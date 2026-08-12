@@ -1,0 +1,7 @@
+repo,missing_count,missing_symbols
+"abnvle/ha-matomo",1,"homeassistant.config_entries:ConfigFlow"
+"andrejs2/arso_potresi",1,"homeassistant.config_entries:OptionsFlowWithConfigEntry"
+"alexhaller/Elli-Charger_HA",2,"homeassistant.core:ServiceCall | homeassistant.helpers.entity:EntityCategory"
+"alpenfun/fems-diagnostics",2,"homeassistant.components.binary_sensor:BinarySensorEntityDescription | homeassistant.helpers:device_registry"
+"andrew-codechimp/HA-Andrews-Arnold-Quota",2,"homeassistant.helpers.entity:EntityDescription | homeassistant.util:slugify"
+"aniolpages/ha-icqa",2,"homeassistant.components.diagnostics:async_redact_data | homeassistant.helpers.device_registry:DeviceEntry"

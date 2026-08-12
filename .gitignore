@@ -1,0 +1,11 @@
+# Cached HACS tarballs (160M, regenerable via hacs_api_surface.py)
+.hacs_cache/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Spike scratch
+*.log
