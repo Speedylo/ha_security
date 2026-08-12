@@ -9,3 +9,6 @@ venv/
 
 # Spike scratch
 *.log
+
+# Spike run artefacts
+spike/audit/

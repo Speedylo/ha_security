@@ -3,7 +3,10 @@
 **Owner:** Younes · Al Akhawayn University, BSc Computer Science
 **Advisor (intended):** Prof. Omar Iraqi Houssaini — Professor of CS; IT & Cybersecurity Lead Auditor & Architect. Already took a cybersecurity course with him.
 **Work period:** September – November 2026 (~13 calendar weeks; **~10 realistic engineering weeks** after proposal, mid-report, final report and defence overhead).
-**Last updated:** 2026-08-10
+**Last updated:** 2026-08-12
+**Repo:** `~/capstone` (WSL filesystem, under git). The Windows `Desktop/Capstone`
+copy is a stale backup — do not edit it. `/mnt/c` is avoided because file modes
+there are fake, which would silently break filesystem permission tests.
 
 > This file is the source of truth across sessions. Update it as decisions land.
 
@@ -203,13 +206,69 @@ probably over-broad; **imports are a lower bound on difficulty** — an integrat
 surface that HACS integrations depend on appears to exist. It is a report figure and it
 justifies every downstream scoping decision — exactly the evidence an auditor grades well.
 
+### 5.3 Shim spike — **GO** ✅ (2026-08-12)
+
+Item 4 of the August plan, the go/no-go. Full write-up in `spike/README.md`.
+
+**Result: an unmodified real HACS integration runs outside HA's process.**
+`andrew-codechimp/HA-Andrews-Arnold-Quota` v2.0.0 sets up, polls twice, and publishes two
+sensor states through a permission-checked Unix socket, with **zero lines changed**.
+It was picked because it is the HA integration-blueprint layout (`__init__` + `coordinator`
++ `entity` + `sensor` + config flow) — the shape most of the polling-sensor population takes.
+
+Built: `spike/shim/homeassistant/` (~2.3k lines: `core`, `const`, `config_entries`,
+`exceptions`, `data_entry_flow`, `util`, `helpers/{entity,entity_platform,update_coordinator,
+aiohttp_client,config_validation,device_registry,typing}`, `components/sensor`),
+plus supervisor, sandbox runner, adversarial probe, stub vendor cloud and a coverage scorer
+(~760 lines).
+
+**Adversarial probe (`./run_spike.sh --probe`)** — four of five attacks blocked:
+
+| Attempt | Result |
+|---|---|
+| Read undeclared `lock.front_door` | blocked by `reads_entities` |
+| Enumerate whole house (the firehose) | blocked — 2 of 8 entities returned, 6 withheld |
+| Call `lock.unlock` (confused deputy) | blocked by `calls_services` |
+| Exfiltrate to undeclared host | blocked by `network` allowlist |
+| **Read a host file directly** | **ALLOWED — no filesystem isolation yet** |
+
+That last row is the honest gap: until namespaces + seccomp land, the framework does *not*
+stop the 2021 HACS file-theft pattern, which is the strongest planned result (§8, Evaluation).
+Nothing else in the table depends on it.
+
+The hash-chained audit log works and detects tampering: flipping the `lock.unlock` denial to
+an allow in a copy of the log yields `BROKEN: line 10: record altered (hash mismatch)`.
+
+**Coverage now measurable end-to-end** (`spike/shim_coverage.py`, replaying `integrations.json`):
+shim exposes 323 importable names; **4/30 (13.3%)** polling-sensor integrations import cleanly;
+median **8** missing among the rest; two are missing exactly one symbol.
+Top blockers are cheap and mechanical — `binary_sensor` platform (13 integrations, a mirror of
+`sensor`), `helpers.selector` (8, pure data), `entity_registry` (12), `ConfigFlowResult` (12,
+an alias), `util.dt` (10). **§5.2's "the tail is generatable, not hard" thesis holds.**
+
+⚠️ **Import success is an upper bound on compatibility**, not a compatibility claim. The lower
+bound is integrations actually executed end-to-end: currently one. The evaluation chapter must
+report both numbers and never conflate them.
+
+**Fidelity gaps found (report material, all in `spike/README.md`):**
+1. `EntityDescription` frozen-ness — HA's `FrozenOrThawed` metaclass lets a frozen base be
+   subclassed by a plain `@dataclass`; the shim leaves it unfrozen. The target *depends* on
+   the mutable behaviour.
+2. `config_entries.current_entry` — integrations read `coordinator.config_entry` having never
+   set it; HA fills it from a ContextVar during setup. Missing it breaks the blueprint layout
+   at runtime, not at import. **Exactly the class of failure import counts cannot predict.**
+3. Egress check misses redirects (only the first URL is authorised).
+4. Bridge calls block the event loop.
+5. Shim-side checks are ergonomics, not security — the integration can bypass them. All
+   enforcement is duplicated supervisor-side. Worth stating explicitly in the threat model.
+
 ---
 
 ## 6. Open decisions
 
 | # | Decision | Options | Recommendation |
 |---|---|---|---|
-| 1 | **Compatibility strategy** | (a) shim so real integrations run unmodified; (b) own SDK + toy integrations; (c) hand-port 2–3 and measure cost | **(a) scoped to the ~30-symbol core + generated constants, reporting measured coverage; (c) as the written fallback.** Not "everything runs unmodified" — that's out of budget. |
+| 1 | ~~**Compatibility strategy**~~ **SETTLED 2026-08-12** | (a) shim so real integrations run unmodified; (b) own SDK + toy integrations; (c) hand-port 2–3 and measure cost | **(a).** The spike (§5.3) ran a real integration unmodified, so the fallback to (c) is no longer needed. Still scoped to a core + generated constants with measured coverage reported — not "everything runs unmodified". |
 | 2 | **Isolation primitive** | namespaces+seccomp / gVisor+its trace sink / gVisor+eBPF-as-boundary-verifier | **namespaces + seccomp** — coherent with eBPF, lighter on the Pi, and defensible as "controls proportionate to the threat model" (his language). |
 | 3 | **Target pattern** ⚠️ **most open question — take this to the advisor first** | polling_sensor only (15%, read-only, easiest, least security-interesting) vs. extending to actuators (58%, where the real stakes are — locks, alarms, switches) | Least settled of the four. Default: start polling_sensor, state actuator support as stretch. But a *security auditor may well push toward actuators*, since that is where the threat model has teeth, and that changes the scope materially. Have this conversation **before** writing the proposal, not after. |
 | 4 | **Report requirements** | literature-review chapter? page target? | **Unknown — ask the advisor / check programme handbook.** |
@@ -243,8 +302,12 @@ justifies every downstream scoping decision — exactly the evidence an auditor 
 
 ### August (before the semester) — de-risk, don't build
 
-> **The two highest-priority items this month are #4 (shim spike) and #6 (advisor meeting,
-> carrying Decision 3 from §6). Everything else can slip; those two cannot.**
+> **#4 (shim spike) is DONE and came back GO — see §5.3. The one remaining item that
+> cannot slip is #6 (advisor meeting, carrying Decision 3 from §6).**
+>
+> The spike changes what to bring to that meeting: there is now a working demo, a
+> four-of-five adversarial result with an honestly-stated gap, and a measured coverage
+> number. Lead with the demo.
 
 1. **Environment.** Install **Ubuntu Server 24.04 LTS arm64** on the Pi 5 — *not* Raspberry
    Pi OS, whose kernels have historically shipped without `CONFIG_DEBUG_INFO_BTF` that
@@ -257,13 +320,16 @@ justifies every downstream scoping decision — exactly the evidence an auditor 
    WebSocket APIs. Makes everything downstream concrete.
 3. **Re-run the surface analysis over the full catalogue** (`--limit 0`) to replace the
    200-repo sample with definitive numbers.
-4. ⭐ **HIGHEST VALUE — prototype the shim's spine.** Fake `homeassistant.core` +
-   `DataUpdateCoordinator` + `SensorEntity`, enough to make *one* real HACS sensor
-   integration produce a state update through a socket. **This is a go/no-go spike: it
-   proves or kills the entire approach in days rather than in week 8**, when there would be
-   no time to recover. Nothing else in August matters as much. Timebox it to ~3 days; if it
-   is clearly going nowhere, that is a *result* — switch Decision 1 to option (c),
-   hand-port-and-measure, and the project still stands.
+4. ✅ **DONE (2026-08-12) — shim spine prototyped, result GO.** See §5.3 and `spike/README.md`.
+   Follow-on work, in value order, none of it blocking the advisor meeting:
+   - **Filesystem isolation** (namespaces + seccomp). The one probe failure, and the
+     precondition for reproducing the 2021 HACS file-theft result.
+   - **Second and third integrations** through the shim, to turn "one runs" into a curve.
+     `abnvle/ha-matomo` and `aniolpages/ha-icqa` are each one symbol short.
+   - **`binary_sensor` + `selector` + `util.dt` + `ConfigFlowResult`** — the cheap wins that
+     move measured coverage most.
+   - Replace the supervisor's `DEFAULT_HOUSE` stub with a real HA over REST/WebSocket
+     (this is item 2 below; the policy layer does not change).
 5. **Draft manifest schema** (strawman is in §2).
 6. ⭐ **Meet the advisor** with a ~2-page pre-proposal — problem, evidenced gap, architecture
    sketch, deliverables, risks, and the coverage-curve figure. Secure buy-in *before*

@@ -1,0 +1,15 @@
+{
+  "domain": "andrews_arnold_quota",
+  "name": "Andrews & Arnold Quota",
+  "codeowners": [
+    "@andrew-codechimp"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/andrew-codechimp/HA-Andrews-Arnold-Quota",
+  "integration_type": "device",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/andrew-codechimp/HA-Andrews-Arnold-Quota/issues",
+  "requirements": [],
+  "version": "2.0.0"
+}
