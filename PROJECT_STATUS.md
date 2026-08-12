@@ -9,6 +9,9 @@ copy is a stale backup — do not edit it. `/mnt/c` is avoided because file mode
 there are fake, which would silently break filesystem permission tests.
 
 > This file is the source of truth across sessions. Update it as decisions land.
+>
+> Companion docs: `CODE_WALKTHROUGH.md` (what every script does and how) ·
+> `spike/README.md` (spike results, adversarial probe, known gaps).
 
 ---
 
