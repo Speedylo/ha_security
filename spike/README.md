@@ -15,11 +15,14 @@ source is exactly what its tarball contained.
 | `aniolpages/ha-icqa` | 8 sensors | 18 | public credential-free endpoint; `runtime_data`; nested payload parsing |
 
 ```bash
-./run_targets.sh          # all three, end to end
-./run_targets.sh matomo   # just one
-./run_spike.sh            # andrews_arnold only: setup + two polls
-./run_spike.sh --probe    # the above, then the adversarial probe
-./shim_coverage.py        # score the shim against the 200-repo dataset
+./run_targets.sh              # all three, end to end
+./run_targets.sh matomo       # just one
+./run_spike.sh                # andrews_arnold only: setup + two polls
+./run_spike.sh --probe        # the above, then the adversarial probe
+./generate_shim.py            # regenerate const.py + selector.py from HA's source
+./generate_shim.py --check    # report what would change, write nothing
+./shim_coverage.py            # score the shim against the full catalogue
+./shim_coverage.py --installs # ...and weight it by real installed base
 ./supervisor.py --verify audit/<run>.jsonl
 ```
 
@@ -90,16 +93,17 @@ a copy of the log is detected: `BROKEN: line 10: record altered (hash mismatch)`
 
 | | import cleanly | median missing among the rest |
 |---|---|---|
-| full catalogue, constants included (n=763) | **72/763 (9.4%)** | **6** |
-| 200-repo sample, `--exclude-trivial` (n=30) | 6/30 (20.0%), was 4/30 | 8 |
+| polling sensors (n=763) | **94/763 (12.3%)** | **4** |
+| all patterns (n=3075) | **141/3075 (4.6%)** | 9 |
 
-- shim exposes **350 importable names** (was 323)
+- shim exposes **814 importable names** (was 323, then 350 before the generator)
 - **3 integrations executed end-to-end** (was 1)
+- **1.2% of the real installed base** — `./shim_coverage.py --pattern all --installs`
 
-The full-catalogue percentage is lower for two reasons at once: it counts the constants
-`--exclude-trivial` hid, and it draws on a population that is not alphabetically clustered.
-**72 integrations importing cleanly** is the honest absolute number, and the median
-non-clean integration is **6** symbols away.
+That last row is the one that answers "how much of the real world does this run". Counting
+repositories treats a 43,601-install integration and a 3-install one identically; Home
+Assistant publishes per-domain install counts, so there is no need to. Of the 100
+most-installed integrations, **1** imports cleanly, with a median of 22 symbols missing.
 
 Run it under `../.venv/bin/python`, not the system interpreter. Without
 `aiohttp` importable, two shim modules fail to load and the scorer silently
@@ -133,24 +137,32 @@ rank what to build next.
 
 Top blockers, and why the number should move fast:
 
-Ranked on the full 763-integration population, which reorders the queue against
-what the 30-integration sample suggested:
+Ranked by how many of the **100 most-installed** integrations each blocks — i.e.
+weighted by real-world use rather than by repository count:
 
-| Missing | Blocks | Cost | Status |
-|---|---|---|---|
-| `util:dt` | **257** | thin wrapper over stdlib | open |
-| `binary_sensor:BinarySensorEntity` | **229** | mirror of `sensor`, ~1h | open |
-| `helpers:entity_registry` | **163** | needs a supervisor-side registry | open |
-| `binary_sensor:BinarySensorDeviceClass` | **150** | pure data | open |
-| `helpers:selector` + the `Select*`/`Text`/`Number` family | **129 / 109 / 107 / 86 / 75 / 68** | pure data, generatable | open |
-| `helpers.storage:Store` | **105** | absent from the sample's top list | open |
-| `config_entries:ConfigFlowResult` | — | alias, minutes | **done** |
-| `components.diagnostics:async_redact_data` | — | ~20 lines | **done** |
+| Missing | Blocks (of top 100) | Generatable? |
+|---|---|---|
+| `binary_sensor:BinarySensorEntity` | 50 | no — platform |
+| `helpers:entity_registry` | 50 | no — stateful |
+| `switch:SwitchEntity` | 49 | no — **actuator** platform |
+| `button:ButtonEntity` | 41 | no — **actuator** platform |
+| `util:dt` | 41 | thin stdlib wrapper |
+| `select:SelectEntity` | 36 | no — **actuator** platform |
+| `number:NumberEntity` | 33 | no — **actuator** platform |
+| `restore_state:RestoreEntity` | 30 | no — stateful |
+| `helpers.selector` (whole family) | — | **generated** |
+| `const` (units, enums, keys) | — | **generated** |
+| `config_entries:ConfigFlowResult` | — | done |
+| `components.diagnostics:async_redact_data` | — | done |
 
-This is the §5.2 thesis holding up: the tail is mechanical, not hard — `util.dt`,
-`selector` and the `binary_sensor` enums now sit at the top of the queue and are
-all generatable or near-copies. The two marked done cost well under an hour
-between them and moved the sample figure from 13.3% to 20.0%.
+**This qualifies the "the tail is generatable" thesis rather than confirming it.**
+The thesis is true — `generate_shim.py` produced 469 constants and 93 selector
+classes in an afternoon, and regenerates them free every HA release. But that
+tail turned out to be a *smaller share of the problem than assumed*: clearing
+every constant and selector moved import-cleanliness from 9.4% to 12.3%. What
+actually blocks integrations is **behavioural** — entity platforms and stateful
+helpers — and among the most-installed integrations those platforms are mostly
+**actuator** platforms.
 
 ## Fidelity gaps found while building
 

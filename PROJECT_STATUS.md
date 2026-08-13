@@ -159,24 +159,50 @@ Tarballs cache in `.hacs_cache/`, so re-runs are instant.
 **The whole catalogue has now been analysed: 3105 repositories, 3075 parsed.** The
 200-repo sample is superseded and kept only as `surface_out_200repo/` for provenance.
 
-**Pattern distribution — and the sample was biased, as suspected:**
+**Pattern distribution — by repo count, and by how many people actually run them:**
 
-| pattern | full catalogue (n=3075) | 200-repo sample | drift |
+| pattern | repos (n=3075) | 200-repo sample | **by installed base** |
 |---|---|---|---|
-| actuator (receives commands) | **46.7%** (1437) | 58.0% | −11.3 |
-| polling_sensor | **24.8%** (763) | 15.0% | **+9.8** |
-| sensor_other | **9.4%** (288) | 13.5% | −4.1 |
-| other | **8.0%** (246) | 6.5% | +1.5 |
-| local_discovery | **7.8%** (240) | 6.0% | +1.8 |
-| push_stream | **2.4%** (75) | 0.5% | +1.9 |
-| oauth_cloud | **0.8%** (26) | 0.5% | +0.3 |
+| actuator (receives commands) | 46.7% (1437) | 58.0% | **64.8%** |
+| polling_sensor | 24.8% (763) | 15.0% | **10.6%** |
+| sensor_other | 9.4% (288) | 13.5% | 5.0% |
+| other | 8.0% (246) | 6.5% | 6.0% |
+| local_discovery | 7.8% (240) | 6.0% | 7.4% |
+| push_stream | 2.4% (75) | 0.5% | 4.9% |
+| oauth_cloud | 0.8% (26) | 0.5% | 1.2% |
 
-The alphabetical-order caveat in the old §5.2 was justified: **polling sensors are 24.8% of
-the catalogue, not 15%** — two-thirds more of the population than the sample implied, and
-763 integrations in absolute terms. Actuators are still the largest group but by a smaller
-margin. This strengthens the "start with polling sensors" position going into Decision 3,
-without removing the reason to discuss actuators (46.7% is still where the threat model has
-teeth).
+Two separate corrections here, and the second is the bigger one.
+
+**(a) The sample was biased, as suspected.** Catalogue order is roughly alphabetical — which
+is why every near-miss repo in the old results began with `a`. By repo count, polling sensors
+are 24.8%, not 15%.
+
+**(b) Repo counts are the wrong denominator.** ⭐ **Found 2026-08-13.** Home Assistant
+publishes real install counts for custom integrations at
+`https://analytics.home-assistant.io/custom_integrations.json`, keyed by **domain**, which
+joins directly to `integrations.json`. 1,770 of 3,075 integrations match; 1,064,724 installs
+total. Weighted by what people actually run:
+
+- **actuators are 64.8% of the installed base**, not 46.7%;
+- **polling sensors are 10.6%**, not 24.8%.
+
+Counting repositories treats a 43,601-install integration (`AlexxIT/SonoffLAN`) and a
+3-install one identically. **Every coverage figure in this project should be reported both
+ways**, and the install-weighted one is the honest answer to "how much of the real world does
+this run". `spike/shim_coverage.py --installs` computes it.
+
+Installs are also extremely concentrated:
+
+| top N integrations | share of all installs |
+|---|---|
+| 10 | 25.9% |
+| 100 | **69.6%** |
+| 200 | 82.3% |
+| 500 | 94.3% |
+
+⚠️ Caveat for the report: HA analytics is **opt-in telemetry**, so these are a lower bound and
+a relative measure, not a census. They remain the only public signal of real-world usage, and
+far better than assuming every repo is equally used.
 
 **API surface, polling-sensor subset (n=763, constants included):** median **6** missing
 symbols against the current shim, and 72 integrations already import cleanly.
@@ -295,34 +321,72 @@ Nothing else in the table depends on it.
 The hash-chained audit log works and detects tampering: flipping the `lock.unlock` denial to
 an allow in a copy of the log yields `BROKEN: line 10: record altered (hash mismatch)`.
 
-**Coverage now measurable end-to-end** (`spike/shim_coverage.py`). Two figures, and they must
-not be mixed up:
+### 5.4 Constants generator, and the honest coverage position ✅ (2026-08-13)
 
-| dataset | import cleanly | median missing among the rest |
+`spike/generate_shim.py` reads HA's own source with `ast` — never importing or executing it —
+and emits the shim's pure-data modules. It is pinned to release **2026.8.1**, never `dev`, and
+carries over any name that disappears upstream rather than silently dropping it.
+
+It generated **469 constants and 93 selector classes**, taking the shim from 350 to **814
+importable names**. Three things surfaced while building it:
+
+- **HA generates `Platform` themselves** — since 2026.8 it is `EntityPlatforms`, re-exported
+  from `homeassistant/generated/entity_platforms.py`. Independent upstream support for the
+  "constants are generated, not written" premise.
+- **HA 2026.8.1's `helpers/selector.py` does not parse under Python 3** — line 621 is
+  `except vol.Invalid, vol.MultipleInvalid:`, Python 2 syntax. The generator degrades to
+  line-based extraction rather than failing. *Verify this independently before citing it.*
+- **A latent supervisor bug**: `AuditLog.verify` raised `UnboundLocalError` on an empty log.
+  Fixed.
+
+**What generating actually bought — less than the thesis predicted:**
+
+| | before | after |
 |---|---|---|
-| **full catalogue, constants included** (n=763) | **72/763 (9.4%)** | **6** |
-| 200-repo sample, `--exclude-trivial` (n=30) | 6/30 (20.0%) | 8 |
+| importable names | 350 | **814** |
+| polling sensors import-clean | 9.4% | **12.3%** (94/763) |
+| median missing among the rest | 6 | **4** |
+| share of polling-sensor installs | — | **7.8%** |
+| share of *all* installs | 0.8% | **1.2%** |
 
-The shim exposes **350** importable names. The sample figure rose from 4/30 to 6/30 after
-`ConfigFlowResult` and `async_redact_data` — under an hour's work. The full-catalogue figure
-is lower because it counts the constants the sample hid *and* draws on a population that is
-not alphabetically clustered; **72 integrations importing cleanly** is the honest absolute
-number, and the median non-clean integration is only **6** symbols away.
+⚠️ **This qualifies §5.2's "the tail is generatable" thesis.** The thesis is *true* — the
+constant tail was generated in an afternoon and regenerates free every HA release. But that
+tail was **a smaller part of the problem than assumed**: clearing every constant and selector
+moved import-cleanliness by three points. What actually blocks integrations is **behavioural**
+— entity platforms and stateful helpers, none of which are generatable.
 
-**Blocker queue, now ranked on 763 integrations rather than 30** — the numbers moved enough
-to change the build order:
+**Blockers among the 100 most-installed integrations** (69.6% of the installed base):
 
-| missing | blocks | note |
+| missing | blocks | generatable? |
 |---|---|---|
-| `util:dt` | **257** | thin stdlib wrapper; was ranked 5th on the sample |
-| `binary_sensor:BinarySensorEntity` | **229** | mirror of `sensor` |
-| `helpers:entity_registry` | **163** | needs a supervisor-side registry |
-| `binary_sensor:BinarySensorDeviceClass` | **150** | pure data |
-| `helpers:selector` + `SelectSelector`/`Config`/`Mode`/`Text`/`Number` | **129 / 109 / 107 / 86 / 75 / 68** | pure data, generatable |
-| `helpers.storage:Store` | **105** | not in the sample's top list at all |
+| `binary_sensor:BinarySensorEntity` | 50 | no — platform |
+| `helpers:entity_registry` | 50 | no — stateful |
+| `switch:SwitchEntity` | 49 | no — **actuator** platform |
+| `button:ButtonEntity` | 41 | no — **actuator** platform |
+| `util:dt` | 41 | thin wrapper |
+| `select:SelectEntity` | 36 | no — **actuator** platform |
+| `number:NumberEntity` | 33 | no — **actuator** platform |
+| `restore_state:RestoreEntity` | 30 | no — stateful |
 
-**§5.2's "the tail is generatable, not hard" thesis holds** — and `util.dt`, `selector` and
-the `binary_sensor` enums, all mechanical, sit at the top of the queue.
+**How much ground the framework covers right now — state it plainly:**
+
+| measure | value |
+|---|---|
+| **executed end-to-end** | **3** integrations |
+| import-clean, polling sensors | 94/763 (12.3%) |
+| import-clean, all patterns | 141/3075 (4.6%) |
+| **share of real installed base** | **1.2%** |
+| top 100 most-installed | **1/100** |
+
+A greedy search — implement whole modules one at a time, always choosing the one unblocking
+the most installs — reaches only **5.8% of the installed base after twelve more complete
+modules**. The curve is flat because *every* import an integration makes must be satisfied,
+and popular integrations import more (median **22** missing among the top 100).
+
+**The conclusion to carry into the report:** this project has a **working mechanism** and
+**very little coverage**, and those are compatible facts. The contribution is the mechanism
+plus the first empirical measurement of what applying it ecosystem-wide would cost — not a
+deployable product. See §10.
 
 ⚠️ **Two corrections to how the import number must be read** (both found 2026-08-13, both
 report material):
@@ -375,7 +439,8 @@ report material):
 |---|---|---|---|
 | 1 | ~~**Compatibility strategy**~~ **SETTLED 2026-08-12** | (a) shim so real integrations run unmodified; (b) own SDK + toy integrations; (c) hand-port 2–3 and measure cost | **(a).** The spike (§5.3) ran a real integration unmodified, so the fallback to (c) is no longer needed. Still scoped to a core + generated constants with measured coverage reported — not "everything runs unmodified". |
 | 2 | **Isolation primitive** | namespaces+seccomp / gVisor+its trace sink / gVisor+eBPF-as-boundary-verifier | **namespaces + seccomp** — coherent with eBPF, lighter on the Pi, and defensible as "controls proportionate to the threat model" (his language). |
-| 3 | **Target pattern** ⚠️ **most open question — take this to the advisor first** | polling_sensor only (**24.8%**, 763 integrations, read-only, easiest, least security-interesting) vs. extending to actuators (**46.7%**, 1437 integrations, where the real stakes are — locks, alarms, switches) | Least settled of the four. **Full-catalogue numbers (§5.2) strengthen the polling-sensor default**: it is 24.8% of the catalogue, not the 15% the sample suggested, so "one pattern" now covers a quarter of all HACS integrations and 763 real programs — a defensible scope, not a toy. Actuators remain the bigger group and the one with teeth. Default: start polling_sensor, state actuator support as stretch, and bring both numbers to the meeting. Have this conversation **before** writing the proposal, not after. |
+| 3 | **Target pattern** ⚠️ **most open question — take this to the advisor first** | polling_sensor only (24.8% of repos but **only 10.6% of installs**) vs. extending to actuators (46.7% of repos and **64.8% of installs**) | **Install weighting (§5.2b) cuts against the polling-sensor default.** By repo count it looked like a quarter of the ecosystem; by what people actually run it is a tenth, while actuators are nearly two-thirds. Actuators are simultaneously where the threat model has teeth *and* where the users are — a security auditor will notice both. Counter-argument that still holds: actuator platforms are behavioural work (`switch`, `button`, `select`, `number` each block 30–50 of the top 100, §5.4), so the cost is real and the ~10 engineering weeks are not elastic. **Recommended position to take into the meeting:** keep polling_sensor as the *implemented* scope, but present the install numbers honestly, frame actuator support as the explicit next increment, and let him choose. Do not present 24.8% without 10.6% beside it. |
+| 3b | **Which integrations to target inside the pattern** — new, 2026-08-13 | arbitrary / alphabetical (what happened so far) vs. **most-installed first** | **Most-installed first.** The top 20 polling sensors are 52% of all polling-sensor installs, and several are already within reach of today's shim — `MarcoGos/kleenex_pollenradar` (1,569 installs) and `delphiki/hass-tarif-edf` (1,473) need **zero** additional symbols; `jonandel/ha-hildebrandglow-dcc` (1,718) needs one. "Runs integrations installed on thousands of real systems" is a far stronger claim than "runs three integrations", for identical effort. |
 | 4 | **Report requirements** | literature-review chapter? page target? | **Unknown — ask the advisor / check programme handbook.** |
 
 ---
@@ -421,23 +486,31 @@ report material):
    - `sudo bpftrace -e 'tracepoint:syscalls:sys_enter_openat { printf("%s\n", comm); }'` streams output
 
    If either fails, plan for a small cloud VM rather than fighting kernel configs in October.
-2. **Run HA in Docker on the Pi**, and drive it from a Python script over the REST and
-   WebSocket APIs. Makes everything downstream concrete.
+2. ⭐⭐ **Run HA in Docker and put it behind the supervisor**, replacing the `DEFAULT_HOUSE`
+   stub with a real REST/WebSocket client. **Now the highest-value engineering item in the
+   project** — see §9. Until this exists, "works against an unmodified Home Assistant" is a
+   design intention rather than a demonstrated fact, and that claim is the whole difference
+   between a retrofit and a thought experiment. Cheap, too: the policy layer does not change,
+   only what sits behind it. Ahead of more integrations, and well ahead of isolation.
 3. ✅ **DONE (2026-08-13) — full catalogue analysed** (3105 repos, 3075 parsed). See §5.2:
    polling sensors are 24.8% of the catalogue, not 15%, and the head of the symbol
    distribution held up at n=763. Selection-bias caveat retired.
 4. ✅ **DONE (2026-08-12) — shim spine prototyped, result GO.** See §5.3 and `spike/README.md`.
    Follow-on work, in value order, none of it blocking the advisor meeting:
-   - **Filesystem isolation** (namespaces + seccomp). The one probe failure, and the
-     precondition for reproducing the 2021 HACS file-theft result. **Now the top open item.**
+   - **Real HA behind the supervisor** — promoted to item 2 above; it now outranks
+     everything else here.
    - ✅ **DONE (2026-08-13) — second and third integrations** (`abnvle/ha-matomo`,
      `aniolpages/ha-icqa`) run end-to-end. Forced the `FrozenOrThawed` fix above.
-   - **A fourth and fifth integration**, ideally not from the `a*` end of the catalogue —
-     see the selection-bias caveat in §5.2. `spike/README.md` documents the four-step recipe.
-   - **`binary_sensor` + `selector` + `util.dt` + `entity_registry`** — the cheap wins that
-     move measured coverage most (`ConfigFlowResult` and `async_redact_data` are done).
-   - Replace the supervisor's `DEFAULT_HOUSE` stub with a real HA over REST/WebSocket
-     (this is item 2 below; the policy layer does not change).
+   - ✅ **DONE (2026-08-13) — constants generator** (§5.4). Shim 350 → 814 names.
+   - **Targets #4 and #5, chosen by installed base** (Decision 3b, §6):
+     `MarcoGos/kleenex_pollenradar` and `delphiki/hass-tarif-edf` need **zero** extra symbols
+     and carry ~1,500 real installs each. `spike/README.md` documents the four-step recipe.
+   - **`binary_sensor` + `util.dt` + `entity_registry` + `restore_state`** — the behavioural
+     work that now dominates the blocker list (§5.4). Not generatable; budget accordingly.
+   - **Filesystem isolation** (namespaces + seccomp). Deferred by decision on 2026-08-13.
+     Still the precondition for reproducing the 2021 HACS file-theft result, so the security
+     chapter must state *why* the fifth probe row is unblocked rather than quietly reporting
+     "4 of 5".
 5. **Draft manifest schema** (strawman is in §2).
 6. ⭐ **Meet the advisor** with a ~2-page pre-proposal — problem, evidenced gap, architecture
    sketch, deliverables, risks, and the coverage-curve figure. Secure buy-in *before*
@@ -477,8 +550,52 @@ trees, ISO 27001 / NIST — **confirm which**). Stated scope limits are an asset
 
 ---
 
-## 9. Key sources
+## 9. What this project actually claims (positioning) ⭐ 2026-08-13
+
+Prompted by the right question: *"is what we are doing just 'if Home Assistant were rewritten
+to be more secure, this is how it could be'?"* At 1.2% install coverage (§5.4) that question
+will be asked in the defence, so the answer belongs in the report.
+
+**No — and the distinction is the project's main asset.** The design requires **zero changes
+to Home Assistant**. The supervisor sits *beside* stock HA and speaks to it through the REST
+and WebSocket APIs that already exist and are already public; the integration runs unmodified.
+Nothing upstream has to accept a patch, change an interface, or agree. That is a **retrofit**,
+not a redesign — and redesign proposals are cheap to write and nobody has to adopt them.
+
+**But it is not yet proven, and this is the single highest-value thing left to build.** The
+supervisor currently talks to `DEFAULT_HOUSE`, a hardcoded dict standing in for a house. Until
+that is a real REST/WebSocket client against a real HA instance, "works against unmodified HA"
+is an intention, not a demonstrated fact. **This is the difference between a retrofit and a
+thought experiment.** It is already item 2 of the August list, still undone, and it is cheap:
+the policy layer does not change at all, only what sits behind it. Rank it above more
+integrations and well above isolation.
+
+**Where the framing is genuinely vulnerable** — put these in the report rather than letting an
+examiner find them:
+
+- Users install HACS integrations *into HA's config directory*, and HA loads them. Using this
+  framework means installing them somewhere else instead: a **workflow change for the user**,
+  even though it is not a code change for HA.
+- Entities published over the REST API are not identical to natively-loaded ones — device
+  registry association, config-entry linkage and the UI's "configure" affordances all differ.
+  Measure this rather than hand-waving it.
+- HA's own "Remote Integration Execution" RFC moves toward process separation for
+  non-security reasons. Engage directly: this supplies the **policy layer** their mechanism
+  would need. Do not wait to be asked.
+
+**The accurate one-sentence claim:** *a demonstrated mechanism for confining unmodified HACS
+integrations against a stock Home Assistant, plus the first empirical measurement of what
+applying it across the real ecosystem would cost.* Both halves are contributions and the
+second is the more novel one — no published account of the HA API surface appears to exist.
+That sentence stays honest at 1.2% coverage; "a sandboxing framework for HACS" does not.
+
+---
+
+## 10. Key sources
 - Home Assistant security disclosure, Jan 2021 — file theft via custom integrations
+- **HA analytics — `https://analytics.home-assistant.io/custom_integrations.json`** — per-domain
+  install counts for custom integrations; opt-in telemetry, so a lower bound. The basis for
+  every install-weighted figure in §5.2 and §5.4.
 - Home Assistant official security page (trust assumptions)
 - GitHub Security Lab — "Securing our home labs: Home Assistant code review"
 - HA community RFC, 2026 — "Remote Integration Execution" (process separation, *not* security-motivated; engage with it directly, position as complementary)

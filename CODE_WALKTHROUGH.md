@@ -24,7 +24,8 @@ A mechanical tour of the codebase, in execution order. For *what the results mea
     ├── supervisor.py            TRUSTED: policy + audit + process spawn
     ├── runner.py                sandbox entrypoint
     ├── probe.py                 adversarial test
-    ├── shim_coverage.py         scores the shim against surface_out/
+    ├── generate_shim.py         generates const.py + selector.py from HA's source
+    ├── shim_coverage.py         scores the shim against surface_out/ (± install weighting)
     ├── shim/homeassistant/      the fake HA API (~2.5k lines)
     ├── target/custom_components/andrews_arnold_quota/   untrusted, unmodified
     └── targets/<name>/custom_components/<name>/         ditto: matomo, icqa
@@ -349,6 +350,28 @@ been the wrong test.
 
 Check #5 reads a host file, expects to succeed, and reports it as `ALLOWED`. A test suite that
 only contains tests you pass is marketing, not evaluation.
+
+### `generate_shim.py`
+
+The cost thesis, executed. It reads HA's own source with `ast` — never importing or running it,
+the same discipline `hacs_api_surface.py` applies to untrusted integrations — and emits the
+shim's pure-data modules: 469 constants into `const.py`, 93 selector classes into
+`helpers/selector.py`.
+
+Three design points worth keeping:
+
+- **Pinned to a release tag, never `dev`.** Otherwise the shim's contents depend on the day it
+  was run. It also matters practically: HA 2026.8.1's `helpers/selector.py` contains
+  `except vol.Invalid, vol.MultipleInvalid:` — Python 2 syntax, a `SyntaxError` on any Python 3
+  — so the generator falls back to line-based class extraction rather than dying.
+- **It never silently drops a name.** Anything the previous module exported that the pinned
+  source lacks is copied over verbatim, because a name can leave `const.py` without leaving the
+  API: 2026.8 moved `Platform` into `homeassistant/generated/entity_platforms.py` (HA generates
+  it too — independent support for this script's premise) and the lock states into their own
+  component.
+- **Dunders count as API.** Integrations do `from homeassistant.const import __version__` to
+  gate on an HA version, so `__version__` is emitted and tracked like any other name. Missing
+  this broke `andrews_arnold_quota` on the first generated run.
 
 ### `shim_coverage.py`
 
