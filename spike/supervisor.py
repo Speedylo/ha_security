@@ -32,18 +32,9 @@ from pathlib import Path
 
 import yaml
 
-HERE = Path(__file__).resolve().parent
+from ha_backend import HomeAssistantError, RestHouse, StubHouse
 
-# A stand-in for the rest of the house: the entities a real HA instance would
-# expose to anything holding a token. None of it is this integration's business.
-DEFAULT_HOUSE = {
-    "lock.front_door": ("locked", {"friendly_name": "Front door"}),
-    "alarm_control_panel.home": ("armed_away", {"friendly_name": "Alarm"}),
-    "device_tracker.younes": ("not_home", {"friendly_name": "Younes"}),
-    "sensor.living_room_temperature": ("21.4", {"friendly_name": "Living room temperature"}),
-    "camera.hallway": ("recording", {"friendly_name": "Hallway camera"}),
-    "binary_sensor.holiday_mode": ("on", {"friendly_name": "Holiday mode"}),
-}
+HERE = Path(__file__).resolve().parent
 
 
 class Manifest:
@@ -146,14 +137,13 @@ class AuditLog:
 class Supervisor:
     """Policy enforcement for one sandboxed integration."""
 
-    def __init__(self, manifest: Manifest, audit: AuditLog, quiet: bool = False) -> None:
+    def __init__(self, manifest: Manifest, audit: AuditLog, house, quiet: bool = False) -> None:
         self.manifest = manifest
         self.audit = audit
         self.quiet = quiet
-        self.house = {
-            entity_id: {"entity_id": entity_id, "state": state, "attributes": attributes}
-            for entity_id, (state, attributes) in DEFAULT_HOUSE.items()
-        }
+        # Where state lives — a stub dict or a real HA. Policy does not care,
+        # and that is the point: every check below runs before this is touched.
+        self.house = house
         self.published: dict[str, dict] = {}
         self.allowed_count = 0
         self.denied_count = 0
@@ -169,12 +159,12 @@ class Supervisor:
             entity_id = str(message.get("entity_id", ""))
             if not self.manifest.may_publish(entity_id):
                 return False, f"{entity_id} not in manifest publishes", {}
-            self.published[entity_id] = {
+            record = self.house.set(entity_id, message.get("state"), message.get("attributes") or {})
+            self.published[entity_id] = record or {
                 "entity_id": entity_id,
                 "state": message.get("state"),
                 "attributes": message.get("attributes") or {},
             }
-            self.house[entity_id] = self.published[entity_id]
             return True, f"publishes matches {entity_id}", {}
 
         if op == "get_state":
@@ -186,26 +176,28 @@ class Supervisor:
         if op == "list_states":
             # The firehose. Real HA's /api/states hands back the entire house;
             # the bridge returns only the declared subset.
+            everything = self.house.all()
             visible = [
-                state for entity_id, state in self.house.items() if self.manifest.may_read(entity_id)
+                state for state in everything if self.manifest.may_read(state.get("entity_id", ""))
             ]
-            hidden = len(self.house) - len(visible)
+            hidden = len(everything) - len(visible)
             return True, f"{len(visible)} visible, {hidden} withheld", {"states": visible}
 
         if op == "remove_state":
             entity_id = str(message.get("entity_id", ""))
             if not self.manifest.may_publish(entity_id):
                 return False, f"{entity_id} not owned by this integration", {"removed": False}
-            self.house.pop(entity_id, None)
+            removed = self.house.remove(entity_id)
             self.published.pop(entity_id, None)
-            return True, f"removed {entity_id}", {"removed": True}
+            return True, f"removed {entity_id}", {"removed": removed}
 
         if op == "call_service":
             domain = str(message.get("domain", ""))
             service = str(message.get("service", ""))
             if not self.manifest.may_call(domain, service):
                 return False, f"{domain}.{service} not in manifest calls_services", {}
-            return True, f"calls_services matches {domain}.{service}", {"response": None}
+            response = self.house.call_service(domain, service, message.get("data") or {})
+            return True, f"calls_services matches {domain}.{service}", {"response": response}
 
         if op == "register_service":
             domain = str(message.get("domain", ""))
@@ -286,9 +278,27 @@ def run(args: argparse.Namespace) -> int:
     domain = integration_dir.name
     run_id = datetime.now().strftime("%Y%m%d-%H%M%S")
     audit = AuditLog(HERE / "audit" / f"{domain}-{run_id}.jsonl")
-    supervisor = Supervisor(manifest, audit, quiet=args.quiet)
+
+    if args.ha_url:
+        token = args.ha_token or os.environ.get("HA_TOKEN", "")
+        if not token:
+            print("supervisor: --ha-url given but no token (--ha-token or HA_TOKEN)", file=sys.stderr)
+            return 2
+        house = RestHouse(args.ha_url, token)
+        try:
+            detail = house.check()
+        except HomeAssistantError as err:
+            print(f"supervisor: cannot reach Home Assistant — {err}", file=sys.stderr)
+            return 2
+        backend_line = f"{house.describe()} — {detail}"
+    else:
+        house = StubHouse()
+        backend_line = house.describe()
+
+    supervisor = Supervisor(manifest, audit, house, quiet=args.quiet)
 
     print(f"supervisor: integration '{manifest.name}' v{manifest.version}")
+    print(f"  backend        : {backend_line}")
     print(f"  publishes      : {manifest.publishes or '(none)'}")
     print(f"  reads_entities : {manifest.reads_entities or '(none)'}")
     print(f"  calls_services : {manifest.calls_services or '(none)'}")
@@ -380,6 +390,17 @@ def main() -> int:
         "--egress-rewrite",
         default="",
         help="test harness only: host=http://127.0.0.1:PORT redirection, checked after policy",
+    )
+    parser.add_argument(
+        "--ha-url",
+        default="",
+        help="base URL of a real Home Assistant, e.g. http://127.0.0.1:8123. "
+        "Without it the supervisor uses the in-memory stub house.",
+    )
+    parser.add_argument(
+        "--ha-token",
+        default="",
+        help="long-lived access token for --ha-url (or set HA_TOKEN). The sandbox never sees it.",
     )
     parser.add_argument("--probe", action="store_true", help="run the adversarial probe after setup")
     parser.add_argument("--quiet", action="store_true", help="suppress the per-decision trace")

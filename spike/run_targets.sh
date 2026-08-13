@@ -1,16 +1,30 @@
 #!/usr/bin/env bash
 # Run every target integration end-to-end under the shim + supervisor.
 #
-#   ./run_targets.sh              all three
+#   ./run_targets.sh              all three, against the in-memory stub house
 #   ./run_targets.sh matomo       just one
+#   HA=1 ./run_targets.sh         against the real Home Assistant in Docker
 #
 # Each target is an unmodified HACS integration, its hand-written manifest, and
 # a stub of its vendor cloud. run_spike.sh remains the single-target entry point
 # for andrews_arnold_quota and the adversarial probe.
+#
+# With HA=1 the supervisor publishes into a stock, unmodified Home Assistant over
+# its public REST API — the claim being that this needs no changes to HA at all.
+# Bring one up first with:  ./ha_docker.sh up && ./ha_onboard.py && ./ha_seed.py
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PYTHON="${HERE}/../.venv/bin/python"
+
+HA_ARGS=()
+if [[ "${HA:-0}" == "1" ]]; then
+  if [[ ! -f "${HERE}/.ha_token" ]]; then
+    echo "HA=1 but no .ha_token — run ./ha_docker.sh up && ./ha_onboard.py" >&2
+    exit 2
+  fi
+  HA_ARGS=(--ha-url "${HA_URL:-http://127.0.0.1:8123}" --ha-token "$(cat "${HERE}/.ha_token")")
+fi
 
 # name | integration dir | manifest | stub script | port | declared host | entry data
 TARGETS=(
@@ -49,6 +63,7 @@ for spec in "${TARGETS[@]}"; do
       --integration "${dir}" \
       --entry-data "${entry}" \
       --egress-rewrite "${host}=http://127.0.0.1:${port}" \
+      "${HA_ARGS[@]+"${HA_ARGS[@]}"}" \
       --quiet; then
     :
   else
