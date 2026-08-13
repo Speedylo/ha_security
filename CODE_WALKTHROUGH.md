@@ -14,15 +14,20 @@ A mechanical tour of the codebase, in execution order. For *what the results mea
 ├── hacs_api_surface.py          measurement: what API do real integrations need?
 ├── surface_out/                 its results (the evidence base)
 └── spike/
-    ├── run_spike.sh             orchestration
+    ├── run_spike.sh             orchestration: andrews_arnold + the probe
+    ├── run_targets.sh           runs all three integrations end to end
     ├── fake_aa_api.py           stub vendor cloud (outside the sandbox)
-    ├── manifest.yaml            the security contract
+    ├── fake_matomo_api.py       ditto, for matomo
+    ├── fake_icqa_api.py         ditto, for icqa
+    ├── manifest.yaml            the security contract (andrews_arnold)
+    ├── manifests/<name>.yaml    one contract per additional integration
     ├── supervisor.py            TRUSTED: policy + audit + process spawn
     ├── runner.py                sandbox entrypoint
     ├── probe.py                 adversarial test
     ├── shim_coverage.py         scores the shim against surface_out/
-    ├── shim/homeassistant/      the fake HA API (~2.3k lines)
-    └── target/custom_components/andrews_arnold_quota/   untrusted, unmodified
+    ├── shim/homeassistant/      the fake HA API (~2.5k lines)
+    ├── target/custom_components/andrews_arnold_quota/   untrusted, unmodified
+    └── targets/<name>/custom_components/<name>/         ditto: matomo, icqa
 ```
 
 Two trust zones. `supervisor.py` and everything it holds is trusted. `runner.py`, the whole
@@ -262,11 +267,26 @@ attributes = self._build_attributes()   # friendly_name, unit, icon, device_clas
 self.hass.states.async_set(self.entity_id, state, attributes)
 ```
 
-`EntityDescription` is a `@dataclass(kw_only=True)` here. Real HA uses a `FrozenOrThawed`
-metaclass so a frozen base can be subclassed by a plain `@dataclass`; ours is simply unfrozen.
-That accepts both forms but permits mutation HA would reject — and the target *depends* on the
-mutable behaviour, rewriting `entity_description.entity_id` in its constructor. Fidelity
-gap #1.
+`EntityDescription` is deliberately **not** a dataclass. It carries
+`metaclass=FrozenOrThawed, frozen_or_thawed=True`, exactly as real HA does, because the three
+targets need mutually exclusive things from it: `andrews_arnold_quota` subclasses it with a
+plain `@dataclass` and rewrites `entity_description.entity_id` in its constructor, while
+`matomo` subclasses it with `@dataclass(frozen=True, kw_only=True)`. Python refuses to let a
+frozen dataclass inherit from a non-frozen one or the reverse, so an unfrozen base runs the
+first and raises `TypeError` on the second. See `util/frozen_dataclass_compat.py` below.
+
+**`util/frozen_dataclass_compat.py`** — the metaclass that squares that circle. A class marked
+`frozen_or_thawed=True` is never made a dataclass itself; instead it builds a parallel frozen
+dataclass in `cls._dataclass` and delegates construction to it via `__new__`. Because the class
+is not a dataclass, `@dataclass` on a subclass sees no dataclass base, so neither the frozen nor
+the unfrozen form conflicts; the subclass picks up inherited fields through annotations the
+metaclass injects. Upstream's version reads annotations with `annotationlib` (Python 3.14+);
+this one reads `__annotations__` directly so it runs on 3.12.
+
+**`components/diagnostics/__init__.py`** — just `async_redact_data`, which masks named keys
+recursively before an integration hands a payload to HA's diagnostics download. Pure data
+manipulation with no HA state involved, so the shim's version and the real one are the same
+function. Seven of the thirty sampled polling sensors import it.
 
 **`helpers/entity_platform.py`** — `async_add_entities` is sync (as on real HA) and schedules
 the real work as a task. That task sets `entity.hass`, generates an `entity_id` if the
@@ -340,8 +360,20 @@ computes, per integration, `[s for s in symbols if s not in provided]`.
 Dynamic import rather than static parsing, deliberately: it catches inherited and re-exported
 names (like `DeviceInfo` re-exported from `device_registry`) that an AST pass would miss.
 
-Its output — 4/30 clean, median 8 missing, ranked blockers — is a **work queue sorted by
+Its output — 6/30 clean, median 8 missing, ranked blockers — is a **work queue sorted by
 value**. `binary_sensor` blocks 13 integrations and is a near-copy of `sensor`.
+
+Two cautions on that number, both learned the hard way:
+
+- **Run it under `../.venv/bin/python`.** With `aiohttp` unimportable, two shim modules fail
+  to load, and the scorer reports 180 names and 0/30 while sending its warnings to stderr. The
+  headline numbers print with equal confidence either way.
+- **It is a work queue, not a compatibility score.** The dataset it replays was built with
+  `--exclude-trivial`, so missing constants are invisible to it (`ha-icqa` was recorded as one
+  symbol short and also failed on a missing `CONCENTRATION_*` constant), while integrations
+  whose only gaps sit in never-executed modules count as failures despite running fine
+  (`ha-matomo`). Use it to decide what to build next; use the executed-end-to-end count to
+  claim compatibility.
 
 ---
 

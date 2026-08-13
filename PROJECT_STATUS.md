@@ -3,7 +3,7 @@
 **Owner:** Younes · Al Akhawayn University, BSc Computer Science
 **Advisor (intended):** Prof. Omar Iraqi Houssaini — Professor of CS; IT & Cybersecurity Lead Auditor & Architect. Already took a cybersecurity course with him.
 **Work period:** September – November 2026 (~13 calendar weeks; **~10 realistic engineering weeks** after proposal, mid-report, final report and defence overhead).
-**Last updated:** 2026-08-12
+**Last updated:** 2026-08-13
 **Repo:** `~/capstone` (WSL filesystem, under git). The Windows `Desktop/Capstone`
 copy is a stale backup — do not edit it. `/mnt/c` is avoided because file modes
 there are fake, which would silently break filesystem permission tests.
@@ -149,61 +149,106 @@ computes a **coverage curve**: integrations fully runnable vs. number of symbols
 
 ```bash
 python3 hacs_api_surface.py --limit 200 --pattern polling_sensor --exclude-trivial
-python3 hacs_api_surface.py --limit 0            # full catalogue (~1900 repos)
+python3 hacs_api_surface.py --limit 0            # full catalogue (3105 repos)
 ```
 Outputs to `surface_out/`: `symbols.csv`, `coverage.csv`, `nearmiss.csv`, `integrations.json`.
 Tarballs cache in `.hacs_cache/`, so re-runs are instant.
 
-### 5.2 Results from a 200-repo sample
+### 5.2 Results — full catalogue ✅ (2026-08-13)
 
-**Pattern distribution:**
+**The whole catalogue has now been analysed: 3105 repositories, 3075 parsed.** The
+200-repo sample is superseded and kept only as `surface_out_200repo/` for provenance.
 
-| pattern | share |
+**Pattern distribution — and the sample was biased, as suspected:**
+
+| pattern | full catalogue (n=3075) | 200-repo sample | drift |
+|---|---|---|---|
+| actuator (receives commands) | **46.7%** (1437) | 58.0% | −11.3 |
+| polling_sensor | **24.8%** (763) | 15.0% | **+9.8** |
+| sensor_other | **9.4%** (288) | 13.5% | −4.1 |
+| other | **8.0%** (246) | 6.5% | +1.5 |
+| local_discovery | **7.8%** (240) | 6.0% | +1.8 |
+| push_stream | **2.4%** (75) | 0.5% | +1.9 |
+| oauth_cloud | **0.8%** (26) | 0.5% | +0.3 |
+
+The alphabetical-order caveat in the old §5.2 was justified: **polling sensors are 24.8% of
+the catalogue, not 15%** — two-thirds more of the population than the sample implied, and
+763 integrations in absolute terms. Actuators are still the largest group but by a smaller
+margin. This strengthens the "start with polling sensors" position going into Decision 3,
+without removing the reason to discuss actuators (46.7% is still where the threat model has
+teeth).
+
+**API surface, polling-sensor subset (n=763, constants included):** median **6** missing
+symbols against the current shim, and 72 integrations already import cleanly.
+
+*Historical, 200-repo sample (n=30, `--exclude-trivial`): 237 distinct symbols · median 29
+per integration · max 74.*
+
+**⚠️ The coverage curve, corrected twice.** The original working assumption of "~15 symbols"
+was wrong; the 200-repo sample replaced it with "50% of integrations needs ~83 behavioural
+symbols". **The full catalogue says even that was optimistic:**
+
+| behavioural symbols implemented | integrations fully covered (n=763) |
 |---|---|
-| actuator (receives commands) | 58.0% |
-| polling_sensor | 15.0% |
-| sensor_other | 13.5% |
-| other | 6.5% |
-| local_discovery | 6.0% |
-| oauth_cloud | 0.5% |
-| push_stream | 0.5% |
+| 30 | 15.2% |
+| 51 | **25%** |
+| 80 | 33.9% |
+| 120 | **46.1%** (352) |
 
-**API surface, polling-sensor subset (n=30):** 237 distinct symbols · median **29** per
-integration · max 74.
+**50% is not reached within 120 behavioural symbols** — the sample's "~83 for 50%" does not
+survive contact with the full population. Strict zero-modification coverage of the whole
+polling-sensor class is therefore expensive, and the report should say so plainly.
 
-**⚠️ Correction to an earlier estimate:** the working assumption of "~15 symbols" was
-**wrong**. Strict zero-modification coverage of 50% of integrations needs ~83 behavioural
-symbols; 75% is not reached within 120.
+**This does not undermine the project — it is the argument for how it is scoped.** Two
+things stay true at full scale: the head of the distribution is extremely concentrated (the
+table below), so a small core reaches a large minority of integrations quickly; and the
+expensive tail is dominated by generatable material (`util.dt`, the `selector` family,
+`const` enums), not by behavioural work. The honest claim is **"a small hand-written core
+plus a generated constants layer runs a well-characterised fraction, measured and
+reported"** — not "most integrations run unmodified". Report the curve, not a single number.
 
-**But the distribution is steeply concentrated — the good case:**
+**The distribution is steeply concentrated, and the concentration survived the jump from 30
+integrations to 763** — the single most important thing the full run confirms:
 
-| symbol | appears in |
-|---|---|
-| `core:HomeAssistant` | 100% |
-| `update_coordinator:DataUpdateCoordinator` | 100% |
-| `config_entries:ConfigEntry` | 97% |
-| `update_coordinator:CoordinatorEntity` | 93% |
-| `sensor:SensorEntity` | 93% |
-| `update_coordinator:UpdateFailed` | 90% |
-| `entity_platform:AddEntitiesCallback` | 80% |
-| `core:callback` | 77% |
-| `sensor:SensorStateClass` | 73% |
-| `sensor:SensorDeviceClass` | 70% |
-| `aiohttp_client:async_get_clientsession` | 67% |
+| symbol | appears in (n=763) | sample said |
+|---|---|---|
+| `update_coordinator:DataUpdateCoordinator` | **98.7%** | 100% |
+| `core:HomeAssistant` | **98.2%** | 100% |
+| `config_entries:ConfigEntry` | **96.7%** | 97% |
+| `sensor:SensorEntity` | **93.8%** | 93% |
+| `update_coordinator:CoordinatorEntity` | **93.8%** | 93% |
+| `update_coordinator:UpdateFailed` | **77.3%** | 90% |
+| `entity_platform:AddEntitiesCallback` | **73.0%** | 80% |
+| `core:callback` | **69.7%** | 77% |
+| `sensor:SensorDeviceClass` | **61.3%** | 70% |
+| `sensor:SensorStateClass` | **59.1%** | 73% |
+| `aiohttp_client:async_get_clientsession` | **51.1%** | 67% |
 
-- Top 30 symbols = **69% of all import usage**.
-- With the top 30 implemented, the **median integration is missing only 5** more symbols;
-  **18 of 30 are missing ≤6**.
+The head is slightly less dominant at full scale (each symbol's share drops a few points, and
+the sample's two "100%" figures were artefacts of n=30), but the shape is unchanged: **the
+same handful of symbols carries nearly the whole population.** Every scoping decision that
+rested on this still holds, now on 763 integrations instead of 30.
+
 - Much of the tail is `homeassistant.const` values, enums (`SensorDeviceClass`,
   `EntityCategory`) and selector configs — **machine-generatable from HA's source**, not
   hand-written. That collapses most of the tail to near-zero cost.
 
 **Realistic budget: ~30–40 hand-written behavioural symbols + a generated constants layer.**
 
-**Caveats to carry into the report:** sample is 200 of ~1900 repos in catalogue order
-(possible selection bias — rerun with `--limit 0`); the actuator classifier is heuristic and
-probably over-broad; **imports are a lower bound on difficulty** — an integration can import
-`SensorEntity` and still depend on lifecycle behaviour the shim doesn't reproduce.
+**Caveats to carry into the report:** the actuator classifier is heuristic and probably
+over-broad; **imports are a lower bound on difficulty** — an integration can import
+`SensorEntity` and still depend on lifecycle behaviour the shim doesn't reproduce (see the
+`current_entry` gap in §5.3, and the two metric corrections below). The selection-bias caveat
+is **retired**: the full catalogue has been analysed and the drift it predicted is quantified
+in the table above.
+
+**Datasets on disk** — each figure must state which one it came from:
+
+| directory | population | `--exclude-trivial` |
+|---|---|---|
+| `surface_out/` | 3105 repos, 3075 parsed | no — constants included |
+| `surface_out_excl_trivial/` | same | yes — behavioural symbols only |
+| `surface_out_200repo/` | historical 200-repo sample | yes |
 
 **This measurement is itself a contribution.** No published empirical account of the HA API
 surface that HACS integrations depend on appears to exist. It is a report figure and it
@@ -213,11 +258,19 @@ justifies every downstream scoping decision — exactly the evidence an auditor 
 
 Item 4 of the August plan, the go/no-go. Full write-up in `spike/README.md`.
 
-**Result: an unmodified real HACS integration runs outside HA's process.**
-`andrew-codechimp/HA-Andrews-Arnold-Quota` v2.0.0 sets up, polls twice, and publishes two
-sensor states through a permission-checked Unix socket, with **zero lines changed**.
-It was picked because it is the HA integration-blueprint layout (`__init__` + `coordinator`
-+ `entity` + `sensor` + config flow) — the shape most of the polling-sensor population takes.
+**Result: unmodified real HACS integrations run outside HA's process.**
+**Three of them as of 2026-08-13** — each sets up, polls twice and publishes sensor states
+through a permission-checked Unix socket with **zero lines changed**:
+
+| Target | Publishes | Mediated ops | Why this one |
+|---|---|---|---|
+| `andrew-codechimp/HA-Andrews-Arnold-Quota` v2.0.0 | 2 sensors | 7 | the integration-blueprint layout (`__init__` + `coordinator` + `entity` + `sensor` + config flow) — the shape most of the polling-sensor population takes |
+| `abnvle/ha-matomo` | 15 sensors | 44 | frozen entity descriptions; many entities off one coordinator |
+| `aniolpages/ha-icqa` | 8 sensors | 18 | public credential-free endpoint; `runtime_data`; nested payload parsing |
+
+`spike/run_targets.sh` runs all three: **69 mediated operations, 0 denied, every audit
+chain intact**. The supervisor and runner are target-agnostic — a new integration is a
+directory, a manifest and a vendor-cloud stub, with no change to the enforcement path.
 
 Built: `spike/shim/homeassistant/` (~2.3k lines: `core`, `const`, `config_entries`,
 `exceptions`, `data_entry_flow`, `util`, `helpers/{entity,entity_platform,update_coordinator,
@@ -242,21 +295,70 @@ Nothing else in the table depends on it.
 The hash-chained audit log works and detects tampering: flipping the `lock.unlock` denial to
 an allow in a copy of the log yields `BROKEN: line 10: record altered (hash mismatch)`.
 
-**Coverage now measurable end-to-end** (`spike/shim_coverage.py`, replaying `integrations.json`):
-shim exposes 323 importable names; **4/30 (13.3%)** polling-sensor integrations import cleanly;
-median **8** missing among the rest; two are missing exactly one symbol.
-Top blockers are cheap and mechanical — `binary_sensor` platform (13 integrations, a mirror of
-`sensor`), `helpers.selector` (8, pure data), `entity_registry` (12), `ConfigFlowResult` (12,
-an alias), `util.dt` (10). **§5.2's "the tail is generatable, not hard" thesis holds.**
+**Coverage now measurable end-to-end** (`spike/shim_coverage.py`). Two figures, and they must
+not be mixed up:
 
-⚠️ **Import success is an upper bound on compatibility**, not a compatibility claim. The lower
-bound is integrations actually executed end-to-end: currently one. The evaluation chapter must
-report both numbers and never conflate them.
+| dataset | import cleanly | median missing among the rest |
+|---|---|---|
+| **full catalogue, constants included** (n=763) | **72/763 (9.4%)** | **6** |
+| 200-repo sample, `--exclude-trivial` (n=30) | 6/30 (20.0%) | 8 |
+
+The shim exposes **350** importable names. The sample figure rose from 4/30 to 6/30 after
+`ConfigFlowResult` and `async_redact_data` — under an hour's work. The full-catalogue figure
+is lower because it counts the constants the sample hid *and* draws on a population that is
+not alphabetically clustered; **72 integrations importing cleanly** is the honest absolute
+number, and the median non-clean integration is only **6** symbols away.
+
+**Blocker queue, now ranked on 763 integrations rather than 30** — the numbers moved enough
+to change the build order:
+
+| missing | blocks | note |
+|---|---|---|
+| `util:dt` | **257** | thin stdlib wrapper; was ranked 5th on the sample |
+| `binary_sensor:BinarySensorEntity` | **229** | mirror of `sensor` |
+| `helpers:entity_registry` | **163** | needs a supervisor-side registry |
+| `binary_sensor:BinarySensorDeviceClass` | **150** | pure data |
+| `helpers:selector` + `SelectSelector`/`Config`/`Mode`/`Text`/`Number` | **129 / 109 / 107 / 86 / 75 / 68** | pure data, generatable |
+| `helpers.storage:Store` | **105** | not in the sample's top list at all |
+
+**§5.2's "the tail is generatable, not hard" thesis holds** — and `util.dt`, `selector` and
+the `binary_sensor` enums, all mechanical, sit at the top of the queue.
+
+⚠️ **Two corrections to how the import number must be read** (both found 2026-08-13, both
+report material):
+
+1. **The dataset was built with `--exclude-trivial`**, which drops `homeassistant.const`,
+   `.exceptions`, `.helpers.typing` and `.util.dt` from every recorded symbol set. Those
+   symbols still have to exist for an import to succeed, so the measured gap **understates**
+   the real one. `ha-icqa` was recorded as missing one symbol and in fact also failed on
+   `CONCENTRATION_MICROGRAMS_PER_CUBIC_METER`, a constant the dataset never counted. The
+   understatement is confined to cheap, generatable symbols — but it must be stated, and any
+   headline coverage figure has to name the flag it was measured under.
+2. **Import-cleanliness is *not* an upper bound on compatibility** — the earlier claim in
+   this file. `ha-matomo` runs end-to-end while still counting as one symbol short, because
+   the missing name sits in `config_flow.py`, which HA loads only when a user adds the
+   integration through the UI and which never runs afterwards. So the metric errs in **both**
+   directions: it over-counts integrations that import cleanly then die on lifecycle
+   behaviour, and under-counts ones whose gaps sit on cold code paths. **It is a proxy for
+   ranking work, not a bound.** Executed-end-to-end (now 3) is the compatibility measure;
+   report it as the headline and import counts as the backlog.
 
 **Fidelity gaps found (report material, all in `spike/README.md`):**
-1. `EntityDescription` frozen-ness — HA's `FrozenOrThawed` metaclass lets a frozen base be
-   subclassed by a plain `@dataclass`; the shim leaves it unfrozen. The target *depends* on
-   the mutable behaviour.
+1. ✅ **FIXED — `EntityDescription` frozen-ness, and the single most interesting result of
+   adding a second integration.** HA's `FrozenOrThawed` metaclass lets one description base
+   be subclassed by *either* a frozen or a plain `@dataclass`; Python forbids that directly.
+   The shim originally left the base unfrozen — enough for one target, and it looked like a
+   harmless simplification. It is not: `andrews_arnold_quota` uses a plain `@dataclass` and
+   **mutates** `entity_description.entity_id`, while `matomo` uses
+   `@dataclass(frozen=True)`. An unfrozen base runs the first and raises `TypeError` on the
+   second; a frozen base does the reverse. **No single choice runs both.** Now implemented
+   as `shim/homeassistant/util/frozen_dataclass_compat.py` (upstream's needs `annotationlib`
+   from Python 3.14; this reads `__annotations__` and runs on 3.12).
+   **The methodological point for the report:** this is a gap a one-integration spike
+   *cannot* surface — at n=1 the shortcut is invisible, and only the second sample turns it
+   into a contradiction. The same argument applies to every remaining shortcut in the shim,
+   and it is the argument for growing the executed-integration count rather than the import
+   count.
 2. `config_entries.current_entry` — integrations read `coordinator.config_entry` having never
    set it; HA fills it from a ContextVar during setup. Missing it breaks the blueprint layout
    at runtime, not at import. **Exactly the class of failure import counts cannot predict.**
@@ -273,7 +375,7 @@ report both numbers and never conflate them.
 |---|---|---|---|
 | 1 | ~~**Compatibility strategy**~~ **SETTLED 2026-08-12** | (a) shim so real integrations run unmodified; (b) own SDK + toy integrations; (c) hand-port 2–3 and measure cost | **(a).** The spike (§5.3) ran a real integration unmodified, so the fallback to (c) is no longer needed. Still scoped to a core + generated constants with measured coverage reported — not "everything runs unmodified". |
 | 2 | **Isolation primitive** | namespaces+seccomp / gVisor+its trace sink / gVisor+eBPF-as-boundary-verifier | **namespaces + seccomp** — coherent with eBPF, lighter on the Pi, and defensible as "controls proportionate to the threat model" (his language). |
-| 3 | **Target pattern** ⚠️ **most open question — take this to the advisor first** | polling_sensor only (15%, read-only, easiest, least security-interesting) vs. extending to actuators (58%, where the real stakes are — locks, alarms, switches) | Least settled of the four. Default: start polling_sensor, state actuator support as stretch. But a *security auditor may well push toward actuators*, since that is where the threat model has teeth, and that changes the scope materially. Have this conversation **before** writing the proposal, not after. |
+| 3 | **Target pattern** ⚠️ **most open question — take this to the advisor first** | polling_sensor only (**24.8%**, 763 integrations, read-only, easiest, least security-interesting) vs. extending to actuators (**46.7%**, 1437 integrations, where the real stakes are — locks, alarms, switches) | Least settled of the four. **Full-catalogue numbers (§5.2) strengthen the polling-sensor default**: it is 24.8% of the catalogue, not the 15% the sample suggested, so "one pattern" now covers a quarter of all HACS integrations and 763 real programs — a defensible scope, not a toy. Actuators remain the bigger group and the one with teeth. Default: start polling_sensor, state actuator support as stretch, and bring both numbers to the meeting. Have this conversation **before** writing the proposal, not after. |
 | 4 | **Report requirements** | literature-review chapter? page target? | **Unknown — ask the advisor / check programme handbook.** |
 
 ---
@@ -321,16 +423,19 @@ report both numbers and never conflate them.
    If either fails, plan for a small cloud VM rather than fighting kernel configs in October.
 2. **Run HA in Docker on the Pi**, and drive it from a Python script over the REST and
    WebSocket APIs. Makes everything downstream concrete.
-3. **Re-run the surface analysis over the full catalogue** (`--limit 0`) to replace the
-   200-repo sample with definitive numbers.
+3. ✅ **DONE (2026-08-13) — full catalogue analysed** (3105 repos, 3075 parsed). See §5.2:
+   polling sensors are 24.8% of the catalogue, not 15%, and the head of the symbol
+   distribution held up at n=763. Selection-bias caveat retired.
 4. ✅ **DONE (2026-08-12) — shim spine prototyped, result GO.** See §5.3 and `spike/README.md`.
    Follow-on work, in value order, none of it blocking the advisor meeting:
    - **Filesystem isolation** (namespaces + seccomp). The one probe failure, and the
-     precondition for reproducing the 2021 HACS file-theft result.
-   - **Second and third integrations** through the shim, to turn "one runs" into a curve.
-     `abnvle/ha-matomo` and `aniolpages/ha-icqa` are each one symbol short.
-   - **`binary_sensor` + `selector` + `util.dt` + `ConfigFlowResult`** — the cheap wins that
-     move measured coverage most.
+     precondition for reproducing the 2021 HACS file-theft result. **Now the top open item.**
+   - ✅ **DONE (2026-08-13) — second and third integrations** (`abnvle/ha-matomo`,
+     `aniolpages/ha-icqa`) run end-to-end. Forced the `FrozenOrThawed` fix above.
+   - **A fourth and fifth integration**, ideally not from the `a*` end of the catalogue —
+     see the selection-bias caveat in §5.2. `spike/README.md` documents the four-step recipe.
+   - **`binary_sensor` + `selector` + `util.dt` + `entity_registry`** — the cheap wins that
+     move measured coverage most (`ConfigFlowResult` and `async_redact_data` are done).
    - Replace the supervisor's `DEFAULT_HOUSE` stub with a real HA over REST/WebSocket
      (this is item 2 below; the policy layer does not change).
 5. **Draft manifest schema** (strawman is in §2).
