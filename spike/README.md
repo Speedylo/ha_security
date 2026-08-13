@@ -50,21 +50,39 @@ framework is a **retrofit**, not a proposal to redesign HA.
 Installs `matomo` into HA's own `custom_components` *and* runs it through the
 framework, then diffs what HA thinks of the two sets of entities:
 
-| | native | framework |
-|---|---|---|
-| entity-registry row | yes — 4/10 fields set, 6 available | **none — 10/10 unavailable** |
-| config entries | 1 (reload/delete/configure in UI) | **0** |
-| devices | 1 | **0** |
-| **survives an HA restart** | **15/15** | **0/15** |
+| | native | framework, raw REST | framework, via bridge |
+|---|---|---|---|
+| entity-registry row | 4/10 set, 6 available | **none** | **4/10 set, 6 available** |
+| config entries | 1 | **0** | **1** |
+| devices | 1 | **0** | **1** per integration |
+| **survives an HA restart** | 15/15 | **0/15** | **15/15** |
 
 State-level presentation (`unit_of_measurement`, `state_class`, `device_class`,
-`icon`) arrives intact; only `friendly_name` differs in form, because HA composes
-it from a device name the framework has no device for.
+`icon`) arrives intact in both modes.
 
-The restart row is the one that matters: HA restarts a native integration itself,
-while REST-published states are in-memory only. **The supervisor has to be a
-long-running, restart-aware service** — a design requirement this measurement
-surfaced.
+### `sandbox_bridge` — closing that gap
+
+```bash
+./ha_bridge_setup.sh              # install the bridge, restart HA, configure it
+HA=1 BRIDGE=1 ./run_targets.sh    # publish through it instead of raw states
+```
+
+A ~250-line **trusted** native integration in `bridge_integration/sandbox_bridge/`.
+It owns a config entry, creates one device per sandboxed integration, and exposes
+`sandbox_bridge.publish` for the supervisor to call. Entities are `RestoreEntity`
+subclasses with a `unique_id`, and the roster is persisted with `Store`, so they
+come back after a restart with their last values — verified with the supervisor
+deliberately *not* re-run.
+
+It loads no untrusted code: the sandboxed integrations still run in their own
+process behind the manifest checks, and the bridge only ever receives a domain, a
+key, an entity_id, a state string and an attribute dict, none of which it
+evaluates. Being small is the point — it is the trusted half, so it has to be
+reviewable.
+
+`platform` reads `sandbox_bridge` rather than the integration's own domain. That
+is accurate rather than a shortfall, and it makes the sandboxing visible in the
+UI instead of hiding it.
 
 Requires `../.venv` (aiohttp, voluptuous, awesomeversion, pyyaml).
 

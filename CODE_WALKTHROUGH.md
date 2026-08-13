@@ -27,7 +27,9 @@ A mechanical tour of the codebase, in execution order. For *what the results mea
     ├── ha_onboard.py            headless onboarding + long-lived token
     ├── ha_seed.py               give the real HA a house worth protecting
     ├── ha_compare_setup.sh      load one integration natively AND via the framework
+    ├── ha_bridge_setup.sh       install + configure the bridge inside HA
     ├── registry_gap.py          diff what HA thinks of the two sets of entities
+    ├── bridge_integration/      TRUSTED: the native integration that owns entities
     ├── runner.py                sandbox entrypoint
     ├── probe.py                 adversarial test
     ├── generate_shim.py         generates const.py + selector.py from HA's source
@@ -206,6 +208,28 @@ Home Assistant through an API that already exists for any token holder, so the f
 retrofit rather than a request that HA be redesigned. The supervisor holds the token; the
 sandboxed integration never sees it and has no route to HA except the bridge — which is what
 turns the confused-deputy attack into a policy question instead of a network one.
+
+### `bridge_integration/sandbox_bridge/` — the trusted native half
+
+The only part of the framework that runs *inside* Home Assistant, and the answer to the
+measurement in `registry_gap.py`: publishing over `/api/states` produces states with no
+identity — no registry row, no config entry, no device, and nothing that survives a restart.
+
+It owns a config entry, creates one device per sandboxed integration, and exposes a service
+`sandbox_bridge.publish` that the supervisor calls in place of posting a state. Entities are
+`RestoreEntity` subclasses carrying a `unique_id`, which is what earns them a registry row; the
+roster is persisted with `helpers.storage.Store`, so `async_setup_entry` recreates every entity
+on startup and each restores its last value.
+
+The trust argument matters more than the code. This component is **trusted and belongs to the
+framework**, not to any integration it publishes for. It loads, imports and executes nothing
+from a sandboxed integration — it receives a domain, a key, an entity_id, a state string and a
+dict of attributes, and evaluates none of them. At ~250 lines it is small enough to review by
+hand, which is the property a trusted component has to have.
+
+`platform` on the resulting entities reads `sandbox_bridge` rather than the integration's own
+domain. That is accurate — the bridge is what created them — and it makes the sandboxing
+visible to the user rather than hiding it.
 
 ### `runner.py` — the sandbox entrypoint
 

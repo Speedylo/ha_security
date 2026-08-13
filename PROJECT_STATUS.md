@@ -533,14 +533,57 @@ in form — native renders "Matomo - example.org" (device name + entity name) ag
 framework's "Actions this month", because HA composes the device name in that pattern and the
 framework has no device.
 
-**Honest reading:** the retrofit works and the entities are real and usable, but they are
-**second-class citizens** in HA's data model. For the report this is a *residual risk* entry
-with three concrete mitigations, in rising order of effort: (a) accept it and document it;
-(b) have the supervisor also register entities through HA's WebSocket registry APIs; (c) ship
-a thin native HA integration whose only job is to own the config entry and device on the
-framework's behalf. **(c) is the honest long-term answer** and is a natural Future Work
-section — it would close all three results above without weakening the "HA is unmodified"
-claim, since it would be an ordinary integration a user installs.
+**Honest reading (as of the measurement):** the retrofit worked and the entities were real and
+usable, but they were **second-class citizens** in HA's data model. Three mitigations were
+identified, in rising order of effort: (a) accept and document; (b) register entities through
+HA's WebSocket registry APIs; (c) ship a thin native HA integration that owns the config entry
+and device on the framework's behalf.
+
+### 5.7 `sandbox_bridge` — the registry gap closed ✅ (2026-08-13)
+
+**Option (c) is built.** `spike/bridge_integration/sandbox_bridge/` is a ~250-line native HA
+integration whose only job is to give sandboxed integrations first-class entities.
+
+```bash
+./ha_bridge_setup.sh            # install it, restart HA, create its config entry
+HA=1 BRIDGE=1 ./run_targets.sh  # publish through it
+./registry_gap.py --restart-test
+```
+
+**How it works.** It owns a config entry, creates one device per sandboxed integration, and
+exposes a service `sandbox_bridge.publish` that the supervisor calls instead of `POST
+/api/states`. Entities are `RestoreEntity` subclasses with a `unique_id`, so they get registry
+rows; the roster is persisted with `helpers.storage.Store`, so the bridge recreates every
+entity on startup and each restores its last value.
+
+**Crucially, it does not weaken the threat model.** No untrusted code is loaded into HA. The
+sandboxed integrations still run in their own process behind the supervisor's manifest checks;
+the bridge only ever receives a domain, a key, an entity_id, a state string and a dict of
+attributes, and never evaluates any of it. It is a *trusted* component of the framework, and
+being ~250 lines it is small enough to actually review — which is the argument to make about it.
+
+**Result — the gap is closed on every axis measured in §5.6:**
+
+| | native | framework, REST (§5.6) | framework, via bridge |
+|---|---|---|---|
+| entity-registry row | 4/10 set, 6 available | **none — 10/10 unavailable** | **4/10 set, 6 available** |
+| config entries | 1 | **0** | **1** |
+| devices | 1 | **0** | **1** (one per integration) |
+| **survives an HA restart** | 15/15 | **0/15** | **15/15** |
+
+Across all three targets: **25 registry-backed entities and 3 devices** (`matomo` 15,
+`icqa` 8, `andrews_arnold_quota` 2). The restart test was run with the supervisor deliberately
+*not* re-run afterwards, so survival is the bridge's doing, not a re-publish.
+
+**One accurate difference remains, and it is a feature.** `platform` reads `sandbox_bridge`
+rather than `matomo`. That is true — the bridge really is what created the entity — and it
+makes the sandboxing *visible* to the user in the UI rather than hiding it. The device is named
+after the integration and modelled "Runs outside Home Assistant, under manifest enforcement".
+
+**Publishing mode is now a supervisor flag** (`--ha-bridge`), so §5.6's table is reproducible in
+both directions: the framework can still publish raw states to demonstrate the gap, then
+publish through the bridge to demonstrate the fix. All three modes — stub, real REST, bridge —
+are regression-tested and pass.
 
 ---
 
@@ -601,10 +644,12 @@ claim, since it would be an ordinary integration a user installs.
    unmodified; 25 entities published into it by three sandboxed integrations; probe re-run
    against it with a paired baseline comparison (43 entities readable without the framework,
    2 with). The retrofit claim in §9 is now demonstrated rather than intended.
-   ✅ *Follow-up also done:* the registry gap is quantified in §5.6 — no registry row, no
-   config entry, no device, and **0/15 entities survive a restart vs 15/15 native**. That last
-   result makes "the supervisor must be a long-running, restart-aware service" an
-   architectural requirement rather than an implementation detail.
+   ✅ *Follow-ups also done:* the registry gap is quantified in §5.6 (no registry row, no
+   config entry, no device, **0/15 entities surviving a restart vs 15/15 native**) and then
+   **closed in §5.7** by `sandbox_bridge`, a ~250-line trusted native integration — all four
+   measures now at parity, 25 registry-backed entities across the three targets. Restart
+   survival is now the bridge's doing rather than the supervisor's, which also relaxes the
+   "supervisor must be long-running" requirement into "should be, for freshness".
 3. ✅ **DONE (2026-08-13) — full catalogue analysed** (3105 repos, 3075 parsed). See §5.2:
    polling sensors are 24.8% of the catalogue, not 15%, and the head of the symbol
    distribution held up at n=763. Selection-bias caveat retired.
@@ -689,11 +734,12 @@ examiner find them:
 - Users install HACS integrations *into HA's config directory*, and HA loads them. Using this
   framework means installing them somewhere else instead: a **workflow change for the user**,
   even though it is not a code change for HA.
-- Entities published over the REST API are not identical to natively-loaded ones. **Measured
-  in §5.6:** no entity-registry row at all (10/10 identity fields unavailable), 0 config
-  entries, 0 devices, and — the sharp one — **0/15 survive an HA restart against 15/15 for the
-  native install**. The retrofit works, but its entities are second-class citizens in HA's data
-  model. Answer it with the Future Work in §5.6(c), not by minimising it.
+- ~~Entities published over the REST API are not identical to natively-loaded ones.~~
+  **Measured in §5.6 and then closed in §5.7.** The gap was real — no registry row, 0 config
+  entries, 0 devices, 0/15 surviving a restart — and `sandbox_bridge`, a ~250-line trusted
+  native integration, brings all four to parity with a native install. The framework no longer
+  produces second-class entities. Keep both halves in the report: the measurement is what
+  justified the design.
 - HA's own "Remote Integration Execution" RFC moves toward process separation for
   non-security reasons. Engage directly: this supplies the **policy layer** their mechanism
   would need. Do not wait to be asked.
