@@ -88,10 +88,12 @@ class Handler(BaseHTTPRequestHandler):
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--host", default="127.0.0.1",
+                        help="bind address; use 0.0.0.0 to reach it from a container")
     parser.add_argument("--port", type=int, default=8766)
     args = parser.parse_args()
-    server = HTTPServer(("127.0.0.1", args.port), Handler)
-    print(f"fake Matomo Reporting API on http://127.0.0.1:{args.port}", flush=True)
+    server = HTTPServer((args.host, args.port), Handler)
+    print(f"fake Matomo Reporting API on http://{args.host}:{args.port}", flush=True)
     server.serve_forever()
 
 
