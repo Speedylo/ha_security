@@ -40,6 +40,32 @@ The supervisor reaches HA only through the REST API it already exposes to any
 token holder. Nothing about Home Assistant is modified, which is the point: the
 framework is a **retrofit**, not a proposal to redesign HA.
 
+### How framework entities differ from native ones
+
+```bash
+./ha_compare_setup.sh              # same integration, loaded both ways at once
+./registry_gap.py --restart-test
+```
+
+Installs `matomo` into HA's own `custom_components` *and* runs it through the
+framework, then diffs what HA thinks of the two sets of entities:
+
+| | native | framework |
+|---|---|---|
+| entity-registry row | yes — 4/10 fields set, 6 available | **none — 10/10 unavailable** |
+| config entries | 1 (reload/delete/configure in UI) | **0** |
+| devices | 1 | **0** |
+| **survives an HA restart** | **15/15** | **0/15** |
+
+State-level presentation (`unit_of_measurement`, `state_class`, `device_class`,
+`icon`) arrives intact; only `friendly_name` differs in form, because HA composes
+it from a device name the framework has no device for.
+
+The restart row is the one that matters: HA restarts a native integration itself,
+while REST-published states are in-memory only. **The supervisor has to be a
+long-running, restart-aware service** — a design requirement this measurement
+surfaced.
+
 Requires `../.venv` (aiohttp, voluptuous, awesomeversion, pyyaml).
 
 ## What runs

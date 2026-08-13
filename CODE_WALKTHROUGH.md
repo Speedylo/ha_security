@@ -26,6 +26,8 @@ A mechanical tour of the codebase, in execution order. For *what the results mea
     ├── ha_docker.sh             run a stock, unmodified HA in Docker
     ├── ha_onboard.py            headless onboarding + long-lived token
     ├── ha_seed.py               give the real HA a house worth protecting
+    ├── ha_compare_setup.sh      load one integration natively AND via the framework
+    ├── registry_gap.py          diff what HA thinks of the two sets of entities
     ├── runner.py                sandbox entrypoint
     ├── probe.py                 adversarial test
     ├── generate_shim.py         generates const.py + selector.py from HA's source

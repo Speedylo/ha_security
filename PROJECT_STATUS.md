@@ -483,10 +483,64 @@ the probe table comparable.
 `ha_onboard.py` (headless onboarding + long-lived token via the WebSocket API — HA has no REST
 route for minting one), `ha_seed.py` (populate a realistic house).
 
-⚠️ **Still open, and the report must not blur it:** entities arrive over REST as plain states.
-They are *not* linked to a config entry or the device registry the way a natively-loaded
-integration's entities are, so HA's "configure" affordances and device grouping do not appear.
-Measuring that difference is outstanding work — see §9.
+### 5.6 The registry gap, quantified ✅ (2026-08-13)
+
+§5.5 left one objection open: entities arrive over REST as plain states, not linked to a config
+entry or the device registry. It is now **measured rather than asserted**, by running *the same
+integration two ways at once* against the same live HA:
+
+```bash
+./ha_compare_setup.sh   # matomo natively in /config/custom_components AND via the framework
+./registry_gap.py --restart-test
+```
+
+`matomo` was chosen because its config flow needs only a URL and a token, so it can be driven
+headlessly against the same vendor stub the framework uses. Both halves publish 15 entities.
+
+**Result 1 — the framework entity has no entity-registry row at all.** Not a sparse row: no
+row. Every identity field is therefore structurally unavailable, rather than merely unset:
+
+| field | native | framework | what it buys |
+|---|---|---|---|
+| `unique_id` | `matomo_1_actions_month` | **unavailable** | stable identity across restarts/renames |
+| `config_entry_id` | set | **unavailable** | user can reload/delete the configuration |
+| `device_id` | set | **unavailable** | grouped under a device in the UI |
+| `platform` | `matomo` | **unavailable** | attributed to the integration that made it |
+| `area_id`, `entity_category`, `disabled_by`, `hidden_by`, `name`, `icon` | available, unset | **unavailable** | assign to a room, hide, disable, rename |
+
+Native: registry row exists — **4/10 populated** by the integration, the other **6 available**
+for the user to set. Framework: **10/10 unavailable**.
+
+**Result 2 — ownership.** Native produces **1 config entry and 1 device**; the framework
+produces **0 and 0**. There is nothing for the user to reload, reconfigure, or delete from the
+UI, and nothing to group entities under.
+
+**Result 3 — ⚠️ the decisive one: framework entities do not survive an HA restart.**
+
+| | survived a restart |
+|---|---|
+| native | **15/15** |
+| framework | **0/15** |
+
+This is not cosmetic. HA restarts a natively-loaded integration itself; REST-published states
+are in-memory only and nothing re-creates them. **The supervisor must therefore be a
+long-running, restart-aware service, not a one-shot process** — an architectural requirement
+that was not visible before this measurement and that belongs in the design chapter.
+
+**What is *not* lost:** state-level presentation is intact. `unit_of_measurement`,
+`state_class`, `device_class` and `icon` all arrive identically. Only `friendly_name` differs
+in form — native renders "Matomo - example.org" (device name + entity name) against the
+framework's "Actions this month", because HA composes the device name in that pattern and the
+framework has no device.
+
+**Honest reading:** the retrofit works and the entities are real and usable, but they are
+**second-class citizens** in HA's data model. For the report this is a *residual risk* entry
+with three concrete mitigations, in rising order of effort: (a) accept it and document it;
+(b) have the supervisor also register entities through HA's WebSocket registry APIs; (c) ship
+a thin native HA integration whose only job is to own the config entry and device on the
+framework's behalf. **(c) is the honest long-term answer** and is a natural Future Work
+section — it would close all three results above without weakening the "HA is unmodified"
+claim, since it would be an ordinary integration a user installs.
 
 ---
 
@@ -547,8 +601,10 @@ Measuring that difference is outstanding work — see §9.
    unmodified; 25 entities published into it by three sandboxed integrations; probe re-run
    against it with a paired baseline comparison (43 entities readable without the framework,
    2 with). The retrofit claim in §9 is now demonstrated rather than intended.
-   *Remaining thread:* entities arrive as plain REST states, not config-entry/device-registry
-   linked. Quantify that gap.
+   ✅ *Follow-up also done:* the registry gap is quantified in §5.6 — no registry row, no
+   config entry, no device, and **0/15 entities survive a restart vs 15/15 native**. That last
+   result makes "the supervisor must be a long-running, restart-aware service" an
+   architectural requirement rather than an implementation detail.
 3. ✅ **DONE (2026-08-13) — full catalogue analysed** (3105 repos, 3075 parsed). See §5.2:
    polling sensors are 24.8% of the catalogue, not 15%, and the head of the symbol
    distribution held up at n=763. Selection-bias caveat retired.
@@ -633,10 +689,11 @@ examiner find them:
 - Users install HACS integrations *into HA's config directory*, and HA loads them. Using this
   framework means installing them somewhere else instead: a **workflow change for the user**,
   even though it is not a code change for HA.
-- Entities published over the REST API are not identical to natively-loaded ones — device
-  registry association, config-entry linkage and the UI's "configure" affordances all differ.
-  **Confirmed real in §5.5**, now that states land in a live instance. Quantify it; do not
-  hand-wave it. This is the strongest remaining objection to the retrofit framing.
+- Entities published over the REST API are not identical to natively-loaded ones. **Measured
+  in §5.6:** no entity-registry row at all (10/10 identity fields unavailable), 0 config
+  entries, 0 devices, and — the sharp one — **0/15 survive an HA restart against 15/15 for the
+  native install**. The retrofit works, but its entities are second-class citizens in HA's data
+  model. Answer it with the Future Work in §5.6(c), not by minimising it.
 - HA's own "Remote Integration Execution" RFC moves toward process separation for
   non-security reasons. Engage directly: this supplies the **policy layer** their mechanism
   would need. Do not wait to be asked.
