@@ -136,6 +136,25 @@ class UnitOfLength(StrEnum):
     MILES = "mi"
 
 
+class UnitOfDensity(StrEnum):
+    GRAMS_PER_CUBIC_METER = "g/m³"
+    MILLIGRAMS_PER_CUBIC_METER = "mg/m³"
+    MICROGRAMS_PER_CUBIC_METER = "μg/m³"
+    MICROGRAMS_PER_CUBIC_FOOT = "μg/ft³"
+
+
+# Concentration units. Upstream now routes these through UnitOfDensity and marks
+# the flat names deprecated, but they remain importable and air-quality
+# integrations still use them, so both spellings resolve to the same string.
+CONCENTRATION_GRAMS_PER_CUBIC_METER = UnitOfDensity.GRAMS_PER_CUBIC_METER.value
+CONCENTRATION_MILLIGRAMS_PER_CUBIC_METER = UnitOfDensity.MILLIGRAMS_PER_CUBIC_METER.value
+CONCENTRATION_MICROGRAMS_PER_CUBIC_METER = UnitOfDensity.MICROGRAMS_PER_CUBIC_METER.value
+CONCENTRATION_MICROGRAMS_PER_CUBIC_FOOT = UnitOfDensity.MICROGRAMS_PER_CUBIC_FOOT.value
+CONCENTRATION_PARTS_PER_CUBIC_METER = "p/m³"
+CONCENTRATION_PARTS_PER_MILLION = "ppm"
+CONCENTRATION_PARTS_PER_BILLION = "ppb"
+
+
 class UnitOfPressure(StrEnum):
     PA = "Pa"
     HPA = "hPa"

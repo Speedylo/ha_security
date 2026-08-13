@@ -1,0 +1,21 @@
+# Security contract for icqa.
+#
+# An air-quality sensor for one Catalan monitoring station. Reads a single
+# public endpoint, publishes its own sensors, touches nothing else.
+name: icqa
+version: "1.0.0"
+
+publishes:
+  - sensor.icqa_*
+
+# An air-quality display has no reason to see the rest of the house.
+reads_entities: []
+
+calls_services: []
+subscribes: []
+
+# The public Generalitat endpoint. No credentials are involved, which is exactly
+# why the host still has to be declared: the check is on where data can go, not
+# on whether the request is authenticated.
+network:
+  - www.gencat.cat

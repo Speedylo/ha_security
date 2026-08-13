@@ -11,6 +11,11 @@ from typing import Any, Callable
 from .core import HomeAssistant, callback
 from .data_entry_flow import FlowResult, FlowResultType
 
+# Upstream renamed FlowResult to ConfigFlowResult for config flows and kept both
+# importable. Integrations annotate with whichever name matched the HA release
+# they were written against, so both have to resolve.
+ConfigFlowResult = FlowResult
+
 # Real HA sets this while a config entry is being set up, so helpers constructed
 # during setup (notably DataUpdateCoordinator) can find their own entry without
 # being passed it. Integrations rely on the side effect: this target reads

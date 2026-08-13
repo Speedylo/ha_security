@@ -14,6 +14,7 @@ from typing import Any, Callable
 from ..const import ATTR_ATTRIBUTION, EntityCategory, STATE_UNAVAILABLE, STATE_UNKNOWN
 from ..core import HomeAssistant, callback
 from ..util import slugify
+from ..util.frozen_dataclass_compat import FrozenOrThawed
 
 # Populated by the runner from the integration's translations/<lang>.json, so
 # friendly names match what HA would render. Keyed by (domain, platform, key).
@@ -43,15 +44,13 @@ class DeviceInfo(dict):
         super().__init__(**{key: value for key, value in kwargs.items() if value is not None})
 
 
-@dataclass(kw_only=True)
-class EntityDescription:
-    """Immutable-ish description of an entity.
+class EntityDescription(metaclass=FrozenOrThawed, frozen_or_thawed=True):
+    """Description of an entity.
 
-    Real HA makes this frozen via a ``FrozenOrThawed`` metaclass so that
-    integrations can still subclass it with a plain ``@dataclass``. This shim
-    leaves it unfrozen, which accepts both forms but silently allows mutation
-    HA would reject. Recorded as a fidelity gap; the target integration relies
-    on the mutable behaviour (it rewrites ``entity_description.entity_id``).
+    Not a dataclass itself, deliberately — see
+    ``homeassistant.util.frozen_dataclass_compat``. That is what lets one
+    integration subclass this with a plain ``@dataclass`` and mutate the result
+    while another subclasses it with ``@dataclass(frozen=True)``.
     """
 
     key: str

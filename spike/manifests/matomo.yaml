@@ -1,0 +1,23 @@
+# Security contract for matomo.
+#
+# A web-analytics sensor. It reads nothing in the house, actuates nothing, and
+# talks to exactly one host: the Matomo instance the user configured. Everything
+# absent from this file is denied by default.
+name: matomo
+version: "1.0.0"
+
+# Entities this integration may create and update. The 15 site sensors it
+# registers all land under this prefix.
+publishes:
+  - sensor.matomo_*
+
+# Nothing in the house is any of an analytics dashboard's business — and this is
+# the manifest line that closes the /api/states firehose for it.
+reads_entities: []
+
+calls_services: []
+subscribes: []
+
+# The user's own Matomo server. Declared by the author, checked per request.
+network:
+  - analytics.example.org

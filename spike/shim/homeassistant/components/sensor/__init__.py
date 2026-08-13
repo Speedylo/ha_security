@@ -72,9 +72,12 @@ class SensorStateClass(StrEnum):
     TOTAL_INCREASING = "total_increasing"
 
 
-@dataclass(kw_only=True)
-class SensorEntityDescription(EntityDescription):
-    """Description of a sensor entity."""
+class SensorEntityDescription(EntityDescription, frozen_or_thawed=True):
+    """Description of a sensor entity.
+
+    Also frozen-or-thawed: integrations subclass this one directly far more
+    often than they subclass EntityDescription.
+    """
 
     device_class: SensorDeviceClass | None = None
     state_class: SensorStateClass | str | None = None
