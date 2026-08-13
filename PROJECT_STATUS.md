@@ -593,7 +593,7 @@ are regression-tested and pass.
 |---|---|---|---|
 | 1 | ~~**Compatibility strategy**~~ **SETTLED 2026-08-12** | (a) shim so real integrations run unmodified; (b) own SDK + toy integrations; (c) hand-port 2–3 and measure cost | **(a).** The spike (§5.3) ran a real integration unmodified, so the fallback to (c) is no longer needed. Still scoped to a core + generated constants with measured coverage reported — not "everything runs unmodified". |
 | 2 | **Isolation primitive** | namespaces+seccomp / gVisor+its trace sink / gVisor+eBPF-as-boundary-verifier | **namespaces + seccomp** — coherent with eBPF, lighter on the Pi, and defensible as "controls proportionate to the threat model" (his language). |
-| 3 | **Target pattern** ⚠️ **most open question — take this to the advisor first** | polling_sensor only (24.8% of repos but **only 10.6% of installs**) vs. extending to actuators (46.7% of repos and **64.8% of installs**) | **Install weighting (§5.2b) cuts against the polling-sensor default.** By repo count it looked like a quarter of the ecosystem; by what people actually run it is a tenth, while actuators are nearly two-thirds. Actuators are simultaneously where the threat model has teeth *and* where the users are — a security auditor will notice both. Counter-argument that still holds: actuator platforms are behavioural work (`switch`, `button`, `select`, `number` each block 30–50 of the top 100, §5.4), so the cost is real and the ~10 engineering weeks are not elastic. **Recommended position to take into the meeting:** keep polling_sensor as the *implemented* scope, but present the install numbers honestly, frame actuator support as the explicit next increment, and let him choose. Do not present 24.8% without 10.6% beside it. |
+| 3 | **Target pattern** ⚠️ **most open question — take this to the advisor first** | polling_sensor only (24.8% of repos but **only 10.6% of installs**) vs. extending to actuators (46.7% of repos and **64.8% of installs**) | **Install weighting (§5.2b) cuts against the polling-sensor default.** By repo count it looked like a quarter of the ecosystem; by what people actually run it is a tenth, while actuators are nearly two-thirds. Actuators are simultaneously where the threat model has teeth *and* where the users are — a security auditor will notice both. **But full-platform support is not the right response — see §10.1, measured 2026-08-13.** Implementing all 21 HA entity platforms moves coverage from 1.2% to only 2.1% of installs, because platforms were never the real blocker (`homeassistant.helpers`, `.util`, `.helpers.event`, `.helpers.storage` block far more integrations than any platform). Actuators also require an **inbound** command path the framework does not have yet (HA → sandbox), versus the outbound-only path built so far. And manifest confinement is structurally weaker for actuators: it stops an integration reaching *other* devices, not misuse of the *one* device it legitimately declared and controls (the 3am-unlock scenario). **Recommended position for the meeting:** keep polling_sensor as the implemented scope; analyse actuators fully in the threat model, including the declared-capability-abuse limit; build **one** actuator platform (`switch`) end-to-end as an architecture proof, not a coverage push. Present 24.8%/10.6% together, and bring the 21-platform coverage table as evidence the scope call is deliberate, not avoidance. |
 | 3b | **Which integrations to target inside the pattern** — new, 2026-08-13 | arbitrary / alphabetical (what happened so far) vs. **most-installed first** | **Most-installed first.** The top 20 polling sensors are 52% of all polling-sensor installs, and several are already within reach of today's shim — `MarcoGos/kleenex_pollenradar` (1,569 installs) and `delphiki/hass-tarif-edf` (1,473) need **zero** additional symbols; `jonandel/ha-hildebrandglow-dcc` (1,718) needs one. "Runs integrations installed on thousands of real systems" is a far stronger claim than "runs three integrations", for identical effort. |
 | 4 | **Report requirements** | literature-review chapter? page target? | **Unknown — ask the advisor / check programme handbook.** |
 
@@ -623,6 +623,14 @@ are regression-tested and pass.
 ---
 
 ## 8. Next steps
+
+> ⏸️ **PAUSED 2026-08-13 — shim/framework coding is on hold.** Decided after §10's
+> conversation: Decision 3 (§6) is unresolved and the shim's next increment depends on its
+> answer, so building further now risks building the wrong thing. **Current focus: the threat
+> model (§10.2), so there is something substantive to bring to the advisor meeting (#6
+> below), which now comes before any more code.** Resume shim/isolation work only after that
+> meeting settles Decision 3. See §10 for the full reasoning and what stays true regardless of
+> how it's resolved.
 
 ### August (before the semester) — de-risk, don't build
 
@@ -752,7 +760,145 @@ That sentence stays honest at 1.2% coverage; "a sandboxing framework for HACS" d
 
 ---
 
-## 10. Key sources
+## 10. Scope conversation and the plan going forward — 2026-08-13, end of day
+
+After §9 was written, the conversation turned to whether the project as it stood was the
+right size and whether it was something Younes could own and defend, not just something that
+had been built. Recorded here because it changed the plan, not just the mood.
+
+### 10.1 "Should we just cover the top integrations too?" — priced, not just answered
+
+Two versions of that question, with different answers:
+
+**"Target integrations by install count rather than arbitrarily"** — **yes, already Decision
+3b.** Cheap and already actionable: `kleenex_pollenradar` and `hass-tarif-edf` need zero new
+symbols and carry ~1,500 real installs each.
+
+**"Support the actuator pattern generally, since that's most of the installed base"** —
+**priced, and it does not pay off the way it looks like it should.**
+
+| scope | integrations | share of installed base |
+|---|---|---|
+| today | 141 | 1.2% |
+| + `binary_sensor` | 182 | 1.5% |
+| + all 21 HA entity platforms (every actuator + `binary_sensor`) | 308 | **2.1%** |
+
+Implementing **every entity platform HA has** — sensor, switch, button, select, number,
+climate, cover, fan, light, lock, vacuum, siren, water_heater, humidifier, lawn_mower, valve,
+text, update, media_player, remote, scene — moves coverage from 1.2% to 2.1%. Platforms were
+never the binding constraint. What still blocks integrations once every platform exists:
+
+```
+1437  homeassistant.helpers          881  homeassistant.helpers.event
+1017  homeassistant.util             511  homeassistant.helpers.storage
+ 498  homeassistant.core             437  homeassistant.helpers.restore_state
+ 362  homeassistant.components.http  304  homeassistant.helpers.dispatcher
+```
+
+Deep HA internals — event scheduling, persistent storage, state restoration, dispatch,
+integrations serving their own HTTP endpoints — not platform classes.
+
+**Two further reasons actuators are not "just more shim":**
+
+1. **Architecture, not just coverage.** Everything built so far is outbound only: integration
+   polls → publishes → HA. Actuators need an inbound path — HA receives a service call (user
+   flips a switch) and must route it *into* the sandboxed process. The supervisor does not
+   listen for HA service calls yet; the sandbox is a script, not a server. Estimated 2–3 weeks,
+   which is most of the isolation + threat-model budget.
+2. **Manifest confinement is structurally weaker for actuators, and this belongs in the threat
+   model, not just the roadmap.** A manifest constrains *which* devices/services an integration
+   reaches — it stops lateral movement. It cannot constrain *when or why* an integration uses a
+   capability it legitimately declared. A malicious lock integration declaring
+   `network: [api.lockvendor.com]` — which it genuinely needs to function — can still unlock
+   the door at 3am through that same declared, legitimate channel. The framework prevents a
+   compromised lock integration from becoming a whole-house compromise; it does not make lock
+   integrations safe. State this precisely rather than letting it be discovered under
+   questioning.
+
+**Resulting plan:** freeze the general shim (§10.3). Build **one** actuator platform end-to-end
+(`switch` is the natural pick — simplest command shape) as an *architecture* proof that the
+inbound path works, not as a coverage push. Analyse actuators fully in the threat model,
+including the declared-capability-abuse limit above. Bring the 21-platform table to the
+advisor meeting as evidence the scope call is deliberate.
+
+### 10.2 The five workstreams, and where each actually stands
+
+The project is not one thing called "the shim." It is five, and the shim is the one furthest
+along and the one that contributes least to the security argument:
+
+| # | workstream | status |
+|---|---|---|
+| 1 | **Evidence / measurement** (§5.2, §5.4) | ✅ done — the novel contribution |
+| 2 | **Compatibility (the shim)** (§5.3, §5.4) | ✅ substantially done — **now frozen, see §10.3** |
+| 3 | **Mediation / policy** (supervisor, §5.3, §5.5–5.7) | ✅ core done; manifest schema still a strawman |
+| 4 | **Isolation** (namespaces + seccomp) | ❌ **not started at all** — plain `subprocess`, no fs/network restriction. Confirmed 2026-08-13: unprivileged user namespaces work on the dev machine (`unshare --user --mount --pid --fork` succeeds), so the approach is feasible, just unbuilt. |
+| 5 | **Evaluation + write-up** | ⚠️ 2 of 4 axes have data (compatibility, security-partial); performance is untouched; threat model is unwritten |
+
+**What is genuinely banked regardless of how Decision 3 resolves** — i.e. the minimum
+significant result already secured: the empirical measurement (§5.2/§5.4, likely the strongest
+single artifact — no comparable published account of the HA API surface appears to exist);
+three unmodified HACS integrations running against a stock HA (§5.5); API-level confinement
+with a paired baseline, 43 entities readable without the framework vs 2 with (§5.5); tamper-
+evident audit with detection demonstrated (§5.3); first-class entity registration via
+`sandbox_bridge` (§5.7); three methodological findings that show self-correcting work
+(`FrozenOrThawed`, the registry gap, the install-weighting reversal). **What is not banked:**
+containment. The framework stops API misuse; it does not yet stop `open("/etc/passwd")` or
+reading `secrets.yaml` directly, so the 2021 HACS file-theft pattern — named in §8 as the
+single strongest available result — is not yet reproduced as blocked. Isolation (workstream 4)
+is what closes that, and it is currently the largest unstarted piece of work in the plan.
+
+### 10.3 Why the shim is paused, specifically
+
+Two independent reasons, not one:
+
+1. **Decision 3 is unresolved and the shim's next increment depends on the answer.** Building
+   more `sensor`-side symbols now is wasted if the advisor meeting settles on actuators; the
+   symbols needed diverge (§10.1). Building before that conversation is the risk, not building
+   less.
+2. **The shim is the hardest part of the codebase to personally own, and also the part that
+   contributes least to the argument.** By line count: shim (hand-written + generated) is
+   ~3,600 lines; the security core (supervisor + runner + probe + backend) and the measurement
+   tools together are ~1,200 lines of comparatively ordinary Python (parse, count, check, log)
+   — the metaclass work in `frozen_dataclass_compat.py` is the one genuinely advanced piece,
+   and advanced by any standard, not a personal shortfall. Freezing the shim concentrates
+   remaining effort on the ~1,200 lines that carry the actual claim and that are realistic to
+   fully understand and defend.
+
+**What "frozen" means in practice:** the three existing integrations, the generated constants
+layer, and `shim_coverage.py` stay as they are. No new HA symbols are added and no new
+integration targets are onboarded until Decision 3 is settled. Targets 3b's zero-cost
+candidates (`kleenex_pollenradar`, `hass-tarif-edf`) are a candidate exception — they cost a
+manifest and a stub, not shim growth — but even those wait until after the threat model is
+drafted, so the current focus stays undivided.
+
+### 10.4 Immediate next action
+
+Write the threat model (workstream 5) before writing any more code. It is the highest-weight
+artifact for an advisor who is a lead auditor by profession, it is required for the proposal
+regardless of how Decision 3 resolves, and — unlike the shim — it is work Younes can own
+end to end, since it is reasoning about the design rather than Python implementation detail.
+
+Skeleton to fill in: trust boundaries (who holds the HA token, where does untrusted code run,
+where does the manifest get authored and by whom), asset list (device control, `secrets.yaml`,
+occupancy/presence data, camera feeds), actor list (integration author — possibly malicious;
+HACS as an unvetted distribution channel; the user, who both authors trust decisions and is
+the asset owner), a STRIDE or attack-tree pass per boundary, and a threat → control → residual-
+risk table. Two residual risks that must appear because they are already known, not
+hypothetical: **the over-declaring manifest nobody reads** (a weather widget that declares lock
+access is a red flag *if reviewed*, and there is currently no mechanism forcing review), and
+**declared-capability abuse on the integration's own device** (§10.1's 3am-unlock scenario,
+which manifest confinement structurally cannot prevent).
+
+Carry the answer to "who writes the manifest?" into the meeting explicitly — it will be asked
+early. The honest position: the manifest does not stop a determined malicious author from
+declaring what they need, the same way an Android permission list does not. It converts an
+*invisible* capability into a *declared, reviewable* one, closing the silent-full-trust default
+that exists today. That is the browser-extension precedent already cited in §4.4, stated as an
+explicit limit rather than an implicit hope.
+
+---
+
+## 11. Key sources
 - Home Assistant security disclosure, Jan 2021 — file theft via custom integrations
 - **HA analytics — `https://analytics.home-assistant.io/custom_integrations.json`** — per-domain
   install counts for custom integrations; opt-in telemetry, so a lower bound. The basis for
