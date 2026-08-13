@@ -12,3 +12,7 @@ venv/
 
 # Spike run artefacts
 spike/audit/
+
+# Generator + analytics caches (regenerable, and pinned by HA_VERSION)
+spike/.ha_source_cache/
+spike/.ha_analytics.json

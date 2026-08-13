@@ -130,6 +130,7 @@ class AuditLog:
     @staticmethod
     def verify(path: Path) -> tuple[bool, str]:
         prev = "0" * 64
+        line_number = 0
         with path.open(encoding="utf-8") as handle:
             for line_number, line in enumerate(handle, start=1):
                 record = json.loads(line)
