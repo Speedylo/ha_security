@@ -22,6 +22,10 @@ A mechanical tour of the codebase, in execution order. For *what the results mea
     ├── manifest.yaml            the security contract (andrews_arnold)
     ├── manifests/<name>.yaml    one contract per additional integration
     ├── supervisor.py            TRUSTED: policy + audit + process spawn
+    ├── ha_backend.py            what sits behind it: stub house, or real HA over REST
+    ├── ha_docker.sh             run a stock, unmodified HA in Docker
+    ├── ha_onboard.py            headless onboarding + long-lived token
+    ├── ha_seed.py               give the real HA a house worth protecting
     ├── runner.py                sandbox entrypoint
     ├── probe.py                 adversarial test
     ├── generate_shim.py         generates const.py + selector.py from HA's source
@@ -183,6 +187,23 @@ decision before replying**, and writes back `{"ok": true, ...}` or
 
 Note what is *not* in the child's environment: any HA token. The whole architecture is that
 the credential never crosses the boundary.
+
+### `ha_backend.py` — stub house or real Home Assistant
+
+Two implementations of one interface (`get`/`all`/`set`/`remove`/`call_service`). `StubHouse`
+is the in-memory dict the spike started with; `RestHouse` is a real HA reached over its public
+REST API with a bearer token.
+
+The important property is what *doesn't* change when you swap them: `supervisor.py`'s
+`decide()` is identical either way, and every manifest check runs **before** the backend is
+touched. That is why the adversarial probe can be reported for both backends in the same table
+— the policy under test is provably the same code.
+
+It is also the project's central claim in executable form. `RestHouse` talks to a stock
+Home Assistant through an API that already exists for any token holder, so the framework is a
+retrofit rather than a request that HA be redesigned. The supervisor holds the token; the
+sandboxed integration never sees it and has no route to HA except the bridge — which is what
+turns the confused-deputy attack into a policy question instead of a network one.
 
 ### `runner.py` — the sandbox entrypoint
 

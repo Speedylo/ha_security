@@ -431,6 +431,63 @@ report material):
 5. Shim-side checks are ergonomics, not security — the integration can bypass them. All
    enforcement is duplicated supervisor-side. Worth stating explicitly in the threat model.
 
+### 5.5 Real Home Assistant behind the supervisor ✅ (2026-08-13) ⭐
+
+The item §9 called the highest-value one in the project. **Done, and it converts the central
+claim from design intent into a demonstrated result.**
+
+```bash
+./ha_docker.sh up      # stock ghcr.io/home-assistant/home-assistant:2026.8.1
+./ha_onboard.py        # headless onboarding, mints a long-lived token
+./ha_seed.py           # give it a house worth protecting
+HA=1 ./run_targets.sh  # all three integrations, publishing into real HA
+```
+
+**Nothing about Home Assistant is modified.** The official published image, no patches, no
+custom components mounted, no config edits. The supervisor reaches it only through the REST
+API that HA already exposes to any client holding a token.
+
+**Result:** all three unmodified integrations run and publish into the live instance —
+**25 entities** (15 matomo, 8 icqa, 2 andrews_arnold), with correct units and friendly names,
+visible in HA's own `/api/states` alongside its native `sun.*` entities.
+
+**The adversarial probe re-run against real HA — and the firehose result gets much stronger:**
+
+| attempt | stub house | **real HA** |
+|---|---|---|
+| Read undeclared `lock.front_door` | blocked | **blocked** |
+| Enumerate the whole house | 2 of 8 returned | **2 visible, 41 withheld** |
+| Call `lock.unlock` (confused deputy) | blocked | **blocked** |
+| Exfiltrate to undeclared host | blocked | **blocked** |
+| Read a host file | ALLOWED | **ALLOWED** (unchanged; no fs isolation) |
+
+**Paired baseline measurement — the comparison the evaluation chapter needs.** The same token,
+used the way an ordinary in-process integration uses `hass` today:
+
+| | baseline HA | under the framework |
+|---|---|---|
+| `lock.front_door` | readable (`'locked'`) | **denied** |
+| entities enumerable | **43** | **2** |
+| privacy-relevant entities exposed | 5 (locks, alarm, camera, device_tracker) | **0** |
+
+That is the security result stated as a controlled comparison rather than a demo, against a
+real instance, and it is reproducible with four commands.
+
+**Design note worth keeping:** the switch is a backend swap, not a policy change.
+`ha_backend.py` holds `StubHouse` and `RestHouse` behind one interface; `supervisor.py`'s
+`decide()` is untouched by which is in use, and every manifest check still runs *before* the
+backend is called. The stub path still works identically, which is what makes the two rows of
+the probe table comparable.
+
+**New scripts:** `ha_backend.py` (both backends), `ha_docker.sh` (up/down/logs/status),
+`ha_onboard.py` (headless onboarding + long-lived token via the WebSocket API — HA has no REST
+route for minting one), `ha_seed.py` (populate a realistic house).
+
+⚠️ **Still open, and the report must not blur it:** entities arrive over REST as plain states.
+They are *not* linked to a config entry or the device registry the way a natively-loaded
+integration's entities are, so HA's "configure" affordances and device grouping do not appear.
+Measuring that difference is outstanding work — see §9.
+
 ---
 
 ## 6. Open decisions
@@ -486,12 +543,12 @@ report material):
    - `sudo bpftrace -e 'tracepoint:syscalls:sys_enter_openat { printf("%s\n", comm); }'` streams output
 
    If either fails, plan for a small cloud VM rather than fighting kernel configs in October.
-2. ⭐⭐ **Run HA in Docker and put it behind the supervisor**, replacing the `DEFAULT_HOUSE`
-   stub with a real REST/WebSocket client. **Now the highest-value engineering item in the
-   project** — see §9. Until this exists, "works against an unmodified Home Assistant" is a
-   design intention rather than a demonstrated fact, and that claim is the whole difference
-   between a retrofit and a thought experiment. Cheap, too: the policy layer does not change,
-   only what sits behind it. Ahead of more integrations, and well ahead of isolation.
+2. ✅ **DONE (2026-08-13) — real HA behind the supervisor.** See §5.5. Stock 2026.8.1 image,
+   unmodified; 25 entities published into it by three sandboxed integrations; probe re-run
+   against it with a paired baseline comparison (43 entities readable without the framework,
+   2 with). The retrofit claim in §9 is now demonstrated rather than intended.
+   *Remaining thread:* entities arrive as plain REST states, not config-entry/device-registry
+   linked. Quantify that gap.
 3. ✅ **DONE (2026-08-13) — full catalogue analysed** (3105 repos, 3075 parsed). See §5.2:
    polling sensors are 24.8% of the catalogue, not 15%, and the head of the symbol
    distribution held up at n=763. Selection-bias caveat retired.
@@ -562,13 +619,13 @@ and WebSocket APIs that already exist and are already public; the integration ru
 Nothing upstream has to accept a patch, change an interface, or agree. That is a **retrofit**,
 not a redesign — and redesign proposals are cheap to write and nobody has to adopt them.
 
-**But it is not yet proven, and this is the single highest-value thing left to build.** The
-supervisor currently talks to `DEFAULT_HOUSE`, a hardcoded dict standing in for a house. Until
-that is a real REST/WebSocket client against a real HA instance, "works against unmodified HA"
-is an intention, not a demonstrated fact. **This is the difference between a retrofit and a
-thought experiment.** It is already item 2 of the August list, still undone, and it is cheap:
-the policy layer does not change at all, only what sits behind it. Rank it above more
-integrations and well above isolation.
+**✅ PROVEN 2026-08-13 — see §5.5.** This was the open caveat: the supervisor talked to
+`DEFAULT_HOUSE`, a hardcoded dict, so "works against unmodified HA" was an intention rather
+than a demonstrated fact. It is now demonstrated. A stock
+`ghcr.io/home-assistant/home-assistant:2026.8.1` container, no patches and no custom
+components mounted, receives 25 sensor states from three unmodified HACS integrations running
+outside its process under manifest enforcement. The retrofit claim is now evidence, not
+design intent.
 
 **Where the framing is genuinely vulnerable** — put these in the report rather than letting an
 examiner find them:
@@ -578,7 +635,8 @@ examiner find them:
   even though it is not a code change for HA.
 - Entities published over the REST API are not identical to natively-loaded ones — device
   registry association, config-entry linkage and the UI's "configure" affordances all differ.
-  Measure this rather than hand-waving it.
+  **Confirmed real in §5.5**, now that states land in a live instance. Quantify it; do not
+  hand-wave it. This is the strongest remaining objection to the retrofit framing.
 - HA's own "Remote Integration Execution" RFC moves toward process separation for
   non-security reasons. Engage directly: this supplies the **policy layer** their mechanism
   would need. Do not wait to be asked.

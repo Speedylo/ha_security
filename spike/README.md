@@ -15,7 +15,7 @@ source is exactly what its tarball contained.
 | `aniolpages/ha-icqa` | 8 sensors | 18 | public credential-free endpoint; `runtime_data`; nested payload parsing |
 
 ```bash
-./run_targets.sh              # all three, end to end
+./run_targets.sh              # all three, end to end, against the stub house
 ./run_targets.sh matomo       # just one
 ./run_spike.sh                # andrews_arnold only: setup + two polls
 ./run_spike.sh --probe        # the above, then the adversarial probe
@@ -25,6 +25,20 @@ source is exactly what its tarball contained.
 ./shim_coverage.py --installs # ...and weight it by real installed base
 ./supervisor.py --verify audit/<run>.jsonl
 ```
+
+### Against a real, unmodified Home Assistant
+
+```bash
+./ha_docker.sh up             # stock 2026.8.1 image — no patches, no custom components
+./ha_onboard.py               # headless onboarding, mints a long-lived token
+./ha_seed.py                  # give it locks, a camera, a device tracker
+HA=1 ./run_targets.sh         # publish into the real instance
+./ha_docker.sh down           # stop it
+```
+
+The supervisor reaches HA only through the REST API it already exposes to any
+token holder. Nothing about Home Assistant is modified, which is the point: the
+framework is a **retrofit**, not a proposal to redesign HA.
 
 Requires `../.venv` (aiohttp, voluptuous, awesomeversion, pyyaml).
 
@@ -70,13 +84,21 @@ drains, Matomo's day counters climb, ICQA's NO₂ rises from 28,3 to 41,7 µg/m�
 Five things a malicious version of this integration would try. Each is one line
 an author could add, and on stock HA every one of them succeeds today.
 
-| Attempt | Spike | Enforced by |
+| Attempt | Stub house | **Real HA** | Enforced by |
+|---|---|---|---|
+| Read `lock.front_door` (undeclared) | blocked | **blocked** | `reads_entities` |
+| Enumerate the whole house (`/api/states` firehose) | 2 of 8 returned | **2 visible, 41 withheld** | read filtering |
+| Call `lock.unlock` (confused deputy) | blocked | **blocked** | `calls_services` |
+| Exfiltrate to `collector.exfil-example.net` | blocked | **blocked** | `network` allowlist |
+| Read a host file directly | ALLOWED | **ALLOWED** | nothing yet — see below |
+
+**Paired baseline**, same token used the way an in-process integration uses `hass` today:
+
+| | baseline HA | under the framework |
 |---|---|---|
-| Read `lock.front_door` (undeclared) | **blocked** | `reads_entities` |
-| Enumerate the whole house (`/api/states` firehose) | **blocked** — 2 of 8 entities returned, 6 withheld | read filtering |
-| Call `lock.unlock` (confused deputy) | **blocked** | `calls_services` |
-| Exfiltrate to `collector.exfil-example.net` | **blocked** | `network` allowlist |
-| Read a host file directly | **ALLOWED** | nothing yet — see below |
+| `lock.front_door` | readable (`'locked'`) | **denied** |
+| entities enumerable | **43** | **2** |
+| privacy-relevant entities exposed | 5 | **0** |
 
 The last row is the honest one. The spike has process separation and a mediated
 API; it has **no filesystem isolation**, so `open("/etc/passwd")` succeeds. That
