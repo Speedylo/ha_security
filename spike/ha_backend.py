@@ -157,3 +157,67 @@ class RestHouse(House):
         if not info:
             raise HomeAssistantError("HA returned no config; is the token valid?")
         return f"{info.get('location_name', 'Home')} (HA {info.get('version', '?')})"
+
+
+class BridgeHouse(RestHouse):
+    """Publish through the `sandbox_bridge` integration instead of raw states.
+
+    Posting to /api/states produces a state with no identity: no entity-registry
+    row, no config entry, no device, and nothing that survives a restart. Routing
+    the same values through a small *trusted* native integration instead gives the
+    sandboxed integration's entities the same standing as any other.
+
+    Reads still go straight to the REST API — there is nothing to gain by
+    indirecting them, and the manifest checks that matter happen in the supervisor
+    before either path is taken.
+    """
+
+    SERVICE_DOMAIN = "sandbox_bridge"
+
+    def __init__(self, base_url: str, token: str, integration: str, timeout: int = 10) -> None:
+        super().__init__(base_url, token, timeout)
+        self.integration = integration
+
+    def set(self, entity_id: str, state: Any, attributes: dict) -> dict:
+        # `key` must be stable for the entity's identity to be stable across runs,
+        # so derive it from the entity_id rather than from call order.
+        key = entity_id.split(".", 1)[-1]
+        self._request(
+            "POST",
+            f"/api/services/{self.SERVICE_DOMAIN}/publish",
+            {
+                "integration": self.integration,
+                "key": key,
+                "entity_id": entity_id,
+                "state": "" if state is None else str(state),
+                "attributes": attributes or {},
+            },
+        )
+        return {"entity_id": entity_id, "state": state, "attributes": attributes or {}}
+
+    def remove(self, entity_id: str) -> bool:
+        try:
+            self._request(
+                "POST",
+                f"/api/services/{self.SERVICE_DOMAIN}/remove",
+                {"integration": self.integration, "key": entity_id.split(".", 1)[-1]},
+            )
+            return True
+        except HomeAssistantError:
+            return False
+
+    def describe(self) -> str:
+        return f"real Home Assistant at {self.base_url} via the {self.SERVICE_DOMAIN} integration"
+
+    def check(self) -> str:
+        detail = super().check()
+        services = self._request("GET", "/api/services") or []
+        available = {
+            entry.get("domain"): set((entry.get("services") or {}).keys()) for entry in services
+        }
+        if "publish" not in available.get(self.SERVICE_DOMAIN, set()):
+            raise HomeAssistantError(
+                f"the '{self.SERVICE_DOMAIN}' integration is not set up in this Home Assistant. "
+                "Install and configure it first: ./ha_bridge_setup.sh"
+            )
+        return detail

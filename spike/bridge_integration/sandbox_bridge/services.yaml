@@ -1,0 +1,45 @@
+publish:
+  name: Publish entity state
+  description: >-
+    Create or update an entity on behalf of an integration running outside Home
+    Assistant. Called by the supervisor, which holds the only token permitted to
+    do so; the sandboxed integration cannot reach this service.
+  fields:
+    integration:
+      name: Integration
+      description: Domain of the sandboxed integration the entity belongs to.
+      required: true
+      selector: {text: }
+    key:
+      name: Key
+      description: Identifier for the entity, unique within that integration.
+      required: true
+      selector: {text: }
+    entity_id:
+      name: Entity ID
+      description: The entity_id the integration would have produced inside HA.
+      required: true
+      selector: {text: }
+    state:
+      name: State
+      description: The value to publish.
+      required: true
+      selector: {text: }
+    attributes:
+      name: Attributes
+      description: Unit, device class, icon and any extra state attributes.
+      required: false
+      selector: {object: }
+
+remove:
+  name: Remove entity
+  description: Forget an entity the sandboxed integration no longer publishes.
+  fields:
+    integration:
+      name: Integration
+      required: true
+      selector: {text: }
+    key:
+      name: Key
+      required: true
+      selector: {text: }

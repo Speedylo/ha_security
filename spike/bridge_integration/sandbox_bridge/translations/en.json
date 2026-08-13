@@ -1,0 +1,13 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Sandboxed Integration Bridge",
+        "description": "Gives integrations running outside Home Assistant real, registry-backed entities."
+      }
+    },
+    "abort": {
+      "already_configured": "The bridge is already set up."
+    }
+  }
+}

@@ -129,41 +129,67 @@ def main() -> int:
     print(f"\n  in entity registry — native: {native[0] in by_entity}  "
           f"framework: {framework[0] in by_entity}")
 
+    bridged = sample_framework is not None
+    mode = "sandbox_bridge integration" if bridged else "raw REST states"
+
     print("\n" + "=" * 72)
-    print("REGISTRY FIELDS")
+    print(f"REGISTRY FIELDS   (framework publishing via: {mode})")
     print("=" * 72)
-    print("  A framework entity has no registry row at all, so every field below is")
-    print("  structurally unavailable to it — not merely unset. On the native side,")
-    print("  'set' means the integration populated it and 'available' means the row")
-    print("  exists so a user or another integration can populate it.")
+    if bridged:
+        print("  The framework entity has a registry row, so these fields exist for it on")
+        print("  the same terms as for the native one: 'set' means something populated it,")
+        print("  'available' means the row exists and a user can populate it.")
+    else:
+        print("  The framework entity has no registry row at all, so every field below is")
+        print("  structurally unavailable to it — not merely unset. On the native side,")
+        print("  'set' means the integration populated it and 'available' means the row")
+        print("  exists so a user or another integration can populate it.")
     print()
-    print(f"  {'field':18s} {'native':30s} {'framework':12s}  meaning")
-    populated = 0
+    print(f"  {'field':18s} {'native':32s} {'framework':32s}")
+
+    def render(entry, field):
+        if entry is None:
+            return "unavailable (no row)"
+        value = entry.get(field)
+        return str(value)[:30] if value is not None else "(available, unset)"
+
+    native_set = framework_set = 0
     for field, meaning in REGISTRY_FIELDS:
-        native_value = sample_native.get(field)
-        if native_value is not None:
-            populated += 1
-            shown = str(native_value)[:28]
-        else:
-            shown = "(available, unset)"
-        state = "unavailable" if sample_framework is None else str((sample_framework or {}).get(field))
-        print(f"  {field:18s} {shown:30s} {state:12s}  {meaning}")
+        if sample_native.get(field) is not None:
+            native_set += 1
+        if bridged and sample_framework.get(field) is not None:
+            framework_set += 1
+        print(f"  {field:18s} {render(sample_native, field):32s} {render(sample_framework, field):32s}")
+
     total = len(REGISTRY_FIELDS)
-    print(f"\n  native   : registry row exists — {populated}/{total} populated by the integration,")
-    print(f"             the remaining {total - populated} available for the user to set.")
-    print(f"  framework: no registry row — {total}/{total} unavailable.")
+    print(f"\n  native   : registry row — {native_set}/{total} populated, "
+          f"{total - native_set} available for the user.")
+    if bridged:
+        print(f"  framework: registry row — {framework_set}/{total} populated, "
+              f"{total - framework_set} available for the user.")
+        print("\n  The gap in this table is closed. `platform` reads sandbox_bridge rather")
+        print("  than matomo, which is accurate rather than a shortfall: the bridge really")
+        print("  is what created the entity, and that is what makes the sandboxing visible")
+        print("  to the user instead of hiding it.")
+    else:
+        print(f"  framework: no registry row — {total}/{total} unavailable.")
 
     # Devices and config entries
     matomo_entries = [e for e in registries["entries"] if e.get("domain") == "matomo"]
-    device_ids = {by_entity[e]["device_id"] for e in native if by_entity.get(e, {}).get("device_id")}
+    bridge_entries = [e for e in registries["entries"] if e.get("domain") == "sandbox_bridge"]
+    native_devices = {by_entity[e]["device_id"] for e in native if by_entity.get(e, {}).get("device_id")}
+    framework_devices = {
+        by_entity[e]["device_id"] for e in framework if by_entity.get(e, {}).get("device_id")
+    }
     print("\n" + "=" * 72)
     print("OWNERSHIP")
     print("=" * 72)
-    print(f"  config entries for 'matomo'    : {len(matomo_entries)}  "
-          f"(reload/delete/options available in the UI)")
-    print(f"  devices created by the native   : {len(device_ids)}")
-    print(f"  config entries for the framework: 0  (nothing to reload, delete, or configure)")
-    print(f"  devices for the framework       : 0")
+    print(f"  {'':32s} {'native':10s} {'framework':10s}")
+    print(f"  {'config entries':32s} {len(matomo_entries):<10d} {len(bridge_entries):<10d}")
+    print(f"  {'devices':32s} {len(native_devices):<10d} {len(framework_devices):<10d}")
+    if not bridge_entries:
+        print("\n  Nothing to reload, delete, or configure for the framework, and nothing to")
+        print("  group its entities under.")
 
     # State-level attributes do survive — worth being precise about what is NOT lost.
     native_state = next(s for s in states if s["entity_id"] == native[0])

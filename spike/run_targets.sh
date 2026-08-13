@@ -4,6 +4,7 @@
 #   ./run_targets.sh              all three, against the in-memory stub house
 #   ./run_targets.sh matomo       just one
 #   HA=1 ./run_targets.sh         against the real Home Assistant in Docker
+#   HA=1 BRIDGE=1 ./run_targets.sh   ...publishing through the sandbox_bridge integration
 #
 # Each target is an unmodified HACS integration, its hand-written manifest, and
 # a stub of its vendor cloud. run_spike.sh remains the single-target entry point
@@ -24,6 +25,11 @@ if [[ "${HA:-0}" == "1" ]]; then
     exit 2
   fi
   HA_ARGS=(--ha-url "${HA_URL:-http://127.0.0.1:8123}" --ha-token "$(cat "${HERE}/.ha_token")")
+  # BRIDGE=1 publishes through the sandbox_bridge integration instead of raw
+  # states, so the entities get registry identity, a device, and survive restarts.
+  if [[ "${BRIDGE:-0}" == "1" ]]; then
+    HA_ARGS+=(--ha-bridge)
+  fi
 fi
 
 # name | integration dir | manifest | stub script | port | declared host | entry data

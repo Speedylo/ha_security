@@ -32,7 +32,7 @@ from pathlib import Path
 
 import yaml
 
-from ha_backend import HomeAssistantError, RestHouse, StubHouse
+from ha_backend import BridgeHouse, HomeAssistantError, RestHouse, StubHouse
 
 HERE = Path(__file__).resolve().parent
 
@@ -284,7 +284,11 @@ def run(args: argparse.Namespace) -> int:
         if not token:
             print("supervisor: --ha-url given but no token (--ha-token or HA_TOKEN)", file=sys.stderr)
             return 2
-        house = RestHouse(args.ha_url, token)
+        house = (
+            BridgeHouse(args.ha_url, token, manifest.name)
+            if args.ha_bridge
+            else RestHouse(args.ha_url, token)
+        )
         try:
             detail = house.check()
         except HomeAssistantError as err:
@@ -401,6 +405,12 @@ def main() -> int:
         "--ha-token",
         default="",
         help="long-lived access token for --ha-url (or set HA_TOKEN). The sandbox never sees it.",
+    )
+    parser.add_argument(
+        "--ha-bridge",
+        action="store_true",
+        help="publish through the sandbox_bridge integration so entities get registry "
+        "identity, a device, and survival across restarts (requires --ha-url)",
     )
     parser.add_argument("--probe", action="store_true", help="run the adversarial probe after setup")
     parser.add_argument("--quiet", action="store_true", help="suppress the per-decision trace")
