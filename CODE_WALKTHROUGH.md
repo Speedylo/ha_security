@@ -34,6 +34,8 @@ A mechanical tour of the codebase, in execution order. For *what the results mea
     ├── isolate.py               TRUSTED: builds the namespaces + allowlisted root
     ├── syscall_filter.py        TRUSTED: the seccomp policy
     ├── probe.py                 adversarial test
+    ├── test_matrix.sh           full matrix with assertions (23 checks)
+    ├── test_egress.py           egress policy cases (17)
     ├── generate_shim.py         generates const.py + selector.py from HA's source
     ├── shim_coverage.py         scores the shim against surface_out/ (± install weighting)
     ├── shim/homeassistant/      the fake HA API (~2.5k lines)

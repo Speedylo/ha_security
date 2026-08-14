@@ -401,6 +401,14 @@ def run(args: argparse.Namespace) -> int:
             "HACS_INTEGRATION_DIR": str(integration_dir),
             "HACS_DOMAIN": domain,
             "HACS_ENTRY_DATA": args.entry_data,
+            # The integration's own declared scope, handed back to it. Not a
+            # secret — it is what this integration itself declared — and it
+            # lets the adversarial probe test the property that actually
+            # matters ("did the firehose return anything outside my declared
+            # scope?") rather than the proxy it used before ("anything I did
+            # not publish this run"), which false-alarmed on entities
+            # legitimately persisting in HA from an earlier run.
+            "HACS_DECLARED_SCOPE": json.dumps(manifest.publishes + manifest.reads_entities),
             "HACS_SANDBOX_DIR": tmpdir,
             "HACS_PROBE": "1" if args.probe else "0",
             "PYTHONDONTWRITEBYTECODE": "1",

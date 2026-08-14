@@ -25,12 +25,21 @@ HA_ARGS=()
 if [[ "${ISOLATE:-0}" == "1" ]]; then
   HA_ARGS+=(--isolate)
 fi
+# PROBE=1 runs the adversarial probe after each target sets up, rather than
+# only for andrews_arnold_quota via run_spike.sh. The probe is target-agnostic
+# except for check 2, which counts entities not belonging to the integration.
+if [[ "${PROBE:-0}" == "1" ]]; then
+  HA_ARGS+=(--probe)
+fi
 if [[ "${HA:-0}" == "1" ]]; then
   if [[ ! -f "${HERE}/.ha_token" ]]; then
     echo "HA=1 but no .ha_token — run ./ha_docker.sh up && ./ha_onboard.py" >&2
     exit 2
   fi
-  HA_ARGS=(--ha-url "${HA_URL:-http://127.0.0.1:8123}" --ha-token "$(cat "${HERE}/.ha_token")")
+  # `+=`, not `=`. This assignment used to overwrite the array, silently
+  # discarding --isolate and --probe whenever HA=1 was set — so `HA=1 ISOLATE=1`
+  # ran with no isolation at all while appearing to test it.
+  HA_ARGS+=(--ha-url "${HA_URL:-http://127.0.0.1:8123}" --ha-token "$(cat "${HERE}/.ha_token")")
   # BRIDGE=1 publishes through the sandbox_bridge integration instead of raw
   # states, so the entities get registry identity, a device, and survive restarts.
   if [[ "${BRIDGE:-0}" == "1" ]]; then

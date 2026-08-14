@@ -153,7 +153,13 @@ class Egress:
 
             if status in (301, 302, 303, 307, 308) and response_headers.get("Location"):
                 # Re-enter the loop so the new host is checked like the first.
-                url = urllib.parse.urljoin(target, response_headers["Location"])
+                #
+                # Resolve against the *logical* url, not the rewritten `target`.
+                # A relative `Location: /next` from a declared host must stay on
+                # that host; resolving it against the rewrite target would
+                # rewrite the identity too, and the hop would then be checked
+                # against the stub's address rather than the declared one.
+                url = urllib.parse.urljoin(url, response_headers["Location"])
                 if status == 303 or (status == 302 and method == "POST"):
                     method, body = "GET", None
                 continue

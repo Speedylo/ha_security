@@ -28,8 +28,10 @@ declares. An allowlist governs destination, not content.
 from __future__ import annotations
 
 import errno
+import json
 import os
 import socket
+from fnmatch import fnmatch
 
 from homeassistant._bridge import PermissionDenied
 from homeassistant.core import HomeAssistant
@@ -63,9 +65,25 @@ async def run_probe(hass: HomeAssistant) -> list[tuple[str, bool, str]]:
         results.append(("read undeclared entity", True, str(err)))
 
     # 2. The firehose: ask for every state in the house at once.
+    #
+    #    "Leaked" means an entity outside this integration's *declared scope* —
+    #    the patterns it put in its own manifest. Two earlier versions of this
+    #    check were wrong, both found by widening what it was run against:
+    #      - `startswith("sensor.andrews_arnold")` false-alarmed on every other
+    #        integration (found by running the probe on matomo and icqa);
+    #      - "anything I did not publish this run" false-alarmed on entities
+    #        legitimately persisting in a real HA from an earlier run (found by
+    #        running against real HA rather than the stub house).
+    #    Declared scope is the property the supervisor actually enforces, so it
+    #    is what the check should measure.
+    declared = json.loads(os.environ.get("HACS_DECLARED_SCOPE", "[]"))
     try:
         states = hass.states.async_all()
-        leaked = [state.entity_id for state in states if not state.entity_id.startswith("sensor.andrews_arnold")]
+        leaked = [
+            state.entity_id
+            for state in states
+            if not any(fnmatch(state.entity_id, pattern) for pattern in declared)
+        ]
         results.append(
             (
                 "enumerate whole house",

@@ -17,6 +17,7 @@ source is exactly what its tarball contained.
 ```bash
 ./run_targets.sh              # all three, end to end, against the stub house
 ./run_targets.sh matomo       # just one
+PROBE=1 ISOLATE=1 ./run_targets.sh   # ...isolated, with the adversarial probe
 ./run_spike.sh                # andrews_arnold only: setup + two polls
 ./run_spike.sh --probe        # the above, then the adversarial probe
 ./run_spike.sh --probe --isolate   # ...with namespaces + seccomp (6 of 8 blocked)
@@ -27,6 +28,9 @@ python3 syscall_filter.py     # self-test: load the filter, prove ptrace is deni
 ./shim_coverage.py            # score the shim against the full catalogue
 ./shim_coverage.py --installs # ...and weight it by real installed base
 ./supervisor.py --verify audit/<run>.jsonl
+./test_matrix.sh              # full matrix with assertions (23 checks)
+HA=1 ./test_matrix.sh         # ...including real HA and the bridge
+./test_egress.py              # 17 egress policy cases
 ```
 
 ### Against a real, unmodified Home Assistant

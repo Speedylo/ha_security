@@ -768,6 +768,51 @@ checkable as in what it blocks.
 An allowlist governs destination, not content. No allowlist fixes this; it belongs in the threat
 model as accepted.
 
+### 5.11 Test matrix — and three defects only wider testing could find ✅ (2026-08-14)
+
+Prompted by a direct question: *"did you test the current system against multiple integrations
+with multiple scenarios?"* The honest answer was **no** — three integrations had been run for
+operation counts, but the eight-check adversarial probe had only ever run against *one*
+(`andrews_arnold_quota`), and the real-HA path had not been re-run since egress was rewritten.
+
+Widening the matrix immediately found three defects. None was in the security mechanisms; **all
+three were in the things that measure them**, which is the more dangerous category, because a
+broken measurement reports success.
+
+| # | Defect | Why single-target testing could not find it |
+|---|---|---|
+| 1 | Probe check 2 hardcoded `startswith("sensor.andrews_arnold")`, so **matomo's own 15 entities counted as "belonging to others"** — a false ALLOWED | Only wrong for integrations other than the one it was written against |
+| 2 | `run_targets.sh` used `HA_ARGS=(...)` rather than `+=` when `HA=1`, **silently discarding `--isolate`** | Only wrong when two options were combined; each worked alone |
+| 3 | Relative redirects resolved against the *rewritten* URL, so an **in-allowlist redirect was wrongly denied** | Only wrong for the positive case; the negative case (off-allowlist) passed, which looked like the feature working |
+
+**Defect 1 was fixed twice.** The first fix compared against "entities this sandbox published this
+run" — which then false-alarmed against *real* HA, where matomo's entities legitimately persist
+from an earlier run. The correct measure is the integration's **declared scope** (its own manifest
+patterns, now passed in as `HACS_DECLARED_SCOPE`), because that is the property the supervisor
+actually enforces. Two wrong proxies before the right one, each exposed by widening the matrix
+again.
+
+**Defect 3 is the one worth citing in the report.** The redirect test that *passed* was the denial;
+the one that failed was the legitimate case. A control that blocks everything looks identical to a
+correct control until you test the positive path. `spike/test_egress.py` now covers both
+directions for every rule.
+
+**Now mechanical rather than claimed.** `spike/test_matrix.sh` runs the full matrix with
+assertions — 3 integrations × {stub, real HA, bridge} × {baseline, isolated} × {with, without
+probe}, plus the egress policy suite and the seccomp self-test. **23 assertions, all passing**,
+including `HACS_ALLOW_INET=1` restoring the pre-fix 6/8 so the before/after stays reproducible.
+
+```bash
+./test_matrix.sh          # stub-house scenarios, no Docker needed
+HA=1 ./test_matrix.sh     # ...plus real Home Assistant and the bridge
+./test_egress.py          # 17 egress policy cases on their own
+```
+
+**Methodological point for the write-up**, and it generalises beyond this project: the probe is
+part of the evaluation apparatus, and **evaluation apparatus needs testing as much as the system
+does**. Three of the four defects found this day were in measurement code, not in controls. An
+evaluation chapter that reports "8 of 8 blocked" should say how the probe itself was validated.
+
 ---
 
 ## 6. Open decisions
