@@ -717,6 +717,57 @@ denylist partly answers by removing `bpf`, `perf_event_open`, `setns` and module
 mechanism. Nothing remaining is blocked on something unproven — which was the actual question
 being asked.
 
+### 5.10 Lateral movement closed — the supervisor brokers egress ✅ (2026-08-14) ⭐
+
+Full write-up: **`RESULTS_2026-08-14_egress_broker.md`**. Closes the gap §5.9 left open, and it
+was the largest one: the `network:` allowlist was *advisory*, so a raw socket reached any LAN
+device or internet host, unlogged.
+
+**Why the old check could not be repaired.** `aiohttp_client` asked the supervisor for permission
+and then let the sandbox open the connection. The check bound only an integration that chose to
+use HA's HTTP helper; `import socket` walked past it. **The sandbox was the party making the
+decision** — that is the defect, not a missing rule.
+
+**The fix moves the decision to the side that cannot be skipped.** Seccomp denies
+`socket(AF_INET)`/`AF_INET6` (default under `--isolate`), so the sandbox has no IP networking at
+all — no TCP, no UDP, no DNS. `AF_UNIX` remains, so the bridge still works and is now the **only**
+way out. All HTTP is serialised over it and performed by the supervisor (`spike/egress.py`, ~170
+lines), which checks the manifest per request *and per redirect hop*.
+
+**Result: the probe reaches 8 of 8**, from 4 of 8 unisolated. All three integrations produce
+identical operation counts (7, 44, 18) and none was modified. Two side effects worth recording:
+the **redirect gap closed for free** (each hop is re-authorised — a declared host answering `302`
+to an undeclared one is now denied), and the **audit log improved** from a permission question to
+what actually happened: `http_request -> allow | fetched chaos2.aa.net.uk [200]`.
+
+**A measurement error was found and fixed in the process.** Checks 7 and 8 originally used
+hostnames, but `socket.create_connection()` resolves before opening a socket, so they failed with
+`gaierror` and never reached the layer under test — and `gaierror` looks identical whether a name
+does not exist or the sandbox has no network. Both now use RFC 5737 documentation *addresses*, and
+the probe distinguishes a refused syscall (`EPERM`/`EACCES`/`EAFNOSUPPORT`) from a request that
+merely failed in transit. **A control has to be measured where it actually sits.**
+
+**This created new attack surface, and saying so is part of the result.** The supervisor now
+parses attacker-controlled URLs, headers and bodies and issues requests on the sandbox's behalf —
+a confused deputy by construction. Eight limits bound it, each verified: scheme allowlist (no
+`file://`), per-hop re-authorisation, 8 MiB response cap, 30 s timeout cap, header count and
+length caps, CRLF rejection, no ambient `http_proxy`, and **Home Assistant's own host blocked
+unconditionally regardless of manifest**. The residual is honest: ~170 lines of new trusted code,
+small enough to review, but a bug there is a bug in the trusted half.
+
+**The argument to make in the report is about attacker cost, not elimination.** Before: one line
+of Python reaches any device on the LAN, unlogged. After, the attacker must either declare the
+host in the manifest — where it is *visible in a public repository*, a weather integration
+inexplicably naming the lock's address — or find a bug in 170 reviewable lines, or break seccomp
+and the namespaces with a kernel exploit. **The open-source nature of HACS is what makes option
+one expensive:** the manifest gives reviewers a declared baseline, turning "is this integration
+overreaching?" into a mechanical question. The control's value is as much in what it makes
+checkable as in what it blocks.
+
+**Still open and structural:** exfiltration through a host the manifest *legitimately* declares.
+An allowlist governs destination, not content. No allowlist fixes this; it belongs in the threat
+model as accepted.
+
 ---
 
 ## 6. Open decisions
@@ -1028,7 +1079,7 @@ along and the one that contributes least to the security argument:
 | 1 | **Evidence / measurement** (§5.2, §5.4) | ✅ done — the novel contribution |
 | 2 | **Compatibility (the shim)** (§5.3, §5.4) | ✅ substantially done — **now frozen, see §10.3** |
 | 3 | **Mediation / policy** (supervisor, §5.3, §5.5–5.7) | ✅ core done; manifest schema still a strawman. ⚠️ **§5.8: mediation is currently *evadable*, not merely incomplete** — the sandbox can obtain the HA token and bypass the supervisor entirely. Policy logic is sound; its *unavoidability* depends on workstream 4. |
-| 4 | **Isolation** (namespaces + seccomp) | ✅ **core built 2026-08-14** — see §5.9 and `RESULTS_2026-08-14_isolation_spike.md`. User + PID + mount namespaces with an allowlisted root and a 25-rule seccomp filter, ~260 lines, unprivileged. Probe goes 4/8 → 6/8 blocked; all three integrations run identically. **Outstanding:** lateral movement to undeclared LAN devices and egress generally (needs a supervisor-side proxy, not a namespace flag) and cgroups (resource exhaustion). **Unverified:** aarch64 / the actual Pi. |
+| 4 | **Isolation** (namespaces + seccomp + brokered egress) | ✅ **built 2026-08-14** — see §5.9, §5.10, `RESULTS_2026-08-14_isolation_spike.md` and `RESULTS_2026-08-14_egress_broker.md`. User + PID + mount namespaces with an allowlisted root, a 27-rule seccomp filter denying IP sockets, and supervisor-brokered HTTP. Probe goes **4/8 → 8/8** blocked; all three integrations run identically. **Outstanding:** cgroups (resource exhaustion); WebSockets not brokered. **Unverified:** aarch64 / the actual Pi. |
 | 5 | **Evaluation + write-up** | ⚠️ 2 of 4 axes have data (compatibility, security-partial); performance is untouched; threat model is unwritten. §5.8 supplies two drafted threat→control→residual-risk rows to start it with. |
 
 **What is genuinely banked regardless of how Decision 3 resolves** — i.e. the minimum
@@ -1050,9 +1101,10 @@ credential leak) closed and demonstrated.
 
 **What is still not banked, precisely:**
 
-- **Network containment.** Raw-socket egress bypasses the `network:` allowlist, which is advisory
-  rather than enforcing. Closing it needs a supervisor-side egress proxy, not a namespace flag —
-  though §5.9 demonstrated the enforcement half works (`HACS_DENY_INET=1`).
+- ~~**Network containment.**~~ **Banked 2026-08-14 (§5.10).** The allowlist is now enforcing:
+  seccomp denies IP sockets and the supervisor performs all HTTP, checking each redirect hop.
+  Probe 8/8. *What remains is content, not destination* — exfiltration through a legitimately
+  declared host, which is structural and belongs in the residual-risk table.
 - **Resource containment.** No cgroups, so a malicious integration can still exhaust CPU or RAM.
   Availability is a security property and this belongs in the threat model.
 - **Verification on the real target.** Everything is tested on x86_64 under WSL2; the Pi 5 is

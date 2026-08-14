@@ -6,26 +6,28 @@ a single line an integration author could add to a legitimate integration, and
 on stock Home Assistant every one of them succeeds today.
 
 Some checks are expected to FAIL to be blocked, and say so. Reporting that
-honestly is the point of running the probe at all — checks 5, 6 and 7 were all
-written while they still failed, which is what made the before/after in
-RESULTS_2026-08-14_isolation_spike.md a measurement rather than an assertion.
+honestly is the point of running the probe at all — checks 5 through 8 were each
+written while they still failed, which is what made every before/after a
+measurement rather than an assertion.
 
-Current state: 4 of 8 blocked as an ordinary child process, 6 of 8 under
+Current state: 4 of 8 blocked as an ordinary child process, **8 of 8** under
 `supervisor.py --isolate` (user + PID + mount namespaces, allowlisted root,
-seccomp filter).
+seccomp filter, and supervisor-brokered egress).
 
-Checks 7 and 8 are still open in both modes, and they are the important
-remaining gap. The `network:` allowlist is enforced in the shim's HTTP client,
-which asks the supervisor and then lets *this* process open the connection — so
-a raw socket never consults it. Check 8 is exfiltration; check 7 is **lateral
-movement to a device the manifest never declared**, which is the sharper of the
-two: a lock's local API or a camera needs no HA credential, so closing every
-token route does nothing about it. Confining lateral movement is what the
-manifest is *for*. Closing this needs the supervisor to broker egress.
+Checks 7 and 8 were the last to close, on 2026-08-14. The `network:` allowlist
+used to be enforced in the shim's HTTP client, which asked the supervisor and
+then let *this* process open the connection — so a raw socket never consulted
+it. Now seccomp denies `socket(AF_INET)` and all HTTP is performed by the
+supervisor over the bridge, so the allowlist binds regardless of intent. See
+RESULTS_2026-08-14_egress_broker.md.
+
+What none of this touches: exfiltration through a host the manifest legitimately
+declares. An allowlist governs destination, not content.
 """
 
 from __future__ import annotations
 
+import errno
 import os
 import socket
 
@@ -36,10 +38,16 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 TARGET_LOCK = "lock.front_door"
 EXFIL_HOST = "collector.exfil-example.net"
 SECRETS_PATH = "/etc/passwd"  # stands in for /config/secrets.yaml on a real host
-# Stands in for a device on the user's LAN that the manifest never declared —
-# a lock's local API, a camera, the router. Documentation range (RFC 5737), so
-# the probe never touches anything real.
-LAN_DEVICE = "192.0.2.10"
+# Checks 7 and 8 use IP literals rather than hostnames, deliberately.
+# socket.create_connection() resolves a name before it opens a socket, so a
+# hostname target fails with gaierror and never reaches the layer being tested —
+# and gaierror looks identical whether the name does not exist or the sandbox
+# has no network at all. An address removes the confound: what is measured is
+# the socket call, which is where the control actually sits.
+# Both are RFC 5737 documentation ranges, so the probe never touches anything
+# real, on the LAN or otherwise.
+LAN_DEVICE = "192.0.2.10"  # TEST-NET-1: a lock's local API, a camera, the router
+EXFIL_ADDR = "198.51.100.10"  # TEST-NET-2: a collector on the internet
 
 
 async def run_probe(hass: HomeAssistant) -> list[tuple[str, bool, str]]:
@@ -115,40 +123,53 @@ async def run_probe(hass: HomeAssistant) -> list[tuple[str, bool, str]]:
     except OSError as err:
         results.append(("read supervisor's /proc", True, str(err)))
 
-    # 7. Reach a device the manifest never declared, without going through the
-    #    shim's mediated session. The `network:` allowlist is enforced inside
-    #    aiohttp_client, which asks the supervisor and then lets *this* process
-    #    open the connection — so a raw socket never consults it. No
-    #    net_request is sent and nothing is logged.
+    # 7 and 8. Reach a device the manifest never declared, without going
+    #    through the shim's mediated session.
     #
-    #    Exfiltration is the obvious reading. The sharper one is lateral
-    #    movement: LAN_DEVICE stands for a smart lock's local HTTP API, a
+    #    Exfiltration (8) is the obvious reading. The sharper one is lateral
+    #    movement (7): LAN_DEVICE stands for a smart lock's local HTTP API, a
     #    camera, or a router admin page — none of which need HA's credential,
-    #    so closing every token route (checks 6) does not touch this. Confining
-    #    lateral movement is the manifest's central promise, and this is the
-    #    check that says it is not yet kept.
+    #    so closing every token route did nothing about them. Confining lateral
+    #    movement is the manifest's central promise, and these are the checks
+    #    that say whether it is kept.
+    #
+    #    Both were ALLOWED until 2026-08-14, because the allowlist was checked
+    #    inside aiohttp_client and the sandbox then opened the socket itself.
+    #    Now seccomp denies socket(AF_INET), so there is no socket to open and
+    #    the only exit is the supervisor.
     #
     #    "Blocked" here means the *socket call* was refused, not that nothing
     #    answered: a connection failing on DNS or routing is not a control.
     for label, host, port in (
         ("undeclared LAN device", LAN_DEVICE, 80),
-        ("undeclared internet host", EXFIL_HOST, 80),
+        ("undeclared internet host", EXFIL_ADDR, 80),
     ):
         try:
             connection = socket.create_connection((host, port), timeout=2)
             connection.close()
             results.append((f"raw socket → {label}", False, f"connected to {host}, unmediated"))
-        except PermissionError as err:
-            # What a seccomp filter denying socket(2) looks like from in here.
-            results.append((f"raw socket → {label}", True, f"denied by syscall filter: {err}"))
         except OSError as err:
-            results.append(
-                (
-                    f"raw socket → {label}",
-                    False,
-                    f"unmediated by policy, failed in transit: {type(err).__name__}",
+            # Distinguish a *refused syscall* from a request that merely failed
+            # to arrive. Only the first is a control: a connection dying on DNS
+            # or a timeout would have succeeded against a reachable target.
+            # seccomp reports the denied socket family as EAFNOSUPPORT; a plain
+            # errno filter would report EPERM/EACCES.
+            if err.errno in (errno.EAFNOSUPPORT, errno.EPERM, errno.EACCES):
+                results.append(
+                    (
+                        f"raw socket → {label}",
+                        True,
+                        f"socket refused by syscall filter ({errno.errorcode.get(err.errno)})",
+                    )
                 )
-            )
+            else:
+                results.append(
+                    (
+                        f"raw socket → {label}",
+                        False,
+                        f"unmediated by policy, failed in transit: {type(err).__name__}",
+                    )
+                )
 
     print("\nsandbox: probe results")
     for name, blocked, detail in results:

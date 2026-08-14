@@ -29,10 +29,12 @@ import time
 from datetime import datetime, timezone
 from fnmatch import fnmatch
 from pathlib import Path
+from urllib.parse import urlparse
 
 import yaml
 
 import isolate
+from egress import Egress, EgressDenied
 from ha_backend import BridgeHouse, HomeAssistantError, RestHouse, StubHouse
 
 HERE = Path(__file__).resolve().parent
@@ -151,10 +153,20 @@ class AuditLog:
 class Supervisor:
     """Policy enforcement for one sandboxed integration."""
 
-    def __init__(self, manifest: Manifest, audit: AuditLog, house, quiet: bool = False) -> None:
+    def __init__(
+        self,
+        manifest: Manifest,
+        audit: AuditLog,
+        house,
+        quiet: bool = False,
+        egress: "Egress | None" = None,
+    ) -> None:
         self.manifest = manifest
         self.audit = audit
         self.quiet = quiet
+        # Outbound HTTP on the sandbox's behalf. None means the sandbox is
+        # expected to connect for itself, i.e. the pre-2026-08-14 behaviour.
+        self.egress = egress
         # Where state lives — a stub dict or a real HA. Policy does not care,
         # and that is the point: every check below runs before this is touched.
         self.house = house
@@ -233,10 +245,27 @@ class Supervisor:
             return True, f"fired {event_type}", {}
 
         if op == "net_request":
+            # Legacy advisory check: the sandbox asked, then connected itself.
+            # Kept so the old behaviour stays reproducible for the evaluation
+            # chapter's before/after, but no longer how egress happens.
             host = str(message.get("host", ""))
             if not self.manifest.may_connect(host):
                 return False, f"{host} not in manifest network allowlist", {}
             return True, f"network allowlist matches {host}", {}
+
+        if op == "http_request":
+            # Enforcing egress: the supervisor makes the connection, so the
+            # allowlist binds regardless of what the sandbox intended. Each
+            # redirect hop is re-checked inside Egress.fetch.
+            if self.egress is None:
+                return False, "egress not configured", {}
+            try:
+                payload = self.egress.fetch(message)
+            except EgressDenied as err:
+                return False, str(err), {}
+            hops = payload.pop("hops", [])
+            trail = " -> ".join(hops)
+            return True, f"fetched {trail} [{payload['status']}]", payload
 
         return False, f"unknown operation {op!r}", {}
 
@@ -313,7 +342,24 @@ def run(args: argparse.Namespace) -> int:
         house = StubHouse()
         backend_line = house.describe()
 
-    supervisor = Supervisor(manifest, audit, house, quiet=args.quiet)
+    # Egress rewrites are parsed here rather than in the sandbox: the sandbox no
+    # longer opens connections, so it has no use for them, and a rewrite table
+    # the sandbox could edit would be a way to move its own traffic.
+    rewrites: dict[str, str] = {}
+    for pair in filter(None, (part.strip() for part in args.egress_rewrite.split(","))):
+        host, _, target = pair.partition("=")
+        if host and target:
+            rewrites[host.strip().lower()] = target.strip()
+
+    # The sandbox may never reach Home Assistant directly, whatever its manifest
+    # says. It holds no token so it could not authenticate, but keeping the
+    # framework's own dependency off the reachable set is cheap.
+    blocked = []
+    if args.ha_url:
+        blocked.append(urlparse(args.ha_url).hostname or "")
+
+    egress = Egress(manifest, rewrites=rewrites, blocked_hosts=blocked)
+    supervisor = Supervisor(manifest, audit, house, quiet=args.quiet, egress=egress)
 
     if args.isolate:
         ok, detail = isolate.available()

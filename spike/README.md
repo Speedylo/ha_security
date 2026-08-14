@@ -139,12 +139,13 @@ an author could add, and on stock HA every one of them succeeds today.
 | Exfiltrate to `collector.exfil-example.net` | blocked | **blocked** | blocked | `network` allowlist |
 | Read a host file directly | ALLOWED | **ALLOWED** | **blocked** | mount namespace |
 | Read the supervisor's `/proc` (steal the token) | ALLOWED | **ALLOWED** | **blocked** | PID namespace |
-| Raw socket → undeclared **LAN device** (lateral movement) | ALLOWED | **ALLOWED** | **ALLOWED** | nothing — see below |
-| Raw socket → undeclared internet host (exfiltration) | ALLOWED | **ALLOWED** | **ALLOWED** | nothing — see below |
+| Raw socket → undeclared **LAN device** (lateral movement) | ALLOWED | **ALLOWED** | **blocked** | seccomp + brokered egress |
+| Raw socket → undeclared internet host (exfiltration) | ALLOWED | **ALLOWED** | **blocked** | seccomp + brokered egress |
 
-**4 of 8 without isolation, 6 of 8 with it.** The last three checks exist to make
-the gaps measurable *before* they are fixed; see
-`../FINDINGS_2026-08-14_token_leak.md`.
+**4 of 8 without isolation, 8 of 8 with it.** Each of the last four checks was
+written while it still failed, so every before/after is a measurement rather
+than an assertion. See `../FINDINGS_2026-08-14_token_leak.md` and
+`../RESULTS_2026-08-14_egress_broker.md`.
 
 **Paired baseline**, same token used the way an in-process integration uses `hass` today:
 

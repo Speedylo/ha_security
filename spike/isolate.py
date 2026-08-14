@@ -294,8 +294,13 @@ def main() -> int:
     if os.environ.get("HACS_SECCOMP", "1") != "0":
         import syscall_filter
 
+        # AF_INET is denied by default. The sandbox has no legitimate need for
+        # an IP socket: its HTTP goes to the supervisor over AF_UNIX, which is
+        # what makes the manifest's `network:` allowlist enforcing rather than
+        # advisory. HACS_ALLOW_INET=1 restores the old behaviour so the
+        # before/after stays reproducible for the evaluation chapter.
         syscall_filter.apply(
-            deny_inet=os.environ.get("HACS_DENY_INET") == "1",
+            deny_inet=os.environ.get("HACS_ALLOW_INET") != "1",
             verbose=True,
         )
 
