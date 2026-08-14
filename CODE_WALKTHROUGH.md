@@ -34,8 +34,9 @@ A mechanical tour of the codebase, in execution order. For *what the results mea
     ├── isolate.py               TRUSTED: builds the namespaces + allowlisted root
     ├── syscall_filter.py        TRUSTED: the seccomp policy
     ├── probe.py                 adversarial test
-    ├── test_matrix.sh           full matrix with assertions (23 checks)
+    ├── test_matrix.sh           full matrix with assertions (15, or 24 with HA=1)
     ├── test_egress.py           egress policy cases (17)
+    ├── test_audit.py            hash chain: what it proves and what it does not
     ├── generate_shim.py         generates const.py + selector.py from HA's source
     ├── shim_coverage.py         scores the shim against surface_out/ (± install weighting)
     ├── shim/homeassistant/      the fake HA API (~2.5k lines)
@@ -434,9 +435,48 @@ that look like bugs). Second, it is applied *after* the mounts and immediately b
 which is why it can safely deny `mount` and `pivot_root`. A seccomp filter survives `execve`,
 which is what makes that ordering work.
 
-`HACS_DENY_INET=1` adds argument-level filtering: permit `socket(AF_UNIX)`, deny `AF_INET`.
-Running with it breaks the integration's vendor poll, and that is the demonstration — it proves
-the `network:` allowlist can be made enforcing rather than advisory.
+Argument-level filtering permits `socket(AF_UNIX)` — the bridge — and denies `AF_INET`/`AF_INET6`.
+**This is on by default** under `--isolate`, and it is what makes the `network:` allowlist
+enforcing rather than advisory: with no IP socket available, the only way out is the supervisor.
+`HACS_ALLOW_INET=1` turns it off, restoring the pre-2026-08-14 sandbox so the before/after stays
+reproducible.
+
+### `egress.py` — the only way out
+
+The counterpart to the above. The sandbox has no network, so `MediatedClientSession` serialises
+each request (method, URL, headers, body) over the bridge, and `Egress.fetch` performs it.
+
+`_authorise` is the whole policy and reads like `Manifest`: check the scheme, check the host
+against `network:`, refuse anything on `blocked_hosts`. It is called **once per redirect hop**,
+not once per request, which is what closed the redirect gap the old shim documented but did not
+fix.
+
+The rest of the file is limits, and they exist for a specific reason worth understanding: this
+module is **trusted code acting on attacker-controlled input**, so it is a confused deputy by
+construction. Response size, timeout, header count, header length, CRLF in header values, redirect
+depth, and an empty `ProxyHandler` so ambient `http_proxy` cannot redirect egress. Each one bounds
+something the sandbox could otherwise make the *supervisor* do. `test_egress.py` covers all of
+them in both directions.
+
+### `test_egress.py` and `test_matrix.sh`
+
+Added 2026-08-14 after the question *"did you test this against multiple integrations with
+multiple scenarios?"* — the answer being no. Widening the matrix found three defects, **all three
+in measurement code rather than in controls** (see `PROJECT_STATUS.md` §5.11).
+
+`test_egress.py` runs 17 policy cases against a local stub, covering both directions of every
+rule — notably a redirect that *should* be followed as well as one that should not, since a
+control that blocks everything looks correct until you test the positive path.
+
+`test_audit.py` covers the hash chain, and three of its five cases assert *limits* rather than
+requirements — that a rebuilt chain still verifies (the unkeyed-digest limit from §5.8), and that
+two runs cannot share a log file. Asserting a known limit is deliberate: a limit that is only
+written down tends to quietly stop being true, and one that is tested cannot later be mistaken for
+a bug someone already fixed.
+
+`test_matrix.sh` asserts across 3 integrations × {stub, real HA, bridge} × {isolated, not} ×
+{probe, no probe}, plus the three unit suites. 15 assertions without Docker, 24 with `HA=1`.
+**Run it more than once** — defect 4 in §5.11 was invisible to any single run.
 
 ### `probe.py`
 

@@ -877,10 +877,12 @@ would stay demonstrable. That plan held, and the fixes landed the same day — u
 
 **Still open, and not addressed by anything in this document:**
 
-- **Network egress and lateral movement.** The `network:` allowlist is advisory, so a raw socket
-  reaches any host — including devices on the LAN that never required HA's credential at all.
-  See `ANALYSIS_2026-08-14_isolation_coverage.md` category B. This is now the largest open
-  weakness, and it is *not* a token problem: closing every door above does not touch it.
+- ~~**Network egress and lateral movement.**~~ **Closed later the same day** — see
+  `RESULTS_2026-08-14_egress_broker.md`. It was correctly identified here as *not* a token
+  problem: closing all four doors above did nothing about it, and it needed a separate control
+  (seccomp denying IP sockets, plus supervisor-brokered HTTP). **What remains is content, not
+  destination:** exfiltration through a host the manifest legitimately declares. No allowlist
+  fixes that.
 - **Resource exhaustion.** No cgroups.
 
 **For the report:** these join `FrozenOrThawed`, the registry gap, and the install-weighting

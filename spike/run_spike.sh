@@ -15,12 +15,19 @@ VENDOR_PID=$!
 trap 'kill ${VENDOR_PID} 2>/dev/null || true' EXIT
 
 # Wait for the stub cloud to accept connections.
-for _ in $(seq 1 50); do
+# Fail loudly rather than racing: a stub that is not up yet makes the
+# integration fail to connect, which looks like a framework regression.
+READY=0
+for _ in $(seq 1 100); do
   if "${PYTHON}" -c "import socket,sys; s=socket.socket(); sys.exit(s.connect_ex(('127.0.0.1',${PORT})))" 2>/dev/null; then
-    break
+    READY=1; break
   fi
   sleep 0.1
 done
+if [[ "${READY}" -eq 0 ]]; then
+  echo "stub cloud on port ${PORT} never came up — harness failure, not a result" >&2
+  exit 3
+fi
 
 echo
 "${PYTHON}" "${HERE}/supervisor.py" \

@@ -6,6 +6,12 @@
 **Answer: yes, and it is smaller than expected.** A working implementation is ~260 lines across
 two new files, needs no root, and is transparent to the integrations.
 
+> ⏭️ **Snapshot — superseded the same day for rows 7 and 8.** This document records the isolation
+> spike as it stood, ending at **6 of 8** with network egress honestly open. Those two rows were
+> closed hours later by supervisor-brokered egress — see
+> **`RESULTS_2026-08-14_egress_broker.md`**, which takes the probe to **8 of 8**. The body below
+> is left as written, because the gap it reports is what motivated the next piece of work.
+
 ---
 
 ## What was built

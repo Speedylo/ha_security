@@ -21,7 +21,8 @@ work is well worth doing and was, when this was written, the highest-value unsta
 But it does **not** close three other families. One of them — **network egress, and more sharply
 lateral movement to undeclared LAN devices** — looks like it belongs to the first family and does
 not; confining it requires building a proxy, which is new architecture rather than a namespace
-flag. That one is now the largest open weakness in the project. Another family is **structural** and no isolation
+flag. **Built later the same day** — see `RESULTS_2026-08-14_egress_broker.md`; the prediction
+that it needed separate architecture held exactly. Another family is **structural** and no isolation
 primitive will ever touch it. And isolation **introduces** a fourth set of risks of its own.
 
 ---
@@ -43,7 +44,8 @@ These are the ones where "turn on isolation" really is the fix.
 **This category is real and it matters.** Predicted to convert the probe from "4 of 5 blocked, and
 we explain the fifth" into "5 of 5", and to restore the truth of the two claims §5.8 showed were
 false. **Measured after building: 4 of 8 → 6 of 8**, the difference being that two further checks
-were added for the still-open network gap rather than any Category A prediction failing. A fourth
+were added for the then-open network gap rather than any Category A prediction failing.
+**Now 8 of 8** since Category B was built too. A fourth
 token route (`.ha_token` on disk) was also found during verification and was already covered by
 the mount namespace.
 
@@ -53,6 +55,12 @@ the mount namespace.
 
 **Network egress — and, more sharply, lateral movement. This is the one to be careful about.**
 
+> ✅ **CLOSED 2026-08-14** by supervisor-brokered egress — seccomp denies `socket(AF_INET)` and
+> the supervisor performs all HTTP, checking each redirect hop. Probe rows 7 and 8 now block, and
+> the redirect gap noted at the end of this section closed with it. Everything below is retained
+> because the *analysis* is what directed the work, and it proved accurate: this genuinely did
+> need new architecture rather than a namespace flag.
+>
 > **Framing corrected 2026-08-14, after isolation was built.** This section was originally written
 > as "network egress", which understates it. Exfiltration is the obvious reading; the sharper one
 > is that a raw socket reaches **devices on the user's LAN that the manifest never declared** — a
@@ -189,18 +197,21 @@ Counting the concrete weaknesses currently known:
 | Category | Count | Status after namespaces + seccomp |
 |---|---|---|
 | A — closed by isolation | 5 (+1 found later) | ✅ **Fixed and measured** — built 2026-08-14, probe 4/8 → 6/8 |
-| B — needs new architecture (egress proxy, redirect check) | 2 | ⚠️ **Still open — now the largest remaining weakness** |
+| B — needs new architecture (egress proxy, redirect check) | 2 | ✅ **Built the same day** — probe now 8 of 8; redirect gap closed with it |
 | C — structural, no technical control | 5 | ❌ Permanently residual; must be *stated* |
 | D — introduced by isolation | ~7 | 🆕 New work and new caveats; 3 hit in practice |
 
 > **Scored after the build.** Category A closed exactly as predicted (plus a fourth token route
-> found while verifying — a file on disk, already covered by the mount namespace). Category B
-> stayed open exactly as predicted. Three of Category D's practical obstacles showed up as real
-> bugs. **Doing this analysis before building was worth the time**, and that is worth a line in
-> the methodology chapter.
+> found while verifying — a file on disk, already covered by the mount namespace). Category B was
+> correctly identified as needing separate architecture, and was then built the same day, taking
+> the probe to 8 of 8. Three of Category D's practical obstacles showed up as real bugs.
+> **Doing this analysis before building was worth the time**, and that is worth a line in the
+> methodology chapter — the categories predicted not just what would close, but *what kind of
+> work* each would take, which is what made the sequencing right.
 
-So: **isolation closes the largest and most visible family, and it is the right next build.** But
-"almost all" would be wrong in a report. A defensible sentence is closer to:
+So: **isolation closes the largest and most visible family, and it was the right next build.** But
+"almost all" would still have been wrong in a report at the time. The sentence that was defensible
+then — and which the same day's work then overtook:
 
 > Namespaces and seccomp close the host-access family of weaknesses in full, including the one
 > required to reproduce the 2021 HACS file-theft pattern. Enforcing the network allowlist
@@ -216,24 +227,25 @@ That paragraph is worth more to an auditor than "we sandboxed it."
 
 ## Recommended sequence
 
-Ordered by value per unit of effort, given the current state:
+Written as a plan; kept with outcomes marked, since the sequencing is itself a result.
 
-1. ✅ **DONE — probe checks #6, #7 and #8** — reading the token from `/proc`, lateral movement to an undeclared LAN device, and exfiltration. All
-   are a few lines and both currently *fail to be blocked*. This makes the real gap measurable
-   before it is fixed, giving a genuine before/after. Cheap, and it is measurement, which is this
-   project's strongest suit.
-2. **Fix the two misleading comments** (`supervisor.py:329`, `:79–85`) and scrub `HA_TOKEN` from
-   the child's environment. Small, honest, closes route 1.
-3. **HMAC the audit chain.** A few lines; closes the rebuild attack independently of everything
-   else.
-4. **Verify unprivileged user namespaces on the actual Pi**, not the dev machine. Do this before
-   depending on the approach.
-5. **Build mount + PID namespaces.** This is Category A — the biggest single win, and it unblocks
-   the 2021 file-theft reproduction.
-6. **Then decide on the egress proxy** (Category B) as a separately budgeted piece, with the
-   redirect check as its cheap first half.
-7. **Write Category C into the threat model as residual risks.** No code. Required regardless.
+1. ✅ **DONE — probe checks #6, #7 and #8.** Written while all three still failed, which is what
+   made every later before/after a measurement rather than an assertion. Cheap, and measurement is
+   this project's strongest suit.
+2. ✅ **DONE — the two misleading comments** (`supervisor.py:329`, `:79–85`) corrected, and
+   `HA_TOKEN` scrubbed from the child's environment. Closed token route 1.
+3. ⬜ **HMAC the audit chain.** Still outstanding. A few lines; closes the rebuild attack
+   independently of everything else, and the mount namespace removing the sandbox's *access* to
+   the log is not a reason to skip it — two independent controls beat one that must never fail.
+4. ⬜ **Verify unprivileged user namespaces on the actual Pi.** Still outstanding, and now the
+   single largest unknown: everything is tested on x86_64 under WSL2 and the Pi 5 is aarch64.
+5. ✅ **DONE — mount + PID namespaces** (`RESULTS_2026-08-14_isolation_spike.md`). Category A, the
+   biggest single win; unblocks the 2021 file-theft reproduction.
+6. ✅ **DONE — the egress broker** (`RESULTS_2026-08-14_egress_broker.md`), with the redirect
+   check falling out of it as predicted. Took the probe from 6/8 to 8/8.
+7. ⬜ **Write Category C into the threat model as residual risks.** No code. Required regardless,
+   and now the main thing standing between the project and a complete argument.
 
-Note that items 1–4 are all small, and three of them are *measurement or honesty* work rather than
-new subsystems — which suits both the current writing phase and the constraint that the code
-should be personally ownable.
+**What is left is items 3, 4 and 7** — an HMAC, a hardware check, and writing. Two of the three
+are small, and the third is the highest-weight artifact for this advisor. That is a materially
+better position than the plan assumed when it was written.

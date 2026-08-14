@@ -72,12 +72,23 @@ for spec in "${TARGETS[@]}"; do
   STUB_PID=$!
   trap 'kill ${STUB_PID} 2>/dev/null || true' EXIT
 
-  for _ in $(seq 1 50); do
+  # Wait for the stub cloud to accept connections. Fail loudly if it never
+  # does: proceeding anyway makes the integration fail to connect, which shows
+  # up as a wrong operation count and looks like a framework regression rather
+  # than a harness timeout. 10s, because 5s was not enough under load.
+  READY=0
+  for _ in $(seq 1 100); do
     if "${PYTHON}" -c "import socket,sys; s=socket.socket(); sys.exit(s.connect_ex(('127.0.0.1',${port})))" 2>/dev/null; then
-      break
+      READY=1; break
     fi
     sleep 0.1
   done
+  if [[ "${READY}" -eq 0 ]]; then
+    echo "  ${name}: stub cloud on port ${port} never came up — harness failure, not a result" >&2
+    FAILED=$((FAILED + 1))
+    kill ${STUB_PID} 2>/dev/null || true
+    continue
+  fi
 
   if "${PYTHON}" "${HERE}/supervisor.py" \
       --manifest "${manifest}" \

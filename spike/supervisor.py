@@ -103,7 +103,14 @@ class AuditLog:
     def __init__(self, path: Path) -> None:
         self.path = path
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self._handle = self.path.open("a", encoding="utf-8")
+        # Exclusive create, never append. A chain is only meaningful within one
+        # file: two runs appending to the same path each restart `_seq` at 0 and
+        # `_prev` at the zero anchor, so verify() reports "chain broken" at the
+        # junction — a *false* tamper report, which is worse than no report.
+        # This happened: run ids were second-resolution, so two runs starting in
+        # the same second silently shared a log. Failing loudly here means a
+        # naming collision can never be mistaken for tampering again.
+        self._handle = self.path.open("x", encoding="utf-8")
         self._lock = threading.Lock()
         self._seq = 0
         self._prev = "0" * 64
@@ -319,7 +326,10 @@ def run(args: argparse.Namespace) -> int:
     manifest = Manifest.load(Path(args.manifest))
     integration_dir = Path(args.integration).resolve()
     domain = integration_dir.name
-    run_id = datetime.now().strftime("%Y%m%d-%H%M%S")
+    # Includes the pid: two supervisors cannot hold the same pid at once, so
+    # concurrent runs cannot collide however close together they start. The
+    # timestamp alone was second-resolution and did collide — see AuditLog.
+    run_id = f"{datetime.now().strftime('%Y%m%d-%H%M%S')}-{os.getpid()}"
     audit = AuditLog(HERE / "audit" / f"{domain}-{run_id}.jsonl")
 
     if args.ha_url:

@@ -14,7 +14,10 @@
 #   2. run_targets.sh overwrote HA_ARGS when HA=1, silently discarding
 #      --isolate, so `HA=1 ISOLATE=1` tested no isolation at all;
 #   3. relative redirects resolved against the rewritten URL rather than the
-#      declared one, so an in-allowlist redirect was wrongly denied.
+#      declared one, so an in-allowlist redirect was wrongly denied;
+#   4. audit run ids were second-resolution and the log opened in append mode,
+#      so two runs starting in the same second shared a file and verify()
+#      reported a FALSE "chain broken" — found by running the matrix in a loop.
 #
 # The point of this file is that those are now regressions rather than
 # discoveries.
@@ -55,6 +58,14 @@ if "${PYTHON}" "${HERE}/test_egress.py" >/dev/null 2>&1; then
   ok "egress.py policy suite"
 else
   bad "egress.py policy suite" "see ./test_egress.py output"
+fi
+
+echo
+echo "── audit log (unit) ──────────────────────────────────────────────"
+if "${PYTHON}" "${HERE}/test_audit.py" >/dev/null 2>&1; then
+  ok "audit log suite"
+else
+  bad "audit log suite" "see ./test_audit.py output"
 fi
 
 echo

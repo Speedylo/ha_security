@@ -20,7 +20,7 @@ source is exactly what its tarball contained.
 PROBE=1 ISOLATE=1 ./run_targets.sh   # ...isolated, with the adversarial probe
 ./run_spike.sh                # andrews_arnold only: setup + two polls
 ./run_spike.sh --probe        # the above, then the adversarial probe
-./run_spike.sh --probe --isolate   # ...with namespaces + seccomp (6 of 8 blocked)
+./run_spike.sh --probe --isolate   # ...with full isolation (8 of 8 blocked)
 ISOLATE=1 ./run_targets.sh    # all three, each in its own namespaces
 python3 syscall_filter.py     # self-test: load the filter, prove ptrace is denied
 ./generate_shim.py            # regenerate const.py + selector.py from HA's source
@@ -28,9 +28,10 @@ python3 syscall_filter.py     # self-test: load the filter, prove ptrace is deni
 ./shim_coverage.py            # score the shim against the full catalogue
 ./shim_coverage.py --installs # ...and weight it by real installed base
 ./supervisor.py --verify audit/<run>.jsonl
-./test_matrix.sh              # full matrix with assertions (23 checks)
+./test_matrix.sh              # full matrix with assertions (15; 24 with HA=1)
 HA=1 ./test_matrix.sh         # ...including real HA and the bridge
 ./test_egress.py              # 17 egress policy cases
+./test_audit.py               # hash chain: what it proves, and what it does not
 ```
 
 ### Against a real, unmodified Home Assistant
@@ -306,12 +307,13 @@ an `AttributeError` or a lifecycle failure on the second. Both are the point.
 
 ## Not yet built
 
-**Network** isolation — a supervisor-side egress proxy, so the `network:`
-allowlist becomes enforcing rather than advisory (`HACS_DENY_INET=1` shows the
-enforcement half already works). **cgroups**, so resource exhaustion is bounded.
-Subscription filtering under load, actuator platforms, and manifest generation
-rather than hand-authoring.
+**cgroups**, so resource exhaustion is bounded — a malicious integration can
+still fork-bomb or exhaust RAM. **WebSocket brokering**: `ws_connect` raises
+rather than falling through to a real socket, so an integration needing
+WebSockets does not run here today. Subscription filtering under load, actuator
+platforms, and manifest generation rather than hand-authoring.
 
 *Since removed from this list:* filesystem and process isolation (built
-2026-08-14, see above) and the real HA backend (built 2026-08-13; the supervisor
-speaks to a stock HA over its REST API, `DEFAULT_HOUSE` is gone).
+2026-08-14), network egress (built 2026-08-14 — the supervisor performs all HTTP
+and the allowlist is now enforcing), and the real HA backend (built 2026-08-13;
+`DEFAULT_HOUSE` is gone).
