@@ -981,9 +981,13 @@ HA=1 ./test_matrix.sh     # ...plus real Home Assistant and the bridge
      Settled 2026-08-14 (§6): polling sensors as scope, actuators as a stretch/PoC. Present it
      as a costed scope decision — bring the 21-platform table (1.2% → 2.1%) as evidence it is
      deliberate rather than avoidance — and invite disagreement rather than requesting a ruling.
-   - **Two questions genuinely remain open** and should be asked directly:
-     - Which threat-modelling framework he wants used (STRIDE / attack trees / ISO 27001 / NIST)?
-       Pick one and start; ask him to redirect if he prefers another, rather than blocking on it.
+   - ~~**Two questions genuinely remain open**~~ **One remains, 2026-08-14:**
+     - ~~Which threat-modelling framework?~~ **SETTLED — `ISO 31000` for the process, `STRIDE`
+       for identification.** Not a guess: both were taught in Younes' cybersecurity module, so
+       he can defend the choice from coursework rather than from a citation. `THREAT_MODEL.md`
+       Part 0 states how they join — STRIDE occupies ISO 31000 clause 6.4.2, which the standard
+       deliberately leaves open for a technique. State this in the email as a decision made,
+       and invite redirection.
      - Does the programme require a literature-review chapter, and is there a page target?
        *(Decision 4 in §6 — still unknown.)*
    - **Lead with the demo and the measurement**, and include §5.8's self-audit. For an advisor
@@ -1212,6 +1216,11 @@ drafted, so the current focus stays undivided.
 
 ### 10.4 Immediate next action
 
+> ✅ **DONE 2026-08-14 — `THREAT_MODEL.md` v0.1 exists. See §12.** ISO 31000 + STRIDE, 21
+> threats, 6 retained residual risks, and it found a new High risk (T14) in the egress broker
+> the moment it was applied to the code. The section below is kept as the brief it was written
+> against; all four required residual risks appear, as R1–R4.
+
 Write the threat model (workstream 5) before writing any more code, in `THREAT_MODEL.md`. It is
 the highest-weight artifact for an advisor who is a lead auditor by profession, it is required
 for the proposal regardless of how Decision 3 resolves, and — unlike the shim — it is work
@@ -1338,9 +1347,92 @@ smallest remaining one. Nothing in the plan is blocked on something unproven. Re
 order: verify on aarch64, write the threat model, build the egress proxy, add cgroups, HMAC the
 audit chain.
 
+> **Superseded 2026-08-14, later the same day.** The egress proxy was built (§5.10) and the threat
+> model written (§12). Current order is in §12.4 — and it starts with a *new* item the threat
+> model surfaced: the broker authorises host **names** without ever checking the address they
+> resolve to.
+
 ---
 
-## 12. Key sources
+## 12. Threat model written — and it found a new High risk — 2026-08-14
+
+### 12.1 Framework choice settled from coursework
+
+`THREAT_MODEL.md` v0.1 exists (workstream 5), built on **ISO 31000:2018 for the process** and
+**STRIDE for identification**. The choice is not arbitrary: both were taught in Younes'
+cybersecurity module, which means the method can be defended from what he actually knows rather
+than from a citation — the same ownership criterion that keeps the shim frozen (§10.3).
+
+**The join is the part to be able to state in one sentence.** ISO 31000 clause 6.4.2 is *risk
+identification*, and the standard deliberately prescribes no technique for it — that is left to
+IEC 31010, which catalogues techniques and expects you to choose. STRIDE fills that slot;
+everything around it (context, criteria, analysis, evaluation, treatment, monitoring, recording)
+is 31000. Also worth knowing: **ISO 31000 is guidance, not certifiable** — 27001 is the
+certifiable one. An auditor will check whether that distinction is understood.
+
+**Contents:** 7 assets, 5 actors, 5 trust boundaries, **21 identified threats** across the six
+STRIDE categories, a 5×5 likelihood/consequence matrix with a stated tolerance, an inherent-vs-
+residual register, an ISO 31000 §6.5.2 treatment-option mapping, a prioritised treatment plan,
+and **six formally retained residual risks** (R1–R6) — the four required by §10.4 plus the
+declared-capability limit and the surface added by the controls themselves.
+
+**The headline number for the report: inherent 7 Critical / 7 High → residual 0 Critical /
+8 High.** Every Critical eliminated, each backed by a measurement rather than an assertion. Of
+the eight surviving High risks, four are structural or upstream, two are ecosystem-level
+(HACS review and signing), and two are fixable implementation gaps — both newly identified, below.
+
+### 12.2 ⚠️ New finding: the egress broker checks host *names*, never destinations
+
+Found while grounding the threat model in the code, and **measured, not theorised** (T14/T15).
+
+`egress.py:86–102` authorises a request by comparing `parsed.hostname` against the manifest
+allowlist and `blocked_hosts`. It **never resolves the name and never inspects the address it is
+about to connect to.** So the manifest constrains names, while the attacker controls the mapping
+from names to addresses: declare `cdn.their-domain.example` — plausible enough to survive review —
+and point its A record at `192.168.1.1`. The supervisor, trusted and *not* subject to the seccomp
+`AF_INET` denial, then makes the request and hands back the body.
+
+Demonstrated with the existing `Egress` class and `blocked_hosts=("127.0.0.1",)` exactly as
+`supervisor.py` passes it: a manifest declaring `localhost` fetched a loopback URL, status 200,
+body returned to the sandbox.
+
+**Why it is more interesting than an ordinary bug.** §5.10 closed lateral movement by denying the
+sandbox `AF_INET` — probe checks 7 and 8 ALLOWED → BLOCKED. But denying the sandbox sockets meant
+giving the supervisor the job of fetching on its behalf, and the supervisor has no such
+restriction. **The control that closed the hole re-opened a version of it one layer up, through
+the deputy it created.** A textbook confused deputy, and the cleanest available illustration of
+the governing principle: every control adds surface, so the question is never "is it closed" but
+"what did closing it cost". Note too that such a request is logged as *allowed* to a *declared*
+host — the audit log is complete, intact, and reports nothing wrong.
+
+**Treatment (not yet implemented, <1 day):** resolve in the broker; reject private / loopback /
+link-local / multicast results; connect to the **pinned address** with the original `Host:` header
+so a second resolution cannot differ (DNS rebinding / TOCTOU); apply per redirect hop; and add
+probe checks 9 and 10 **before** the fix so the before/after is a measurement.
+
+### 12.3 The methodological point this proves
+
+`test_egress.py` has 17 cases covering both directions of every rule it knows about. **It did not
+find this.** A test suite can only test the threats you already thought of — tests demonstrate the
+absence of *known* failures, never the absence of failures. That is exactly why threat modelling
+is a separate activity from testing, and it is now demonstrable in this project rather than
+merely asserted: the threat model found a real gap in code that already passed a targeted suite.
+
+Pair it with §5.11's lesson (three of four defects were in *measurement* code) and the
+methodology chapter has two independent, evidenced arguments about how the evaluation was done.
+
+### 12.4 Revised order of remaining work
+
+1. **Resolve-and-pin in the broker** (T14/T15) — the only High risk that is both new and cheap
+2. **HMAC the audit chain** (T03) — ~1 hour, and makes two controls fail independently
+3. **Verify on aarch64** — still the most schedule-critical item; every isolation result to date
+   is x86_64-only, and the claim is about a Pi
+4. **cgroups** (T07) — the only threat with no control at all
+5. Distinct uid for the sandbox (defence in depth for T05/T08)
+
+---
+
+## 13. Key sources
 - Home Assistant security disclosure, Jan 2021 — file theft via custom integrations
 - **HA analytics — `https://analytics.home-assistant.io/custom_integrations.json`** — per-domain
   install counts for custom integrations; opt-in telemetry, so a lower bound. The basis for

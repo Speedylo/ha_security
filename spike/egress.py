@@ -84,7 +84,20 @@ class Egress:
 
     # ------------------------------------------------------------------
     def _authorise(self, url: str) -> tuple[str, str]:
-        """Check one URL against the manifest. Returns (host, url to fetch)."""
+        """Check one URL against the manifest. Returns (host, url to fetch).
+
+        KNOWN LIMIT — THREAT_MODEL.md T14/T15, measured 2026-08-14, not yet fixed.
+        This authorises a host *name* and never resolves it, so the manifest
+        constrains names while the author controls the name→address mapping. A
+        declared host whose A record points at 192.168.1.1 is fetched by the
+        supervisor, which is trusted and not subject to the sandbox's seccomp
+        AF_INET denial — reopening the lateral movement that denial closed, one
+        layer up, through the deputy created to close it. `blocked_hosts` does
+        not help: it matches by name too. The fix is to resolve here, reject
+        private/loopback/link-local/multicast results, and connect to the pinned
+        address with the original Host: header so a second resolution cannot
+        differ. Per redirect hop, as with the allowlist check.
+        """
         parsed = urllib.parse.urlparse(url)
         if parsed.scheme not in ALLOWED_SCHEMES:
             raise EgressDenied(f"scheme {parsed.scheme!r} not permitted")
