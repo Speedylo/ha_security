@@ -585,6 +585,81 @@ both directions: the framework can still publish raw states to demonstrate the g
 publish through the bridge to demonstrate the fix. All three modes — stub, real REST, bridge —
 are regression-tested and pass.
 
+### 5.8 Self-audit of the security core — two findings ⚠️ (2026-08-14)
+
+Full write-up: **`FINDINGS_2026-08-14_token_leak.md`** (commit `2ab970a`). Both findings were
+confirmed by test on the dev machine. **No repository code was changed** — the weaknesses are
+left intact deliberately so they can be *demonstrated* rather than described, and so the fix and
+the finding can land together.
+
+**Finding 1 — the HA token reaches the sandbox by three routes.** The supervisor is supposed to
+be the sole holder of the credential; that is the premise the whole confinement argument rests
+on. It is not currently true:
+
+| # | Route | Why |
+|---|---|---|
+| 1 | The child's own environment | `env = dict(os.environ)` (`supervisor.py:320`) copies `HA_TOKEN`; the `env.update()` on the next line only *adds* keys |
+| 2 | `/proc/<ppid>/environ` | Same uid, so the sandbox reads the supervisor's own environment directly |
+| 3 | `/proc/<ppid>/cmdline` | Same uid, so `--ha-token` leaks identically |
+
+Closing any one leaves the others open. Note that route 1 is reached by a **documented** way of
+running the supervisor — line 283 reads the token from `HA_TOKEN` and the `--ha-token` help text
+advertises it. The comment at `supervisor.py:329` (*"No HA token in the child's environment"*)
+asserts a guarantee the code does not implement.
+
+**Why it matters more than an ordinary bug:** an integration that reads the token does not attack
+the policy layer at all. It calls HA's REST API directly, so `decide()` is never invoked. The
+manifest is not defeated — it is bypassed. `probe.py` check #3 correctly blocks
+`lock.unlock` *through the shim*; the same action via a stolen token is not seen.
+
+**Finding 2 — the hash chain is sound for what it does, and its docstring overstates it.**
+Demonstrated against a genuine 11-record audit log from 2026-08-12 (copies only; the original is
+untouched):
+
+| Test | Result |
+|---|---|
+| Untouched log | `OK: chain intact (11 records)` |
+| Flip the `lock.unlock` DENY to allow, leave hashes alone | `BROKEN: line 10: record altered (hash mismatch)` ✅ working as designed |
+| Same edit, recompute all 11 hashes from the zero anchor | **`OK: chain intact (11 records)`** ❌ |
+
+`_digest` is unkeyed `sha256` (`supervisor.py:96`), so rebuilding the chain requires no secret —
+about fifteen lines using only what is already in the file. The `AuditLog` docstring
+(`supervisor.py:79–85`) claims an integration "cannot remove or reorder a decision without
+breaking every hash after it"; true against a naive edit, false against a rebuild.
+
+**Independently, the chain records only *mediated* operations.** `append()` is called in exactly
+one place — inside the socket-reading loop, right after `decide()` (`supervisor.py:250`). A
+bypassed action creates no record, and leaves no gap either: `seq` increments inside `append()`,
+so it counts *records created*, not *events that occurred*. **Integrity is not completeness.**
+After a successful token bypass the lock is open and `verify()` reports `OK`; both are true.
+
+**One root cause, and it strengthens the case for workstream 4.** Both findings follow from a
+single physical fact: the sandbox is a plain `subprocess.Popen` running as the same user, with
+unrestricted filesystem and `/proc` visibility. The audit directory is an ordinary file the
+sandbox can rewrite. Neither is fixable inside `supervisor.py` — scrubbing the environment leaves
+routes 2 and 3; keying the chain still leaves the file writable. What closes them is a distinct
+uid or a PID namespace, i.e. **workstream 4**, which is at zero lines. This upgrades the argument
+for isolation from *"precondition for reproducing the 2021 HACS file-theft result"* (someone
+else's finding) to:
+
+> **Isolation is a precondition for the confidentiality of the HA credential and for the
+> completeness of the audit log — without it the mediation layer can be bypassed entirely rather
+> than defeated.**
+
+**Cheap exception worth noting:** keying the chain with an HMAC closes the rebuild attack
+*independently of workstream 4* and is a small change (`hashlib.sha256` → `hmac.new(key, …)`,
+plus deciding where the key lives). It is one of the few security improvements available that is
+not blocked on isolation.
+
+**What to claim about the audit log**, replacing any "tamper-proof" phrasing: *tamper-evident
+against after-the-fact modification by an actor that cannot recompute the chain*, with both
+limits stated. `FINDINGS_2026-08-14_token_leak.md` §6.12 has the exact wording, and Part 10 there
+carries two drafted threat→control→residual-risk rows ready to lift into `THREAT_MODEL.md`.
+
+**Methodologically this is the fourth self-caught gap**, after `FrozenOrThawed`, the registry gap
+(§5.6→§5.7), and the install-weighting reversal (§5.4). Worth making that pattern explicit in the
+report rather than leaving a reader to notice it.
+
 ---
 
 ## 6. Open decisions
@@ -593,7 +668,7 @@ are regression-tested and pass.
 |---|---|---|---|
 | 1 | ~~**Compatibility strategy**~~ **SETTLED 2026-08-12** | (a) shim so real integrations run unmodified; (b) own SDK + toy integrations; (c) hand-port 2–3 and measure cost | **(a).** The spike (§5.3) ran a real integration unmodified, so the fallback to (c) is no longer needed. Still scoped to a core + generated constants with measured coverage reported — not "everything runs unmodified". |
 | 2 | **Isolation primitive** | namespaces+seccomp / gVisor+its trace sink / gVisor+eBPF-as-boundary-verifier | **namespaces + seccomp** — coherent with eBPF, lighter on the Pi, and defensible as "controls proportionate to the threat model" (his language). |
-| 3 | **Target pattern** ⚠️ **most open question — take this to the advisor first** | polling_sensor only (24.8% of repos but **only 10.6% of installs**) vs. extending to actuators (46.7% of repos and **64.8% of installs**) | **Install weighting (§5.2b) cuts against the polling-sensor default.** By repo count it looked like a quarter of the ecosystem; by what people actually run it is a tenth, while actuators are nearly two-thirds. Actuators are simultaneously where the threat model has teeth *and* where the users are — a security auditor will notice both. **But full-platform support is not the right response — see §10.1, measured 2026-08-13.** Implementing all 21 HA entity platforms moves coverage from 1.2% to only 2.1% of installs, because platforms were never the real blocker (`homeassistant.helpers`, `.util`, `.helpers.event`, `.helpers.storage` block far more integrations than any platform). Actuators also require an **inbound** command path the framework does not have yet (HA → sandbox), versus the outbound-only path built so far. And manifest confinement is structurally weaker for actuators: it stops an integration reaching *other* devices, not misuse of the *one* device it legitimately declared and controls (the 3am-unlock scenario). **Recommended position for the meeting:** keep polling_sensor as the implemented scope; analyse actuators fully in the threat model, including the declared-capability-abuse limit; build **one** actuator platform (`switch`) end-to-end as an architecture proof, not a coverage push. Present 24.8%/10.6% together, and bring the 21-platform coverage table as evidence the scope call is deliberate, not avoidance. |
+| 3 | ~~**Target pattern**~~ **SETTLED 2026-08-14** | polling_sensor only (24.8% of repos but **only 10.6% of installs**) vs. extending to actuators (46.7% of repos and **64.8% of installs**) | **DECIDED: polling sensors as implemented scope; actuators as a stretch goal / basic PoC.** Younes' call, 2026-08-14, and it matches the recommendation that was already worked out below. The decision was taken directly rather than at a meeting because the advisor contact is now expected to be **an email carrying the proposal**, not a live discussion — so there was no meeting to defer it to, and leaving it open was blocking work for no benefit. Rationale for the choice: guarantee a deliverable result and keep scope tight, rather than gamble the isolation + threat-model budget on a 2–3 week inbound command path. **What this unblocks:** the shim freeze's *scope* rationale (§10.3 reason 1) is now void — the symbols needed are settled. Reason 2 (ownership) still stands, so the freeze holds by choice, not by uncertainty. **Original analysis, retained because the report needs it —** install weighting (§5.2b) cut against the polling-sensor default: by repo count it looked like a quarter of the ecosystem; by what people actually run it is a tenth, while actuators are nearly two-thirds. Actuators are simultaneously where the threat model has teeth *and* where the users are — a security auditor will notice both. **But full-platform support is not the right response — see §10.1, measured 2026-08-13.** Implementing all 21 HA entity platforms moves coverage from 1.2% to only 2.1% of installs, because platforms were never the real blocker (`homeassistant.helpers`, `.util`, `.helpers.event`, `.helpers.storage` block far more integrations than any platform). Actuators also require an **inbound** command path the framework does not have yet (HA → sandbox), versus the outbound-only path built so far. And manifest confinement is structurally weaker for actuators: it stops an integration reaching *other* devices, not misuse of the *one* device it legitimately declared and controls (the 3am-unlock scenario). **Recommended position for the meeting:** keep polling_sensor as the implemented scope; analyse actuators fully in the threat model, including the declared-capability-abuse limit; build **one** actuator platform (`switch`) end-to-end as an architecture proof, not a coverage push. Present 24.8%/10.6% together, and bring the 21-platform coverage table as evidence the scope call is deliberate, not avoidance. |
 | 3b | **Which integrations to target inside the pattern** — new, 2026-08-13 | arbitrary / alphabetical (what happened so far) vs. **most-installed first** | **Most-installed first.** The top 20 polling sensors are 52% of all polling-sensor installs, and several are already within reach of today's shim — `MarcoGos/kleenex_pollenradar` (1,569 installs) and `delphiki/hass-tarif-edf` (1,473) need **zero** additional symbols; `jonandel/ha-hildebrandglow-dcc` (1,718) needs one. "Runs integrations installed on thousands of real systems" is a far stronger claim than "runs three integrations", for identical effort. |
 | 4 | **Report requirements** | literature-review chapter? page target? | **Unknown — ask the advisor / check programme handbook.** |
 
@@ -619,27 +694,64 @@ are regression-tested and pass.
 - **Confused deputy** — the privileged component (HA) is tricked into misusing its own
   authority on an attacker's behalf. The attacker never escapes the sandbox because they
   never need to.
+- **Long-lived access token** — the credential HA issues for its REST/WebSocket API. It is
+  **unscoped**: there is no read-only or sensors-only variant, so holding it is full control of
+  the house. It is just text, so anything that can *read* it holds it. The supervisor holding it
+  and the sandbox not holding it is the premise the whole confinement argument rests on (§5.8).
+- **Environment variables** — a bag of labelled name/value notes carried by every running process.
+  A child process receives a **copy of its parent's entire bag by default**, which is why secrets
+  passed this way leak into children unless deliberately removed.
+- **`/proc`** — a Linux pseudo-filesystem presenting every running process as files.
+  `/proc/<pid>/environ` exposes that process's environment variables and `/proc/<pid>/cmdline`
+  its command line, **both readable by any process running as the same user**. This is why
+  process separation alone does not protect a secret held by the parent (§5.8).
+- **PID namespace** — a kernel feature that gives a process its own view of the process table, so
+  it can see only itself. It cannot read another process's `/proc` entries because from inside,
+  those processes do not exist. Together with a separate uid, this is what closes §5.8's findings.
+- **Hash chain** — an append-only log where each record's SHA-256 fingerprint is computed over its
+  own contents **plus the previous record's fingerprint**, so editing, deleting or reordering any
+  record breaks every fingerprint after it. Provides **tamper-evidence**, not tamper-proofing.
+  Two limits it does not cover, both live here (§5.8): it says nothing about events that were
+  never recorded (**integrity ≠ completeness**), and an *unkeyed* chain can be rebuilt wholesale
+  by anyone who can write the file. An **HMAC** — a hash keyed with a secret — closes the second.
 
 ---
 
 ## 8. Next steps
 
-> ⏸️ **PAUSED 2026-08-13 — shim/framework coding is on hold.** Decided after §10's
-> conversation: Decision 3 (§6) is unresolved and the shim's next increment depends on its
-> answer, so building further now risks building the wrong thing. **Current focus: the threat
-> model (§10.2), so there is something substantive to bring to the advisor meeting (#6
-> below), which now comes before any more code.** Resume shim/isolation work only after that
-> meeting settles Decision 3. See §10 for the full reasoning and what stays true regardless of
-> how it's resolved.
+> ⏸️ **PAUSED 2026-08-13, gate revised 2026-08-14 — shim coding remains on hold, for one reason
+> now instead of two.**
+>
+> The original pause had two justifications (§10.3). **The first is now void:** Decision 3 was
+> settled on 2026-08-14 — polling sensors as implemented scope, actuators as a stretch/PoC — so
+> the shim's next increment no longer depends on an unanswered question. **The second still
+> stands:** the shim is the hardest part of the codebase to personally own and contributes least
+> to the security argument, so effort stays concentrated on the ~1,200 lines that carry the
+> actual claim. The freeze therefore continues **by choice, not by uncertainty**, and can be
+> lifted deliberately whenever the threat model is drafted.
+>
+> **Current focus is unchanged: the threat model** (§10.4, §11), which is required for the
+> proposal regardless and is the highest-weight artifact for this advisor. Note that the advisor
+> contact is now expected to be **an email carrying the proposal** rather than a live meeting
+> (see #6 below), so there is no meeting to wait on — the proposal is the deliverable.
+>
+> **New since the pause:** §5.8 records two findings from a self-audit of the security core. They
+> do not change the plan but they sharpen the case for **isolation (workstream 4)**, which
+> remains the largest unstarted piece and is now a precondition for two claims the project
+> already makes.
 
 ### August (before the semester) — de-risk, don't build
 
 > **#4 (shim spike) is DONE and came back GO — see §5.3. The one remaining item that
-> cannot slip is #6 (advisor meeting, carrying Decision 3 from §6).**
+> cannot slip is #6 — now the *proposal email*, not a meeting (revised 2026-08-14, §11.1).
+> Decision 3 no longer travels with it as a question; it is settled in §6 and is stated in the
+> proposal as a costed scope decision.**
 >
-> The spike changes what to bring to that meeting: there is now a working demo, a
+> The spike changes what the proposal leads with: there is now a working demo, a
 > four-of-five adversarial result with an honestly-stated gap, and a measured coverage
-> number. Lead with the demo.
+> number. Lead with the demo and the measurement. Since #6 is written rather than spoken, it
+> must also carry §5.8's self-audit — the weaknesses will not come up in conversation, so
+> reporting them is the only way they get credited.
 
 1. **Environment.** Install **Ubuntu Server 24.04 LTS arm64** on the Pi 5 — *not* Raspberry
    Pi OS, whose kernels have historically shipped without `CONFIG_DEBUG_INFO_BTF` that
@@ -678,15 +790,26 @@ are regression-tested and pass.
      chapter must state *why* the fifth probe row is unblocked rather than quietly reporting
      "4 of 5".
 5. **Draft manifest schema** (strawman is in §2).
-6. ⭐ **Meet the advisor** with a ~2-page pre-proposal — problem, evidenced gap, architecture
+6. ⭐ **Send the advisor a ~2-page pre-proposal** — problem, evidenced gap, architecture
    sketch, deliverables, risks, and the coverage-curve figure. Secure buy-in *before*
    writing the full document; advisors invest more in projects they helped shape.
-   **Carry three questions into that meeting:**
-   - **Decision 3 (§6)** — polling sensors only, or push into actuators where the real
-     threat model lives? This is the one that changes scope most.
-   - Which threat-modelling framework he wants used (STRIDE / attack trees / ISO 27001 / NIST)?
-   - Does the programme require a literature-review chapter, and is there a page target?
-     *(Decision 4 in §6 — currently unknown.)*
+
+   **Revised 2026-08-14: this is expected to be an email, not a live meeting.** That changes
+   what it has to do. A meeting can be exploratory and leave decisions open; an email must
+   **state positions and invite correction**, because there is no back-and-forth to rely on.
+   Consequences:
+   - **Decision 3 is stated, not asked.** ~~polling sensors only, or push into actuators?~~
+     Settled 2026-08-14 (§6): polling sensors as scope, actuators as a stretch/PoC. Present it
+     as a costed scope decision — bring the 21-platform table (1.2% → 2.1%) as evidence it is
+     deliberate rather than avoidance — and invite disagreement rather than requesting a ruling.
+   - **Two questions genuinely remain open** and should be asked directly:
+     - Which threat-modelling framework he wants used (STRIDE / attack trees / ISO 27001 / NIST)?
+       Pick one and start; ask him to redirect if he prefers another, rather than blocking on it.
+     - Does the programme require a literature-review chapter, and is there a page target?
+       *(Decision 4 in §6 — still unknown.)*
+   - **Lead with the demo and the measurement**, and include §5.8's self-audit. For an advisor
+     who is a lead auditor by profession, a team that reports two weaknesses in its own security
+     core — with tests, and with the fix scoped — is showing the exact discipline being graded.
 
 ### Semester skeleton (~10 engineering weeks)
 | Weeks | Work |
@@ -751,6 +874,14 @@ examiner find them:
 - HA's own "Remote Integration Execution" RFC moves toward process separation for
   non-security reasons. Engage directly: this supplies the **policy layer** their mechanism
   would need. Do not wait to be asked.
+- **The confinement demonstrated so far is API-level, not containment — and §5.8 (2026-08-14)
+  shows the gap is wider than "filesystem isolation is unbuilt".** Because the sandbox shares a
+  uid with the supervisor, it can read the HA token out of `/proc` and bypass the mediation layer
+  entirely, and it can rewrite its own audit log. So the honest current claim is *"every
+  operation that goes through the bridge is checked and logged"* — not *"an integration cannot
+  act unchecked"*. The second claim requires workstream 4. State this before an examiner derives
+  it: the probe results (4 of 5 blocked) are results about the **mediated path**, and a reader
+  should not be left to assume they cover the unmediated one.
 
 **The accurate one-sentence claim:** *a demonstrated mechanism for confining unmodified HACS
 integrations against a stock Home Assistant, plus the first empirical measurement of what
@@ -819,7 +950,8 @@ integrations serving their own HTTP endpoints — not platform classes.
 (`switch` is the natural pick — simplest command shape) as an *architecture* proof that the
 inbound path works, not as a coverage push. Analyse actuators fully in the threat model,
 including the declared-capability-abuse limit above. Bring the 21-platform table to the
-advisor meeting as evidence the scope call is deliberate.
+proposal as evidence the scope call is deliberate. *(Settled 2026-08-14 — see §6 and §11.1;
+this section is the analysis that produced the decision.)*
 
 ### 10.2 The five workstreams, and where each actually stands
 
@@ -830,9 +962,9 @@ along and the one that contributes least to the security argument:
 |---|---|---|
 | 1 | **Evidence / measurement** (§5.2, §5.4) | ✅ done — the novel contribution |
 | 2 | **Compatibility (the shim)** (§5.3, §5.4) | ✅ substantially done — **now frozen, see §10.3** |
-| 3 | **Mediation / policy** (supervisor, §5.3, §5.5–5.7) | ✅ core done; manifest schema still a strawman |
-| 4 | **Isolation** (namespaces + seccomp) | ❌ **not started at all** — plain `subprocess`, no fs/network restriction. Confirmed 2026-08-13: unprivileged user namespaces work on the dev machine (`unshare --user --mount --pid --fork` succeeds), so the approach is feasible, just unbuilt. |
-| 5 | **Evaluation + write-up** | ⚠️ 2 of 4 axes have data (compatibility, security-partial); performance is untouched; threat model is unwritten |
+| 3 | **Mediation / policy** (supervisor, §5.3, §5.5–5.7) | ✅ core done; manifest schema still a strawman. ⚠️ **§5.8: mediation is currently *evadable*, not merely incomplete** — the sandbox can obtain the HA token and bypass the supervisor entirely. Policy logic is sound; its *unavoidability* depends on workstream 4. |
+| 4 | **Isolation** (namespaces + seccomp) | ❌ **not started at all** — plain `subprocess`, no fs/network restriction. Confirmed 2026-08-13: unprivileged user namespaces work on the dev machine (`unshare --user --mount --pid --fork` succeeds), so the approach is feasible, just unbuilt. ⭐ **Priority raised 2026-08-14 by §5.8:** no longer only "the precondition for reproducing the 2021 file-theft result", but a precondition for **credential confidentiality** and **audit-log completeness** — two properties the project already claims. This is now the highest-value unstarted work. |
+| 5 | **Evaluation + write-up** | ⚠️ 2 of 4 axes have data (compatibility, security-partial); performance is untouched; threat model is unwritten. §5.8 supplies two drafted threat→control→residual-risk rows to start it with. |
 
 **What is genuinely banked regardless of how Decision 3 resolves** — i.e. the minimum
 significant result already secured: the empirical measurement (§5.2/§5.4, likely the strongest
@@ -840,21 +972,37 @@ single artifact — no comparable published account of the HA API surface appear
 three unmodified HACS integrations running against a stock HA (§5.5); API-level confinement
 with a paired baseline, 43 entities readable without the framework vs 2 with (§5.5); tamper-
 evident audit with detection demonstrated (§5.3); first-class entity registration via
-`sandbox_bridge` (§5.7); three methodological findings that show self-correcting work
-(`FrozenOrThawed`, the registry gap, the install-weighting reversal). **What is not banked:**
-containment. The framework stops API misuse; it does not yet stop `open("/etc/passwd")` or
-reading `secrets.yaml` directly, so the 2021 HACS file-theft pattern — named in §8 as the
-single strongest available result — is not yet reproduced as blocked. Isolation (workstream 4)
-is what closes that, and it is currently the largest unstarted piece of work in the plan.
+`sandbox_bridge` (§5.7); **four** methodological findings that show self-correcting work
+(`FrozenOrThawed`, the registry gap, the install-weighting reversal, and the §5.8 self-audit).
+
+**What is not banked:** containment. The framework stops API misuse; it does not yet stop
+`open("/etc/passwd")` or reading `secrets.yaml` directly, so the 2021 HACS file-theft pattern —
+named in §8 as the single strongest available result — is not yet reproduced as blocked.
+
+**Revised 2026-08-14 (§5.8): the unbanked half is larger than "containment" suggested.** Because
+the sandbox shares a uid with the supervisor, it can lift the HA token from `/proc` and bypass
+mediation altogether, and it can rewrite its own audit log. So what is missing is not only *"the
+sandbox can still read files it shouldn't"* but *"the sandbox can still act without being
+mediated or recorded at all"*. Two banked items above need reading with that qualifier — the
+API-level confinement result (§5.5) and the tamper-evident audit (§5.3) are both sound **for the
+mediated path**, and neither claims more than that. Isolation (workstream 4) is what closes all
+of it, and it remains the largest unstarted piece of work in the plan — now clearly also the
+highest-value one.
 
 ### 10.3 Why the shim is paused, specifically
 
-Two independent reasons, not one:
+Two independent reasons were given. **As of 2026-08-14 only the second survives — see the note
+after reason 1.**
 
-1. **Decision 3 is unresolved and the shim's next increment depends on the answer.** Building
+1. ~~**Decision 3 is unresolved and the shim's next increment depends on the answer.**~~ Building
    more `sensor`-side symbols now is wasted if the advisor meeting settles on actuators; the
    symbols needed diverge (§10.1). Building before that conversation is the risk, not building
    less.
+
+   > **VOID as of 2026-08-14.** Decision 3 is settled (§6): polling sensors as implemented scope,
+   > actuators as a stretch/PoC. The advisor contact is an email carrying the proposal, not a
+   > meeting, so there was nothing to defer to. The `sensor`-side symbols are the right ones and
+   > building them is no longer a gamble.
 2. **The shim is the hardest part of the codebase to personally own, and also the part that
    contributes least to the argument.** By line count: shim (hand-written + generated) is
    ~3,600 lines; the security core (supervisor + runner + probe + backend) and the measurement
@@ -873,24 +1021,42 @@ drafted, so the current focus stays undivided.
 
 ### 10.4 Immediate next action
 
-Write the threat model (workstream 5) before writing any more code. It is the highest-weight
-artifact for an advisor who is a lead auditor by profession, it is required for the proposal
-regardless of how Decision 3 resolves, and — unlike the shim — it is work Younes can own
-end to end, since it is reasoning about the design rather than Python implementation detail.
+Write the threat model (workstream 5) before writing any more code, in `THREAT_MODEL.md`. It is
+the highest-weight artifact for an advisor who is a lead auditor by profession, it is required
+for the proposal regardless of how Decision 3 resolves, and — unlike the shim — it is work
+Younes can own end to end, since it is reasoning about the design rather than Python
+implementation detail.
+
+> **Updated 2026-08-14 — it now has a running start.**
+> `FINDINGS_2026-08-14_token_leak.md` Part 10 supplies **two completed
+> threat → control → residual-risk rows** in the required format (credential disclosure across
+> the sandbox boundary; audit-log completeness and forgeability), each with asset, boundary,
+> actor, STRIDE category, attack, current control, planned control, residual risk and detection
+> already filled in. Lift them in and build outward. §5.8 also fixes the first trust boundary
+> concretely — supervisor (holds credential) ↔ sandbox (runs untrusted code) — with a measured
+> account of where it currently leaks.
 
 Skeleton to fill in: trust boundaries (who holds the HA token, where does untrusted code run,
 where does the manifest get authored and by whom), asset list (device control, `secrets.yaml`,
 occupancy/presence data, camera feeds), actor list (integration author — possibly malicious;
 HACS as an unvetted distribution channel; the user, who both authors trust decisions and is
 the asset owner), a STRIDE or attack-tree pass per boundary, and a threat → control → residual-
-risk table. Two residual risks that must appear because they are already known, not
-hypothetical: **the over-declaring manifest nobody reads** (a weather widget that declares lock
-access is a red flag *if reviewed*, and there is currently no mechanism forcing review), and
-**declared-capability abuse on the integration's own device** (§10.1's 3am-unlock scenario,
-which manifest confinement structurally cannot prevent).
+risk table. **Four** residual risks that must appear because they are already known, not
+hypothetical:
 
-Carry the answer to "who writes the manifest?" into the meeting explicitly — it will be asked
-early. The honest position: the manifest does not stop a determined malicious author from
+1. **The over-declaring manifest nobody reads** — a weather widget that declares lock access is a
+   red flag *if reviewed*, and there is currently no mechanism forcing review.
+2. **Declared-capability abuse on the integration's own device** — §10.1's 3am-unlock scenario,
+   which manifest confinement structurally cannot prevent.
+3. **The supervisor holds an unscoped credential** (§5.8) — even with isolation built, compromise
+   of the supervisor is full house compromise, because HA offers no scoped tokens. This is an
+   *upstream* limitation, not a design flaw here, and should be stated as such.
+4. **A local audit log cannot be authoritative against whoever controls the writer** (§5.8) —
+   only external anchoring changes that, and full decentralised attestation is explicitly out of
+   scope (`supervisor.py:83–85`).
+
+Answer "who writes the manifest?" explicitly **in the proposal itself** — it will be asked early,
+and an email affords no chance to answer it live. The honest position: the manifest does not stop a determined malicious author from
 declaring what they need, the same way an Android permission list does not. It converts an
 *invisible* capability into a *declared, reviewable* one, closing the silent-full-trust default
 that exists today. That is the browser-extension precedent already cited in §4.4, stated as an
@@ -898,7 +1064,62 @@ explicit limit rather than an implicit hope.
 
 ---
 
-## 11. Key sources
+## 11. Decision 3 settled, and a self-audit — 2026-08-14
+
+A short session with two outcomes, one planning and one technical.
+
+### 11.1 Decision 3 is settled, and the advisor contact changed shape
+
+**The advisor contact is now expected to be an email carrying the proposal, not a live meeting.**
+That matters more than it first appears, because §8 and §10 had both been written around a
+meeting that would settle open questions. There is no such meeting. Consequences already applied
+above:
+
+- **Decision 3 is decided rather than deferred** (§6): polling sensors as implemented scope,
+  actuators as a stretch goal / basic PoC. Rationale: guarantee a deliverable result and keep
+  scope tight, rather than spend the isolation + threat-model budget on a 2–3 week inbound
+  command path. This matches the recommendation §10.1 had already worked out, so nothing is
+  re-litigated — it is the same conclusion, now taken as a decision instead of a proposal.
+- **The shim freeze narrows to one reason** (§10.3): the scope-uncertainty justification is void;
+  the ownership justification stands. The freeze continues **by choice**, and can be lifted
+  deliberately once the threat model is drafted.
+- **The proposal must state positions, not ask questions** (§8 #6). An email has no
+  back-and-forth. Present the scope decision as costed and invite disagreement; ask only the two
+  questions that genuinely remain open (threat-modelling framework, literature-review
+  requirement) and proceed with a default rather than blocking on either.
+
+### 11.2 Self-audit of the security core
+
+Full detail in §5.8 and `FINDINGS_2026-08-14_token_leak.md` (commit `2ab970a`). Two findings, both
+confirmed by test, no repository code changed:
+
+1. **The HA token reaches the sandbox by three routes** — the copied environment, and
+   `/proc/<ppid>/environ` and `/proc/<ppid>/cmdline` via shared uid. An integration that reads it
+   bypasses the policy layer rather than defeating it.
+2. **The audit log's hash chain is unkeyed and records only mediated operations.** A rebuilt chain
+   verifies as `OK` while asserting a denied `lock.unlock` was allowed (demonstrated on a real
+   log); and a bypassed action leaves no record and no gap, because `seq` counts records created,
+   not events that occurred.
+
+**Both trace to one root cause** — the sandbox is a plain `subprocess` sharing a uid with the
+supervisor — and one control, isolation, substantially addresses both.
+
+**Why this was worth a session.** It converts workstream 4 from deferred hardening into a
+precondition for two claims the project already makes, which is a stronger argument for building
+it than "it lets us reproduce a 2021 CVE". It also sharpens what §5.3/§5.5's results actually
+say: they are results about the **mediated path**, and the report should say so explicitly rather
+than let a reader over-read them. And methodologically it is the fourth self-caught gap, which is
+worth stating as a pattern in the write-up.
+
+**Deliberately not fixed.** Both weaknesses are left intact so the "before" state stays
+demonstrable and the fix lands with the finding. Two exceptions worth considering early:
+the misleading comments at `supervisor.py:329` and `:79–85` should be corrected regardless, and
+**keying the chain with an HMAC** closes the rebuild attack independently of workstream 4 for a
+few lines of change.
+
+---
+
+## 12. Key sources
 - Home Assistant security disclosure, Jan 2021 — file theft via custom integrations
 - **HA analytics — `https://analytics.home-assistant.io/custom_integrations.json`** — per-domain
   install counts for custom integrations; opt-in telemetry, so a lower bound. The basis for
