@@ -10,19 +10,28 @@ honestly is the point of running the probe at all — checks 5 through 8 were ea
 written while they still failed, which is what made every before/after a
 measurement rather than an assertion.
 
-Current state: 4 of 8 blocked as an ordinary child process, **8 of 8** under
+Current state: 6 of 10 blocked as an ordinary child process, **10 of 10** under
 `supervisor.py --isolate` (user + PID + mount namespaces, allowlisted root,
 seccomp filter, and supervisor-brokered egress).
 
-Checks 7 and 8 were the last to close, on 2026-08-14. The `network:` allowlist
-used to be enforced in the shim's HTTP client, which asked the supervisor and
-then let *this* process open the connection — so a raw socket never consulted
-it. Now seccomp denies `socket(AF_INET)` and all HTTP is performed by the
-supervisor over the bridge, so the allowlist binds regardless of intent. See
-RESULTS_2026-08-14_egress_broker.md.
+Checks 7 and 8 closed on 2026-08-14. The `network:` allowlist used to be enforced
+in the shim's HTTP client, which asked the supervisor and then let *this* process
+open the connection — so a raw socket never consulted it. Now seccomp denies
+`socket(AF_INET)` and all HTTP is performed by the supervisor over the bridge, so
+the allowlist binds regardless of intent. See RESULTS_2026-08-14_egress_broker.md.
+
+Checks 9 and 10 came from writing the threat model, not from writing code
+(THREAT_MODEL.md T14/T15). Closing 7 and 8 meant the *supervisor* now makes
+every connection, and the supervisor authorised host **names** without ever
+asking where they resolved to — so a declared name pointing at a private address
+walked straight back through the deputy created to stop it. Note these two are
+blocked in *both* modes: the control is in egress.py, not in the isolation, so
+they close whether or not `--isolate` is passed. That is why the baseline moved
+from 4/8 to 6/10 rather than staying at 4/10.
 
 What none of this touches: exfiltration through a host the manifest legitimately
-declares. An allowlist governs destination, not content.
+declares *and* which genuinely is a public vendor host. An allowlist governs
+destination, not content.
 """
 
 from __future__ import annotations
@@ -51,9 +60,17 @@ SECRETS_PATH = "/etc/passwd"  # stands in for /config/secrets.yaml on a real hos
 LAN_DEVICE = "192.0.2.10"  # TEST-NET-1: a lock's local API, a camera, the router
 EXFIL_ADDR = "198.51.100.10"  # TEST-NET-2: a collector on the internet
 
+# Checks 9 and 10 attack the *broker*, so they must be requests the manifest
+# permits — otherwise the allowlist refuses them first and the check measures a
+# control that was never in question. The supervisor adds these hosts to the
+# manifest when --probe is passed, and passes the same dict here so the two
+# cannot drift apart. It models the case that matters: an author declaring a
+# host is not the hard part, and never was.
+PROBE_HOSTS: dict[str, str] = json.loads(os.environ.get("HACS_PROBE_HOSTS", "{}"))
+
 
 async def run_probe(hass: HomeAssistant) -> list[tuple[str, bool, str]]:
-    """Attempt eight undeclared actions; return (name, blocked, detail)."""
+    """Attempt ten undeclared actions; return (name, blocked, detail)."""
     results: list[tuple[str, bool, str]] = []
     print("\nsandbox: running adversarial probe", flush=True)
 
@@ -188,6 +205,70 @@ async def run_probe(hass: HomeAssistant) -> list[tuple[str, bool, str]]:
                         f"unmediated by policy, failed in transit: {type(err).__name__}",
                     )
                 )
+
+    # 9 and 10. Turn the broker against the LAN — THREAT_MODEL.md T14/T15.
+    #
+    #    Checks 7 and 8 proved this process cannot open a socket. These two ask
+    #    the harder question: can it make the *supervisor* open one on its
+    #    behalf? The supervisor is trusted, holds the token, and is not subject
+    #    to the seccomp filter, so if the manifest check is the only thing
+    #    standing between the sandbox and 192.168.1.1, then closing 7 and 8
+    #    bought nothing — the traffic just leaves from a better address.
+    #
+    #    Both requests go through the ordinary mediated session, and both name
+    #    hosts the manifest declares (see PROBE_HOSTS). So a denial is only a
+    #    result if it came from the *destination* check, and the reason string
+    #    has to be read rather than trusted. Everything the supervisor refuses
+    #    arrives here identically, as PermissionDenied, whatever the cause.
+    #
+    #    This bit the check on its first run, which is why it is written this
+    #    way. Against the pre-fix broker, check 9 reported BLOCKED — but the
+    #    reason was `transport failure: timed out`. The request had been
+    #    authorised and attempted; it merely never arrived, because 192.0.2.10
+    #    is not routed. A control that is really a timeout would have shown the
+    #    fix working before the fix existed. Same failure mode as the gaierror
+    #    confound in checks 7 and 8 and the two wrong versions of check 2:
+    #    three of four defects found in this project have been in measurement
+    #    code, and this one made four.
+    #
+    #    DESTINATION_CONTROL must match the wording in egress.forbidden_reason.
+    #    A string join between two files is fragile, so if that wording changes
+    #    these checks fail loudly as NOT MEASURED rather than silently passing.
+    DESTINATION_CONTROL = "not a public destination"
+    ALLOWLIST_CONTROL = "not in manifest network allowlist"
+    for label, key, stands_for in (
+        ("declared host → LAN address", "lan", "a lock, camera or router on the home network"),
+        ("declared name → loopback", "loopback", "anything the supervisor itself is listening on"),
+    ):
+        host = PROBE_HOSTS.get(key)
+        if not host:
+            results.append((f"broker: {label}", False, "NOT MEASURED — no probe host configured"))
+            continue
+        try:
+            await session.get(f"http://{host}/")
+            results.append(
+                (f"broker: {label}", False, f"supervisor fetched {host} for us — {stands_for}")
+            )
+        except PermissionDenied as err:
+            reason = str(err)
+            if DESTINATION_CONTROL in reason:
+                results.append((f"broker: {label}", True, reason))
+            elif ALLOWLIST_CONTROL in reason:
+                # The allowlist got there first, so nothing was learned about
+                # the broker. Not a pass.
+                results.append(
+                    (f"broker: {label}", False, f"NOT MEASURED — {host} was not declared")
+                )
+            else:
+                # Authorised, attempted, and failed on the wire. The manifest
+                # said yes; the network said no. That is not a control.
+                results.append(
+                    (f"broker: {label}", False, f"allowed by policy, failed in transit: {reason}")
+                )
+        except Exception as err:  # noqa: BLE001 - a transport failure is not a control
+            results.append(
+                (f"broker: {label}", False, f"allowed by policy, failed in transit: {type(err).__name__}")
+            )
 
     print("\nsandbox: probe results")
     for name, blocked, detail in results:

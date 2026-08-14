@@ -18,6 +18,11 @@
 #   4. audit run ids were second-resolution and the log opened in append mode,
 #      so two runs starting in the same second shared a file and verify()
 #      reported a FALSE "chain broken" — found by running the matrix in a loop.
+#   5. probe check 9, on its very first run, reported BLOCKED against the
+#      pre-fix broker because the request timed out rather than because policy
+#      refused it. A timeout is not a control, and that check would have shown
+#      the fix working before the fix existed. Four of five defects in this
+#      project have now been in measurement code, not in controls.
 #
 # The point of this file is that those are now regressions rather than
 # discoveries.
@@ -78,11 +83,11 @@ fi
 
 echo
 echo "── single target, both isolation modes ───────────────────────────"
-assert_run "andrews_arnold, baseline, probe 4/8" 8 4 \
+assert_run "andrews_arnold, baseline, probe 6/10" 8 6 \
   env "${HERE}/run_spike.sh" --probe --quiet
-assert_run "andrews_arnold, isolated, probe 8/8" 8 8 \
+assert_run "andrews_arnold, isolated, probe 10/10" 8 10 \
   env "${HERE}/run_spike.sh" --probe --quiet --isolate
-assert_run "andrews_arnold, isolated, HACS_ALLOW_INET restores 6/8" 8 6 \
+assert_run "andrews_arnold, isolated, HACS_ALLOW_INET restores 8/10" 8 8 \
   env HACS_ALLOW_INET=1 "${HERE}/run_spike.sh" --probe --quiet --isolate
 
 echo
@@ -97,7 +102,7 @@ echo
 echo "── all three targets, probe, isolated ────────────────────────────"
 for spec in "andrews_arnold_quota 8" "matomo 45" "icqa 19"; do
   set -- $spec
-  assert_run "$1, isolated + probe, 8/8" "$2" 8 \
+  assert_run "$1, isolated + probe, 10/10" "$2" 10 \
     env ISOLATE=1 PROBE=1 "${HERE}/run_targets.sh" "$1"
 done
 
@@ -110,7 +115,7 @@ if [[ "${HA:-0}" == "1" ]]; then
     for spec in "andrews_arnold_quota 7 8" "matomo 44 45" "icqa 18 19"; do
       set -- $spec
       assert_run "$1, real HA, isolated"        "$2" - env HA=1 ISOLATE=1 "${HERE}/run_targets.sh" "$1"
-      assert_run "$1, real HA, isolated + probe" "$3" 8 env HA=1 ISOLATE=1 PROBE=1 "${HERE}/run_targets.sh" "$1"
+      assert_run "$1, real HA, isolated + probe" "$3" 10 env HA=1 ISOLATE=1 PROBE=1 "${HERE}/run_targets.sh" "$1"
       assert_run "$1, real HA, bridge, isolated" "$2" - env HA=1 BRIDGE=1 ISOLATE=1 "${HERE}/run_targets.sh" "$1"
     done
   fi

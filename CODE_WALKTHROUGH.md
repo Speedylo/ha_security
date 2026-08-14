@@ -35,7 +35,7 @@ A mechanical tour of the codebase, in execution order. For *what the results mea
     ├── syscall_filter.py        TRUSTED: the seccomp policy
     ├── probe.py                 adversarial test
     ├── test_matrix.sh           full matrix with assertions (15, or 24 with HA=1)
-    ├── test_egress.py           egress policy cases (17)
+    ├── test_egress.py           egress policy + destination cases (35)
     ├── test_audit.py            hash chain: what it proves and what it does not
     ├── generate_shim.py         generates const.py + selector.py from HA's source
     ├── shim_coverage.py         scores the shim against surface_out/ (± install weighting)
@@ -451,6 +451,28 @@ against `network:`, refuse anything on `blocked_hosts`. It is called **once per 
 not once per request, which is what closed the redirect gap the old shim documented but did not
 fix.
 
+It then answers a *second* question, and the difference between the two is the point. "May this
+integration talk to this name" is the manifest. "Where does that name actually go" is the
+resolution — and the author of the manifest also owns the DNS records the names point at.
+Answering only the first was T14 (`PROJECT_STATUS.md` §12.2): a declared host with an A record on
+192.168.1.1 was fetched by the supervisor, which is trusted and exempt from the sandbox's seccomp
+`AF_INET` denial.
+
+- **Ordinary, and you should be able to read this.** `forbidden_reason` is a pure function over
+  `ipaddress` — refuse loopback, link-local, multicast, unspecified, reserved and private, in that
+  order so the reason names the most specific match. `resolve` is one `getaddrinfo` call, split
+  into its own method purely so tests can substitute an attacker-controlled zone. `_authorise`
+  refuses if **any** answer is bad, not just the one about to be used.
+- **⚠️ Advanced — study this before defending it.** `_PinnedHTTPConnection` and its HTTPS twin
+  override `connect()` to dial the address that was checked instead of re-resolving the name.
+  Without that there are *two* DNS lookups, the checked one and the used one, and an attacker
+  owning the zone makes them differ — DNS rebinding, structurally a time-of-check-to-time-of-use
+  bug. `self.host` is deliberately left untouched, so the `Host:` header and TLS certificate
+  validation still use the declared name: **pinning changes where the connection goes, never who
+  it claims to be talking to.** A pin that broke certificate checking would trade one hole for a
+  worse one. The `functools.partial` in the handlers is only there because `urllib`'s `do_open`
+  calls `http_class(host, ...)` positionally and the pinned address has to arrive as a keyword.
+
 The rest of the file is limits, and they exist for a specific reason worth understanding: this
 module is **trusted code acting on attacker-controlled input**, so it is a confused deputy by
 construction. Response size, timeout, header count, header length, CRLF in header values, redirect
@@ -462,11 +484,23 @@ them in both directions.
 
 Added 2026-08-14 after the question *"did you test this against multiple integrations with
 multiple scenarios?"* — the answer being no. Widening the matrix found three defects, **all three
-in measurement code rather than in controls** (see `PROJECT_STATUS.md` §5.11).
+in measurement code rather than in controls** (see `PROJECT_STATUS.md` §5.11). Two more defects
+followed, one of them in a probe check written the same day (§12.2b), making it **four of five**.
 
-`test_egress.py` runs 17 policy cases against a local stub, covering both directions of every
+`test_egress.py` runs 35 policy cases against a local stub, covering both directions of every
 rule — notably a redirect that *should* be followed as well as one that should not, since a
 control that blocks everything looks correct until you test the positive path.
+
+The last 18 cases are the destination check (T14, `PROJECT_STATUS.md` §12.2) and split three
+ways, which is worth noticing as a pattern for testing security code. **Ordinary:** 14
+classification cases calling `forbidden_reason` as a pure function — no network, no timing, every
+address range in one table. **Ordinary but easy to get wrong:** four cases driving a
+`ScriptedEgress` subclass whose DNS answers the test writes, standing in for a zone the attacker
+owns — necessary because *rebinding is a difference between two resolutions*, which cannot be
+demonstrated against a resolver you do not control. **Advanced, and the one to study before
+defending it:** the pinning cases, which prove the connection reaches the address that was
+checked. That proof is self-evidencing rather than assertion-based — the test's hostname does not
+resolve in real DNS at all, so a 200 response is only explicable by the pin having been used.
 
 `test_audit.py` covers the hash chain, and three of its five cases assert *limits* rather than
 requirements — that a rebuilt chain still verifies (the unkeyed-digest limit from §5.8), and that
@@ -480,31 +514,50 @@ a bug someone already fixed.
 
 ### `probe.py`
 
-Runs *after* successful setup, in the same process, over the same manifest and bridge. Seven
-attempts, each a single line a real author could add. Returns `(name, blocked, detail)` tuples
-so results are tabulated rather than narrated.
+Runs *after* successful setup, in the same process, over the same manifest and bridge. **Ten
+attempts**, each a single line a real author could add. Returns `(name, blocked, detail)` tuples
+so results are tabulated rather than narrated. **6 of 10 blocked as an ordinary child process,
+10 of 10 under `--isolate`.**
 
-The design point is check #2. It does not just assert the call was denied — it inspects what
-came back and counts entities not belonging to this integration:
+The design point is check #2. It does not just assert the call was denied — it inspects what came
+back and counts entities outside this integration's *declared scope*:
 
 ```python
-leaked = [s.entity_id for s in states if not s.entity_id.startswith("sensor.andrews_arnold")]
-results.append(("enumerate whole house", not leaked, ...))
+declared = json.loads(os.environ.get("HACS_DECLARED_SCOPE", "[]"))
+leaked = [s.entity_id for s in states
+          if not any(fnmatch(s.entity_id, p) for p in declared)]
 ```
 
-An *allowed but empty* result is the correct behaviour, so testing for a denial would have
-been the wrong test.
+An *allowed but empty* result is the correct behaviour, so testing for a denial would have been
+the wrong test. Two earlier versions of this check were wrong — a hardcoded
+`startswith("sensor.andrews_arnold")` that false-alarmed on the other two integrations, and
+"anything I did not publish this run" that false-alarmed on entities legitimately persisting in a
+real HA. Declared scope is the property the supervisor actually enforces, so it is what the check
+should measure.
 
 Check #5 reads a host file. It was written expecting to *fail* to be blocked, and reported
 `ALLOWED` for two days. **A test suite that only contains tests you pass is marketing, not
 evaluation** — and the payoff came on 2026-08-14, when isolation landed and that row flipped to
-`BLOCKED` with a genuine before/after already on record.
+`BLOCKED` with a genuine before/after already on record. Checks #6, #7 and #8 followed the same
+rule, written before their fixes existed; all three now block.
 
-Checks #6 and #7 were added the same day for exactly that reason, *before* the fix existed:
-#6 reads the supervisor's `/proc` to steal the credential, #7 opens a raw socket to bypass the
-`network:` allowlist. #6 now blocks under `--isolate`; **#7 still does not**, and the honest
-reporting of that is the point. Write the failing check first, then fix it — the measurement is
-worth more than the fix.
+Checks **#9 and #10** came from writing the threat model rather than from writing code, and they
+attack the *broker* instead of the sandbox: can the integration make the **supervisor** connect to
+the LAN on its behalf? Two things about them are worth studying.
+
+- They are blocked in **both** modes, because the control lives in `egress.py` rather than in the
+  isolation — which is why the baseline moved from 4/8 to 6/10 rather than to 4/10.
+- They must be requests the manifest *permits*, or the allowlist refuses them first and the check
+  measures a control that was never in question. `--probe` widens the manifest with
+  `supervisor.PROBE_HOSTS` and announces that it has done so.
+
+And check #9 is the cautionary tale. On its first run against the unfixed broker it reported
+`BLOCKED` — with the reason `transport failure: timed out`. The request had been authorised and
+attempted and simply never arrived, because 192.0.2.10 is not routed. **A check that cannot tell a
+control from a timeout would have shown the fix working before the fix existed.** It now reads the
+reason string and reports three outcomes: blocked by the destination check, `NOT MEASURED` if the
+allowlist got there first, or allowed-and-failed-in-transit. Write the failing check first, then
+fix it — and then check that the check was measuring the thing you meant.
 
 ### `generate_shim.py`
 

@@ -20,7 +20,7 @@ source is exactly what its tarball contained.
 PROBE=1 ISOLATE=1 ./run_targets.sh   # ...isolated, with the adversarial probe
 ./run_spike.sh                # andrews_arnold only: setup + two polls
 ./run_spike.sh --probe        # the above, then the adversarial probe
-./run_spike.sh --probe --isolate   # ...with full isolation (8 of 8 blocked)
+./run_spike.sh --probe --isolate   # ...with full isolation (10 of 10 blocked)
 ISOLATE=1 ./run_targets.sh    # all three, each in its own namespaces
 python3 syscall_filter.py     # self-test: load the filter, prove ptrace is denied
 ./generate_shim.py            # regenerate const.py + selector.py from HA's source
@@ -133,7 +133,7 @@ drains, Matomo's day counters climb, ICQA's NO₂ rises from 28,3 to 41,7 µg/m�
 
 ## Adversarial probe
 
-Eight things a malicious version of this integration would try. Each is one line
+Ten things a malicious version of this integration would try. Each is one line
 an author could add, and on stock HA every one of them succeeds today.
 
 | Attempt | Stub house | **Real HA** | `--isolate` | Enforced by |
@@ -146,11 +146,22 @@ an author could add, and on stock HA every one of them succeeds today.
 | Read the supervisor's `/proc` (steal the token) | ALLOWED | **ALLOWED** | **blocked** | PID namespace |
 | Raw socket → undeclared **LAN device** (lateral movement) | ALLOWED | **ALLOWED** | **blocked** | seccomp + brokered egress |
 | Raw socket → undeclared internet host (exfiltration) | ALLOWED | **ALLOWED** | **blocked** | seccomp + brokered egress |
+| Broker → **declared** host at a LAN address | blocked | **blocked** | blocked | destination check |
+| Broker → **declared** name resolving to loopback | blocked | **blocked** | blocked | destination check |
 
-**4 of 8 without isolation, 8 of 8 with it.** Each of the last four checks was
+**6 of 10 without isolation, 10 of 10 with it.** Each of the last six checks was
 written while it still failed, so every before/after is a measurement rather
-than an assertion. See `../FINDINGS_2026-08-14_token_leak.md` and
-`../RESULTS_2026-08-14_egress_broker.md`.
+than an assertion. See `../FINDINGS_2026-08-14_token_leak.md`,
+`../RESULTS_2026-08-14_egress_broker.md` and `../THREAT_MODEL.md` §5.1.
+
+The last two rows are blocked in *both* columns because the control lives in
+`egress.py`, not in the isolation — which is why the baseline moved from 4/8 to
+6/10 rather than staying at 4/10. They came from writing the threat model rather
+than from writing code: denying the sandbox its own sockets made the
+**supervisor** the one making every connection, and the supervisor authorised
+host *names* without asking where they resolved to. `--probe` widens the
+manifest to declare those two hosts, and announces that it has, so the checks
+measure the broker rather than bouncing off the allowlist in front of it.
 
 **Paired baseline**, same token used the way an in-process integration uses `hass` today:
 

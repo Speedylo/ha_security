@@ -125,7 +125,8 @@ Ranked by consequence of loss, because that ranking drives Part 3.
 **Note A5 explicitly.** It is the asset most often forgotten in HA threat discussions, because
 the instinct is to reason about "what HA data can leak". But an integration is a *program on
 your home network*, and the network is usually the softest thing it can touch. This is the asset
-that motivated the egress work (§5.10) and it is where the new finding T14 lands.
+that motivated the egress work (§5.10), and it is where T14 landed — twice, since closing the
+sandbox's route to the LAN is what created the broker that reopened it.
 
 ## 1.5 Actors
 
@@ -287,7 +288,7 @@ Reminder of the six, with the property each violates:
 |---|---|---|
 | **T12** | I | Exfiltration of house data to a host the manifest legitimately declares |
 | **T13** | E | Direct socket to LAN devices (A5) — lateral movement needing no HA credential at all |
-| **T14** | E | **The broker is re-targeted at the LAN or loopback by DNS: the allowlist matches host *names*, never resolved addresses** |
+| **T14** | E | The broker is re-targeted at the LAN or loopback by DNS: the allowlist matches host *names*, and the author owns the DNS records those names point at |
 | **T15** | E | The broker is used to reach HA's own API with the supervisor's network position |
 
 ## TB4 — author / HACS ↔ the user's machine
@@ -334,8 +335,8 @@ broker built and measured.
 | T11 | `sandbox_bridge` trusts the supervisor | L2×C4 | Med | By design — it is inside the TCB | L2×C4 | **Med** | `PROJECT_STATUS.md` §5.7 |
 | T12 | Exfiltration to a *declared* host | L4×C3 | High | **Structural — an allowlist governs destination, not content** | L4×C3 | **High** | By construction |
 | T13 | Direct socket to LAN devices | L4×C4 | High | seccomp denies `socket(AF_INET)` | L1×C4 | **Med** | probe checks 7, 8 |
-| T14 | **Broker re-targeted by DNS** | L3×C4 | High | **None — name checked, address never resolved or checked** | L3×C4 | **High** | **Measured today, §5 below** |
-| T15 | Broker reaches HA's own API | L3×C5 | High | `blocked_hosts` — but by *name only*, so T14 defeats it | L3×C5 | **High** | Same root cause as T14 |
+| T14 | **Broker re-targeted by DNS** | L3×C4 | High | ✅ **Treated** — broker resolves, refuses every non-public address, and connects to the address it checked | L1×C4 | **Med** | **probe check 9, ALLOWED → BLOCKED** |
+| T15 | Broker reaches HA's own API | L3×C5 | High | ✅ **Treated by the same change.** `blocked_hosts` is name-only and never covered this; the destination check does | L1×C5 | **Med** | **probe check 10, ALLOWED → BLOCKED** |
 | T16 | Over-declaring manifest | L4×C5 | Critical | Declaration is visible and reviewable (P5); nothing forces review | L3×C5 | **High** | Android/browser precedent |
 | T17 | Malicious update through HACS | L3×C5 | High | **None** — no pinning, no re-review on update | L3×C5 | **High** | Ecosystem property |
 | T18 | Manifest self-declared | L5×C4 | Critical | Same as T16 — visibility, not prevention | L4×C4 | **High** | By construction |
@@ -349,27 +350,33 @@ broker built and measured.
 an exaggeration — an integration today runs in HA's process with HA's privileges and no
 declared limits.
 
-**Residual profile: 0 Critical, 8 High, 13 Medium, 1 Low.**
+**Residual profile: 0 Critical, 6 High, 15 Medium, 1 Low** — after T14 and T15 were treated the
+same day they were identified (§5.1).
 
 **Every Critical was eliminated.** That is the headline result and it is defensible, because
 each one is backed by a measurement rather than an assertion.
 
-**The eight remaining High risks split into three groups, and the distinction matters more than
-the count:**
+**The six remaining High risks split into two groups, and the distinction matters more than the
+count:**
 
 | Group | Risks | Character |
 |---|---|---|
 | **Structural** — cannot be fixed by this design | T12, T18, T21, and T09 (upstream) | An allowlist governs destination not content; a self-declared contract is self-declared; confinement cannot distinguish legitimate use of a declared capability from abuse of it |
 | **Ecosystem** — outside the project's control surface | T16, T17 | Require HACS-side review or signing; the framework can only make the information available |
-| **Implementation — fixable, and now identified** | **T14, T15**, and T04/T10 as partial | Real gaps in code that exists. These are the ones to treat next |
+| ~~**Implementation — fixable**~~ | ~~T14, T15~~ | **Treated 2026-08-14, hours after being identified. See §5.1** |
+
+**Not one of the six survivors is unfinished work.** Four are structural limits of the design and
+two need a change to HACS. That is a meaningfully different position from "eight things still to
+do", and it is the sentence to lead with.
 
 ---
 
 # Part 5: Risk treatment (ISO 31000 §6.5)
 
-## 5.1 The new finding: T14 / T15 — the broker checks names, not destinations
+## 5.1 T14 / T15 — the broker checked names, not destinations
 
-**This was found while writing this document, on 2026-08-14, and is measured, not theorised.**
+**Found while writing this document on 2026-08-14, and treated the same day.** Both halves —
+the finding and the fix — are measurements rather than assertions.
 
 `egress.py:86–102` authorises a request by parsing the URL and comparing `parsed.hostname`
 against the manifest allowlist and against `blocked_hosts`. **It never resolves the name, and
@@ -404,20 +411,80 @@ closed" but "what did closing it cost".*
 It also says something about the audit log: a T14 request is logged as an **allowed** request to
 a **declared** host. The log is complete and intact and tells you nothing is wrong.
 
-**Proposed treatment** (ISO 31000 §6.5.2 — *change the likelihood*), not yet implemented:
+### Treatment applied (ISO 31000 §6.5.2 — *changing the likelihood*)
 
-1. Resolve the hostname in the broker, before connecting.
-2. Reject any resolution landing in a private, loopback, link-local or multicast range —
-   `ipaddress.ip_address(x).is_private or .is_loopback or .is_link_local or .is_multicast`.
-3. Connect to the **pinned address**, sending the original `Host:` header, so that a second
-   resolution cannot return a different answer (DNS rebinding / TOCTOU).
-4. Apply all three **per redirect hop**, exactly as the existing allowlist check already is.
-5. Add probe checks 9 and 10 — declared-host-resolves-to-LAN, and declared-host-resolves-to-
-   loopback — **before** the fix, so the before/after is a measurement.
+Probe checks 9 and 10 were written **first**, against the unfixed broker, so the before/after is
+a measurement:
 
-Estimated at well under a day. Step 3 is the only part that is not routine, and it is the part
-worth being able to explain: without pinning, the check and the connection use two different DNS
-answers, and an attacker who controls the zone can make them differ.
+```
+BEFORE  [ALLOWED] broker: declared host → LAN address   allowed by policy, failed in transit
+        [ALLOWED] broker: declared name → loopback      supervisor fetched localhost for us
+
+AFTER   [BLOCKED] broker: declared host → LAN address   192.0.2.10 is private, not a public destination
+        [BLOCKED] broker: declared name → loopback      127.0.0.1 is loopback, not a public destination
+```
+
+The fix, in `egress.py`:
+
+1. **Resolve in the broker** before connecting (`Egress.resolve`).
+2. **Refuse every non-public address** (`forbidden_reason`) — loopback, link-local, multicast,
+   unspecified, reserved and private, in that order so the reason names the most specific one.
+   Broader than "no LAN" on purpose: link-local covers cloud metadata (169.254.169.254), loopback
+   covers whatever the supervisor is listening on. It costs nothing, because a vendor host is on
+   the public internet by definition.
+3. **Refuse if *any* answer is bad**, not merely the one about to be used. A resolver replying
+   `[93.184.216.34, 192.168.1.1]` is not a host reachable two ways; it is an attempt to have the
+   check read one answer and the connection use the other.
+4. **Connect to the checked address** rather than re-resolving the name — see below.
+5. **Per redirect hop**, since `_authorise` is already called once per hop.
+6. **The audit trail now records the address, not only the name** — `vendor.example[93.184.216.34]`.
+   A T14 request used to be logged as "allowed, to a declared host", which is why a complete and
+   intact log said nothing was wrong.
+
+**Step 4 is the only part that is not routine Python, and it is the part worth being able to
+explain.** Checking an address and then handing the *name* to `urlopen` means two DNS lookups:
+the one that was checked and the one that is used. An attacker who controls the zone answers
+differently the second time — a short TTL is enough — so the check passes on a public address and
+the connection lands on `192.168.1.1`. That is **DNS rebinding**, and structurally it is a
+time-of-check-to-time-of-use bug. The fix is to connect to the exact address already checked:
+`http.client` resolves `self.host` inside `connect()`, so overriding `connect()` is the whole
+change. `self.host` is left alone, so the `Host:` header and the TLS certificate check still use
+the declared name — **pinning changes where the connection goes, never who it claims to be
+talking to**, which matters because a pin that broke certificate validation would trade one hole
+for a worse one.
+
+### Verification
+
+`test_egress.py` grew from 17 cases to **35**:
+
+- 14 classification cases as a pure function — RFC 1918, loopback, link-local, multicast,
+  unspecified, IPv6 ULA, and `::ffff:192.168.1.1` (RFC 1918 wearing an IPv6 hat), plus three
+  genuinely public addresses that must still be allowed.
+- Four attacker-controlled-DNS cases through a `ScriptedEgress` whose answers are written by the
+  test rather than by DNS — because **rebinding is a difference between two resolutions, and that
+  cannot be demonstrated against a resolver you do not control.**
+- Four pinning cases proving the connection reaches the checked address, that resolution happens
+  **exactly once** per hop, that `Host:` still carries the declared name, and that the hop is
+  recorded with its address. The pinning proof is self-evidencing: the test's hostname does not
+  resolve in real DNS at all, so a 200 is only explicable by the pin having been used.
+
+Full matrix: **15/15 without Docker, 24/24 against real Home Assistant**, stable across repeated
+runs. Against real HA the destination check is what stops probe check 10 — `blocked_hosts`
+contains `127.0.0.1` as a *string* and never matched `localhost`, which is precisely T15.
+
+### The defect in the check itself
+
+**Probe check 9 reported a false BLOCKED on its first run.** Against the unfixed broker it showed
+`BLOCKED — transport failure: timed out`: the request had been authorised and attempted, and
+merely never arrived, because 192.0.2.10 is not routed. Every supervisor refusal reaches the
+sandbox as the same `PermissionDenied`, whatever caused it.
+
+**A check that cannot tell a control from a timeout would have shown the fix working before the
+fix existed.** It now reads the reason string and reports three outcomes — blocked by the
+destination check, *not measured* because the allowlist got there first, or allowed-and-failed-in-
+transit. Same failure mode as the `gaierror` confound in checks 7 and 8 and the two wrong versions
+of check 2: **four of the five defects found in this project have been in measurement code, not
+in controls**, which is the more dangerous kind, because a broken measurement reports success.
 
 ## 5.2 Treatment options actually used
 
@@ -443,7 +510,7 @@ The strongest structural argument in the model, and worth a figure in the report
 | **Process isolation** (user+PID+mount ns) | T02, T03, T04, T05, T06, T10 — **six** |
 | **seccomp filter** | T04, T08, T13, T19 (and adds T20) |
 | **Manifest enforcement** | T06, T12*, T13, T16* (*bounds rather than prevents) |
-| **Egress broker** | T13, T15* (*and introduces T14) |
+| **Egress broker** | T13, T14, T15 (and T14 was surface the broker itself introduced) |
 | **Audit log** | T04*, T18* (*detection and attribution only, never prevention) |
 
 Isolation treats six threats across three STRIDE categories from one mechanism, because all six
@@ -455,14 +522,14 @@ building**; controls that map one-to-one are usually patches.
 
 | Priority | Action | Treats | Cost | Why this order |
 |---|---|---|---|---|
-| 1 | Resolve-and-pin in the egress broker (§5.1) | T14, T15 | <1 day | The only *High* risk that is both newly identified and straightforwardly fixable |
+| ~~1~~ | ~~Resolve-and-pin in the egress broker (§5.1)~~ | ~~T14, T15~~ | — | ✅ **Done 2026-08-14**, the day it was identified |
+| 1 | **Verify on aarch64 (Pi 5)** | all of TB5 | ~1 hour | Every isolation result is x86_64-only. If `pivot_root` is wrong on ARM, **nothing above holds on the target hardware** |
 | 2 | HMAC the audit chain | T03 | ~1 hour | Cheapest risk reduction available; makes two controls fail independently |
-| 3 | Verify on aarch64 (Pi 5) | all of TB5 | ~1 hour | Every isolation result is currently x86_64-only. If `pivot_root` is wrong on ARM, **nothing above holds on the target hardware** |
-| 4 | cgroups (pids, memory, cpu) | T07 | ~1 day | The only untouched threat with no control at all |
-| 5 | Distinct uid for the sandbox | T05, T08 | ~half day | Defence in depth: stops the boundary resting solely on namespace correctness |
-| 6 | Manifest signing / review workflow | T16, T17, T18 | Design work | Cannot be finished by this project; can be specified |
+| 3 | cgroups (pids, memory, cpu) | T07 | ~1 day | The only threat with no control at all |
+| 4 | Distinct uid for the sandbox | T05, T08 | ~half day | Defence in depth: stops the boundary resting solely on namespace correctness |
+| 5 | Manifest signing / review workflow | T16, T17, T18 | Design work | Cannot be finished by this project; can be specified |
 
-**Item 3 is not really a security task and it is still the most schedule-critical thing in this
+**Item 1 is not really a security task and it is now the most schedule-critical thing in this
 table.** Every measurement in this document was taken on x86_64 under WSL2. The claim being
 made is about a Raspberry Pi.
 
@@ -518,12 +585,15 @@ that needs *behavioural* policy — time windows, rate limits, anomaly detection
 different and much larger project. Naming this limit is what makes the actuator stretch goal an
 informed choice rather than an oversight.
 
-### R6 — The controls themselves add attack surface (T14, T20)
+### R6 — The controls themselves add attack surface (T20, and T14 as precedent)
 
 **Retained as an accepted cost, and stated as a general property rather than an apology.**
-Unprivileged user namespaces are a known escalation surface; the egress broker created T14.
-Both were accepted because the risk removed is larger than the risk added — but that is a
-*judgement*, and the honest form of the claim is "net reduction", not "elimination".
+Unprivileged user namespaces are a known escalation surface. T14 is the worked example: closing
+lateral movement at the socket layer required a broker, and the broker reopened lateral movement
+one layer up until it was fixed. T14 is now treated; the *pattern* is not, and will recur with
+every future control. Both were accepted because the risk removed is larger than the risk added —
+but that is a **judgement**, and the honest form of the claim is "net reduction", never
+"elimination".
 
 ---
 
@@ -533,9 +603,9 @@ What actually watches this system, and how each control is verified rather than 
 
 | Mechanism | What it monitors | Cadence | Limitation |
 |---|---|---|---|
-| **Adversarial probe** (`probe.py`, 8 checks) | Whether each boundary still holds | Every run | Tests the *mediated* path plus 4 escape routes; it is not exhaustive |
-| **Test matrix** (`test_matrix.sh`, 15 / 24 assertions) | Regression across 3 integrations × 4 modes | Before any claim | Stub-house scenarios unless `HA=1` |
-| **`test_egress.py`** (17 cases) | Egress policy, both directions of every rule | Every run | **Did not catch T14** — see below |
+| **Adversarial probe** (`probe.py`, 10 checks) | Whether each boundary still holds | Every run | Tests the *mediated* path, 4 escape routes and 2 broker abuses; it is not exhaustive |
+| **Test matrix** (`test_matrix.sh`, 15 / 24 assertions) | Regression across 3 integrations × 4 modes | Before any claim | Stub-house scenarios unless `HA=1`; **x86_64 only** |
+| **`test_egress.py`** (35 cases) | Egress policy and destination checking | Every run | The first 17 **did not catch T14** — see below |
 | **`test_audit.py`** (5 cases) | Chain integrity *and* its asserted limits | Every run | 3 of 5 encode limits, not requirements |
 | **The audit log itself** | What each integration attempted | Continuous | Nobody reads it (§1.3) |
 
@@ -552,11 +622,16 @@ What actually watches this system, and how each control is verified rather than 
 defects found by widening the test matrix, **three were in the measurement code, not in the
 controls** — a hardcoded entity prefix, a discarded `--isolate` flag, and an audit `run_id`
 collision that produced a *false* tamper report. A broken control fails visibly; a broken
-measurement reports success. And T14 extends the same lesson: `test_egress.py` has 17 cases
-covering both directions of every rule it knows about, and it did not find T14, because a test
-suite can only test the threats you thought of. **Tests demonstrate the absence of known
-failures, never the absence of failures** — which is exactly why a threat model is a separate
-activity from a test suite, and why this document found something the suite could not.
+measurement reports success — and probe check 9 made it four out of five, reporting a false
+BLOCKED on its first run because a timeout is indistinguishable from a refusal unless you read
+the reason (§5.1).
+
+T14 extends the lesson in the other direction: `test_egress.py` had 17 cases covering both
+directions of every rule it knew about, and it did not find T14, because **a test suite can only
+test the threats someone already thought of. Tests demonstrate the absence of known failures,
+never the absence of failures.** That is exactly why threat modelling is a separate activity from
+testing, and this project can now say so from its own evidence: the model found a real gap in
+code that had passed a targeted suite, and the suite grew from 17 cases to 35 as a result.
 
 ---
 
@@ -589,7 +664,8 @@ Stating these is part of the method, not a hedge — an auditor will test whethe
 your own analysis stops.
 
 1. **Single-analyst, no adversarial review.** One person's imagination bounds the threat list.
-   T14 was found on the day of writing, which is evidence that the list is not closed.
+   T14 was found on the day of writing — evidence that the list is not closed, and no reason to
+   believe the next pass would find nothing.
 2. **STRIDE finds design threats, not implementation bugs.** A buffer overflow in a Python C
    extension appears nowhere here. Complementary techniques — fuzzing, dependency scanning — are
    not part of this project.
@@ -623,6 +699,7 @@ Worth being able to answer these cold.
    them (§1.3). That tension is real and the model does not resolve it; it is the strongest
    argument for making capability declared rather than inferred.
 5. *You found T14 yourself. Doesn't that undermine the results?* — It confirms them, in the sense
-   that matters: the method found a real, measured, previously unknown gap in code that already
-   passed 17 targeted tests. A threat model that finds nothing is not reassuring, it is
-   unfinished.
+   that matters: the method found a real, measured, previously unknown gap in code that had
+   already passed 17 targeted tests, and it was closed the same day with the fix measured by two
+   new probe checks written *before* it. A threat model that finds nothing is not reassuring, it
+   is unfinished.

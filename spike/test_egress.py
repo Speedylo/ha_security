@@ -19,7 +19,8 @@ import socketserver
 import sys
 import threading
 
-from egress import MAX_RESPONSE_BYTES, Egress, EgressDenied
+import egress as egress_module
+from egress import MAX_RESPONSE_BYTES, Egress, EgressDenied, forbidden_reason
 from supervisor import Manifest
 
 PASS, FAIL = "\033[32mPASS\033[0m", "\033[31mFAIL\033[0m"
@@ -47,6 +48,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._send(302, b"", {"Location": "/loop"})
         elif self.path == "/big":
             self._send(200, b"x" * (MAX_RESPONSE_BYTES + 1024))
+        elif self.path == "/host":
+            # Echo the Host header so a pinned connection can prove it still
+            # presents the declared name rather than the address it dialled.
+            self._send(200, self.headers.get("Host", "").encode())
         elif self.path == "/401":
             self._send(401, b"unauthorised")
         elif self.path == "/500":
@@ -141,6 +146,113 @@ def main() -> int:
         url="http://declared.example/ok",
         body=base64.b64encode(b"user=x&pass=y").decode(),
     )
+
+    # ------------------------------------------------------------------
+    # THREAT_MODEL.md T14/T15 — the manifest names hosts, the author owns the
+    # DNS. These cases are the reason the allowlist is not the whole control.
+    # ------------------------------------------------------------------
+    print("\ndestinations, not just names — T14")
+
+    def check(label: str, condition: bool, detail: str = "") -> None:
+        nonlocal failures
+        if condition:
+            print(f"  {PASS}  {label:<46} {detail}")
+        else:
+            failures += 1
+            print(f"  {FAIL}  {label:<46} {detail}")
+
+    # Classification is a pure function, so test it as one: no network, no
+    # timing, and every range that matters in one table.
+    for address, want_blocked in (
+        ("8.8.8.8", False),
+        ("93.184.216.34", False),
+        ("2606:4700::1111", False),
+        ("127.0.0.1", True),  # the supervisor's own services
+        ("192.168.1.1", True),  # the router
+        ("10.0.0.5", True),
+        ("172.16.4.4", True),
+        ("169.254.169.254", True),  # cloud metadata, the classic SSRF target
+        ("224.0.0.1", True),
+        ("0.0.0.0", True),
+        ("::1", True),
+        ("fd00::1", True),
+        ("::ffff:192.168.1.1", True),  # RFC 1918 wearing an IPv6 hat
+    ):
+        reason = forbidden_reason(address)
+        check(
+            f"classify {address}",
+            (reason is not None) == want_blocked,
+            reason or "public — allowed",
+        )
+
+    class ScriptedEgress(Egress):
+        """An Egress whose DNS answers are written by the attacker, not by DNS.
+
+        Rebinding is a *difference between two resolutions*, which cannot be
+        demonstrated against a resolver you do not control. This plays the part
+        of a zone the integration author owns.
+        """
+
+        def __init__(self, *args: object, answers: list[list[str]], **kwargs: object) -> None:
+            super().__init__(*args, **kwargs)  # type: ignore[arg-type]
+            self.answers = answers
+            self.calls = 0
+
+        def resolve(self, host: str, port: int) -> list[str]:  # noqa: ARG002
+            answer = self.answers[min(self.calls, len(self.answers) - 1)]
+            self.calls += 1
+            return answer
+
+    declared = Manifest({"name": "t", "network": ["vendor.example"]})
+
+    # A declared host is not a safe host. Each of these is a manifest entry that
+    # would survive review — the abuse is entirely in the DNS record.
+    for label, answer in (
+        ("declared host resolving to the router", ["192.168.1.1"]),
+        ("declared host resolving to loopback", ["127.0.0.1"]),
+        ("declared host resolving to metadata", ["169.254.169.254"]),
+        # One good answer and one bad one is not a host reachable two ways. It
+        # is an attempt to have the check read one and the connection use the
+        # other, so it must be refused on the strength of the bad one alone.
+        ("declared host with one poisoned answer", ["93.184.216.34", "192.168.1.1"]),
+    ):
+        scripted = ScriptedEgress(declared, answers=[answer])
+        try:
+            scripted.fetch({"url": "http://vendor.example/data"})
+            check(label, False, "was ALLOWED and should not have been")
+        except EgressDenied as err:
+            check(label, True, str(err))
+
+    # Pinning. With the destination check stubbed out so the request can
+    # proceed at all, does the connection go to the address that was *checked*,
+    # or to whatever DNS says at connect time? The scripted zone answers with
+    # the stub on the first call and a different address afterwards; the name
+    # itself does not resolve at all in real DNS, so a second lookup could not
+    # succeed even if it were attempted.
+    scripted = ScriptedEgress(
+        declared, answers=[["127.0.0.1"], ["192.0.2.99"]]
+    )
+    original = egress_module.forbidden_reason
+    egress_module.forbidden_reason = lambda address: None  # allow loopback, this test only
+    try:
+        reply = scripted.fetch({"url": f"http://vendor.example:{port}/host"})
+        body = base64.b64decode(reply["body"]).decode()
+        check("pinned connection reaches the checked address", reply["status"] == 200, f"status={reply['status']}")
+        check("resolved exactly once, so rebinding has no second chance", scripted.calls == 1, f"{scripted.calls} lookup(s)")
+        check(
+            "Host: header still carries the declared name",
+            body.startswith("vendor.example"),
+            f"server saw Host: {body}",
+        )
+        check(
+            "audit trail records the address, not only the name",
+            reply["hops"] == [f"vendor.example[127.0.0.1]"],
+            f"hops={reply['hops']}",
+        )
+    except EgressDenied as err:
+        check("pinned connection reaches the checked address", False, f"denied: {err}")
+    finally:
+        egress_module.forbidden_reason = original
 
     server.shutdown()
     print()

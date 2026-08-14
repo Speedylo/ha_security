@@ -39,6 +39,18 @@ from ha_backend import BridgeHouse, HomeAssistantError, RestHouse, StubHouse
 
 HERE = Path(__file__).resolve().parent
 
+# Hosts added to the manifest when --probe is passed, so probe checks 9 and 10
+# can attack the egress broker rather than bouncing off the allowlist in front
+# of it. Both are chosen so a *failed* control still touches nothing real:
+#   lan       192.0.2.10 is RFC 5737 TEST-NET-1, standing in for a lock, camera
+#             or router, and guaranteed by RFC not to be routed anywhere.
+#   loopback  a name that resolves to 127.0.0.1 without any external DNS query,
+#             standing in for a vendor host whose A record the author points
+#             wherever they like. It is the *resolution* being tested, not the
+#             plausibility of the name — see probe.py checks 9 and 10 for what
+#             this does and does not demonstrate.
+PROBE_HOSTS = {"lan": "192.0.2.10", "loopback": "localhost"}
+
 
 class Manifest:
     """The security contract an integration ships with."""
@@ -368,6 +380,21 @@ def run(args: argparse.Namespace) -> int:
     if args.ha_url:
         blocked.append(urlparse(args.ha_url).hostname or "")
 
+    if args.probe:
+        # Probe checks 9 and 10 attack the egress broker, which means the
+        # manifest has to *permit* the requests they make — otherwise the
+        # allowlist refuses them first and the checks measure the wrong control
+        # while looking like passes. Widening the manifest here models the only
+        # realistic version of T14 anyway: declaring a host is the easy part for
+        # an author, and the interesting question is what the broker does with a
+        # declaration it has accepted.
+        #
+        # This is test scaffolding and is announced as such, because a manifest
+        # that silently grows at runtime would be a serious thing to hide.
+        manifest.network = list(manifest.network) + list(PROBE_HOSTS.values())
+        if not args.quiet:
+            print(f"supervisor: --probe widens network to include {list(PROBE_HOSTS.values())}")
+
     egress = Egress(manifest, rewrites=rewrites, blocked_hosts=blocked)
     supervisor = Supervisor(manifest, audit, house, quiet=args.quiet, egress=egress)
 
@@ -421,6 +448,9 @@ def run(args: argparse.Namespace) -> int:
             "HACS_DECLARED_SCOPE": json.dumps(manifest.publishes + manifest.reads_entities),
             "HACS_SANDBOX_DIR": tmpdir,
             "HACS_PROBE": "1" if args.probe else "0",
+            # Same dict the manifest was widened with, so the probe and the
+            # policy cannot disagree about what was declared.
+            "HACS_PROBE_HOSTS": json.dumps(PROBE_HOSTS if args.probe else {}),
             "PYTHONDONTWRITEBYTECODE": "1",
         }
     )

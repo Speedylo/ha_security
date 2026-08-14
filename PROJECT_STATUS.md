@@ -817,6 +817,8 @@ assertions — 3 integrations × {stub, real HA, bridge} × {baseline, isolated}
 probe}, plus the egress policy suite, the audit-log suite and the seccomp self-test.
 **15 assertions without Docker, 24 with `HA=1`, all passing and stable across repeated runs** —
 including `HACS_ALLOW_INET=1` restoring the pre-fix 6/8 so the before/after stays reproducible.
+*(Both figures are on the 8-check probe of that moment; checks 9 and 10 arrived with §12.2, making
+the same three assertions 6/10, 10/10 and 8/10.)*
 
 ```bash
 ./test_matrix.sh          # stub-house scenarios, no Docker needed
@@ -841,7 +843,7 @@ HA=1 ./test_matrix.sh     # ...plus real Home Assistant and the bridge
 | # | Decision | Options | Recommendation |
 |---|---|---|---|
 | 1 | ~~**Compatibility strategy**~~ **SETTLED 2026-08-12** | (a) shim so real integrations run unmodified; (b) own SDK + toy integrations; (c) hand-port 2–3 and measure cost | **(a).** The spike (§5.3) ran a real integration unmodified, so the fallback to (c) is no longer needed. Still scoped to a core + generated constants with measured coverage reported — not "everything runs unmodified". |
-| 2 | ~~**Isolation primitive**~~ **SETTLED 2026-08-14 — by building it** | namespaces+seccomp / gVisor+its trace sink / gVisor+eBPF-as-boundary-verifier | **namespaces + seccomp, now implemented and measured (§5.9).** The recommendation was acted on rather than merely accepted: user + PID + mount namespaces with an allowlisted root and a 25-rule seccomp denylist, ~260 lines, unprivileged, probe 4/8 → 6/8, and 8/8 once egress was brokered (§5.10). The trade-off stated below is unchanged and should still be argued explicitly — a syscall boundary is weaker than a fake kernel, and the seccomp policy is partly a response to that, removing `bpf`, `perf_event_open`, `setns` and module loading from the sandbox's reach. Original reasoning: **namespaces + seccomp** — coherent with eBPF, lighter on the Pi, and defensible as "controls proportionate to the threat model" (his language). |
+| 2 | ~~**Isolation primitive**~~ **SETTLED 2026-08-14 — by building it** | namespaces+seccomp / gVisor+its trace sink / gVisor+eBPF-as-boundary-verifier | **namespaces + seccomp, now implemented and measured (§5.9).** The recommendation was acted on rather than merely accepted: user + PID + mount namespaces with an allowlisted root and a 25-rule seccomp denylist, ~260 lines, unprivileged, probe 4/8 → 6/8, and 8/8 once egress was brokered (§5.10) — **10/10 on today's 10-check probe, §12.2**. The trade-off stated below is unchanged and should still be argued explicitly — a syscall boundary is weaker than a fake kernel, and the seccomp policy is partly a response to that, removing `bpf`, `perf_event_open`, `setns` and module loading from the sandbox's reach. Original reasoning: **namespaces + seccomp** — coherent with eBPF, lighter on the Pi, and defensible as "controls proportionate to the threat model" (his language). |
 | 3 | ~~**Target pattern**~~ **SETTLED 2026-08-14** | polling_sensor only (24.8% of repos but **only 10.6% of installs**) vs. extending to actuators (46.7% of repos and **64.8% of installs**) | **DECIDED: polling sensors as implemented scope; actuators as a stretch goal / basic PoC.** Younes' call, 2026-08-14, and it matches the recommendation that was already worked out below. The decision was taken directly rather than at a meeting because the advisor contact is now expected to be **an email carrying the proposal**, not a live discussion — so there was no meeting to defer it to, and leaving it open was blocking work for no benefit. Rationale for the choice: guarantee a deliverable result and keep scope tight, rather than gamble the isolation + threat-model budget on a 2–3 week inbound command path. **What this unblocks:** the shim freeze's *scope* rationale (§10.3 reason 1) is now void — the symbols needed are settled. Reason 2 (ownership) still stands, so the freeze holds by choice, not by uncertainty. **Original analysis, retained because the report needs it —** install weighting (§5.2b) cut against the polling-sensor default: by repo count it looked like a quarter of the ecosystem; by what people actually run it is a tenth, while actuators are nearly two-thirds. Actuators are simultaneously where the threat model has teeth *and* where the users are — a security auditor will notice both. **But full-platform support is not the right response — see §10.1, measured 2026-08-13.** Implementing all 21 HA entity platforms moves coverage from 1.2% to only 2.1% of installs, because platforms were never the real blocker (`homeassistant.helpers`, `.util`, `.helpers.event`, `.helpers.storage` block far more integrations than any platform). Actuators also require an **inbound** command path the framework does not have yet (HA → sandbox), versus the outbound-only path built so far. And manifest confinement is structurally weaker for actuators: it stops an integration reaching *other* devices, not misuse of the *one* device it legitimately declared and controls (the 3am-unlock scenario). **Recommended position for the meeting:** keep polling_sensor as the implemented scope; analyse actuators fully in the threat model, including the declared-capability-abuse limit; build **one** actuator platform (`switch`) end-to-end as an architecture proof, not a coverage push. Present 24.8%/10.6% together, and bring the 21-platform coverage table as evidence the scope call is deliberate, not avoidance. |
 | 3b | **Which integrations to target inside the pattern** — new, 2026-08-13 | arbitrary / alphabetical (what happened so far) vs. **most-installed first** | **Most-installed first.** The top 20 polling sensors are 52% of all polling-sensor installs, and several are already within reach of today's shim — `MarcoGos/kleenex_pollenradar` (1,569 installs) and `delphiki/hass-tarif-edf` (1,473) need **zero** additional symbols; `jonandel/ha-hildebrandglow-dcc` (1,718) needs one. "Runs integrations installed on thousands of real systems" is a far stronger claim than "runs three integrations", for identical effort. |
 | 4 | **Report requirements** | literature-review chapter? page target? | **Unknown — ask the advisor / check programme handbook.** |
@@ -912,7 +914,7 @@ HA=1 ./test_matrix.sh     # ...plus real Home Assistant and the bridge
 > **New since the pause:** §5.8 records two findings from a self-audit of the security core, and
 > **§5.9 records that isolation (workstream 4) is now built** — user + PID + mount namespaces
 > with an allowlisted root and a seccomp filter, ~260 lines, unprivileged. The adversarial probe
-> goes from 4/8 to **8/8** blocked (§5.10 closed the last two rows) and all three integrations run
+> goes from 6/10 to **10/10** blocked (§5.10 closed checks 7–8, §12.2 added and closed 9–10) and all three integrations run
 > unchanged. This does not reopen the
 > shim: it was the security core that grew, which is exactly where effort was meant to
 > concentrate. **The plan no longer contains anything unproven** — every workstream now has
@@ -1061,8 +1063,8 @@ examiner find them:
   2026-08-14 (§5.9), but the framing lesson survives and belongs in the report.** §5.8 found that
   a sandbox sharing a uid with the supervisor could read the HA token from `/proc` and bypass
   mediation entirely — so probe results were results about the **mediated path** only. Isolation
-  now closes the filesystem and process routes, and §5.10 closed the network ones — **probe 4/8 →
-  8/8**. The precise claim today is *"an integration cannot read the host, steal the credential,
+  now closes the filesystem and process routes, §5.10 closed the network ones and §12.2 closed the
+  broker's own — **probe 6/10 → 10/10**. The precise claim today is *"an integration cannot read the host, steal the credential,
   reach the HA API unchecked, or open a socket the manifest never authorised — but nothing stops
   it sending whatever it likes to a host it legitimately declared."* Say exactly that. The
   general lesson — **distinguish results about the mediated path from claims about all paths** —
@@ -1148,7 +1150,7 @@ along and the one that contributes least to the security argument:
 | 1 | **Evidence / measurement** (§5.2, §5.4) | ✅ done — the novel contribution |
 | 2 | **Compatibility (the shim)** (§5.3, §5.4) | ✅ substantially done — **now frozen, see §10.3** |
 | 3 | **Mediation / policy** (supervisor, §5.3, §5.5–5.7) | ✅ core done; manifest schema still a strawman. ⚠️ **§5.8: mediation is currently *evadable*, not merely incomplete** — the sandbox can obtain the HA token and bypass the supervisor entirely. Policy logic is sound; its *unavoidability* depends on workstream 4. |
-| 4 | **Isolation** (namespaces + seccomp + brokered egress) | ✅ **built 2026-08-14** — see §5.9, §5.10, `RESULTS_2026-08-14_isolation_spike.md` and `RESULTS_2026-08-14_egress_broker.md`. User + PID + mount namespaces with an allowlisted root, a 27-rule seccomp filter denying IP sockets, and supervisor-brokered HTTP. Probe goes **4/8 → 8/8** blocked; all three integrations run identically. **Outstanding:** cgroups (resource exhaustion); WebSockets not brokered. **Unverified:** aarch64 / the actual Pi. |
+| 4 | **Isolation** (namespaces + seccomp + brokered egress) | ✅ **built 2026-08-14** — see §5.9, §5.10, `RESULTS_2026-08-14_isolation_spike.md` and `RESULTS_2026-08-14_egress_broker.md`. User + PID + mount namespaces with an allowlisted root, a 27-rule seccomp filter denying IP sockets, and supervisor-brokered HTTP. Probe goes **6/10 → 10/10** blocked; all three integrations run identically. **Outstanding:** cgroups (resource exhaustion); WebSockets not brokered. **Unverified:** aarch64 / the actual Pi. |
 | 5 | **Evaluation + write-up** | ⚠️ 2 of 4 axes have data (compatibility, security-partial); performance is untouched; threat model is unwritten. §5.8 supplies two drafted threat→control→residual-risk rows to start it with. |
 
 **What is genuinely banked regardless of how Decision 3 resolves** — i.e. the minimum
@@ -1163,7 +1165,7 @@ evident audit with detection demonstrated (§5.3); first-class entity registrati
 ~~**What is not banked:** containment.~~ **Banked as of 2026-08-14 — see §5.9.** This paragraph
 previously read "the framework stops API misuse; it does not yet stop `open('/etc/passwd')`". It
 now does. Isolation was built the day after this was written, and the adversarial probe goes from
-4/8 to **8/8** blocked with all three integrations running unchanged. **Add to the banked list:**
+6/10 to **10/10** blocked with all three integrations running unchanged. **Add to the banked list:**
 filesystem and process containment via unprivileged namespaces, with a measured before/after; the
 2021 HACS file-theft pattern reproducible as *blocked*; and a fifth self-caught gap (§5.8's
 credential leak) closed and demonstrated.
@@ -1172,7 +1174,7 @@ credential leak) closed and demonstrated.
 
 - ~~**Network containment.**~~ **Banked 2026-08-14 (§5.10).** The allowlist is now enforcing:
   seccomp denies IP sockets and the supervisor performs all HTTP, checking each redirect hop.
-  Probe 8/8. *What remains is content, not destination* — exfiltration through a legitimately
+  Probe 10/10. *What remains is content, not destination* — exfiltration through a legitimately
   declared host, which is structural and belongs in the residual-risk table.
 - **Resource containment.** No cgroups, so a malicious integration can still exhaust CPU or RAM.
   Availability is a security property and this belongs in the threat model.
@@ -1371,19 +1373,22 @@ is 31000. Also worth knowing: **ISO 31000 is guidance, not certifiable** — 270
 certifiable one. An auditor will check whether that distinction is understood.
 
 **Contents:** 7 assets, 5 actors, 5 trust boundaries, **21 identified threats** across the six
-STRIDE categories, a 5×5 likelihood/consequence matrix with a stated tolerance, an inherent-vs-
+STRIDE categories, 10 probe checks, a 5×5 likelihood/consequence matrix with a stated tolerance, an inherent-vs-
 residual register, an ISO 31000 §6.5.2 treatment-option mapping, a prioritised treatment plan,
 and **six formally retained residual risks** (R1–R6) — the four required by §10.4 plus the
 declared-capability limit and the surface added by the controls themselves.
 
 **The headline number for the report: inherent 7 Critical / 7 High → residual 0 Critical /
-8 High.** Every Critical eliminated, each backed by a measurement rather than an assertion. Of
-the eight surviving High risks, four are structural or upstream, two are ecosystem-level
-(HACS review and signing), and two are fixable implementation gaps — both newly identified, below.
+6 High.** Every Critical eliminated, each backed by a measurement rather than an assertion. And
+**not one of the six survivors is unfinished work** — four are structural limits of the design
+(an allowlist governs destination not content; a self-declared contract is self-declared) or
+upstream (HA has no scoped tokens), and two need a change to HACS itself. The two that *were*
+fixable implementation gaps were found by the model and closed the same day (§12.2).
 
-### 12.2 ⚠️ New finding: the egress broker checks host *names*, never destinations
+### 12.2 ✅ New finding, found and closed the same day: the broker checked host *names*, never destinations
 
 Found while grounding the threat model in the code, and **measured, not theorised** (T14/T15).
+Fixed hours later, with the measurement written first.
 
 `egress.py:86–102` authorises a request by comparing `parsed.hostname` against the manifest
 allowlist and `blocked_hosts`. It **never resolves the name and never inspects the address it is
@@ -1405,28 +1410,80 @@ the governing principle: every control adds surface, so the question is never "i
 "what did closing it cost". Note too that such a request is logged as *allowed* to a *declared*
 host — the audit log is complete, intact, and reports nothing wrong.
 
-**Treatment (not yet implemented, <1 day):** resolve in the broker; reject private / loopback /
-link-local / multicast results; connect to the **pinned address** with the original `Host:` header
-so a second resolution cannot differ (DNS rebinding / TOCTOU); apply per redirect hop; and add
-probe checks 9 and 10 **before** the fix so the before/after is a measurement.
+**Treatment, applied 2026-08-14.** Probe checks 9 and 10 were written **first**, against the
+unfixed broker, so the before/after is a measurement:
+
+```
+BEFORE  [ALLOWED] broker: declared host → LAN address   allowed by policy, failed in transit
+        [ALLOWED] broker: declared name → loopback      supervisor fetched localhost for us
+AFTER   [BLOCKED] broker: declared host → LAN address   192.0.2.10 is private, not a public destination
+        [BLOCKED] broker: declared name → loopback      127.0.0.1 is loopback, not a public destination
+```
+
+`egress.py` now resolves in the broker; refuses loopback, link-local, multicast, unspecified,
+reserved and private addresses; refuses if **any** answer is bad rather than only the one about to
+be used; connects to the **checked** address instead of re-resolving the name; applies all of it
+per redirect hop; and records the address in the audit trail (`vendor.example[93.184.216.34]`)
+rather than only the name.
+
+**The pinning is the one non-routine part and the one to be able to explain.** Checking an address
+and then handing the *name* to `urlopen` means two DNS lookups — the one checked and the one used.
+An attacker owning the zone answers differently the second time, so the check passes on a public
+address and the connection lands on 192.168.1.1. That is **DNS rebinding**, structurally a
+time-of-check-to-time-of-use bug. `http.client` resolves `self.host` inside `connect()`, so
+overriding `connect()` is the whole change; `self.host` is untouched, so the `Host:` header and
+TLS certificate validation still use the declared name. **Pinning changes where the connection
+goes, never who it claims to be talking to** — a pin that broke certificate checking would trade
+one hole for a worse one.
+
+**Verification.** `test_egress.py` grew 17 → **35 cases**: 14 address-classification cases as a
+pure function (RFC 1918, loopback, link-local, multicast, unspecified, IPv6 ULA, and
+`::ffff:192.168.1.1`, plus three public addresses that must still pass); four attacker-controlled-
+DNS cases through a `ScriptedEgress` whose answers the test writes, **because rebinding is a
+difference between two resolutions and cannot be shown against a resolver you do not control**;
+and four pinning cases proving the connection reaches the checked address, that resolution happens
+exactly once per hop, that `Host:` still carries the declared name, and that the hop is logged with
+its address. Matrix: **15/15 without Docker, 24/24 against real HA**, stable across repeats.
+
+Against real HA this is also what closes T15: `blocked_hosts` holds `127.0.0.1` as a *string* and
+never matched `localhost`. The destination check does.
+
+### 12.2b ⚠️ Defect 5 — and it was in the new check, on its first run
+
+**Probe check 9 reported a false BLOCKED against the unfixed broker**, with the reason
+`transport failure: timed out`. The request had been authorised and attempted and merely never
+arrived, because 192.0.2.10 is not routed. Every supervisor refusal reaches the sandbox as the
+same `PermissionDenied`, whatever caused it.
+
+A check that cannot tell a control from a timeout **would have shown the fix working before the
+fix existed**. It now reads the reason string and reports three outcomes: blocked by the
+destination check, *NOT MEASURED* because the allowlist got there first, or allowed-and-failed-in-
+transit. Same failure mode as the `gaierror` confound in checks 7/8 and the two wrong versions of
+check 2 — **four of the five defects found in this project have been in measurement code**, which
+is the more dangerous kind, because a broken measurement reports success.
+
+Caught only because the before/after was run as a measurement rather than assumed. Writing the
+failing check first is now twice-proven as a method, once for what it measures and once for what
+it revealed about itself.
 
 ### 12.3 The methodological point this proves
 
-`test_egress.py` has 17 cases covering both directions of every rule it knows about. **It did not
-find this.** A test suite can only test the threats you already thought of — tests demonstrate the
-absence of *known* failures, never the absence of failures. That is exactly why threat modelling
-is a separate activity from testing, and it is now demonstrable in this project rather than
-merely asserted: the threat model found a real gap in code that already passed a targeted suite.
+`test_egress.py` had 17 cases covering both directions of every rule it knew about. **It did not
+find this.** A test suite can only test the threats someone already thought of — tests demonstrate
+the absence of *known* failures, never the absence of failures. That is exactly why threat
+modelling is a separate activity from testing, and it is now demonstrable in this project rather
+than merely asserted: the model found a real gap in code that had already passed a targeted suite,
+and the suite grew 17 → 35 cases as a result.
 
-Pair it with §5.11's lesson (three of four defects were in *measurement* code) and the
+Pair it with §5.11 and §12.2b (**four of five defects were in *measurement* code**) and the
 methodology chapter has two independent, evidenced arguments about how the evaluation was done.
 
 ### 12.4 Revised order of remaining work
 
-1. **Resolve-and-pin in the broker** (T14/T15) — the only High risk that is both new and cheap
-2. **HMAC the audit chain** (T03) — ~1 hour, and makes two controls fail independently
-3. **Verify on aarch64** — still the most schedule-critical item; every isolation result to date
-   is x86_64-only, and the claim is about a Pi
+1. ~~Resolve-and-pin in the broker (T14/T15)~~ — **done 2026-08-14**, §12.2
+2. **Verify on aarch64** — now the most schedule-critical item by some distance; every isolation
+   result to date is x86_64-only under WSL2, and the claim is about a Pi 5
+3. **HMAC the audit chain** (T03) — ~1 hour, and makes two controls fail independently
 4. **cgroups** (T07) — the only threat with no control at all
 5. Distinct uid for the sandbox (defence in depth for T05/T08)
 
