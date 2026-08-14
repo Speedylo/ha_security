@@ -75,7 +75,7 @@ manifest before acting on its behalf.
 The security claim is: *the contractor never gets a copy of the master key.*
 
 **What this document reports is that the contractor can read the master key off the guard's
-desk.** Three different ways, all confirmed by test. But two Linux concepts have to be clear
+desk.** Four different ways, all confirmed by test. But two Linux concepts have to be clear
 first, or none of the rest means anything.
 
 ---
@@ -226,15 +226,37 @@ as `--ha-token` on the command line instead."*
 That does not help either. `/proc/1234/cmdline` holds the command line and is readable by the
 same user for the same reason. The sandbox reads the token straight out of it.
 
-### Three doors, one key
+### Four doors, one key
+
+*Originally written as three. A fourth was found on 2026-08-14 while verifying that isolation had
+actually closed the others — see the note below. It is the simplest of the four, which is worth
+noticing: the sophisticated routes were found first.*
 
 | # | Door | Closing it alone is enough? |
 |---|---|---|
 | 1 | The token sits in the **child's own bag** (copied at line 320) | No |
 | 2 | The token sits in the **parent's bag**, readable via `/proc/<parent>/environ` | No |
 | 3 | The token sits in the **parent's command line**, readable via `/proc/<parent>/cmdline` | No |
+| 4 | The token sits in **a file on disk**, `spike/.ha_token`, readable with plain `open()` | No |
 
-Closing any one leaves the other two open.
+Closing any one leaves the other three open.
+
+**Door 4, added 2026-08-14.** `run_targets.sh` and `ha_compare_setup.sh` read the credential from
+`spike/.ha_token` and pass it with `--ha-token`. The file is mode `0600` — but that only restricts
+*other users*, and the sandbox runs as the same user, so `open("/home/.../spike/.ha_token")` is
+enough. No `/proc` trick required.
+
+This is worth recording as a methodological point rather than quietly fixing. Doors 2 and 3
+require knowing that `/proc/<pid>/environ` exists and is same-uid readable; door 4 requires
+noticing that a file is a file. The first pass found the clever routes and missed the obvious
+one, which is a normal failure mode in security review and an argument for **enumerating where a
+secret physically lives** — environment, command line, kernel-exposed process state, disk — rather
+than reasoning attack-by-attack.
+
+**All four are closed by `--isolate`** (§5.9 / `RESULTS_2026-08-14_isolation_spike.md`): door 1 by
+the environment scrub in `supervisor.py`, doors 2 and 3 by the PID namespace, and door 4 by the
+mount namespace, since `.ha_token` is not on the filesystem allowlist. Verified with a real token
+present — baseline reports `readable — CONTAINS HA_TOKEN`, isolated reports `BLOCKED`.
 
 ---
 
@@ -795,9 +817,9 @@ Two entries for the threat → control → residual-risk table in the (unwritten
 | **Trust boundary** | Supervisor process (trusted, holds credential) ↔ sandbox process (untrusted, runs third-party code) |
 | **Actor** | Malicious or compromised integration author, distributing via HACS |
 | **Threat (STRIDE)** | **Information Disclosure** leading to **Elevation of Privilege** — sandbox reads the credential and acts with full supervisor authority |
-| **Attack** | Read `/proc/<ppid>/environ` or `/proc/<ppid>/cmdline`, extract the token, call HA's REST API directly, bypassing the bridge socket entirely |
-| **Control (current)** | **None effective.** Process separation exists, but both processes share a uid and the sandbox has unrestricted `/proc` visibility. The comment at `supervisor.py:329` asserts the property but no mechanism enforces it |
-| **Control (planned)** | Workstream 4 — distinct uid for the sandbox, and/or PID namespace via `unshare`, so `/proc` exposes only the sandbox itself. Secondary: never place the token in the environment or command line at all |
+| **Attack** | Read the credential from any of four locations — the inherited environment, `/proc/<ppid>/environ`, `/proc/<ppid>/cmdline`, or `spike/.ha_token` on disk — then call HA's REST API directly, bypassing the bridge socket entirely |
+| **Control (current)** | ✅ **Effective as of 2026-08-14.** `supervisor.py --isolate`: environment scrub (door 1), PID namespace (doors 2–3), mount namespace excluding `.ha_token` from the filesystem allowlist (door 4). Verified with a real token present — probe check #6 goes ALLOWED → BLOCKED. *Before this:* none effective, since both processes shared a uid and the sandbox had unrestricted `/proc` and filesystem visibility |
+| **Control (planned)** | Run the sandbox under a **distinct uid** as well, so the boundary does not rest solely on namespace correctness. Also: never place the token in the environment or on a command line at all, so door 1 and door 3 cannot recur if isolation is ever disabled |
 | **Residual risk after control** | The supervisor still holds an **unscoped** token. Compromise of the supervisor itself remains full house compromise. HA offers no scoped tokens, so this cannot be mitigated within the framework — it is an upstream limitation and must be stated as such |
 | **Detection** | **None.** The hash-chained audit log records only mediated operations; a bypass produces no record. Log integrity is intact but log completeness is not guaranteed without enforced mediation |
 
@@ -831,25 +853,38 @@ threat model should show controls mapping to *several* threats, not one each.
 
 ## Status and next steps
 
-- **No repository code has been changed.** All three token doors remain open, and the audit chain
-  remains unkeyed, deliberately — so both can be *demonstrated* as evidence rather than merely
-  described. The tamper tests were run on copies; no real audit log was modified.
-- **Decision needed on the token:** patch door 1 now (a two-line change — honest but partial), or
-  leave all three intact until workstream 4 closes them properly. Leaving them intact means the
-  fix and the finding land together and the "before" state stays demonstrable.
-- **Decision needed on the log:** keying the chain with an HMAC is a genuinely small change
-  (roughly `hashlib.sha256` → `hmac.new(key, ..., sha256)`, plus deciding where the key lives)
-  and closes attack B independently of workstream 4. Worth considering as a cheap early win,
-  since it is one of the few security improvements available that does *not* wait on isolation.
-- **Two comments should not stay as they are:**
-  - `supervisor.py:329` — *"No HA token in the child's environment"* asserts a guarantee the code
-    does not provide.
-  - `supervisor.py:79–85` — the `AuditLog` docstring says a compromised integration "cannot
-    remove or reorder a decision without breaking every hash after it." True for a naive edit,
-    false for a rebuild, since no secret is involved. It should say *tamper-evident against an
-    actor that cannot recompute the chain*.
+*This section originally recorded both weaknesses as deliberately unfixed, so the "before" state
+would stay demonstrable. That plan held, and the fixes landed the same day — updated below.*
 
-  At minimum both should be reworded to state intent accurately and reference this document.
-- **For the report:** these join `FrozenOrThawed`, the registry gap, and the install-weighting
-  reversal as instances of the project auditing itself. That pattern is worth making explicit in
-  the write-up rather than leaving the reader to notice it.
+- ✅ **Token: all four doors closed** (§5.9, `RESULTS_2026-08-14_isolation_spike.md`). Door 1 by
+  scrubbing `HA_TOKEN` from the child's environment in `supervisor.py`; doors 2 and 3 by the PID
+  namespace; door 4 by the mount namespace. **Probe check #6 was added while the gap was still
+  open**, so the before/after is a measurement rather than an assertion: baseline reports
+  `readable — CONTAINS HA_TOKEN`, isolated reports `BLOCKED`.
+- ⚠️ **Log: partly addressed, and the remaining half is still worth doing.** The mount namespace
+  removes the sandbox's *access* to `spike/audit/`, which closes the practical attack. The chain
+  itself is **still unkeyed**, so anything that does obtain write access can rebuild it. Keying it
+  is a small change (roughly `hashlib.sha256` → `hmac.new(key, …, sha256)`, plus deciding where
+  the key lives) and the two controls fail independently — which is the argument for having both
+  rather than relying on the namespace alone.
+- ✅ **Both misleading comments corrected.** `supervisor.py:329` no longer claims the child has no
+  token (it now describes the scrub, and notes the scrub alone is insufficient). The `AuditLog`
+  docstring now states both measured limits — unkeyed digest, and mediated-only records — instead
+  of claiming a compromised integration "cannot remove or reorder a decision".
+- 🆕 **Door 4 was found after the fixes**, while verifying the others were closed. It was already
+  covered by the mount namespace, so nothing had to change — but see Part 4 for why it is worth
+  recording rather than quietly absorbing.
+
+**Still open, and not addressed by anything in this document:**
+
+- **Network egress and lateral movement.** The `network:` allowlist is advisory, so a raw socket
+  reaches any host — including devices on the LAN that never required HA's credential at all.
+  See `ANALYSIS_2026-08-14_isolation_coverage.md` category B. This is now the largest open
+  weakness, and it is *not* a token problem: closing every door above does not touch it.
+- **Resource exhaustion.** No cgroups.
+
+**For the report:** these join `FrozenOrThawed`, the registry gap, and the install-weighting
+reversal as instances of the project auditing itself. The full arc — find it, measure it, write
+the failing check, fix it, then find a fourth route while verifying the fix — is more convincing
+than any single finding, and is worth making explicit rather than leaving the reader to notice
+it.

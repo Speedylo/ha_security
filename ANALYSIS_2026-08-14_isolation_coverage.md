@@ -15,11 +15,13 @@ Namespaces + seccomp closes **one family** of weaknesses cleanly and completely:
 the sandboxed process reaches *around* the shim to touch the host directly — reading the token
 out of `/proc`, reading `secrets.yaml`, rewriting its own audit log. That family includes the
 single strongest result available to the project (the 2021 HACS file-theft reproduction), so the
-work is well worth doing and remains the highest-value unstarted item.
+work is well worth doing and was, when this was written, the highest-value unstarted item.
+**It was built the same day — see `RESULTS_2026-08-14_isolation_spike.md`.**
 
-But it does **not** close three other families. One of them — **network egress** — looks like it
-belongs to the first family and does not; confining it requires building a proxy, which is new
-architecture rather than a namespace flag. Another family is **structural** and no isolation
+But it does **not** close three other families. One of them — **network egress, and more sharply
+lateral movement to undeclared LAN devices** — looks like it belongs to the first family and does
+not; confining it requires building a proxy, which is new architecture rather than a namespace
+flag. That one is now the largest open weakness in the project. Another family is **structural** and no isolation
 primitive will ever touch it. And isolation **introduces** a fourth set of risks of its own.
 
 ---
@@ -38,15 +40,29 @@ These are the ones where "turn on isolation" really is the fix.
 | Reading `secrets.yaml` / `/etc/passwd` (`probe.py` check #5) | **Mount namespace** | This is the one that unblocks the 2021 HACS file-theft reproduction — the strongest single result available |
 | Sandbox rewriting its own audit log (§5.8, §6.10 of the findings) | **Mount namespace** | The audit directory simply isn't present in the sandbox's filesystem view |
 
-**This category is real and it matters.** It converts the probe from "4 of 5 blocked, and we
-explain the fifth" into "5 of 5 blocked", and it restores the truth of the two claims §5.8 showed
-were false. If nothing else got done, this would still be worth the effort.
+**This category is real and it matters.** Predicted to convert the probe from "4 of 5 blocked, and
+we explain the fifth" into "5 of 5", and to restore the truth of the two claims §5.8 showed were
+false. **Measured after building: 4 of 8 → 6 of 8**, the difference being that two further checks
+were added for the still-open network gap rather than any Category A prediction failing. A fourth
+token route (`.ha_token` on disk) was also found during verification and was already covered by
+the mount namespace.
 
 ---
 
 ### Category B — looks like Category A, is actually new architecture ⚠️
 
-**Network egress. This is the one to be careful about.**
+**Network egress — and, more sharply, lateral movement. This is the one to be careful about.**
+
+> **Framing corrected 2026-08-14, after isolation was built.** This section was originally written
+> as "network egress", which understates it. Exfiltration is the obvious reading; the sharper one
+> is that a raw socket reaches **devices on the user's LAN that the manifest never declared** — a
+> lock's local HTTP API, a camera, the router's admin page. None of those require Home Assistant's
+> credential, so closing every token route (which isolation did) does nothing about them.
+> **Confining lateral movement is the manifest's central promise**, and this is the gap that says
+> it is not yet kept. Note this is a step *before* the declared-capability limit in §10.1: that
+> one says the manifest cannot stop an integration abusing a device it legitimately declared;
+> this one says it cannot yet stop it reaching devices it never declared at all. The second is a
+> bigger hole and, unlike the first, it is fixable.
 
 The current state is worse than it appears, and it is worth being precise because the probe
 result reads as reassuring. `spike/shim/homeassistant/helpers/aiohttp_client.py` implements
@@ -172,10 +188,16 @@ Counting the concrete weaknesses currently known:
 
 | Category | Count | Status after namespaces + seccomp |
 |---|---|---|
-| A — closed by isolation | 5 | ✅ Fixed |
-| B — needs new architecture (egress proxy, redirect check) | 2 | ⚠️ Still open; budget separately |
+| A — closed by isolation | 5 (+1 found later) | ✅ **Fixed and measured** — built 2026-08-14, probe 4/8 → 6/8 |
+| B — needs new architecture (egress proxy, redirect check) | 2 | ⚠️ **Still open — now the largest remaining weakness** |
 | C — structural, no technical control | 5 | ❌ Permanently residual; must be *stated* |
-| D — introduced by isolation | ~7 | 🆕 New work and new caveats |
+| D — introduced by isolation | ~7 | 🆕 New work and new caveats; 3 hit in practice |
+
+> **Scored after the build.** Category A closed exactly as predicted (plus a fourth token route
+> found while verifying — a file on disk, already covered by the mount namespace). Category B
+> stayed open exactly as predicted. Three of Category D's practical obstacles showed up as real
+> bugs. **Doing this analysis before building was worth the time**, and that is worth a line in
+> the methodology chapter.
 
 So: **isolation closes the largest and most visible family, and it is the right next build.** But
 "almost all" would be wrong in a report. A defensible sentence is closer to:
@@ -196,7 +218,7 @@ That paragraph is worth more to an auditor than "we sandboxed it."
 
 Ordered by value per unit of effort, given the current state:
 
-1. **Add probe checks #6 and #7** — raw-socket egress, and reading the token from `/proc`. Both
+1. ✅ **DONE — probe checks #6, #7 and #8** — reading the token from `/proc`, lateral movement to an undeclared LAN device, and exfiltration. All
    are a few lines and both currently *fail to be blocked*. This makes the real gap measurable
    before it is fixed, giving a genuine before/after. Cheap, and it is measurement, which is this
    project's strongest suit.

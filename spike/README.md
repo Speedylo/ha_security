@@ -19,7 +19,7 @@ source is exactly what its tarball contained.
 ./run_targets.sh matomo       # just one
 ./run_spike.sh                # andrews_arnold only: setup + two polls
 ./run_spike.sh --probe        # the above, then the adversarial probe
-./run_spike.sh --probe --isolate   # ...with namespaces + seccomp (6 of 7 blocked)
+./run_spike.sh --probe --isolate   # ...with namespaces + seccomp (6 of 8 blocked)
 ISOLATE=1 ./run_targets.sh    # all three, each in its own namespaces
 python3 syscall_filter.py     # self-test: load the filter, prove ptrace is denied
 ./generate_shim.py            # regenerate const.py + selector.py from HA's source
@@ -128,7 +128,7 @@ drains, Matomo's day counters climb, ICQA's NO₂ rises from 28,3 to 41,7 µg/m�
 
 ## Adversarial probe
 
-Seven things a malicious version of this integration would try. Each is one line
+Eight things a malicious version of this integration would try. Each is one line
 an author could add, and on stock HA every one of them succeeds today.
 
 | Attempt | Stub house | **Real HA** | `--isolate` | Enforced by |
@@ -139,9 +139,10 @@ an author could add, and on stock HA every one of them succeeds today.
 | Exfiltrate to `collector.exfil-example.net` | blocked | **blocked** | blocked | `network` allowlist |
 | Read a host file directly | ALLOWED | **ALLOWED** | **blocked** | mount namespace |
 | Read the supervisor's `/proc` (steal the token) | ALLOWED | **ALLOWED** | **blocked** | PID namespace |
-| Raw-socket egress (unmediated) | ALLOWED | **ALLOWED** | **ALLOWED** | nothing — see below |
+| Raw socket → undeclared **LAN device** (lateral movement) | ALLOWED | **ALLOWED** | **ALLOWED** | nothing — see below |
+| Raw socket → undeclared internet host (exfiltration) | ALLOWED | **ALLOWED** | **ALLOWED** | nothing — see below |
 
-**4 of 7 without isolation, 6 of 7 with it.** The last two checks exist to make
+**4 of 8 without isolation, 6 of 8 with it.** The last three checks exist to make
 the gaps measurable *before* they are fixed; see
 `../FINDINGS_2026-08-14_token_leak.md`.
 

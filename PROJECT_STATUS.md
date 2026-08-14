@@ -683,13 +683,14 @@ an explicit allowlist of paths, pivots into it, and mounts a private `/proc`;
 namespaces throughout. Enabled with `--isolate` (or `ISOLATE=1 ./run_targets.sh`); the
 unisolated path is unchanged, so every measurement is reproducible in both directions.
 
-**The adversarial probe gains two checks and goes from 4/7 to 6/7 blocked:**
+**The adversarial probe gains three checks and goes from 4/8 to 6/8 blocked:**
 
 | # | Check | Baseline | Isolated |
 |---|---|---|---|
 | 5 | read host filesystem (`/etc/passwd`) | ALLOWED | **BLOCKED** |
 | 6 | read supervisor's `/proc` (credential theft, §5.8) | ALLOWED | **BLOCKED** |
-| 7 | raw-socket egress, unmediated | ALLOWED | **ALLOWED** |
+| 7 | raw socket → undeclared **LAN device** (lateral movement) | ALLOWED | **ALLOWED** |
+| 8 | raw socket → undeclared internet host (exfiltration) | ALLOWED | **ALLOWED** |
 
 Row 5 is the 2021 HACS file-theft pattern — §8's "single strongest result available" is now
 reachable. Row 6 closes §5.8's routes 2 and 3 (route 1, the copied environment, was fixed
@@ -700,7 +701,7 @@ sufficient). **Row 7 is the predicted Category B gap** and stays open honestly.
 counts isolated and not: `andrews_arnold_quota` 7, `matomo` 44, `icqa` 18, chains intact. The
 compatibility result is not traded away to get the security result.
 
-**Seccomp argument filtering demonstrates the fix for row 7.** `HACS_DENY_INET=1` permits
+**Seccomp argument filtering demonstrates the fix for rows 7–8.** `HACS_DENY_INET=1` permits
 `socket(AF_UNIX)` (the bridge) and denies `AF_INET`/`AF_INET6`. The integration then fails to
 reach its vendor cloud — *which is the point*: it proves the `network:` allowlist can be made
 enforcing rather than advisory, with the traffic forced through the supervisor. Building that
@@ -723,7 +724,7 @@ being asked.
 | # | Decision | Options | Recommendation |
 |---|---|---|---|
 | 1 | ~~**Compatibility strategy**~~ **SETTLED 2026-08-12** | (a) shim so real integrations run unmodified; (b) own SDK + toy integrations; (c) hand-port 2–3 and measure cost | **(a).** The spike (§5.3) ran a real integration unmodified, so the fallback to (c) is no longer needed. Still scoped to a core + generated constants with measured coverage reported — not "everything runs unmodified". |
-| 2 | ~~**Isolation primitive**~~ **SETTLED 2026-08-14 — by building it** | namespaces+seccomp / gVisor+its trace sink / gVisor+eBPF-as-boundary-verifier | **namespaces + seccomp, now implemented and measured (§5.9).** The recommendation was acted on rather than merely accepted: user + PID + mount namespaces with an allowlisted root and a 25-rule seccomp denylist, ~260 lines, unprivileged, probe 4/7 → 6/7. The trade-off stated below is unchanged and should still be argued explicitly — a syscall boundary is weaker than a fake kernel, and the seccomp policy is partly a response to that, removing `bpf`, `perf_event_open`, `setns` and module loading from the sandbox's reach. Original reasoning: **namespaces + seccomp** — coherent with eBPF, lighter on the Pi, and defensible as "controls proportionate to the threat model" (his language). |
+| 2 | ~~**Isolation primitive**~~ **SETTLED 2026-08-14 — by building it** | namespaces+seccomp / gVisor+its trace sink / gVisor+eBPF-as-boundary-verifier | **namespaces + seccomp, now implemented and measured (§5.9).** The recommendation was acted on rather than merely accepted: user + PID + mount namespaces with an allowlisted root and a 25-rule seccomp denylist, ~260 lines, unprivileged, probe 4/8 → 6/8. The trade-off stated below is unchanged and should still be argued explicitly — a syscall boundary is weaker than a fake kernel, and the seccomp policy is partly a response to that, removing `bpf`, `perf_event_open`, `setns` and module loading from the sandbox's reach. Original reasoning: **namespaces + seccomp** — coherent with eBPF, lighter on the Pi, and defensible as "controls proportionate to the threat model" (his language). |
 | 3 | ~~**Target pattern**~~ **SETTLED 2026-08-14** | polling_sensor only (24.8% of repos but **only 10.6% of installs**) vs. extending to actuators (46.7% of repos and **64.8% of installs**) | **DECIDED: polling sensors as implemented scope; actuators as a stretch goal / basic PoC.** Younes' call, 2026-08-14, and it matches the recommendation that was already worked out below. The decision was taken directly rather than at a meeting because the advisor contact is now expected to be **an email carrying the proposal**, not a live discussion — so there was no meeting to defer it to, and leaving it open was blocking work for no benefit. Rationale for the choice: guarantee a deliverable result and keep scope tight, rather than gamble the isolation + threat-model budget on a 2–3 week inbound command path. **What this unblocks:** the shim freeze's *scope* rationale (§10.3 reason 1) is now void — the symbols needed are settled. Reason 2 (ownership) still stands, so the freeze holds by choice, not by uncertainty. **Original analysis, retained because the report needs it —** install weighting (§5.2b) cut against the polling-sensor default: by repo count it looked like a quarter of the ecosystem; by what people actually run it is a tenth, while actuators are nearly two-thirds. Actuators are simultaneously where the threat model has teeth *and* where the users are — a security auditor will notice both. **But full-platform support is not the right response — see §10.1, measured 2026-08-13.** Implementing all 21 HA entity platforms moves coverage from 1.2% to only 2.1% of installs, because platforms were never the real blocker (`homeassistant.helpers`, `.util`, `.helpers.event`, `.helpers.storage` block far more integrations than any platform). Actuators also require an **inbound** command path the framework does not have yet (HA → sandbox), versus the outbound-only path built so far. And manifest confinement is structurally weaker for actuators: it stops an integration reaching *other* devices, not misuse of the *one* device it legitimately declared and controls (the 3am-unlock scenario). **Recommended position for the meeting:** keep polling_sensor as the implemented scope; analyse actuators fully in the threat model, including the declared-capability-abuse limit; build **one** actuator platform (`switch`) end-to-end as an architecture proof, not a coverage push. Present 24.8%/10.6% together, and bring the 21-platform coverage table as evidence the scope call is deliberate, not avoidance. |
 | 3b | **Which integrations to target inside the pattern** — new, 2026-08-13 | arbitrary / alphabetical (what happened so far) vs. **most-installed first** | **Most-installed first.** The top 20 polling sensors are 52% of all polling-sensor installs, and several are already within reach of today's shim — `MarcoGos/kleenex_pollenradar` (1,569 installs) and `delphiki/hass-tarif-edf` (1,473) need **zero** additional symbols; `jonandel/ha-hildebrandglow-dcc` (1,718) needs one. "Runs integrations installed on thousands of real systems" is a far stronger claim than "runs three integrations", for identical effort. |
 | 4 | **Report requirements** | literature-review chapter? page target? | **Unknown — ask the advisor / check programme handbook.** |
@@ -794,7 +795,7 @@ being asked.
 > **New since the pause:** §5.8 records two findings from a self-audit of the security core, and
 > **§5.9 records that isolation (workstream 4) is now built** — user + PID + mount namespaces
 > with an allowlisted root and a seccomp filter, ~260 lines, unprivileged. The adversarial probe
-> goes from 4/7 to 6/7 blocked and all three integrations run unchanged. This does not reopen the
+> goes from 4/8 to 6/8 blocked and all three integrations run unchanged. This does not reopen the
 > shim: it was the security core that grew, which is exactly where effort was meant to
 > concentrate. **The plan no longer contains anything unproven** — every workstream now has
 > either a result or a demonstrated mechanism.
@@ -847,7 +848,7 @@ being asked.
    - ✅ **DONE (2026-08-14) — filesystem and process isolation** (namespaces + seccomp). See
      §5.9. Deferred on 2026-08-13, then built on 2026-08-14 to answer whether the project was
      completable end to end. The fifth probe row is now blocked, so the security chapter reports
-     **6 of 7** with one honestly-stated gap (raw-socket egress) rather than explaining an
+     **6 of 8** with one honestly-stated gap (lateral movement / egress) rather than explaining an
      unblocked filesystem row. The 2021 HACS file-theft reproduction is now reachable.
      *Remaining:* egress proxy, cgroups, and verification on aarch64.
 5. **Draft manifest schema** (strawman is in §2).
@@ -939,8 +940,8 @@ examiner find them:
   2026-08-14 (§5.9), but the framing lesson survives and belongs in the report.** §5.8 found that
   a sandbox sharing a uid with the supervisor could read the HA token from `/proc` and bypass
   mediation entirely — so probe results were results about the **mediated path** only. Isolation
-  now closes the filesystem and process routes (probe 4/7 → 6/7). **One row is still honestly
-  open:** raw-socket egress bypasses the `network:` allowlist, because that check is advisory —
+  now closes the filesystem and process routes (probe 4/8 → 6/8). **Two rows are still honestly
+  open:** a raw socket bypasses the `network:` allowlist, because that check is advisory —
   `aiohttp_client` asks permission and then the *sandbox* makes the connection. So the precise
   claim today is *"an integration cannot read the host, steal the credential, or reach the HA API
   unchecked; it can still open a socket the manifest never authorised."* Say exactly that. The
@@ -1027,7 +1028,7 @@ along and the one that contributes least to the security argument:
 | 1 | **Evidence / measurement** (§5.2, §5.4) | ✅ done — the novel contribution |
 | 2 | **Compatibility (the shim)** (§5.3, §5.4) | ✅ substantially done — **now frozen, see §10.3** |
 | 3 | **Mediation / policy** (supervisor, §5.3, §5.5–5.7) | ✅ core done; manifest schema still a strawman. ⚠️ **§5.8: mediation is currently *evadable*, not merely incomplete** — the sandbox can obtain the HA token and bypass the supervisor entirely. Policy logic is sound; its *unavoidability* depends on workstream 4. |
-| 4 | **Isolation** (namespaces + seccomp) | ✅ **core built 2026-08-14** — see §5.9 and `RESULTS_2026-08-14_isolation_spike.md`. User + PID + mount namespaces with an allowlisted root and a 25-rule seccomp filter, ~260 lines, unprivileged. Probe goes 4/7 → 6/7 blocked; all three integrations run identically. **Outstanding:** network egress (needs a supervisor-side proxy, not a namespace flag) and cgroups (resource exhaustion). **Unverified:** aarch64 / the actual Pi. |
+| 4 | **Isolation** (namespaces + seccomp) | ✅ **core built 2026-08-14** — see §5.9 and `RESULTS_2026-08-14_isolation_spike.md`. User + PID + mount namespaces with an allowlisted root and a 25-rule seccomp filter, ~260 lines, unprivileged. Probe goes 4/8 → 6/8 blocked; all three integrations run identically. **Outstanding:** lateral movement to undeclared LAN devices and egress generally (needs a supervisor-side proxy, not a namespace flag) and cgroups (resource exhaustion). **Unverified:** aarch64 / the actual Pi. |
 | 5 | **Evaluation + write-up** | ⚠️ 2 of 4 axes have data (compatibility, security-partial); performance is untouched; threat model is unwritten. §5.8 supplies two drafted threat→control→residual-risk rows to start it with. |
 
 **What is genuinely banked regardless of how Decision 3 resolves** — i.e. the minimum
@@ -1042,7 +1043,7 @@ evident audit with detection demonstrated (§5.3); first-class entity registrati
 ~~**What is not banked:** containment.~~ **Banked as of 2026-08-14 — see §5.9.** This paragraph
 previously read "the framework stops API misuse; it does not yet stop `open('/etc/passwd')`". It
 now does. Isolation was built the day after this was written, and the adversarial probe goes from
-4/7 to 6/7 blocked with all three integrations running unchanged. **Add to the banked list:**
+4/8 to 6/8 blocked with all three integrations running unchanged. **Add to the banked list:**
 filesystem and process containment via unprivileged namespaces, with a measured before/after; the
 2021 HACS file-theft pattern reproducible as *blocked*; and a fifth self-caught gap (§5.8's
 credential leak) closed and demonstrated.

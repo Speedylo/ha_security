@@ -15,19 +15,19 @@ two new files, needs no root, and is transparent to the integrations.
 | `spike/isolate.py` | ~230 | Builds an allowlisted root filesystem, pivots into it, mounts a private `/proc`, then execs the runner |
 | `spike/syscall_filter.py` | ~110 | Seccomp policy — denies 25 syscalls a polling integration provably never needs |
 | `spike/supervisor.py` | +20 | New `--isolate` flag; also strips `HA_TOKEN` from the child's environment |
-| `spike/probe.py` | +40 | Two new adversarial checks (#6 `/proc` credential theft, #7 raw-socket egress) |
+| `spike/probe.py` | +50 | Three new adversarial checks (#6 `/proc` credential theft, #7 lateral movement, #8 exfiltration) |
 | `spike/run_targets.sh` | +5 | `ISOLATE=1` to run every target isolated |
 
 Run it:
 
 ```bash
-./run_spike.sh --probe --isolate      # one integration, seven adversarial checks
+./run_spike.sh --probe --isolate      # one integration, eight adversarial checks
 ISOLATE=1 ./run_targets.sh            # all three integrations, isolated
 ```
 
 ---
 
-## Result 1 — the probe goes from 4/7 to 6/7 blocked
+## Result 1 — the probe goes from 4/8 to 6/8 blocked
 
 Same integration, same manifest, same supervisor. Only `--isolate` differs.
 
@@ -39,25 +39,45 @@ Same integration, same manifest, same supervisor. Only `--isolate` differs.
 | 4 | exfiltrate to undeclared host (mediated) | BLOCKED | BLOCKED |
 | 5 | **read host filesystem** (`/etc/passwd`) | **ALLOWED** | **BLOCKED** ✅ |
 | 6 | **read supervisor's `/proc`** (credential theft) | **ALLOWED** | **BLOCKED** ✅ |
-| 7 | **raw-socket egress** (unmediated) | **ALLOWED** | **ALLOWED** ⚠️ |
-| | | **4 of 7** | **6 of 7** |
+| 7 | **raw socket → undeclared LAN device** (lateral movement) | **ALLOWED** | **ALLOWED** ⚠️ |
+| 8 | **raw socket → undeclared internet host** (exfiltration) | **ALLOWED** | **ALLOWED** ⚠️ |
+| | | **4 of 8** | **6 of 8** |
 
 **Row 5 is the one that matters most.** It is the 2021 HACS file-theft pattern, named in
 `PROJECT_STATUS.md` §8 as *"the single strongest result available"*. It is now blocked, so that
 result is reachable rather than aspirational.
 
 **Row 6 closes the finding from this morning.** `FINDINGS_2026-08-14_token_leak.md` documented
-three routes by which the sandbox reaches the HA token. Routes 2 and 3 read
-`/proc/<supervisor>/environ` and `/cmdline`; inside a PID namespace the supervisor has no `/proc`
-entry at all, so both vanish. Route 1 (the copied environment) is *not* closed by isolation and
-was fixed separately in `supervisor.py` — worth keeping distinct, because it shows isolation is
-necessary but not sufficient.
+routes by which the sandbox reaches the HA token. Routes 2 and 3 read `/proc/<supervisor>/environ`
+and `/cmdline`; inside a PID namespace the supervisor has no `/proc` entry at all, so both vanish.
+Route 1 (the copied environment) is *not* closed by isolation and was fixed separately in
+`supervisor.py` — worth keeping distinct, because it shows isolation is necessary but not
+sufficient. Verified with a real token present: baseline reports `readable — CONTAINS HA_TOKEN`,
+isolated reports `BLOCKED`.
 
-**Row 7 is the honest remaining gap, and it is exactly the one predicted.**
-`ANALYSIS_2026-08-14_isolation_coverage.md` put network egress in Category B — *looks like
-isolation solves it, actually needs new architecture*. Confirmed: a raw socket still bypasses the
-manifest allowlist entirely, because the check in `aiohttp_client` is advisory and the connection
-originates inside the sandbox.
+> **A fourth route was found afterwards**, while checking that the first three were really shut:
+> `spike/.ha_token`, an ordinary file the sandbox could `open()`. Mode `0600` restricts other
+> *users*, and the sandbox ran as the same user. It was already covered — the mount namespace does
+> not put it on the allowlist — but the first pass missed the simplest route while finding the
+> clever ones. Recorded in the findings doc as an argument for enumerating **where a secret
+> physically lives** rather than reasoning attack-by-attack.
+
+**Rows 7 and 8 are the honest remaining gap, and they are exactly the one predicted.**
+`ANALYSIS_2026-08-14_isolation_coverage.md` put this in Category B — *looks like isolation solves
+it, actually needs new architecture*. Confirmed: a raw socket bypasses the manifest allowlist
+entirely, because the check in `aiohttp_client` is advisory and the connection originates inside
+the sandbox.
+
+**Row 7 is the one to lead with, and it is worse than "exfiltration".** Row 8 is data leaving.
+Row 7 is the sandbox reaching a device on the user's LAN that the manifest never declared — a
+lock's local HTTP API, a camera, the router. **None of those need Home Assistant's credential**,
+so closing every token route did nothing about them. Demonstrated directly: under full isolation,
+namespaces *and* seccomp, a raw socket reached a live local service and got a response.
+
+That matters because **confining lateral movement is the manifest's central promise.** §10.1
+already concedes the manifest cannot stop an integration abusing a device it legitimately declared
+(the 3am unlock). This is a step earlier: it cannot yet stop an integration reaching devices it
+*never* declared. That is a bigger hole — and unlike the declared-capability limit, it is fixable.
 
 ---
 
@@ -101,7 +121,7 @@ bridge — and deny `socket(AF_INET)` / `AF_INET6`.
 The integration breaks, **and that is the point.** It proves two things at once: seccomp can
 filter on syscall arguments and not just names, and denying IP is what would make the manifest's
 `network:` allowlist *enforcing* rather than advisory. The integration's traffic would then have
-to leave through the supervisor — i.e. row 7 is closable, and this is the mechanism that closes
+to leave through the supervisor — i.e. rows 7 and 8 are closable, and this is the mechanism that closes
 it. Building the proxy on the other side of that socket remains the Category B work.
 
 ---
@@ -140,7 +160,7 @@ State these rather than let them be found:
   and a wrong allowlist fails by crashing the integration in ways that look like bugs. Tightening
   this should be driven by tracing, not guesswork. The denylist is defensible on its own terms —
   every entry is unnecessary for any integration — but it should not be oversold.
-- **No network namespace.** Row 7 stays open. Adding `--net` would cut the legitimate vendor poll
+- **No network namespace.** Rows 7 and 8 stay open. Adding `--net` would cut the legitimate vendor poll
   too, so it waits for the supervisor-side proxy.
 - **No cgroups.** Resource exhaustion is untouched: a malicious integration can still fork-bomb or
   exhaust RAM. Namespaces isolate visibility, not consumption. Availability is a security
