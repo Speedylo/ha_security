@@ -884,9 +884,17 @@ would stay demonstrable. That plan held, and the fixes landed the same day — u
   destination:** exfiltration through a host the manifest legitimately declares. No allowlist
   fixes that.
 - **Resource exhaustion.** No cgroups.
+- **aarch64 is unverified.** Every measurement in this document was taken on x86_64 under WSL2,
+  and the four doors are closed by namespaces whose behaviour on the Pi has never been observed.
+
+**A fifth route appeared later the same day, and not through a token at all.** `THREAT_MODEL.md`
+§5.1 found that the egress broker — built to close the network route above — authorised host
+*names* without resolving them, so an integration could have the supervisor fetch a LAN address
+on its behalf. It needs no credential, which is exactly the property that made the raw-socket
+route interesting here. Closed the same day.
 
 **For the report:** these join `FrozenOrThawed`, the registry gap, and the install-weighting
 reversal as instances of the project auditing itself. The full arc — find it, measure it, write
-the failing check, fix it, then find a fourth route while verifying the fix — is more convincing
-than any single finding, and is worth making explicit rather than leaving the reader to notice
-it.
+the failing check, fix it, find a fourth route while verifying the fix, then find a fifth in the
+*fix for a different problem* — is more convincing than any single finding, and is worth making
+explicit rather than leaving the reader to notice it.

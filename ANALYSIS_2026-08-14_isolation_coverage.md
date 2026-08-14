@@ -197,7 +197,7 @@ Counting the concrete weaknesses currently known:
 | Category | Count | Status after namespaces + seccomp |
 |---|---|---|
 | A — closed by isolation | 5 (+1 found later) | ✅ **Fixed and measured** — built 2026-08-14, probe 4/8 → 6/8 |
-| B — needs new architecture (egress proxy, redirect check) | 2 | ✅ **Built the same day** — probe now 8 of 8; redirect gap closed with it |
+| B — needs new architecture (egress proxy, redirect check) | 2 | ✅ **Built the same day** — probe 8 of 8 at the time; redirect gap closed with it. The broker then needed a destination check of its own (T14), added later that day — probe now **10 of 10** |
 | C — structural, no technical control | 5 | ❌ Permanently residual; must be *stated* |
 | D — introduced by isolation | ~7 | 🆕 New work and new caveats; 3 hit in practice |
 
@@ -243,9 +243,21 @@ Written as a plan; kept with outcomes marked, since the sequencing is itself a r
    biggest single win; unblocks the 2021 file-theft reproduction.
 6. ✅ **DONE — the egress broker** (`RESULTS_2026-08-14_egress_broker.md`), with the redirect
    check falling out of it as predicted. Took the probe from 6/8 to 8/8.
-7. ⬜ **Write Category C into the threat model as residual risks.** No code. Required regardless,
-   and now the main thing standing between the project and a complete argument.
+7. ✅ **DONE — Category C written into `THREAT_MODEL.md`** as residual risks R1–R6, on ISO 31000
+   with STRIDE for identification. Every Category C item from this document appears there: R2 is
+   content-level exfiltration, R3 is manifest over-declaration, R1 is the unscoped credential,
+   R5 is declared-capability abuse.
+8. 🆕 **DONE, and not in the original plan — the destination check** (`THREAT_MODEL.md` §5.1).
+   The threat model found T14 in the egress broker item 6 had just built: it authorised host
+   *names* and never resolved them, so a declared host with an A record on the LAN was fetched by
+   the supervisor. Closed the same day, probe now 10/10.
 
-**What is left is items 3, 4 and 7** — an HMAC, a hardware check, and writing. Two of the three
-are small, and the third is the highest-weight artifact for this advisor. That is a materially
-better position than the plan assumed when it was written.
+**What is left is items 3 and 4** — an HMAC and a hardware check, both small.
+
+**The sequencing result worth reporting is item 8.** This document predicted what each category
+would need and was right about all four, but it did not predict that *building* Category B would
+create a new Category B problem of its own. Item 6 closed lateral movement at the socket layer by
+making the supervisor fetch on the sandbox's behalf; item 8 closed the lateral movement that
+created. **Analysis-before-building sequenced the work correctly and still could not see one step
+past its own remedy** — which is the argument for threat modelling as a separate, later activity
+rather than a planning document written up front.

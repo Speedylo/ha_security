@@ -483,9 +483,9 @@ them in both directions.
 ### `test_egress.py` and `test_matrix.sh`
 
 Added 2026-08-14 after the question *"did you test this against multiple integrations with
-multiple scenarios?"* — the answer being no. Widening the matrix found three defects, **all three
-in measurement code rather than in controls** (see `PROJECT_STATUS.md` §5.11). Two more defects
-followed, one of them in a probe check written the same day (§12.2b), making it **four of five**.
+multiple scenarios?"* — the answer being no. Widening the matrix found four defects, three of them
+**in measurement code rather than in controls** (see `PROJECT_STATUS.md` §5.11). A fifth followed
+the same day, in a probe check written that afternoon (§12.2b), making it **four of five**.
 
 `test_egress.py` runs 35 policy cases against a local stub, covering both directions of every
 rule — notably a redirect that *should* be followed as well as one that should not, since a

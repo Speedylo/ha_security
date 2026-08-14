@@ -117,7 +117,9 @@ PASS
 ```
 
 Separately, `HACS_DENY_INET=1` adds an **argument-level** rule: allow `socket(AF_UNIX)` — the
-bridge — and deny `socket(AF_INET)` / `AF_INET6`.
+bridge — and deny `socket(AF_INET)` / `AF_INET6`. *(That flag was opt-in while denial was
+experimental. It is now the default, and the flag inverted to `HACS_ALLOW_INET=1` for restoring
+the old behaviour — `HACS_DENY_INET` no longer exists.)*
 
 ```
   sandbox: seccomp filter loaded — 27 rules, AF_INET denied

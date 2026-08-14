@@ -6,7 +6,7 @@ a single line an integration author could add to a legitimate integration, and
 on stock Home Assistant every one of them succeeds today.
 
 Some checks are expected to FAIL to be blocked, and say so. Reporting that
-honestly is the point of running the probe at all — checks 5 through 8 were each
+honestly is the point of running the probe at all — checks 5 through 10 were each
 written while they still failed, which is what made every before/after a
 measurement rather than an assertion.
 
@@ -228,8 +228,8 @@ async def run_probe(hass: HomeAssistant) -> list[tuple[str, bool, str]]:
     #    is not routed. A control that is really a timeout would have shown the
     #    fix working before the fix existed. Same failure mode as the gaierror
     #    confound in checks 7 and 8 and the two wrong versions of check 2:
-    #    three of four defects found in this project have been in measurement
-    #    code, and this one made four.
+    #    four of the five defects found in this project have been in
+    #    measurement code, and this one made four.
     #
     #    DESTINATION_CONTROL must match the wording in egress.forbidden_reason.
     #    A string join between two files is fragile, so if that wording changes

@@ -708,6 +708,10 @@ reach its vendor cloud — *which is the point*: it proves the `network:` allowl
 enforcing rather than advisory, with the traffic forced through the supervisor. Building that
 proxy is the remaining Category B work.
 
+> *Flag naming, so this stays reproducible: `HACS_DENY_INET=1` was opt-**in** while denial was
+> experimental. Since §5.10 denial is the default and the flag inverted to `HACS_ALLOW_INET=1`,
+> which restores the pre-fix behaviour for before/after runs. `HACS_DENY_INET` no longer exists.*
+
 **Honest limits, all in the results doc:** tested on x86_64/WSL2 only — **the Pi 5 is aarch64 and
 unverified**, and that is the cheapest next check; seccomp is a denylist over default-allow, not
 an allowlist (justified, but should not be oversold); no network namespace and no cgroups, so
@@ -735,7 +739,9 @@ all — no TCP, no UDP, no DNS. `AF_UNIX` remains, so the bridge still works and
 way out. All HTTP is serialised over it and performed by the supervisor (`spike/egress.py`, ~170
 lines), which checks the manifest per request *and per redirect hop*.
 
-**Result: the probe reaches 8 of 8**, from 4 of 8 unisolated. All three integrations produce
+**Result: the probe reaches 8 of 8**, from 4 of 8 unisolated *(on the 8-check probe of that
+moment; checks 9 and 10 were added hours later when the threat model found T14 in this very
+broker — §12.2. Current figures are 6/10 and 10/10.)* All three integrations produce
 identical operation counts (7, 44, 18) and none was modified. Two side effects worth recording:
 the **redirect gap closed for free** (each hop is re-authorised — a declared host answering `302`
 to an undeclared one is now denied), and the **audit log improved** from a permission question to
@@ -769,15 +775,19 @@ checkable as in what it blocks.
 An allowlist governs destination, not content. No allowlist fixes this; it belongs in the threat
 model as accepted.
 
-### 5.11 Test matrix — and three defects only wider testing could find ✅ (2026-08-14)
+### 5.11 Test matrix — and four defects only wider testing could find ✅ (2026-08-14)
+
+> **Updated later the same day: a fifth defect followed, in probe check 9 — see §12.2b.** The
+> running tally is **four of five in measurement code**, and the lesson below is the reason it is
+> worth counting at all.
 
 Prompted by a direct question: *"did you test the current system against multiple integrations
 with multiple scenarios?"* The honest answer was **no** — three integrations had been run for
 operation counts, but the eight-check adversarial probe had only ever run against *one*
 (`andrews_arnold_quota`), and the real-HA path had not been re-run since egress was rewritten.
 
-Widening the matrix immediately found three defects. None was in the security mechanisms; **all
-three were in the things that measure them**, which is the more dangerous category, because a
+Widening the matrix immediately found four defects. Three were not in the security mechanisms at
+all but **in the things that measure them**, which is the more dangerous category, because a
 broken measurement reports success.
 
 | # | Defect | Why single-target testing could not find it |
@@ -786,6 +796,7 @@ broken measurement reports success.
 | 2 | `run_targets.sh` used `HA_ARGS=(...)` rather than `+=` when `HA=1`, **silently discarding `--isolate`** | Only wrong when two options were combined; each worked alone |
 | 3 | Relative redirects resolved against the *rewritten* URL, so an **in-allowlist redirect was wrongly denied** | Only wrong for the positive case; the negative case (off-allowlist) passed, which looked like the feature working |
 | 4 | Audit run ids were second-resolution and the log opened in **append** mode, so two runs starting in the same second shared a file and `verify()` reported a **false "chain broken"** | Needs two runs close together — invisible in any single run, and it surfaced only when the matrix was run in a loop |
+| 5 | *(later the same day, §12.2b)* Probe check 9 reported **BLOCKED because the request timed out**, not because policy refused it — it would have shown the fix working before the fix existed | Needs the before/after to be *run* rather than assumed; a check written against a fixed system never sees it |
 
 **Defect 1 was fixed twice.** The first fix compared against "entities this sandbox published this
 run" — which then false-alarmed against *real* HA, where matomo's entities legitimately persist
@@ -829,9 +840,9 @@ HA=1 ./test_matrix.sh     # ...plus real Home Assistant and the bridge
 
 **Two methodological points for the write-up**, both generalising beyond this project:
 
-1. **Evaluation apparatus needs testing as much as the system does.** Three of these four defects
+1. **Evaluation apparatus needs testing as much as the system does.** Four of these five defects
    were in measurement code rather than in controls, and a broken measurement reports success. An
-   evaluation chapter that says "8 of 8 blocked" should also say how the probe was validated.
+   evaluation chapter that says "10 of 10 blocked" should also say how the probe was validated.
 2. **Run the suite more than once.** Defect 4 was invisible to any single run and only appeared as
    a result that changed between identical invocations. Intermittency is information; a suite that
    is only ever run once cannot report it.
@@ -968,7 +979,7 @@ HA=1 ./test_matrix.sh     # ...plus real Home Assistant and the bridge
    - ✅ **DONE (2026-08-14) — filesystem and process isolation** (namespaces + seccomp). See
      §5.9. Deferred on 2026-08-13, then built on 2026-08-14 to answer whether the project was
      completable end to end. The fifth probe row is now blocked, so the security chapter reports
-     **8 of 8** (§5.10 closed the last two rows) rather than explaining an unblocked filesystem row. The 2021 HACS file-theft reproduction is now reachable.
+     **10 of 10** (§5.10 closed checks 7–8; §12.2 added and closed 9–10) rather than explaining an unblocked filesystem row. The 2021 HACS file-theft reproduction is now reachable.
      *Remaining:* egress proxy, cgroups, and verification on aarch64.
 5. **Draft manifest schema** (strawman is in §2).
 6. ⭐ **Send the advisor a ~2-page pre-proposal** — problem, evidenced gap, architecture

@@ -325,7 +325,7 @@ broker built and measured.
 | T01 | Identity spoofing on the bridge | L2×C4 | Med | One 0600 socket per sandbox; identity is *positional*, never asserted | L1×C4 | **Low** | `supervisor.py:393–397` |
 | T02 | Manifest self-modification | L4×C5 | Critical | Manifest is outside the sandbox's filesystem allowlist | L1×C5 | **Med** | `isolate.py:105–120` |
 | T03 | Audit-log rebuild | L3×C3 | Med | Mount ns hides `audit/`; **chain is still unkeyed** | L2×C3 | **Med** | `test_audit.py`, asserted as a limit |
-| T04 | Acting outside mediation | L5×C5 | Critical | Isolation makes mediation the only route | L2×C5 | **High** | probe 4/8 → 8/8 |
+| T04 | Acting outside mediation | L5×C5 | Critical | Isolation makes mediation the only route | L2×C5 | **High** | probe 6/10 → 10/10 |
 | T05 | Token theft (4 doors) | L5×C5 | Critical | Env scrub + PID ns + mount ns; all four closed | L1×C5 | **Med** | probe check 6, measured before/after |
 | T06 | Reading undeclared entities | L5×C3 | High | Manifest `reads_entities` enforced per request | L2×C3 | **Med** | 43 entities baseline → 2 under policy |
 | T07 | Resource exhaustion | L3×C2 | Med | **None — cgroups not implemented** | L3×C2 | **Med** | Known gap |
@@ -644,7 +644,7 @@ code that had passed a targeted suite, and the suite grew from 17 cases to 35 as
 | `FINDINGS_2026-08-14_token_leak.md` | Detailed walk-through of T05 and T03, teaching-first |
 | `ANALYSIS_2026-08-14_isolation_coverage.md` | Predicted coverage of isolation, written *before* it was built |
 | `RESULTS_2026-08-14_isolation_spike.md` | Measured 6/8 snapshot (superseded) |
-| `RESULTS_2026-08-14_egress_broker.md` | Measured 8/8, and the surface the broker added |
+| `RESULTS_2026-08-14_egress_broker.md` | Measured 8/8 snapshot — and the surface the broker added, which §5.1 then found and closed |
 | `spike/audit/*.jsonl` | Per-run hash-chained decision log |
 
 **For the user, the residual-risk statement must be one paragraph, not this document.** Suggested

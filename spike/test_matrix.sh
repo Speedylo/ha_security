@@ -6,8 +6,9 @@
 #
 # Written after the question "did you test this against multiple integrations
 # and multiple scenarios?" — to which the honest answer was "not enough".
-# Widening the matrix immediately found three defects that single-target runs
-# could not have surfaced:
+# Widening the matrix immediately found four defects that single-target runs
+# could not have surfaced, and a fifth followed when the destination check was
+# added later the same day:
 #
 #   1. probe check 2 hardcoded andrews_arnold's entity prefix, so it reported a
 #      false ALLOWED for matomo and icqa;

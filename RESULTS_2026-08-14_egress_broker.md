@@ -11,6 +11,23 @@ gap closed as a side effect.
 one where attacking it is expensive, complex, and conspicuous enough not to be worth it. Every
 claim below is stated as cost imposed, not risk eliminated.
 
+> **⚠️ Snapshot, and the most instructive one in the project. Read `THREAT_MODEL.md` §5.1 next.**
+>
+> This document ends at **8 of 8**, which was true when it was written and is no longer the
+> current figure — the probe now has ten checks and reports **6/10 baseline, 10/10 isolated**.
+>
+> The reason the extra two exist is the point. This document's own §"the part that matters most"
+> section warned that the broker was new attack surface. **It was, and specifically:** the broker
+> authorised host *names* and never resolved them, so an author could declare a plausible vendor
+> host, point its A record at 192.168.1.1, and have the **supervisor** — trusted, and exempt from
+> the seccomp `AF_INET` denial this document is about — fetch it for them. Denying the sandbox its
+> own sockets had moved lateral movement one layer up rather than removing it.
+>
+> Found by writing the threat model, not by testing, and closed the same day (T14/T15,
+> commit `1e1e035`). **Keep this document as written.** The arc — control built, surface
+> predicted in the abstract, surface then found concretely, surface closed — is worth more in a
+> report than a document that claimed to be finished on the first pass.
+
 ---
 
 ## Why the old check could not work
@@ -53,6 +70,9 @@ about how the integration behaves. It is that the integration is no longer the o
 | 7 | **raw socket → undeclared LAN device** | **ALLOWED** | **BLOCKED** ✅ |
 | 8 | **raw socket → undeclared internet host** | **ALLOWED** | **BLOCKED** ✅ |
 | | | **4 of 8** | **8 of 8** |
+
+*Checks 9 and 10 — turning the broker itself against the LAN — did not exist yet. They were added
+later the same day and are ALLOWED against the broker as described here. See the banner above.*
 
 ```
 [BLOCKED] raw socket → undeclared LAN device    socket refused by syscall filter (EAFNOSUPPORT)
@@ -133,6 +153,23 @@ name the thing the framework protects is a weaker allowlist than one that cannot
 did not exist this morning. It is small and reviewable, which is the mitigation, but it is real.
 A bug there is a bug in the trusted half.
 
+> **And there was one, found the same day.** Note what is *missing* from the table above: every
+> row bounds what the sandbox can make the supervisor do with a request, and none of them asks
+> **where the request goes**. The host was checked as a *name*, and the author of the manifest also
+> owns the DNS records that name points at. `THREAT_MODEL.md` §5.1 has the finding and the fix —
+> resolve in the broker, refuse every non-public address, and connect to the address that was
+> checked rather than re-resolving the name. Two rows belong in the table above and are now in the
+> code:
+>
+> | Limit | Attack it bounds | Verified |
+> |---|---|---|
+> | Resolved address must be public | Declared host with an A record on the LAN — probe check 9 | `192.0.2.10 is private, not a public destination` |
+> | Connect to the checked address | DNS rebinding: check one answer, connect on another | `test_egress.py`, 4 pinning cases |
+>
+> This is the strongest available evidence for the claim this section makes. The section predicted
+> new attack surface *in the abstract*; it took a separate threat-modelling pass to find it
+> *concretely*, and no amount of testing the limits already listed would have surfaced it.
+
 ---
 
 ## What this costs an attacker now
@@ -147,9 +184,14 @@ the user's LAN, leave no record.
 1. **Declare the host in the manifest.** Then it is *visible* — in a public repository, in a
    reviewable file, with a weather integration inexplicably declaring the lock's address. This is
    the intended outcome: the control converts an invisible capability into a declared one. It does
-   not prevent the attack; it makes it conspicuous.
+   not prevent the attack; it makes it conspicuous. *(Since T14 was fixed, declaring the host is
+   also no longer sufficient: the address it resolves to must be public, so a declared name aimed
+   at the LAN is refused as well as visible.)*
 2. **Find a bug in `egress.py`** — a scheme parser confusion, a redirect edge case. ~170 lines,
-   which is why keeping it small is itself the control.
+   which is why keeping it small is itself the control. **This route was open until the same
+   evening:** the broker checked names and not destinations, so a declared host pointing at the LAN
+   went straight through. Closed (T14), and worth reporting as evidence that route 2 is a *real*
+   route and not a rhetorical one.
 3. **Break out of the seccomp filter or the namespaces.** A kernel exploit. Much higher cost than
    one line of Python, and the seccomp denylist deliberately removes the syscalls most often used
    in those chains (`bpf`, `perf_event_open`, `userfaultfd`, `io_uring_setup`).
@@ -179,7 +221,8 @@ is as much in what it makes checkable as in what it blocks.
   through to a real socket — failing loudly is the point, since silently falling through is
   precisely the advisory-check mistake this replaced. An integration needing WebSockets does not
   run under the framework today.
-- **aarch64 / the Pi remains unverified.** Unchanged and still the cheapest outstanding check.
+- **aarch64 / the Pi remains unverified.** Unchanged, and now the single most schedule-critical
+  item — every result in this document was measured on x86_64 under WSL2.
 
 ---
 
@@ -192,6 +235,9 @@ is as much in what it makes checkable as in what it blocks.
 | `spike/supervisor.py` | +30 | `http_request` op; rewrites moved here from the sandbox |
 | `spike/isolate.py` | +5 | `AF_INET` denied by default; `HACS_ALLOW_INET=1` restores the old behaviour |
 | `spike/probe.py` | ~+20 | IP literals instead of hostnames; errno-based blocked detection |
+
+*Later the same day, closing T14: `egress.py` +100 (destination check and address pinning),
+`probe.py` +50 (checks 9 and 10), `test_egress.py` 17 → 35 cases.*
 
 `net_request` is retained but unused by the shim, so the old advisory behaviour stays reproducible
 for the evaluation chapter's before/after.

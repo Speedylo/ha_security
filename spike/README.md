@@ -171,17 +171,22 @@ measure the broker rather than bouncing off the allowlist in front of it.
 | entities enumerable | **43** | **2** |
 | privacy-relevant entities exposed | 5 | **0** |
 
-**The last row is now the honest one**, and it is a different row than it used
-to be. Filesystem isolation landed on 2026-08-14 (`isolate.py`,
+**The last row is now the honest one**, and it took three separate controls to
+get there. Filesystem isolation landed on 2026-08-14 (`isolate.py`,
 `syscall_filter.py`), so `open("/etc/passwd")` fails under `--isolate` and the
-2021 HACS file-theft pattern *is* stopped. What remains open is **raw-socket
-egress**: the `network:` allowlist is checked in `aiohttp_client`, which asks the
-supervisor and then lets the *sandbox* make the connection, so a raw socket never
-consults it. A network namespace alone would also cut the legitimate vendor poll,
-so closing this needs an egress proxy on the supervisor side.
-`HACS_DENY_INET=1 ./run_spike.sh --isolate` shows the enforcement half already
-works: `socket(AF_UNIX)` is permitted, `AF_INET` is denied, and the integration
-correctly fails to reach its cloud.
+2021 HACS file-theft pattern *is* stopped. Raw-socket egress closed the same day:
+the `network:` allowlist used to be checked in `aiohttp_client`, which asked the
+supervisor and then let the *sandbox* make the connection, so a raw socket never
+consulted it. Now seccomp denies `AF_INET` and `AF_INET6` outright and the
+supervisor performs every request, so the allowlist binds regardless of intent.
+`HACS_ALLOW_INET=1 ./run_spike.sh --probe --isolate` restores the old behaviour
+and drops the probe back to 8/10, so the before/after stays reproducible.
+
+Then the broker needed a control of its own. It authorised host *names* and never
+resolved them, so a declared vendor host with an A record on the LAN was fetched
+by the **supervisor** — trusted, and exempt from the seccomp denial. `egress.py`
+now resolves, refuses every non-public address, and connects to the address it
+checked rather than re-resolving the name. See `../THREAT_MODEL.md` §5.1.
 
 The audit log is hash-chained. Flipping the `lock.unlock` denial to an allow in
 a copy of the log is detected: `BROKEN: line 10: record altered (hash mismatch)`.
@@ -318,6 +323,17 @@ an `AttributeError` or a lifecycle failure on the second. Both are the point.
 
 ## Not yet built
 
+**Verification on aarch64.** Everything here was measured on x86_64 under WSL2,
+and the target is a Raspberry Pi 5. `isolate.py` carries a per-architecture
+`pivot_root` syscall number but has never been run there. This is cheap and is
+the top of the list, because every isolation result above depends on it.
+
+**An HMAC on the audit chain.** The digest is unkeyed, so anyone who can write
+the file can rebuild a consistent chain — asserted as a limit in `test_audit.py`
+rather than left implicit. The mount namespace hides `audit/` from the sandbox,
+which closes the practical attack, but two independent controls beat one that
+must never fail.
+
 **cgroups**, so resource exhaustion is bounded — a malicious integration can
 still fork-bomb or exhaust RAM. **WebSocket brokering**: `ws_connect` raises
 rather than falling through to a real socket, so an integration needing
@@ -326,5 +342,6 @@ platforms, and manifest generation rather than hand-authoring.
 
 *Since removed from this list:* filesystem and process isolation (built
 2026-08-14), network egress (built 2026-08-14 — the supervisor performs all HTTP
-and the allowlist is now enforcing), and the real HA backend (built 2026-08-13;
-`DEFAULT_HOUSE` is gone).
+and the allowlist is now enforcing), destination checking and address pinning in
+the broker (built 2026-08-14 after `../THREAT_MODEL.md` found the gap), and the
+real HA backend (built 2026-08-13; `DEFAULT_HOUSE` is gone).
