@@ -660,6 +660,51 @@ carries two drafted threat→control→residual-risk rows ready to lift into `TH
 (§5.6→§5.7), and the install-weighting reversal (§5.4). Worth making that pattern explicit in the
 report rather than leaving a reader to notice it.
 
+### 5.9 Isolation spike — namespaces + seccomp work end to end ✅ (2026-08-14) ⭐
+
+Full write-up: **`RESULTS_2026-08-14_isolation_spike.md`**. Built to answer a direct question —
+*can this project actually be completed end to end?* — by attacking the one workstream that was
+at zero and made the plan look risky.
+
+**It works, and it is ~260 lines.** `spike/isolate.py` builds a root filesystem containing only
+an explicit allowlist of paths, pivots into it, and mounts a private `/proc`;
+`spike/syscall_filter.py` adds a 25-rule seccomp policy. No root required — unprivileged user
+namespaces throughout. Enabled with `--isolate` (or `ISOLATE=1 ./run_targets.sh`); the
+unisolated path is unchanged, so every measurement is reproducible in both directions.
+
+**The adversarial probe gains two checks and goes from 4/7 to 6/7 blocked:**
+
+| # | Check | Baseline | Isolated |
+|---|---|---|---|
+| 5 | read host filesystem (`/etc/passwd`) | ALLOWED | **BLOCKED** |
+| 6 | read supervisor's `/proc` (credential theft, §5.8) | ALLOWED | **BLOCKED** |
+| 7 | raw-socket egress, unmediated | ALLOWED | **ALLOWED** |
+
+Row 5 is the 2021 HACS file-theft pattern — §8's "single strongest result available" is now
+reachable. Row 6 closes §5.8's routes 2 and 3 (route 1, the copied environment, was fixed
+separately in `supervisor.py`; keep the distinction, it shows isolation is necessary but not
+sufficient). **Row 7 is the predicted Category B gap** and stays open honestly.
+
+**Isolation is transparent to compatibility.** All three integrations produce identical operation
+counts isolated and not: `andrews_arnold_quota` 7, `matomo` 44, `icqa` 18, chains intact. The
+compatibility result is not traded away to get the security result.
+
+**Seccomp argument filtering demonstrates the fix for row 7.** `HACS_DENY_INET=1` permits
+`socket(AF_UNIX)` (the bridge) and denies `AF_INET`/`AF_INET6`. The integration then fails to
+reach its vendor cloud — *which is the point*: it proves the `network:` allowlist can be made
+enforcing rather than advisory, with the traffic forced through the supervisor. Building that
+proxy is the remaining Category B work.
+
+**Honest limits, all in the results doc:** tested on x86_64/WSL2 only — **the Pi 5 is aarch64 and
+unverified**, and that is the cheapest next check; seccomp is a denylist over default-allow, not
+an allowlist (justified, but should not be oversold); no network namespace and no cgroups, so
+resource exhaustion is untouched; and the user namespace is itself attack surface, which the
+denylist partly answers by removing `bpf`, `perf_event_open`, `setns` and module loading.
+
+**Why this matters for the plan.** Every workstream now has either a result or a demonstrated
+mechanism. Nothing remaining is blocked on something unproven — which was the actual question
+being asked.
+
 ---
 
 ## 6. Open decisions
@@ -963,7 +1008,7 @@ along and the one that contributes least to the security argument:
 | 1 | **Evidence / measurement** (§5.2, §5.4) | ✅ done — the novel contribution |
 | 2 | **Compatibility (the shim)** (§5.3, §5.4) | ✅ substantially done — **now frozen, see §10.3** |
 | 3 | **Mediation / policy** (supervisor, §5.3, §5.5–5.7) | ✅ core done; manifest schema still a strawman. ⚠️ **§5.8: mediation is currently *evadable*, not merely incomplete** — the sandbox can obtain the HA token and bypass the supervisor entirely. Policy logic is sound; its *unavoidability* depends on workstream 4. |
-| 4 | **Isolation** (namespaces + seccomp) | ❌ **not started at all** — plain `subprocess`, no fs/network restriction. Confirmed 2026-08-13: unprivileged user namespaces work on the dev machine (`unshare --user --mount --pid --fork` succeeds), so the approach is feasible, just unbuilt. ⭐ **Priority raised 2026-08-14 by §5.8:** no longer only "the precondition for reproducing the 2021 file-theft result", but a precondition for **credential confidentiality** and **audit-log completeness** — two properties the project already claims. This is now the highest-value unstarted work. |
+| 4 | **Isolation** (namespaces + seccomp) | ✅ **core built 2026-08-14** — see §5.9 and `RESULTS_2026-08-14_isolation_spike.md`. User + PID + mount namespaces with an allowlisted root and a 25-rule seccomp filter, ~260 lines, unprivileged. Probe goes 4/7 → 6/7 blocked; all three integrations run identically. **Outstanding:** network egress (needs a supervisor-side proxy, not a namespace flag) and cgroups (resource exhaustion). **Unverified:** aarch64 / the actual Pi. |
 | 5 | **Evaluation + write-up** | ⚠️ 2 of 4 axes have data (compatibility, security-partial); performance is untouched; threat model is unwritten. §5.8 supplies two drafted threat→control→residual-risk rows to start it with. |
 
 **What is genuinely banked regardless of how Decision 3 resolves** — i.e. the minimum

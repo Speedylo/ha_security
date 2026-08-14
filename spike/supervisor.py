@@ -32,6 +32,7 @@ from pathlib import Path
 
 import yaml
 
+import isolate
 from ha_backend import BridgeHouse, HomeAssistantError, RestHouse, StubHouse
 
 HERE = Path(__file__).resolve().parent
@@ -301,8 +302,18 @@ def run(args: argparse.Namespace) -> int:
 
     supervisor = Supervisor(manifest, audit, house, quiet=args.quiet)
 
+    if args.isolate:
+        ok, detail = isolate.available()
+        if not ok:
+            print(f"supervisor: --isolate requested but unavailable — {detail}", file=sys.stderr)
+            return 2
+        isolation_line = detail
+    else:
+        isolation_line = "NONE — ordinary child process, shares uid, filesystem and /proc"
+
     print(f"supervisor: integration '{manifest.name}' v{manifest.version}")
     print(f"  backend        : {backend_line}")
+    print(f"  isolation      : {isolation_line}")
     print(f"  publishes      : {manifest.publishes or '(none)'}")
     print(f"  reads_entities : {manifest.reads_entities or '(none)'}")
     print(f"  calls_services : {manifest.calls_services or '(none)'}")
@@ -318,6 +329,13 @@ def run(args: argparse.Namespace) -> int:
     server.listen(4)
 
     env = dict(os.environ)
+    # Strip the credential from the copy handed to the child. `update` below
+    # only *adds* keys, so without this the token rides along -- see
+    # FINDINGS_2026-08-14_token_leak.md, route 1. Note that this alone is not
+    # sufficient: routes 2 and 3 read the supervisor's own /proc entries and are
+    # closed only by --isolate.
+    for secret in ("HA_TOKEN", "SUPERVISOR_TOKEN"):
+        env.pop(secret, None)
     env.update(
         {
             "HACS_BRIDGE_SOCKET": socket_path,
@@ -326,15 +344,18 @@ def run(args: argparse.Namespace) -> int:
             "HACS_ENTRY_DATA": args.entry_data,
             "HACS_SANDBOX_DIR": tmpdir,
             "HACS_PROBE": "1" if args.probe else "0",
-            # No HA token in the child's environment: the supervisor holds it.
             "PYTHONDONTWRITEBYTECODE": "1",
         }
     )
     if args.egress_rewrite:
         env["HACS_EGRESS_REWRITE"] = args.egress_rewrite
 
+    child_command = [sys.executable, str(HERE / "runner.py")]
+    if args.isolate:
+        child_command = isolate.wrap(child_command)
+
     child = subprocess.Popen(
-        [sys.executable, str(HERE / "runner.py")],
+        child_command,
         env=env,
         cwd=tmpdir,
     )
@@ -411,6 +432,13 @@ def main() -> int:
         action="store_true",
         help="publish through the sandbox_bridge integration so entities get registry "
         "identity, a device, and survival across restarts (requires --ha-url)",
+    )
+    parser.add_argument(
+        "--isolate",
+        action="store_true",
+        help="run the sandbox in its own user/pid/mount namespaces, with an allowlisted "
+        "filesystem (see isolate.py). Without this the sandbox is an ordinary child "
+        "process sharing the supervisor's uid, filesystem and /proc.",
     )
     parser.add_argument("--probe", action="store_true", help="run the adversarial probe after setup")
     parser.add_argument("--quiet", action="store_true", help="suppress the per-decision trace")

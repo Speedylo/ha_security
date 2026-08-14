@@ -5,6 +5,7 @@
 #   ./run_targets.sh matomo       just one
 #   HA=1 ./run_targets.sh         against the real Home Assistant in Docker
 #   HA=1 BRIDGE=1 ./run_targets.sh   ...publishing through the sandbox_bridge integration
+#   ISOLATE=1 ./run_targets.sh    each sandbox in its own namespaces + seccomp
 #
 # Each target is an unmodified HACS integration, its hand-written manifest, and
 # a stub of its vendor cloud. run_spike.sh remains the single-target entry point
@@ -19,6 +20,11 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PYTHON="${HERE}/../.venv/bin/python"
 
 HA_ARGS=()
+# ISOLATE=1 runs each sandbox in its own user/pid/mount namespaces with an
+# allowlisted filesystem and a seccomp filter. See isolate.py.
+if [[ "${ISOLATE:-0}" == "1" ]]; then
+  HA_ARGS+=(--isolate)
+fi
 if [[ "${HA:-0}" == "1" ]]; then
   if [[ ! -f "${HERE}/.ha_token" ]]; then
     echo "HA=1 but no .ha_token — run ./ha_docker.sh up && ./ha_onboard.py" >&2
