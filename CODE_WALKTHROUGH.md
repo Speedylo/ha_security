@@ -31,6 +31,8 @@ A mechanical tour of the codebase, in execution order. For *what the results mea
     ├── registry_gap.py          diff what HA thinks of the two sets of entities
     ├── bridge_integration/      TRUSTED: the native integration that owns entities
     ├── runner.py                sandbox entrypoint
+    ├── isolate.py               TRUSTED: builds the namespaces + allowlisted root
+    ├── syscall_filter.py        TRUSTED: the seccomp policy
     ├── probe.py                 adversarial test
     ├── generate_shim.py         generates const.py + selector.py from HA's source
     ├── shim_coverage.py         scores the shim against surface_out/ (± install weighting)
@@ -42,6 +44,11 @@ A mechanical tour of the codebase, in execution order. For *what the results mea
 Two trust zones. `supervisor.py` and everything it holds is trusted. `runner.py`, the whole
 shim, and the target are untrusted — they run in a separate OS process and hold no
 credentials.
+
+`isolate.py` sits on the boundary and is worth understanding as a *transition*: it starts
+trusted (it is the supervisor's code, doing the mounts) and ends untrusted (it `exec`s the
+runner, which is the integration's world). Everything it does happens before that `exec`, and
+the seccomp filter it installs last is what it hands forward across the line.
 
 ---
 
@@ -378,9 +385,60 @@ would escape.
 rely on: they implement `native_value`, never `state`, and `state` derives from it. Plus
 `SensorDeviceClass` / `SensorStateClass`, which are pure data.
 
+### `isolate.py` — building the box
+
+Runs *inside* the namespaces created by `unshare`, before the runner starts. Three jobs, in
+order, and the order is load-bearing:
+
+1. **Scratch filesystems first.** A `tmpfs` on `/tmp` and `/run`. This must precede the
+   allowlist, because the bridge socket lives in a `mkdtemp` under `/tmp` — mounting a fresh
+   `tmpfs` over `/tmp` afterwards would shadow it and cut the sandbox off from the supervisor.
+   This was a real bug, found by the sandbox silently failing to start.
+2. **The allowlist.** `allowlist()` returns the host paths the sandbox may see, each bind-mounted
+   in and then remounted read-only. The list is deliberately short: `/usr` (interpreter, stdlib,
+   TLS certificates), the virtualenv if there is one, `runner.py`, `probe.py`, `shim/`, the
+   integration, `resolv.conf`, and `ld.so.cache`. **Not** `supervisor.py`, and **not** `audit/` —
+   which is what stops the sandbox rewriting its own decision log.
+3. **`pivot_root`, then a private `/proc`.** After the pivot, everything not on the list ceases
+   to exist. The fresh `/proc` is what removes `/proc/<supervisor>/environ` and `/cmdline`, the
+   two credential-leak routes that cannot be closed from inside `supervisor.py`.
+
+The allowlist mirrors the manifest on purpose: *declare what you need, get that and nothing
+else.* A blocklist ("hide `/home`, hide `secrets.yaml`") would be weaker and would need editing
+every time the host layout changed; an allowlist fails closed.
+
+**Difficulty note for the defence.** `allowlist()` is ordinary Python — a list of paths with a
+comment justifying each, and you should be able to read every line. The mount plumbing is not:
+it calls `mount(2)` and `pivot_root(2)` through `ctypes` with kernel flag constants, and carries
+a per-architecture syscall number because `pivot_root` has no glibc wrapper. Each line is
+explainable ("bind this in, then remount it read-only"), but this is the advanced part of the
+file and most developers would need the man pages to write it.
+
+### `syscall_filter.py` — shrinking the kernel surface
+
+Namespaces decide what the sandbox can *see*; seccomp decides what it can *ask the kernel to
+do*. The second exists largely because of the first — unprivileged user namespaces widen the
+reachable kernel surface, and that surface has a long local-privilege-escalation history.
+
+`DENIED` is a list of 25 `(syscall, why no integration needs it)` pairs: `ptrace`,
+`process_vm_readv`, `bpf`, `perf_event_open`, module loading, `kexec`, `setns`/`unshare`, the
+mount family, the kernel keyring, `userfaultfd`, `io_uring_setup`. A loop adds one rule per
+entry. That is the whole file — genuinely ordinary code.
+
+Two honest notes that belong in the report. First, this is a **denylist over default-allow**,
+which is weaker than an allowlist; the docstring says why (CPython, `aiohttp` and OpenSSL issue
+a wide, version-dependent syscall set, and a wrong allowlist crashes the integration in ways
+that look like bugs). Second, it is applied *after* the mounts and immediately before `exec` —
+which is why it can safely deny `mount` and `pivot_root`. A seccomp filter survives `execve`,
+which is what makes that ordering work.
+
+`HACS_DENY_INET=1` adds argument-level filtering: permit `socket(AF_UNIX)`, deny `AF_INET`.
+Running with it breaks the integration's vendor poll, and that is the demonstration — it proves
+the `network:` allowlist can be made enforcing rather than advisory.
+
 ### `probe.py`
 
-Runs *after* successful setup, in the same process, over the same manifest and bridge. Five
+Runs *after* successful setup, in the same process, over the same manifest and bridge. Seven
 attempts, each a single line a real author could add. Returns `(name, blocked, detail)` tuples
 so results are tabulated rather than narrated.
 
@@ -395,8 +453,16 @@ results.append(("enumerate whole house", not leaked, ...))
 An *allowed but empty* result is the correct behaviour, so testing for a denial would have
 been the wrong test.
 
-Check #5 reads a host file, expects to succeed, and reports it as `ALLOWED`. A test suite that
-only contains tests you pass is marketing, not evaluation.
+Check #5 reads a host file. It was written expecting to *fail* to be blocked, and reported
+`ALLOWED` for two days. **A test suite that only contains tests you pass is marketing, not
+evaluation** — and the payoff came on 2026-08-14, when isolation landed and that row flipped to
+`BLOCKED` with a genuine before/after already on record.
+
+Checks #6 and #7 were added the same day for exactly that reason, *before* the fix existed:
+#6 reads the supervisor's `/proc` to steal the credential, #7 opens a raw socket to bypass the
+`network:` allowlist. #6 now blocks under `--isolate`; **#7 still does not**, and the honest
+reporting of that is the point. Write the failing check first, then fix it — the measurement is
+worth more than the fix.
 
 ### `generate_shim.py`
 

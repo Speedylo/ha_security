@@ -77,12 +77,25 @@ class Manifest:
 
 
 class AuditLog:
-    """Append-only, hash-chained decision log.
+    """Append-only, hash-chained decision log. Tamper-*evident*, not tamper-proof.
 
-    Each record commits to the one before it, so a compromised integration that
-    later gains write access to the log cannot remove or reorder a decision
-    without breaking every hash after it. Cheap, local, and verifiable — the
-    decentralised attestation layer is out of scope.
+    Each record commits to the one before it, so editing, removing or reordering
+    a record breaks every hash after it. Two limits, both measured — see
+    FINDINGS_2026-08-14_token_leak.md part 6:
+
+    1. `_digest` is unkeyed sha256, so an actor that can write the file can
+       recompute the whole chain from the zero anchor and `verify()` will pass.
+       An HMAC with a key the sandbox never holds would close this; a mount
+       namespace that hides audit/ from the sandbox (isolate.py) removes the
+       access path, and the two fail independently, so both are worth having.
+    2. Only *mediated* operations are recorded — `append()` is called from the
+       socket loop and nowhere else. An action that bypasses the bridge leaves
+       no record and no gap, because `_seq` counts records created rather than
+       events that happened. Integrity is not completeness.
+
+    Cheap, local, and verifiable — the decentralised attestation layer, which is
+    what would make a local log authoritative against whoever controls the
+    writer, is out of scope.
     """
 
     def __init__(self, path: Path) -> None:

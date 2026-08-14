@@ -5,9 +5,17 @@ the same manifest and the same bridge. Nothing here is exotic — each of these 
 a single line an integration author could add to a legitimate integration, and
 on stock Home Assistant every one of them succeeds today.
 
-The last check is expected to FAIL to be blocked, and says so. The spike has
-process separation and a mediated API; it does not yet have filesystem
-isolation. Reporting that honestly is the point of running the probe at all.
+Some checks are expected to FAIL to be blocked, and say so. Reporting that
+honestly is the point of running the probe at all — checks 5, 6 and 7 were all
+written while they still failed, which is what made the before/after in
+RESULTS_2026-08-14_isolation_spike.md a measurement rather than an assertion.
+
+Current state: 4 of 7 blocked as an ordinary child process, 6 of 7 under
+`supervisor.py --isolate` (user + PID + mount namespaces, allowlisted root,
+seccomp filter). Check 7 — raw-socket egress — is still open in both modes: the
+`network:` allowlist is enforced in the shim's HTTP client, which asks the
+supervisor and then lets *this* process make the connection, so a raw socket
+never consults it. Closing it needs the supervisor to broker egress.
 """
 
 from __future__ import annotations
@@ -71,7 +79,9 @@ async def run_probe(hass: HomeAssistant) -> list[tuple[str, bool, str]]:
     try:
         with open(SECRETS_PATH, encoding="utf-8") as handle:
             handle.readline()
-        results.append(("read host filesystem", False, f"{SECRETS_PATH} readable — no fs isolation yet"))
+        results.append(
+            ("read host filesystem", False, f"{SECRETS_PATH} readable — run with --isolate")
+        )
     except OSError as err:
         results.append(("read host filesystem", True, str(err)))
 

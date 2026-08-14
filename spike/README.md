@@ -19,6 +19,9 @@ source is exactly what its tarball contained.
 ./run_targets.sh matomo       # just one
 ./run_spike.sh                # andrews_arnold only: setup + two polls
 ./run_spike.sh --probe        # the above, then the adversarial probe
+./run_spike.sh --probe --isolate   # ...with namespaces + seccomp (6 of 7 blocked)
+ISOLATE=1 ./run_targets.sh    # all three, each in its own namespaces
+python3 syscall_filter.py     # self-test: load the filter, prove ptrace is denied
 ./generate_shim.py            # regenerate const.py + selector.py from HA's source
 ./generate_shim.py --check    # report what would change, write nothing
 ./shim_coverage.py            # score the shim against the full catalogue
@@ -125,16 +128,22 @@ drains, Matomo's day counters climb, ICQA's NO₂ rises from 28,3 to 41,7 µg/m�
 
 ## Adversarial probe
 
-Five things a malicious version of this integration would try. Each is one line
+Seven things a malicious version of this integration would try. Each is one line
 an author could add, and on stock HA every one of them succeeds today.
 
-| Attempt | Stub house | **Real HA** | Enforced by |
-|---|---|---|---|
-| Read `lock.front_door` (undeclared) | blocked | **blocked** | `reads_entities` |
-| Enumerate the whole house (`/api/states` firehose) | 2 of 8 returned | **2 visible, 41 withheld** | read filtering |
-| Call `lock.unlock` (confused deputy) | blocked | **blocked** | `calls_services` |
-| Exfiltrate to `collector.exfil-example.net` | blocked | **blocked** | `network` allowlist |
-| Read a host file directly | ALLOWED | **ALLOWED** | nothing yet — see below |
+| Attempt | Stub house | **Real HA** | `--isolate` | Enforced by |
+|---|---|---|---|---|
+| Read `lock.front_door` (undeclared) | blocked | **blocked** | blocked | `reads_entities` |
+| Enumerate the whole house (`/api/states` firehose) | 2 of 8 returned | **2 visible, 41 withheld** | same | read filtering |
+| Call `lock.unlock` (confused deputy) | blocked | **blocked** | blocked | `calls_services` |
+| Exfiltrate to `collector.exfil-example.net` | blocked | **blocked** | blocked | `network` allowlist |
+| Read a host file directly | ALLOWED | **ALLOWED** | **blocked** | mount namespace |
+| Read the supervisor's `/proc` (steal the token) | ALLOWED | **ALLOWED** | **blocked** | PID namespace |
+| Raw-socket egress (unmediated) | ALLOWED | **ALLOWED** | **ALLOWED** | nothing — see below |
+
+**4 of 7 without isolation, 6 of 7 with it.** The last two checks exist to make
+the gaps measurable *before* they are fixed; see
+`../FINDINGS_2026-08-14_token_leak.md`.
 
 **Paired baseline**, same token used the way an in-process integration uses `hass` today:
 
@@ -144,10 +153,17 @@ an author could add, and on stock HA every one of them succeeds today.
 | entities enumerable | **43** | **2** |
 | privacy-relevant entities exposed | 5 | **0** |
 
-The last row is the honest one. The spike has process separation and a mediated
-API; it has **no filesystem isolation**, so `open("/etc/passwd")` succeeds. That
-is the namespaces + seccomp work, and until it lands the framework does not stop
-the 2021 HACS file-theft pattern. Nothing else in the table depends on it.
+**The last row is now the honest one**, and it is a different row than it used
+to be. Filesystem isolation landed on 2026-08-14 (`isolate.py`,
+`syscall_filter.py`), so `open("/etc/passwd")` fails under `--isolate` and the
+2021 HACS file-theft pattern *is* stopped. What remains open is **raw-socket
+egress**: the `network:` allowlist is checked in `aiohttp_client`, which asks the
+supervisor and then lets the *sandbox* make the connection, so a raw socket never
+consults it. A network namespace alone would also cut the legitimate vendor poll,
+so closing this needs an egress proxy on the supervisor side.
+`HACS_DENY_INET=1 ./run_spike.sh --isolate` shows the enforcement half already
+works: `socket(AF_UNIX)` is permitted, `AF_INET` is denied, and the integration
+correctly fails to reach its cloud.
 
 The audit log is hash-chained. Flipping the `lock.unlock` denial to an allow in
 a copy of the log is detected: `BROKEN: line 10: record altered (hash mismatch)`.
@@ -284,6 +300,12 @@ an `AttributeError` or a lifecycle failure on the second. Both are the point.
 
 ## Not yet built
 
-Filesystem/network isolation (namespaces + seccomp), a real HA backend behind
-the supervisor instead of `DEFAULT_HOUSE`, subscription filtering under load,
-actuator platforms, and manifest generation rather than hand-authoring.
+**Network** isolation — a supervisor-side egress proxy, so the `network:`
+allowlist becomes enforcing rather than advisory (`HACS_DENY_INET=1` shows the
+enforcement half already works). **cgroups**, so resource exhaustion is bounded.
+Subscription filtering under load, actuator platforms, and manifest generation
+rather than hand-authoring.
+
+*Since removed from this list:* filesystem and process isolation (built
+2026-08-14, see above) and the real HA backend (built 2026-08-13; the supervisor
+speaks to a stock HA over its REST API, `DEFAULT_HOUSE` is gone).
