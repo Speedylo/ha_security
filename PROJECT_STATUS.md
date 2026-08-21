@@ -3,7 +3,7 @@
 **Owner:** Younes · Al Akhawayn University, BSc Computer Science
 **Advisor (intended):** Prof. Omar Iraqi Houssaini — Professor of CS; IT & Cybersecurity Lead Auditor & Architect. Already took a cybersecurity course with him.
 **Work period:** September – November 2026 (~13 calendar weeks; **~10 realistic engineering weeks** after proposal, mid-report, final report and defence overhead).
-**Last updated:** 2026-08-13
+**Last updated:** 2026-08-21
 **Repo:** `~/capstone` (WSL filesystem, under git). The Windows `Desktop/Capstone`
 copy is a stale backup — do not edit it. `/mnt/c` is avoided because file modes
 there are fake, which would silently break filesystem permission tests.
@@ -944,13 +944,15 @@ HA=1 ./test_matrix.sh     # ...plus real Home Assistant and the bridge
 > must also carry §5.8's self-audit — the weaknesses will not come up in conversation, so
 > reporting them is the only way they get credited.
 
-1. **Environment.** Install **Ubuntu Server 24.04 LTS arm64** on the Pi 5 — *not* Raspberry
-   Pi OS, whose kernels have historically shipped without `CONFIG_DEBUG_INFO_BTF` that
-   modern eBPF tooling needs. Verify:
-   - `ls /sys/kernel/btf/vmlinux` exists
-   - `sudo bpftrace -e 'tracepoint:syscalls:sys_enter_openat { printf("%s\n", comm); }'` streams output
-
-   If either fails, plan for a small cloud VM rather than fighting kernel configs in October.
+1. ✅ **DONE (2026-08-21) — environment, and the distro call reversed.** See §13.
+   ~~Install **Ubuntu Server 24.04 LTS arm64** on the Pi 5 — *not* Raspberry Pi OS, whose
+   kernels have historically shipped without `CONFIG_DEBUG_INFO_BTF` that modern eBPF tooling
+   needs.~~ **Void:** eBPF left the architecture with Decision 2, so BTF buys nothing, and
+   Ubuntu 24.04 would actively cost a sysctl (`kernel.apparmor_restrict_unprivileged_userns`)
+   to permit the namespaces `isolate.py` depends on. **Staying on Raspberry Pi OS** (trixie,
+   kernel 6.12.47, aarch64), where unprivileged namespaces, seccomp and cgroups v2 all work
+   untouched — and which is also what Pi-based HA users actually run. Full probe passes 10/10
+   there; no cloud VM needed.
 2. ✅ **DONE (2026-08-13) — real HA behind the supervisor.** See §5.5. Stock 2026.8.1 image,
    unmodified; 25 entities published into it by three sandboxed integrations; probe re-run
    against it with a paired baseline comparison (43 entities readable without the framework,
@@ -1492,15 +1494,98 @@ methodology chapter has two independent, evidenced arguments about how the evalu
 ### 12.4 Revised order of remaining work
 
 1. ~~Resolve-and-pin in the broker (T14/T15)~~ — **done 2026-08-14**, §12.2
-2. **Verify on aarch64** — now the most schedule-critical item by some distance; every isolation
-   result to date is x86_64-only under WSL2, and the claim is about a Pi 5
+2. ~~**Verify on aarch64**~~ — **done 2026-08-21**, §13. 10/10 on a real Pi 5 under Raspberry Pi OS.
 3. **HMAC the audit chain** (T03) — ~1 hour, and makes two controls fail independently
 4. **cgroups** (T07) — the only threat with no control at all
 5. Distinct uid for the sandbox (defence in depth for T05/T08)
 
 ---
 
-## 13. Key sources
+## 13. aarch64 verified on the real Pi — 2026-08-21 ⭐
+
+**The most schedule-critical open item (§12.4 #2) is closed.** Every isolation result until now
+was x86_64 under WSL2 while the claim was about a Pi 5. It now runs on the Pi.
+
+### 13.1 The distro question, settled by measurement rather than by the old plan
+
+§8 item 1 mandated **Ubuntu Server 24.04 arm64**, on the grounds that Raspberry Pi OS kernels
+historically ship without `CONFIG_DEBUG_INFO_BTF`, which modern eBPF tooling needs. **That
+rationale is void:** eBPF left the architecture when Decision 2 settled on namespaces + seccomp,
+and it now survives in these documents only as the explanation for why gVisor was dropped. The
+seccomp policy actively *denies* `bpf` to the sandbox.
+
+Measured on the existing Pi (Raspberry Pi OS trixie / Debian 13, kernel 6.12.47+rpt-rpi-2712,
+aarch64, 4 GB):
+
+| check | result |
+|---|---|
+| unprivileged user namespaces | ✅ work out of the box |
+| `user+pid+mount` (the `isolate.py` set) | ✅ |
+| AppArmor userns restriction | ✅ **absent** |
+| seccomp filter support · `libseccomp2 2.6.0` | ✅ |
+| cgroups v2 (`cgroup2fs`) | ✅ — T07 is unblocked |
+| BTF / eBPF | ❌ absent — confirms the old concern, now irrelevant |
+
+**Decision: stay on Raspberry Pi OS.** Ubuntu 24.04 would have *cost* something here — it ships
+`kernel.apparmor_restrict_unprivileged_userns=1`, which blocks precisely the mechanism
+`isolate.py` is built on until a sysctl is changed. Pi OS needs no such change, and it is also
+what Pi-based HA users actually run, so the deployment-representativeness caveat disappears
+instead of needing to be written into the limitations.
+
+### 13.2 Results on the Pi
+
+Python 3.14.7, aarch64, `--isolate`:
+
+- **Adversarial probe: 10/10 blocked**, identical to x86_64, including both filesystem rows,
+  both raw-socket rows and both broker-destination rows.
+- `andrews_arnold_quota` runs end to end and publishes both sensors; **8 allowed, 5 denied**;
+  audit chain intact, 13 records.
+- All three integrations run via `run_targets.sh` (icqa: 18 allowed, 0 denied, chain intact).
+- `test_egress.py` and `test_audit.py` pass in full.
+- `isolate.available()` → PASS; `PIVOT_ROOT_SYSCALL` resolved `aarch64 → 41` correctly, so the
+  architecture port that was written speculatively in `isolate.py:46` was right.
+
+**Nothing about the security result is architecture-dependent.** That is the finding.
+
+### 13.3 The Python version question — and a correction worth reporting
+
+Three interpreters were in play: laptop venv **3.12.3**, Pi system **3.13.5**, and — measured by
+running `python3 -V` inside the pinned `ghcr.io/home-assistant/home-assistant:2026.8.1` image —
+**real Home Assistant runs 3.14.6**. Neither development machine matched the target.
+
+This matters more than ordinary version hygiene: the compatibility claim is *"unmodified HACS
+integrations run"*, and that claim is only meaningful on the interpreter HA would actually have
+run them on. Coverage measured on 3.12 could be optimistic or pessimistic in ways nobody had
+checked, and the shim contains **no `version_info` guards anywhere**.
+
+**Standardised on CPython 3.14** (3.14.7 via `uv`, closest available to HA's 3.14.6). Everything
+passes on it. The laptop should be moved to 3.14 too so the two machines and the target agree;
+until then, the Pi is the more faithful environment, not the less.
+
+### 13.4 A portability defect the port exposed — sixth self-caught finding
+
+The first Pi run failed with `FileNotFoundError` from `os.execvp` *after* the seccomp filter had
+loaded. Not an architecture problem and not a Python-version problem:
+
+`allowlist()` bound `sys.prefix` and `sys.base_prefix`, and `sys.base_prefix` is already
+symlink-resolved — but a venv's `bin/python` may *reach* the interpreter through a
+**version-alias symlink** (`uv` and `pyenv` both do this: `cpython-3.14-…` → `cpython-3.14.7-…`).
+Binding only the resolved home left the alias dangling inside the new root, so the interpreter
+was present and unreachable.
+
+Fixed in `isolate.py:allowlist()` by walking the interpreter's symlink chain and binding every
+interpreter home it passes through. Verified against uv's own layout (previously failing, now
+10/10) and re-verified on x86_64 for regression.
+
+**Why it belongs in the report:** the isolation code was implicitly coupled to a
+*distro-packaged interpreter layout*, and nothing in the threat model or the 35-case egress
+suite could have found it — only running on a second machine did. It is the same lesson as
+§12.3, from an independent direction: **environment assumptions are invisible until the
+environment changes.** Pair with §5.11 and §12.2b in the methodology chapter.
+
+---
+
+## 14. Key sources
 - Home Assistant security disclosure, Jan 2021 — file theft via custom integrations
 - **HA analytics — `https://analytics.home-assistant.io/custom_integrations.json`** — per-domain
   install counts for custom integrations; opt-in telemetry, so a lower bound. The basis for

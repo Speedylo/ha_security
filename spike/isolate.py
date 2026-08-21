@@ -103,6 +103,23 @@ def allowlist() -> tuple[list[Path], list[Path]]:
         if not str(path).startswith("/usr"):
             read_only.append(path)
 
+    # `sys.base_prefix` is already symlink-resolved, but the venv's bin/python
+    # may *reach* the interpreter through a version-alias symlink — uv and
+    # pyenv both do this (cpython-3.14-... -> cpython-3.14.7-...). Binding only
+    # the resolved home leaves the alias dangling inside the new root, and exec
+    # then fails with ENOENT even though the interpreter is present. Walk the
+    # chain and bind every interpreter home it passes through, so the sandbox
+    # does not depend on how the host lays its interpreters out.
+    hop = Path(sys.executable)
+    for _ in range(8):
+        if not hop.is_symlink():
+            break
+        target = Path(os.readlink(hop))
+        hop = target if target.is_absolute() else hop.parent / target
+        home = hop.parent.parent  # .../<home>/bin/python3.x -> .../<home>
+        if not str(home).startswith("/usr") and home not in read_only:
+            read_only.append(home)
+
     here = Path(__file__).resolve().parent
     # The runner and the shim it imports. Note this is deliberately *not* the
     # whole spike directory: audit/ stays invisible, which is what stops the
