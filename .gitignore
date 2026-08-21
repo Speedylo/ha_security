@@ -20,3 +20,6 @@ spike/.ha_analytics.json
 # Real-HA spike: instance config and credentials — never commit the token
 spike/.ha_config/
 spike/.ha_token
+
+# v2: cached telemetry snapshot (regenerable via figures/ecosystem_scale.py)
+v2/figures/custom_integrations.json

@@ -1,0 +1,77 @@
+{
+  "source": "https://analytics.home-assistant.io/custom_integrations.json",
+  "retrieved": "2026-08-21",
+  "active_installations": 669743,
+  "active_installations_as_of": "2026-08-21",
+  "distinct_custom_integrations": 4220,
+  "total_custom_integration_installs": 1904297,
+  "hacs_installs": 379326,
+  "hacs_share_of_installations": 0.5664,
+  "mean_custom_integrations_per_installation": 2.28,
+  "median_installs_per_integration": 20.0,
+  "integrations_over_1000_installs": 257,
+  "integrations_over_10000_installs": 27,
+  "integrations_under_100_installs": 3095,
+  "top_15": [
+    {
+      "domain": "hacs",
+      "installs": 379326
+    },
+    {
+      "domain": "sonoff",
+      "installs": 43799
+    },
+    {
+      "domain": "localtuya",
+      "installs": 32222
+    },
+    {
+      "domain": "alexa_media",
+      "installs": 29308
+    },
+    {
+      "domain": "spook",
+      "installs": 27331
+    },
+    {
+      "domain": "webrtc",
+      "installs": 26804
+    },
+    {
+      "domain": "frigate",
+      "installs": 26484
+    },
+    {
+      "domain": "browser_mod",
+      "installs": 26109
+    },
+    {
+      "domain": "alarmo",
+      "installs": 25370
+    },
+    {
+      "domain": "waste_collection_schedule",
+      "installs": 23336
+    },
+    {
+      "domain": "meross_lan",
+      "installs": 22628
+    },
+    {
+      "domain": "xiaomi_miot",
+      "installs": 21657
+    },
+    {
+      "domain": "scheduler",
+      "installs": 21557
+    },
+    {
+      "domain": "bambu_lab",
+      "installs": 19980
+    },
+    {
+      "domain": "nodered",
+      "installs": 18180
+    }
+  ]
+}
