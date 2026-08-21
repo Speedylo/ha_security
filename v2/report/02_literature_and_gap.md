@@ -120,19 +120,33 @@ tool for reasoning about threats, functioning as a set of guidelines indicating 
 developers should not write plug-ins exhibiting the modelled behaviours. Sandboxing to
 isolate extension runtimes is raised as an approach; the authors' subsequent direction [8]
 adapts the IETF Manufacturer Usage Description standard (MUD, RFC 8520 [9]) to smart-home
-gateways, labelling extensions with their intended use so that behaviour can be constrained.
+gateways. The stated aim of that direction is again developer-facing — "how to adopt the
+Manufacturer Usage Description (MUD) standard (RFC-8520) to support developers in plug-in
+creation" [15].
 
 This work must be engaged with directly rather than distinguished away, because it
 establishes the same problem on the same platform. Three differences define what is left
 to do.
 
-**It models; it does not enforce.** The contribution is a threat model and developer
-guidance. No mechanism is built into Home Assistant that prevents a plug-in from exceeding
-its intended behaviour, and none is evaluated against real plug-ins. Guidance is a control
-on the *likelihood* that a plug-in misbehaves — the same category as the community review
-of §1.6 — and shares its central limitation: **guidance addressed to plug-in developers is
-inert against a developer who is malicious**, since it asks the attacker to please not
-attack. It is aimed, reasonably, at the honest-but-careless author.
+**It models; it does not enforce — and the Home Assistant work is offensive, not
+defensive.** The author's own summary of the research programme is explicit on both points.
+Describing the threat model, Mannella writes that "we proposed a threat model to help
+developers during the creation (or the evaluation) of plug-ins", and that "we demonstrated
+the presented threats developing a set of proofs of concept for a widespread python-based
+open-source SHG: Home Assistant" [15]. The Home Assistant contribution is therefore a set
+of **attack** proofs-of-concept establishing that the threats are real — valuable, and
+corroborating Chapter 1 — not a defensive prototype. No mechanism is built that prevents a
+plug-in from exceeding its intended behaviour, and none is evaluated against real plug-ins.
+
+The orientation is deliberate rather than an oversight, and this is the crux. The stated
+goal of the wider programme is "to simplify the development of secure and reliable IoT
+solutions", with the focus "on developers with limited experience in IoT and/or security
+fields" [15]. That is a research agenda aimed squarely at the **honest but inexperienced**
+author, and it is a legitimate and useful one. But it places the work in the same category
+as the community review of §1.6: a control on the *likelihood* that a plug-in misbehaves.
+It shares that category's defining limitation — **guidance addressed to plug-in developers
+is inert against a developer who is malicious**, because it asks the attacker to please not
+attack. Nothing in this line of work bounds what a plug-in can do once it is running.
 
 **MUD constrains the network, not the platform's own authority.** MUD [9] is a network-layer
 mechanism: a profile declares the endpoints a thing should communicate with, and network
@@ -267,11 +281,14 @@ hardest thing to establish.
 
 - **The review is narrative, not systematic** (§2.1). A pre-registered systematic search
   could surface work this review missed.
-- **Two of the closest sources could not be retrieved in full.** The publisher pages for
-  [6] and [7] returned HTTP 403 to automated retrieval; their bibliographic data and
-  abstracts come from OpenAlex and publisher metadata. **Both must be read in full before
-  submission**, and §2.4's characterisation of [6] revised if it proves to contain an
-  implemented mechanism.
+- **The closest sources could not be retrieved in full.** The publisher-hosted PDFs for
+  [6], [7] and [8] sit behind a Cloudflare challenge or a paywall. §2.4's characterisation
+  of [6] and [8] rests on the authors' own research summary [15] — a primary source, and
+  unusually direct about both orientation and contributions — together with abstracts and
+  publisher metadata. **All three should still be read in full before submission.** The
+  claim most exposed is the category distinction in §2.4: if [8] enforces MUD-style profiles
+  at the *gateway application* layer rather than at the network layer, that argument becomes
+  one of granularity rather than of kind, and must be rewritten accordingly.
 - **Absence of evidence.** The claim is that no *published* work does this. Unpublished or
   in-progress work may exist, and the Home Assistant project could implement confinement
   at any time.
@@ -329,3 +346,8 @@ https://github.blog/security/vulnerability-research/securing-our-home-labs-home-
 
 [14] *XZ Utils backdoor* (CVE-2024-3094), March 2024.
 https://en.wikipedia.org/wiki/XZ_Utils_backdoor
+
+[15] L. Mannella, "Supporting Developers in the Cybersecurity of IoT Systems", PhD research
+summary (supervisors F. Corno and A. Lioy), PhD Day, Department of Control and Computer
+Engineering, Politecnico di Torino, 2022.
+http://www.phd-dauin.polito.it/events/phdday2022/Mannella.pdf

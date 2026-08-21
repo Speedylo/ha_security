@@ -32,6 +32,24 @@ migrate. Home Assistant has none of the four. That table converts "prior work do
 apply" from an assertion into something checkable row by row, and it is the thing to point
 at if challenged with "isn't this just FlowFence for Home Assistant?".
 
+## Confirmed 2026-08-21 via Mannella's PhD-day poster [15]
+
+Retrieved from `phd-dauin.polito.it` (the publisher PDFs are all Cloudflare-blocked). It
+confirms three things I had inferred, now from the author's own words:
+
+1. The threat model was "to help developers during the creation (or the evaluation) of
+   plug-ins" — developer-facing guidance, as characterised.
+2. The Home Assistant work is "a set of proofs of concept" **demonstrating the threats** —
+   i.e. attack PoCs, not a defensive prototype. Stronger than I first wrote.
+3. The programme's goal is "to simplify the development of secure and reliable IoT
+   solutions", focused on "developers with limited experience in IoT and/or security
+   fields" — explicitly aimed at the honest-but-inexperienced author.
+
+Point 3 is the important one. It means the likelihood-vs-impact distinction is not me
+reading their work uncharitably; it is *their stated agenda*, and a legitimate one. Frame it
+that way in the viva — "their goal and mine are different halves of the same problem" — not
+as a deficiency in their work.
+
 ## The MUD argument — check this one carefully before the viva
 
 §2.4 argues MUD cannot reach platform-API authority because reading entities and calling
