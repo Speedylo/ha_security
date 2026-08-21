@@ -120,88 +120,158 @@ modules distributed peer-to-peer from GitHub.
 
 ## 2.4 Extensible hubs, and the closest prior work
 
-A smaller literature addresses hubs that are extended by third-party plug-ins, which is the
-Home Assistant case exactly.
+A smaller literature addresses hubs extended by third-party plug-ins, which is the Home
+Assistant case exactly. This section examines it in detail, because it contains the closest
+prior work to this project and because the contribution claim in §2.8 depends on
+characterising it accurately.
 
-**Corno and Mannella [6]** is the closest prior work identified in this review. Presented at
-SpliTech 2022, it proposes a threat model for smart-home gateways extensible through
-plug-ins, covering issues arising from "a malicious or defective implementation of a
-plug-in" affecting the gateway or other devices — and it validates the model with a **use
-case based on Home Assistant**. The paper's stated purpose is to give plug-in developers a
-tool for reasoning about threats, functioning as a set of guidelines indicating that
-developers should not write plug-ins exhibiting the modelled behaviours. Sandboxing to
-isolate extension runtimes is raised as an approach; the authors' subsequent direction [8]
-adapts the IETF Manufacturer Usage Description standard (MUD, RFC 8520 [9]) to smart-home
-gateways. The stated aim of that direction is again developer-facing — "how to adopt the
-Manufacturer Usage Description (MUD) standard (RFC-8520) to support developers in plug-in
-creation" [15].
+### 2.4.1 Corno and Mannella: the threat model, and what it demonstrates
 
-This work must be engaged with directly rather than distinguished away, because it
-establishes the same problem on the same platform. Three differences define what is left
-to do.
+**Corno and Mannella [6]**, presented at SpliTech 2022, propose a threat model for smart
+home gateways extensible through plug-ins. The paper states its purpose as "twofold": to
+help developers understand attacks arising "from a malicious or defective implementation of
+a plug-in", and to serve as "a set of guidelines", since "plug-in developers should not
+create plug-ins acting like the threats reported in the paper". It is validated on Home
+Assistant.
 
-**It models; it does not enforce — and the Home Assistant work is offensive, not
-defensive.** The author's own summary of the research programme is explicit on both points.
-Describing the threat model, Mannella writes that "we proposed a threat model to help
-developers during the creation (or the evaluation) of plug-ins", and that "we demonstrated
-the presented threats developing a set of proofs of concept for a widespread python-based
-open-source SHG: Home Assistant" [15]. The Home Assistant contribution is therefore a set
-of **attack** proofs-of-concept establishing that the threats are real — valuable, and
-corroborating Chapter 1 — not a defensive prototype. No mechanism is built that prevents a
-plug-in from exceeding its intended behaviour, and none is evaluated against real plug-ins.
+Their validation is **offensive**, and it is valuable. The authors wrote three custom
+integrations — `switch_target`, `light_simple_access` and `light_altering_state` — in which
+the latter two attack the first. The attack technique deserves quoting in full, because it
+bears directly on this project's design. To reach another integration's live object, they
+walk the Python garbage collector:
 
-The orientation is deliberate rather than an oversight, and this is the crux. The stated
-goal of the wider programme is "to simplify the development of secure and reliable IoT
-solutions", with the focus "on developers with limited experience in IoT and/or security
-fields" [15]. That is a research agenda aimed squarely at the **honest but inexperienced**
-author, and it is a legitimate and useful one. But it places the work in the same category
-as the community review of §1.6: a control on the *likelihood* that a plug-in misbehaves.
-It shares that category's defining limitation — **guidance addressed to plug-in developers
-is inert against a developer who is malicious**, because it asks the attacker to please not
-attack. Nothing in this line of work bounds what a plug-in can do once it is running.
+```python
+def get_target(self):
+    for obj in gc.get_objects():
+        if isinstance(obj, SwitchEntity):
+            if obj.name == "Switch Target":
+                return obj
+```
 
-**MUD constrains the network, not the platform's own authority.** The Manufacturer Usage
-Description standard [9] applies the declare-and-enforce principle at the network layer.
-Its premise is that most IoT devices have narrow, predictable communication patterns, so
-rather than detecting misbehaviour after the fact, the manufacturer publishes a
-machine-readable profile of the device's *intended* communications. The device advertises a
-URL for that profile when it joins the network; a MUD manager retrieves it; and the
-resulting access-control rules — permitted endpoints, protocols, directions, and whether
-local or internet traffic is expected — are enforced by the network infrastructure. A
-compromised bulb that begins scanning the local network is blocked, because scanning was
-never declared.
+Having obtained the reference, `light_simple_access` reads a secret held by the target
+integration and can then either use it directly or exfiltrate it; `light_altering_state`
+modifies the target's state and secret, breaking integrity and partial availability.
 
-This is the same *shape* of idea as the manifest proposed in this work, which is precisely
-why it must be distinguished rather than dismissed: declare intent, enforce the declaration,
-deny the remainder. Applied to extensions, it can bound where an integration
-connects — a genuine and useful control, and one this project also needs (§1.6, Table 1.2).
-But the most consequential capabilities in Table 1.2 are not network operations at all.
-Reading every entity state and calling `lock.unlock` are exercises of the platform's *own*
-API, performed with the platform's own credential, over a connection that any network
-policy must permit for the integration to function. A network-layer profile cannot
-distinguish a permitted call to Home Assistant that reads a declared sensor from a
-permitted call to Home Assistant that unlocks the front door.
+This result extends Chapter 1's Table 1.2 in a way that constrains any solution. It is not
+merely that an integration holds full authority over the *platform*; **co-residence in one
+Python process means there is no boundary between integrations either**. Any object on the
+heap is reachable by name and type. The consequence for design is decisive and is carried
+into Chapter 5: a permission layer implemented as an in-process API wrapper cannot be a
+security boundary, because the code it purports to constrain can enumerate the heap and
+reach past it — including to any credential such a layer holds. Isolation must be at least
+at process granularity. That conclusion is normally asserted; here it is demonstrated by
+published, independent work.
 
-**The compatibility cost is not addressed.** Neither the threat model nor the MUD direction
-asks what fraction of existing integrations would still work under enforcement — which,
-per §2.2, is the question that decides whether any such scheme is deployable.
+**What the paper recommends, and does not build.** Its own summary states the direction
+plainly: "to reduce the presence of the previously described threats is necessary to act on
+different components. First of all, the gateway itself (and its APIs) should enforce more
+controls. Then, the plug-ins should authenticate themselves while interacting with the
+platform (or among them)." That is a description of a mediating, per-plug-in-authenticated
+API boundary — precisely the mechanism this project builds — and it is offered as a
+recommendation. No such mechanism is implemented or evaluated in the paper. Its stated
+future work is to develop a proof of concept per threat, to broaden the attack targets, and
+to analyse "a large set of Home Assistant extensions to observe how many plug-ins present
+the described threats", with the aim of helping "developers create more secure and reliable
+smart home systems". The programme is diagnostic and developer-facing throughout.
 
-The broader picture is confirmed by **Thingnes and Meland [7]**, a 2025 systematic
-literature review in *Future Internet* which screened 713 papers published between January
-2019 and November 2024 and synthesised eight prevalent security challenges for users of
-extensible smart-home hubs. That a systematic review of this precise topic was published in
-2025 establishes the area as active and recognised. It also, by its own construction,
-excluded work on prototypes and individual features — so it characterises the problem
-space rather than supplying the missing mechanism.
+### 2.4.2 The MUD architecture: enforcement at the network layer
 
-Finally, industry security work points the same way. GitHub Security Lab's professional
-code review of Home Assistant [12] found six vulnerabilities in the core platform and
-assessed its layered architecture favourably, but **explicitly declined to examine
-community integrations**, noting: "Due to time constraints during the audit, we did not
-examine these community integrations. However, it's important to exercise caution when
-using them because they will have complete access to your Home Assistant installation."
-A dedicated security audit thus confirmed the full-access property of §1.2 and left the
-area unexamined.
+The same authors' subsequent work [8] adapts the Manufacturer Usage Description standard
+[9] to extensible gateways. MUD applies the declare-and-enforce principle at the network
+layer: because most IoT devices have narrow, predictable communication patterns, the
+manufacturer publishes a machine-readable profile of intended communications; the device
+advertises a URL for it on joining the network; a *MUD manager* retrieves the profile; and
+the resulting access-control lists are enforced by network infrastructure. A compromised
+bulb that begins scanning the local network is blocked, because scanning was never declared.
+
+This is the same *shape* of idea as the manifest proposed in this work, which is why it must
+be distinguished carefully rather than dismissed. Corno and Mannella's extension lets plug-in
+developers "specify which endpoints their plug-ins need to reach"; the gateway consolidates
+these declarations into a single gateway-level MUD file, signs it, exposes it over Home
+Assistant's own web server, and advertises it by DHCP. Their proof of concept enforces the
+result with osMUD on an OpenWrt router, which instantiates the policies as `iptables` rules.
+
+Three properties of that design bound what it can achieve, all evident from the paper itself.
+
+**Enforcement is at the network layer, not the platform's.** The policies become firewall
+rules on a router. The most consequential capabilities in Table 1.2 never reach a router: an
+integration reading every entity state or calling `lock.unlock` is exercising Home
+Assistant's *own* API, in-process, with the platform's own authority. The garbage-collector
+attack of §2.4.1 crosses no network at all. This is a difference of layer, not of
+granularity — a firewall cannot mediate a call that never becomes a packet.
+
+**Consolidation removes per-plug-in attribution.** Because the declarations of all plug-ins
+are merged into one gateway-level file, and because the firewall sees a single host, the
+effective network policy for any individual plug-in is the **union of every plug-in's
+declarations**. An integration that declares nothing still reaches every endpoint that any
+other installed integration declared. The architecture constrains the gateway in aggregate;
+it does not isolate plug-ins from one another. Their reported evaluation is consistent with
+this: eight policies across three integrations, enforced as ten firewall rules.
+
+**It depends on the developer's cooperation, and the authors say so.** The declarations are
+written by plug-in developers, and the paper acknowledges that "anyone accessing the
+integrations source code could alter it (and alter the snippets)", proposing signing or a
+list of "authorized HAss-MUD developers" as mitigation — that is, trusting the developer.
+The paper further leaves to future work how to handle conflicting, overlapping and *absent*
+policies. A malicious author simply declares what they want, or declares nothing.
+
+Validation was on three integrations — a weather integration and two emulated custom ones —
+so no compatibility cost over the real extension ecosystem is reported.
+
+None of this diminishes the work: within its stated aim, bringing MUD coverage to devices
+that are not MUD-enabled, it succeeds and is evaluated. It addresses a different axis of the
+problem, and this project needs that axis too (§1.6, Table 1.2). It does not address
+authority exercised through the platform's own API.
+
+### 2.4.3 Independent confirmation from a systematic review
+
+**Thingnes and Meland [7]**, a 2025 systematic review in *Future Internet*, screened 713
+papers published between January 2019 and November 2024, selected 16, and synthesised eight
+prevalent security challenges for users of extensible smart home hubs. **Two of the eight
+are this project's subject**: "Insecure Extension Runtime" and "Insufficient Access
+Control".
+
+Their summary of the state of affairs is direct: "Corno and Mannella specifically found that
+Home Assistant, the most popular open-source hub, has no firm extension isolation,
+compromising the confidentiality and integrity of other extensions running on the hub.
+Furthermore, extensions are free to perform actions without being authenticated, reducing
+the ability to audit logs and locate malicious extensions." On access control they report
+that "insufficient access control allows extensions in extensible hubs unrestricted access
+to sensitive information and actions", citing five independent papers for the point that
+extensions should be limited to the access they require.
+
+Critically, the solutions they are able to point to are *suggestions* and *other platforms*.
+Sandboxing extension runtimes is cited as existing in Apple HomeKit and as "an approach also
+suggested by Corno and Mannella"; the remaining proposals are MUD labelling [8],
+expectation-based analysis, behaviour-based approaches, and app-store-style third-party
+verification. For access control, the concrete prototype they identify — context-based
+access control by Yang and Sun — targets **SmartThings**, not Home Assistant.
+
+Their Future Research Directions section then proposes, unprompted by this project, exactly
+the work reported here:
+
+> "Extensible smart home hubs often lack fine-grained access control, which is crucial for
+> multi-user setups and less reputable extensions. Exploring the application of zero-trust
+> principles from network security to develop fine-grained access control could be
+> beneficial. **A proof-of-concept implementation for Home Assistant, for instance, could be
+> evaluated based on the threat model introduced by Corno and Mannella**, providing insight
+> into its applicability and effectiveness." [7]
+
+An independent systematic review, having surveyed the field, names a fine-grained access
+control proof of concept for Home Assistant — evaluated against Corno and Mannella's threat
+model — as an open research direction. This is stronger evidence for the gap than any
+argument this chapter could construct, and it also supplies an evaluation framing that
+Chapter 7 adopts.
+
+### 2.4.4 Industry security work points the same way
+
+GitHub Security Lab's professional code review of Home Assistant [12] found six
+vulnerabilities in the core platform and assessed its layered architecture favourably, but
+**explicitly declined to examine community integrations**, noting: "Due to time constraints
+during the audit, we did not examine these community integrations. However, it's important
+to exercise caution when using them because they will have complete access to your Home
+Assistant installation." A dedicated security audit thus confirmed the full-access property
+of §1.2 and left the area unexamined.
 
 ## 2.5 The distribution channel: supply-chain attacks
 
@@ -244,10 +314,15 @@ Synthesising the five strands:
   a vendor-operated platform, an existing permission model, a sandboxed execution
   environment, and applications that can be required to change. Home Assistant has none of
   these (Table 2.1).
-- **The problem has been recognised on Home Assistant specifically** [6], [7], [12], and
-  sandboxing has been *suggested* [6]. It has not been built, and the mechanism that was
-  pursued instead [8], [9] constrains network behaviour and therefore cannot reach the
-  platform-API authority that Table 1.2 shows to be the most consequential.
+- **The problem is recognised on Home Assistant specifically** [6], [7], [12], and
+  sandboxing of extension runtimes has been *suggested* [6], [7]. It has not been built for
+  this platform. The mechanism pursued instead [8] enforces at the network layer, so it
+  cannot reach the platform-API authority Table 1.2 shows to be most consequential, and its
+  consolidated gateway-level profile grants every plug-in the union of all declarations.
+  Corno and Mannella's own recommendation — that "the gateway itself (and its APIs) should
+  enforce more controls" and that "plug-ins should authenticate themselves" [6] — remains
+  unimplemented, and Thingnes and Meland [7] name a fine-grained access-control proof of
+  concept for Home Assistant as an open research direction.
 - **Supply-chain research** [10], [14] addresses how hostile code arrives, not what it may
   do on arrival.
 - **Empirical API-usage measurement to justify a privilege model** has been done for
@@ -304,14 +379,12 @@ hardest thing to establish.
 
 - **The review is narrative, not systematic** (§2.1). A pre-registered systematic search
   could surface work this review missed.
-- **The closest sources could not be retrieved in full.** The publisher-hosted PDFs for
-  [6], [7] and [8] sit behind a Cloudflare challenge or a paywall. §2.4's characterisation
-  of [6] and [8] rests on the authors' own research summary [15] — a primary source, and
-  unusually direct about both orientation and contributions — together with abstracts and
-  publisher metadata. **All three should still be read in full before submission.** The
-  claim most exposed is the category distinction in §2.4: if [8] enforces MUD-style profiles
-  at the *gateway application* layer rather than at the network layer, that argument becomes
-  one of granularity rather than of kind, and must be rewritten accordingly.
+- ~~**The closest sources could not be retrieved in full.**~~ **Resolved.** [6], [7] and
+  [8] have now been read in full, and §2.4 is written from the papers themselves rather than
+  from abstracts. The specific risk flagged in the earlier draft — that [8] might enforce at
+  the gateway application layer, reducing the argument to one of granularity — **did not
+  materialise**: enforcement is by `osMUD` on an OpenWrt router via `iptables`, so the
+  layer distinction holds as stated.
 - **Absence of evidence.** The claim is that no *published* work does this. Unpublished or
   in-progress work may exist, and the Home Assistant project could implement confinement
   at any time.
