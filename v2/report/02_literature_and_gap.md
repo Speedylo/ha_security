@@ -148,9 +148,20 @@ It shares that category's defining limitation — **guidance addressed to plug-i
 is inert against a developer who is malicious**, because it asks the attacker to please not
 attack. Nothing in this line of work bounds what a plug-in can do once it is running.
 
-**MUD constrains the network, not the platform's own authority.** MUD [9] is a network-layer
-mechanism: a profile declares the endpoints a thing should communicate with, and network
-infrastructure enforces it. Applied to extensions, it can bound where an integration
+**MUD constrains the network, not the platform's own authority.** The Manufacturer Usage
+Description standard [9] applies the declare-and-enforce principle at the network layer.
+Its premise is that most IoT devices have narrow, predictable communication patterns, so
+rather than detecting misbehaviour after the fact, the manufacturer publishes a
+machine-readable profile of the device's *intended* communications. The device advertises a
+URL for that profile when it joins the network; a MUD manager retrieves it; and the
+resulting access-control rules — permitted endpoints, protocols, directions, and whether
+local or internet traffic is expected — are enforced by the network infrastructure. A
+compromised bulb that begins scanning the local network is blocked, because scanning was
+never declared.
+
+This is the same *shape* of idea as the manifest proposed in this work, which is precisely
+why it must be distinguished rather than dismissed: declare intent, enforce the declaration,
+deny the remainder. Applied to extensions, it can bound where an integration
 connects — a genuine and useful control, and one this project also needs (§1.6, Table 1.2).
 But the most consequential capabilities in Table 1.2 are not network operations at all.
 Reading every entity state and calling `lock.unlock` are exercises of the platform's *own*
