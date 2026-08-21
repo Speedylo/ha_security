@@ -8,7 +8,24 @@
 copy is a stale backup — do not edit it. `/mnt/c` is avoided because file modes
 there are fake, which would silently break filesystem permission tests.
 
-> This file is the source of truth across sessions. Update it as decisions land.
+> ⚠️ **SUPERSEDED FOR CURRENT WORK, 2026-08-21. Start at `v2/STATE.md`.**
+>
+> On 2026-08-21 the project was restarted from first principles in `v2/`, building the
+> chain problem → literature/gap → requirements → threat model → architecture → evaluation
+> in the order that makes it defensible. **`v2/STATE.md` is the resume point**; `v2/00_METHOD.md`
+> holds the ground rules and `v2/01_PLAN.md` the plan.
+>
+> This file and everything else outside `v2/` remain accurate as the record of a two-week
+> **feasibility spike** — working code, 10/10 adversarial probe on two architectures, a
+> 3,105-repo API-surface measurement. That work is not superseded and is not to be deleted
+> or tidied: it is cited as prior feasibility evidence in v2 Chapter 6. What it lacks is a
+> defensible chain of reasoning from a problem in the literature to the artifact, which is
+> what `v2/` builds.
+>
+> **Note the evidence rule** (`v2/00_METHOD.md` §2): findings recorded in this file are
+> private knowledge for the rebuild, not citable evidence, until re-derived there.
+
+> This file is the source of truth for the feasibility spike. Update it as decisions land.
 >
 > Companion docs: `CODE_WALKTHROUGH.md` (what every script does and how) ·
 > `spike/README.md` (spike results, adversarial probe, known gaps).
