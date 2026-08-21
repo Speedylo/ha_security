@@ -8,6 +8,7 @@
   "hacs_installs": 379326,
   "hacs_share_of_installations": 0.5664,
   "mean_custom_integrations_per_installation": 2.28,
+  "mean_custom_integrations_per_hacs_installation": 4.02,
   "median_installs_per_integration": 20.0,
   "integrations_over_1000_installs": 257,
   "integrations_over_10000_installs": 27,

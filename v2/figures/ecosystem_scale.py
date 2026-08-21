@@ -69,9 +69,15 @@ def derive(data: dict) -> dict:
         # distribution channel itself. The headline exposure figure.
         "hacs_share_of_installations": round(hacs / ACTIVE_INSTALLATIONS, 4),
         # Excluding HACS itself, so the figure counts extensions rather than
-        # the store that delivers them.
+        # the store that delivers them. Reported two ways because the first is
+        # easy to misread: averaged over *all* installations it is diluted by
+        # the 43% that do not run HACS at all, so the second figure is the one
+        # describing a typical HACS user.
         "mean_custom_integrations_per_installation": round(
             (total - hacs) / ACTIVE_INSTALLATIONS, 2
+        ),
+        "mean_custom_integrations_per_hacs_installation": round(
+            (total - hacs) / hacs, 2
         ),
         "median_installs_per_integration": statistics.median(counts),
         "integrations_over_1000_installs": sum(1 for c in counts if c >= 1000),
@@ -102,6 +108,7 @@ def main() -> None:
     print(f"  HACS installs                      {figures['hacs_installs']:>10,}")
     print(f"  HACS share of installations        {figures['hacs_share_of_installations']:>10.1%}")
     print(f"  mean custom integrations/install   {figures['mean_custom_integrations_per_installation']:>10.2f}")
+    print(f"  ...per HACS installation           {figures['mean_custom_integrations_per_hacs_installation']:>10.2f}")
     print(f"  median installs per integration    {figures['median_installs_per_integration']:>10,.0f}")
     print(f"  integrations >= 1,000 installs     {figures['integrations_over_1000_installs']:>10,}")
     print(f"  integrations >= 10,000 installs    {figures['integrations_over_10000_installs']:>10,}")

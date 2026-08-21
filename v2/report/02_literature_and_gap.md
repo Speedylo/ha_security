@@ -220,7 +220,7 @@ so no compatibility cost over the real extension ecosystem is reported.
 
 None of this diminishes the work: within its stated aim, bringing MUD coverage to devices
 that are not MUD-enabled, it succeeds and is evaluated. It addresses a different axis of the
-problem, and this project needs that axis too (§1.6, Table 1.2). It does not address
+problem, and this project needs that axis too (§1.7, Table 1.2). It does not address
 authority exercised through the platform's own API.
 
 ### 2.4.3 The consolidated statement: the 2024 doctoral thesis
@@ -479,14 +479,14 @@ https://github.blog/security/vulnerability-research/securing-our-home-labs-home-
 [14] *XZ Utils backdoor* (CVE-2024-3094), March 2024.
 https://en.wikipedia.org/wiki/XZ_Utils_backdoor
 
-[17] L. Mannella, *Securing IoT Gateways in Smart Home Environments*, PhD thesis,
-Politecnico di Torino, 2024.
+[15] L. Mannella, "Supporting Developers in the Cybersecurity of IoT Systems", PhD research
+summary (supervisors F. Corno and A. Lioy), PhD Day, Department of Control and Computer
+Engineering, Politecnico di Torino, 2022.
+http://www.phd-dauin.polito.it/events/phdday2022/Mannella.pdf
 
 [16] A. Rahmati, E. Fernandes, K. Eykholt and A. Prakash, "Tyche: A Risk-Based Permission
 Model for Smart Homes", *IEEE Secure Development Conference (SecDev)*, 2018.
 DOI 10.1109/SECDEV.2018.00012. Preprint: arXiv:1801.04609.
 
-[15] L. Mannella, "Supporting Developers in the Cybersecurity of IoT Systems", PhD research
-summary (supervisors F. Corno and A. Lioy), PhD Day, Department of Control and Computer
-Engineering, Politecnico di Torino, 2022.
-http://www.phd-dauin.polito.it/events/phdday2022/Mannella.pdf
+[17] L. Mannella, *Securing IoT Gateways in Smart Home Environments*, PhD thesis,
+Politecnico di Torino, 2024.
