@@ -222,9 +222,18 @@ is a list of ordinary capabilities that follow from running in-process.
 | Camera and media entities | Same as any other entity | Surveillance |
 | Filesystem | Whatever the process user can read | Configuration, database, tokens |
 | Network | Unrestricted outbound; internal network reachable [6] | Exfiltration; pivot into the home LAN |
+| **Other integrations' live objects** | Any object on the Python heap, reachable via the garbage collector [10] | Theft or alteration of another integration's secrets and state |
+
+The last row is the least obvious and has been demonstrated experimentally rather than
+merely inferred. Corno and Mannella [10] show that a Home Assistant integration can obtain a
+reference to *another* integration's live object by iterating the Python garbage collector
+and matching on class and name, then read and modify that object's private state. Because
+every integration shares one interpreter, the absence of a boundary is not only between an
+integration and the platform but **between integrations**. Chapter 2 returns to this, since
+it constrains what any solution can look like.
 
 The distinguishing feature of this platform, relative to the general problem of untrusted
-plugins, is the final column. A compromised browser extension costs a user data. A
+plugins, is the final column of consequences. A compromised browser extension costs a user data. A
 compromised Home Assistant integration can also **unlock the front door**, and can do so
 using the platform's own legitimate control path, which is indistinguishable from the
 user's own action.
@@ -339,6 +348,9 @@ https://www.elttam.com/blog/pwnassistant
 
 [8] T. Cohen (titilambert), *Remote Integration Execution*, Home Assistant Community RFC,
 12 May 2026. https://community.home-assistant.io/t/remote-integration-execution/1010130
+
+[10] F. Corno and L. Mannella, "A Threat Model for Extensible Smart Home Gateways",
+*7th International Conference on Smart and Sustainable Technologies (SpliTech)*, 2022.
 
 [9] *XZ Utils backdoor* (CVE-2024-3094), March 2024. Backdoor introduced by a contributor
 who had acquired maintainer trust over approximately two years; discovered by A. Freund

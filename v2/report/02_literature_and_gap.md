@@ -358,10 +358,19 @@ be checked:
    either the platform's maintainers or the extension's author.
 
 3. **A quantified security/compatibility trade-off.** Prior work asserts that confinement
-   is desirable [6] or that overprivilege is prevalent [2]; none reports what fraction of
-   real, unmodified extensions still function once confinement is applied. Reporting both
-   the security effect and its compatibility cost is the contribution most likely to
-   survive scrutiny, because it is the one nobody else has data for.
+   is desirable [6], [7] or that overprivilege is prevalent [2]; none reports what fraction
+   of real, unmodified extensions still function once confinement is applied. The closest
+   evaluation [8] covers three integrations, two of them purpose-built for the experiment.
+   Reporting both the security effect and its compatibility cost is the contribution most
+   likely to survive scrutiny, because it is the one nobody else has data for.
+
+The framing is endorsed independently. Thingnes and Meland's systematic review [7] proposes
+as future work "a proof-of-concept implementation for Home Assistant … evaluated based on
+the threat model introduced by Corno and Mannella", which describes contributions 2 and 3 in
+the words of authors with no connection to this project. Chapter 7 therefore adopts that
+evaluation framing directly: the security axis is assessed against the threat model of [6],
+so that the result is comparable against an existing published model rather than against
+criteria invented here.
 
 Contribution 2 is where the engineering lies; contributions 1 and 3 are where the
 *research* lies, and the report's weight should be distributed accordingly.
