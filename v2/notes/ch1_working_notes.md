@@ -18,6 +18,29 @@ demonstrable today, and a control that addresses both actors is not weakened by 
 scarcity of one of them. Chapter 4 must carry both actors through the threat model
 explicitly.
 
+**"Nobody looks at the code."** Explicitly *not* claimed — §1.6 exists to prevent that
+reading. Added 2026-08-21 after the first draft overstated §1.4's "no formal gate" into an
+implied absence of any review at all. Integration source is public and the user base is
+technical, so informal peer review is a genuine control and blatant malice would likely be
+caught, especially in popular integrations.
+
+The correction improves the argument rather than weakening it, and it is worth understanding
+why: conceding the control forces the chapter to say precisely what it does *not* cover, and
+that is where the project's actual justification lives. The framing that resulted —
+**community review acts on likelihood, confinement acts on impact, neither substitutes for
+the other** — is stronger than the original claim and is stated in risk-treatment vocabulary
+this advisor uses professionally.
+
+Three bounds are given, all evidenced rather than asserted: coverage collapses across the
+long tail (median 20 installs, from Table 1.1); review is point-in-time while HACS updates
+are continuous; and it is permeable to the non-obvious, evidenced *within this ecosystem* by
+2021 — eight integrations, same flaw class, all public, found by a researcher rather than by
+the community — and in general by XZ Utils.
+
+**Do not inflate this into a claim that community review is ineffective.** It is the
+mechanism doing most of the work today. The chapter's position is that it is a real control
+with a measurable coverage envelope, and that the residual is what this project addresses.
+
 **"HACS is negligent."** Not claimed, and I would resist it. §1.4 says the opposite —
 reviewing 4,220 repositories is not something a volunteer project can undertake. The claim
 is about what the *user reasonably infers* from a default store, not about HACS's conduct.
@@ -62,6 +85,15 @@ only to establish what code execution inside HA is worth, and labelled as such i
   and must engage seriously with the Remote Integration Execution RFC [8] rather than
   dismissing it.
 - Ch. 4 must carry both actors (malicious author; compromised honest author) explicitly.
+- Ch. 4 owes a promise made in §1.6: **community review must appear in the threat model as
+  an existing control**, with its coverage envelope, not be silently omitted because it is
+  informal. Omitting it would make the residual-risk table overstate what the framework
+  contributes.
+- Ch. 5 owes the defence-in-depth framing (likelihood control + impact control) also
+  promised in §1.6.
+- Ch. 2 should engage with the "many eyes" claim as prior art rather than treating informal
+  review as un-scholarly. There is a real literature on its limits, and XZ Utils [9] is the
+  canonical modern counter-example.
 - The §1.8 argument — that relocation without scoping does not constrain authority — is
   asserted here and *promised* to Chapter 5. It must actually be discharged there.
 - §1.7's three-way framing (platform disclaims / channel does not inspect / user cannot

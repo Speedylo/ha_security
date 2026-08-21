@@ -12,8 +12,9 @@ particular device or cloud service. Beyond those shipped with the platform, user
 community-written integrations through a third-party distribution channel. This chapter
 establishes three things: that such code runs with the full authority of the platform
 itself; that this is a current and documented exposure rather than a hypothetical one; and
-that neither the platform nor the distribution channel accepts responsibility for it,
-while offering the user no mechanism to manage the risk they are told they own.
+that while the ecosystem does have one real safeguard — informal community review of public
+source — every existing control acts on the likelihood that hostile code arrives, and none
+bounds what it can do once it is running.
 
 The argument is deliberately built from primary sources — the platform's own
 documentation, its own security disclosures, its own telemetry, and the distribution
@@ -153,7 +154,59 @@ also internal access to the home network" [6]. That vulnerability was in first-p
 and is not itself an argument about integrations, but it establishes what code execution
 inside Home Assistant is worth to an attacker.
 
-## 1.6 What is at stake
+## 1.6 The review that does happen, and what it covers
+
+Sections 1.4 and 1.5 describe the absence of a *formal* gate. They should not be read as
+claiming that nobody looks at the code, because that is not true and the distinction
+matters.
+
+Integration source is published on GitHub, and the Home Assistant user base is unusually
+technical — self-hosters, home-lab operators and IT practitioners who read code, file
+issues and fork projects. Informal peer review is therefore a real control, and it is
+reasonable to expect that **blatant** malice — a plaintext credential upload, an
+unexplained connection to an unrelated host — would be noticed and reported, particularly
+in an integration with a substantial user base. Any honest account of this ecosystem's
+security has to credit that. It is the mechanism that currently does most of the work.
+
+Its coverage, however, is uneven in three specific ways, each measurable rather than
+speculative.
+
+**It is weakest where the population is largest.** Informal review requires reviewers.
+Table 1.1 shows 3,095 of 4,220 custom integrations have fewer than 100 installs, with a
+median of 20. Attention scales with popularity, so the mechanism is strongest for the 257
+integrations above 1,000 installs and close to absent across the long tail.
+
+**It is point-in-time, while distribution is continuous.** Whatever review occurs happens
+at some moment, to some revision. HACS then delivers subsequent releases through an update
+path the user has already authorised. The artifact that was reviewed is not necessarily the
+artifact that is running, and it is not realistic to expect users to diff each release.
+
+**It is demonstrably permeable to the non-obvious.** The 2021 disclosures are direct
+evidence about this ecosystem: the same directory-traversal class was present
+simultaneously in eight custom integrations named across the two advisories, all of them
+public, all installed widely enough to be worth disclosing — and it was found by a security
+researcher, not by the community reading the code [3][5]. The general case is stronger
+still. The backdoor introduced into XZ Utils (CVE-2024-3094) was placed in a library
+present in effectively every Linux distribution, by a contributor who had spent roughly two
+years earning maintainer trust, and was discovered by an engineer investigating a 500 ms
+SSH latency regression rather than by review [9].
+
+The conclusion is not that community review is ineffective. It is that review and
+confinement occupy **different roles in risk treatment**, and neither substitutes for the
+other:
+
+- Community review acts on **likelihood**. It reduces the chance that hostile or careless
+  code is published and installed in the first place.
+- Confinement acts on **impact**. It bounds what code can do in the cases where review did
+  not happen, happened to an earlier revision, or happened and missed.
+
+The first control exists in this ecosystem and works. The second does not exist at all.
+This project supplies the second and is complementary to the first by construction — a
+point developed as defence in depth in Chapter 5, and carried into the threat model in
+Chapter 4, where community review appears as an existing control with the coverage limits
+set out above.
+
+## 1.7 What is at stake
 
 Combining the loading mechanism of §1.2 with the impact statements above, Table 1.2 sets
 out what a custom integration can reach today. This is not a list of vulnerabilities; it
@@ -176,7 +229,7 @@ compromised Home Assistant integration can also **unlock the front door**, and c
 using the platform's own legitimate control path, which is indistinguishable from the
 user's own action.
 
-## 1.7 The stated positions of the platform and the channel
+## 1.8 The stated positions of the platform and the channel
 
 Home Assistant's security page defines what its security programme covers. Attacks "that
 require the user to install a malicious other software, like a third-party integration,
@@ -196,15 +249,20 @@ exists to address:
 
 - The **platform** declares third-party integration behaviour outside its security scope.
 - The **distribution channel** verifies structure and metadata, never behaviour.
-- The **user** is therefore assigned the risk — "at your own risk" — and is given **no
-  mechanism whatsoever for managing it**. They cannot see what an integration intends to
-  access before installing it; they cannot restrict what it accesses after installing it;
-  and they cannot detect what it accessed afterwards.
+- **Community review** (§1.6) partially covers the remainder, but only where an integration
+  is popular enough to attract readers, only for the revision actually read, and only for
+  malice obvious enough to be recognised as such.
+- The **user** is assigned the risk — "at your own risk" — and is given **no technical means
+  of bounding it**. They cannot see what an integration intends to access before installing
+  it; they cannot restrict what it accesses once it is running; and they cannot detect
+  afterwards what it accessed.
 
-Risk has been allocated to the one party with neither the information nor the tools to act
-on it. That, and not the absence of code review, is the gap.
+The gap is therefore not the absence of code review — review exists, and for popular
+integrations it works. It is that every existing control acts on the *likelihood* that
+hostile code arrives, and none acts on the *impact* once it has. Risk has been allocated to
+the one party with neither the information nor the tools to act on it.
 
-## 1.8 The problem is recognised, but not as a security problem
+## 1.9 The problem is recognised, but not as a security problem
 
 In May 2026 a request for comment titled *Remote Integration Execution* proposed allowing
 integrations to run on separate machines while Home Assistant Core retains control of
@@ -229,7 +287,7 @@ without changing what it may do. Process separation is a necessary building bloc
 not, on its own, a security control. This project should therefore be positioned as
 complementary to that RFC rather than competing with it.
 
-## 1.9 Problem statement
+## 1.10 Problem statement
 
 > Home Assistant loads community-written integrations into its own process, granting them
 > unscoped authority over every entity, service, credential and network path available to
@@ -237,14 +295,17 @@ complementary to that RFC rather than competing with it.
 > at scale through a channel whose inclusion criteria verify repository structure but never
 > code behaviour, and it is installed on the majority of reporting installations. The
 > platform explicitly places such code outside its security programme and assigns the
-> resulting risk to the user, who has no means of inspecting, constraining or auditing what
-> an integration does. The exposure is documented: in 2021 a single vulnerability class
-> across several widely-installed integrations exposed arbitrary file contents, including
-> stored credentials, to unauthenticated attackers.
+> resulting risk to the user. The ecosystem's one real safeguard is informal review of
+> public source, which is effective against obvious malice in popular integrations but
+> weakens across a long tail where the median integration has twenty installs, covers only
+> the revision actually read, and did not prevent the documented case: in 2021 a single
+> vulnerability class across eight widely-installed integrations exposed arbitrary file
+> contents, including stored credentials, to unauthenticated attackers.
 >
-> **What is missing is not review capacity but a mechanism: a way for an integration's
-> required authority to be declared, enforced and audited, so that the risk the user is
-> told they own becomes a risk they can actually see and limit.**
+> **Every control in place today acts on the likelihood that hostile code arrives. None
+> bounds what it can do once it is running. What is missing is a mechanism: a way for an
+> integration's required authority to be declared, enforced and audited, so that the risk
+> the user is told they own becomes a risk they can actually see and limit.**
 
 Chapter 2 examines whether such a mechanism exists — in this platform, in comparable
 extension ecosystems, or in the research literature — and states precisely what remains
@@ -278,3 +339,9 @@ https://www.elttam.com/blog/pwnassistant
 
 [8] T. Cohen (titilambert), *Remote Integration Execution*, Home Assistant Community RFC,
 12 May 2026. https://community.home-assistant.io/t/remote-integration-execution/1010130
+
+[9] *XZ Utils backdoor* (CVE-2024-3094), March 2024. Backdoor introduced by a contributor
+who had acquired maintainer trust over approximately two years; discovered by A. Freund
+while investigating an SSH latency regression rather than through code review.
+https://en.wikipedia.org/wiki/XZ_Utils_backdoor — see also
+https://www.rapid7.com/blog/post/2024/04/01/etr-backdoored-xz-utils-cve-2024-3094/
