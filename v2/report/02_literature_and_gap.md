@@ -223,7 +223,34 @@ that are not MUD-enabled, it succeeds and is evaluated. It addresses a different
 problem, and this project needs that axis too (§1.6, Table 1.2). It does not address
 authority exercised through the platform's own API.
 
-### 2.4.3 Independent confirmation from a systematic review
+### 2.4.3 The consolidated statement: the 2024 doctoral thesis
+
+Mannella's doctoral thesis [17] is the fullest statement of this line of work, and it
+settles the question of what was ultimately built. Its three contributions are the threat
+model of §2.4.1, extended with a survey of experts and users to establish "whether developers
+could potentially introduce undesired behaviors by mistake"; the extended MUD architecture of
+§2.4.2, described as giving "plug-in developers the possibility of specifying the network
+requirements of their plug-ins", together with an integrity-verification mechanism that
+detects tampering with developers' declarations; and an *IoT Proxy* that outsources security
+functions from resource-limited devices to the gateway using virtual network security
+functions.
+
+The thesis's own future work confirms the direction of travel. It proposes comparing groups
+of programmers working with and without the threat model; "analyzing a large set of Smart
+Home Gateway open-source extensions using the threat model" to assess the ecosystem's
+security status; unsupervised machine learning and live traffic analysis for the IoT Proxy;
+dataset diversification; and usability studies. **No item proposes runtime confinement of
+plug-in authority.** The programme's framing is stated in its own conclusion: the work is
+directed at "supporting novice developers and enhancing the security of smart home systems".
+
+One item deserves explicit acknowledgement rather than quiet appropriation. Their proposal
+to analyse a large set of extensions is *adjacent* to this project's first contribution, and
+both remain open. They are not the same study: theirs applies a threat model to a corpus to
+ask **how many plug-ins exhibit the modelled threats**; this project parses a corpus to ask
+**what platform API surface plug-ins depend on**, in order to size the retrofit cost of
+confinement. The corpus is shared; the question is not.
+
+### 2.4.4 Independent confirmation from a systematic review
 
 **Thingnes and Meland [7]**, a 2025 systematic review in *Future Internet*, screened 713
 papers published between January 2019 and November 2024, selected 16, and synthesised eight
@@ -263,7 +290,7 @@ model — as an open research direction. This is stronger evidence for the gap t
 argument this chapter could construct, and it also supplies an evaluation framing that
 Chapter 7 adopts.
 
-### 2.4.4 Industry security work points the same way
+### 2.4.5 Industry security work points the same way
 
 GitHub Security Lab's professional code review of Home Assistant [12] found six
 vulnerabilities in the core platform and assessed its layered architecture favourably, but
@@ -388,8 +415,8 @@ hardest thing to establish.
 
 - **The review is narrative, not systematic** (§2.1). A pre-registered systematic search
   could surface work this review missed.
-- ~~**The closest sources could not be retrieved in full.**~~ **Resolved.** [6], [7] and
-  [8] have now been read in full, and §2.4 is written from the papers themselves rather than
+- ~~**The closest sources could not be retrieved in full.**~~ **Resolved.** [6], [7], [8]
+  and the consolidating doctoral thesis [17] have now been read in full, and §2.4 is written from the papers themselves rather than
   from abstracts. The specific risk flagged in the earlier draft — that [8] might enforce at
   the gateway application layer, reducing the argument to one of granularity — **did not
   materialise**: enforcement is by `osMUD` on an OpenWrt router via `iptables`, so the
@@ -451,6 +478,9 @@ https://github.blog/security/vulnerability-research/securing-our-home-labs-home-
 
 [14] *XZ Utils backdoor* (CVE-2024-3094), March 2024.
 https://en.wikipedia.org/wiki/XZ_Utils_backdoor
+
+[17] L. Mannella, *Securing IoT Gateways in Smart Home Environments*, PhD thesis,
+Politecnico di Torino, 2024.
 
 [16] A. Rahmati, E. Fernandes, K. Eykholt and A. Prakash, "Tyche: A Risk-Based Permission
 Model for Smart Homes", *IEEE Secure Development Conference (SecDev)*, 2018.
