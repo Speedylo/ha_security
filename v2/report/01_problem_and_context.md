@@ -264,15 +264,27 @@ is a list of ordinary capabilities that follow from running in-process.
 
 **Table 1.2 — Authority held by any custom integration**
 
-| Asset | Reach | Consequence of abuse |
-|---|---|---|
-| Entity states | All entities in the installation | Occupancy, presence, sleep patterns, absence from home |
-| Service calls | Any service, including `lock.unlock`, alarm disarm | Physical access to the dwelling |
-| Stored credentials | Any file readable by the process, incl. stored secrets [3] | Lateral compromise of every linked cloud account |
-| Camera and media entities | Same as any other entity | Surveillance |
-| Filesystem | Whatever the process user can read | Configuration, database, tokens |
-| Network | Unrestricted outbound; internal network reachable [6] | Exfiltration; pivot into the home LAN |
-| **Other integrations' live objects** | Any object on the Python heap, reachable via the garbage collector [11] | Theft or alteration of another integration's secrets and state |
+| Asset | Reach | Consequence of abuse | Basis |
+|---|---|---|---|
+| Entity states | All entities in the installation | Occupancy, presence, sleep patterns, absence from home | Deduced from §1.2 [2] |
+| Service calls | Any service, including `lock.unlock`, alarm disarm | Physical access to the dwelling | Deduced from §1.2; **no scoping check is documented** [2] |
+| Stored credentials | Any file readable by the process, incl. stored secrets | Lateral compromise of every linked cloud account | Stated by the platform [3] |
+| Camera and media entities | Same as any other entity | Surveillance | Deduced from §1.2 [2] |
+| Filesystem | Whatever the process user can read | Configuration, database, tokens | Stated by the platform [3] |
+| Network | Unrestricted outbound; internal network reachable | Exfiltration; pivot into the home LAN | Reported in the RCE assessment [6] |
+| **Other integrations' live objects** | Any object on the Python heap, reachable via the garbage collector | Theft or alteration of another integration's secrets and state | **Demonstrated experimentally** [11] |
+
+The final column distinguishes what is *deduced* from the architecture of §1.2 from what has
+been independently *demonstrated* or *stated*, because the two carry different evidential
+weight and an argument that blurs them is weaker than one that does not.
+
+The deduced rows follow from a single premise: the integration executes inside the
+platform's process holding the unscoped `hass` object. Notably, Home Assistant's developer
+documentation for service actions describes registration and invocation but **specifies no
+permission model, scoping rule, or caller check** [2]. That is an argument from absence, and
+it is presented as one — the claim is not that the documentation grants an integration the
+right to call `lock.unlock`, but that nothing in the platform's design or documentation
+withholds it.
 
 The last row is the least obvious and has been demonstrated experimentally rather than
 merely inferred. Corno and Mannella [11] show that a Home Assistant integration can obtain a
@@ -378,8 +390,11 @@ undone.
 installations; retrieved 21 August 2026. Per-domain custom-integration install counts from
 https://analytics.home-assistant.io/custom_integrations.json, same date.
 
-[2] Home Assistant, *Creating your first integration*, Developer Documentation.
-https://developers.home-assistant.io/docs/creating_component_index/
+[2] Home Assistant, Developer Documentation: *Creating your first integration*
+(https://developers.home-assistant.io/docs/creating_component_index/) and *Service actions*
+(https://developers.home-assistant.io/docs/dev_101_services/). The latter documents
+registration and invocation of service actions and specifies no permission model, scoping
+rule or caller check.
 
 [3] Home Assistant, *Disclosure: security vulnerabilities in custom integrations HACS,
 Dwains Dashboard, Font Awesome and others*, 22 January 2021.
