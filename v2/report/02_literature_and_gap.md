@@ -81,6 +81,16 @@ The subsequent literature proposed mechanisms to address it:
 - **SmartAuth** (Tian, Zhang, Lin, Wang, Ur, Guo, Tague) [5] extracts security-relevant
   information from an application's description, code and annotations, and generates an
   authorization interface that reconciles what an app *says* it does with what it does.
+- **Tyche** (Rahmati, Fernandes, Eykholt, Prakash) [16] proposes a risk-based permission
+  model that groups device operations "into units of similar risk" rather than by function,
+  motivated by the observation that physical operations are **risk-asymmetric**: unlocking a
+  door is not the inverse of locking it in risk terms, though a function-oriented permission
+  model treats both as `lock` access.
+
+Tyche's asymmetry observation carries directly into this project's design and is recorded
+here for Chapter 5: a manifest whose granularity is the *entity* or the *domain* will grant
+`lock.unlock` to anything permitted to call `lock.lock`. Granularity is a security
+property of the manifest, not a formatting detail.
 
 This is a mature body of work, and its framing of overprivilege is directly applicable.
 Its *assumptions*, however, are not — and the difference is what makes Home Assistant a
@@ -99,7 +109,9 @@ distinct problem rather than a new instance of a solved one.
 
 The consequence is specific. Prior mechanisms improve a permission model that already
 exists, on a platform whose operator can mandate migration, for applications that run in a
-sandbox the operator built. Home Assistant has no permission model to improve, no operator
+sandbox the operator built. Tyche [16] is the clearest illustration: it does not require
+apps to be rewritten, but it does require the *platform operator* to implement a new
+permission framework — an option available to Samsung and unavailable here. Home Assistant has no permission model to improve, no operator
 who can mandate anything, and no sandbox: the untrusted code is `import`ed into the
 platform's own process. FlowFence's Quarantined Modules require applications to be written
 against its programming model; SmartAuth requires an app store position from which to
@@ -357,6 +369,10 @@ https://github.blog/security/vulnerability-research/securing-our-home-labs-home-
 
 [14] *XZ Utils backdoor* (CVE-2024-3094), March 2024.
 https://en.wikipedia.org/wiki/XZ_Utils_backdoor
+
+[16] A. Rahmati, E. Fernandes, K. Eykholt and A. Prakash, "Tyche: A Risk-Based Permission
+Model for Smart Homes", *IEEE Secure Development Conference (SecDev)*, 2018.
+DOI 10.1109/SECDEV.2018.00012. Preprint: arXiv:1801.04609.
 
 [15] L. Mannella, "Supporting Developers in the Cybersecurity of IoT Systems", PhD research
 summary (supervisors F. Corno and A. Lioy), PhD Day, Department of Control and Computer
