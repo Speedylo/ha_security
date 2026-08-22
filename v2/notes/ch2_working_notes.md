@@ -50,27 +50,28 @@ reading their work uncharitably; it is *their stated agenda*, and a legitimate o
 that way in the viva — "their goal and mine are different halves of the same problem" — not
 as a deficiency in their work.
 
-## The MUD argument — check this one carefully before the viva
+## The MUD argument — ✅ resolved 2026-08-21
 
 §2.4 argues MUD cannot reach platform-API authority because reading entities and calling
 `lock.unlock` are exercises of HA's own API over a connection any network policy must
-permit. I am confident this is right in principle, but I have **not read [8] in full**
-(403). If [8] proposes MUD-style profiles enforced at the *gateway application* layer
-rather than the network layer, the distinction weakens and §2.4 needs rewriting — the
-argument would become one of granularity rather than of category.
+permit. The risk flagged here was that [8] might enforce at the *gateway application* layer
+rather than the network layer, which would have reduced the argument from one of category
+to one of granularity and required §2.4 to be rewritten.
 
-**Action before submission: obtain [6] and [8] in full**, via institutional access,
-IEEE Xplore, or by emailing the authors. This is the single highest-value outstanding item
-in the chapter and it is cheap.
+**It did not materialise.** [8] was obtained and read in full: enforcement is by `osMUD` on
+an OpenWrt router via `iptables`, so the layer distinction holds exactly as argued. [6],
+[7] and the doctoral thesis [17] were also read in full — all four PDFs are in `refs/` —
+and §2.9 records the resolution in the report itself.
 
 ## Deliberate omissions
 
-- **Tyche: Risk-Based Permissions for Smart Home Platforms** — looks relevant, but the
-  author list could not be verified through OpenAlex in this session and I will not cite a
-  paper whose authorship I have not confirmed. Verify and add; it likely strengthens §2.3.
-- **Mannella's PhD thesis** (*Securing IoT Gateways in Smart Home Environments*, PoliTo,
-  2024) — exists and is directly on topic; the PDF host returned 403. Almost certainly the
-  fullest statement of [6] and [8] and the most important thing left to read.
+- ~~**Tyche: Risk-Based Permissions for Smart Home Platforms**~~ — **✅ no longer omitted.**
+  Authorship verified (Rahmati, Fernandes, Eykholt, Prakash) and the paper obtained; cited
+  as [16], discussed in §2.3 and §2.4, and it is what S5 rests on. Added in `e51eefd`.
+- ~~**Mannella's PhD thesis**~~ (*Securing IoT Gateways in Smart Home Environments*, PoliTo,
+  2024) — **✅ no longer omitted.** Obtained and read in full; it is [17] in `refs/`, and
+  §2.4.3 is written from it. It did prove to be the fullest statement of [6] and [8], as
+  guessed. Added in `dc4ff70`.
 - **WebAssembly-based plugin isolation** (e.g. RLBox) — omitted as out of scope: it
   requires recompiling the extension, which the retrofit constraint forbids. Worth one
   sentence in Ch. 5's rejected-alternatives section rather than in the review.
