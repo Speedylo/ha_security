@@ -17,7 +17,7 @@ that does not belong in the report, including anticipated viva questions.
 | `report/01_problem_and_context.md` | ✅ Drafted, reviewed, revised |
 | `report/02_literature_and_gap.md` | ✅ Drafted, reviewed, revised; all four key sources read in full |
 | `report/03_requirements.md` | ✅ Drafted — 19 requirements + S9 added by Ch. 4 |
-| `report/04_threat_model.md` | ✅ Drafted — 18 threats, 6 residual risks. **Outstanding:** the §4.6 boundary figure (`notes/decision_threat_model_diagrams.md`) |
+| `report/04_threat_model.md` | ✅ Drafted — 18 threats, 6 residual risks; impact scale rebuilt 2026-08-22 (`notes/decision_impact_scale_and_standards.md`). **Outstanding:** the §4.6 boundary figure (`notes/decision_threat_model_diagrams.md`) |
 | `figures/ecosystem_scale.py` | ✅ Regenerates every number in Ch. 1 |
 | `refs/` | ✅ Four PDFs obtained and read (Corno & Mannella ×2, Thingnes & Meland, Mannella thesis) |
 

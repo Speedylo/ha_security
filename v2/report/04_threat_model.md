@@ -13,6 +13,13 @@ per trust boundary.
 The chapter follows ISO 31000's clause structure explicitly, and each section names the
 clause it discharges, so that the process is auditable rather than merely invoked.
 
+Two frameworks, and deliberately not more. ISO 31000 is generic by design and does not
+supply impact criteria, which is the one thing it leaves conspicuously open; §4.7 derives
+those from the asset valuation of §4.4 rather than importing a published generic scale.
+That is a considered choice rather than an omission: no general-purpose scale contains a
+rung for defeat of a life-safety function in a dwelling, and calibration to this asset
+owner (§4.3) is precisely what makes the ratings mean anything.
+
 This chapter is deliberately written **before** the architecture. Chapter 3 fixed what the
 system must do; Chapter 5 will decide how. Placing the threat model between them means the
 controls in Chapter 5 answer threats enumerated independently of them. Written in the other
@@ -74,6 +81,27 @@ Derived from Table 1.2 and the consequences recorded there.
 | A7 | **The audit record** | Meta-asset: its integrity determines whether any other loss is attributable |
 | A8 | **The home network** | Pivot target reachable from the gateway |
 
+### 4.4.1 Valuation
+
+The impact criteria of §4.7 are derived from this table rather than adopted from a generic
+scale, so the relative valuation is stated here and the derivation can be checked.
+
+| Rank | Assets | Basis |
+|---|---|---|
+| Highest | A1 | Life-safety, and irreversible in effect: a door opened cannot be un-opened |
+| High | A3, A4 | Harm crosses the boundary of the dwelling (A3) or is intimate and permanent (A4); both irreversible once realised |
+| High, conditional | A5 | Ordinarily a serious loss of service; where automations include alarms or heating, unavailability becomes a life-safety matter and is valued with A1 |
+| Moderate | A2, A8 | A2 is irreversible once disclosed but enabling rather than directly harmful; A8 extends reach without itself being a loss |
+| Moderate, meta | A7 | No direct loss. Its value is that it determines whether any other loss can be attributed, and this owner has no other detection capability (§4.3) |
+| Lower | A6 | Reachable and demonstrably so, but state written by one integration is ordinarily overwritten by the owning integration's next update |
+
+**Reversibility is the axis that makes these commensurable.** Disclosure is permanent;
+availability is normally recovered. This is what justifies placing an outage below an
+exfiltration of comparable drama, and it is applied consistently in §4.7.
+
+Every asset above must be reachable somewhere on the impact scale. That is a completeness
+condition on §4.7, and applying it is what produced the criteria in their present form.
+
 ## 4.5 Actors
 
 | ID | Actor | Capability | Evidence for plausibility |
@@ -112,15 +140,32 @@ Scales are **ordinal, not cardinal**. They order risks for treatment priority; t
 of two ordinal scales is not a quantity and is not treated as one. This is stated because a
 risk matrix presented without that caveat invites arithmetic it cannot support.
 
-**Impact** (calibrated to a private dwelling, per §4.3):
+**The risk owner** is the occupying householder: the party that owns the assets of §4.4,
+carries the consequences, and has neither a security function nor an incident-response
+capability (§4.3). The appetite below is stated on their behalf. Naming them matters
+because every judgement in this section is calibrated to that owner and would be different
+for an organisation.
 
-| | Level | Meaning |
-|---|---|---|
-| 5 | Severe | Physical access to the dwelling, or defeat of a life-safety function |
-| 4 | Major | Credential compromise extending beyond the home; camera access |
-| 3 | Moderate | Disclosure of occupancy or behavioural patterns |
-| 2 | Minor | Disclosure of individual non-sensitive readings; partial loss of function |
-| 1 | Negligible | No meaningful loss |
+**Impact** (calibrated to a private dwelling, per §4.3, and derived from the valuation of
+§4.4.1). An earlier form of this scale laddered confidentiality harm across four levels and
+gave availability a single rung, which left three assets — A5, A6 and A7 — with nowhere to
+sit; §4.12 records the review that corrected it. Each level is therefore now defined across
+the harm types the assets can actually suffer, and **a threat is rated at the highest level
+any column matches.**
+
+| | Level | Confidentiality | Integrity and control | Availability |
+|---|---|---|---|---|
+| 5 | Severe | — | Physical access to the dwelling by state change (A1) | Defeat of a life-safety function: alarm, smoke or CO response, heating in freezing conditions (A5 with A1) |
+| 4 | Major | Credential compromise extending beyond the home (A3); camera or media access (A4) | Reach into other devices on the home network (A8) | Total loss of the platform while unattended (A5) |
+| 3 | Moderate | Disclosure of occupancy or behavioural patterns (A2) | Undetected corruption of another integration's data (A6) | Loss of attribution: harm occurs and cannot be traced to its source (A7) |
+| 2 | Minor | Disclosure of individual non-sensitive readings | Corruption that is detected, or recovered by the owning integration's next update (A6) | Partial or transient loss of function |
+| 1 | Negligible | No meaningful loss | | |
+
+**Convention: worst credible case.** A threat is rated on the most serious outcome
+consistent with the actor model, not on the average one — so T14 is rated on the assumption
+that credentials are in fact stored on the host, which the platform's own documentation
+says is normal (§1.7). Rating on the modal case would understate exposure for precisely the
+installations that have most to lose.
 
 **Likelihood**, anchored on evidence rather than intuition:
 
@@ -134,8 +179,9 @@ risk matrix presented without that caveat invites arithmetic it cannot support.
 
 **Evaluation bands:** Low (1–4), Medium (5–9), High (10–16), Critical (17–25).
 
-**Risk appetite.** The owner is a private individual with no detection or response
-capability (§4.3). The stated appetite is therefore: **no residual Critical risk is
+**Risk appetite.** The owner named above has no detection or response capability, so a risk
+that materialises is unlikely to be noticed and cannot be responded to. The stated appetite
+is therefore: **no residual Critical risk is
 acceptable; High residual risk is acceptable only where it is structural** — that is, where
 no available control addresses it and the limitation is stated openly to the user.
 
@@ -205,20 +251,20 @@ Chapter 3's requirements implemented. Likelihood reflects §4.7's anchors.
 | T04 | 5 | 4 | **20 Critical** | Credential is in-process and readable |
 | T05 | 5 | 5 | **25 Critical** | `lock.unlock` is an ordinary call today |
 | T06 | 3 | 5 | 15 High | Reading all states is the default capability |
-| T07 | 2 | 4 | 8 Medium | Demonstrated (§2.4.1); limited direct harm |
+| T07 | 2 | 4 | 8 Medium | Demonstrated (§2.4.1); recoverable — the owning integration's next update overwrites |
 | T08 | 4 | 4 | 16 High | Unrestricted egress |
 | T09 | 4 | 3 | 12 High | Requires a declared host to abuse |
-| T10 | 4 | 3 | 12 High | Documented as consequence of gateway compromise (§1.5) |
+| T10 | 4 | 3 | 12 High | Reach into other devices on the home network (A8); documented as a consequence of gateway compromise (§1.5) |
 | T11 | 4 | 2 | 8 Medium | Requires attacker-controlled DNS |
 | T12 | 5 | 3 | 15 High | Documented in comparable ecosystems (XZ, §1.6) |
 | T13 | 4 | 4 | 16 High | Costless for an author to do |
 | T14 | 4 | 4 | 16 High | **Realised in this ecosystem in 2021** (§1.5) |
-| T15 | 4 | 3 | 12 High | Same-user processes readable via `/proc` |
-| T16 | 3 | 3 | 9 Medium | No resource limits exist |
+| T15 | 4 | 4 | 16 High | **No attacker skill required**: `/proc/<pid>/environ` is an ordinary file read for a same-uid process |
+| T16 | 4 | 3 | 12 High | Total loss of an unattended platform (A5); no resource limits exist |
 | T17 | 4 | 4 | 16 High | **Demonstrated** (§2.4.1) |
-| T18 | 3 | 5 | 15 High | No attribution exists; confirmed by [7 of Ch. 2] |
+| T18 | 3 | 5 | 15 High | Loss of attribution (A7); no attribution exists, confirmed by [7 of Ch. 2] |
 
-**Evaluation.** Four Critical and eleven High inherent risks, and the Critical ones share a
+**Evaluation.** Four Critical and twelve High inherent risks, and the Critical ones share a
 single cause: integration and platform occupy one process with no boundary between them.
 This concentration is itself the finding — it means one architectural decision (TB1) governs
 the majority of the risk, and that treating it is worth more than treating any number of
@@ -264,7 +310,9 @@ Chapter 3 contained **no requirement addressing resource exhaustion**, because n
 Chapters 1 or 2 justified one and the traceability discipline (§3.1) forbade inventing it.
 T16 now supplies the justification: availability is a security property (A5), automations
 include alarms and heating, and the closest published model treats gateway "resource
-saturation up to a frozen state" as an explicit threat (§4.14).
+saturation up to a frozen state" as an explicit threat (§4.14). T16 is rated High, not
+Medium (§4.9), so the requirement rests on a risk the register ranks alongside credential
+theft rather than on a marginal one.
 
 **S9 — The framework shall bound an integration's consumption of CPU, memory and disk.**
 *Derivation:* T16, this chapter.
@@ -341,14 +389,43 @@ This model is a snapshot and will decay. Specific triggers for revision:
 - **New threats surface from the evaluation itself.** §4.13 records that this has already
   happened once in the project's history and should be expected again.
 
+### 4.12.1 Review of 22 August 2026
+
+One review has already been performed and is recorded here rather than absorbed silently,
+since a register that changes without a trail is worth less than one that does not change
+at all.
+
+A check of the impact criteria against the asset table found that the scale laddered
+confidentiality harm across four levels while giving availability a single rung, so that
+A5, A6 and A7 had no level whose text described them. Four threats — T07, T10, T16 and T18
+— were consequently rated against descriptions that did not fit. The criteria were rebuilt
+across three harm types and derived explicitly from the valuation now stated in §4.4.1.
+
+Two ratings changed as a result, both upward:
+
+| Threat | Was | Now | Reason |
+|---|---|---|---|
+| T15 | 12 High | 16 High | Likelihood 3 → 4. The justification given was a statement of capability, which anchors at 2, not 3; the correct anchor is level 4's "requires no attacker skill" |
+| T16 | 9 Medium | 12 High | Impact 3 → 4. The threat is total loss of an unattended platform, which the previous scale could express only as "partial loss of function" |
+
+T07, T10 and T18 retain their ratings; only their justifications changed, each now naming
+the asset and level it is rated against.
+
+The correction was prompted by scrutiny of two individual ratings rather than by a
+scheduled review, which is worth stating plainly. Both changes raise risk, and one of them
+strengthens a requirement (S9) rather than excusing its absence.
+
 ## 4.13 Limits of this threat model
 
 - **It models threats originating from an integration** (§4.2). Threats originating from a
   compromised platform, a hostile LAN, or physical access are excluded by scope, not because
   they are unimportant.
 - **The ratings are judgements.** Likelihood is anchored on documented occurrence where
-  possible (§4.7) and is otherwise reasoned. Two assessors would not produce identical
-  numbers; the ordering is more robust than the values.
+  possible, and impact on the asset valuation of §4.4.1, so both axes can be argued against
+  rather than merely disputed. Two assessors would still not produce identical numbers; the
+  ordering is more robust than the values. The scale also asserts that harms of different
+  kinds are commensurable at each level — that credential loss and total unavailability
+  both sit at 4 — for which reversibility (§4.4.1) is the stated reason, not a proof.
 - **A threat model enumerates what its author thought of.** This is not a hedge but the
   central methodological point of the chapter: testing demonstrates the absence of *known*
   failures, never the absence of failures, which is precisely why threat modelling is a
