@@ -72,6 +72,12 @@ Chapters 3 and 4 constrain the design tightly. Carry these in:
 - **S5 / Tyche** → granularity must separate risk-asymmetric operations; `lock.unlock` must
   not come free with `lock.lock`.
 - **S9** → resource limits (added by Ch. 4 §4.10.1).
+- **S7 identity** → an integration's identity in the audit log is its name *plus a content
+  hash of the loaded source*. A design specification discharging S7, justified by T12 and
+  A7 — not a new requirement. Decided 2026-08-22; the reasoning, the boundary it must not
+  cross, and the trust-layer PoC that was refused are in
+  `notes/decision_audit_identity_and_trust_layer.md`, which also carries three open
+  questions Ch. 5 has to answer.
 
 **Two questions Chapter 5 must answer and Chapter 3 deliberately left open:**
 
