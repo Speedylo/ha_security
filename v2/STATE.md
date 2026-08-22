@@ -17,7 +17,7 @@ that does not belong in the report, including anticipated viva questions.
 | `report/01_problem_and_context.md` | ✅ Drafted, reviewed, revised |
 | `report/02_literature_and_gap.md` | ✅ Drafted, reviewed, revised; all four key sources read in full |
 | `report/03_requirements.md` | ✅ Drafted — 19 requirements + S9 added by Ch. 4 |
-| `report/04_threat_model.md` | ✅ Drafted — 18 threats, 6 residual risks |
+| `report/04_threat_model.md` | ✅ Drafted — 18 threats, 6 residual risks. **Outstanding:** the §4.6 boundary figure (`notes/decision_threat_model_diagrams.md`) |
 | `figures/ecosystem_scale.py` | ✅ Regenerates every number in Ch. 1 |
 | `refs/` | ✅ Four PDFs obtained and read (Corno & Mannella ×2, Thingnes & Meland, Mannella thesis) |
 
@@ -72,6 +72,9 @@ Chapters 3 and 4 constrain the design tightly. Carry these in:
 - **S5 / Tyche** → granularity must separate risk-asymmetric operations; `lock.unlock` must
   not come free with `lock.lock`.
 - **S9** → resource limits (added by Ch. 4 §4.10.1).
+- **Paired figure** → Ch. 5 draws the same data-flow diagram as Ch. 4 §4.6, with TB1, TB3,
+  TB5 and TB6 instantiated. Ch. 4 draws today, Ch. 5 draws the fix, and the delta is the
+  argument. See `notes/decision_threat_model_diagrams.md`.
 - **S7 identity** → an integration's identity in the audit log is its name *plus a content
   hash of the loaded source*. A design specification discharging S7, justified by T12 and
   A7 — not a new requirement. Decided 2026-08-22; the reasoning, the boundary it must not
