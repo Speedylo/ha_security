@@ -1,6 +1,6 @@
 # Where the rebuild stands
 
-**Last updated:** 2026-08-21, end of session · **Read this first when resuming.**
+**Last updated:** 2026-08-22, end of session · **Read this first when resuming.**
 
 Read alongside `00_METHOD.md` (ground rules — especially the evidence rule) and
 `01_PLAN.md` (stage plan and gates). Chapter working notes in `notes/` carry the reasoning
@@ -21,7 +21,31 @@ that does not belong in the report, including anticipated viva questions.
 | `figures/ecosystem_scale.py` | ✅ Regenerates every number in Ch. 1 |
 | `refs/` | ✅ Four PDFs obtained and read (Corno & Mannella ×2, Thingnes & Meland, Mannella thesis) |
 
-**Next: Chapter 5 — Architecture and design rationale.**
+## Next session, in order
+
+**1. Get Home Assistant's source onto the machine.** It is not here — the spike ran HA in
+Docker, and the venv holds only `aiohttp` and friends. Either `pip install homeassistant`
+into a scratch venv or clone `home-assistant/core`. Minutes of work, and **everything in
+Chapter 5 waits behind it**.
+
+**2. Re-derive the in-process coupling.** Bootstrap → loader → component setup → the `hass`
+object handed to an integration. This discharges item 1 of `00_METHOD.md` §2's
+private-knowledge table ("integrations cannot run outside HA's process"), which is the
+gating evidence for both G2 and the hardest deferred question — how an unmodified
+integration runs outside the process it expects. Write it up in
+`notes/ch5_evidence_ha_coupling.md`; nothing in Chapter 5 may rest on knowing this already.
+
+**3. Draw the §4.6 figure.** Today's system only — one process, six boundaries, four of
+them absent. Bounds and reasoning in `notes/decision_threat_model_diagrams.md`. Threat
+Dragon is a GUI tool, so the drawing is Younes's; Claude drafts the element list, the
+caption, and the §4.6 paragraph that introduces it. Doing this *after* step 2 makes the
+boundaries sharper at no extra cost, though §1.2's existing citations already justify the
+figure on their own.
+
+**4. Then Chapter 5 proper** — architecture and design rationale. Constraints and open
+questions in the section below.
+
+---
 
 ## Decisions taken, and their consequences
 
@@ -107,5 +131,8 @@ scoping does not constrain authority — which must be *discharged*, not repeate
   several requirements I wanted to write from experience.
 - **Nothing outside `v2/` is edited.** The rest of `~/capstone` is the feasibility spike,
   cited as prior work in Chapter 6, not tidied.
-- **Dates and the advisor email are parked** at the user's instruction (2026-08-21). The
-  stage dates in `01_PLAN.md` are stale and should not drive decisions until unparked.
+- **Dates and the advisor email are parked** at the user's instruction (2026-08-21), and
+  the email is **not blocking** — it will not cancel the project, so it is status if asked
+  and never a flag raised unprompted (confirmed 2026-08-22). The stage dates in
+  `01_PLAN.md` are stale and should not drive decisions until unparked; Stages 0–1 landed
+  roughly three weeks early, so a cheap re-fit is owed whenever the parking lifts.
