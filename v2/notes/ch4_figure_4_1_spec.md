@@ -3,7 +3,13 @@
 **Written:** 2026-08-24 · **Working note, not a report chapter.**
 **Implements:** `decision_threat_model_diagrams.md` (OWASP Threat Dragon, visualisation
 only; Ch. 4 draws **today**, Ch. 5 draws the fix).
-**For:** `report/04_threat_model.md` §4.6. · **Status:** specified, awaiting the drawing.
+**For:** `report/04_threat_model.md` §4.6. · **Status:** **drawn.**
+
+> **Built, 2026-08-24.** `figures/fig_4_1_current_state.py` generates both the Threat Dragon
+> model (`.json`) and the rendered figure (`.svg`, plus `.png` when cairosvg is present)
+> from one description, so the two cannot drift apart. Open the `.json` in Threat Dragon to
+> adjust it by hand; re-run the script to regenerate from source. §8 below records what
+> changed between this specification and the figure as built.
 
 Everything below is derived from §4.2 (scope), §4.4 (assets), §4.5 (actors) and §4.6
 (boundaries) as they already stand. **No element here is new.** If drawing it makes you
@@ -93,22 +99,31 @@ Threat Dragon draws every trust boundary the same way — a dashed curve. So "ex
 "absent" **cannot** be carried by the shape, and colour is not reliably portable between
 Threat Dragon versions and an exported PNG. Carry it in the **name**, which always exports:
 
-- Existing: `TB2 ✓ exists — unscoped`
-- Absent: `TB1 ✗ ABSENT — required by S1`
+- Existing: `TB2 · EXISTS — unscoped API surface`
+- Absent: `TB1 · ABSENT — required by S1`
 
-Use the tick and cross literally. A reader with a greyscale printout still gets it.
+**Words, not ✓ and ✗.** The specification originally called for the tick and cross. The
+first render proved that wrong: both came out as tofu boxes in a font that lacked them, and
+a symbol that may not render is worse than no symbol. `EXISTS` and `ABSENT` survive any
+font and any greyscale printout. Colour is carried too, but only as reinforcement.
 
-| ID | Where to draw it | Name to type | Status |
+| ID | Where to draw it | Name | Status |
 |---|---|---|---|
-| TB1 | Between HA core and each integration, *inside* the container | `TB1 ✗ ABSENT — required by S1` | Absent |
-| TB2 | Around HA core's API surface | `TB2 ✓ exists — unscoped, no per-integration identity` | Exists |
-| TB3 | Between the container and **External network endpoints** | `TB3 ✗ ABSENT — required by F2/S4` | Absent |
-| TB4 | Between **Integration author + HACS channel** and the machine | `TB4 ✓ exists procedurally — verifies structure, not behaviour` | Exists |
-| TB5 | Between the container and the host OS / filesystem stores | `TB5 ✗ ABSENT — required by S8` | Absent |
-| TB6 | Between Integration A and Integration B, *inside* the container | `TB6 ✗ ABSENT — demonstrated crossable` | Absent |
+| TB1 | Between HA core and the integrations, *inside* the container | `TB1 · ABSENT — required by S1` | Absent |
+| TB2 | Hugging HA core's API surface, inside the same corridor | `TB2 · EXISTS — unscoped API surface` | Exists |
+| TB3 | Between the container and **External network endpoints** | `TB3 · ABSENT — required by F2/S4` | Absent |
+| TB4 | Between **Integration author + HACS channel** and the machine | `TB4 · EXISTS — structure, not behaviour` | Exists |
+| TB5 | Between the container and the host OS / filesystem stores | `TB5 · ABSENT — required by S8` | Absent |
+| TB6 | Between Integration A and Integration B, *inside* the container | `TB6 · ABSENT — demonstrated crossable` | Absent |
 
-**Four crosses, two ticks.** That ratio is the argument the figure exists to make, and it
-should be visible from across a room without reading a single flow label.
+**Four absent, two present.** That ratio is the argument the figure exists to make, and it
+should be visible from across a room without reading a single flow label. The generator
+asserts it before writing, so a later edit cannot silently break it.
+
+**TB1 and TB2 are drawn as two near-parallel curves in one corridor**, with an empty gap
+between them. That gap is where a mediating component would stand, and today nothing does —
+which is what makes it honest to draw the two boundaries as coinciding at a single
+interface. Chapter 5's paired figure fills the gap; that is the delta.
 
 ---
 
@@ -122,13 +137,14 @@ you can check, while drawing, that no flow crosses a boundary the chapter does n
 | F1 | Author + HACS → Config directory | installs / updates integration source | TB4 |
 | F2 | HA core → Integration A | `import_module`, then `async_setup(hass, …)` — **passes the `hass` reference** | TB1 (absent) |
 | F3 | Integration A → HA core | service calls, state writes, event subscription | TB1 (absent), TB2 |
-| F4 | Integration A → In-memory shared state | direct read/write of `hass.data`, all domains | TB1, TB6 (both absent) |
+| F4 | Integration A → In-memory shared state | direct read/write of `hass.data`, all domains | TB1 (absent) |
+| F4b | Integration B → In-memory shared state | the same shared dict, from another integration | TB1 (absent) |
 | F5 | Integration A → Config entry store | reads any integration's stored credentials | TB1 (absent) |
 | F6 | Integration A → `secrets.yaml` / config dir | arbitrary file read via `hass.config.path()` | TB5 (absent) |
 | F7 | Integration A → External network endpoints | unrestricted outbound | TB3 (absent) |
 | F8 | Integration A ↔ Integration B | direct object access (in-process) | TB6 (absent) |
 | F9 | Integration A → Home devices and LAN | local network access | TB3, TB5 (both absent) |
-| F10 | User ↔ HA core | web UI | TB2 |
+| F10 | User ↔ HA core | web UI | none |
 
 **F2 is the flow to make visually prominent** — thicker, or placed centrally. It is the
 single line that explains why the other nine are possible, and it is the flow Chapter 5's
@@ -222,27 +238,33 @@ today, not a proposal, and Chapter 5 remains free to be surprising.
 
 ---
 
-## 8. Practical steps
+## 8. As built, and how to change it
 
-1. Threat Dragon: use the **web version** (`owasp-threat-dragon.github.io`) or the desktop
-   app. No account is needed for a local model.
-2. New threat model → **Add a diagram** → type *Data Flow Diagram*.
-3. Build §2's elements, then §2.4's container, then §3's boundaries, then §4's flows. In
-   that order — the container is fiddly to add around existing shapes.
-4. Fill in the model's own title/description fields: title `Home Assistant — current state
-   (Ch. 4 §4.6)`, and in the description, one line saying the model is **visualisation
-   only**, that threats are enumerated in the report by STRIDE per boundary, and that
-   Threat Dragon's threat generator was not used. This is what stops a reader assuming the
-   tool produced the analysis.
-5. Save the model JSON to `v2/figures/fig_4_1_current_state.json`.
-6. Export the diagram as PNG to `v2/figures/fig_4_1_current_state.png`.
-7. **Commit both.** The JSON is the source, matching the norm set by
-   `figures/ecosystem_scale.py` — every figure in this report regenerable from a committed
-   source.
+**Regenerate:** `python3 figures/fig_4_1_current_state.py`. It writes the Threat Dragon
+model, the SVG, and — only if `cairosvg` happens to be installed — a PNG. The SVG is the
+figure of record; the PNG is a convenience for pasting into a word processor.
 
-**Checks before you commit** — each one catches a specific way this figure could mislead:
+**Edit by hand instead:** open `fig_4_1_current_state.json` in Threat Dragon (the web
+version at `owasp-threat-dragon.github.io` or the desktop app; no account needed for a
+local model). Anything moved there is lost on the next run of the script, so if a change is
+worth keeping, put it in the script.
 
-- Four ✗, two ✓. Count them.
+**Three departures from this specification, made while building and worth recording:**
+
+1. **Symbols became words** (§3). The ✓/✗ convention failed its first render.
+2. **F4 gained a twin, F4b.** The specification had F4 crossing TB6, which cannot be drawn
+   honestly: the shared store sits on Integration A's side of any line between A and B.
+   Drawing *both* integrations connected to the same store says "shared" better than a
+   boundary crossing would, and it is also ordinary DFD practice.
+3. **F10 crosses nothing.** The specification had it crossing TB2. It does not: none of
+   §4.6's six boundaries is "user ↔ platform". The user is AC5 — a source of risk through
+   action, not an external attacker — and inventing a boundary for that flow would have put
+   the figure ahead of the chapter.
+
+**Checks before committing a change** — each catches a specific way this figure could
+mislead:
+
+- Four ABSENT, two EXISTS. The script asserts this; do not remove the assertion.
 - No element on the canvas that §4.4/§4.5/§4.6 does not name.
 - No box representing a mediator, broker, sandbox or proxy anywhere.
 - No flow label naming a threat or an attack.
