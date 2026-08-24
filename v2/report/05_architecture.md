@@ -864,7 +864,223 @@ audited are claimed; declared is arranged for, not guaranteed.**
 That is a smaller claim than "the manifest makes integrations safe", and it is the one the
 evidence supports.
 
+## 5.10 The manifest
+
+F3 requires authority to be expressed in a declarative manifest and specifies its own
+verification: the schema is fixed in this chapter, and **every enforcement decision must be
+attributable to a manifest clause**. S5 adds that granularity is a security property rather
+than a formatting choice. This section fixes both.
+
+Every granularity decision below is answerable to the measurement in
+`notes/ch5_evidence_api_surface.md`, and the test it applies is the one that measurement was
+taken to serve:
+
+- a capability nearly every integration needs **is not a permission**, it is a formality —
+  granting it confines nobody;
+- a capability almost nobody uses can be **denied by default at near-zero cost**;
+- a capability used at one granularity and declared at another is where S5's asymmetry
+  problem lives.
+
+### 5.10.1 Where the manifest lives
+
+Home Assistant integrations already ship a `manifest.json`, and §5.9.1 found 83% of authors
+already declaring authority-shaped information in it. Putting permissions there rather than in
+a new file asks authors for a change of degree rather than a change of habit.
+
+Two properties of the platform make this safe, and both were checked in the source rather
+than assumed:
+
+**The runtime does not validate the manifest.** `loader.py` reads the file with `json_loads`
+and applies `cast(Manifest, …)`, which is a static typing annotation with no runtime effect.
+Unknown keys are carried, not rejected. A `permissions` block can therefore be added to a
+stock installation's integration today, with no change to Home Assistant — which is C2
+satisfied rather than merely claimed.
+
+**The development-time validator would reject it.** `hassfest` validates manifests with a
+voluptuous schema that defaults to `PREVENT_EXTRA`, so an unrecognised key fails there. That
+tool runs in the platform's CI and on submission to community distribution, not at runtime.
+The honest statement is therefore: **the design is deployable today and would require a
+one-line schema addition to be adopted upstream** — a change to a linter, not to the
+architecture.
+
+This yields a placement that also carries §5.9's provenance distinction structurally:
+
+| Provenance (§5.9.4) | Where the manifest is read from |
+|---|---|
+| 1 — author-declared | the `permissions` key of the integration's own `manifest.json` |
+| 2 — derived | `permissions.json`, supplied alongside the integration by the installation |
+| 3 — none | neither present: S6 applies, nothing mediated is granted |
+
+**The file's location is the provenance signal.** No field has to assert who wrote a
+declaration, which is the correct way to represent a fact an adversary would otherwise be
+asked to self-report.
+
+### 5.10.2 What is never declared
+
+The measurement's sharpest finding for schema design is that the most-used capabilities are
+not the dangerous ones. 94.4% of community integrations touch `hass.config_entries` and 86.1%
+touch `hass.data` — but almost entirely to manage **their own** entry and **their own**
+runtime storage.
+
+A permission held by 94% of holders is not a permission. These capabilities are therefore
+**ambient and structurally scoped, not declarable**:
+
+| Capability | Community use | Why it is ambient |
+|---|---|---|
+| Its own config-entry lifecycle | 88.9% | Setting up and tearing down its own platforms is what being an integration *is* |
+| Its own `hass.data` namespace | 86.1% | The sandbox provides a private dictionary; there is nothing else in it |
+| Its own directory on disk | — | The sandbox's mount namespace contains it and nothing else (§5.7.3) |
+| Registering *its own* services | 56.2% | An integration exposing its own functionality; the risk is in *calling* others', not in offering one's own |
+
+**"Its own" is enforced by construction, not by a check.** This is §5.6.2's principle applied:
+the sandbox's data dictionary starts empty, its state machine holds only what was mirrored in,
+its filesystem view contains only its own directory. Scoping is what the sandbox *is*, so
+these need no clause — and a manifest not cluttered with four permissions everyone holds is a
+manifest a user might actually read, which is F4's concern.
+
+### 5.10.3 The declarable capabilities
+
+Eight, each with the measured cost of denying it by default.
+
+| Clause | Grants | Community use | Granularity, and why |
+|---|---|---|---|
+| `entities.read` | Reading other entities' state and attributes | 38.9% | Entity-ID patterns, **domain required**. Blanket denial is not available at this share (S3) |
+| `entities.subscribe` | State-change subscription | — | Same patterns as `read`. S3 names subscriptions explicitly because polling and watching are the same disclosure |
+| `entities.write` | Setting state on entities it does not own | 6.9% | Patterns, domain required. Rare enough that the default costs almost nothing |
+| `services.call` | Calling a service belonging to something else | 22.2% | **`domain.service`, exact, no wildcards** — see §5.10.4 |
+| `events.subscribe` / `events.fire` | Event bus access | 48.6% touch the bus | Explicit event types. `*` is not accepted; the bus carries every state change in the home |
+| `network.egress` | Outbound network | — | Hostnames, resolved and pinned by the mediator (T11). Non-public destinations require a separate explicit flag (T10) |
+| `files` | Paths outside its own directory | 33.3% | Individual paths with `read`/`write`. See §5.10.5 for what cannot be granted |
+| `config_entries.read_all` | Enumerating *everyone's* config entries | 41.0% | Separate clause from the ambient own-entry lifecycle, because A3 hangs on the difference |
+| `http.register` | Registering routes on the running server | 19.4% | Explicit path prefixes |
+
+`hass.auth` — 5.6%, eight integrations — **has no clause and cannot be declared.** Users and
+tokens are the platform's authentication state; a design whose whole purpose is to keep
+credentials away from third-party code should not offer a permission that hands them over. The
+eight integrations that use it are unsupported under this framework, and Chapter 7 reports
+them as such rather than the framework quietly permitting it.
+
+### 5.10.4 The asymmetry rule, which is S5
+
+**No wildcard is accepted in `services.call`. Every entry names one `domain.service`.**
+
+This is the single rule S5 exists to produce. Tyche's observation (§2.3) is that physical
+operations are risk-asymmetric: `lock.unlock` is not the inverse of `lock.lock` in risk terms.
+A `lock.*` grant, or a domain-level grant, hands over the unlock with the lock — and T05, an
+integration calling `lock.unlock`, is the register's joint-highest risk at 25, Critical.
+
+The cost of the rule is verbosity in an uncommon clause: only 22.2% of integrations declare
+any outbound service call at all, and those that do call few. The rule is therefore expensive
+where it does not matter and precise where it does.
+
+**The same rule is not applied to entity patterns**, and the asymmetry in treatment is
+deliberate. An integration usually cannot know the entity IDs it will need at authoring time —
+they depend on the user's devices — whereas it always knows which services it calls, because
+those are written into its code. Requiring exactness where it is knowable and permitting
+patterns where it is not is what keeps the manifest writable. Patterns still require a domain,
+so `*` alone is never a grant.
+
+### 5.10.5 What no grant may reach
+
+Two constraints on `files`, both from Chapter 4 rather than from taste:
+
+**The configuration root is not grantable, and neither is `.storage/`.** A grant of the
+configuration directory would include `secrets.yaml` and the config-entry store — A3 in full —
+which is precisely T14, the capability exercised in the 2021 disclosures (§1.5). Paths are
+declared individually, and a declared path that encloses either location is rejected when the
+manifest is parsed, not when it is first used.
+
+**Path grants are checked after resolution.** A path is resolved before it is compared to the
+grant, so `..` traversal and symbolic links cannot escape a grant. This is T11's resolve-then-
+pin principle applied to the filesystem instead of the network, and both exist for the same
+reason: **a name is not the thing it names, and checking the name is not checking the thing.**
+
+### 5.10.6 Resource limits
+
+S9 was generated by Chapter 4 itself (§4.10.1) for T16, the one threat with no control at all.
+The clause is optional, and its absence means the framework's defaults apply rather than that
+no limit applies:
+
+| Field | Bounds |
+|---|---|
+| `resources.memory_mb` | cgroup v2 memory limit |
+| `resources.cpu_percent` | cgroup v2 CPU weight |
+| `resources.max_processes` | cgroup v2 `pids` limit |
+
+§5.7.4 recorded that the memory controller is absent on a default Raspberry Pi OS
+installation, and that under N3 the framework refuses to start rather than run unable to
+enforce this clause.
+
+### 5.10.7 A worked example
+
+A weather integration polling one API, reading one sensor for local calibration:
+
+```json
+{
+  "domain": "example_weather",
+  "name": "Example Weather",
+  "version": "1.4.2",
+  "iot_class": "cloud_polling",
+  "permissions": {
+    "schema_version": 1,
+    "network": {
+      "egress": ["api.example-weather.invalid"]
+    },
+    "entities": {
+      "read": ["sensor.outdoor_temperature"]
+    },
+    "resources": {
+      "memory_mb": 192,
+      "max_processes": 8
+    }
+  }
+}
+```
+
+What this integration **cannot** do, without any of it being written down: call any service,
+write any entity, subscribe to any event, read any file outside its own directory, enumerate
+anyone's config entries, register an HTTP route, or reach any host but the one named. Nine of
+the ten capabilities are denied by their absence, which is S6.
+
+Note also what the declaration *reveals*. This manifest is legible to a user who cannot read
+Python — one host, one sensor — and a weather integration requesting `lock.unlock` would be
+equally legible. That is F4 doing its work through the schema's shape rather than through a
+presentation layer.
+
+### 5.10.8 How F3's verification is met
+
+F3 requires that **every enforcement decision be attributable to a manifest clause**. The
+schema is designed so this is mechanical rather than aspirational: each clause is addressable
+by a JSON pointer, and every decision the mediator records carries one.
+
+| Decision | Recorded as |
+|---|---|
+| Permitted | the pointer of the clause that permitted it, e.g. `/permissions/network/egress/0` |
+| Denied by absence | the pointer of the *capability* that held no matching clause |
+| Denied by rule | the constraint that rejected it, e.g. the `.storage/` exclusion of §5.10.5 |
+
+A decision that cannot name a clause is a bug in the mediator, and Chapter 7's evaluation can
+test for that condition directly rather than inspecting behaviour and inferring. Together with
+§5.9.6's binding of a manifest to a content hash, this gives the audit record the two things
+S7 and T18 require: **which code acted, and which clause allowed it**.
+
+### 5.10.9 What the schema deliberately cannot express
+
+A policy language grows until nobody can read it, and F4's whole point is a declaration a
+non-programmer can evaluate. Four things were considered and left out:
+
+| Not expressible | Why |
+|---|---|
+| Time-of-day or conditional grants | "May unlock, but only between 09:00 and 17:00" is an automation rule wearing a permission's clothes. It also invites the belief that a broad grant is safe because it is fenced |
+| Rate limits on mediated calls | Real, and belongs to resource control (§5.10.6) rather than to authority. Bounding *how often* is a different question from bounding *what* |
+| Delegation between integrations | An integration granting another its authority reintroduces the union problem §2.4.2's consolidation suffers from, in a form the user cannot see |
+| Negative clauses (`deny: …`) | With default-deny, a deny clause can only contradict an allow clause. Policy languages with both are where policy bugs live |
+
+Each is a genuine capability given up. The exchange is a schema whose meaning is the union of
+its clauses, evaluable by reading it once — and that property is what F4 requires and what
+§3.7's non-goal on user comprehension deliberately does not claim beyond.
+
 ---
 
-*Chapter in progress. §5.10 (the manifest schema and granularity) onward is next; the section
-plan is in `notes/ch5_working_notes.md`.*
+*Chapter in progress. §5.11 (the mediator interface and the channel) onward is next; the
+section plan is in `notes/ch5_working_notes.md`.*

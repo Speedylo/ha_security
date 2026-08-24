@@ -18,8 +18,8 @@ questions a viva will probe.
 | 5.7 | Decision 3 — the isolation primitive (G2 #3) | ✅ drafted — namespaces + seccomp + cgroup v2; **G2 confirmation**, primitives probed on the Pi |
 | 5.8 | Decision 4 — implemented scope (G2 #4) | ✅ drafted — **DIVERGED**: sensors + egress×2 + one lock path |
 | 5.9 | Who authors the manifest (§3.9 open question 1) | ✅ drafted — plural provenance, precedence, default-deny; **§3.9's open question 1 closed** |
-| 5.10 | The manifest — schema and granularity (S5) | ⬅ **next**; needs the API-surface measurement re-derived first |
-| 5.11 | The mediator interface and the channel (T02, K4) | not started |
+| 5.10 | The manifest — schema and granularity (S5) | ✅ drafted — 8 declarable clauses, 4 ambient, no wildcards in `services.call` |
+| 5.11 | The mediator interface and the channel (T02, K4) | ⬅ **next** |
 | 5.12 | Identity and the audit record (S7; `decision_audit_identity_and_trust_layer.md`) | not started |
 | 5.13 | Defence in depth — **§1.6 discharged here** (L1 returns as a layer, never as the boundary) | not started |
 | 5.14 | Figure 5.1, paired with Figure 4.1; threat-to-control traceability | not started |
