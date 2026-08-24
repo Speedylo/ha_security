@@ -17,8 +17,8 @@ questions a viva will probe.
 | 5.6 | **Decision 2 — R1 vs R2** (G2 #2, §3.9 open question 2) | ✅ drafted — **R2 chosen; G2 divergence reported** |
 | 5.7 | Decision 3 — the isolation primitive (G2 #3) | ✅ drafted — namespaces + seccomp + cgroup v2; **G2 confirmation**, primitives probed on the Pi |
 | 5.8 | Decision 4 — implemented scope (G2 #4) | ✅ drafted — **DIVERGED**: sensors + egress×2 + one lock path |
-| 5.9 | Who authors the manifest (§3.9 open question 1) | ⬅ **next** |
-| 5.10 | The manifest — schema and granularity (S5) | not started |
+| 5.9 | Who authors the manifest (§3.9 open question 1) | ✅ drafted — plural provenance, precedence, default-deny; **§3.9's open question 1 closed** |
+| 5.10 | The manifest — schema and granularity (S5) | ⬅ **next**; needs the API-surface measurement re-derived first |
 | 5.11 | The mediator interface and the channel (T02, K4) | not started |
 | 5.12 | Identity and the audit record (S7; `decision_audit_identity_and_trust_layer.md`) | not started |
 | 5.13 | Defence in depth — **§1.6 discharged here** (L1 returns as a layer, never as the boundary) | not started |
@@ -187,6 +187,26 @@ Three things the experiment produced that the argument did not have before:
 **What this does not settle.** One synthetic integration, measured idle, with no mediator
 attached. It establishes the shape works and the cost is affordable; it is not the
 compatibility evaluation and must not be reported as one.
+
+## The pattern that keeps recurring, and is now worth naming in the report
+
+Three independent observations, one shape. In each, the information needed for a security
+decision **already exists** and is spent on something that is not one:
+
+| Where | Information that exists | What it is actually used for |
+|---|---|---|
+| §2.4.1 Corno & Mannella | a plug-in's "scope" | prose in the documentation |
+| `ch5_evidence_ha_coupling.md` §5 | `is_built_in` — which code is third-party | the wording of a log line |
+| §5.9.1 | `iot_class` — whether it reaches the cloud (83% declare it) | a HomeKit discovery heuristic |
+
+**The contribution is not inventing the declaration; it is making one load-bearing.** That
+sentence now rests on three findings rather than on the single Corno & Mannella line
+`STATE.md` has been carrying. Worth reusing in §5.1's framing, in Chapter 8, and in the
+proposal — it is the most compact honest statement of the gap available.
+
+Second-order point worth keeping: the 83% figure kills the feasibility objection to author
+declaration before it is raised. Authors are not being asked for a new behaviour, they are
+being asked for a slightly more precise version of one 83% of them already perform unprompted.
 
 ## Open conflict for Younes to settle at G3 — the cut order
 

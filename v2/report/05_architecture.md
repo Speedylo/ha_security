@@ -667,7 +667,186 @@ working documents rather than an error in either. It is recorded here, and in
 but the candidate the evidence favours cutting first is **coverage-widening**, whose cost is
 a weaker N2 number rather than an unverifiable requirement.
 
+## 5.9 Who authors the manifest
+
+§1.10 stated the missing mechanism as a way for authority to be "declared, enforced and
+audited". Chapters 3 and 4 specified enforcement and auditing in detail and left the first
+word alone: F3 requires that authority be expressed in a manifest without saying who writes
+it, and §3.9 recorded the omission as deliberate. It cannot be deferred further, because C3
+forbids assuming the author is honest and the obvious answer is that the author declares.
+
+### 5.9.1 The ecosystem already declares something authority-shaped
+
+Before arguing about who *should* write a declaration, it is worth establishing what authors
+already do. Every manifest shipped with Home Assistant 2026.8.3 was examined:
+
+| Manifest field | Integrations declaring it | Share |
+|---|---|---|
+| `iot_class` | 1,236 | **83%** |
+| `requirements` | 1,111 | 74% |
+| `dependencies` | 354 | 23% |
+
+*n = 1,482.* `iot_class` takes values including `local_polling` (28%), `cloud_polling` (26%),
+`local_push` (17%) and `cloud_push` (7%).
+
+**`iot_class` is a statement about authority.** The difference between `local_polling` and
+`cloud_polling` is precisely whether the integration reaches outside the home — the substance
+of F2 and S4 — and 83% of authors supply it voluntarily, with no enforcement compelling them.
+
+And it is enforced nowhere. Tracing its consumers through the platform: it is exposed in an
+integration metadata dictionary, and it feeds `homekit_always_discover()` — a *discovery*
+heuristic deciding whether a device should always be offered to HomeKit. It gates nothing an
+integration may do. An integration declaring `local_polling` and then calling a remote host
+is not contradicted, not warned about, and not recorded.
+
+This is the third instance of one pattern in this project, and the repetition is the point:
+
+| Where | The information that exists | What it is used for |
+|---|---|---|
+| §2.4.1 (Corno & Mannella) | A plug-in's "scope" | Prose in the documentation |
+| `ch5_evidence_ha_coupling.md` §5 | `is_built_in` — which code is third-party | The wording of a log line |
+| Here | `iot_class` — whether it reaches the cloud | A HomeKit discovery heuristic |
+
+In each case the declaration exists and is never load-bearing. **The contribution of this work
+is not inventing the declaration. It is making one load-bearing** — which is the sharpest
+available statement of what §1.10 meant, and it now rests on three independent observations
+rather than one.
+
+The finding also settles a feasibility worry. Author declaration is not a hypothetical
+behaviour that would have to be induced: at 83% it is an established habit, and a permission
+manifest asks authors for something they largely already do, in a file they already ship.
+
+### 5.9.2 What C3 actually forbids
+
+C3 says enforcement "shall not presuppose the author's cooperation or honesty". This is
+routinely misread as "the author cannot write the manifest", and the distinction matters
+enough to state precisely.
+
+**C3 forbids *trusting* a declaration. It does not forbid *asking* for one.** Its derivation
+in §3.3 is the gateway MUD architecture, whose authors concede that "anyone accessing the
+integrations source code could alter it" and who propose developer allow-lists in response —
+that is, a design where the declaration is believed. What fails there is not that a developer
+wrote the profile; it is that nothing checks the code against it.
+
+An author-written manifest that is **enforced** and **shown to the user** does not presuppose
+honesty in the way C3 prohibits:
+
+- A narrow, honest declaration is enforced, and the integration works.
+- A narrow declaration with broader behaviour is *denied at the point of use* and the denial
+  is recorded (S6, S7). The author's dishonesty produces a blocked call and an audit entry,
+  not a compromise.
+- A deliberately broad declaration is enforced as written — but breadth is visible before
+  installation (F4), and a weather integration requesting `lock.unlock` is legible as
+  anomalous to a user who cannot read Python.
+
+What remains unaddressed is an author who declares broadly, is granted it, and abuses it.
+§3.7 already records that as an explicit non-goal and Chapter 4 carries it as residual risk
+R1. It is the browser-extension model's limit too (§2.2), and it is a limit of the *approach*,
+not a defect in this choice of author.
+
+### 5.9.3 The candidates
+
+| ID | Who writes it | Verdict |
+|---|---|---|
+| **M1** | The integration author | **Accepted, but cannot be the only source** — see C1 below |
+| **M2** | The user | **Rejected.** §1.8 and §3.2: the user cannot audit Python and is the party this design exists to protect from having to |
+| **M3** | Static analysis of the integration | **Accepted as a contributor, not an authority** — unsound for dynamic Python |
+| **M4** | Community curation of shared manifests | **Deferred** — viable, and a governance problem rather than a design one |
+| **M5** | Observation of the integration running | **Accepted as a bootstrap, under §5.9.5's constraint** |
+
+**M1 cannot stand alone, and the reason is C1.** No integration in the existing corpus ships
+an authority manifest today. A design requiring one would confine none of the 4,220 community
+integrations until their authors acted, and would therefore protect nobody at the moment of
+deployment. This is the same argument that eliminated R5 in §5.5: the existing corpus is the
+problem, and a mechanism that works only for future, cooperating authors does not address it.
+
+**M3 is a contributor because it is objective and works on the corpus without author action**,
+and it is not an authority because Python defeats sound static analysis: attribute access
+computed at runtime, `importlib`, and dynamic dispatch mean any analysis either
+under-approximates — producing a manifest that breaks working integrations — or
+over-approximates into uselessness. It can *propose*; it cannot *certify*.
+
+**M4 is deferred rather than rejected.** A curated manifest repository is a reasonable
+long-term answer and the architecture does not preclude it. It is out of scope here because
+its hard problems are governance and Sybil resistance, which are the same problems that put
+the trust layer out of scope (`notes/decision_audit_identity_and_trust_layer.md`), and because
+it is a *likelihood* control — it makes a good manifest more probable — where this project
+claims the impact half (§1.6).
+
+### 5.9.4 The decision
+
+**Manifest provenance is plural, ordered by precedence, and defaults to denial. Enforcement
+is identical regardless of provenance.**
+
+| Precedence | Source | Status |
+|---|---|---|
+| 1 | A manifest shipped by the author with the integration | Used as-is, marked *author-declared* |
+| 2 | A manifest supplied with the installation — derived by analysis, observation, or hand | Used, marked *derived*, and requires explicit user confirmation |
+| 3 | No manifest | **S6 applies: the integration receives no mediated capability** |
+
+Two properties of this arrangement carry the argument.
+
+**Provenance changes what the user is shown, never what the mediator does.** The mediator
+receives a manifest and a request and decides; it has no notion of who wrote the manifest. The
+audit record notes the provenance because attribution demands it (S7), and F4's presentation
+distinguishes *the author says this integration needs X* from *this was derived by observing
+it*, because those warrant different confidence. But the enforcement path is one path. This
+matters for the contribution's shape: **the mechanism is enforcement, and authorship is a
+policy question layered above it.** A project that entangled the two would have to defend a
+position on authorship in order to defend its enforcement.
+
+**Default-deny at precedence 3 is what makes the arrangement safe.** An absent manifest is not
+an escape hatch. This is S6 verbatim, and it is why an author who declines to declare gets an
+integration that cannot do anything mediated, rather than one that is unconstrained.
+
+### 5.9.5 Observation may propose, and must never apply
+
+M5 — running the integration and recording what it does — is the only route to a manifest for
+an existing integration whose author never wrote one and whose behaviour static analysis
+cannot pin down. It carries a specific and serious failure mode, and the design constraint
+that answers it is stated here rather than discovered in implementation.
+
+**A learning mode that applied its own findings would let an integration write its own
+permissions.** The first run is precisely when malicious code would behave expansively to
+establish a broad grant, or benignly to be granted narrowly and later fail closed in ways that
+look like bugs. Either way, the adversary would be authoring the document that constrains it —
+which is C3 violated in the most direct way available.
+
+Therefore: **observation produces a *proposal*, always presented to the user for confirmation,
+and never self-applying.** During observation the integration is confined to precedence 3 —
+it receives nothing mediated — so what is recorded is what it *attempted*, not what it was
+permitted to do. The proposal is a list of denied attempts, which is a much stronger artifact
+than a log of successful ones: it says what the integration wanted and did not get.
+
+### 5.9.6 What the manifest is bound to
+
+A manifest authorises a specific body of code, not a name. §5.12 specifies an integration's
+identity in the audit record as its name plus a content hash of the loaded source; the same
+binding applies here, and it is what discharges T12 — a malicious update arriving through the
+authorised update path.
+
+**A manifest is bound to the content hash it was granted against. A version whose hash differs
+does not inherit the previous version's grants**; its declaration is re-checked, and a
+derived manifest is re-confirmed. This is §4.10's treatment of T12 — "confinement applies to
+whatever version runs; declaration re-checked per version" — made concrete.
+
+The limitation is inherited and stated: the hash records what was *loaded*, not what
+*executed*. An integration that fetches or generates code at runtime defeats it, which is a
+real limit on T12's treatment and belongs in Chapter 8 rather than being discovered there.
+
+### 5.9.7 What this concedes
+
+Stated plainly, because §3.7 promised it and because a viva will look for it.
+
+This design does not guarantee the manifest is minimal, honest, or correct. It guarantees
+that whatever the manifest says is what the integration gets — no more — and that every
+decision is attributable and recorded. §1.10's three words divide cleanly: **enforced and
+audited are claimed; declared is arranged for, not guaranteed.**
+
+That is a smaller claim than "the manifest makes integrations safe", and it is the one the
+evidence supports.
+
 ---
 
-*Chapter in progress. §5.9 (who authors the manifest) onward is next; the section plan is in
-`notes/ch5_working_notes.md`.*
+*Chapter in progress. §5.10 (the manifest schema and granularity) onward is next; the section
+plan is in `notes/ch5_working_notes.md`.*

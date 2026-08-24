@@ -24,7 +24,7 @@ that does not belong in the report, including anticipated viva questions.
 | **HA source on the machine** | ✅ `~/ha-src/core`, pinned to **2026.8.3** (`759e465`, 2026-08-21), shallow clone. **Outside the capstone repo on purpose** — never committed, never confused with the frozen spike |
 | `notes/ch5_evidence_ha_coupling.md` | ✅ Written 2026-08-24 — the in-process coupling re-derived from source. **Discharges item 1 of `00_METHOD.md` §2** |
 | `notes/ch5_evidence_ha_coupling_explained.md` | ✅ The same finding from first principles, for defending it aloud — what `import` really does, why `hass` is everything, a 30-second version, and six self-test questions |
-| `report/05_architecture.md` | 🔶 §5.1–§5.8 drafted; §5.9 next. **All four G2 decisions now settled** — two confirmed, two diverged |
+| `report/05_architecture.md` | 🔶 §5.1–§5.9 drafted; §5.10 next. **All four G2 decisions settled** (two confirmed, two diverged) and **§3.9's open question 1 — who authors the manifest — closed in §5.9** |
 | `experiments/r2_footprint/` | ✅ **Pi 5, 2026-08-24.** R2's premise holds and it fits: minimal HA builds without `bootstrap`, an ordinary integration runs against it, 176 MB first sandbox / 136 MB marginal / ~17 in 60% of 4 GB. Feeds §5.6.3 |
 | `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24.** Namespaces (unprivileged), seccomp and cgroup v2 all present; **`memory` controller absent** — Pi OS ships `cgroup_disable=memory`, so S9 needs a boot change. Feeds §5.7.4 |
 
@@ -38,8 +38,8 @@ already inserted into §4.6 with its caption, so Chapter 4 is closed unless the 
 wrong. Open the `.json` in Threat Dragon if it needs adjusting by hand, but put anything
 worth keeping into the generator script.
 
-**2. Chapter 5 is under way** — `report/05_architecture.md`, §5.1–§5.8 drafted. **§5.9 (who authors
-the manifest) is next**; the plan and the questions each section owes are in
+**2. Chapter 5 is under way** — `report/05_architecture.md`, §5.1–§5.9 drafted. **§5.10 (the manifest
+schema) is next**, and it needs step 3 below done first; the plan is in
 `notes/ch5_working_notes.md`.
 
 **Gate G2 fired twice** — see the table below for all four outcomes. The compatibility
