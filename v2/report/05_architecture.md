@@ -371,7 +371,157 @@ installation with more integrations than that cannot have one sandbox each. The 
 scope decision is therefore load-bearing rather than cosmetic, and it now has a number to be
 decided against rather than an intuition.
 
+## 5.7 Decision 3 — the isolation primitive
+
+§5.6 settled what runs in the sandbox. This section settles what the sandbox *is*: the
+mechanism that makes the confined process a place conferring no authority. It is the third
+of the four decisions Gate G2 re-opened.
+
+### 5.7.1 What the primitive has to deliver
+
+Five requirements bear on it directly, and they are not equally easy to satisfy.
+
+| Requirement | What the primitive must provide |
+|---|---|
+| **S1** | An execution context the mediator is not inside |
+| **S2** | No path from the sandbox to a platform credential — including the process table (T15) and the filesystem (T14) |
+| **S8** | Filesystem and process isolation confined to declared resources |
+| **S9** | Resource limits (T16 — the one threat Chapter 4 found with no control at all) |
+| **S4** | Egress attributable *per integration* |
+| **C4 / N1** | Affordable at the scale §5.6.3 measured — the budget is roughly 17 sandboxes |
+
+**S4 deserves particular attention, because it is where this project differs from its closest
+prior work.** §2.4.2's gateway MUD architecture consolidates every plug-in's declaration into
+a single gateway-level profile, enforced by a firewall that sees one host — so the effective
+policy for any plug-in becomes the union of all of them, and attribution is impossible in
+principle rather than merely unimplemented. Any primitive chosen here must give each
+integration its own network identity, or this project inherits the same limitation it
+identified in the prior work.
+
+### 5.7.2 The candidates
+
+| ID | Primitive | Verdict |
+|---|---|---|
+| **I1** | Linux namespaces + seccomp-BPF + cgroup v2, driven by a supervisor | **Chosen** |
+| **I2** | OCI containers (Docker, Podman) | Viable, but a packaging choice built on I1 — see below |
+| **I3** | gVisor — a user-space kernel intercepting syscalls | Stronger containment, unaffordable here |
+| **I4** | microVMs (Firecracker, QEMU) | Strongest containment, decisively unaffordable |
+| **I5** | Language-level confinement (`RestrictedPython`, sub-interpreters) | **Eliminated by S1** |
+| **I6** | WebAssembly | **Eliminated by C1** |
+
+**I5 and I6 are eliminated before cost is considered.** Language-level confinement puts the
+restriction in the same interpreter as the code it restricts, which is exactly the class §5.2
+showed to be unsound — and §5.3's L1 argument applies unchanged. WebAssembly cannot run
+CPython integrations with native extensions unmodified, so it fails C1 at the first
+integration that imports a compiled dependency; the elimination is C1's, not a judgement
+about the technology.
+
+**I3 and I4 are eliminated on cost, and the arithmetic is the argument.** §5.6.3 measured a
+marginal sandbox at 136 MB using ordinary processes, against a device with 4 GB. Namespaces
+add essentially nothing to that: they are kernel bookkeeping, not a runtime. gVisor adds a
+user-space kernel process per sandbox and intercepts every system call — and a Python
+interpreter is syscall-heavy. A microVM adds a guest kernel per sandbox. Either would consume
+the margin that makes ~17 sandboxes possible, and C4 is a constraint rather than a preference.
+This is a trade the design is *losing* something on, and §5.7.5 says what.
+
+**I2 is not really a competitor.** Docker and Podman are management layers over precisely the
+primitives I1 uses. Choosing them would add a daemon or a toolchain to the deployment without
+adding a boundary, and Home Assistant is itself frequently deployed inside a container, which
+makes nesting an operational problem rather than a convenience. The distinction worth keeping
+is that **I1 is the security boundary and containerisation is a packaging question**, which
+Chapter 6 may revisit without reopening this decision.
+
+### 5.7.3 The decision, and what each primitive does
+
+**I1: a supervisor that places each integration in its own set of namespaces, applies a
+seccomp-BPF filter, and confines it to a cgroup v2 slice.**
+
+| Mechanism | Requirement served | Effect |
+|---|---|---|
+| **user** namespace | S2, S8 | The sandbox's root is an unprivileged uid outside it; no privileged operation on the host |
+| **mount** namespace | S8, T14 | A private filesystem view: the integration's own directory and nothing else. `secrets.yaml` is not merely unreadable, it is absent |
+| **pid** namespace | S8, T15 | The sandbox sees only its own processes, closing the `/proc/<pid>/environ` read that T15 records as requiring no attacker skill |
+| **network** namespace | **S4**, T10 | Each integration gets its own network stack with no route to anywhere. All egress leaves through the mediator, so the request's origin is known by construction |
+| **ipc**, **uts** namespaces | S8 | Removes shared memory and hostname as side channels |
+| **seccomp-BPF** | S8 | Denies syscalls outside the set an integration needs |
+| **cgroup v2** | **S9** | Bounds memory, CPU and process count — the control T16 had none of |
+
+**The network namespace is the part that matters most**, and it is worth stating plainly why.
+Per-integration egress attribution (S4) is not achieved by inspecting traffic and inferring
+its source, which is what a gateway-level firewall must do and why §2.4.2's design cannot
+attribute. It is achieved by giving each integration a network stack whose only exit is the
+mediator. Attribution becomes a property of the topology rather than a deduction from it, and
+T11's resolve-then-pin requirement becomes implementable because the mediator, not the
+integration, performs the resolution.
+
+### 5.7.4 The primitives were verified on the target, not assumed
+
+A design that assumes kernel features is only as good as the kernel it runs on, so the C4
+device was probed directly (`experiments/host_isolation_probe/`, run 2026-08-24 against
+Raspberry Pi OS trixie, kernel 6.12.47, on the Pi 5):
+
+| Primitive | Result |
+|---|---|
+| Unprivileged user + net + pid namespaces | **Available** — created as an ordinary user; inside, uid 0, pid 1, and a single interface |
+| All seven namespace types | Present |
+| seccomp-BPF | Present, including `user_notif` |
+| cgroup v2 with `pids`, `cpu`, `io`, `cpuset` | Available |
+| cgroup v2 `memory` | **Missing** |
+
+Two consequences follow, and the second is a genuine constraint on deployment rather than a
+detail.
+
+**The supervisor does not need to be privileged.** Unprivileged user namespaces work on the
+target, so a sandbox can be created without granting the framework root. That is worth having
+for its own sake: a confinement mechanism that must run as root to confine anything enlarges
+the very surface it is meant to reduce.
+
+**S9's memory limit is not available on a default Raspberry Pi OS installation.** The probe
+found `cgroup_disable=memory` on the kernel command line, which is that distribution's
+default, and the memory controller is consequently absent. Bounding memory therefore requires
+a boot-time configuration change and a reboot before the framework can enforce S9 at all.
+
+This is exactly the kind of finding that is cheap now and expensive in November, and it forces
+a design decision rather than merely being noted. **Under N3 the framework must refuse to
+start, with a stated reason, when the memory controller is unavailable** — not start anyway
+and leave T16 uncontrolled while implying protection. N3 requires a stated failure mode
+precisely because §1.6's complaint about the status quo is that the user's exposure is
+invisible; a framework that silently ran without the one control T16 has would reproduce that
+property under a security label.
+
+### 5.7.5 What is being given up, and the residual risk
+
+**The kernel is the boundary.** I1's confinement is enforced by the same kernel the sandboxed
+code makes system calls into, so a kernel vulnerability reachable through the syscalls seccomp
+still permits defeats the sandbox. I3 and I4 exist to shrink exactly this surface, and both
+were rejected on cost in §5.7.2.
+
+Stated as a residual risk rather than argued away: this design assumes the host kernel is
+sound, and it is a weaker assumption than a microVM design makes. Three things bound it
+without removing it — seccomp reduces the reachable syscall surface, the user namespace means
+a successful escape lands on an unprivileged uid rather than root, and the alternative that
+would remove it costs more than C4 permits. **A deployment where the threat model justifies
+the expense should prefer I3 or I4, and the architecture does not prevent that**: the
+supervisor's interface to the sandbox is process creation, and substituting a stronger
+sandbox is a change of implementation, not of design.
+
+### 5.7.6 Divergence from the first pass — Gate G2
+
+**None: the first pass also chose namespaces and seccomp, and this pass re-derives them.**
+Per `01_PLAN.md` §6 that is reported as independent confirmation.
+
+It is worth more than the platform confirmation of §5.4, and the reason is the route. §5.4
+conceded that a chain beginning with Home Assistant will tend to end there. Here the chain
+arrived through criteria the first pass did not have in this form: S4's attribution
+requirement, which came out of Chapter 2's reading of the gateway MUD architecture's
+consolidation limitation; S9, which Chapter 4 generated itself in §4.10.1; and a measured
+memory budget from §5.6.3 that made the cost comparison arithmetic rather than intuition. The
+same answer reached along a different road is the case where confirmation carries weight.
+
+The one thing the first pass did not produce is §5.7.4's finding about the memory controller,
+which came from probing the target rather than from reasoning about it.
+
 ---
 
-*Chapter in progress. §5.7 (the isolation primitive) onward is next; the section plan is in
+*Chapter in progress. §5.8 (implemented scope) onward is next; the section plan is in
 `notes/ch5_working_notes.md`.*

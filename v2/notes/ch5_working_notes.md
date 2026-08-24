@@ -15,8 +15,8 @@ questions a viva will probe.
 | 5.4 | Decision 1 — the platform (G2 #1) | ✅ drafted |
 | 5.5 | The relocation problem — criteria K1–K7, candidates R1–R5, three eliminated | ✅ drafted |
 | 5.6 | **Decision 2 — R1 vs R2** (G2 #2, §3.9 open question 2) | ✅ drafted — **R2 chosen; G2 divergence reported** |
-| 5.7 | Decision 3 — the isolation primitive (G2 #3) | ⬅ **next** |
-| 5.8 | Decision 4 — implemented scope (G2 #4) | not started |
+| 5.7 | Decision 3 — the isolation primitive (G2 #3) | ✅ drafted — namespaces + seccomp + cgroup v2; **G2 confirmation**, primitives probed on the Pi |
+| 5.8 | Decision 4 — implemented scope (G2 #4) | ⬅ **next** — and §5.6.3's 17-sandbox budget is the number it decides against |
 | 5.9 | Who authors the manifest (§3.9 open question 1) | not started |
 | 5.10 | The manifest — schema and granularity (S5) | not started |
 | 5.11 | The mediator interface and the channel (T02, K4) | not started |

@@ -24,6 +24,9 @@ that does not belong in the report, including anticipated viva questions.
 | **HA source on the machine** | ✅ `~/ha-src/core`, pinned to **2026.8.3** (`759e465`, 2026-08-21), shallow clone. **Outside the capstone repo on purpose** — never committed, never confused with the frozen spike |
 | `notes/ch5_evidence_ha_coupling.md` | ✅ Written 2026-08-24 — the in-process coupling re-derived from source. **Discharges item 1 of `00_METHOD.md` §2** |
 | `notes/ch5_evidence_ha_coupling_explained.md` | ✅ The same finding from first principles, for defending it aloud — what `import` really does, why `hass` is everything, a 30-second version, and six self-test questions |
+| `report/05_architecture.md` | 🔶 §5.1–§5.7 drafted; §5.8 next |
+| `experiments/r2_footprint/` | ✅ **Pi 5, 2026-08-24.** R2's premise holds and it fits: minimal HA builds without `bootstrap`, an ordinary integration runs against it, 176 MB first sandbox / 136 MB marginal / ~17 in 60% of 4 GB. Feeds §5.6.3 |
+| `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24.** Namespaces (unprivileged), seccomp and cgroup v2 all present; **`memory` controller absent** — Pi OS ships `cgroup_disable=memory`, so S9 needs a boot change. Feeds §5.7.4 |
 
 ## Next session, in order
 
@@ -35,8 +38,8 @@ already inserted into §4.6 with its caption, so Chapter 4 is closed unless the 
 wrong. Open the `.json` in Threat Dragon if it needs adjusting by hand, but put anything
 worth keeping into the generator script.
 
-**2. Chapter 5 is under way** — `report/05_architecture.md`, §5.1–§5.6 drafted. **§5.7 (the
-isolation primitive) is next**; the section plan and the questions each section owes are in
+**2. Chapter 5 is under way** — `report/05_architecture.md`, §5.1–§5.7 drafted. **§5.8 (implemented
+scope) is next**, and §5.6.3's 17-sandbox budget is the number it decides against; the plan is in
 `notes/ch5_working_notes.md`.
 
 **Gate G2 has fired once, on the compatibility decision.** The first pass built a proxy shim
@@ -72,7 +75,14 @@ evaluated* confinement for these integrations, and nobody has measured what conf
 pre-existing, unmodifiable extensions costs in compatibility. Weaker-sounding, far more
 defensible. `notes/ch2_working_notes.md` has the full reasoning.
 
-**Gate G2 (the four re-openable decisions) is still open** and belongs to Chapter 5.
+**Gate G2 (the four re-openable decisions) is half settled**, all in Chapter 5:
+
+| # | Decision | Outcome | Where |
+|---|---|---|---|
+| 1 | Platform | Home Assistant — **confirmed, but weakly**: a chain that begins there tends to end there, and the section says so | §5.4 |
+| 2 | Compatibility strategy | **DIVERGED** — R2 (real stripped HA in the sandbox), not the first pass's proxy shim | §5.6 |
+| 3 | Isolation primitive | namespaces + seccomp + cgroup v2 — **confirmed, and strongly**: reached via S4, S9 and a measured budget the first pass did not have | §5.7 |
+| 4 | Implemented scope | Open | §5.8 |
 
 ## The three things most worth remembering
 
