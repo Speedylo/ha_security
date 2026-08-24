@@ -25,6 +25,45 @@ questions a viva will probe.
 | 5.14 | Figure 5.1, paired with Figure 4.1; threat-to-control traceability | not started |
 | 5.15 | What the design does not do; L2 as the platform's own better answer | not started |
 
+## Measurement: what integrations actually talk to
+
+Taken 2026-08-24 against Home Assistant 2026.8.3 (`759e465`), over all 1,482 integrations
+shipped in `homeassistant/components/`. This was run to settle R1 vs R2 on evidence rather
+than on intuition about what integrations "probably" use.
+
+```bash
+cd homeassistant/components
+tot=$(ls -d */ | wc -l)
+for pat in "homeassistant.helpers" "DataUpdateCoordinator" "async_add_entities" \
+           "hass.data" "hass.states.async_set"; do
+  n=$(grep -rlF "$pat" --include='*.py' . | sed 's|^\./||' | cut -d/ -f1 | sort -u | wc -l)
+  echo "$pat -> $n / $tot"
+done
+```
+
+| What the integration touches | Integrations | Share |
+|---|---|---|
+| `homeassistant.helpers` — the helper layer | 1,356 | **91%** |
+| `async_add_entities` — helper-layer entity registration | 941 | 63% |
+| `DataUpdateCoordinator` — helper-layer polling | 572 | 38% |
+| `hass.data` — the raw shared dict | 279 | 18% |
+| `hass.states.async_set` — writing state directly on `hass` | **2** | **0.1%** |
+
+**This is the finding that decides §5.6.** Integrations do not, in the main, program against
+the `hass` object at all. They program against Home Assistant's *helper layer* — its entity
+base classes, its polling coordinator, its platform registration — and that layer is Home
+Assistant's own code, which in any confined design is running inside the sandbox and expects
+real platform internals beneath it. Two integrations in 1,482 set state directly on `hass`.
+
+The consequence for R1 is direct: substituting the `hass` object substitutes the thing almost
+nothing uses directly, and leaves the 91% case resting on how faithfully the helper layer's
+expectations are emulated.
+
+**Stated limit.** These are the *core* integrations, not the community ones this project
+targets. The measurement establishes the shape of the dependency, not its exact magnitude in
+HACS. Chapter 6 or 7 must re-run it over community integrations before any number here is
+quoted as characterising the target population.
+
 ## The decision that blocks §5.6
 
 §5.5 eliminated R3 (loader interposition — fails S1), R4 (the RFC — verified unshipped in
