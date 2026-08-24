@@ -48,7 +48,7 @@ NODES = [
     ("ha_core",  "process", "Home Assistant core\nbus · states · services\nconfig_entries · auth · http",
                                                                             370,  340, 190, 150),
     ("integ_a",  "process", "Integration A\n(third-party)",                  760,  357, 180, 115),
-    ("integ_b",  "process", "Integration B\n(third-party)",                  760,  545, 180, 115),
+    ("integ_b",  "process", "Integration B\n(third-party)",                  760,  585, 180, 115),
     ("mem",      "store",   "In-memory shared state\nhass.data · states (A2, A6)",
                                                                             960,  300, 175,  85),
     # --- on disk ------------------------------------------------------------------
@@ -61,7 +61,7 @@ NODES = [
 BOUNDARY_BOX = {
     "id": "ha_process",
     "label": "HOME ASSISTANT — ONE OS PROCESS, ONE PYTHON INTERPRETER",
-    "x": 340, "y": 220, "width": 800, "height": 480,
+    "x": 340, "y": 220, "width": 800, "height": 500,
 }
 
 # id: (name, source, target, [vertices], exists, label_xy)
@@ -71,15 +71,15 @@ BOUNDARIES = [
     ("tb4", "TB4 · EXISTS — structure, not behaviour",
      (25, 240), (335, 25), [(210, 245), (300, 195)], True, (185, 212)),
     ("tb2", "TB2 · EXISTS — unscoped API surface",
-     (620, 290), (620, 540), [(640, 415)], True, (600, 262)),
+     (620, 350), (620, 480), [(640, 425)], True, (600, 262)),
     ("tb1", "TB1 · ABSENT — required by S1",
-     (690, 290), (690, 560), [(710, 415)], False, (600, 292)),
+     (690, 350), (690, 480), [(710, 425)], False, (600, 292)),
     ("tb3", "TB3 · ABSENT — required by F2/S4",
      (1215, 30), (1215, 900), [(1225, 400), (1215, 650)], False, (1260, 470)),
     ("tb5", "TB5 · ABSENT — required by S8",
      (300, 770), (1160, 770), [(700, 780)], False, (700, 780)),
     ("tb6", "TB6 · ABSENT — demonstrated crossable",
-     (700, 508), (1150, 508), [(1000, 508)], False, (940, 508)),
+     (720, 528), (1000, 528), [(860, 528)], False, (1145, 528)),
 ]
 
 # (id, source, target, label, source_port, target_port, bidirectional, [vertices], label_xy)
@@ -89,19 +89,19 @@ FLOWS = [
     ("f2",  "ha_core", "integ_a", "F2  import_module →\nasync_setup(hass, …)\npasses the hass reference",
      "right",  "left",  False, [], (655, 340)),
     ("f3",  "integ_a", "ha_core", "F3  service calls · state writes\nevent subscription",
-     "bottom", "bottom", False, [(640, 500)], (560, 570)),
+     "left",   "right", False, [(660, 478)], (620, 540)),
     ("f4",  "integ_a", "mem",     "F4  direct read/write of hass.data\n(all domains)",
      "right",  "left",  True,  [], (1030, 465)),
     ("f4b", "integ_b", "mem",     "F4b  the same shared dict,\nfrom another integration",
-     "right",  "bottom", True, [(1100, 602), (1100, 430)], (1040, 645)),
+     "right",  "bottom", True, [(1100, 642), (1100, 430)], (1030, 600)),
     ("f5",  "integ_a", "entries", "F5  reads any integration's\nstored credentials",
-     "bottom", "top",   False, [(930, 740)], (1000, 730)),
+     "bottom", "top",   False, [(1030, 500), (960, 740)], (1000, 690)),
     ("f6",  "integ_a", "secrets", "F6  arbitrary file read via\nhass.config.path()",
-     "bottom", "top",   False, [(560, 740)], (420, 745)),
+     "bottom", "top",   False, [(620, 560), (560, 740)], (420, 745)),
     ("f7",  "integ_a", "extnet",  "F7  unrestricted outbound",
      "top",    "left",  False, [(1030, 230)], (1080, 195)),
-    ("f8",  "integ_a", "integ_b", "F8  in-process object access",
-     "bottom", "top",   True,  [], (850, 488)),
+    ("f8",  "integ_a", "integ_b", "F8  direct object access",
+     "bottom", "top",   True,  [], (935, 495)),
     ("f9",  "integ_a", "devices", "F9  local network access",
      "right",  "left",  False, [(1170, 414), (1170, 742)], (1170, 600)),
     ("f10", "user",    "ha_core", "F10  web UI",

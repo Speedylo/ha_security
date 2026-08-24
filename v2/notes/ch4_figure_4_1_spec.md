@@ -260,6 +260,13 @@ worth keeping, put it in the script.
    §4.6's six boundaries is "user ↔ platform". The user is AC5 — a source of risk through
    action, not an external attacker — and inventing a boundary for that flow would have put
    the figure ahead of the chapter.
+4. **The Integration A ↔ B band was rebuilt** after review, 2026-08-24. Four flows left
+   Integration A by the same bottom port and fanned out through a 73-pixel gap that also
+   carried TB6 and two labels. The band is now 113 pixels; F3 returns to the platform by
+   the left port as a bowed second leg of the F2/F3 pair; F5 and F6 diverge early, right
+   and left; and **F8 is the only flow that crosses TB6**, which is correct — it is the
+   only integration-to-integration flow. TB6's label sits at the line's right end so it
+   never hides F8's arrow. Nothing about the figure's content changed, only its legibility.
 
 **Checks before committing a change** — each catches a specific way this figure could
 mislead:

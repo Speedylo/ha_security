@@ -24,7 +24,7 @@
             },
             "size": {
               "width": 800,
-              "height": 480
+              "height": 500
             },
             "attrs": {
               "label": {
@@ -747,7 +747,7 @@
           {
             "position": {
               "x": 760,
-              "y": 545
+              "y": 585
             },
             "size": {
               "width": 180,
@@ -1351,16 +1351,16 @@
             "id": "05d89f31-85e2-52a2-a0e6-69c477d57a31",
             "source": {
               "x": 620,
-              "y": 290
+              "y": 350
             },
             "target": {
               "x": 620,
-              "y": 540
+              "y": 480
             },
             "vertices": [
               {
                 "x": 640,
-                "y": 415
+                "y": 425
               }
             ]
           },
@@ -1415,16 +1415,16 @@
             "id": "a9096f92-cac2-5041-8d49-2f809b3a5248",
             "source": {
               "x": 690,
-              "y": 290
+              "y": 350
             },
             "target": {
               "x": 690,
-              "y": 560
+              "y": 480
             },
             "vertices": [
               {
                 "x": 710,
-                "y": 415
+                "y": 425
               }
             ]
           },
@@ -1610,17 +1610,17 @@
             },
             "id": "99b6525d-681f-5892-97fb-f50468b7c8f2",
             "source": {
-              "x": 700,
-              "y": 508
+              "x": 720,
+              "y": 528
             },
             "target": {
-              "x": 1150,
-              "y": 508
+              "x": 1000,
+              "y": 528
             },
             "vertices": [
               {
-                "x": 1000,
-                "y": 508
+                "x": 860,
+                "y": 528
               }
             ]
           },
@@ -1852,16 +1852,16 @@
             "id": "54111ffb-0a60-54d6-af33-95633a111aa4",
             "source": {
               "cell": "a9209549-e84a-5499-ace0-1ddde1f1e2b9",
-              "port": "e9ff1c90-ade3-5207-b9c3-56e50d7af8f5"
+              "port": "99a4d025-b4be-500b-bd71-cf1f5e82027d"
             },
             "target": {
               "cell": "30118bce-aa74-5e25-8af7-9a2c5dafd963",
-              "port": "a451eef1-2cc4-5def-9e69-850dc92e56bc"
+              "port": "a79f22b7-430b-5db5-93e9-b41e72c30860"
             },
             "vertices": [
               {
-                "x": 640,
-                "y": 500
+                "x": 660,
+                "y": 478
               }
             ]
           },
@@ -2020,7 +2020,7 @@
             "vertices": [
               {
                 "x": 1100,
-                "y": 602
+                "y": 642
               },
               {
                 "x": 1100,
@@ -2105,7 +2105,11 @@
             },
             "vertices": [
               {
-                "x": 930,
+                "x": 1030,
+                "y": 500
+              },
+              {
+                "x": 960,
                 "y": 740
               }
             ]
@@ -2186,6 +2190,10 @@
               "port": "50d5999d-a54a-5226-b4c8-9059e0ac9833"
             },
             "vertices": [
+              {
+                "x": 620,
+                "y": 560
+              },
               {
                 "x": 560,
                 "y": 740
@@ -2305,7 +2313,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "F8  in-process object access",
+                    "text": "F8  direct object access",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -2329,7 +2337,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F8  in-process object access",
+              "name": "F8  direct object access",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
