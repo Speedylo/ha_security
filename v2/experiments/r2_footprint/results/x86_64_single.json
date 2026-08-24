@@ -1,0 +1,73 @@
+{
+  "host": {
+    "machine": "x86_64",
+    "python": "3.14.7",
+    "node": "DESKTOP-6OPV9NM",
+    "ha_version": "2026.8.3"
+  },
+  "questions": {
+    "Q1_minimal_instance": {
+      "ok": true
+    },
+    "Q2_integration_runs": {
+      "ok": true,
+      "base_component": true,
+      "entry_state": "ConfigEntryState.LOADED",
+      "entities_published": [
+        "sensor.ticks"
+      ],
+      "all_entity_ids": [
+        "sensor.ticks"
+      ],
+      "sensor_value": "1"
+    },
+    "Q3_footprint": {
+      "peak_rss_mb": 160.2,
+      "rss_at_running_mb": 160.2,
+      "time_to_running_s": 0.75,
+      "host_mem_mb": 7793
+    }
+  },
+  "stages": [
+    {
+      "stage": "bare interpreter",
+      "rss_mb": 22.1,
+      "elapsed_s": 0.0
+    },
+    {
+      "stage": "+ import homeassistant.const",
+      "rss_mb": 27.8,
+      "elapsed_s": 0.01
+    },
+    {
+      "stage": "+ import homeassistant.core",
+      "rss_mb": 46.3,
+      "elapsed_s": 0.08
+    },
+    {
+      "stage": "+ import helper layer + sensor platform",
+      "rss_mb": 108.9,
+      "elapsed_s": 0.4
+    },
+    {
+      "stage": "+ minimal hass constructed and running",
+      "rss_mb": 109.0,
+      "elapsed_s": 0.41
+    },
+    {
+      "stage": "+ base 'homeassistant' component",
+      "rss_mb": 160.0,
+      "elapsed_s": 0.75
+    },
+    {
+      "stage": "+ probe integration set up",
+      "rss_mb": 160.2,
+      "elapsed_s": 0.75
+    },
+    {
+      "stage": "after hass.async_stop()",
+      "rss_mb": 160.2,
+      "elapsed_s": 0.77
+    }
+  ]
+}

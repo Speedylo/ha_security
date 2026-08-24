@@ -1,0 +1,11 @@
+{
+  "domain": "probe_sensor",
+  "name": "R2 Probe Sensor",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://example.invalid/probe_sensor",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "requirements": [],
+  "version": "1.0.0"
+}

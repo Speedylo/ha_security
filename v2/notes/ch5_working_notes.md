@@ -156,12 +156,37 @@ Note the evidence-rule position carefully. That the shim was hard and large is *
 knowledge* and cannot be an argument in the chapter. The chapter's argument against R1 must
 stand on what §5.2 established about the helper layer — which it does, independently.
 
-### Re-decision point
+### Re-decision point — resolved on 2026-08-24, before the decision was taken
 
-**Chapter 6, first task:** measure a stripped Home Assistant's resident memory and startup
-time on the target hardware. If a sandbox costs more than roughly a fifth of the Pi's memory,
-R2 does not survive C4 and the design falls back to R1 with a reduced scope. Deciding this by
-measurement in October is cheap; discovering it in November is not.
+This was going to be deferred to Chapter 6. It was instead run first, on the actual Pi 5,
+because a design chapter that picks R2 and *then* discovers it does not fit is the expensive
+order. Full write-up and raw results in `experiments/r2_footprint/`.
+
+| Question | Result |
+|---|---|
+| Minimal Home Assistant without `bootstrap`? | **Yes** |
+| Ordinary helper-layer integration runs against it? | **Yes** — entry `LOADED`, `sensor.ticks` published |
+| One sandbox on the Pi 5 | **176 MB**, ready in 6.1 s |
+| Each additional sandbox | **136 MB** — about **17** in 60% of 4 GB |
+
+**R2's premise holds and its footprint fits.** The threshold set in advance was "more than
+roughly a fifth of the Pi's memory kills it"; a fifth is 809 MB and the answer is 136 MB.
+The test was specified before it was run, and it passed on its own terms.
+
+Three things the experiment produced that the argument did not have before:
+
+1. **`bootstrap` cannot be used in the sandbox** — it imports `.components` at module level,
+   frontend included. A minimal instance is built by constructing `HomeAssistant` directly.
+   This is a §5.6 design detail, not an implementation one.
+2. **The base `homeassistant` component costs 60 MB of the 176 MB.** Whether the sandbox
+   needs it is the first thing Chapter 6 should test; dropping it roughly doubles capacity.
+3. **17 sandboxes is enough but not generous.** A user with more integrations than that
+   cannot have one sandbox each, which makes the *scope* decision (§5.8) load-bearing rather
+   than cosmetic — and gives it a number to be decided against.
+
+**What this does not settle.** One synthetic integration, measured idle, with no mediator
+attached. It establishes the shape works and the cost is affordable; it is not the
+compatibility evaluation and must not be reported as one.
 
 ## Questions a viva will probe here
 
