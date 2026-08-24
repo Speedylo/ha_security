@@ -4,6 +4,11 @@
 `00_METHOD.md` §2 ("Integrations cannot run outside HA's process — read HA's bootstrap;
 show the coupling"). · **Feeds:** Ch. 5 (architecture), Gate G2, Ch. 4 §4.6 figure.
 
+> **Companion:** `ch5_evidence_ha_coupling_explained.md` states the same finding from the
+> ground up — what a process is, what `import` actually does, why holding `hass` is holding
+> everything — plus how to say it out loud and six questions to test yourself against. Read
+> that one first if the Python here is doing more work than it should have to.
+
 ## 1. Question, and why it is asked here
 
 Chapter 3 deferred a question to Chapter 5: **how does an unmodified integration run
@@ -110,10 +115,13 @@ reachable by attribute access from there.
 | Config entries | `hass.config_entries` (`core.py:386`) | Every integration's stored configuration, credentials included |
 | Event loop / executor | `hass.loop`, `hass.import_executor` (`core.py:405`, `422`) | Schedule work on the platform's own loop and threads |
 
-Two structural facts compound this. First, `HomeAssistant.__new__` (`core.py:388–392`)
-stores the instance in a module-level thread-local (`_hass.hass = hass`), so the root
-object is reachable *without* being passed — holding a reference is a convenience, not a
-requirement. Second, and decisively for Ch. 5, none of this depends on the argument list
+Two structural facts compound this. First, the root object is **ambient, not disclosed**:
+`HomeAssistant.__new__` (`core.py:388–392`) stores the instance in a module-level
+thread-local (`_hass.hass = hass`, `core.py:234–240`), and `async_get_hass()`
+(`core.py:244`) is a *public accessor* that returns it to any caller on the event loop
+thread. Its own docstring gives the purpose — "where it's very cumbersome or downright
+impossible to pass hass to the code which needs it". Withholding `hass` at the two dispatch
+sites would therefore withhold nothing. Second, and decisively for Ch. 5, none of this depends on the argument list
 at all: since the integration shares an interpreter, the Python object graph is a
 navigable structure at runtime. This is the published `gc.get_objects()` result that
 Ch. 4 already relies on (Corno & Mannella), and §3 step 4 is its mechanism.
