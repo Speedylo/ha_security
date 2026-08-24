@@ -1,6 +1,6 @@
 # Where the rebuild stands
 
-**Last updated:** 2026-08-22, end of session · **Read this first when resuming.**
+**Last updated:** 2026-08-24, end of session · **Read this first when resuming.**
 
 Read alongside `00_METHOD.md` (ground rules — especially the evidence rule) and
 `01_PLAN.md` (stage plan and gates). Chapter working notes in `notes/` carry the reasoning
@@ -20,30 +20,29 @@ that does not belong in the report, including anticipated viva questions.
 | `report/04_threat_model.md` | ✅ Drafted — 18 threats, 6 residual risks; impact scale rebuilt 2026-08-22 (`notes/decision_impact_scale_and_standards.md`). **Outstanding:** the §4.6 boundary figure (`notes/decision_threat_model_diagrams.md`) |
 | `figures/ecosystem_scale.py` | ✅ Regenerates every number in Ch. 1 |
 | `refs/` | ✅ Four PDFs obtained and read (Corno & Mannella ×2, Thingnes & Meland, Mannella thesis) |
+| **HA source on the machine** | ✅ `~/ha-src/core`, pinned to **2026.8.3** (`759e465`, 2026-08-21), shallow clone. **Outside the capstone repo on purpose** — never committed, never confused with the frozen spike |
+| `notes/ch5_evidence_ha_coupling.md` | ✅ Written 2026-08-24 — the in-process coupling re-derived from source. **Discharges item 1 of `00_METHOD.md` §2** |
 
 ## Next session, in order
 
-**1. Get Home Assistant's source onto the machine.** It is not here — the spike ran HA in
-Docker, and the venv holds only `aiohttp` and friends. Either `pip install homeassistant`
-into a scratch venv or clone `home-assistant/core`. Minutes of work, and **everything in
-Chapter 5 waits behind it**.
+*(Steps 1 and 2 of the previous list — get the source, re-derive the coupling — were done
+on 2026-08-24. What follows is what remains.)*
 
-**2. Re-derive the in-process coupling.** Bootstrap → loader → component setup → the `hass`
-object handed to an integration. This discharges item 1 of `00_METHOD.md` §2's
-private-knowledge table ("integrations cannot run outside HA's process"), which is the
-gating evidence for both G2 and the hardest deferred question — how an unmodified
-integration runs outside the process it expects. Write it up in
-`notes/ch5_evidence_ha_coupling.md`; nothing in Chapter 5 may rest on knowing this already.
-
-**3. Draw the §4.6 figure.** Today's system only — one process, six boundaries, four of
+**1. Draw the §4.6 figure.** Today's system only — one process, six boundaries, four of
 them absent. Bounds and reasoning in `notes/decision_threat_model_diagrams.md`. Threat
 Dragon is a GUI tool, so the drawing is Younes's; Claude drafts the element list, the
-caption, and the §4.6 paragraph that introduces it. Doing this *after* step 2 makes the
-boundaries sharper at no extra cost, though §1.2's existing citations already justify the
-figure on their own.
+caption, and the §4.6 paragraph that introduces it. The coupling note now makes the
+boundaries concrete: `loader.py:1091` is where the outermost one fails to exist.
 
-**4. Then Chapter 5 proper** — architecture and design rationale. Constraints and open
-questions in the section below.
+**2. Then Chapter 5 proper** — architecture and design rationale. Constraints and open
+questions in the section below. The coupling note's §4 table is the **specification any
+answer to the relocation question must satisfy**, and its §6 lists what it deliberately
+leaves open.
+
+**3. Re-derive the API-surface measurement**, when Ch. 5 needs it. Which of the nine
+handles must be mediated, which can be denied outright, and which are used so rarely that
+denial is free, is an empirical question. The spike measured it across 3,105 repos; under
+the evidence rule that result is private knowledge until re-derived in this pass.
 
 ---
 
@@ -114,7 +113,19 @@ Chapters 3 and 4 constrain the design tightly. Carry these in:
    curation. This will be asked early — §1.10's word "declared" is doing quiet work.
 2. **How does an unmodified integration run outside the process it expects?** The hardest
    engineering question in the project, deferred on purpose so that Chapter 4 could constrain
-   the answer.
+   the answer. **Now specified, not yet answered:** `notes/ch5_evidence_ha_coupling.md` §4
+   tabulates the nine handles reachable from the `hass` object, and any design must present
+   that surface or modify the integration — which C3's compatibility constraint forbids.
+   The coupling is one ordinary `importlib.import_module` call (`loader.py:1091` at HA
+   2026.8.3), which is also why authority here is *positional* rather than granted, and
+   therefore why relocation without scoping changes nothing — the §1.9 discharge.
+
+**One finding worth using in Ch. 5's opening.** Home Assistant *does* distinguish custom
+code from built-in — `Integration.is_built_in` — and every one of its consumers is
+presentational: a warning banner, a quality-scale label, log wording, an issue-tracker URL,
+a deprecation severity. The flag is never consulted on the load path or at either dispatch
+site. The platform knows which code is untrusted and uses that knowledge to phrase a
+warning. It pairs exactly with Corno & Mannella's scope-that-lives-only-in-prose.
 
 Chapter 5 also owes two promises made earlier: the defence-in-depth framing (likelihood
 control + impact control) promised in §1.6, and the §1.9 argument that relocation without
