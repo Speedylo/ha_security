@@ -2,6 +2,10 @@
 
 **Last updated:** 2026-08-24, end of session · **Read this first when resuming.**
 
+**That session in one line:** Chapter 4 closed, Chapter 5 taken from nothing to §5.12 of 15,
+Gate G2 closed with two divergences, and four measurements run on the Pi 5 and the corpora
+rather than argued — see `experiments/` and `figures/`.
+
 Read alongside `00_METHOD.md` (ground rules — especially the evidence rule) and
 `01_PLAN.md` (stage plan and gates). Chapter working notes in `notes/` carry the reasoning
 that does not belong in the report, including anticipated viva questions.
@@ -31,23 +35,21 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/mediation_latency/` | ✅ **Pi 5, 2026-08-24.** One mediated request over the channel: **30.0 µs** median, p99 33.9 µs; ~33k req/s. Floor only — excludes manifest check and audit write. Feeds §5.11.4 |
 | `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24.** Namespaces (unprivileged), seccomp and cgroup v2 all present; **`memory` controller absent** — Pi OS ships `cgroup_disable=memory`, so S9 needs a boot change. Feeds §5.7.4 |
 
-## Next session, in order
+## Next session — start here
 
-*(Steps 1 and 2 of the previous list — get the source, re-derive the coupling — were done
-on 2026-08-24. What follows is what remains.)*
+**Chapters 1–4 are complete. Chapter 5 is §5.1–§5.12 of 15.** Pick up at §5.13. The section
+plan, with what each remaining section owes, is in `notes/ch5_working_notes.md`.
 
-**1. Review Figure 4.1** (`figures/fig_4_1_current_state.svg`) — drawn 2026-08-24 and
-already inserted into §4.6 with its caption, so Chapter 4 is closed unless the figure is
-wrong. Open the `.json` in Threat Dragon if it needs adjusting by hand, but put anything
-worth keeping into the generator script.
+| # | Task | Notes |
+|---|---|---|
+| **1** | **§5.13 — defence in depth** | **Discharges the §1.6 promise** (likelihood control + impact control). L1 from §5.3 returns here as a layer and never as the boundary — that distinction is the section's spine |
+| 2 | §5.14 — Figure 5.1 and threat-to-control traceability | Figure 5.1 is Figure 4.1 **with TB1/TB3/TB5/TB6 instantiated**; work from a *copy* of `figures/fig_4_1_current_state.py` and keep the element positions so the delta is legible. Then check every Ch. 4 control against where §5.6–§5.12 actually put it |
+| 3 | §5.15 — what the design does not do | Includes L2 (fixing the platform) as the *better* answer for the platform project, which C2 puts out of reach for this one |
+| 4 | Read Chapter 5 end to end | It was written in one long session across twelve sections; it has not yet been read as a whole for repetition or drift |
 
-**2. Chapter 5 is under way** — `report/05_architecture.md`, §5.1–§5.12 drafted. **§5.13 (defence in
-depth, which discharges §1.6) is next**; the plan is in
-`notes/ch5_working_notes.md`.
-
-**Gate G2 fired twice** — see the table below for all four outcomes. The compatibility
-divergence (§5.6) was approved by Younes on 2026-08-24 **with an explicit fallback to R1 if
-implementation refutes it**, written into §5.6.5 with trigger conditions and tied to G3.
+**Then Chapter 6 (implementation).** Its first task is fixed by §5.6.5: measure whether the
+sandbox needs the platform's base `homeassistant` component. That is **60 MB of the 176 MB**,
+and dropping it roughly doubles the ~17-sandbox budget.
 
 **⚠ One conflict is open and deliberately unresolved.** `01_PLAN.md` §6 says the actuator PoC
 is cut first if G3 fires. §5.8.2 derived scope from Chapter 3's verification column and found
@@ -56,12 +58,10 @@ risk — with no demonstrated control. The plan's cut list predates the scope de
 Recommendation in `notes/ch5_working_notes.md`: cut coverage-widening first instead. **This is
 Younes's call at G3**, and `01_PLAN.md` has deliberately not been edited.
 
-**3. ~~Re-derive the API-surface measurement~~ — done 2026-08-24.**
-`notes/ch5_evidence_api_surface.md`; scripts and results in `figures/`. Two corpora parsed
-with `ast` under Python 3.14, zero parse failures: 1,458 shipped integrations and the top 144
-community ones by install count. **The headline is that the population changes the answer** —
-community integrations use every handle 1.5–4.7× more than shipped ones, so core-only results
-do not transfer. §7 of that note lists the six things §5.10 takes from it.
+**Owed before Chapter 7 reports coverage:** the API-surface measurement was run on the top 144
+community integrations *by install count*. That describes what most installations run, not
+what most integrations do. A uniform sample answers the second question and
+`figures/fetch_hacs_corpus.py` already takes the corpus — only the selection changes.
 
 ---
 
@@ -118,54 +118,42 @@ theatre (`00_METHOD.md` §3); two divergences out of four is the evidence it was
    that framing, so the security evaluation is measured against a published model rather than
    criteria invented here.
 
-## Chapter 5 starts here
+## Chapter 5 — what it has settled, and what it still owes
 
-Chapters 3 and 4 constrain the design tightly. Carry these in:
+**Settled.** Every constraint Chapters 3 and 4 handed to Chapter 5 now has a home:
 
-- **S1** → enforcement outside the integration's process. Non-negotiable, published evidence.
-- **S2** → the mediator holds the platform credential; the integration holds none.
-- **T02** → per-integration *identity* on every mediated request. Do not assume one
-  connection equals one integration; make the architecture carry identity explicitly.
-- **T11** → resolve-then-pin the destination address. Checking hostnames is not enough.
-- **T12** → confirm a new version's declaration is re-checked, not cached from install time.
-- **S5 / Tyche** → granularity must separate risk-asymmetric operations; `lock.unlock` must
-  not come free with `lock.lock`.
-- **S9** → resource limits (added by Ch. 4 §4.10.1).
-- **Paired figure** → Ch. 5 draws the same data-flow diagram as Ch. 4 §4.6, with TB1, TB3,
-  TB5 and TB6 instantiated. Ch. 4 draws today, Ch. 5 draws the fix, and the delta is the
-  argument. See `notes/decision_threat_model_diagrams.md`.
-- **S7 identity** → an integration's identity in the audit log is its name *plus a content
-  hash of the loaded source*. A design specification discharging S7, justified by T12 and
-  A7 — not a new requirement. Decided 2026-08-22; the reasoning, the boundary it must not
-  cross, and the trust-layer PoC that was refused are in
-  `notes/decision_audit_identity_and_trust_layer.md`, which also carries three open
-  questions Ch. 5 has to answer.
+| Carried in | Answered in | How |
+|---|---|---|
+| **S1** — enforcement outside the integration's context | §5.3 | L3: a mediator in a separate process. L1/L2/L4 eliminated |
+| **S2** — mediator holds the credential | §5.11.3 | The mediator acts only with its own credential, at step 5 of 5 |
+| **T02** — per-integration identity on every request | §5.11.2 | **Identity is the socket**, not a field. The supervisor creates the pair before the sandbox exists |
+| **T11** — resolve-then-pin | §5.10.5, §5.11.1 | The mediator resolves; the same principle is applied to filesystem paths |
+| **T12** — re-check declaration per version | §5.9.6, §5.12.2 | The manifest binds to a content hash; identity is recomputed per sandbox construction |
+| **S5 / Tyche** — risk-asymmetric granularity | §5.10.4 | **No wildcard in `services.call`.** Patterns allowed for entities, never for services |
+| **S9** — resource limits | §5.10.6, §5.7.4 | cgroup v2; and the framework refuses to start when the memory controller is missing |
+| **S7 identity** — name + content hash | §5.12.1 | Extended to a **three-part tuple** — source, manifest, dependencies — hashed separately *and* together |
+| **§1.9** — relocation without scoping | §5.2 | **Discharged.** Authority is *positional*, so moving code moves authority unless the new position confers less |
+| **§3.9 Q1** — who authors the manifest | §5.9 | Plural provenance, ordered, default-deny. The file's location is the provenance signal |
+| **§3.9 Q2** — how unmodified code runs elsewhere | §5.6 | R2: a real stripped platform in the sandbox. **G2 divergence** |
 
-**Two questions Chapter 5 must answer and Chapter 3 deliberately left open:**
+**Still owed by Chapter 5:**
 
-1. **Who authors the manifest?** C3 forbids assuming the author is honest, but does not say
-   who writes the declaration. Candidates: the author (visible but self-serving), the user
-   (informed but unqualified), static analysis (objective but incomplete), community
-   curation. This will be asked early — §1.10's word "declared" is doing quiet work.
-2. **How does an unmodified integration run outside the process it expects?** The hardest
-   engineering question in the project, deferred on purpose so that Chapter 4 could constrain
-   the answer. **Now specified, not yet answered:** `notes/ch5_evidence_ha_coupling.md` §4
-   tabulates the nine handles reachable from the `hass` object, and any design must present
-   that surface or modify the integration — which C3's compatibility constraint forbids.
-   The coupling is one ordinary `importlib.import_module` call (`loader.py:1091` at HA
-   2026.8.3), which is also why authority here is *positional* rather than granted, and
-   therefore why relocation without scoping changes nothing — the §1.9 discharge.
+- **§1.6's defence-in-depth framing** — likelihood control plus impact control. §5.13, and the
+  only Chapter 1 promise still outstanding.
+- **The paired figure.** Ch. 4 drew today; Ch. 5 draws the fix, with TB1/TB3/TB5/TB6
+  instantiated, and the delta is the argument. `notes/decision_threat_model_diagrams.md` has
+  the bounds; `notes/ch4_figure_4_1_spec.md` §9 says to work from a copy and keep positions.
+- **Threat-to-control traceability** — §5.14 checks every Ch. 4 control against where the
+  design actually put it, rather than asserting coverage.
 
-**One finding worth using in Ch. 5's opening.** Home Assistant *does* distinguish custom
-code from built-in — `Integration.is_built_in` — and every one of its consumers is
-presentational: a warning banner, a quality-scale label, log wording, an issue-tracker URL,
-a deprecation severity. The flag is never consulted on the load path or at either dispatch
-site. The platform knows which code is untrusted and uses that knowledge to phrase a
-warning. It pairs exactly with Corno & Mannella's scope-that-lives-only-in-prose.
+**Two framings to reuse, both stronger than when they were first written:**
 
-Chapter 5 also owes two promises made earlier: the defence-in-depth framing (likelihood
-control + impact control) promised in §1.6, and the §1.9 argument that relocation without
-scoping does not constrain authority — which must be *discharged*, not repeated a third time.
+1. **The declaration always already exists and is never load-bearing** — now three findings
+   (see below), not one borrowed line.
+2. **Most of the manifest is enforced structurally, not by checking.** An integration cannot
+   ask to read `secrets.yaml` and be refused; the file is not in its mount namespace, so
+   there is nothing to ask. §5.6.2, §5.10.2 and §5.11.1 are the same idea in three places, and
+   it is what makes both the performance and the default-deny arguments work.
 
 ## Standing constraints on how this work is done
 
