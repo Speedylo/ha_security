@@ -90,11 +90,19 @@ theatre (`00_METHOD.md` §3); two divergences out of four is the evidence it was
 
 ## The three things most worth remembering
 
-1. **Their threat model presupposes a scope it cannot enforce.** Corno & Mannella define a
-   plug-in's scope as what "the plug-in documentation has to include", and all eleven of
-   their threats are defined as acting *outside its scope*. The manifest is that notion made
-   machine-readable and enforced. This is the sharpest available statement of the
-   contribution — reuse it in Chapter 5's opening and in the proposal.
+1. **The declaration always already exists, and is never load-bearing.** Three independent
+   findings, one shape — and this is the sharpest statement of the contribution available.
+   Reuse it in Chapter 5's opening, Chapter 8 and the proposal.
+
+   | Where | Information that exists | What it is spent on |
+   |---|---|---|
+   | §2.4.1 Corno & Mannella | a plug-in's "scope" | prose in the documentation |
+   | `ch5_evidence_ha_coupling.md` §5 | `is_built_in` — which code is third-party | the wording of a log line |
+   | §5.9.1 | `iot_class` — whether it reaches the cloud, declared by **83%** | a HomeKit discovery heuristic |
+
+   **The contribution is not inventing the declaration; it is making one load-bearing.** The
+   83% also kills the feasibility objection before it is raised: authors are not being asked
+   for a new behaviour, but for a more precise version of one most already perform unprompted.
 
 2. **The garbage-collector attack settles the architecture.** They demonstrate an integration
    walking `gc.get_objects()` to reach another integration's live object and read/modify its
