@@ -42,14 +42,16 @@ worth keeping into the generator script.
 the manifest) is next**; the plan and the questions each section owes are in
 `notes/ch5_working_notes.md`.
 
-**Gate G2 has fired once, on the compatibility decision.** The first pass built a proxy shim
-(R1); this pass reaches R2 — a real, stripped Home Assistant inside the sandbox, with only
-permitted effects forwarded. Two measurements taken in this pass drive it: 91% of the 1,482
-shipped integrations import the helper layer while **2** write state directly on `hass`; and
-on the Pi 5 a sandbox costs 176 MB, each additional one 136 MB, against a threshold of 809 MB
-fixed before the run. Younes confirmed the decision on 2026-08-24 **with an explicit fallback
-to R1 if implementation refutes it** — written into §5.6.5 with its trigger conditions and
-tied to Gate G3.
+**Gate G2 fired twice** — see the table below for all four outcomes. The compatibility
+divergence (§5.6) was approved by Younes on 2026-08-24 **with an explicit fallback to R1 if
+implementation refutes it**, written into §5.6.5 with trigger conditions and tied to G3.
+
+**⚠ One conflict is open and deliberately unresolved.** `01_PLAN.md` §6 says the actuator PoC
+is cut first if G3 fires. §5.8.2 derived scope from Chapter 3's verification column and found
+that cutting the actuator leaves **S5 unverifiable** and T05 — the register's joint-highest
+risk — with no demonstrated control. The plan's cut list predates the scope derivation.
+Recommendation in `notes/ch5_working_notes.md`: cut coverage-widening first instead. **This is
+Younes's call at G3**, and `01_PLAN.md` has deliberately not been edited.
 
 **3. Re-derive the API-surface measurement**, when §5.10 needs it. Which of the nine handles
 in `notes/ch5_evidence_ha_coupling.md` §4 must be mediated, which can be denied outright, and
@@ -75,7 +77,9 @@ evaluated* confinement for these integrations, and nobody has measured what conf
 pre-existing, unmodifiable extensions costs in compatibility. Weaker-sounding, far more
 defensible. `notes/ch2_working_notes.md` has the full reasoning.
 
-**Gate G2 (the four re-openable decisions) is half settled**, all in Chapter 5:
+**Gate G2 is closed: all four re-openable decisions are settled, two confirmed and two
+diverged**, all in Chapter 5. A rebuild that could only ever have confirmed would have been
+theatre (`00_METHOD.md` §3); two divergences out of four is the evidence it was not.
 
 | # | Decision | Outcome | Where |
 |---|---|---|---|
