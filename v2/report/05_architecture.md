@@ -1080,7 +1080,136 @@ Each is a genuine capability given up. The exchange is a schema whose meaning is
 its clauses, evaluable by reading it once — and that property is what F4 requires and what
 §3.7's non-goal on user comprehension deliberately does not claim beyond.
 
+## 5.11 The mediator and the channel
+
+The manifest says what an integration may do. This section says how a request reaches a
+decision, and it must satisfy T02 — per-integration identity on *every* mediated request —
+without assuming that one connection means one integration.
+
+### 5.11.1 Not everything is mediated, and that is the performance argument
+
+A design in which every capability is checked at the moment of use would be simple to
+describe and expensive to run. It is also unnecessary, because the capabilities of §5.10 are
+not enforced the same way. Three mechanisms, and only one of them costs anything per request:
+
+| Mechanism | Enforced by | Capabilities | Per-request cost |
+|---|---|---|---|
+| **Structural** | The kernel, at sandbox creation (§5.7.3) | Filesystem, process visibility, resource limits, and everything scoped to "its own" (§5.10.2) | **None** — the sandbox cannot express the request |
+| **Mediated** | The mediator, per request | Entity reads, writes and subscriptions; service calls; events; enumerating config entries | One round trip |
+| **Proxied** | The mediator, per connection | Network egress (T11's resolve-then-pin happens here) | One connection setup |
+
+**Structural enforcement is the majority of the manifest.** An integration cannot ask to read
+`secrets.yaml` and be refused; the file is not in its mount namespace, so there is nothing to
+ask. This is §5.6.2's principle again, and it is why the mediated path carries only what
+genuinely requires a decision.
+
+### 5.11.2 The channel, and why identity is not a field
+
+Each sandbox is created with **one connected Unix domain socket, inherited as a file
+descriptor**. The supervisor creates the socket pair before the sandbox exists, keeps one end
+for the mediator, and passes the other into the child. Nothing else crosses the boundary: the
+sandbox's network namespace has no route (§5.7.3), its IPC namespace is its own, and its
+mount namespace contains no path to any other socket.
+
+**Identity is therefore a property of the channel, not a claim in the message.** The mediator
+knows which integration is speaking because it created that socket for that sandbox and holds
+the other end. There is no identity field to forge, no token to steal, and no authentication
+step that could be bypassed — the question "who is asking?" is answered by *which file
+descriptor the request arrived on*.
+
+This is the design consequence of T02, and the alternative is worth stating in order to
+reject it. A protocol in which the sandbox names itself — `{"integration": "example_weather",
+…}` — asks the adversary to self-report the one fact the decision turns on. It would be
+accepted by any correct implementation and defeated by a one-line change to the integration.
+`notes/decision_audit_identity_and_trust_layer.md` reached the same conclusion for the audit
+record; the two are the same principle in different places, and §5.12 depends on it.
+
+**One sandbox, one socket, one integration.** The Chapter 3 note behind T02 warned against
+assuming a connection maps to an integration; here that mapping is not assumed but
+constructed, and the supervisor is the only party that can create it.
+
+### 5.11.3 The protocol
+
+Deliberately small. Length-prefixed JSON — a four-byte big-endian length followed by a JSON
+object — because the message rate is modest (§5.11.4), the payloads are small, and a
+human-readable wire format is worth more during evaluation than the bytes it costs. The
+channel is bidirectional and carries two shapes:
+
+| Shape | Direction | Used for |
+|---|---|---|
+| **Request / response** | sandbox → mediator → sandbox | `entity.read`, `entity.write`, `service.call`, `events.fire`, `config_entries.list` |
+| **Push** | mediator → sandbox | A declared entity's state changing; a subscribed event firing |
+
+Push is what makes §5.6.2's empty state machine work. The sandbox's local state machine holds
+only what the mediator has mirrored into it, and the mediator mirrors only what the manifest
+declares. An integration reading a declared entity therefore reads its *own local* state
+machine at full speed and pays nothing, while an undeclared entity is absent rather than
+refused.
+
+**Every response carries the clause that decided it** — the JSON pointer of §5.10.8 — so
+attribution is a property of the protocol rather than something reconstructed from logs
+afterwards.
+
+The mediator's handling of one request is five steps, in this order:
+
+1. **Identity** — from the socket the request arrived on (§5.11.2).
+2. **Manifest** — the manifest bound to that integration's content hash (§5.9.6).
+3. **Decision** — match the request against the clauses; absent a match, deny (S6).
+4. **Record** — write the decision, its clause, and the identity to the audit log (§5.12).
+5. **Act** — only now, and only using the mediator's own platform credential (S2).
+
+The order matters and is not an implementation detail: the record is written **before** the
+action, so an action that succeeds and then crashes the mediator is still attributable.
+
+### 5.11.4 What it costs
+
+N1 requires the overhead be small enough not to change how the platform is used. Measured on
+the C4 device — a Raspberry Pi 5, 20,000 iterations, `experiments/mediation_latency/`:
+
+| Shape | median | p95 | p99 |
+|---|---|---|---|
+| Request / response | **30.0 µs** | 30.4 µs | 33.9 µs |
+| Push (receive only) | 6.4 µs | 6.6 µs | 6.9 µs |
+
+The distribution is tight — p99 within 13% of the median — which matters more than the median
+for a system running unattended.
+
+Put in the terms of the workload: a sandbox can make about **33,000 mediated requests per
+second**, and a polling integration reading ten entities every thirty seconds spends **0.30 ms
+per cycle** in mediation. Against a 30-second period that is a factor of 10⁵.
+
+**This figure is a floor and is labelled as one.** It excludes evaluating the manifest and
+writing the audit record, which Chapter 6 measures on the real path. What it establishes is
+that the *channel* is not the problem — a conclusion worth having before building on it.
+
+The comparison with the rejected design is the sharper point. Under R1 (§5.6), every attribute
+access on `hass` became a round trip, and the helper layer performs many per entity update.
+Under R2 only the mediated verbs cross the boundary: the coordinator's polling loop, the
+entity base classes and the state machine all run locally at native speed. **The architecture
+choice of §5.6, made on compatibility grounds, also removes most of the traffic** — which is
+the sort of agreement between two independent criteria that suggests the decision was right
+for more than one reason.
+
+### 5.11.5 When the mediator is unavailable — N3
+
+N3 requires a stated failure mode rather than a silent one, and the answer here is largely
+structural rather than a policy that must be implemented correctly.
+
+If the mediator stops, the socket closes. The sandbox's mediated requests fail; it can reach
+nothing, because the socket was the only route out (§5.11.2). **The failure is closed by
+construction** — there is no fallback path that could be taken by mistake, and no code path in
+which an unavailable mediator results in an unmediated action.
+
+What must be implemented is the visible half: the framework reports that integrations are
+unconfined-and-stopped rather than merely quiet, because §1.6's complaint about the status quo
+is that the user's exposure is invisible. A framework that failed silently would satisfy the
+security property and reproduce the usability failure that motivated the work.
+
+The remaining decision — whether a sandbox whose mediator has died should be terminated or
+left running and failing — is deferred to Chapter 6, where it can be settled against observed
+integration behaviour rather than guessed at here.
+
 ---
 
-*Chapter in progress. §5.11 (the mediator interface and the channel) onward is next; the
-section plan is in `notes/ch5_working_notes.md`.*
+*Chapter in progress. §5.12 (identity and the audit record) onward is next; the section plan
+is in `notes/ch5_working_notes.md`.*

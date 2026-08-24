@@ -1,0 +1,25 @@
+{
+  "host": {
+    "machine": "aarch64",
+    "node": "raspberrypi",
+    "python": "3.14.7"
+  },
+  "iterations": 20000,
+  "request_response_us": {
+    "n": 19800,
+    "mean_us": 30.0,
+    "median_us": 30.0,
+    "p95_us": 30.4,
+    "p99_us": 33.9,
+    "max_us": 564.3
+  },
+  "push_us": {
+    "n": 20000,
+    "mean_us": 6.4,
+    "median_us": 6.4,
+    "p95_us": 6.6,
+    "p99_us": 6.9,
+    "max_us": 24.0
+  },
+  "note": "floor only: excludes manifest evaluation and audit write"
+}
