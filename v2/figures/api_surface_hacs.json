@@ -1,0 +1,4335 @@
+{
+  "label": "hacs-top150",
+  "n": 144,
+  "files": 4628,
+  "unparseable": 0,
+  "handles": {
+    "data": 124,
+    "bus": 51,
+    "services": 82,
+    "states": 37,
+    "config": 66,
+    "auth": 6,
+    "http": 24,
+    "config_entries": 136,
+    "loop": 80
+  },
+  "handle_share": {
+    "data": 86.1,
+    "bus": 35.4,
+    "services": 56.9,
+    "states": 25.7,
+    "config": 45.8,
+    "auth": 4.2,
+    "http": 16.7,
+    "config_entries": 94.4,
+    "loop": 55.6
+  },
+  "members": {
+    "config_entries.async_forward_entry_setups": 125,
+    "config_entries.async_unload_platforms": 104,
+    "config_entries.async_update_entry": 92,
+    "data.setdefault": 86,
+    "config_entries.async_reload": 84,
+    "services.async_register": 69,
+    "loop.async_add_executor_job": 56,
+    "data.get": 55,
+    "config_entries.async_entries": 48,
+    "loop.async_create_task": 43,
+    "config.path": 35,
+    "states.get": 33,
+    "bus.async_listen_once": 32,
+    "config_entries.async_forward_entry_unload": 26,
+    "services.async_remove": 26,
+    "config_entries.flow": 23,
+    "config_entries.async_get_entry": 21,
+    "data.pop": 18,
+    "services.async_call": 17,
+    "bus.async_listen": 17,
+    "http.register_view": 17,
+    "services.has_service": 15,
+    "config.config_dir": 13,
+    "http.async_register_static_paths": 13,
+    "bus.async_fire": 12,
+    "config.language": 11,
+    "config.time_zone": 10,
+    "config_entries.async_remove": 9,
+    "config.units": 9,
+    "states.async_all": 6,
+    "states.async_set": 6,
+    "bus.fire": 5,
+    "config.latitude": 5,
+    "config.longitude": 5,
+    "loop.call_soon_threadsafe": 4,
+    "config_entries.async_schedule_reload": 4,
+    "loop.create_task": 4,
+    "services.register": 4,
+    "services.async_services": 4,
+    "config.is_allowed_path": 3
+  },
+  "calls_services": 17,
+  "registers_services": 72,
+  "cross_component": 103,
+  "service_domains": {
+    "weather": 4,
+    "todo": 3,
+    "persistent_notification": 2,
+    "xiaomi_miot": 2,
+    "homeassistant": 1,
+    "automation": 1,
+    "spotcast": 1
+  },
+  "foreign_components": {
+    "diagnostics": 40,
+    "http": 28,
+    "repairs": 17,
+    "recorder": 15,
+    "homeassistant": 13,
+    "device_automation": 12,
+    "persistent_notification": 11,
+    "frontend": 11,
+    "lovelace": 9,
+    "mqtt": 8,
+    "websocket_api": 7,
+    "media_source": 7,
+    "ffmpeg": 4,
+    "network": 4,
+    "script": 4,
+    "person": 3,
+    "zeroconf": 3,
+    "webhook": 3,
+    "automation": 3,
+    "backup": 2,
+    "bluetooth": 2,
+    "zone": 2,
+    "application_credentials": 2,
+    "logbook": 2,
+    "group": 2,
+    "input_number": 2,
+    "input_select": 2,
+    "stream": 2,
+    "hassio": 1,
+    "private_ble_device": 1,
+    "tag": 1,
+    "file_upload": 1,
+    "mobile_app": 1,
+    "mjpeg": 1,
+    "go2rtc": 1,
+    "web_rtc": 1,
+    "integration": 1,
+    "utility_meter": 1,
+    "smartthings": 1,
+    "modbus": 1
+  },
+  "per_integration": [
+    {
+      "domain": "aarlo",
+      "files": 13,
+      "parsed": 13,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "loop.async_create_task": 1,
+        "config_entries.flow": 2,
+        "config_entries.async_entries": 1,
+        "loop.async_add_executor_job": 5,
+        "config_entries.async_forward_entry_setups": 2,
+        "services.async_register": 13,
+        "config_entries.async_unload_platforms": 2,
+        "data.pop": 3,
+        "config.config_dir": 2,
+        "data.get": 9,
+        "bus.fire": 3,
+        "config.is_allowed_path": 2,
+        "config.path": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "ffmpeg"
+      ]
+    },
+    {
+      "domain": "adaptive_lighting",
+      "files": 10,
+      "parsed": 10,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "services.async_call": 1,
+        "loop.async_create_task": 1,
+        "config_entries.flow": 2,
+        "data.setdefault": 1,
+        "bus.async_listen": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_forward_entry_unload": 1,
+        "data.pop": 1,
+        "config.latitude": 1,
+        "config.longitude": 1,
+        "config.elevation": 1,
+        "config_entries.async_entries": 1,
+        "config_entries.async_remove": 1,
+        "services.async_register": 4,
+        "states.get": 4,
+        "services._services": 1
+      },
+      "calls_services": true,
+      "registers_services": true,
+      "service_domains": {
+        "homeassistant": 1
+      },
+      "foreign_components": []
+    },
+    {
+      "domain": "afvalbeheer",
+      "files": 33,
+      "parsed": 33,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "loop.async_create_task": 2,
+        "config_entries.flow": 4,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "loop.async_add_executor_job": 2,
+        "config_entries.async_reload": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "afvalwijzer",
+      "files": 38,
+      "parsed": 38,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 1,
+        "data.setdefault": 2,
+        "loop.async_add_executor_job": 1,
+        "config.language": 2,
+        "loop.async_create_task": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "data.get": 3,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.flow": 2
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "ai_automation_suggester",
+      "files": 12,
+      "parsed": 12,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "http",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 1,
+        "data.setdefault": 2,
+        "services.async_register": 3,
+        "config_entries.async_forward_entry_setups": 1,
+        "loop.async_create_task": 1,
+        "bus.async_listen": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "http.register_view": 2
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "http"
+      ]
+    },
+    {
+      "domain": "alarmo",
+      "files": 13,
+      "parsed": 13,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "http",
+        "loop",
+        "states"
+      ],
+      "members": {
+        "http.register_view": 6,
+        "data.setdefault": 2,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_forward_entry_unload": 1,
+        "loop.async_create_task": 4,
+        "loop.call_soon_threadsafe": 2,
+        "bus.async_listen_once": 1,
+        "data.get": 2,
+        "config.path": 1,
+        "http.async_register_static_paths": 1,
+        "states.get": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "http",
+        "mqtt",
+        "websocket_api"
+      ]
+    },
+    {
+      "domain": "alexa_media",
+      "files": 19,
+      "parsed": 19,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 2,
+        "data.get": 13,
+        "config.path": 7,
+        "bus.async_listen_once": 2,
+        "bus.async_listen": 2,
+        "bus.async_fire": 5,
+        "config_entries.async_forward_entry_setups": 2,
+        "config_entries.async_update_entry": 1,
+        "loop.async_create_task": 3,
+        "config_entries.async_forward_entry_unload": 1,
+        "config_entries.flow": 10,
+        "data.pop": 1,
+        "config_entries.async_reload": 1,
+        "config.as_dict": 2,
+        "loop.async_add_executor_job": 1,
+        "config_entries.async_entries": 3,
+        "services.async_remove": 2
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "http",
+        "persistent_notification"
+      ]
+    },
+    {
+      "domain": "anker_solix",
+      "files": 44,
+      "parsed": 44,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_update_entry": 3,
+        "config_entries.async_entries": 3,
+        "data.get": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_schedule_reload": 1,
+        "config_entries.async_unload_platforms": 1,
+        "services.async_remove": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "anniversaries",
+      "files": 5,
+      "parsed": 5,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "loop.async_create_task": 2,
+        "config_entries.flow": 2,
+        "config_entries.async_remove": 1,
+        "config_entries.async_update_entry": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_forward_entry_unload": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "ariston",
+      "files": 12,
+      "parsed": 12,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "config.units": 1,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_get_entry": 2,
+        "services.async_register": 2,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "asusrouter",
+      "files": 23,
+      "parsed": 23,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "states"
+      ],
+      "members": {
+        "bus.async_listen_once": 1,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_update_entry": 1,
+        "states.get": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "audiconnect",
+      "files": 17,
+      "parsed": 17,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 2,
+        "config_entries.async_entries": 4,
+        "config_entries.async_reload": 1,
+        "services.has_service": 9,
+        "services.async_register": 8,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "services.async_remove": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "auto_backup",
+      "files": 9,
+      "parsed": 9,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "services.async_register": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "services.async_remove": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config.components": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "backup",
+        "hassio"
+      ]
+    },
+    {
+      "domain": "average",
+      "files": 3,
+      "parsed": 3,
+      "failed": 0,
+      "handles": [
+        "services"
+      ],
+      "members": {
+        "services.async_register": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "recorder"
+      ]
+    },
+    {
+      "domain": "bambu_lab",
+      "files": 34,
+      "parsed": 34,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "http",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "http.register_view": 4,
+        "bus.fire": 1,
+        "services.async_register": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 1,
+        "config.language": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "device_automation",
+        "diagnostics",
+        "homeassistant",
+        "http"
+      ]
+    },
+    {
+      "domain": "battery_notes",
+      "files": 19,
+      "parsed": 19,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_entries": 1,
+        "config_entries.async_remove": 2,
+        "config_entries.async_update_entry": 4,
+        "config_entries.async_add_subentry": 1,
+        "config_entries.async_update_subentry": 1,
+        "config_entries.async_reload": 1,
+        "services.async_register": 4,
+        "config_entries.async_get_entry": 1,
+        "data.get": 1,
+        "loop.async_create_task": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "repairs"
+      ]
+    },
+    {
+      "domain": "bermuda",
+      "files": 16,
+      "parsed": 16,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "data.get": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_schedule_reload": 1,
+        "services.async_register": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "bluetooth",
+        "private_ble_device"
+      ]
+    },
+    {
+      "domain": "better_thermostat",
+      "files": 78,
+      "parsed": 78,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "services",
+        "states"
+      ],
+      "members": {
+        "data.setdefault": 3,
+        "config_entries.async_forward_entry_setups": 2,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1,
+        "data.get": 2,
+        "config_entries.async_update_entry": 1,
+        "states.get": 8,
+        "config.units": 6,
+        "config_entries.async_get_entry": 1,
+        "services.async_call": 1
+      },
+      "calls_services": true,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "device_automation",
+        "homeassistant",
+        "recorder"
+      ]
+    },
+    {
+      "domain": "bhyve",
+      "files": 17,
+      "parsed": 17,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "bus.async_listen_once": 1,
+        "config_entries.async_unload_platforms": 1,
+        "data.get": 3,
+        "services.async_register": 2,
+        "services.has_service": 1,
+        "bus.async_listen": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "ble_monitor",
+      "files": 113,
+      "parsed": 113,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "services.async_register": 2,
+        "loop.async_create_task": 1,
+        "config_entries.flow": 2,
+        "config_entries.async_update_entry": 3,
+        "bus.async_listen": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_forward_entry_unload": 1,
+        "config_entries.async_reload": 1,
+        "loop.create_task": 3
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "blitzortung",
+      "files": 13,
+      "parsed": 13,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "states"
+      ],
+      "members": {
+        "config.units": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 5,
+        "config.latitude": 1,
+        "config.longitude": 1,
+        "states.get": 2
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "persistent_notification",
+        "person",
+        "repairs",
+        "zone"
+      ]
+    },
+    {
+      "domain": "bodymiscale",
+      "files": 13,
+      "parsed": 13,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "states"
+      ],
+      "members": {
+        "data.get": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "data.pop": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_update_entry": 1,
+        "states.get": 1,
+        "bus.async_listen": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "bosch_shc",
+      "files": 25,
+      "parsed": 25,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "config_entries.async_entries": 8,
+        "services.async_register": 4,
+        "services.has_service": 6,
+        "config.path": 5,
+        "loop.async_add_executor_job": 4,
+        "loop.async_create_task": 3,
+        "config_entries.async_reload": 1,
+        "states.get": 2,
+        "bus.async_listen_once": 5,
+        "bus.async_fire": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "services.async_remove": 3,
+        "config_entries.async_get_entry": 2,
+        "config_entries.async_update_entry": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "device_automation",
+        "diagnostics",
+        "homeassistant"
+      ]
+    },
+    {
+      "domain": "browser_mod",
+      "files": 18,
+      "parsed": 18,
+      "failed": 0,
+      "handles": [
+        "auth",
+        "config",
+        "config_entries",
+        "data",
+        "http",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "loop.async_add_executor_job": 3,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "http.async_register_static_paths": 3,
+        "config.path": 4,
+        "data.get": 8,
+        "states.async_entity_ids": 1,
+        "states.get": 2,
+        "auth.async_get_refresh_token": 1,
+        "services.async_register": 2
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "frontend",
+        "http",
+        "lovelace",
+        "websocket_api"
+      ]
+    },
+    {
+      "domain": "bureau_of_meteorology",
+      "files": 8,
+      "parsed": 8,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "data.setdefault": 2,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "chime_tts",
+      "files": 12,
+      "parsed": 12,
+      "failed": 0,
+      "handles": [
+        "config",
+        "data",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "services.async_register": 6,
+        "services.async_call": 10,
+        "loop.async_add_executor_job": 27,
+        "config.path": 7,
+        "config.external_url": 1,
+        "states.async_all": 1,
+        "services.has_service": 1,
+        "services.async_remove": 2,
+        "config.media_dirs": 3,
+        "states.get": 2
+      },
+      "calls_services": true,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "config_editor",
+      "files": 2,
+      "parsed": 2,
+      "failed": 0,
+      "handles": [
+        "config",
+        "loop"
+      ],
+      "members": {
+        "config.path": 2,
+        "loop.async_add_executor_job": 4
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "connectlife",
+      "files": 21,
+      "parsed": 21,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_get_entry": 1,
+        "services.async_register": 2
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "recorder",
+        "repairs"
+      ]
+    },
+    {
+      "domain": "custom_icons",
+      "files": 9,
+      "parsed": 9,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "http"
+      ],
+      "members": {
+        "config.path": 8,
+        "config_entries.async_entries": 9,
+        "config_entries.async_update_entry": 1,
+        "http.async_register_static_paths": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "frontend",
+        "http"
+      ]
+    },
+    {
+      "domain": "dahua",
+      "files": 16,
+      "parsed": 16,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "data.get": 1,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "bus.async_listen_once": 1,
+        "config_entries.async_forward_entry_unload": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "tag"
+      ]
+    },
+    {
+      "domain": "daikin_onecta",
+      "files": 17,
+      "parsed": 17,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "states"
+      ],
+      "members": {
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 1,
+        "states.get": 1,
+        "config_entries.async_entries": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "application_credentials",
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "dirigera_platform",
+      "files": 25,
+      "parsed": 25,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "services.async_register": 1,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "loop.async_add_executor_job": 14,
+        "config_entries.async_forward_entry_unload": 7
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "device_automation",
+        "homeassistant"
+      ]
+    },
+    {
+      "domain": "dreame_vacuum",
+      "files": 21,
+      "parsed": 21,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_update_entry": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "dreo",
+      "files": 42,
+      "parsed": 42,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "loop.async_add_executor_job": 3,
+        "loop.call_soon_threadsafe": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1,
+        "data.pop": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "dwains_dashboard",
+      "files": 27,
+      "parsed": 27,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "http",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "config.path": 39,
+        "loop.async_add_executor_job": 44,
+        "bus.async_fire": 51,
+        "bus.async_listen_once": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 2,
+        "loop.async_create_task": 2,
+        "services.async_call": 2,
+        "states.async_set": 1,
+        "states.async_remove": 4,
+        "services.async_register": 4,
+        "services.async_remove": 2,
+        "bus.async_listen": 1,
+        "http.async_register_static_paths": 1,
+        "data.get": 3,
+        "data.setdefault": 1
+      },
+      "calls_services": true,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "frontend",
+        "http",
+        "lovelace",
+        "repairs"
+      ]
+    },
+    {
+      "domain": "dwd",
+      "files": 5,
+      "parsed": 5,
+      "failed": 0,
+      "handles": [
+        "config_entries"
+      ],
+      "members": {
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "dwd_pollenflug",
+      "files": 6,
+      "parsed": 6,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "loop.async_add_executor_job": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "dwd_weather",
+      "files": 9,
+      "parsed": 9,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "config_entries.async_reload": 1,
+        "data.setdefault": 2,
+        "config_entries.async_forward_entry_setups": 2,
+        "config_entries.async_update_entry": 15,
+        "config_entries.async_forward_entry_unload": 2,
+        "data.pop": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "dyson_local",
+      "files": 16,
+      "parsed": 16,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "loop.async_add_executor_job": 9,
+        "loop.async_create_task": 1,
+        "config_entries.flow": 2,
+        "config_entries.async_forward_entry_setups": 2,
+        "bus.async_listen_once": 1,
+        "config_entries.async_unload_platforms": 2
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "zeroconf"
+      ]
+    },
+    {
+      "domain": "easee",
+      "files": 16,
+      "parsed": 16,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "services.async_register": 1,
+        "services.async_call": 1
+      },
+      "calls_services": true,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "device_automation",
+        "diagnostics",
+        "homeassistant"
+      ]
+    },
+    {
+      "domain": "ecoflow_cloud",
+      "files": 57,
+      "parsed": 57,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 2,
+        "config_entries.async_entries": 1,
+        "config_entries.async_unload": 1,
+        "config_entries.async_remove": 1,
+        "loop.async_add_executor_job": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "mqtt"
+      ]
+    },
+    {
+      "domain": "electrolux_status",
+      "files": 19,
+      "parsed": 19,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "states"
+      ],
+      "members": {
+        "data.get": 1,
+        "data.setdefault": 1,
+        "bus.async_listen_once": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1,
+        "data.pop": 1,
+        "config.path": 1,
+        "states.get": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics",
+        "persistent_notification"
+      ]
+    },
+    {
+      "domain": "energidataservice",
+      "files": 27,
+      "parsed": 27,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "loop.async_create_task": 1,
+        "config_entries.flow": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_forward_entry_unload": 1,
+        "config.time_zone": 2,
+        "config.currency": 7,
+        "loop.async_add_executor_job": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "epex_spot",
+      "files": 24,
+      "parsed": 24,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "services.async_register": 3,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "eufy_security",
+      "files": 31,
+      "parsed": 31,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "services.async_register": 3,
+        "data.get": 1,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "ffmpeg",
+        "persistent_notification"
+      ]
+    },
+    {
+      "domain": "evcc_intg",
+      "files": 16,
+      "parsed": 16,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 2,
+        "data.setdefault": 1,
+        "config.config_dir": 1,
+        "loop.async_add_executor_job": 3,
+        "config_entries.async_forward_entry_setups": 1,
+        "services.async_register": 6,
+        "bus.async_listen_once": 1,
+        "config_entries.async_unload_platforms": 1,
+        "services.async_remove": 6,
+        "config_entries.async_reload": 1,
+        "config.language": 2,
+        "data.get": 4
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "f1_sensor",
+      "files": 114,
+      "parsed": 114,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "data.get": 26,
+        "data.setdefault": 101,
+        "services.async_register": 2,
+        "loop.create_task": 1,
+        "loop.async_create_task": 2,
+        "config_entries.async_reload": 24,
+        "bus.async_listen": 12,
+        "config_entries.async_forward_entry_setups": 16,
+        "config_entries.async_unload_platforms": 6,
+        "services.has_service": 2,
+        "services.async_remove": 1,
+        "config_entries.async_get_entry": 2,
+        "config_entries.async_update_entry": 1,
+        "config_entries.flow": 7,
+        "config.path": 7,
+        "loop.async_add_executor_job": 2,
+        "loop.call_soon": 1,
+        "states.get": 49,
+        "services.async_call": 5,
+        "config.units": 2,
+        "config.language": 3,
+        "states.async_set": 7,
+        "loop.get_exception_handler": 1,
+        "loop.set_exception_handler": 2,
+        "bus.async_fire": 8
+      },
+      "calls_services": true,
+      "registers_services": true,
+      "service_domains": {
+        "weather": 4
+      },
+      "foreign_components": [
+        "device_automation",
+        "diagnostics",
+        "homeassistant",
+        "http",
+        "logbook",
+        "lovelace",
+        "repairs"
+      ]
+    },
+    {
+      "domain": "flightradar24",
+      "files": 15,
+      "parsed": 15,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "bus.async_listen_once": 1,
+        "loop.async_add_executor_job": 2,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "data.get": 1,
+        "config_entries.async_reload": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "http"
+      ]
+    },
+    {
+      "domain": "fontawesome",
+      "files": 2,
+      "parsed": 2,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "http"
+      ],
+      "members": {
+        "http.async_register_static_paths": 3,
+        "config.path": 5,
+        "http.register_view": 2,
+        "config_entries.async_update_entry": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "frontend",
+        "http"
+      ]
+    },
+    {
+      "domain": "frigate",
+      "files": 19,
+      "parsed": 19,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "http",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_update_entry": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "services.async_register": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_entries": 2,
+        "http.register_view": 12,
+        "data.get": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics",
+        "http",
+        "media_source",
+        "mqtt",
+        "websocket_api"
+      ]
+    },
+    {
+      "domain": "fusion_solar",
+      "files": 18,
+      "parsed": 18,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "data.setdefault": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "loop.async_add_executor_job": 5
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "gardena_smart_system",
+      "files": 27,
+      "parsed": 27,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_entries": 1,
+        "config_entries.async_reload": 1,
+        "services.async_register": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "garmin_connect",
+      "files": 7,
+      "parsed": 7,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 1,
+        "data.setdefault": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "services.has_service": 1,
+        "data.get": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_entries": 2,
+        "states.get": 2,
+        "config.time_zone": 1,
+        "config.path": 3,
+        "config.is_allowed_path": 1,
+        "loop.async_add_executor_job": 1,
+        "services.async_register": 9,
+        "services.async_remove": 9
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "google_home",
+      "files": 11,
+      "parsed": 11,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "data.get": 1,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "govee",
+      "files": 46,
+      "parsed": 46,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "services.has_service": 1,
+        "data.get": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_entries": 2,
+        "data.pop": 1,
+        "config_entries.async_reload": 1,
+        "services.async_register": 2,
+        "services.async_remove": 2
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "bluetooth",
+        "diagnostics",
+        "repairs"
+      ]
+    },
+    {
+      "domain": "gree",
+      "files": 11,
+      "parsed": 11,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "states"
+      ],
+      "members": {
+        "states.async_all": 1,
+        "loop.async_create_task": 1,
+        "config_entries.flow": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "config.units": 2,
+        "data.get": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "network"
+      ]
+    },
+    {
+      "domain": "ha_washdata",
+      "files": 46,
+      "parsed": 46,
+      "failed": 0,
+      "handles": [
+        "auth",
+        "config",
+        "config_entries",
+        "data",
+        "http",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 11,
+        "config_entries.async_entries": 3,
+        "data.get": 33,
+        "data.setdefault": 4,
+        "config_entries.async_forward_entry_setups": 1,
+        "services.has_service": 13,
+        "services.async_register": 13,
+        "loop.async_add_executor_job": 47,
+        "config_entries.async_get_entry": 3,
+        "config.path": 1,
+        "config.is_allowed_path": 2,
+        "config_entries.async_unload_platforms": 1,
+        "loop.async_create_task": 14,
+        "auth.async_get_users": 1,
+        "http.async_register_static_paths": 1,
+        "data.pop": 5
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "frontend",
+        "http",
+        "lovelace",
+        "recorder"
+      ]
+    },
+    {
+      "domain": "hacs",
+      "files": 59,
+      "parsed": 59,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "http",
+        "loop"
+      ],
+      "members": {
+        "loop.async_create_task": 1,
+        "config_entries.async_remove": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "data.get": 18,
+        "config_entries.async_unload_platforms": 1,
+        "data.pop": 2,
+        "http.async_register_static_paths": 1,
+        "http.register_static_path": 1,
+        "data.setdefault": 1,
+        "loop.async_add_executor_job": 3
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics",
+        "frontend",
+        "http",
+        "lovelace",
+        "persistent_notification",
+        "repairs"
+      ]
+    },
+    {
+      "domain": "haghs",
+      "files": 6,
+      "parsed": 6,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "loop.async_add_executor_job": 1,
+        "data.setdefault": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 1,
+        "config.path": 1,
+        "config.config_dir": 1,
+        "bus.async_listen_once": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "repairs"
+      ]
+    },
+    {
+      "domain": "hass_agent",
+      "files": 11,
+      "parsed": 11,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_forward_entry_setups": 3,
+        "config_entries.async_forward_entry_unload": 3,
+        "data.get": 7,
+        "bus.async_listen": 8,
+        "data.setdefault": 2,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_entries": 3,
+        "loop.async_create_task": 1,
+        "config_entries.flow": 2,
+        "bus.async_fire": 1,
+        "services.async_register": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "device_automation",
+        "homeassistant",
+        "media_source",
+        "mqtt",
+        "repairs"
+      ]
+    },
+    {
+      "domain": "hikvision_next",
+      "files": 18,
+      "parsed": 18,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "http",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_forward_entry_setups": 1,
+        "http.register_view": 1,
+        "config_entries.async_forward_entry_unload": 1,
+        "config_entries.async_entries": 1,
+        "config_entries.async_update_entry": 2,
+        "config_entries.async_get_entry": 2,
+        "services.async_register": 2
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "http",
+        "network"
+      ]
+    },
+    {
+      "domain": "home_connect_alt",
+      "files": 15,
+      "parsed": 15,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_reload": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_entries": 1,
+        "config_entries.async_unload_platforms": 1,
+        "services.async_register": 8,
+        "bus.async_fire": 2,
+        "config.language": 1,
+        "config.country": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "application_credentials",
+        "device_automation",
+        "homeassistant"
+      ]
+    },
+    {
+      "domain": "homeconnect_ws",
+      "files": 23,
+      "parsed": 23,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "services.async_register": 3,
+        "config.path": 2,
+        "loop.async_add_executor_job": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_get_entry": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics",
+        "file_upload"
+      ]
+    },
+    {
+      "domain": "homematicip_local",
+      "files": 62,
+      "parsed": 62,
+      "failed": 0,
+      "handles": [
+        "auth",
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "http",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_entries": 3,
+        "data.setdefault": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "data.get": 13,
+        "http.register_view": 1,
+        "bus.async_listen_once": 2,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_update_entry": 6,
+        "config_entries.async_schedule_reload": 1,
+        "services.async_register": 17,
+        "services.async_remove": 1,
+        "loop.async_add_executor_job": 2,
+        "config_entries.async_get_entry": 8,
+        "config.language": 9,
+        "loop.async_create_task": 1,
+        "auth.async_get_user": 1,
+        "http.async_register_static_paths": 2,
+        "data.pop": 2,
+        "config_entries.async_loaded_entries": 1,
+        "config.config_dir": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "backup",
+        "device_automation",
+        "diagnostics",
+        "homeassistant",
+        "http",
+        "logbook",
+        "mqtt",
+        "repairs",
+        "websocket_api"
+      ]
+    },
+    {
+      "domain": "hon",
+      "files": 16,
+      "parsed": 16,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "services",
+        "states"
+      ],
+      "members": {
+        "config.language": 2,
+        "states.get": 1,
+        "states.async_set": 1,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config.time_zone": 3,
+        "bus.async_fire": 1,
+        "services.async_register": 1,
+        "config_entries.async_unload_platforms": 1,
+        "data.get": 1,
+        "services.async_remove": 1,
+        "data.pop": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "persistent_notification"
+      ]
+    },
+    {
+      "domain": "huesyncbox",
+      "files": 11,
+      "parsed": 11,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 3,
+        "config_entries.async_get_entry": 1,
+        "services.async_register": 2
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "icloud3",
+      "files": 69,
+      "parsed": 69,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "data.get": 1,
+        "data.setdefault": 1,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_forward_entry_unload": 2,
+        "config_entries.async_unload_platforms": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "lovelace",
+        "mobile_app"
+      ]
+    },
+    {
+      "domain": "iphonedetect",
+      "files": 6,
+      "parsed": 6,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_entries": 1,
+        "loop.async_add_executor_job": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "network"
+      ]
+    },
+    {
+      "domain": "kia_uvo",
+      "files": 18,
+      "parsed": 18,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 1,
+        "services.async_register": 1,
+        "services.async_remove": 1,
+        "config_entries.async_get_entry": 2,
+        "loop.async_add_executor_job": 2,
+        "config.language": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "knmi",
+      "files": 9,
+      "parsed": 9,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_update_entry": 1,
+        "config.location_name": 3
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "landroid_cloud",
+      "files": 21,
+      "parsed": 21,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "services",
+        "states"
+      ],
+      "members": {
+        "config_entries.async_entries": 2,
+        "config_entries.async_update_entry": 1,
+        "config.time_zone": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "states.get": 1,
+        "services.async_call": 1
+      },
+      "calls_services": true,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "device_automation",
+        "diagnostics",
+        "homeassistant"
+      ]
+    },
+    {
+      "domain": "llmvision",
+      "files": 9,
+      "parsed": 9,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "http",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "loop.async_add_executor_job": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config.path": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 4,
+        "config_entries.async_entries": 5,
+        "data.get": 1,
+        "loop.async_create_task": 1,
+        "config_entries.async_remove": 1,
+        "states.get": 4,
+        "states.async_set": 1,
+        "services.register": 6,
+        "http.register_view": 3
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "http",
+        "media_source"
+      ]
+    },
+    {
+      "domain": "localtuya",
+      "files": 18,
+      "parsed": 18,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_entries": 3,
+        "config_entries.async_reload": 2,
+        "config_entries.async_update_entry": 4,
+        "services.async_register": 1,
+        "bus.async_listen_once": 1,
+        "config_entries.async_remove": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "loop.async_create_task": 1,
+        "config_entries.async_forward_entry_unload": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "mass_queue",
+      "files": 9,
+      "parsed": 9,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "bus.async_listen_once": 1,
+        "config_entries.async_unload_platforms": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "loop.async_create_task": 1,
+        "config_entries.async_reload": 1,
+        "services.async_register": 21,
+        "config_entries.async_get_entry": 12,
+        "config_entries.async_entries": 1,
+        "states.get": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "material_symbols",
+      "files": 3,
+      "parsed": 3,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "http"
+      ],
+      "members": {
+        "http.async_register_static_paths": 2,
+        "config.path": 2,
+        "http.register_view": 1,
+        "config_entries.async_update_entry": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "frontend",
+        "http"
+      ]
+    },
+    {
+      "domain": "mbapi2020",
+      "files": 38,
+      "parsed": 38,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 2,
+        "loop.async_add_executor_job": 5,
+        "loop.create_task": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1,
+        "services.async_register": 1,
+        "services.async_remove": 26
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics",
+        "repairs"
+      ]
+    },
+    {
+      "domain": "meross_cloud",
+      "files": 10,
+      "parsed": 10,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_forward_entry_unload": 1,
+        "loop.async_create_task": 3,
+        "config_entries.flow": 2,
+        "services.async_call": 2
+      },
+      "calls_services": true,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "meross_lan",
+      "files": 55,
+      "parsed": 55,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "bus.async_listen_once": 2,
+        "config_entries.flow": 2,
+        "config_entries.async_update_entry": 2,
+        "config_entries.async_add": 1,
+        "loop.create_future": 1,
+        "data.pop": 1,
+        "config_entries.async_entries": 1,
+        "services.async_register": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config.path": 1,
+        "loop.async_add_executor_job": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "mqtt",
+        "recorder",
+        "repairs"
+      ]
+    },
+    {
+      "domain": "midea_ac",
+      "files": 14,
+      "parsed": 14,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_update_entry": 6,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "midea_ac_lan",
+      "files": 19,
+      "parsed": 19,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 2,
+        "config_entries.async_reload": 1,
+        "services.async_register": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 5,
+        "loop.async_add_executor_job": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "midea_dehumidifier_lan",
+      "files": 13,
+      "parsed": 13,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "network"
+      ]
+    },
+    {
+      "domain": "mitsubishi_wf_rac",
+      "files": 23,
+      "parsed": 23,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 5,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "config.time_zone": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "moonraker",
+      "files": 12,
+      "parsed": 12,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "data.get": 3,
+        "data.setdefault": 1,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "services.async_register": 1,
+        "config_entries.async_forward_entry_unload": 1,
+        "config_entries.async_reload": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "mjpeg"
+      ]
+    },
+    {
+      "domain": "multiscrape",
+      "files": 20,
+      "parsed": 20,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "services.async_register": 4,
+        "bus.async_listen_once": 2,
+        "config.config_dir": 1,
+        "loop.async_add_executor_job": 3
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "myenergi",
+      "files": 10,
+      "parsed": 10,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "data.get": 1,
+        "data.setdefault": 1,
+        "loop.async_add_executor_job": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_forward_entry_unload": 1,
+        "config_entries.async_reload": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "mypyllant",
+      "files": 15,
+      "parsed": 15,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "services.async_register": 3,
+        "config_entries.async_unload_platforms": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "recorder"
+      ]
+    },
+    {
+      "domain": "myskoda",
+      "files": 19,
+      "parsed": 19,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 10,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_entries": 1,
+        "services.async_register": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "nest_protect",
+      "files": 38,
+      "parsed": 38,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 2,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "data.get": 5,
+        "config_entries.async_unload_platforms": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "network_scanner",
+      "files": 4,
+      "parsed": 4,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_forward_entry_unload": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "nodered",
+      "files": 17,
+      "parsed": 17,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "config_entries.async_entries": 2,
+        "config_entries.async_update_entry": 1,
+        "loop.call_soon_threadsafe": 1,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "bus.async_fire": 2,
+        "config_entries.async_forward_entry_unload": 1,
+        "data.pop": 1,
+        "config_entries.async_reload": 1,
+        "loop.create_future": 1,
+        "loop.async_create_task": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "device_automation",
+        "webhook",
+        "websocket_api"
+      ]
+    },
+    {
+      "domain": "nordpool",
+      "files": 8,
+      "parsed": 8,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "data.pop": 1,
+        "services.async_register": 5,
+        "config.time_zone": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "nws_alerts",
+      "files": 5,
+      "parsed": 5,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "states"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_update_entry": 4,
+        "states.get": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "states.async_entity_ids": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "ocpp",
+      "files": 13,
+      "parsed": 13,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "services",
+        "states"
+      ],
+      "members": {
+        "data.get": 1,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "states.get": 1,
+        "config_entries.async_update_entry": 2,
+        "services.async_services_for_domain": 1,
+        "services.async_remove": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "persistent_notification"
+      ]
+    },
+    {
+      "domain": "octopus_energy",
+      "files": 186,
+      "parsed": 186,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "services",
+        "states"
+      ],
+      "members": {
+        "config_entries.async_entries": 7,
+        "config_entries.async_update_entry": 1,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 3,
+        "bus.async_listen_once": 1,
+        "config_entries.async_reload": 3,
+        "config_entries.async_unload_platforms": 3,
+        "services.register": 1,
+        "states.async_all": 2,
+        "bus.async_fire": 4
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics",
+        "recorder"
+      ]
+    },
+    {
+      "domain": "open_meteo_solar_forecast",
+      "files": 9,
+      "parsed": 9,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "loop.async_add_executor_job": 1,
+        "data.setdefault": 1,
+        "config.latitude": 1,
+        "config.longitude": 1,
+        "config_entries.async_update_entry": 1,
+        "services.async_register": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "openplantbook",
+      "files": 6,
+      "parsed": 6,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 2,
+        "config.language": 1,
+        "config.path": 1,
+        "loop.async_add_executor_job": 3,
+        "services.async_register": 4,
+        "services.async_call": 3,
+        "services.async_remove": 4,
+        "config.country": 1,
+        "config.longitude": 1,
+        "config.latitude": 1
+      },
+      "calls_services": true,
+      "registers_services": true,
+      "service_domains": {
+        "persistent_notification": 2
+      },
+      "foreign_components": [
+        "persistent_notification",
+        "recorder"
+      ]
+    },
+    {
+      "domain": "panasonic_cc",
+      "files": 41,
+      "parsed": 41,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 2,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 4,
+        "config_entries.async_unload_platforms": 4
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics",
+        "persistent_notification"
+      ]
+    },
+    {
+      "domain": "petkit",
+      "files": 29,
+      "parsed": 29,
+      "failed": 0,
+      "handles": [
+        "auth",
+        "config",
+        "config_entries",
+        "data",
+        "http",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_entries": 1,
+        "http.register_view": 4,
+        "config.country": 1,
+        "config.time_zone": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "services.has_service": 1,
+        "services.async_register": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 2,
+        "config_entries.async_update_entry": 2,
+        "data.setdefault": 3,
+        "auth.async_validate_access_token": 1,
+        "data.get": 5,
+        "auth.async_get_refresh_token": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics",
+        "go2rtc",
+        "http",
+        "media_source",
+        "persistent_notification",
+        "web_rtc"
+      ]
+    },
+    {
+      "domain": "philips_airpurifier_coap",
+      "files": 18,
+      "parsed": 18,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "http",
+        "loop"
+      ],
+      "members": {
+        "http.async_register_static_paths": 2,
+        "config.path": 2,
+        "http.register_view": 1,
+        "loop.async_add_executor_job": 3,
+        "config_entries.async_update_entry": 1,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_forward_entry_unload": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "frontend",
+        "http"
+      ]
+    },
+    {
+      "domain": "pirateweather",
+      "files": 7,
+      "parsed": 7,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "config.latitude": 1,
+        "config.longitude": 1,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 3,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 3,
+        "loop.async_create_task": 2,
+        "config_entries.flow": 4
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "powercalc",
+      "files": 82,
+      "parsed": 82,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "bus.async_listen_once": 3,
+        "services.async_register": 3,
+        "config_entries.async_entries": 7,
+        "config_entries.async_reload": 5,
+        "loop.async_create_task": 5,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries._entries": 2,
+        "config_entries.async_remove": 1,
+        "services.async_call": 1,
+        "config_entries.async_update_entry": 8,
+        "bus.async_listen": 1,
+        "config_entries.async_get_entry": 5,
+        "states.get": 6,
+        "data.get": 4,
+        "config.config_dir": 4,
+        "config_entries.async_entry_for_domain_unique_id": 2,
+        "config_entries.flow": 2,
+        "config_entries.options": 2,
+        "states.async_all": 1,
+        "config.currency": 1,
+        "config_entries.async_add": 1
+      },
+      "calls_services": true,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "group",
+        "integration",
+        "repairs",
+        "utility_meter"
+      ]
+    },
+    {
+      "domain": "presence_simulation",
+      "files": 7,
+      "parsed": 7,
+      "failed": 0,
+      "handles": [
+        "auth",
+        "bus",
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "services.async_register": 3,
+        "bus.async_listen_once": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "auth.async_get_users": 1,
+        "auth.async_create_system_user": 1,
+        "data.get": 1,
+        "config_entries.async_forward_entry_unload": 1,
+        "config_entries.async_entries": 1,
+        "auth.async_remove_user": 1,
+        "services.async_remove": 3,
+        "config_entries.async_update_entry": 4
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "recorder"
+      ]
+    },
+    {
+      "domain": "pyscript",
+      "files": 28,
+      "parsed": 28,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "loop.async_create_task": 1,
+        "config_entries.flow": 4,
+        "states.async_set": 2,
+        "data.setdefault": 2,
+        "bus.listen_once": 2,
+        "loop.call_soon_threadsafe": 1,
+        "loop.async_add_executor_job": 7,
+        "config.path": 3,
+        "services.async_register": 3,
+        "states.async_remove": 1,
+        "bus.async_listen": 3,
+        "config_entries.async_update_entry": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "webhook"
+      ]
+    },
+    {
+      "domain": "remote_homeassistant",
+      "files": 7,
+      "parsed": 7,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "http",
+        "loop"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 2,
+        "http.register_view": 1,
+        "data.setdefault": 1,
+        "config_entries.async_entries": 1,
+        "loop.async_create_task": 5,
+        "config_entries.flow": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_forward_entry_unload": 1,
+        "config_entries.async_reload": 1,
+        "config.location_name": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "http"
+      ]
+    },
+    {
+      "domain": "samsungtv_smart",
+      "files": 14,
+      "parsed": 14,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "http",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "loop.async_create_task": 1,
+        "services.async_call": 1,
+        "config.path": 4,
+        "config_entries.async_update_entry": 5,
+        "data.get": 1,
+        "config_entries.async_entries": 5,
+        "http.async_register_static_paths": 1,
+        "data.setdefault": 1,
+        "loop.async_add_executor_job": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "data.pop": 1,
+        "states.get": 1,
+        "services.async_services": 1
+      },
+      "calls_services": true,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics",
+        "http",
+        "smartthings"
+      ]
+    },
+    {
+      "domain": "scheduler",
+      "files": 8,
+      "parsed": 8,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "http",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "http.register_view": 4,
+        "data.setdefault": 1,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "services.async_register": 7,
+        "config_entries.async_forward_entry_unload": 1,
+        "loop.async_create_task": 2,
+        "bus.async_listen_once": 2,
+        "states.get": 4,
+        "services.has_service": 1,
+        "data.get": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "http",
+        "websocket_api"
+      ]
+    },
+    {
+      "domain": "sigen",
+      "files": 17,
+      "parsed": 17,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics",
+        "recorder"
+      ]
+    },
+    {
+      "domain": "smartthinq_sensors",
+      "files": 41,
+      "parsed": 41,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "states"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 2,
+        "loop.async_create_task": 1,
+        "config_entries.flow": 2,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 2,
+        "data.pop": 2,
+        "config_entries.async_reload": 1,
+        "bus.async_listen_once": 1,
+        "data.get": 2,
+        "config_entries.async_unload_platforms": 1,
+        "config.units": 2,
+        "states.get": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "solaredge_modbus",
+      "files": 7,
+      "parsed": 7,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_entry_for_domain_unique_id": 1,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_entries": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "solaredge_modbus_multi",
+      "files": 14,
+      "parsed": 14,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_update_entry": 2,
+        "config_entries.async_get_entry": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics",
+        "repairs"
+      ]
+    },
+    {
+      "domain": "solarman",
+      "files": 8,
+      "parsed": 8,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "data.get": 1,
+        "services.async_register": 4,
+        "config.path": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "solax_modbus",
+      "files": 34,
+      "parsed": 34,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_reload": 1,
+        "data.get": 9,
+        "bus.async_listen_once": 1,
+        "services.async_register": 2,
+        "config_entries.async_update_entry": 2,
+        "config_entries.async_unload_platforms": 2,
+        "loop.async_add_executor_job": 1,
+        "config_entries.async_entries": 1,
+        "data.setdefault": 4,
+        "bus.async_listen": 2
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "modbus"
+      ]
+    },
+    {
+      "domain": "solcast_solar",
+      "files": 31,
+      "parsed": 31,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "config.time_zone": 2,
+        "config_entries.async_update_entry": 3,
+        "config.path": 2,
+        "config.config_dir": 8,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_get_entry": 2,
+        "states.get": 1,
+        "config.components": 1,
+        "services.async_register": 2,
+        "services.async_services_for_domain": 1,
+        "services.async_remove": 1,
+        "states.async_all": 1,
+        "services.async_call": 1,
+        "loop.async_add_executor_job": 1
+      },
+      "calls_services": true,
+      "registers_services": true,
+      "service_domains": {
+        "automation": 1
+      },
+      "foreign_components": [
+        "diagnostics",
+        "recorder",
+        "repairs"
+      ]
+    },
+    {
+      "domain": "sonoff",
+      "files": 26,
+      "parsed": 26,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "http",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_entries": 1,
+        "config_entries.flow": 2,
+        "loop.async_create_task": 1,
+        "services.async_register": 1,
+        "config_entries.async_update_entry": 1,
+        "bus.async_listen_once": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1,
+        "loop.async_add_executor_job": 3,
+        "http.register_view": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "http",
+        "media_source",
+        "script"
+      ]
+    },
+    {
+      "domain": "spook",
+      "files": 219,
+      "parsed": 219,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "loop.async_add_executor_job": 2,
+        "data.get": 4,
+        "bus.async_listen_once": 4,
+        "config_entries.async_forward_entry_setups": 2,
+        "config_entries.async_unload_platforms": 2,
+        "config.config_dir": 3,
+        "bus.async_listen": 3,
+        "states.async_entity_ids": 48,
+        "services.has_service": 1,
+        "services.async_services": 1,
+        "services.async_call": 2,
+        "states.get": 2,
+        "config.components": 2,
+        "config.path": 2,
+        "config_entries.async_reload": 1,
+        "config_entries.async_update_entry": 1
+      },
+      "calls_services": true,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "alert",
+        "automation",
+        "blueprint",
+        "cloud",
+        "energy",
+        "group",
+        "homeassistant",
+        "input_number",
+        "input_select",
+        "lovelace",
+        "person",
+        "proximity",
+        "recorder",
+        "repairs",
+        "script",
+        "timer",
+        "zone"
+      ]
+    },
+    {
+      "domain": "spotcast",
+      "files": 9,
+      "parsed": 9,
+      "failed": 0,
+      "handles": [
+        "config",
+        "data",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "services.async_call": 1,
+        "config.path": 1,
+        "loop.async_add_job": 3,
+        "services.register": 1,
+        "states.get": 1
+      },
+      "calls_services": true,
+      "registers_services": true,
+      "service_domains": {
+        "spotcast": 1
+      },
+      "foreign_components": [
+        "cast",
+        "spotify"
+      ]
+    },
+    {
+      "domain": "switch_manager",
+      "files": 9,
+      "parsed": 9,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "data",
+        "http",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "loop.async_add_executor_job": 4,
+        "services.register": 2,
+        "bus.async_listen": 1,
+        "config.path": 5,
+        "http.async_register_static_paths": 2,
+        "loop.run_in_executor": 2
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "frontend",
+        "http",
+        "mqtt",
+        "websocket_api"
+      ]
+    },
+    {
+      "domain": "tapo",
+      "files": 35,
+      "parsed": 35,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "data.setdefault": 2,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_forward_entry_setups": 2,
+        "config_entries.async_reload": 3,
+        "data.get": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "tapo_control",
+      "files": 16,
+      "parsed": 16,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "data.setdefault": 2,
+        "loop.async_add_executor_job": 31,
+        "config_entries.async_update_entry": 11,
+        "config_entries.async_unload_platforms": 1,
+        "data.get": 3,
+        "loop.async_create_task": 2,
+        "config_entries.async_forward_entry_setups": 2,
+        "bus.async_listen_once": 2,
+        "config_entries.async_entries": 2,
+        "config_entries.async_get_entry": 1,
+        "bus.fire": 1,
+        "config_entries.async_forward_entry_unload": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "ffmpeg",
+        "media_source",
+        "onvif",
+        "stream"
+      ]
+    },
+    {
+      "domain": "teamtracker",
+      "files": 31,
+      "parsed": 31,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "loop.async_add_executor_job": 4,
+        "config_entries.async_update_entry": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "services.async_register": 2,
+        "config_entries.async_forward_entry_unload": 1,
+        "data.get": 5,
+        "services.async_remove": 1,
+        "config_entries.async_reload": 1,
+        "config.path": 1,
+        "data.keys": 1,
+        "data.setdefault": 1,
+        "config.language": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "tesla_custom",
+      "files": 19,
+      "parsed": 19,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 4,
+        "config_entries.async_entries": 8,
+        "loop.async_create_task": 1,
+        "config_entries.flow": 2,
+        "data.setdefault": 2,
+        "loop.async_add_executor_job": 2,
+        "bus.async_listen_once": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "data.get": 1,
+        "services.async_register": 2,
+        "services.async_remove": 2
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "mqtt"
+      ]
+    },
+    {
+      "domain": "thermal_comfort",
+      "files": 4,
+      "parsed": 4,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "states"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_update_entry": 2,
+        "loop.async_create_task": 5,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1,
+        "bus.async_fire": 1,
+        "states.get": 4,
+        "config.units": 2
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "tplink_deco",
+      "files": 13,
+      "parsed": 13,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "services"
+      ],
+      "members": {
+        "data.get": 2,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "services.async_register": 3,
+        "config_entries.async_forward_entry_unload": 1,
+        "services.async_remove": 2,
+        "config_entries.async_reload": 1,
+        "config_entries.async_update_entry": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "tplink_router",
+      "files": 9,
+      "parsed": 9,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 1,
+        "loop.async_add_executor_job": 3,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "services.has_service": 2,
+        "services.async_remove": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_get_entry": 1,
+        "services.async_register": 1,
+        "bus.fire": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "truenas",
+      "files": 15,
+      "parsed": 15,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "config_entries.async_reload": 2,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_entries": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics"
+      ]
+    },
+    {
+      "domain": "ui_lovelace_minimalist",
+      "files": 8,
+      "parsed": 8,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "loop.async_create_task": 1,
+        "config_entries.async_remove": 1,
+        "data.get": 2,
+        "config.path": 5,
+        "loop.async_add_executor_job": 1,
+        "config_entries.async_reload": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "frontend",
+        "http",
+        "lovelace"
+      ]
+    },
+    {
+      "domain": "versatile_thermostat",
+      "files": 50,
+      "parsed": 50,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "states"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "bus.async_listen_once": 1,
+        "config_entries.async_entries": 1,
+        "config_entries.async_reload": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 1,
+        "bus.fire": 1,
+        "states.get": 1,
+        "config.units": 4
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "input_boolean",
+        "input_datetime",
+        "input_number",
+        "input_select",
+        "person",
+        "recorder"
+      ]
+    },
+    {
+      "domain": "victron",
+      "files": 12,
+      "parsed": 12,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "data.setdefault": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "volkswagencarnet",
+      "files": 14,
+      "parsed": 14,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "services.async_remove": 1,
+        "bus.async_listen_once": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_update_entry": 2,
+        "loop.async_create_task": 1,
+        "data.setdefault": 1,
+        "services.async_register": 1,
+        "config_entries.async_entries": 1,
+        "config_entries.async_forward_entry_unload": 1,
+        "config_entries.async_reload": 1,
+        "config.path": 2,
+        "config_entries.async_get_entry": 1,
+        "data.get": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "waste_collection_schedule",
+      "files": 1015,
+      "parsed": 1015,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "loop.async_add_executor_job": 4,
+        "data.setdefault": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "services.async_register": 2,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "watchman",
+      "files": 18,
+      "parsed": 18,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "config.path": 8,
+        "loop.async_add_executor_job": 4,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "bus.async_listen": 1,
+        "config_entries.async_reload": 1,
+        "services.has_service": 2,
+        "services.async_remove": 1,
+        "config_entries.async_unload_platforms": 1,
+        "data.pop": 2,
+        "config_entries.async_update_entry": 2,
+        "states.get": 3,
+        "config_entries.async_get_entry": 2,
+        "config.config_dir": 1,
+        "config.time_zone": 1,
+        "services.async_call": 1,
+        "services.async_services": 1
+      },
+      "calls_services": true,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "automation",
+        "homeassistant"
+      ]
+    },
+    {
+      "domain": "webrtc",
+      "files": 4,
+      "parsed": 4,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "data",
+        "http",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "http.register_view": 2,
+        "loop.async_add_executor_job": 2,
+        "services.async_register": 2,
+        "bus.async_listen_once": 1,
+        "states.get": 1,
+        "data.get": 2,
+        "config.path": 2,
+        "config.config_dir": 1,
+        "http.async_register_static_paths": 1,
+        "http.register_static_path": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "frontend",
+        "http",
+        "lovelace"
+      ]
+    },
+    {
+      "domain": "wyzeapi",
+      "files": 19,
+      "parsed": 19,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "config_entries.async_entries": 3,
+        "config_entries.async_update_entry": 3,
+        "loop.async_create_task": 1,
+        "config_entries.flow": 2,
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "automation",
+        "script"
+      ]
+    },
+    {
+      "domain": "xiaomi_cloud_map_extractor",
+      "files": 31,
+      "parsed": 31,
+      "failed": 0,
+      "handles": [],
+      "members": {},
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "xiaomi_gateway3",
+      "files": 51,
+      "parsed": 51,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop"
+      ],
+      "members": {
+        "loop.async_add_executor_job": 3,
+        "config.config_dir": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "bus.async_listen_once": 2,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_update_entry": 2,
+        "data.get": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "device_automation",
+        "homeassistant",
+        "script"
+      ]
+    },
+    {
+      "domain": "xiaomi_home",
+      "files": 35,
+      "parsed": 35,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "webhook",
+        "zeroconf"
+      ]
+    },
+    {
+      "domain": "xiaomi_miot",
+      "files": 42,
+      "parsed": 42,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 19,
+        "loop.async_add_executor_job": 4,
+        "data.get": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 2,
+        "services.async_register": 3,
+        "config_entries.async_entries": 1,
+        "bus.async_listen": 1,
+        "config_entries.async_update_entry": 1,
+        "services.async_call": 2,
+        "config.time_zone": 3,
+        "config.language": 1
+      },
+      "calls_services": true,
+      "registers_services": true,
+      "service_domains": {
+        "xiaomi_miot": 2
+      },
+      "foreign_components": [
+        "ffmpeg",
+        "homekit"
+      ]
+    },
+    {
+      "domain": "xtend_tuya",
+      "files": 92,
+      "parsed": 92,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "loop",
+        "states"
+      ],
+      "members": {
+        "config_entries.async_schedule_reload": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_entries": 4,
+        "config_entries.async_unload_platforms": 1,
+        "states.get": 1,
+        "config.units": 2,
+        "loop.async_create_task": 1,
+        "bus.async_listen": 1
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics",
+        "recorder",
+        "tuya"
+      ]
+    },
+    {
+      "domain": "yandex_smart_home",
+      "files": 43,
+      "parsed": 43,
+      "failed": 0,
+      "handles": [
+        "auth",
+        "bus",
+        "config_entries",
+        "data",
+        "http",
+        "states"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 4,
+        "config_entries.async_entries": 2,
+        "data.get": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_get_entry": 1,
+        "states.async_all": 1,
+        "states.get": 2,
+        "auth.async_get_users": 1,
+        "auth.async_get_user": 1,
+        "http.register_view": 2,
+        "auth.async_get_refresh_token": 1,
+        "bus.async_fire": 3
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "air_quality",
+        "diagnostics",
+        "http",
+        "repairs",
+        "stream"
+      ]
+    },
+    {
+      "domain": "yandex_station",
+      "files": 39,
+      "parsed": 39,
+      "failed": 0,
+      "handles": [
+        "bus",
+        "config",
+        "config_entries",
+        "data",
+        "http",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "loop.async_add_executor_job": 3,
+        "http.register_view": 2,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_reload": 1,
+        "config_entries.async_unload_platforms": 1,
+        "bus.async_listen_once": 1,
+        "services.async_register": 2,
+        "services.async_call": 4,
+        "config_entries.async_entries": 2,
+        "loop.async_create_task": 1,
+        "config_entries.flow": 2,
+        "bus.async_fire": 2,
+        "data.get": 2,
+        "config.path": 2,
+        "loop.create_task": 1,
+        "http.app": 11
+      },
+      "calls_services": true,
+      "registers_services": true,
+      "service_domains": {
+        "todo": 3
+      },
+      "foreign_components": [
+        "http",
+        "media_source",
+        "shopping_list",
+        "zeroconf"
+      ]
+    },
+    {
+      "domain": "zaptec",
+      "files": 22,
+      "parsed": 22,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "services"
+      ],
+      "members": {
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 1,
+        "services.has_service": 1,
+        "services.async_register": 1,
+        "services.async_services": 1,
+        "services.async_remove": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": []
+    },
+    {
+      "domain": "zendure_ha",
+      "files": 26,
+      "parsed": 26,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "loop"
+      ],
+      "members": {
+        "config_entries.async_update_entry": 2,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "config.path": 1,
+        "config.config_dir": 1,
+        "config_entries.async_entries": 1,
+        "loop.async_create_task": 1,
+        "config_entries.async_reload": 1,
+        "loop.async_add_executor_job": 2
+      },
+      "calls_services": false,
+      "registers_services": false,
+      "service_domains": {},
+      "foreign_components": [
+        "persistent_notification"
+      ]
+    },
+    {
+      "domain": "zha_toolkit",
+      "files": 22,
+      "parsed": 22,
+      "failed": 0,
+      "handles": [
+        "config",
+        "config_entries",
+        "data",
+        "loop",
+        "services",
+        "states"
+      ],
+      "members": {
+        "config.config_dir": 1,
+        "services.async_register": 2,
+        "loop.async_add_executor_job": 1,
+        "config_entries.async_update_entry": 1,
+        "states.get": 1,
+        "states.async_set": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "zha"
+      ]
+    },
+    {
+      "domain": "zonneplan_one",
+      "files": 31,
+      "parsed": 31,
+      "failed": 0,
+      "handles": [
+        "config_entries",
+        "data",
+        "loop",
+        "services"
+      ],
+      "members": {
+        "data.setdefault": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_unload_platforms": 1,
+        "services.has_service": 1,
+        "config_entries.async_entries": 1,
+        "loop.async_create_task": 2,
+        "services.async_register": 1
+      },
+      "calls_services": false,
+      "registers_services": true,
+      "service_domains": {},
+      "foreign_components": [
+        "diagnostics",
+        "recorder"
+      ]
+    }
+  ]
+}

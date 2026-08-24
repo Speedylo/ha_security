@@ -53,13 +53,12 @@ risk — with no demonstrated control. The plan's cut list predates the scope de
 Recommendation in `notes/ch5_working_notes.md`: cut coverage-widening first instead. **This is
 Younes's call at G3**, and `01_PLAN.md` has deliberately not been edited.
 
-**3. Re-derive the API-surface measurement**, when §5.10 needs it. Which of the nine handles
-in `notes/ch5_evidence_ha_coupling.md` §4 must be mediated, which can be denied outright, and
-which are used so rarely that denial is free, is an empirical question and the manifest's
-granularity depends on the answer. The spike measured it across 3,105 repos; under the
-evidence rule that result is private knowledge until re-derived in this pass. The §5.6.1
-measurement is the template — same method, run over community integrations rather than
-shipped ones, which Chapter 7 owes anyway.
+**3. ~~Re-derive the API-surface measurement~~ — done 2026-08-24.**
+`notes/ch5_evidence_api_surface.md`; scripts and results in `figures/`. Two corpora parsed
+with `ast` under Python 3.14, zero parse failures: 1,458 shipped integrations and the top 144
+community ones by install count. **The headline is that the population changes the answer** —
+community integrations use every handle 1.5–4.7× more than shipped ones, so core-only results
+do not transfer. §7 of that note lists the six things §5.10 takes from it.
 
 ---
 
