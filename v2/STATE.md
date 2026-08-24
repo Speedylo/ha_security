@@ -17,7 +17,7 @@ that does not belong in the report, including anticipated viva questions.
 | `report/01_problem_and_context.md` | ✅ Drafted, reviewed, revised |
 | `report/02_literature_and_gap.md` | ✅ Drafted, reviewed, revised; all four key sources read in full |
 | `report/03_requirements.md` | ✅ Drafted — 19 requirements + S9 added by Ch. 4 |
-| `report/04_threat_model.md` | ✅ Drafted — 18 threats, 6 residual risks; impact scale rebuilt 2026-08-22 (`notes/decision_impact_scale_and_standards.md`). **Outstanding:** the §4.6 boundary figure (`notes/decision_threat_model_diagrams.md`) |
+| `report/04_threat_model.md` | ✅ Drafted — 18 threats, 6 residual risks; impact scale rebuilt 2026-08-22 (`notes/decision_impact_scale_and_standards.md`). **Outstanding:** the §4.6 boundary figure — now fully specified in `notes/ch4_figure_4_1_spec.md`, awaiting the drawing |
 | `figures/ecosystem_scale.py` | ✅ Regenerates every number in Ch. 1 |
 | `refs/` | ✅ Four PDFs obtained and read (Corno & Mannella ×2, Thingnes & Meland, Mannella thesis) |
 | **HA source on the machine** | ✅ `~/ha-src/core`, pinned to **2026.8.3** (`759e465`, 2026-08-21), shallow clone. **Outside the capstone repo on purpose** — never committed, never confused with the frozen spike |
@@ -29,11 +29,11 @@ that does not belong in the report, including anticipated viva questions.
 *(Steps 1 and 2 of the previous list — get the source, re-derive the coupling — were done
 on 2026-08-24. What follows is what remains.)*
 
-**1. Draw the §4.6 figure.** Today's system only — one process, six boundaries, four of
-them absent. Bounds and reasoning in `notes/decision_threat_model_diagrams.md`. Threat
-Dragon is a GUI tool, so the drawing is Younes's; Claude drafts the element list, the
-caption, and the §4.6 paragraph that introduces it. The coupling note now makes the
-boundaries concrete: `loader.py:1091` is where the outermost one fails to exist.
+**1. Draw the §4.6 figure — Younes's, and the only action item that is not Claude's.**
+Full specification in `notes/ch4_figure_4_1_spec.md`: elements, the six boundary labels,
+ten flows, a layout sketch, the caption, the §4.6 paragraph to insert, and a six-point
+check before committing. Save `figures/fig_4_1_current_state.json` **and** `.png`, then
+paste §7 of the spec into `report/04_threat_model.md` §4.6. That closes Chapter 4.
 
 **2. Then Chapter 5 proper** — architecture and design rationale. Constraints and open
 questions in the section below. The coupling note's §4 table is the **specification any
