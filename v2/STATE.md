@@ -35,15 +35,26 @@ already inserted into §4.6 with its caption, so Chapter 4 is closed unless the 
 wrong. Open the `.json` in Threat Dragon if it needs adjusting by hand, but put anything
 worth keeping into the generator script.
 
-**2. Then Chapter 5 proper** — architecture and design rationale. Constraints and open
-questions in the section below. The coupling note's §4 table is the **specification any
-answer to the relocation question must satisfy**, and its §6 lists what it deliberately
-leaves open.
+**2. Chapter 5 is under way** — `report/05_architecture.md`, §5.1–§5.6 drafted. **§5.7 (the
+isolation primitive) is next**; the section plan and the questions each section owes are in
+`notes/ch5_working_notes.md`.
 
-**3. Re-derive the API-surface measurement**, when Ch. 5 needs it. Which of the nine
-handles must be mediated, which can be denied outright, and which are used so rarely that
-denial is free, is an empirical question. The spike measured it across 3,105 repos; under
-the evidence rule that result is private knowledge until re-derived in this pass.
+**Gate G2 has fired once, on the compatibility decision.** The first pass built a proxy shim
+(R1); this pass reaches R2 — a real, stripped Home Assistant inside the sandbox, with only
+permitted effects forwarded. Two measurements taken in this pass drive it: 91% of the 1,482
+shipped integrations import the helper layer while **2** write state directly on `hass`; and
+on the Pi 5 a sandbox costs 176 MB, each additional one 136 MB, against a threshold of 809 MB
+fixed before the run. Younes confirmed the decision on 2026-08-24 **with an explicit fallback
+to R1 if implementation refutes it** — written into §5.6.5 with its trigger conditions and
+tied to Gate G3.
+
+**3. Re-derive the API-surface measurement**, when §5.10 needs it. Which of the nine handles
+in `notes/ch5_evidence_ha_coupling.md` §4 must be mediated, which can be denied outright, and
+which are used so rarely that denial is free, is an empirical question and the manifest's
+granularity depends on the answer. The spike measured it across 3,105 repos; under the
+evidence rule that result is private knowledge until re-derived in this pass. The §5.6.1
+measurement is the template — same method, run over community integrations rather than
+shipped ones, which Chapter 7 owes anyway.
 
 ---
 

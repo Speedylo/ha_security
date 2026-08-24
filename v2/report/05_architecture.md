@@ -218,7 +218,160 @@ showed relocation does not provide by itself.
 **That leaves R1 and R2, and they are genuinely different designs** rather than variants. The
 comparison is the substance of the decision, and it is taken up in §5.6.
 
+## 5.6 Decision 2 — how the integration runs, and what it finds
+
+**R1 — the proxy object.** The confined process runs the integration against a stand-in for
+`hass` that presents the same attribute surface and forwards each access to the mediator.
+Mediation is then total by construction, because every access is already a message.
+
+**R2 — a real, minimal platform in the sandbox.** The confined process runs a stripped Home
+Assistant. The integration imports the genuine helper layer and receives a genuine `hass`
+object — but a *local* one, whose state machine, service registry and event bus are private
+to the sandbox and start empty. A single bridge component forwards permitted effects to the
+mediator, which holds the credential and applies them to the real platform.
+
+**The decision is R2.** Three arguments, and they are ordered by weight rather than by how
+obvious they are.
+
+### 5.6.1 What integrations are actually written against
+
+R1's premise is that `hass` is the compatibility surface. It is not; it is the entrance to
+it. To establish this rather than assert it, every integration shipped with Home Assistant
+2026.8.3 was examined for what it imports and calls:
+
+| What the integration touches | Integrations | Share |
+|---|---|---|
+| `homeassistant.helpers` — the helper layer | 1,356 | **91%** |
+| `async_add_entities` — helper-layer entity registration | 941 | 63% |
+| `DataUpdateCoordinator` — helper-layer polling | 572 | 38% |
+| `hass.data` — the shared dictionary directly | 279 | 18% |
+| `hass.states.async_set` — setting state directly on `hass` | **2** | **0.1%** |
+
+*n = 1,482 integrations; method and command in `notes/ch5_working_notes.md`.*
+
+Integrations are, overwhelmingly, not written against `hass`. They are written against Home
+Assistant's **helper layer** — its entity base classes, its polling coordinator, its platform
+registration. Two integrations in 1,482 write state directly on `hass`.
+
+The consequence for R1 is structural, not incidental. The helper layer is Home Assistant's
+own code; under *any* confined design it runs inside the sandbox alongside the integration,
+and it expects real platform internals beneath it. Substituting `hass` therefore substitutes
+the thing almost nothing uses directly, and leaves the 91% case resting on how faithfully
+that layer's expectations are reproduced — a surface that is large, undocumented because it
+was never intended as a public contract, and free to change every release. R1 does not remove
+the compatibility problem; it relocates it to the least documented place available.
+
+> **Stated limit.** These are the integrations shipped with the platform, not the community
+> integrations this work targets. The measurement establishes the *shape* of the dependency,
+> which is what the argument needs; it does not establish its exact magnitude in HACS, and
+> Chapter 7 re-runs it over the target population before any figure here is quoted as
+> characterising it.
+
+### 5.6.2 Default denial becomes structural rather than procedural
+
+Under R1, every read is a request that must be checked, and S6 holds exactly as long as no
+path is left unchecked. Under R2, the sandbox's state machine **starts empty**. An
+integration reading an undeclared entity is not refused by a check — there is nothing there
+to read. Only what the manifest declares is mirrored in.
+
+The same is true of the service registry: a sandbox whose registry holds nothing offers
+`lock.unlock` to no one. S3 and S6 are then properties of the shape of the system rather than
+obligations on an implementer's diligence, and a design whose safe behaviour is its default
+state is stronger than one whose safe behaviour is a check that must never be forgotten.
+
+### 5.6.3 The premise and the cost were tested before the decision was taken
+
+R2's advantages are worthless if a real Home Assistant cannot be built small enough, or if
+the helper layer does not in fact work against a locally-constructed instance. Both were
+open questions, and deciding first and discovering later is the expensive order. They were
+therefore measured on the target hardware — a Raspberry Pi 5 with 4 GB, the C4 device —
+before this section was written. The full write-up is `experiments/r2_footprint/`.
+
+A threshold was fixed in advance: if one sandbox cost more than roughly a fifth of the
+device's memory — 809 MB — R2 would not survive C4 and the design would fall back to R1.
+
+| Question | Result |
+|---|---|
+| Can a Home Assistant instance be built without `bootstrap`? | **Yes** |
+| Does an ordinary integration run against it? | **Yes** — config entry reaches `LOADED` and publishes its entity |
+| First sandbox | **176 MB** resident; ready in 6.1 s |
+| **Each additional sandbox** | **136 MB** |
+| Capacity in 60% of the device's memory | **~17 sandboxes** |
+
+The test integration was written in the ordinary idiom — a config entry, a
+`DataUpdateCoordinator`, a `SensorEntity`, `async_add_entities` — precisely the pattern
+§5.6.1 found to dominate, and it ran against an instance with no HTTP server, no recorder, no
+frontend and no authentication.
+
+The marginal figure is the one quoted, and the distinction matters: most of a sandbox is the
+Python interpreter and the Home Assistant library, which the operating system maps into every
+sandbox from the same physical pages. Measured at six concurrent sandboxes, the sum of
+resident memory was 970.8 MB while the machine actually consumed 844.6 MB, and per-sandbox
+proportional memory fell from 154.7 MB at one sandbox to 136.4 MB at six as the sharing became
+visible. Reporting 176 MB per sandbox would have overstated the cost of six by 126 MB.
+
+**One design consequence came out of the experiment rather than out of the reasoning.** The
+sandbox cannot use `bootstrap`: `homeassistant/bootstrap.py` imports `.components` at module
+level — the frontend and the recorder's sensor support among them — which is exactly the
+weight the sandbox exists to avoid. A minimal instance is constructed directly and its
+registries wired by hand. This is a property of the design, not a detail of its
+implementation, and it is recorded here for that reason.
+
+**What the experiment does not establish**, stated so that it is not later read as more than
+it is: one integration was tested, and a synthetic one; the sandboxes were measured idle; and
+no mediator was attached, so the bridge and the inter-process channel will add cost not
+counted here. It establishes that the premise holds and the cost is affordable. It is not the
+compatibility evaluation, which is Chapter 7's and is a different measurement entirely.
+
+### 5.6.4 Divergence from the first pass — Gate G2
+
+**The first pass built R1.** This pass reaches R2, and per `01_PLAN.md` §6 a divergence at
+Gate G2 is reported prominently rather than absorbed quietly.
+
+The divergence is genuine and it is the most substantial result of rebuilding the chain. The
+first pass arrived at a proxy design by growing outward from an implementation — the shim was
+built because something had to make an integration run, and the question of what integrations
+are *actually written against* was never posed as a measurement. This pass posed it, and the
+answer inverted the design.
+
+**A discipline note on how this argument is allowed to be made.** The first pass's experience
+of building a proxy — its size, its difficulty — is private knowledge under `00_METHOD.md` §2
+and is not evidence here. It cannot appear in this chapter, and the argument above does not
+rest on it: §5.6.1 is a measurement taken in this pass, and §5.6.3 is an experiment run in
+this pass. Both would stand had the first pass never happened. That is the test the evidence
+rule sets, and it is met.
+
+### 5.6.5 The re-decision point, and what would trigger it
+
+R2 is chosen on evidence that is real but partial: one integration, measured idle, without a
+mediator. The honest position is that implementation can still refute it, and the fallback is
+identified now rather than improvised later.
+
+**The design reverts to R1, with a reduced scope, if any of the following holds at Gate G3
+(end of October, `01_PLAN.md` §6):**
+
+| Trigger | Why it would be decisive |
+|---|---|
+| Footprint with the mediator and bridge attached leaves fewer sandboxes than a realistic installation needs | C4 and N1 are not negotiable; an unadoptable control protects nobody |
+| Real community integrations fail against a minimal instance for reasons a *fuller* instance would fix | Would mean the stripping, not the architecture, is what breaks compatibility — and R1 would then be no worse |
+| Version coupling between sandbox and host proves unmanageable in practice | An operational cost R1 does not carry |
+
+Reverting is not cheap, and saying so is part of the decision: the bridge would be replaced by
+a proxy, and the compatibility evaluation would have to be re-run. It is cheaper than
+discovering in November that the architecture does not fit, which is why the experiment was
+run before the choice rather than after it.
+
+Two considerations bound the risk. The measured margin is wide — 136 MB against a 809 MB
+threshold — so the footprint trigger has room before it fires. And **60 MB of the 176 MB is
+the platform's own base component**, which Chapter 6 tests first for removability; if it can
+go, capacity roughly doubles.
+
+**A consequence for §5.8.** Seventeen sandboxes is sufficient but not generous, and an
+installation with more integrations than that cannot have one sandbox each. The implemented
+scope decision is therefore load-bearing rather than cosmetic, and it now has a number to be
+decided against rather than an intuition.
+
 ---
 
-*Chapter in progress. §5.6 (the R1/R2 decision) onward is next; the section plan is in
+*Chapter in progress. §5.7 (the isolation primitive) onward is next; the section plan is in
 `notes/ch5_working_notes.md`.*

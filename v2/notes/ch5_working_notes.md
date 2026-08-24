@@ -14,8 +14,8 @@ questions a viva will probe.
 | 5.3 | Where enforcement can live — L1–L4, three eliminated | ✅ drafted |
 | 5.4 | Decision 1 — the platform (G2 #1) | ✅ drafted |
 | 5.5 | The relocation problem — criteria K1–K7, candidates R1–R5, three eliminated | ✅ drafted |
-| 5.6 | **Decision 2 — R1 vs R2** (G2 #2, §3.9 open question 2) | ⬅ **next, and blocked on a choice** |
-| 5.7 | Decision 3 — the isolation primitive (G2 #3) | not started |
+| 5.6 | **Decision 2 — R1 vs R2** (G2 #2, §3.9 open question 2) | ✅ drafted — **R2 chosen; G2 divergence reported** |
+| 5.7 | Decision 3 — the isolation primitive (G2 #3) | ⬅ **next** |
 | 5.8 | Decision 4 — implemented scope (G2 #4) | not started |
 | 5.9 | Who authors the manifest (§3.9 open question 1) | not started |
 | 5.10 | The manifest — schema and granularity (S5) | not started |
