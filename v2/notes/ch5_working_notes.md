@@ -59,10 +59,12 @@ The consequence for R1 is direct: substituting the `hass` object substitutes the
 nothing uses directly, and leaves the 91% case resting on how faithfully the helper layer's
 expectations are emulated.
 
-**Stated limit.** These are the *core* integrations, not the community ones this project
-targets. The measurement establishes the shape of the dependency, not its exact magnitude in
-HACS. Chapter 6 or 7 must re-run it over community integrations before any number here is
-quoted as characterising the target population.
+**~~Stated limit~~ — discharged 2026-08-24.** These were the *core* integrations. The same
+measurement over the 144 most-installed community ones is **stronger**: 100% import the
+helper layer, 83% use `async_add_entities`, 58% use `DataUpdateCoordinator`, and 6.9% set
+state directly. The dependency R1 would have to emulate is universal in the target
+population, not merely common in the one the argument was first made from. Now in §5.6.1 of
+the report; full write-up in `ch5_evidence_api_surface.md`.
 
 ## The decision that blocks §5.6
 
