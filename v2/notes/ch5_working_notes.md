@@ -20,8 +20,8 @@ questions a viva will probe.
 | 5.9 | Who authors the manifest (§3.9 open question 1) | ✅ drafted — plural provenance, precedence, default-deny; **§3.9's open question 1 closed** |
 | 5.10 | The manifest — schema and granularity (S5) | ✅ drafted — 8 declarable clauses, 4 ambient, no wildcards in `services.call` |
 | 5.11 | The mediator interface and the channel (T02, K4) | ✅ drafted — identity is the socket; 30 µs measured on the Pi |
-| 5.12 | Identity and the audit record (S7; `decision_audit_identity_and_trust_layer.md`) | ⬅ **next** |
-| 5.13 | Defence in depth — **§1.6 discharged here** (L1 returns as a layer, never as the boundary) | not started |
+| 5.12 | Identity and the audit record (S7) | ✅ drafted — identity is a 3-part tuple; **all three open questions in `decision_audit_identity_and_trust_layer.md` answered** |
+| 5.13 | Defence in depth — **§1.6 discharged here** (L1 returns as a layer, never as the boundary) | ⬅ **next** |
 | 5.14 | Figure 5.1, paired with Figure 4.1; threat-to-control traceability | not started |
 | 5.15 | What the design does not do; L2 as the platform's own better answer | not started |
 

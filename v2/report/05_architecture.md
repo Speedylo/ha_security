@@ -1209,7 +1209,135 @@ The remaining decision — whether a sandbox whose mediator has died should be t
 left running and failing — is deferred to Chapter 6, where it can be settled against observed
 integration behaviour rather than guessed at here.
 
+## 5.12 Identity and the audit record
+
+S7 requires every enforcement decision to be recorded in a tamper-evident log carrying the
+integration's identity, and states its own limit: tamper-*evidence* is not tamper-proofing.
+T18 records the threat it answers — an integration acting without attribution — and §4.4 makes
+the log asset A7 a meta-asset, whose integrity "determines whether any other loss is
+attributable".
+
+S7 says *the integration's identity* without saying what that means. This section fixes it,
+and Chapter 5 is entitled to: defining the term is a design specification discharging a
+requirement, not a new requirement.
+
+### 5.12.1 What an integration's identity is
+
+**Its domain name, plus a content hash of what was loaded.** A name alone cannot support
+attribution, because the name is stable across every version an integration ever ships and T12
+is precisely a malicious update arriving through the authorised path. A log naming the
+integration but not the release cannot say which version misbehaved.
+
+What is hashed is a **tuple of three components, each hashed separately and then together**:
+
+| Component | Why it is in the identity |
+|---|---|
+| The integration's source tree | The code that ran |
+| Its manifest, including the `permissions` block | The manifest *is* the grant (§5.10). A manifest swapped without a source change is an authority change, and an identity blind to it would miss the most direct attack on the design |
+| Its declared requirements, with resolved versions | Where supply-chain change actually lands — an integration's dependencies are installed into the sandbox at setup (`requirements.py`, §5.2) |
+
+**Keeping the three separate is the design decision worth defending.** A single composite hash
+says *something changed*. Three component hashes say *what* changed — and a source change, a
+permission change and a dependency change are different events warranting different responses.
+The composite is what the manifest binds to (§5.9.6); the components are what makes the log
+diagnostic rather than merely tamper-evident.
+
+**The inherited limitation, stated rather than discovered:** the hash records what was
+*loaded*, not what *executed*. An integration that fetches or generates code at runtime
+defeats it. This bounds T12's treatment as well as the identity's meaning, and it belongs in
+Chapter 8's limitations alongside the residual risks of §4.11.
+
+### 5.12.2 When identity is computed
+
+**Once per sandbox construction**, not per decision. Each sandbox run opens with a **run
+record** carrying the full identity, the manifest's provenance (§5.9.4) and the resolved
+dependency versions; every decision record then references that run by identifier.
+
+Two consequences follow. Re-computing at construction is what makes T12's "declaration
+re-checked per version" (§4.10) automatic rather than a rule someone must remember — a changed
+integration is a changed identity before it has run a line. And decision records stay small,
+which matters at the volumes §5.11.4 makes possible.
+
+### 5.12.3 What is recorded, and what deliberately is not
+
+| Record | Written when | Carries |
+|---|---|---|
+| **Run** | Sandbox construction | Run id, identity (§5.12.1), manifest provenance, resolved dependencies, wall-clock and monotonic time |
+| **Decision** | Each mediated request | Run id, operation and target, permit/deny, the deciding clause pointer (§5.10.8), time, chain link |
+
+**Decisions are recorded; their consequences are not.** A subscription to a declared entity is
+a decision and is logged once. The state updates that subscription then delivers are not
+decisions — they are a standing grant being exercised — and logging each would bury the record
+that matters under traffic. S7 requires every enforcement *decision* to be recorded, and this
+reading is deliberate rather than convenient: a log nobody can read has the same evidentiary
+value as no log, which is §1.8's complaint about the status quo in a different form.
+
+Every decision carries its clause pointer, so the log answers both halves of attribution
+together: **which code acted, and which clause allowed it.** A decision that cannot name a
+clause is a mediator bug, and Chapter 7 can test for that condition directly.
+
+### 5.12.4 Tamper-evidence, and the adversary it is evident against
+
+Each record includes the hash of the record before it, so the log is a chain. Modifying,
+deleting or reordering any record breaks every link after it, which is what S7's verification
+requires.
+
+The interesting question is *against whom*, and the answer is stronger than "tamper-evident"
+suggests:
+
+**Against the adversary this project models, the log is not merely tamper-evident — it is
+unreachable.** The sandboxed integration has no path to it. The log lives outside the
+sandbox's mount namespace (§5.7.3), the sandbox's only channel is a socket carrying a fixed
+verb set (§5.11.3), and no verb writes to the log. This is structural enforcement again: the
+integration cannot tamper badly and be detected, because it cannot tamper.
+
+**Against an adversary with write access to the host filesystem, the chain is evidence and not
+protection.** Anything that can rewrite one record can rewrite all of them. A keyed MAC over
+each link, with the key held only in the mediator's memory, raises the bar — an attacker who
+can write the file but not read that memory can no longer forge a consistent chain — and it
+does not survive a full host compromise either.
+
+This is exactly S7's stated limit, and §4.2 already places host compromise out of scope. The
+honest framing is therefore: **the log is authoritative against the confined integration, and
+evidentiary against everything else.** That is a smaller claim than "tamper-proof audit log"
+and it is the one the architecture supports.
+
+§4.11's residual risk R4 records that external anchoring — publishing records somewhere the
+local machine cannot rewrite — is a different project. Nothing here forecloses it.
+
+### 5.12.5 Whether the user sees the hash
+
+`decision_audit_identity_and_trust_layer.md` left this open, and the answer is **no for the
+digest, yes for the change.**
+
+A hex string means nothing to the reader F4 exists to serve, and §3.7 explicitly declines to
+claim anything about user comprehension. Presenting one would be security theatre in the
+literal sense — visible, and no help.
+
+**A change in it, however, is legible and actionable**: *this integration's code has changed
+since you approved its permissions* is a sentence a non-programmer can act on, and it is the
+user-facing half of T12. The identity is therefore machine-facing; its delta is user-facing.
+
+### 5.12.6 The line this section does not cross
+
+The record is designed to support attribution on this machine. It is deliberately **not**
+designed for anything off-box to consume: there is no export format, no signature over
+records, no node identity, no wire protocol.
+
+That restraint is the decision recorded in
+`notes/decision_audit_identity_and_trust_layer.md`, and the reasoning is worth one sentence
+here because a reader will ask why a design with content hashes stops short of distributing
+them. A layer that shared per-integration behaviour across installations would be a
+*likelihood* control — making a bad integration more visible — where §1.6 stakes this work on
+the *impact* half, and it would raise Sybil-resistance questions this project cannot answer at
+its scale. **The moment this chapter specified a format for another machine to consume, the
+scope would have moved.**
+
+What the design does buy is that the option stays open at no cost: Chapter 8 can state that
+the artifact already emits the record such a layer would consume, which is a more useful
+piece of future work than an unevidenced suggestion.
+
 ---
 
-*Chapter in progress. §5.12 (identity and the audit record) onward is next; the section plan
-is in `notes/ch5_working_notes.md`.*
+*Chapter in progress. §5.13 (defence in depth) onward is next; the section plan is in
+`notes/ch5_working_notes.md`.*

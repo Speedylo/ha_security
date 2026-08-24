@@ -103,13 +103,30 @@ open without promising anything.
   T12/A7 alone and would be added regardless — but the reason it is being added *today*,
   rather than in Ch. 6, is that it preserves an option. Both statements are true; say both.
 
-## Open questions for Ch. 5
+## Open questions for Ch. 5 — all three answered in §5.12, 2026-08-24
 
-1. **What exactly is hashed** — the integration's source tree, its manifest, its declared
-   dependencies, or the tuple? Dependencies are where supply-chain change actually lands.
-2. **When** — at load time, once per run, or on every mediated decision (the last is
-   redundant; the record can carry a run identifier instead).
-3. **Whether the hash appears in the user-facing view of F4**, or only in the log.
+1. **What is hashed:** the **tuple**, each component hashed separately *and* together —
+   source tree, manifest including the `permissions` block, and declared requirements with
+   resolved versions. The manifest is in the identity because the manifest *is* the grant, so
+   a manifest swapped without a source change is an authority change that an identity blind to
+   it would miss. Components stay separate because a composite says *something* changed while
+   components say *what* changed, and source, permission and dependency changes warrant
+   different responses. §5.12.1.
+2. **When:** once per sandbox construction, in a **run record**; decision records reference
+   the run by id. That makes T12's per-version re-check automatic rather than a rule to
+   remember, and keeps decision records small at §5.11.4's volumes. §5.12.2.
+3. **User-facing:** **no for the digest, yes for the change.** A hex string means nothing to
+   the reader F4 serves, and §3.7 declines to claim comprehension; but *"this integration's
+   code has changed since you approved its permissions"* is legible and actionable, and is the
+   user-facing half of T12. Identity is machine-facing; its delta is user-facing. §5.12.5.
+
+**One thing §5.12 added that this note did not anticipate.** Against the adversary this
+project actually models, the log is not merely tamper-evident — it is **unreachable**. It sits
+outside the sandbox's mount namespace, and no verb on the mediator channel writes to it. The
+chain makes tampering evident against an adversary with host filesystem access, and a keyed
+MAC (key in mediator memory only) raises that bar without surviving full host compromise. The
+framing that survives questioning: **authoritative against the confined integration,
+evidentiary against everything else.**
 
 ## The re-decision point
 
