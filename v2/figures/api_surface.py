@@ -67,19 +67,38 @@ ENTITY_PLATFORMS = {
 }
 
 
+# The names a reference to the platform root travels under. `self._hass` is a common
+# convention and missing it under-counted `hass.states` use by a third in the first run of
+# this measurement; `opp` is the Open Peer Power fork's name, which some community
+# integrations still carry.
+HASS_NAMES = {"hass", "_hass", "opp", "_opp"}
+
+
 def chain_of(node: ast.Attribute) -> list[str] | None:
-    """Return ['hass', 'states', 'async_set'] for a chain rooted at hass or self.hass."""
-    parts: list[str] = []
+    """Return ['hass', 'states', 'async_set'] for a chain rooted at a platform reference.
+
+    Roots recognised: a bare name (`hass`), an attribute (`self.hass`, `self._hass`,
+    `coordinator.hass`), under any of the names in HASS_NAMES.
+    """
+    parts: list[str] = []          # outermost attribute first
     cur: ast.expr = node
     while isinstance(cur, ast.Attribute):
         parts.append(cur.attr)
         cur = cur.value
-    if isinstance(cur, ast.Name) and cur.id == "hass":
-        parts.append("hass")
-    elif isinstance(cur, ast.Attribute) and cur.attr == "hass":
+
+    if isinstance(cur, ast.Name) and cur.id in HASS_NAMES:
+        # A bare reference: hass.states.get
         parts.append("hass")
     else:
-        return None
+        # A reference held on something else: self.hass.states.get,
+        # self.coordinator.hass.states.get. The loop above has already consumed the
+        # `hass` attribute into `parts`, so the root must be recovered from there —
+        # taking the innermost match, and discarding whatever it hangs off.
+        idx = max((i for i, p in enumerate(parts) if p in HASS_NAMES), default=-1)
+        if idx < 0:
+            return None
+        parts = parts[: idx + 1]
+        parts[idx] = "hass"
     return list(reversed(parts))
 
 

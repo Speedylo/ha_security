@@ -261,11 +261,29 @@ that layer's expectations are reproduced — a surface that is large, undocument
 was never intended as a public contract, and free to change every release. R1 does not remove
 the compatibility problem; it relocates it to the least documented place available.
 
-> **Stated limit.** These are the integrations shipped with the platform, not the community
-> integrations this work targets. The measurement establishes the *shape* of the dependency,
-> which is what the argument needs; it does not establish its exact magnitude in HACS, and
-> Chapter 7 re-runs it over the target population before any figure here is quoted as
-> characterising it.
+**The same measurement over the target population, which is stronger still.** The figures
+above are the integrations shipped with the platform, not the community ones this work
+targets — a limitation stated when they were first taken and discharged here. Repeating the
+measurement over the 144 most-installed community integrations
+(`notes/ch5_evidence_api_surface.md`):
+
+| What the integration touches | Shipped | Community |
+|---|---|---|
+| `homeassistant.helpers` — the helper layer | 91% | **100%** |
+| `async_add_entities` | 63% | **83%** |
+| `DataUpdateCoordinator` | 38% | **58%** |
+| `hass.states.async_set` — setting state directly | 0.1% | 6.9% |
+
+**Every community integration measured imports the helper layer**, and the entity-publication
+path runs through it in 83% of them. The dependency R1 would have to emulate is not weaker in
+the population this work targets; it is universal there.
+
+> **What this does not say.** Community integrations reach the `hass` object directly *far*
+> more than shipped ones do for everything other than publishing entities — reading other
+> entities' state, storing runtime data, resolving configuration paths. §5.10 is built on
+> those figures. The two findings are complementary rather than in tension: **the helper
+> layer is how an integration exposes itself; direct `hass` access is how it reaches
+> everything else.** R2 answers the first, and the manifest answers the second.
 
 ### 5.6.2 Default denial becomes structural rather than procedural
 

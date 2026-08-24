@@ -47,21 +47,49 @@ describe a population almost nobody runs. Every repository fetched is recorded i
 run under 3.12 failed on 322 files using newer syntax; that run was discarded rather than
 reported, and the final measurement has **zero parse failures in either corpus**.
 
+### 2.1 A correction, recorded because the first numbers were wrong
+
+The first run of this measurement **under-counted every handle**, and the error is worth
+recording rather than quietly fixing.
+
+`chain_of()` walked an attribute chain inwards to find its root. For a bare `hass.states.get`
+the root is the name `hass` and the match succeeded. But for `self.hass.states.get` the walk
+consumed `hass` as an ordinary attribute before the root test ran, leaving the root as `self`
+— and the match failed. **`self.hass.X` is the dominant idiom in entity classes**, so the
+effect was large and systematic, not marginal.
+
+It surfaced because a cross-check disagreed: `grep` found `hass.states.get` in 38% of
+community integrations where the parser reported 22.9%. A parser is supposed to beat a grep
+by excluding comments and strings, so it may report *less* — but not by a third. The gap was
+the signal.
+
+| | first run | corrected |
+|---|---|---|
+| `hass.states` (community) | 25.7% | **41.0%** |
+| `hass.loop` (community) | 55.6% | **78.5%** |
+| `hass.config` (community) | 45.8% | **61.8%** |
+| Integrations calling another's services | 11.8% | **22.2%** |
+
+Every figure below is from the corrected run. Two process points follow, and both are worth
+keeping: **a measurement whose method is more rigorous is not automatically more correct**,
+and the cheap grep cross-check that caught it should be run against any future parser-based
+measurement in this project before its numbers are used.
+
 ## 3. The first result: the population changes the answer
 
 | Handle | core | HACS top-150 | ratio |
 |---|---|---|---|
-| `hass.data` | 18.7% | **86.1%** | 4.6× |
-| `hass.config_entries` | 63.0% | **94.4%** | 1.5× |
-| `hass.services` | 14.6% | **56.9%** | 3.9× |
-| `hass.loop` / executor | 24.0% | 55.6% | 2.3× |
-| `hass.config` | 11.7% | 45.8% | 3.9× |
-| `hass.bus` | 16.0% | 35.4% | 2.2× |
-| `hass.states` | 6.4% | 25.7% | 4.0× |
-| `hass.http` | 4.5% | 16.7% | 3.7× |
-| `hass.auth` | 0.9% | 4.2% | 4.7× |
+| `hass.config_entries` | 63.5% | **94.4%** | 1.5× |
+| `hass.data` | 19.0% | **86.1%** | 4.5× |
+| `hass.loop` / executor | 34.7% | **78.5%** | 2.3× |
+| `hass.services` | 15.2% | **64.6%** | 4.2× |
+| `hass.config` | 17.2% | **61.8%** | 3.6× |
+| `hass.bus` | 19.9% | 48.6% | 2.4× |
+| `hass.states` | 8.3% | 41.0% | 4.9× |
+| `hass.http` | 4.5% | 19.4% | 4.3× |
+| `hass.auth` | 1.1% | 5.6% | 5.1× |
 
-**Community integrations use every handle between 1.5 and 4.7 times more than the platform's
+**Community integrations use every handle between 1.5 and 5.1 times more than the platform's
 own.** Measuring on core alone — which is what is conveniently on disk — would have
 understated what confinement must accommodate across the board, and would have made
 confinement look far cheaper than it is.
@@ -85,10 +113,10 @@ useless as a permission. But the breakdown shows why:
 
 | Member | Share of community integrations |
 |---|---|
-| `config_entries.async_forward_entry_setups` | 86.8% |
+| `config_entries.async_forward_entry_setups` | 88.9% |
+| `config_entries.async_update_entry` | 79.9% |
 | `config_entries.async_unload_platforms` | 72.2% |
-| `config_entries.async_update_entry` | 63.9% |
-| `config_entries.async_entries` | 33.3% |
+| `config_entries.async_entries` | **41.0%** |
 
 The first three are an integration managing **its own** entry — the ordinary setup and
 teardown lifecycle. `async_entries` enumerates **everyone's**. Those are entirely different
@@ -103,23 +131,24 @@ arrive with `lock.lock`, and *everyone's config entries* must not arrive with *m
 
 | Capability | Community integrations using it | Cost of default-deny |
 |---|---|---|
-| `hass.auth` | 4.2% (6) | Near-zero |
-| **Calling another integration's services** | **11.8%** | Low — and this is T05's path |
-| `hass.http` route registration | 16.7% | Low |
-| Reading others' state (`states.get`) | 22.9% | Moderate |
-| `hass.config.path` — the config directory | 24.3% | Moderate |
+| `hass.auth` | 5.6% (8) | Near-zero |
+| `hass.http` route registration | 19.4% | Low |
+| **Calling another integration's services** | **22.2%** | Moderate — and this is T05's path |
+| `hass.config.path` — the config directory | 33.3% | Moderate |
+| Reading others' state (`states.get`) | 38.9% | High |
 
-**The service-call result is the most useful thing in this measurement.** 50% of community
+**The service-call result is the most useful thing in this measurement.** 56.2% of community
 integrations *register* services — that is how they expose their own functionality — but only
-**11.8% call** services belonging to anything else. T05, the register's joint-highest risk, is
+**22.2% call** services belonging to anything else. T05, the register's joint-highest risk, is
 an integration calling `lock.unlock`. Default-denying outbound service calls therefore costs
-roughly one integration in eight, and those eight declare what they need. S6's
-default-to-denial is affordable exactly where it matters most.
+about one integration in five, and those declare what they need. S6's default-to-denial is
+affordable at the point where the highest-rated threat lives — though at roughly twice the
+cost the first, buggy run suggested, which is why §2.1 exists.
 
 ### 4.3 Where denial is not cheap, and S8 must be scoped rather than absolute
 
-**24.3% of community integrations call `hass.config.path`** — they read or write inside the
-configuration directory. S8 requires filesystem confinement "to declared resources", and this
+**33.3% of community integrations call `hass.config.path`** — a third of them read or write
+inside the configuration directory. S8 requires filesystem confinement "to declared resources", and this
 number is why the qualifier is load-bearing: a design that simply denied filesystem access
 would break a quarter of the population, while a design that grants the whole configuration
 directory grants `secrets.yaml` and reproduces T14 exactly.
@@ -177,9 +206,11 @@ argument that survives contact with the actual code is worth more than one that 
 ## 7. What §5.10 takes from this
 
 1. Permissions are **per operation with a target**, not per handle (§4.1).
-2. **Default-deny outbound service calls** — 11.8% cost, and it is T05's path (§4.2).
+2. **Default-deny outbound service calls** — 22.2% cost, and it is T05's path (§4.2).
 3. **Filesystem permission is path-scoped**, defaulting to the integration's own directory —
-   an absolute denial breaks 24.3% (§4.3).
-4. **State reads are mediated, not blanket-denied** — 25.7% read others' state (§4.3).
-5. `hass.auth` and route registration are **denied by default** at near-zero cost (§4.2).
+   an absolute denial breaks 33.3% (§4.3).
+4. **State reads are mediated, not blanket-denied** — 41.0% touch the state machine and
+   38.9% read others' state (§4.3). This is the most-used capability after lifecycle and
+   storage, and blanket denial is not available.
+5. `hass.auth` is **denied by default** at near-zero cost — 5.6% (§4.2).
 6. The manifest must distinguish **one's own config entry from everyone's** (§4.1).

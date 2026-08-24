@@ -5,79 +5,95 @@
   "unparseable": 0,
   "handles": {
     "data": 124,
-    "bus": 51,
-    "services": 82,
-    "states": 37,
-    "config": 66,
-    "auth": 6,
-    "http": 24,
+    "bus": 70,
+    "services": 93,
+    "states": 59,
+    "config": 89,
+    "auth": 8,
+    "http": 28,
     "config_entries": 136,
-    "loop": 80
+    "loop": 113
   },
   "handle_share": {
     "data": 86.1,
-    "bus": 35.4,
-    "services": 56.9,
-    "states": 25.7,
-    "config": 45.8,
-    "auth": 4.2,
-    "http": 16.7,
+    "bus": 48.6,
+    "services": 64.6,
+    "states": 41.0,
+    "config": 61.8,
+    "auth": 5.6,
+    "http": 19.4,
     "config_entries": 94.4,
-    "loop": 55.6
+    "loop": 78.5
   },
   "members": {
-    "config_entries.async_forward_entry_setups": 125,
+    "config_entries.async_forward_entry_setups": 128,
+    "config_entries.async_update_entry": 115,
     "config_entries.async_unload_platforms": 104,
-    "config_entries.async_update_entry": 92,
-    "data.setdefault": 86,
-    "config_entries.async_reload": 84,
-    "services.async_register": 69,
-    "loop.async_add_executor_job": 56,
-    "data.get": 55,
-    "config_entries.async_entries": 48,
-    "loop.async_create_task": 43,
-    "config.path": 35,
-    "states.get": 33,
-    "bus.async_listen_once": 32,
-    "config_entries.async_forward_entry_unload": 26,
-    "services.async_remove": 26,
-    "config_entries.flow": 23,
-    "config_entries.async_get_entry": 21,
-    "data.pop": 18,
-    "services.async_call": 17,
-    "bus.async_listen": 17,
-    "http.register_view": 17,
-    "services.has_service": 15,
-    "config.config_dir": 13,
-    "http.async_register_static_paths": 13,
-    "bus.async_fire": 12,
-    "config.language": 11,
-    "config.time_zone": 10,
-    "config_entries.async_remove": 9,
-    "config.units": 9,
-    "states.async_all": 6,
-    "states.async_set": 6,
-    "bus.fire": 5,
-    "config.latitude": 5,
-    "config.longitude": 5,
-    "loop.call_soon_threadsafe": 4,
-    "config_entries.async_schedule_reload": 4,
-    "loop.create_task": 4,
-    "services.register": 4,
-    "services.async_services": 4,
-    "config.is_allowed_path": 3
+    "config_entries.async_reload": 98,
+    "data.setdefault": 88,
+    "loop.async_add_executor_job": 83,
+    "services.async_register": 77,
+    "loop.async_create_task": 74,
+    "data.get": 68,
+    "config_entries.async_entries": 59,
+    "states.get": 56,
+    "config_entries.async_get_entry": 50,
+    "config.path": 48,
+    "bus.async_listen_once": 42,
+    "config_entries.flow": 32,
+    "bus.async_fire": 32,
+    "services.async_call": 31,
+    "services.async_remove": 30,
+    "bus.async_listen": 29,
+    "config_entries.async_forward_entry_unload": 28,
+    "data.pop": 20,
+    "config.language": 20,
+    "http.register_view": 19,
+    "services.has_service": 19,
+    "http.async_register_static_paths": 16,
+    "config.config_dir": 15,
+    "bus.fire": 15,
+    "config.time_zone": 15,
+    "config_entries.async_schedule_reload": 15,
+    "config.units": 14,
+    "loop.create_task": 13,
+    "states.async_all": 13,
+    "config_entries.async_remove": 12,
+    "loop.call_soon_threadsafe": 12,
+    "config.latitude": 10,
+    "config.longitude": 10,
+    "states.async_set": 10,
+    "states.async_entity_ids": 9,
+    "config.location_name": 7,
+    "services.async_services": 6
   },
-  "calls_services": 17,
-  "registers_services": 72,
+  "calls_services": 32,
+  "registers_services": 81,
   "cross_component": 103,
   "service_domains": {
+    "climate": 15,
+    "homeassistant": 13,
+    "number": 11,
+    "persistent_notification": 8,
+    "media_player": 7,
+    "switch": 6,
+    "cover": 6,
     "weather": 4,
+    "notify": 3,
     "todo": 3,
-    "persistent_notification": 2,
+    "lock": 2,
+    "select": 2,
+    "frontend": 2,
+    "scene": 2,
     "xiaomi_miot": 2,
-    "homeassistant": 1,
+    "tado": 1,
+    "deconz": 1,
+    "light": 1,
+    "input_select": 1,
     "automation": 1,
-    "spotcast": 1
+    "person": 1,
+    "spotcast": 1,
+    "recorder": 1
   },
   "foreign_components": {
     "diagnostics": 40,
@@ -140,18 +156,19 @@
         "loop.async_create_task": 1,
         "config_entries.flow": 2,
         "config_entries.async_entries": 1,
-        "loop.async_add_executor_job": 5,
+        "loop.async_add_executor_job": 18,
         "config_entries.async_forward_entry_setups": 2,
         "services.async_register": 13,
         "config_entries.async_unload_platforms": 2,
         "data.pop": 3,
         "config.config_dir": 2,
-        "data.get": 9,
-        "bus.fire": 3,
-        "config.is_allowed_path": 2,
+        "data.get": 10,
+        "bus.fire": 6,
+        "config.is_allowed_path": 3,
+        "services.call": 1,
         "config.path": 1
       },
-      "calls_services": false,
+      "calls_services": true,
       "registers_services": true,
       "service_domains": {},
       "foreign_components": [
@@ -173,11 +190,11 @@
         "states"
       ],
       "members": {
-        "services.async_call": 1,
-        "loop.async_create_task": 1,
+        "services.async_call": 3,
+        "loop.async_create_task": 2,
         "config_entries.flow": 2,
-        "data.setdefault": 1,
-        "bus.async_listen": 1,
+        "data.setdefault": 2,
+        "bus.async_listen": 3,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_reload": 1,
         "config_entries.async_forward_entry_unload": 1,
@@ -188,7 +205,14 @@
         "config_entries.async_entries": 1,
         "config_entries.async_remove": 1,
         "services.async_register": 4,
-        "states.get": 4,
+        "states.get": 10,
+        "config.time_zone": 1,
+        "bus.async_listen_once": 1,
+        "bus.async_fire": 1,
+        "states.is_state": 2,
+        "config_entries.async_get_entry": 1,
+        "config_entries.async_update_entry": 1,
+        "states.async_entity_ids": 1,
         "services._services": 1
       },
       "calls_services": true,
@@ -214,8 +238,9 @@
         "config_entries.async_update_entry": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "loop.async_add_executor_job": 2,
-        "config_entries.async_reload": 1
+        "loop.async_add_executor_job": 37,
+        "config_entries.async_reload": 1,
+        "config_entries.async_get_entry": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -234,16 +259,17 @@
         "loop"
       ],
       "members": {
-        "config_entries.async_update_entry": 1,
+        "config_entries.async_update_entry": 2,
         "data.setdefault": 2,
-        "loop.async_add_executor_job": 1,
+        "loop.async_add_executor_job": 2,
         "config.language": 2,
         "loop.async_create_task": 2,
         "config_entries.async_forward_entry_setups": 1,
-        "config_entries.async_reload": 1,
+        "config_entries.async_reload": 2,
         "data.get": 3,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.flow": 2
+        "config_entries.flow": 2,
+        "config_entries.async_get_entry": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -257,11 +283,13 @@
       "failed": 0,
       "handles": [
         "bus",
+        "config",
         "config_entries",
         "data",
         "http",
         "loop",
-        "services"
+        "services",
+        "states"
       ],
       "members": {
         "config_entries.async_update_entry": 1,
@@ -272,7 +300,11 @@
         "bus.async_listen": 1,
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_reload": 1,
-        "http.register_view": 2
+        "http.register_view": 2,
+        "states.get": 6,
+        "services.has_service": 1,
+        "states.async_entity_ids": 3,
+        "config.path": 2
       },
       "calls_services": false,
       "registers_services": true,
@@ -293,6 +325,7 @@
         "data",
         "http",
         "loop",
+        "services",
         "states"
       ],
       "members": {
@@ -301,15 +334,19 @@
         "config_entries.async_update_entry": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_forward_entry_unload": 1,
-        "loop.async_create_task": 4,
+        "loop.async_add_executor_job": 2,
+        "bus.async_listen": 1,
+        "loop.async_create_task": 6,
         "loop.call_soon_threadsafe": 2,
         "bus.async_listen_once": 1,
+        "states.get": 6,
         "data.get": 2,
         "config.path": 1,
         "http.async_register_static_paths": 1,
-        "states.get": 1
+        "services.async_call": 1,
+        "bus.async_fire": 3
       },
-      "calls_services": false,
+      "calls_services": true,
       "registers_services": false,
       "service_domains": {},
       "foreign_components": [
@@ -328,30 +365,38 @@
         "config",
         "config_entries",
         "data",
+        "http",
         "loop",
-        "services"
+        "services",
+        "states"
       ],
       "members": {
-        "data.setdefault": 2,
+        "data.setdefault": 3,
         "data.get": 13,
-        "config.path": 7,
+        "config.path": 11,
         "bus.async_listen_once": 2,
         "bus.async_listen": 2,
-        "bus.async_fire": 5,
+        "bus.async_fire": 6,
         "config_entries.async_forward_entry_setups": 2,
-        "config_entries.async_update_entry": 1,
-        "loop.async_create_task": 3,
+        "config_entries.async_update_entry": 3,
+        "loop.async_create_task": 27,
         "config_entries.async_forward_entry_unload": 1,
         "config_entries.flow": 10,
         "data.pop": 1,
-        "config_entries.async_reload": 1,
+        "config_entries.async_reload": 2,
+        "services.async_register": 1,
+        "services.async_remove": 3,
+        "states.get": 3,
+        "services.async_call": 1,
+        "states.async_set": 1,
         "config.as_dict": 2,
-        "loop.async_add_executor_job": 1,
+        "loop.async_add_executor_job": 2,
+        "bus.fire": 2,
         "config_entries.async_entries": 3,
-        "services.async_remove": 2
+        "http.register_view": 2
       },
-      "calls_services": false,
-      "registers_services": false,
+      "calls_services": true,
+      "registers_services": true,
       "service_domains": {},
       "foreign_components": [
         "http",
@@ -364,19 +409,26 @@
       "parsed": 44,
       "failed": 0,
       "handles": [
+        "config",
         "config_entries",
         "data",
-        "services"
+        "services",
+        "states"
       ],
       "members": {
         "data.setdefault": 1,
         "config_entries.async_update_entry": 3,
-        "config_entries.async_entries": 3,
-        "data.get": 2,
-        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_entries": 4,
+        "data.get": 4,
+        "config_entries.async_forward_entry_setups": 2,
         "config_entries.async_schedule_reload": 1,
-        "config_entries.async_unload_platforms": 1,
-        "services.async_remove": 1
+        "config_entries.async_unload_platforms": 2,
+        "services.async_remove": 1,
+        "config.config_dir": 3,
+        "states.get": 1,
+        "config_entries.async_loaded_entries": 1,
+        "config_entries.async_get_entry": 1,
+        "config.country": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -396,7 +448,7 @@
         "loop"
       ],
       "members": {
-        "loop.async_create_task": 2,
+        "loop.async_create_task": 3,
         "config_entries.flow": 2,
         "config_entries.async_remove": 1,
         "config_entries.async_update_entry": 2,
@@ -425,8 +477,9 @@
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_get_entry": 2,
         "services.async_register": 2,
-        "config_entries.async_reload": 1,
-        "config_entries.async_unload_platforms": 1
+        "config_entries.async_reload": 2,
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -442,19 +495,24 @@
         "bus",
         "config_entries",
         "data",
+        "loop",
+        "services",
         "states"
       ],
       "members": {
         "bus.async_listen_once": 1,
         "data.setdefault": 1,
-        "config_entries.async_forward_entry_setups": 1,
-        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_forward_entry_setups": 3,
+        "config_entries.async_unload_platforms": 3,
         "config_entries.async_reload": 1,
         "config_entries.async_update_entry": 1,
-        "states.get": 1
+        "states.get": 1,
+        "loop.async_add_executor_job": 1,
+        "services.async_register": 2,
+        "bus.fire": 1
       },
       "calls_services": false,
-      "registers_services": false,
+      "registers_services": true,
       "service_domains": {},
       "foreign_components": [
         "diagnostics"
@@ -466,18 +524,20 @@
       "parsed": 17,
       "failed": 0,
       "handles": [
+        "bus",
         "config_entries",
         "services"
       ],
       "members": {
-        "config_entries.async_update_entry": 2,
+        "config_entries.async_update_entry": 3,
         "config_entries.async_entries": 4,
         "config_entries.async_reload": 1,
         "services.has_service": 9,
         "services.async_register": 8,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "services.async_remove": 1
+        "services.async_remove": 1,
+        "bus.async_fire": 2
       },
       "calls_services": false,
       "registers_services": true,
@@ -490,9 +550,11 @@
       "parsed": 9,
       "failed": 0,
       "handles": [
+        "bus",
         "config",
         "config_entries",
         "data",
+        "loop",
         "services"
       ],
       "members": {
@@ -500,7 +562,12 @@
         "config_entries.async_forward_entry_setups": 1,
         "services.async_remove": 1,
         "config_entries.async_unload_platforms": 1,
-        "config.components": 1
+        "bus.async_listen": 10,
+        "config.components": 1,
+        "loop.async_add_executor_job": 1,
+        "config.time_zone": 1,
+        "bus.async_fire": 4,
+        "loop.async_create_task": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -516,10 +583,16 @@
       "parsed": 3,
       "failed": 0,
       "handles": [
-        "services"
+        "bus",
+        "config",
+        "services",
+        "states"
       ],
       "members": {
-        "services.async_register": 1
+        "services.async_register": 1,
+        "bus.async_listen_once": 1,
+        "config.units": 4,
+        "states.get": 2
       },
       "calls_services": false,
       "registers_services": true,
@@ -539,17 +612,33 @@
         "config_entries",
         "data",
         "http",
-        "services"
+        "loop",
+        "services",
+        "states"
       ],
       "members": {
+        "loop.call_soon_threadsafe": 1,
+        "bus.async_fire": 5,
         "data.setdefault": 1,
         "http.register_view": 4,
         "bus.fire": 1,
         "services.async_register": 1,
-        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_forward_entry_setups": 2,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_update_entry": 1,
-        "config.language": 1
+        "config_entries.async_update_entry": 6,
+        "config.language": 1,
+        "bus.async_listen_once": 1,
+        "bus.async_listen": 1,
+        "config_entries.async_forward_entry_unload": 1,
+        "states.get": 1,
+        "loop.async_create_task": 1,
+        "config_entries.async_reload": 3,
+        "config.path": 2,
+        "config.media_dirs": 2,
+        "config_entries.async_entries": 2,
+        "loop.async_add_executor_job": 16,
+        "config_entries.async_remove": 1,
+        "http.async_register_static_paths": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -567,24 +656,34 @@
       "parsed": 19,
       "failed": 0,
       "handles": [
+        "bus",
+        "config",
         "config_entries",
         "data",
         "loop",
-        "services"
+        "services",
+        "states"
       ],
       "members": {
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_entries": 1,
+        "config_entries.async_entries": 4,
         "config_entries.async_remove": 2,
         "config_entries.async_update_entry": 4,
-        "config_entries.async_add_subentry": 1,
-        "config_entries.async_update_subentry": 1,
-        "config_entries.async_reload": 1,
+        "config_entries.async_add_subentry": 2,
+        "config_entries.async_update_subentry": 2,
+        "config_entries.async_reload": 3,
         "services.async_register": 4,
-        "config_entries.async_get_entry": 1,
-        "data.get": 1,
-        "loop.async_create_task": 1
+        "config_entries.async_loaded_entries": 5,
+        "bus.async_fire": 12,
+        "states.get": 5,
+        "bus.async_listen": 2,
+        "data.get": 7,
+        "config.path": 4,
+        "loop.async_add_executor_job": 4,
+        "config_entries.async_get_entry": 3,
+        "config_entries.async_remove_subentry": 2,
+        "loop.async_create_task": 2
       },
       "calls_services": false,
       "registers_services": true,
@@ -599,9 +698,12 @@
       "parsed": 16,
       "failed": 0,
       "handles": [
+        "bus",
+        "config",
         "config_entries",
         "data",
-        "services"
+        "services",
+        "states"
       ],
       "members": {
         "data.get": 1,
@@ -609,7 +711,11 @@
         "config_entries.async_update_entry": 1,
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_schedule_reload": 1,
-        "services.async_register": 1
+        "bus.async_listen": 1,
+        "services.async_register": 1,
+        "config.path": 2,
+        "config_entries.async_entries": 1,
+        "states.get": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -637,15 +743,24 @@
         "config_entries.async_reload": 1,
         "config_entries.async_unload_platforms": 1,
         "data.get": 2,
-        "config_entries.async_update_entry": 1,
-        "states.get": 8,
-        "config.units": 6,
+        "config_entries.async_update_entry": 2,
+        "states.get": 83,
+        "config.units": 26,
         "config_entries.async_get_entry": 1,
-        "services.async_call": 1
+        "services.async_call": 40,
+        "config.components": 1
       },
       "calls_services": true,
       "registers_services": false,
-      "service_domains": {},
+      "service_domains": {
+        "switch": 4,
+        "lock": 2,
+        "climate": 15,
+        "select": 2,
+        "number": 11,
+        "tado": 1,
+        "deconz": 1
+      },
       "foreign_components": [
         "device_automation",
         "homeassistant",
@@ -671,8 +786,11 @@
         "config_entries.async_unload_platforms": 1,
         "data.get": 3,
         "services.async_register": 2,
+        "bus.async_fire": 2,
         "services.has_service": 1,
-        "bus.async_listen": 1
+        "bus.async_listen": 1,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_reload": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -697,12 +815,14 @@
         "services.async_register": 2,
         "loop.async_create_task": 1,
         "config_entries.flow": 2,
-        "config_entries.async_update_entry": 3,
+        "config_entries.async_update_entry": 4,
         "bus.async_listen": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_forward_entry_unload": 1,
         "config_entries.async_reload": 1,
-        "loop.create_task": 3
+        "loop.create_task": 3,
+        "data.get": 1,
+        "config_entries.async_get_entry": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -718,17 +838,23 @@
         "config",
         "config_entries",
         "data",
+        "loop",
         "states"
       ],
       "members": {
-        "config.units": 2,
+        "config.units": 3,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_reload": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_update_entry": 5,
-        "config.latitude": 1,
-        "config.longitude": 1,
-        "states.get": 2
+        "config_entries.async_update_entry": 6,
+        "config.latitude": 3,
+        "config.longitude": 3,
+        "states.get": 3,
+        "loop.async_create_task": 4,
+        "config_entries.async_get_entry": 1,
+        "loop.async_add_executor_job": 5,
+        "loop.call_soon_threadsafe": 2,
+        "config.location_name": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -747,8 +873,11 @@
       "failed": 0,
       "handles": [
         "bus",
+        "config",
         "config_entries",
         "data",
+        "loop",
+        "services",
         "states"
       ],
       "members": {
@@ -757,13 +886,22 @@
         "config_entries.async_unload_platforms": 1,
         "data.pop": 1,
         "config_entries.async_reload": 1,
-        "config_entries.async_update_entry": 1,
-        "states.get": 1,
-        "bus.async_listen": 1
+        "config_entries.async_update_entry": 3,
+        "states.get": 3,
+        "bus.async_listen": 1,
+        "loop.async_add_executor_job": 1,
+        "config.language": 1,
+        "services.async_call": 1,
+        "services.has_service": 1,
+        "services.async_services": 2,
+        "config_entries.async_entries": 1,
+        "loop.async_create_task": 1
       },
-      "calls_services": false,
+      "calls_services": true,
       "registers_services": false,
-      "service_domains": {},
+      "service_domains": {
+        "notify": 1
+      },
       "foreign_components": []
     },
     {
@@ -780,16 +918,16 @@
         "states"
       ],
       "members": {
-        "config_entries.async_entries": 8,
+        "loop.async_create_task": 6,
+        "config_entries.async_reload": 4,
+        "config_entries.async_entries": 9,
         "services.async_register": 4,
         "services.has_service": 6,
-        "config.path": 5,
-        "loop.async_add_executor_job": 4,
-        "loop.async_create_task": 3,
-        "config_entries.async_reload": 1,
+        "config.path": 9,
+        "loop.async_add_executor_job": 9,
         "states.get": 2,
         "bus.async_listen_once": 5,
-        "bus.async_fire": 1,
+        "bus.async_fire": 5,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
         "services.async_remove": 3,
@@ -848,6 +986,8 @@
       "parsed": 8,
       "failed": 0,
       "handles": [
+        "bus",
+        "config",
         "config_entries",
         "data"
       ],
@@ -856,7 +996,10 @@
         "config_entries.async_update_entry": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_reload": 1,
-        "config_entries.async_unload_platforms": 1
+        "config_entries.async_unload_platforms": 1,
+        "bus.async_listen": 1,
+        "config.latitude": 2,
+        "config.longitude": 2
       },
       "calls_services": false,
       "registers_services": false,
@@ -877,15 +1020,17 @@
       ],
       "members": {
         "services.async_register": 6,
-        "services.async_call": 10,
-        "loop.async_add_executor_job": 27,
-        "config.path": 7,
+        "services.async_call": 12,
+        "loop.async_add_executor_job": 28,
+        "config.path": 8,
+        "config.media_dirs": 4,
+        "config.allowlist_external_dirs": 1,
         "config.external_url": 1,
+        "loop.async_create_task": 1,
+        "states.get": 3,
         "states.async_all": 1,
         "services.has_service": 1,
-        "services.async_remove": 2,
-        "config.media_dirs": 3,
-        "states.get": 2
+        "services.async_remove": 2
       },
       "calls_services": true,
       "registers_services": true,
@@ -925,8 +1070,10 @@
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_reload": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_get_entry": 1,
-        "services.async_register": 2
+        "config_entries.async_get_entry": 3,
+        "services.async_register": 2,
+        "config_entries.async_update_entry": 3,
+        "data.get": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -968,14 +1115,20 @@
       "handles": [
         "bus",
         "config_entries",
-        "data"
+        "data",
+        "loop"
       ],
       "members": {
         "data.get": 1,
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
         "bus.async_listen_once": 1,
-        "config_entries.async_forward_entry_unload": 1
+        "bus.fire": 2,
+        "loop.async_create_task": 1,
+        "config_entries.async_forward_entry_unload": 1,
+        "config_entries.async_get_entry": 1,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_reload": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -1014,6 +1167,7 @@
       "parsed": 25,
       "failed": 0,
       "handles": [
+        "bus",
         "config_entries",
         "data",
         "loop",
@@ -1024,8 +1178,12 @@
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_reload": 1,
-        "loop.async_add_executor_job": 14,
-        "config_entries.async_forward_entry_unload": 7
+        "loop.async_add_executor_job": 41,
+        "config_entries.async_forward_entry_unload": 7,
+        "bus.fire": 2,
+        "loop.call_soon_threadsafe": 5,
+        "loop.async_create_task": 5,
+        "config_entries.async_update_entry": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -1041,15 +1199,24 @@
       "parsed": 21,
       "failed": 0,
       "handles": [
+        "bus",
         "config_entries",
-        "data"
+        "data",
+        "loop"
       ],
       "members": {
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_reload": 1,
-        "config_entries.async_update_entry": 1
+        "loop.async_create_task": 1,
+        "config_entries.async_update_entry": 3,
+        "data.get": 1,
+        "bus.fire": 1,
+        "loop.async_add_executor_job": 7,
+        "loop.call_soon_threadsafe": 2,
+        "config_entries.async_schedule_reload": 1,
+        "config_entries.async_entry_for_domain_unique_id": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -1062,17 +1229,19 @@
       "parsed": 42,
       "failed": 0,
       "handles": [
+        "config",
         "config_entries",
         "data",
         "loop"
       ],
       "members": {
-        "loop.async_add_executor_job": 3,
+        "loop.async_add_executor_job": 4,
         "loop.call_soon_threadsafe": 2,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_reload": 1,
         "config_entries.async_unload_platforms": 1,
-        "data.pop": 1
+        "data.pop": 1,
+        "config.units": 4
       },
       "calls_services": false,
       "registers_services": false,
@@ -1097,14 +1266,14 @@
         "states"
       ],
       "members": {
-        "config.path": 39,
-        "loop.async_add_executor_job": 44,
-        "bus.async_fire": 51,
+        "config.path": 40,
+        "loop.async_add_executor_job": 46,
+        "bus.async_fire": 53,
         "bus.async_listen_once": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 2,
-        "loop.async_create_task": 2,
-        "services.async_call": 2,
+        "loop.async_create_task": 3,
+        "services.async_call": 3,
         "states.async_set": 1,
         "states.async_remove": 4,
         "services.async_register": 4,
@@ -1112,11 +1281,14 @@
         "bus.async_listen": 1,
         "http.async_register_static_paths": 1,
         "data.get": 3,
-        "data.setdefault": 1
+        "data.setdefault": 1,
+        "config.config_dir": 1
       },
       "calls_services": true,
       "registers_services": true,
-      "service_domains": {},
+      "service_domains": {
+        "homeassistant": 1
+      },
       "foreign_components": [
         "frontend",
         "http",
@@ -1130,12 +1302,20 @@
       "parsed": 5,
       "failed": 0,
       "handles": [
-        "config_entries"
+        "config",
+        "config_entries",
+        "loop"
       ],
       "members": {
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_reload": 1,
-        "config_entries.async_unload_platforms": 1
+        "config_entries.async_unload_platforms": 1,
+        "config.language": 3,
+        "loop.async_add_executor_job": 2,
+        "config.units": 4,
+        "config.distance": 1,
+        "config.elevation": 1,
+        "config.location_name": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -1154,7 +1334,7 @@
       ],
       "members": {
         "data.setdefault": 1,
-        "loop.async_add_executor_job": 1,
+        "loop.async_add_executor_job": 2,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1
       },
@@ -1169,16 +1349,21 @@
       "parsed": 9,
       "failed": 0,
       "handles": [
+        "config",
         "config_entries",
-        "data"
+        "data",
+        "loop"
       ],
       "members": {
         "config_entries.async_reload": 1,
         "data.setdefault": 2,
         "config_entries.async_forward_entry_setups": 2,
-        "config_entries.async_update_entry": 15,
+        "config_entries.async_update_entry": 19,
+        "loop.async_add_executor_job": 3,
         "config_entries.async_forward_entry_unload": 2,
-        "data.pop": 1
+        "data.pop": 1,
+        "config.latitude": 5,
+        "config.longitude": 5
       },
       "calls_services": false,
       "registers_services": false,
@@ -1197,7 +1382,7 @@
         "loop"
       ],
       "members": {
-        "loop.async_add_executor_job": 9,
+        "loop.async_add_executor_job": 14,
         "loop.async_create_task": 1,
         "config_entries.flow": 2,
         "config_entries.async_forward_entry_setups": 2,
@@ -1224,8 +1409,11 @@
       "members": {
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_reload": 1,
+        "config_entries.async_reload": 2,
         "services.async_register": 1,
+        "config_entries.async_get_entry": 1,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_entries": 1,
         "services.async_call": 1
       },
       "calls_services": true,
@@ -1248,14 +1436,16 @@
         "loop"
       ],
       "members": {
-        "config_entries.async_update_entry": 2,
+        "config_entries.async_update_entry": 3,
         "config_entries.async_entries": 1,
         "config_entries.async_unload": 1,
         "config_entries.async_remove": 1,
         "loop.async_add_executor_job": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_reload": 1
+        "config_entries.async_reload": 1,
+        "config_entries.async_schedule_reload": 1,
+        "config_entries.async_get_entry": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -1284,8 +1474,9 @@
         "config_entries.async_reload": 1,
         "config_entries.async_unload_platforms": 1,
         "data.pop": 1,
-        "config.path": 1,
-        "states.get": 1
+        "config.path": 2,
+        "states.get": 1,
+        "config_entries.async_update_entry": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -1314,7 +1505,7 @@
         "config_entries.async_forward_entry_unload": 1,
         "config.time_zone": 2,
         "config.currency": 7,
-        "loop.async_add_executor_job": 1
+        "loop.async_add_executor_job": 12
       },
       "calls_services": false,
       "registers_services": false,
@@ -1351,6 +1542,7 @@
       "parsed": 31,
       "failed": 0,
       "handles": [
+        "bus",
         "config_entries",
         "data",
         "services"
@@ -1360,7 +1552,10 @@
         "data.get": 1,
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
-        "config_entries.async_unload_platforms": 1
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_reload": 2,
+        "bus.async_listen_once": 1,
+        "bus.async_fire": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -1387,14 +1582,15 @@
         "config_entries.async_update_entry": 2,
         "data.setdefault": 1,
         "config.config_dir": 1,
-        "loop.async_add_executor_job": 3,
+        "loop.async_add_executor_job": 4,
         "config_entries.async_forward_entry_setups": 1,
         "services.async_register": 6,
         "bus.async_listen_once": 1,
         "config_entries.async_unload_platforms": 1,
         "services.async_remove": 6,
-        "config_entries.async_reload": 1,
-        "config.language": 2,
+        "config_entries.async_reload": 2,
+        "config.language": 4,
+        "loop.async_create_task": 1,
         "data.get": 4
       },
       "calls_services": false,
@@ -1419,31 +1615,34 @@
         "states"
       ],
       "members": {
-        "data.get": 26,
+        "loop.create_task": 8,
+        "data.get": 81,
+        "loop.async_create_task": 15,
+        "bus.async_fire": 11,
         "data.setdefault": 101,
         "services.async_register": 2,
-        "loop.create_task": 1,
-        "loop.async_create_task": 2,
-        "config_entries.async_reload": 24,
+        "config_entries.async_reload": 26,
         "bus.async_listen": 12,
         "config_entries.async_forward_entry_setups": 16,
         "config_entries.async_unload_platforms": 6,
         "services.has_service": 2,
         "services.async_remove": 1,
+        "loop.call_later": 2,
+        "loop.call_soon": 2,
+        "config_entries.async_update_entry": 3,
+        "loop.async_add_executor_job": 22,
         "config_entries.async_get_entry": 2,
-        "config_entries.async_update_entry": 1,
         "config_entries.flow": 7,
         "config.path": 7,
-        "loop.async_add_executor_job": 2,
-        "loop.call_soon": 1,
+        "config_entries.async_entries": 1,
+        "loop.time": 2,
         "states.get": 49,
         "services.async_call": 5,
         "config.units": 2,
         "config.language": 3,
         "states.async_set": 7,
         "loop.get_exception_handler": 1,
-        "loop.set_exception_handler": 2,
-        "bus.async_fire": 8
+        "loop.set_exception_handler": 2
       },
       "calls_services": true,
       "registers_services": true,
@@ -1467,18 +1666,25 @@
       "failed": 0,
       "handles": [
         "bus",
+        "config",
         "config_entries",
         "data",
+        "http",
         "loop"
       ],
       "members": {
         "bus.async_listen_once": 1,
-        "loop.async_add_executor_job": 2,
+        "loop.async_add_executor_job": 13,
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "data.get": 1,
-        "config_entries.async_reload": 1
+        "data.get": 3,
+        "config_entries.async_reload": 1,
+        "bus.fire": 1,
+        "config.latitude": 1,
+        "config.longitude": 1,
+        "config_entries.async_update_entry": 1,
+        "http.async_register_static_paths": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -1495,9 +1701,11 @@
       "handles": [
         "config",
         "config_entries",
-        "http"
+        "http",
+        "loop"
       ],
       "members": {
+        "loop.async_add_executor_job": 1,
         "http.async_register_static_paths": 3,
         "config.path": 5,
         "http.register_view": 2,
@@ -1529,9 +1737,9 @@
         "services.async_register": 1,
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_reload": 1,
-        "config_entries.async_entries": 2,
+        "config_entries.async_entries": 3,
         "http.register_view": 12,
-        "data.get": 1
+        "data.get": 2
       },
       "calls_services": false,
       "registers_services": true,
@@ -1552,13 +1760,15 @@
       "handles": [
         "config_entries",
         "data",
-        "loop"
+        "loop",
+        "states"
       ],
       "members": {
         "data.setdefault": 2,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "loop.async_add_executor_job": 5
+        "loop.async_add_executor_job": 7,
+        "states.get": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -1577,10 +1787,11 @@
       ],
       "members": {
         "config_entries.async_entries": 1,
-        "config_entries.async_reload": 1,
-        "services.async_register": 2,
+        "config_entries.async_reload": 2,
+        "services.async_register": 17,
         "config_entries.async_forward_entry_setups": 1,
-        "config_entries.async_unload_platforms": 1
+        "config_entries.async_unload_platforms": 1,
+        "config_entries.async_update_entry": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -1601,19 +1812,19 @@
         "states"
       ],
       "members": {
-        "config_entries.async_update_entry": 1,
+        "config_entries.async_update_entry": 4,
         "data.setdefault": 2,
         "config_entries.async_forward_entry_setups": 1,
         "services.has_service": 1,
         "data.get": 1,
-        "config_entries.async_reload": 1,
+        "config_entries.async_reload": 3,
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_entries": 2,
         "states.get": 2,
-        "config.time_zone": 1,
+        "config.time_zone": 2,
         "config.path": 3,
         "config.is_allowed_path": 1,
-        "loop.async_add_executor_job": 1,
+        "loop.async_add_executor_job": 3,
         "services.async_register": 9,
         "services.async_remove": 9
       },
@@ -1631,13 +1842,15 @@
       "failed": 0,
       "handles": [
         "config_entries",
-        "data"
+        "data",
+        "loop"
       ],
       "members": {
         "data.get": 1,
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
-        "config_entries.async_unload_platforms": 1
+        "config_entries.async_unload_platforms": 1,
+        "loop.async_add_executor_job": 4
       },
       "calls_services": false,
       "registers_services": false,
@@ -1652,19 +1865,24 @@
       "handles": [
         "config_entries",
         "data",
+        "loop",
         "services"
       ],
       "members": {
-        "config_entries.async_update_entry": 2,
+        "config_entries.async_update_entry": 6,
         "config_entries.async_forward_entry_setups": 1,
         "services.has_service": 1,
         "data.get": 1,
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_entries": 2,
         "data.pop": 1,
-        "config_entries.async_reload": 1,
+        "config_entries.async_reload": 2,
         "services.async_register": 2,
-        "services.async_remove": 2
+        "services.async_remove": 2,
+        "config_entries.async_get_entry": 4,
+        "config_entries.flow": 2,
+        "config_entries.async_schedule_reload": 4,
+        "loop.async_create_task": 2
       },
       "calls_services": false,
       "registers_services": true,
@@ -1694,8 +1912,11 @@
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_reload": 1,
-        "config.units": 2,
-        "data.get": 1
+        "config.units": 4,
+        "states.get": 1,
+        "loop.async_add_executor_job": 1,
+        "data.setdefault": 1,
+        "data.get": 2
       },
       "calls_services": false,
       "registers_services": false,
@@ -1711,34 +1932,44 @@
       "failed": 0,
       "handles": [
         "auth",
+        "bus",
         "config",
         "config_entries",
         "data",
         "http",
         "loop",
-        "services"
+        "services",
+        "states"
       ],
       "members": {
-        "config_entries.async_update_entry": 11,
+        "config_entries.async_update_entry": 12,
         "config_entries.async_entries": 3,
-        "data.get": 33,
+        "data.get": 35,
         "data.setdefault": 4,
         "config_entries.async_forward_entry_setups": 1,
         "services.has_service": 13,
         "services.async_register": 13,
-        "loop.async_add_executor_job": 47,
-        "config_entries.async_get_entry": 3,
+        "loop.async_add_executor_job": 69,
+        "config_entries.async_get_entry": 6,
         "config.path": 1,
         "config.is_allowed_path": 2,
         "config_entries.async_unload_platforms": 1,
-        "loop.async_create_task": 14,
+        "loop.async_create_task": 39,
         "auth.async_get_users": 1,
+        "bus.async_listen": 3,
         "http.async_register_static_paths": 1,
-        "data.pop": 5
+        "data.pop": 5,
+        "bus.async_fire": 5,
+        "states.get": 12,
+        "config.language": 1,
+        "services.async_call": 4
       },
-      "calls_services": false,
+      "calls_services": true,
       "registers_services": true,
-      "service_domains": {},
+      "service_domains": {
+        "notify": 1,
+        "switch": 2
+      },
       "foreign_components": [
         "frontend",
         "http",
@@ -1752,26 +1983,41 @@
       "parsed": 59,
       "failed": 0,
       "handles": [
+        "bus",
+        "config",
         "config_entries",
         "data",
         "http",
-        "loop"
+        "loop",
+        "services"
       ],
       "members": {
-        "loop.async_create_task": 1,
+        "loop.async_create_task": 3,
         "config_entries.async_remove": 1,
-        "config_entries.async_forward_entry_setups": 1,
-        "data.get": 18,
-        "config_entries.async_unload_platforms": 1,
+        "config.path": 4,
+        "config_entries.async_forward_entry_setups": 2,
+        "data.get": 20,
+        "config_entries.async_unload_platforms": 3,
         "data.pop": 2,
+        "loop.async_add_executor_job": 17,
+        "bus.async_listen_once": 1,
+        "config.components": 1,
+        "services.has_service": 1,
+        "services.async_call": 3,
+        "config_entries.flow": 2,
+        "config_entries.async_get_entry": 1,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_reload": 1,
         "http.async_register_static_paths": 1,
         "http.register_static_path": 1,
-        "data.setdefault": 1,
-        "loop.async_add_executor_job": 3
+        "data.setdefault": 1
       },
-      "calls_services": false,
+      "calls_services": true,
       "registers_services": false,
-      "service_domains": {},
+      "service_domains": {
+        "homeassistant": 2,
+        "frontend": 1
+      },
       "foreign_components": [
         "diagnostics",
         "frontend",
@@ -1791,18 +2037,25 @@
         "config",
         "config_entries",
         "data",
-        "loop"
+        "loop",
+        "states"
       ],
       "members": {
-        "loop.async_add_executor_job": 1,
+        "loop.async_add_executor_job": 6,
         "data.setdefault": 2,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_reload": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_update_entry": 1,
+        "config_entries.async_update_entry": 2,
+        "config_entries.async_get_entry": 1,
+        "config_entries.async_schedule_reload": 1,
         "config.path": 1,
         "config.config_dir": 1,
-        "bus.async_listen_once": 1
+        "bus.async_listen_once": 1,
+        "states.get": 4,
+        "states.async_all": 4,
+        "config_entries.async_entries": 1,
+        "data.get": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -1826,19 +2079,24 @@
       "members": {
         "config_entries.async_forward_entry_setups": 3,
         "config_entries.async_forward_entry_unload": 3,
-        "data.get": 7,
+        "data.get": 22,
         "bus.async_listen": 8,
         "data.setdefault": 2,
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_entries": 3,
         "loop.async_create_task": 1,
         "config_entries.flow": 2,
-        "bus.async_fire": 1,
-        "services.async_register": 1
+        "bus.async_fire": 7,
+        "services.async_register": 1,
+        "services.async_call": 1,
+        "config_entries.async_update_entry": 2,
+        "config_entries.async_schedule_reload": 1
       },
-      "calls_services": false,
+      "calls_services": true,
       "registers_services": true,
-      "service_domains": {},
+      "service_domains": {
+        "homeassistant": 1
+      },
       "foreign_components": [
         "device_automation",
         "homeassistant",
@@ -1853,18 +2111,23 @@
       "parsed": 18,
       "failed": 0,
       "handles": [
+        "bus",
         "config_entries",
         "http",
-        "services"
+        "services",
+        "states"
       ],
       "members": {
         "config_entries.async_forward_entry_setups": 1,
         "http.register_view": 1,
         "config_entries.async_forward_entry_unload": 1,
-        "config_entries.async_entries": 1,
+        "config_entries.async_entries": 2,
         "config_entries.async_update_entry": 2,
         "config_entries.async_get_entry": 2,
-        "services.async_register": 2
+        "services.async_register": 2,
+        "states.get": 1,
+        "states.async_set": 1,
+        "bus.fire": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -1887,12 +2150,14 @@
         "services"
       ],
       "members": {
-        "config_entries.async_reload": 1,
+        "config_entries.async_reload": 2,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_entries": 1,
         "config_entries.async_unload_platforms": 1,
         "services.async_register": 8,
         "bus.async_fire": 2,
+        "config_entries.async_get_entry": 1,
+        "config_entries.async_update_entry": 1,
         "config.language": 1,
         "config.country": 1
       },
@@ -1920,11 +2185,15 @@
       "members": {
         "data.setdefault": 1,
         "services.async_register": 3,
-        "config.path": 2,
-        "loop.async_add_executor_job": 2,
+        "config.path": 3,
+        "loop.async_add_executor_job": 5,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_get_entry": 1
+        "loop.time": 1,
+        "loop.call_at": 1,
+        "data.get": 1,
+        "config_entries.async_entry_for_domain_unique_id": 2,
+        "config_entries.async_get_entry": 2
       },
       "calls_services": false,
       "registers_services": true,
@@ -1950,26 +2219,28 @@
         "services"
       ],
       "members": {
-        "config_entries.async_entries": 3,
+        "config_entries.async_entries": 4,
         "data.setdefault": 2,
         "config_entries.async_forward_entry_setups": 1,
-        "data.get": 13,
+        "data.get": 14,
         "http.register_view": 1,
         "bus.async_listen_once": 2,
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_reload": 1,
-        "config_entries.async_update_entry": 6,
-        "config_entries.async_schedule_reload": 1,
+        "config_entries.async_update_entry": 15,
+        "config_entries.async_schedule_reload": 2,
         "services.async_register": 17,
         "services.async_remove": 1,
-        "loop.async_add_executor_job": 2,
-        "config_entries.async_get_entry": 8,
-        "config.language": 9,
-        "loop.async_create_task": 1,
+        "loop.async_add_executor_job": 11,
+        "config_entries.async_get_entry": 15,
+        "config.language": 11,
+        "loop.async_create_task": 7,
         "auth.async_get_user": 1,
         "http.async_register_static_paths": 2,
         "data.pop": 2,
+        "config_entries.flow": 4,
         "config_entries.async_loaded_entries": 1,
+        "bus.async_fire": 8,
         "config.config_dir": 1
       },
       "calls_services": false,
@@ -2012,7 +2283,8 @@
         "config_entries.async_unload_platforms": 1,
         "data.get": 1,
         "services.async_remove": 1,
-        "data.pop": 1
+        "data.pop": 1,
+        "config_entries.async_get_entry": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -2027,7 +2299,9 @@
       "parsed": 11,
       "failed": 0,
       "handles": [
+        "config",
         "config_entries",
+        "loop",
         "services"
       ],
       "members": {
@@ -2035,7 +2309,9 @@
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_update_entry": 3,
         "config_entries.async_get_entry": 1,
-        "services.async_register": 2
+        "services.async_register": 2,
+        "loop.async_create_task": 1,
+        "config.location_name": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -2050,20 +2326,51 @@
       "parsed": 69,
       "failed": 0,
       "handles": [
+        "bus",
+        "config",
         "config_entries",
-        "data"
+        "data",
+        "loop",
+        "services",
+        "states"
       ],
       "members": {
-        "data.get": 1,
+        "data.get": 3,
         "data.setdefault": 1,
         "config_entries.async_update_entry": 1,
+        "loop.async_add_executor_job": 45,
+        "bus.async_listen_once": 2,
+        "bus.async_listen": 2,
+        "config_entries.async_forward_entry_setups": 2,
         "config_entries.async_reload": 1,
         "config_entries.async_forward_entry_unload": 2,
-        "config_entries.async_unload_platforms": 1
+        "loop.async_create_task": 2,
+        "states.get": 12,
+        "states.async_set": 1,
+        "states.async_remove": 1,
+        "services.call": 7,
+        "config_entries.async_entries": 1,
+        "services.async_call": 4,
+        "services.register": 6,
+        "config_entries.async_schedule_reload": 1,
+        "config.path": 30,
+        "states.async_all": 1,
+        "states.entity_ids": 1,
+        "states.set": 1,
+        "config_entries.async_unload_platforms": 1,
+        "states.async_available": 1,
+        "states.remove": 1,
+        "loop.create_task": 1,
+        "config_entries.flow": 4
       },
-      "calls_services": false,
-      "registers_services": false,
-      "service_domains": {},
+      "calls_services": true,
+      "registers_services": true,
+      "service_domains": {
+        "homeassistant": 5,
+        "persistent_notification": 1,
+        "notify": 1,
+        "frontend": 1
+      },
       "foreign_components": [
         "lovelace",
         "mobile_app"
@@ -2111,12 +2418,13 @@
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_update_entry": 1,
+        "config_entries.async_update_entry": 5,
         "services.async_register": 1,
         "services.async_remove": 1,
-        "config_entries.async_get_entry": 2,
-        "loop.async_add_executor_job": 2,
-        "config.language": 1
+        "config_entries.async_get_entry": 3,
+        "loop.async_add_executor_job": 20,
+        "config.language": 3,
+        "config_entries.async_reload": 3
       },
       "calls_services": false,
       "registers_services": true,
@@ -2139,7 +2447,9 @@
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_reload": 1,
         "config_entries.async_update_entry": 1,
-        "config.location_name": 3
+        "config.location_name": 4,
+        "config.latitude": 1,
+        "config.longitude": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -2156,17 +2466,20 @@
       "handles": [
         "config",
         "config_entries",
+        "loop",
         "services",
         "states"
       ],
       "members": {
         "config_entries.async_entries": 2,
-        "config_entries.async_update_entry": 1,
+        "config_entries.async_update_entry": 2,
         "config.time_zone": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_reload": 1,
         "states.get": 1,
+        "loop.call_soon_threadsafe": 3,
+        "loop.async_create_task": 2,
         "services.async_call": 1
       },
       "calls_services": true,
@@ -2193,16 +2506,18 @@
         "states"
       ],
       "members": {
-        "loop.async_add_executor_job": 1,
+        "loop.async_add_executor_job": 7,
+        "config.path": 7,
+        "loop.async_create_task": 6,
+        "loop.create_task": 1,
+        "loop.run_in_executor": 21,
         "config_entries.async_forward_entry_setups": 1,
-        "config.path": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_update_entry": 4,
-        "config_entries.async_entries": 5,
-        "data.get": 1,
-        "loop.async_create_task": 1,
+        "config_entries.async_update_entry": 5,
+        "config_entries.async_entries": 8,
+        "data.get": 9,
         "config_entries.async_remove": 1,
-        "states.get": 4,
+        "states.get": 6,
         "states.async_set": 1,
         "services.register": 6,
         "http.register_view": 3
@@ -2231,13 +2546,15 @@
         "data.setdefault": 1,
         "config_entries.async_entries": 3,
         "config_entries.async_reload": 2,
-        "config_entries.async_update_entry": 4,
+        "config_entries.async_update_entry": 10,
         "services.async_register": 1,
         "bus.async_listen_once": 1,
         "config_entries.async_remove": 1,
         "config_entries.async_forward_entry_setups": 1,
-        "loop.async_create_task": 1,
-        "config_entries.async_forward_entry_unload": 1
+        "loop.async_create_task": 4,
+        "config_entries.async_forward_entry_unload": 1,
+        "loop.async_add_executor_job": 1,
+        "data.get": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -2262,10 +2579,14 @@
         "config_entries.async_forward_entry_setups": 1,
         "loop.async_create_task": 1,
         "config_entries.async_reload": 1,
-        "services.async_register": 21,
+        "services.async_register": 31,
         "config_entries.async_get_entry": 12,
         "config_entries.async_entries": 1,
-        "states.get": 1
+        "states.get": 3,
+        "bus.async_fire": 3,
+        "loop.create_task": 3,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_schedule_reload": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -2280,9 +2601,11 @@
       "handles": [
         "config",
         "config_entries",
-        "http"
+        "http",
+        "loop"
       ],
       "members": {
+        "loop.async_add_executor_job": 1,
         "http.async_register_static_paths": 2,
         "config.path": 2,
         "http.register_view": 1,
@@ -2302,23 +2625,37 @@
       "parsed": 38,
       "failed": 0,
       "handles": [
+        "bus",
+        "config",
         "config_entries",
         "data",
         "loop",
         "services"
       ],
       "members": {
+        "data.get": 1,
+        "bus.async_listen_once": 1,
+        "config_entries.async_schedule_reload": 3,
         "data.setdefault": 2,
-        "loop.async_add_executor_job": 5,
+        "loop.async_add_executor_job": 11,
         "loop.create_task": 1,
-        "config_entries.async_reload": 1,
+        "config_entries.async_reload": 3,
         "config_entries.async_unload_platforms": 1,
         "services.async_register": 1,
-        "services.async_remove": 26
+        "services.async_remove": 26,
+        "config_entries.async_update_entry": 6,
+        "config.path": 3,
+        "loop.call_later": 3,
+        "loop.async_create_task": 6,
+        "services.async_call": 1,
+        "config_entries.async_forward_entry_setups": 1,
+        "config_entries.async_get_entry": 1
       },
-      "calls_services": false,
+      "calls_services": true,
       "registers_services": true,
-      "service_domains": {},
+      "service_domains": {
+        "homeassistant": 1
+      },
       "foreign_components": [
         "diagnostics",
         "repairs"
@@ -2336,10 +2673,13 @@
         "services"
       ],
       "members": {
+        "config_entries.async_update_entry": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_forward_entry_unload": 1,
         "loop.async_create_task": 3,
         "config_entries.flow": 2,
+        "loop.async_add_executor_job": 6,
+        "config_entries.async_reload": 1,
         "services.async_call": 2
       },
       "calls_services": true,
@@ -2358,21 +2698,30 @@
         "config_entries",
         "data",
         "loop",
-        "services"
+        "services",
+        "states"
       ],
       "members": {
         "bus.async_listen_once": 2,
-        "config_entries.flow": 2,
-        "config_entries.async_update_entry": 2,
+        "states.get": 1,
+        "config_entries.flow": 9,
+        "config_entries.async_update_entry": 5,
         "config_entries.async_add": 1,
-        "loop.create_future": 1,
+        "config_entries.async_set_disabled_by": 1,
+        "config_entries.async_remove": 1,
+        "loop.create_future": 2,
         "data.pop": 1,
-        "config_entries.async_entries": 1,
+        "config_entries.async_entries": 2,
         "services.async_register": 1,
+        "services.async_remove": 1,
+        "loop.async_add_executor_job": 6,
+        "config_entries.async_entry_for_domain_unique_id": 1,
+        "config_entries.async_schedule_reload": 1,
+        "loop.call_later": 2,
+        "loop.async_create_task": 2,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "config.path": 1,
-        "loop.async_add_executor_job": 1
+        "config.path": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -2389,15 +2738,17 @@
       "parsed": 14,
       "failed": 0,
       "handles": [
+        "config",
         "config_entries",
         "data"
       ],
       "members": {
-        "data.setdefault": 1,
+        "data.setdefault": 2,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_update_entry": 6,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_reload": 1
+        "config_entries.async_reload": 1,
+        "config.units": 2
       },
       "calls_services": false,
       "registers_services": false,
@@ -2412,6 +2763,7 @@
       "parsed": 19,
       "failed": 0,
       "handles": [
+        "config",
         "config_entries",
         "data",
         "loop",
@@ -2424,7 +2776,10 @@
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_update_entry": 5,
-        "loop.async_add_executor_job": 1
+        "loop.async_add_executor_job": 12,
+        "config.path": 2,
+        "data.get": 4,
+        "loop.is_closed": 2
       },
       "calls_services": false,
       "registers_services": true,
@@ -2440,15 +2795,21 @@
       "failed": 0,
       "handles": [
         "config_entries",
-        "data"
+        "data",
+        "loop",
+        "services"
       ],
       "members": {
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_update_entry": 1
+        "config_entries.async_update_entry": 4,
+        "loop.async_add_executor_job": 10,
+        "loop.async_create_task": 2,
+        "config_entries.async_reload": 2,
+        "services.async_call": 1
       },
-      "calls_services": false,
+      "calls_services": true,
       "registers_services": false,
       "service_domains": {},
       "foreign_components": [
@@ -2462,14 +2823,18 @@
       "failed": 0,
       "handles": [
         "config",
-        "config_entries"
+        "config_entries",
+        "loop"
       ],
       "members": {
         "config_entries.async_update_entry": 5,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_reload": 1,
-        "config.time_zone": 1
+        "loop.async_create_task": 2,
+        "config.time_zone": 2,
+        "config.path": 1,
+        "loop.async_add_executor_job": 3
       },
       "calls_services": false,
       "registers_services": false,
@@ -2520,7 +2885,7 @@
         "services.async_register": 4,
         "bus.async_listen_once": 2,
         "config.config_dir": 1,
-        "loop.async_add_executor_job": 3
+        "loop.async_add_executor_job": 6
       },
       "calls_services": false,
       "registers_services": true,
@@ -2540,10 +2905,11 @@
       "members": {
         "data.get": 1,
         "data.setdefault": 1,
-        "loop.async_add_executor_job": 1,
+        "loop.async_add_executor_job": 3,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_forward_entry_unload": 1,
-        "config_entries.async_reload": 1
+        "config_entries.async_reload": 1,
+        "config_entries.async_update_entry": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -2558,13 +2924,19 @@
       "handles": [
         "config_entries",
         "data",
+        "loop",
         "services"
       ],
       "members": {
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
         "services.async_register": 3,
-        "config_entries.async_unload_platforms": 1
+        "config_entries.async_unload_platforms": 1,
+        "loop.async_create_task": 1,
+        "loop.async_add_executor_job": 2,
+        "config_entries.async_get_entry": 2,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_reload": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -2580,13 +2952,17 @@
       "failed": 0,
       "handles": [
         "config_entries",
-        "services"
+        "loop",
+        "services",
+        "states"
       ],
       "members": {
-        "config_entries.async_update_entry": 10,
+        "config_entries.async_update_entry": 13,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_reload": 1,
+        "config_entries.async_reload": 3,
+        "states.get": 1,
+        "loop.async_create_task": 2,
         "config_entries.async_entries": 1,
         "services.async_register": 1
       },
@@ -2602,14 +2978,18 @@
       "failed": 0,
       "handles": [
         "config_entries",
-        "data"
+        "data",
+        "loop"
       ],
       "members": {
-        "config_entries.async_update_entry": 2,
+        "config_entries.async_update_entry": 4,
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
         "data.get": 5,
-        "config_entries.async_unload_platforms": 1
+        "config_entries.async_unload_platforms": 1,
+        "loop.async_create_task": 2,
+        "config_entries.async_reload": 2,
+        "config_entries.async_get_entry": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -2625,11 +3005,14 @@
       "failed": 0,
       "handles": [
         "config_entries",
-        "data"
+        "data",
+        "loop"
       ],
       "members": {
         "config_entries.async_forward_entry_setups": 1,
-        "config_entries.async_forward_entry_unload": 1
+        "config_entries.async_forward_entry_unload": 1,
+        "loop.async_add_executor_job": 1,
+        "data.get": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -2645,10 +3028,11 @@
         "bus",
         "config_entries",
         "data",
-        "loop"
+        "loop",
+        "states"
       ],
       "members": {
-        "config_entries.async_entries": 2,
+        "config_entries.async_entries": 3,
         "config_entries.async_update_entry": 1,
         "loop.call_soon_threadsafe": 1,
         "data.setdefault": 1,
@@ -2657,8 +3041,10 @@
         "config_entries.async_forward_entry_unload": 1,
         "data.pop": 1,
         "config_entries.async_reload": 1,
+        "states.get": 1,
         "loop.create_future": 1,
-        "loop.async_create_task": 1
+        "loop.async_create_task": 3,
+        "data.get": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -2698,6 +3084,7 @@
       "parsed": 5,
       "failed": 0,
       "handles": [
+        "config",
         "config_entries",
         "data",
         "states"
@@ -2705,11 +3092,13 @@
       "members": {
         "data.setdefault": 1,
         "config_entries.async_update_entry": 4,
-        "states.get": 1,
+        "states.get": 2,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_reload": 1,
-        "states.async_entity_ids": 1
+        "states.async_entity_ids": 1,
+        "config.latitude": 2,
+        "config.longitude": 2
       },
       "calls_services": false,
       "registers_services": false,
@@ -2724,22 +3113,29 @@
       "handles": [
         "config_entries",
         "data",
+        "loop",
         "services",
         "states"
       ],
       "members": {
+        "config_entries.async_update_entry": 7,
+        "loop.async_create_task": 21,
+        "states.get": 3,
+        "services.async_call": 1,
         "data.get": 1,
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
-        "states.get": 1,
-        "config_entries.async_update_entry": 2,
         "services.async_services_for_domain": 1,
         "services.async_remove": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_reload": 1
+        "config_entries.async_reload": 1,
+        "services.async_register": 8,
+        "loop.async_add_executor_job": 1,
+        "config_entries.flow": 2,
+        "config_entries.async_entries": 1
       },
-      "calls_services": false,
-      "registers_services": false,
+      "calls_services": true,
+      "registers_services": true,
       "service_domains": {},
       "foreign_components": [
         "persistent_notification"
@@ -2758,16 +3154,17 @@
         "states"
       ],
       "members": {
-        "config_entries.async_entries": 7,
-        "config_entries.async_update_entry": 1,
+        "config_entries.async_entries": 8,
+        "config_entries.async_update_entry": 2,
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 3,
-        "bus.async_listen_once": 1,
-        "config_entries.async_reload": 3,
+        "bus.async_listen_once": 2,
+        "config_entries.async_reload": 6,
         "config_entries.async_unload_platforms": 3,
         "services.register": 1,
         "states.async_all": 2,
-        "bus.async_fire": 4
+        "bus.async_listen": 12,
+        "bus.async_fire": 6
       },
       "calls_services": false,
       "registers_services": true,
@@ -2792,13 +3189,14 @@
       "members": {
         "loop.async_add_executor_job": 1,
         "data.setdefault": 1,
-        "config.latitude": 1,
-        "config.longitude": 1,
+        "config.latitude": 2,
+        "config.longitude": 2,
         "config_entries.async_update_entry": 1,
         "services.async_register": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_reload": 1
+        "config_entries.async_reload": 1,
+        "config.location_name": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -2822,8 +3220,8 @@
       "members": {
         "config_entries.async_update_entry": 2,
         "config.language": 1,
-        "config.path": 1,
-        "loop.async_add_executor_job": 3,
+        "config.path": 2,
+        "loop.async_add_executor_job": 4,
         "services.async_register": 4,
         "services.async_call": 3,
         "services.async_remove": 4,
@@ -2848,13 +3246,15 @@
       "failed": 0,
       "handles": [
         "config_entries",
-        "data"
+        "data",
+        "loop"
       ],
       "members": {
         "config_entries.async_update_entry": 2,
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 4,
-        "config_entries.async_unload_platforms": 4
+        "config_entries.async_unload_platforms": 4,
+        "loop.async_create_task": 18
       },
       "calls_services": false,
       "registers_services": false,
@@ -2871,26 +3271,33 @@
       "failed": 0,
       "handles": [
         "auth",
+        "bus",
         "config",
         "config_entries",
         "data",
         "http",
+        "loop",
         "services"
       ],
       "members": {
         "config_entries.async_entries": 1,
         "http.register_view": 4,
-        "config.country": 1,
-        "config.time_zone": 1,
+        "config.country": 3,
+        "config.time_zone": 2,
         "config_entries.async_forward_entry_setups": 1,
         "services.has_service": 1,
         "services.async_register": 1,
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_reload": 2,
         "config_entries.async_update_entry": 2,
-        "data.setdefault": 3,
+        "config.language": 1,
+        "data.get": 9,
+        "data.setdefault": 4,
+        "loop.async_create_task": 5,
+        "loop.call_soon_threadsafe": 4,
+        "loop.async_add_executor_job": 1,
+        "bus.async_fire": 1,
         "auth.async_validate_access_token": 1,
-        "data.get": 5,
         "auth.async_get_refresh_token": 1
       },
       "calls_services": false,
@@ -2918,10 +3325,10 @@
         "loop"
       ],
       "members": {
+        "loop.async_add_executor_job": 4,
         "http.async_register_static_paths": 2,
         "config.path": 2,
         "http.register_view": 1,
-        "loop.async_add_executor_job": 3,
         "config_entries.async_update_entry": 1,
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
@@ -2948,8 +3355,8 @@
         "loop"
       ],
       "members": {
-        "config.latitude": 1,
-        "config.longitude": 1,
+        "config.latitude": 5,
+        "config.longitude": 5,
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 3,
         "config_entries.async_reload": 1,
@@ -2977,24 +3384,27 @@
         "states"
       ],
       "members": {
-        "bus.async_listen_once": 3,
+        "bus.async_listen_once": 7,
         "services.async_register": 3,
-        "config_entries.async_entries": 7,
-        "config_entries.async_reload": 5,
+        "config_entries.async_entries": 12,
+        "config_entries.async_reload": 7,
         "loop.async_create_task": 5,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
         "config_entries._entries": 2,
         "config_entries.async_remove": 1,
-        "services.async_call": 1,
-        "config_entries.async_update_entry": 8,
-        "bus.async_listen": 1,
-        "config_entries.async_get_entry": 5,
-        "states.get": 6,
-        "data.get": 4,
+        "services.async_call": 2,
+        "config_entries.async_update_entry": 12,
+        "bus.async_listen": 3,
+        "config_entries.async_get_entry": 8,
+        "config_entries.async_entry_for_domain_unique_id": 5,
+        "config_entries.flow": 6,
+        "states.get": 21,
+        "data.get": 6,
         "config.config_dir": 4,
-        "config_entries.async_entry_for_domain_unique_id": 2,
-        "config_entries.flow": 2,
+        "loop.async_add_executor_job": 20,
+        "config.language": 3,
+        "config.path": 5,
         "config_entries.options": 2,
         "states.async_all": 1,
         "config.currency": 1,
@@ -3018,9 +3428,11 @@
       "handles": [
         "auth",
         "bus",
+        "config",
         "config_entries",
         "data",
-        "services"
+        "services",
+        "states"
       ],
       "members": {
         "services.async_register": 3,
@@ -3033,11 +3445,24 @@
         "config_entries.async_entries": 1,
         "auth.async_remove_user": 1,
         "services.async_remove": 3,
-        "config_entries.async_update_entry": 4
+        "config_entries.async_update_entry": 5,
+        "config.time_zone": 4,
+        "services.async_call": 14,
+        "bus.fire": 1,
+        "states.get": 4,
+        "services.call": 2,
+        "states.async_entity_ids": 3
       },
-      "calls_services": false,
+      "calls_services": true,
       "registers_services": true,
-      "service_domains": {},
+      "service_domains": {
+        "scene": 2,
+        "light": 1,
+        "cover": 6,
+        "media_player": 2,
+        "input_select": 1,
+        "homeassistant": 1
+      },
       "foreign_components": [
         "recorder"
       ]
@@ -3057,20 +3482,33 @@
         "states"
       ],
       "members": {
-        "loop.async_create_task": 1,
+        "loop.async_create_task": 4,
         "config_entries.flow": 4,
-        "states.async_set": 2,
+        "states.async_set": 3,
         "data.setdefault": 2,
         "bus.listen_once": 2,
         "loop.call_soon_threadsafe": 1,
-        "loop.async_add_executor_job": 7,
-        "config.path": 3,
-        "services.async_register": 3,
-        "states.async_remove": 1,
-        "bus.async_listen": 3,
-        "config_entries.async_update_entry": 1
+        "loop.async_add_executor_job": 13,
+        "config.path": 4,
+        "services.async_register": 4,
+        "states.async_remove": 2,
+        "bus.async_listen": 5,
+        "bus.async_fire": 3,
+        "data.get": 2,
+        "services.has_service": 1,
+        "services.async_services": 1,
+        "services.supports_response": 1,
+        "services.async_call": 2,
+        "loop.create_task": 1,
+        "services.async_remove": 1,
+        "states.get": 9,
+        "states.async_all": 2,
+        "states.async_entity_ids": 1,
+        "loop.create_future": 2,
+        "config_entries.async_update_entry": 3,
+        "config_entries.async_entries": 2
       },
-      "calls_services": false,
+      "calls_services": true,
       "registers_services": true,
       "service_domains": {},
       "foreign_components": [
@@ -3083,11 +3521,14 @@
       "parsed": 7,
       "failed": 0,
       "handles": [
+        "bus",
         "config",
         "config_entries",
         "data",
         "http",
-        "loop"
+        "loop",
+        "services",
+        "states"
       ],
       "members": {
         "config_entries.async_update_entry": 2,
@@ -3099,10 +3540,18 @@
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_forward_entry_unload": 1,
         "config_entries.async_reload": 1,
+        "bus.async_listen_once": 1,
+        "loop.create_task": 1,
+        "states.async_remove": 2,
+        "states.async_set": 1,
+        "bus.async_fire": 1,
+        "bus.async_listen": 1,
+        "services.async_remove": 1,
+        "services.async_register": 1,
         "config.location_name": 1
       },
       "calls_services": false,
-      "registers_services": false,
+      "registers_services": true,
       "service_domains": {},
       "foreign_components": [
         "http"
@@ -3130,12 +3579,13 @@
         "data.get": 1,
         "config_entries.async_entries": 5,
         "http.async_register_static_paths": 1,
+        "loop.async_add_executor_job": 13,
         "data.setdefault": 1,
-        "loop.async_add_executor_job": 2,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
         "data.pop": 1,
         "states.get": 1,
+        "states.is_state": 1,
         "services.async_services": 1
       },
       "calls_services": true,
@@ -3170,8 +3620,10 @@
         "config_entries.async_forward_entry_unload": 1,
         "loop.async_create_task": 2,
         "bus.async_listen_once": 2,
-        "states.get": 4,
+        "states.get": 8,
+        "loop.create_task": 1,
         "services.has_service": 1,
+        "bus.async_fire": 3,
         "data.get": 1
       },
       "calls_services": false,
@@ -3189,14 +3641,21 @@
       "failed": 0,
       "handles": [
         "config_entries",
-        "data"
+        "data",
+        "loop",
+        "states"
       ],
       "members": {
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
-        "config_entries.async_reload": 1,
+        "config_entries.async_reload": 9,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_update_entry": 1
+        "config_entries.async_update_entry": 10,
+        "states.get": 3,
+        "config_entries.async_get_entry": 4,
+        "config_entries._async_schedule_save": 8,
+        "config_entries.async_entries": 2,
+        "loop.async_create_task": 2
       },
       "calls_services": false,
       "registers_services": false,
@@ -3220,7 +3679,7 @@
         "states"
       ],
       "members": {
-        "config_entries.async_update_entry": 2,
+        "config_entries.async_update_entry": 3,
         "loop.async_create_task": 1,
         "config_entries.flow": 2,
         "data.setdefault": 1,
@@ -3228,7 +3687,7 @@
         "data.pop": 2,
         "config_entries.async_reload": 1,
         "bus.async_listen_once": 1,
-        "data.get": 2,
+        "data.get": 3,
         "config_entries.async_unload_platforms": 1,
         "config.units": 2,
         "states.get": 1
@@ -3254,7 +3713,8 @@
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_entry_for_domain_unique_id": 1,
         "config_entries.async_update_entry": 1,
-        "config_entries.async_entries": 1
+        "config_entries.async_entries": 2,
+        "config_entries.async_get_entry": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -3268,15 +3728,18 @@
       "failed": 0,
       "handles": [
         "config_entries",
-        "data"
+        "data",
+        "loop"
       ],
       "members": {
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_reload": 1,
-        "config_entries.async_update_entry": 2,
-        "config_entries.async_get_entry": 1
+        "config_entries.async_update_entry": 3,
+        "config_entries.async_entry_for_domain_unique_id": 1,
+        "config_entries.async_get_entry": 2,
+        "loop.async_create_task": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -3316,22 +3779,29 @@
       "failed": 0,
       "handles": [
         "bus",
+        "config",
         "config_entries",
         "data",
         "loop",
         "services"
       ],
       "members": {
+        "bus.async_listen": 6,
         "config_entries.async_reload": 1,
         "data.get": 9,
         "bus.async_listen_once": 1,
         "services.async_register": 2,
         "config_entries.async_update_entry": 2,
         "config_entries.async_unload_platforms": 2,
-        "loop.async_add_executor_job": 1,
-        "config_entries.async_entries": 1,
-        "data.setdefault": 4,
-        "bus.async_listen": 2
+        "loop.async_add_executor_job": 4,
+        "loop.create_task": 4,
+        "config_entries.async_forward_entry_setups": 2,
+        "config.path": 2,
+        "loop.call_soon_threadsafe": 1,
+        "bus.async_fire": 2,
+        "config_entries.async_entries": 2,
+        "loop.async_create_task": 1,
+        "data.setdefault": 4
       },
       "calls_services": false,
       "registers_services": true,
@@ -3353,22 +3823,24 @@
         "states"
       ],
       "members": {
+        "config_entries.async_update_entry": 16,
         "config.time_zone": 2,
-        "config_entries.async_update_entry": 3,
         "config.path": 2,
-        "config.config_dir": 8,
+        "config.config_dir": 10,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_reload": 1,
-        "config_entries.async_get_entry": 2,
-        "states.get": 1,
+        "config_entries.async_reload": 3,
+        "loop.async_add_executor_job": 10,
+        "config_entries.async_get_entry": 4,
+        "services.async_remove": 2,
+        "services.async_register": 5,
+        "states.get": 4,
         "config.components": 1,
-        "services.async_register": 2,
         "services.async_services_for_domain": 1,
-        "services.async_remove": 1,
+        "config_entries.async_schedule_reload": 2,
+        "states.async_entity_ids": 1,
         "states.async_all": 1,
-        "services.async_call": 1,
-        "loop.async_add_executor_job": 1
+        "services.async_call": 1
       },
       "calls_services": true,
       "registers_services": true,
@@ -3399,13 +3871,15 @@
         "config_entries.flow": 2,
         "loop.async_create_task": 1,
         "services.async_register": 1,
-        "config_entries.async_update_entry": 1,
+        "config_entries.async_update_entry": 2,
         "bus.async_listen_once": 2,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_reload": 1,
         "config_entries.async_unload_platforms": 1,
+        "bus.async_fire": 1,
         "loop.async_add_executor_job": 3,
-        "http.register_view": 1
+        "http.register_view": 1,
+        "config_entries.async_get_entry": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -3422,6 +3896,7 @@
       "parsed": 219,
       "failed": 0,
       "handles": [
+        "auth",
         "bus",
         "config",
         "config_entries",
@@ -3431,26 +3906,47 @@
         "states"
       ],
       "members": {
-        "loop.async_add_executor_job": 2,
-        "data.get": 4,
+        "loop.async_add_executor_job": 5,
+        "data.get": 16,
         "bus.async_listen_once": 4,
         "config_entries.async_forward_entry_setups": 2,
         "config_entries.async_unload_platforms": 2,
+        "services.async_remove": 1,
+        "config.components": 5,
+        "services.async_register": 1,
+        "bus.async_listen": 15,
+        "services.has_service": 4,
+        "services._services": 5,
+        "config.language": 3,
+        "data.pop": 1,
         "config.config_dir": 3,
-        "bus.async_listen": 3,
-        "states.async_entity_ids": 48,
-        "services.has_service": 1,
+        "services.async_call": 7,
+        "auth.async_get_refresh_token": 1,
+        "auth.async_remove_refresh_token": 1,
+        "states.get": 8,
+        "config_entries.async_get_entry": 6,
+        "config_entries.async_update_entry": 5,
+        "config_entries.async_remove": 1,
+        "states.async_entity_ids": 49,
         "services.async_services": 1,
-        "services.async_call": 2,
-        "states.get": 2,
-        "config.components": 2,
+        "config_entries.async_set_disabled_by": 3,
         "config.path": 2,
-        "config_entries.async_reload": 1,
-        "config_entries.async_update_entry": 1
+        "data.setdefault": 1,
+        "config_entries.async_entries": 4,
+        "auth.async_get_user": 2,
+        "auth.async_update_user": 2,
+        "states.async_all": 2,
+        "states.async_remove": 1,
+        "config_entries.flow": 4,
+        "auth.async_get_users": 1,
+        "config_entries.async_reload": 1
       },
       "calls_services": true,
-      "registers_services": false,
-      "service_domains": {},
+      "registers_services": true,
+      "service_domains": {
+        "homeassistant": 1,
+        "person": 1
+      },
       "foreign_components": [
         "alert",
         "automation",
@@ -3518,6 +4014,7 @@
         "loop.async_add_executor_job": 4,
         "services.register": 2,
         "bus.async_listen": 1,
+        "loop.async_create_task": 3,
         "config.path": 5,
         "http.async_register_static_paths": 2,
         "loop.run_in_executor": 2
@@ -3538,16 +4035,20 @@
       "parsed": 35,
       "failed": 0,
       "handles": [
+        "bus",
         "config_entries",
-        "data"
+        "data",
+        "loop"
       ],
       "members": {
-        "data.setdefault": 2,
+        "data.setdefault": 3,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_update_entry": 1,
+        "config_entries.async_update_entry": 2,
         "config_entries.async_forward_entry_setups": 2,
         "config_entries.async_reload": 3,
-        "data.get": 1
+        "bus.async_listen_once": 2,
+        "data.get": 1,
+        "loop.async_create_task": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -3566,18 +4067,19 @@
         "loop"
       ],
       "members": {
+        "loop.async_add_executor_job": 173,
         "data.setdefault": 2,
-        "loop.async_add_executor_job": 31,
-        "config_entries.async_update_entry": 11,
+        "config_entries.async_update_entry": 19,
         "config_entries.async_unload_platforms": 1,
-        "data.get": 3,
-        "loop.async_create_task": 2,
+        "data.get": 5,
+        "loop.async_create_task": 7,
         "config_entries.async_forward_entry_setups": 2,
         "bus.async_listen_once": 2,
         "config_entries.async_entries": 2,
-        "config_entries.async_get_entry": 1,
+        "config_entries.async_get_entry": 3,
         "bus.fire": 1,
-        "config_entries.async_forward_entry_unload": 1
+        "config_entries.async_forward_entry_unload": 1,
+        "config_entries.async_reload": 4
       },
       "calls_services": false,
       "registers_services": false,
@@ -3607,13 +4109,13 @@
         "config_entries.async_forward_entry_setups": 1,
         "services.async_register": 2,
         "config_entries.async_forward_entry_unload": 1,
-        "data.get": 5,
+        "data.get": 6,
         "services.async_remove": 1,
         "config_entries.async_reload": 1,
         "config.path": 1,
         "data.keys": 1,
-        "data.setdefault": 1,
-        "config.language": 1
+        "data.setdefault": 2,
+        "config.language": 2
       },
       "calls_services": false,
       "registers_services": true,
@@ -3633,9 +4135,9 @@
         "services"
       ],
       "members": {
-        "config_entries.async_update_entry": 4,
+        "config_entries.async_update_entry": 5,
         "config_entries.async_entries": 8,
-        "loop.async_create_task": 1,
+        "loop.async_create_task": 2,
         "config_entries.flow": 2,
         "data.setdefault": 2,
         "loop.async_add_executor_job": 2,
@@ -3643,6 +4145,8 @@
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
         "data.get": 1,
+        "config_entries.async_reload": 3,
+        "loop.time": 1,
         "services.async_register": 2,
         "services.async_remove": 2
       },
@@ -3675,7 +4179,8 @@
         "config_entries.async_unload_platforms": 1,
         "bus.async_fire": 1,
         "states.get": 4,
-        "config.units": 2
+        "config.units": 2,
+        "states.async_all": 2
       },
       "calls_services": false,
       "registers_services": false,
@@ -3693,14 +4198,15 @@
         "services"
       ],
       "members": {
+        "config_entries.async_update_entry": 4,
+        "config_entries.async_reload": 3,
         "data.get": 2,
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
         "services.async_register": 3,
         "config_entries.async_forward_entry_unload": 1,
         "services.async_remove": 2,
-        "config_entries.async_reload": 1,
-        "config_entries.async_update_entry": 1
+        "config_entries.async_get_entry": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -3722,8 +4228,8 @@
         "services"
       ],
       "members": {
-        "config_entries.async_update_entry": 1,
-        "loop.async_add_executor_job": 3,
+        "config_entries.async_update_entry": 2,
+        "loop.async_add_executor_job": 12,
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
@@ -3732,7 +4238,7 @@
         "config_entries.async_reload": 1,
         "config_entries.async_get_entry": 1,
         "services.async_register": 1,
-        "bus.fire": 1
+        "bus.fire": 5
       },
       "calls_services": false,
       "registers_services": true,
@@ -3746,13 +4252,15 @@
       "failed": 0,
       "handles": [
         "config_entries",
-        "data"
+        "data",
+        "loop"
       ],
       "members": {
         "config_entries.async_reload": 2,
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
+        "loop.async_add_executor_job": 31,
         "config_entries.async_entries": 1
       },
       "calls_services": false,
@@ -3768,21 +4276,30 @@
       "parsed": 8,
       "failed": 0,
       "handles": [
+        "bus",
         "config",
         "config_entries",
         "data",
-        "loop"
+        "http",
+        "loop",
+        "services"
       ],
       "members": {
-        "loop.async_create_task": 1,
+        "loop.async_create_task": 2,
         "config_entries.async_remove": 1,
-        "data.get": 2,
-        "config.path": 5,
-        "loop.async_add_executor_job": 1,
-        "config_entries.async_reload": 1
+        "data.get": 4,
+        "config.path": 11,
+        "loop.async_add_executor_job": 7,
+        "config_entries.async_reload": 1,
+        "http.async_register_static_paths": 1,
+        "bus.async_fire": 2,
+        "services.async_register": 1,
+        "config_entries.flow": 2,
+        "config_entries.async_get_entry": 1,
+        "config_entries.async_update_entry": 1
       },
       "calls_services": false,
-      "registers_services": false,
+      "registers_services": true,
       "service_domains": {},
       "foreign_components": [
         "frontend",
@@ -3800,23 +4317,38 @@
         "config",
         "config_entries",
         "data",
+        "loop",
+        "services",
         "states"
       ],
       "members": {
+        "loop.async_create_task": 7,
+        "states.get": 20,
+        "services.async_call": 7,
         "data.setdefault": 1,
         "bus.async_listen_once": 1,
-        "config_entries.async_entries": 1,
+        "config_entries.async_entries": 2,
         "config_entries.async_reload": 2,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_update_entry": 1,
+        "config_entries.async_update_entry": 5,
+        "data.get": 6,
+        "config.time_zone": 2,
+        "config.units": 28,
+        "data.pop": 1,
         "bus.fire": 1,
-        "states.get": 1,
-        "config.units": 4
+        "bus.async_listen": 1,
+        "config_entries.async_get_entry": 4,
+        "bus.async_fire": 1,
+        "config.path": 1,
+        "loop.is_closed": 2,
+        "config.language": 1
       },
-      "calls_services": false,
+      "calls_services": true,
       "registers_services": false,
-      "service_domains": {},
+      "service_domains": {
+        "persistent_notification": 3
+      },
       "foreign_components": [
         "input_boolean",
         "input_datetime",
@@ -3833,13 +4365,17 @@
       "failed": 0,
       "handles": [
         "config_entries",
-        "data"
+        "data",
+        "loop"
       ],
       "members": {
         "data.setdefault": 2,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_reload": 1
+        "config_entries.async_reload": 1,
+        "loop.async_add_executor_job": 1,
+        "config_entries.async_get_entry": 1,
+        "config_entries.async_update_entry": 5
       },
       "calls_services": false,
       "registers_services": false,
@@ -3857,21 +4393,25 @@
         "config_entries",
         "data",
         "loop",
-        "services"
+        "services",
+        "states"
       ],
       "members": {
         "services.async_remove": 1,
         "bus.async_listen_once": 1,
         "config_entries.async_forward_entry_setups": 1,
-        "config_entries.async_update_entry": 2,
-        "loop.async_create_task": 1,
+        "config_entries.async_update_entry": 5,
+        "loop.async_create_task": 3,
         "data.setdefault": 1,
         "services.async_register": 1,
         "config_entries.async_entries": 1,
         "config_entries.async_forward_entry_unload": 1,
-        "config_entries.async_reload": 1,
+        "config_entries.async_reload": 2,
+        "states.get": 1,
+        "config.time_zone": 5,
+        "config_entries.flow": 2,
+        "config_entries.async_get_entry": 2,
         "config.path": 2,
-        "config_entries.async_get_entry": 1,
         "data.get": 1
       },
       "calls_services": false,
@@ -3885,19 +4425,23 @@
       "parsed": 1015,
       "failed": 0,
       "handles": [
+        "config",
         "config_entries",
         "data",
         "loop",
         "services"
       ],
       "members": {
-        "loop.async_add_executor_job": 4,
+        "loop.async_add_executor_job": 8,
         "data.setdefault": 2,
         "config_entries.async_forward_entry_setups": 1,
         "services.async_register": 2,
         "config_entries.async_reload": 1,
         "config_entries.async_unload_platforms": 1,
-        "config_entries.async_update_entry": 1
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_get_entry": 1,
+        "config.language": 1,
+        "data.get": 1
       },
       "calls_services": false,
       "registers_services": true,
@@ -3919,27 +4463,34 @@
         "states"
       ],
       "members": {
-        "config.path": 8,
-        "loop.async_add_executor_job": 4,
+        "config.path": 10,
+        "loop.async_add_executor_job": 9,
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
-        "bus.async_listen": 1,
+        "bus.async_listen": 7,
         "config_entries.async_reload": 1,
         "services.has_service": 2,
         "services.async_remove": 1,
         "config_entries.async_unload_platforms": 1,
         "data.pop": 2,
-        "config_entries.async_update_entry": 2,
+        "config_entries.async_update_entry": 7,
+        "services.async_register": 2,
+        "services.async_call": 4,
         "states.get": 3,
+        "states.async_all": 1,
+        "loop.async_create_task": 2,
+        "states.async_entity_ids": 1,
+        "loop.call_later": 2,
+        "config.config_dir": 3,
         "config_entries.async_get_entry": 2,
-        "config.config_dir": 1,
         "config.time_zone": 1,
-        "services.async_call": 1,
         "services.async_services": 1
       },
       "calls_services": true,
-      "registers_services": false,
-      "service_domains": {},
+      "registers_services": true,
+      "service_domains": {
+        "persistent_notification": 2
+      },
       "foreign_components": [
         "automation",
         "homeassistant"
@@ -3966,7 +4517,7 @@
         "bus.async_listen_once": 1,
         "states.get": 1,
         "data.get": 2,
-        "config.path": 2,
+        "config.path": 4,
         "config.config_dir": 1,
         "http.async_register_static_paths": 1,
         "http.register_static_path": 1
@@ -3986,19 +4537,23 @@
       "parsed": 19,
       "failed": 0,
       "handles": [
+        "bus",
         "config_entries",
         "data",
-        "loop"
+        "loop",
+        "states"
       ],
       "members": {
-        "config_entries.async_entries": 3,
-        "config_entries.async_update_entry": 3,
+        "config_entries.async_entries": 9,
+        "config_entries.async_update_entry": 6,
         "loop.async_create_task": 1,
         "config_entries.flow": 2,
         "data.setdefault": 1,
         "config_entries.async_forward_entry_setups": 1,
-        "config_entries.async_reload": 1,
-        "config_entries.async_unload_platforms": 1
+        "config_entries.async_reload": 3,
+        "config_entries.async_unload_platforms": 1,
+        "states.get": 1,
+        "bus.fire": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -4040,6 +4595,9 @@
         "config_entries.async_unload_platforms": 1,
         "config_entries.async_reload": 1,
         "config_entries.async_update_entry": 2,
+        "bus.async_fire": 2,
+        "loop.create_task": 2,
+        "config_entries.async_get_entry": 1,
         "data.get": 1
       },
       "calls_services": false,
@@ -4057,13 +4615,20 @@
       "parsed": 35,
       "failed": 0,
       "handles": [
+        "config",
         "config_entries",
-        "data"
+        "data",
+        "loop"
       ],
       "members": {
-        "data.setdefault": 1,
+        "data.setdefault": 3,
         "config_entries.async_forward_entry_setups": 1,
-        "config_entries.async_unload_platforms": 1
+        "config_entries.async_unload_platforms": 1,
+        "config.path": 1,
+        "config.language": 1,
+        "loop.async_create_task": 2,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_reload": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -4084,26 +4649,33 @@
         "config_entries",
         "data",
         "loop",
-        "services"
+        "services",
+        "states"
       ],
       "members": {
         "data.setdefault": 19,
-        "loop.async_add_executor_job": 4,
-        "data.get": 2,
+        "loop.async_add_executor_job": 16,
+        "data.get": 3,
         "config_entries.async_forward_entry_setups": 1,
-        "config_entries.async_reload": 2,
+        "config_entries.async_reload": 3,
         "services.async_register": 3,
         "config_entries.async_entries": 1,
-        "bus.async_listen": 1,
-        "config_entries.async_update_entry": 1,
-        "services.async_call": 2,
+        "bus.async_listen": 2,
+        "config_entries.async_update_entry": 5,
+        "states.get": 4,
+        "config.units": 2,
+        "services.async_call": 5,
+        "config_entries.async_schedule_reload": 1,
+        "states.async_all": 1,
+        "config_entries.async_forward_entry_unload": 1,
         "config.time_zone": 3,
         "config.language": 1
       },
       "calls_services": true,
       "registers_services": true,
       "service_domains": {
-        "xiaomi_miot": 2
+        "xiaomi_miot": 2,
+        "recorder": 1
       },
       "foreign_components": [
         "ffmpeg",
@@ -4119,7 +4691,9 @@
         "bus",
         "config",
         "config_entries",
+        "http",
         "loop",
+        "services",
         "states"
       ],
       "members": {
@@ -4129,11 +4703,19 @@
         "config_entries.async_unload_platforms": 1,
         "states.get": 1,
         "config.units": 2,
-        "loop.async_create_task": 1,
-        "bus.async_listen": 1
+        "loop.call_soon_threadsafe": 1,
+        "config_entries.async_get_entry": 1,
+        "loop.async_create_task": 2,
+        "loop.async_add_executor_job": 2,
+        "config_entries.async_update_entry": 1,
+        "bus.async_listen": 1,
+        "bus.fire": 1,
+        "config_entries.flow": 2,
+        "services.async_register": 1,
+        "http.register_view": 1
       },
       "calls_services": false,
-      "registers_services": false,
+      "registers_services": true,
       "service_domains": {},
       "foreign_components": [
         "diagnostics",
@@ -4152,23 +4734,29 @@
         "config_entries",
         "data",
         "http",
+        "loop",
+        "services",
         "states"
       ],
       "members": {
-        "config_entries.async_update_entry": 4,
-        "config_entries.async_entries": 2,
+        "services.async_call": 53,
+        "config_entries.async_entries": 6,
+        "config_entries.async_update_entry": 11,
         "data.get": 1,
         "config_entries.async_reload": 1,
-        "config_entries.async_get_entry": 1,
-        "states.async_all": 1,
-        "states.get": 2,
+        "states.get": 6,
+        "loop.create_task": 2,
+        "bus.async_listen": 1,
+        "states.async_all": 5,
+        "config_entries.async_get_entry": 2,
         "auth.async_get_users": 1,
-        "auth.async_get_user": 1,
+        "auth.async_get_user": 2,
         "http.register_view": 2,
         "auth.async_get_refresh_token": 1,
+        "bus.async_listen_once": 2,
         "bus.async_fire": 3
       },
-      "calls_services": false,
+      "calls_services": true,
       "registers_services": false,
       "service_domains": {},
       "foreign_components": [
@@ -4196,17 +4784,18 @@
       "members": {
         "loop.async_add_executor_job": 3,
         "http.register_view": 2,
-        "config_entries.async_update_entry": 1,
+        "config_entries.async_update_entry": 2,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_reload": 1,
         "config_entries.async_unload_platforms": 1,
         "bus.async_listen_once": 1,
         "services.async_register": 2,
-        "services.async_call": 4,
+        "services.async_call": 9,
         "config_entries.async_entries": 2,
         "loop.async_create_task": 1,
         "config_entries.flow": 2,
-        "bus.async_fire": 2,
+        "config_entries.async_get_entry": 1,
+        "bus.async_fire": 5,
         "data.get": 2,
         "config.path": 2,
         "loop.create_task": 1,
@@ -4215,6 +4804,7 @@
       "calls_services": true,
       "registers_services": true,
       "service_domains": {
+        "media_player": 5,
         "todo": 3
       },
       "foreign_components": [
@@ -4253,12 +4843,15 @@
       "parsed": 26,
       "failed": 0,
       "handles": [
+        "auth",
         "config",
         "config_entries",
-        "loop"
+        "loop",
+        "states"
       ],
       "members": {
-        "config_entries.async_update_entry": 2,
+        "loop.is_running": 12,
+        "config_entries.async_update_entry": 3,
         "config_entries.async_forward_entry_setups": 1,
         "config_entries.async_unload_platforms": 1,
         "config.path": 1,
@@ -4266,7 +4859,11 @@
         "config_entries.async_entries": 1,
         "loop.async_create_task": 1,
         "config_entries.async_reload": 1,
-        "loop.async_add_executor_job": 2
+        "loop.async_add_executor_job": 2,
+        "auth.async_get_user_by_credentials": 1,
+        "auth.async_create_user": 1,
+        "auth.async_link_user": 1,
+        "states.get": 1
       },
       "calls_services": false,
       "registers_services": false,
@@ -4309,6 +4906,7 @@
       "parsed": 31,
       "failed": 0,
       "handles": [
+        "config",
         "config_entries",
         "data",
         "loop",
@@ -4320,8 +4918,11 @@
         "config_entries.async_unload_platforms": 1,
         "services.has_service": 1,
         "config_entries.async_entries": 1,
-        "loop.async_create_task": 2,
-        "services.async_register": 1
+        "loop.async_create_task": 3,
+        "services.async_register": 1,
+        "config.location_name": 1,
+        "config_entries.async_update_entry": 1,
+        "config_entries.async_reload": 1
       },
       "calls_services": false,
       "registers_services": true,
