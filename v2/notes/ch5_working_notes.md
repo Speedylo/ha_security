@@ -16,8 +16,8 @@ questions a viva will probe.
 | 5.5 | The relocation problem — criteria K1–K7, candidates R1–R5, three eliminated | ✅ drafted |
 | 5.6 | **Decision 2 — R1 vs R2** (G2 #2, §3.9 open question 2) | ✅ drafted — **R2 chosen; G2 divergence reported** |
 | 5.7 | Decision 3 — the isolation primitive (G2 #3) | ✅ drafted — namespaces + seccomp + cgroup v2; **G2 confirmation**, primitives probed on the Pi |
-| 5.8 | Decision 4 — implemented scope (G2 #4) | ⬅ **next** — and §5.6.3's 17-sandbox budget is the number it decides against |
-| 5.9 | Who authors the manifest (§3.9 open question 1) | not started |
+| 5.8 | Decision 4 — implemented scope (G2 #4) | ✅ drafted — **DIVERGED**: sensors + egress×2 + one lock path |
+| 5.9 | Who authors the manifest (§3.9 open question 1) | ⬅ **next** |
 | 5.10 | The manifest — schema and granularity (S5) | not started |
 | 5.11 | The mediator interface and the channel (T02, K4) | not started |
 | 5.12 | Identity and the audit record (S7; `decision_audit_identity_and_trust_layer.md`) | not started |
@@ -187,6 +187,31 @@ Three things the experiment produced that the argument did not have before:
 **What this does not settle.** One synthetic integration, measured idle, with no mediator
 attached. It establishes the shape works and the cost is affordable; it is not the
 compatibility evaluation and must not be reported as one.
+
+## Open conflict for Younes to settle at G3 — the cut order
+
+`01_PLAN.md` §6 says that if G3 fires at the end of October, **the actuator PoC is cut
+first**, then coverage-widening. §5.8.2 makes that ordering look wrong.
+
+The cut list was written in August, before the scope was derived from Chapter 3's
+verification column. Reading that column back gives:
+
+- **S5's stated verification names a lock operation and its risk-asymmetric counterpart.**
+  Cut the actuator and S5 cannot be verified at all — not verified weakly, not verified.
+- **T05 is the register's joint-highest risk** (25, Critical, likelihood 5) and §4.10 treats
+  it with F3/S5/S6. Cut the actuator and the highest-rated threat has no demonstrated control.
+- Cutting **coverage-widening** instead costs a weaker N2 number — real, but N2 is a
+  *reporting* requirement and a smaller sample still satisfies it honestly.
+
+**Recommendation: swap the order — cut coverage-widening first, keep the actuator.** Not
+applied to `01_PLAN.md`, because the plan is Younes's document and G3 is the decision point.
+Flagged in §5.8.5 of the report as a known conflict rather than silently resolved.
+
+The counter-argument worth having ready: the actuator is genuinely more work than widening
+the integration set, so if the schedule pressure at G3 is severe, the honest move may be to
+cut it *and state in Chapter 7 that S5 is unverified*, rather than to claim it. An unverified
+requirement that says so is defensible; a verification criterion quietly rewritten to match
+what was built is not.
 
 ## Questions a viva will probe here
 

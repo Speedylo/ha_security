@@ -521,7 +521,153 @@ same answer reached along a different road is the case where confirmation carrie
 The one thing the first pass did not produce is §5.7.4's finding about the memory controller,
 which came from probing the target rather than from reasoning about it.
 
+## 5.8 Decision 4 — scope
+
+The last of the four decisions Gate G2 re-opened is scope, and the word covers two different
+questions that are worth separating before either is answered:
+
+- **Which integrations does the framework confine?** A property of the design.
+- **What must the implementation demonstrate?** A property of the artifact, and the thing
+  Chapters 6 and 7 are sized by.
+
+They are answered by different evidence, and conflating them is how a proof of concept ends
+up demonstrating whatever was easiest to build.
+
+### 5.8.1 Which integrations are confined
+
+**Third-party integrations, all of them; not the platform's own.**
+
+The boundary is already drawn by Chapter 4. §4.2 places Home Assistant core vulnerabilities
+out of scope as first-party code addressed by the project's own security programme, and §4.5
+records platform maintainers as AC6 — trusted, on the ground that if the platform is hostile
+no integration-level control helps. Confining the platform's own components would also be
+incoherent in a second way: they *are* the platform, and the sandbox they would be confined
+from is the thing they constitute.
+
+The interesting question is whether confining *every* third-party integration is affordable,
+because §5.6.3 fixed the budget at roughly 17 sandboxes on the C4 device. Chapter 1's
+telemetry answers it:
+
+| Figure | Value |
+|---|---|
+| Mean custom integrations per HACS-using installation, excluding HACS itself | **4.02** |
+| Sandbox budget measured on the Pi 5 (§5.6.3) | **~17** |
+
+A typical installation runs about four community integrations, against a budget of about
+seventeen. **Confining all of them is affordable with roughly four times the headroom
+needed**, which is what makes "confine every third-party integration" a design decision
+rather than an aspiration, and what removes the need for the user to choose which of their
+integrations deserve protection — a choice §3.2 says they are not equipped to make.
+
+Three qualifications, because the margin is comfortable rather than unlimited:
+
+- **The mean is not the distribution.** The telemetry publishes per-integration install
+  counts, from which a mean follows, but not the spread across installations. Some
+  installations certainly run many more than four, and this data cannot say how many exceed
+  seventeen. The claim defensible from it is about the typical installation, not about all.
+- **The budget is idle-state.** §5.6.3's sandboxes were measured at rest and without a
+  mediator attached. Both figures will move.
+- **60 MB of the 176 is the platform's base component.** If Chapter 6 finds it removable, the
+  budget roughly doubles and this qualification largely dissolves.
+
+If an installation does exceed the budget, the design degrades in a way N3 already governs:
+the framework states the limit and refuses to confine beyond it, rather than silently
+overcommitting the device. It does not fall back to leaving integrations unconfined without
+saying so.
+
+### 5.8.2 What the implementation must demonstrate
+
+Here the discipline of Chapter 3 pays off. §3.1 required every requirement to state **how it
+will be verified**, and wrote those criteria before any design existed precisely so that the
+evaluation could not be fitted to whatever got built. Scope is therefore not a judgement about
+what would be impressive. It is a reading of what those criteria demand.
+
+| Requirement | Its stated verification | What the artifact must therefore contain |
+|---|---|---|
+| C1 | Integrations run with **zero** source lines changed | Real, unmodified community integrations — not re-implementations |
+| F1 | Entities published behave as native entities | A **sensor** path: an integration that publishes state |
+| F2 | An integration polling a declared remote API completes | An **egress** path through the mediator |
+| **S4** | An integration is denied a host declared only by a *different* integration | **At least two integrations**, with different declared hosts, running at once |
+| **S5** | A manifest permitting a lock operation does not permit its risk-asymmetric counterpart | **A service-call path in the `lock` domain** |
+| S3 | Reads and subscriptions of undeclared entities denied, against a baseline | Both a confined and an unconfined run of the same integration |
+| S6 | Absent and unparseable manifests both denied all capability | Negative cases, not only positive ones |
+| S8 | The 2021 file-theft pattern reproduced on a baseline and blocked under the framework | An adversarial integration, deliberately written |
+| N2 | Executed end-to-end reported **separately** from imports-clean | Enough integrations for the distinction to be meaningful |
+
+Two rows in that table settle the decision, and neither is a preference.
+
+**S4 requires two integrations running concurrently.** Its verification is comparative —
+denial of a host that *another* integration declared — so a single-integration demonstration
+cannot verify it at all. This is not incidental: S4 exists because §2.4.2's prior work
+consolidates declarations and therefore cannot attribute, and the whole point is to show this
+design does not share that limitation. A demonstration with one integration would leave the
+project's clearest differentiator unevidenced.
+
+**S5 requires an actuator, specifically a lock.** Its verification names a lock operation and
+its risk-asymmetric counterpart, because S5 derives from Tyche's published observation (§2.3)
+that `lock.unlock` is not the inverse of `lock.lock` in risk terms. T05 — an integration
+calling `lock.unlock` — is rated 25, Critical, at likelihood 5, and §4.10 treats it with F3,
+S5 and S6. **An implementation confined to polling sensors demonstrates no control over the
+highest-rated threat in the register**, and leaves S5 unverifiable by the criterion the report
+itself set in advance.
+
+**The implemented scope is therefore:**
+
+1. **Sensor publication** — the F1 path, on real unmodified community integrations.
+2. **Mediated egress with per-integration attribution** — F2 and S4, requiring at least two
+   integrations with distinct declared hosts.
+3. **One service-call path in the `lock` domain** — S5 and T05, sufficient to show that a
+   manifest granting `lock.lock` does not grant `lock.unlock`.
+4. **Adversarial cases** — S1, S2, S6, S8: the garbage-collector technique, credential
+   recovery attempts, absent and malformed manifests, and the 2021 file-theft pattern.
+
+**On the lock, one honesty note.** What is under test is the mediator's decision, not a
+physical lock, so the demonstration uses a simulated lock device. The manifest check, the
+denial and the audit record are identical whether the entity behind them is real or
+simulated; the hardware would add realism to the demonstration and nothing to the evidence.
+Stating this is better than staging a photograph of a door.
+
+### 5.8.3 What is deliberately excluded
+
+Beyond §3.7's non-goals, which stand unchanged:
+
+| Excluded from the implementation | Why |
+|---|---|
+| Broad actuator coverage — climate, cover, media_player | One domain proves the architecture handles service calls and asymmetric granularity. A second adds coverage, not evidence |
+| Config-flow and UI integration | Real work for adoption, none for the claim. The manifest's presentation (F4) is demonstrated by rendering, not by a polished flow |
+| Integrations requiring local hardware discovery — Bluetooth, Zigbee, USB | The sandbox's device access is a separate problem with its own boundary questions, and Chapter 7 reports it as unsupported rather than pretending otherwise |
+| Multi-host deployment | §5.3's L4. Available, but adds a network to the trust model for no gain on any requirement |
+
+### 5.8.4 Divergence from the first pass — Gate G2
+
+**The first pass scoped its implementation to polling sensors. This pass diverges**, adding
+mediated egress with two concurrent integrations and one `lock`-domain service path.
+
+The reason is methodological rather than a change of ambition. The first pass wrote its
+evaluation after its implementation, so scope was settled by what had been built. This pass
+wrote the verification criteria in Chapter 3 before any design existed, and §5.8.2 is simply
+those criteria read back. Two of them — S4's comparative denial and S5's lock asymmetry —
+cannot be satisfied by polling sensors, and both trace to published work rather than to
+anything invented here: S4 to the consolidation limitation in the gateway MUD architecture,
+S5 to Tyche.
+
+This is the second G2 divergence, after §5.6, and it has the same shape: writing the chain in
+the defensible order produced a different answer from growing outward from an implementation.
+
+### 5.8.5 A consequence for the schedule, flagged rather than decided
+
+`01_PLAN.md` §6 states that if Gate G3 fires at the end of October, **the actuator proof of
+concept is cut first**. §5.8.2 makes that ordering questionable: cutting the actuator does not
+trim a demonstration, it leaves **S5 unverified against its own stated criterion** and the
+register's highest-rated threat without a demonstrated control.
+
+The cut list was written before the scope was derived, so this is a conflict between two
+working documents rather than an error in either. It is recorded here, and in
+`notes/ch5_working_notes.md`, for decision at G3 rather than resolved unilaterally now —
+but the candidate the evidence favours cutting first is **coverage-widening**, whose cost is
+a weaker N2 number rather than an unverifiable requirement.
+
 ---
 
-*Chapter in progress. §5.8 (implemented scope) onward is next; the section plan is in
+*Chapter in progress. §5.9 (who authors the manifest) onward is next; the section plan is in
 `notes/ch5_working_notes.md`.*
