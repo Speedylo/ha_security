@@ -282,6 +282,10 @@ mislead:
 
 ## 9. Afterwards
 
+**Done, 2026-08-25 — `figures/fig_5_1_confined.py`.** Both instructions below were followed:
+the script is a copy, and every surviving element kept its coordinates. As-built notes are in
+`decision_threat_model_diagrams.md`.
+
 Chapter 5 draws the **same diagram** with TB1, TB3, TB5 and TB6 instantiated, and the delta
 between the two is the argument (`decision_threat_model_diagrams.md`). Two consequences for
 how you draw this one:

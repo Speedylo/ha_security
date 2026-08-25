@@ -23,13 +23,14 @@ that does not belong in the report, including anticipated viva questions.
 | `report/03_requirements.md` | ✅ Drafted — 19 requirements + S9 added by Ch. 4 |
 | `report/04_threat_model.md` | ✅ **Complete.** 18 threats, 6 residual risks; impact scale rebuilt 2026-08-22 (`notes/decision_impact_scale_and_standards.md`); §4.6 figure drawn and inserted 2026-08-24 |
 | `figures/fig_4_1_current_state.py` | ✅ Generates the Threat Dragon model **and** the rendered figure from one source, so they cannot drift. Spec and as-built departures in `notes/ch4_figure_4_1_spec.md` |
+| `figures/fig_5_1_confined.py` | ✅ **2026-08-25.** Figure 5.1 — a *copy* of the Ch. 4 script with every surviving element at its Figure 4.1 coordinates, so the two read as one before-and-after. Asserts on each run that the figure still says what §5.14 claims: six boundaries none absent, TB2/TB4 unchanged, the five removed flows still absent, and nothing crossing TB5 or TB6 |
 | `figures/ecosystem_scale.py` | ✅ Regenerates every number in Ch. 1 |
 | `refs/` | ✅ Four PDFs obtained and read (Corno & Mannella ×2, Thingnes & Meland, Mannella thesis) |
 | **HA source on the machine** | ✅ `~/ha-src/core`, pinned to **2026.8.3** (`759e465`, 2026-08-21), shallow clone. **Outside the capstone repo on purpose** — never committed, never confused with the frozen spike |
 | `notes/ch5_evidence_ha_coupling.md` | ✅ Written 2026-08-24 — the in-process coupling re-derived from source. **Discharges item 1 of `00_METHOD.md` §2** |
 | `notes/ch5_12_audit_explained.md` | ✅ §5.12 from first principles — what a hash is, why the manifest is part of identity, unreachable vs tamper-evident, and six self-test questions |
 | `notes/ch5_evidence_ha_coupling_explained.md` | ✅ The same finding from first principles, for defending it aloud — what `import` really does, why `hass` is everything, a 30-second version, and six self-test questions |
-| `report/05_architecture.md` | 🔶 §5.1–§5.13 drafted; §5.14 next. **All four G2 decisions settled** (two confirmed, two diverged), **§3.9's open question 1 closed in §5.9**, and **§1.6's defence-in-depth promise discharged in §5.13** |
+| `report/05_architecture.md` | 🔶 §5.1–§5.14 drafted; §5.15 next. **All four G2 decisions settled** (two confirmed, two diverged), **§3.9's open question 1 closed in §5.9**, and **§1.6's defence-in-depth promise discharged in §5.13** |
 | `figures/api_surface.py`, `fetch_hacs_corpus.py` | ✅ **2026-08-24.** The API surface re-derived by `ast` parsing over two corpora — 1,458 shipped and 144 community integrations, zero parse failures. Write-up in `notes/ch5_evidence_api_surface.md`; corpus reproducible from `hacs_corpus_manifest.json` |
 | `experiments/r2_footprint/` | ✅ **Pi 5, 2026-08-24.** R2's premise holds and it fits: minimal HA builds without `bootstrap`, an ordinary integration runs against it, 176 MB first sandbox / 136 MB marginal / ~17 in 60% of 4 GB. Feeds §5.6.3 |
 | `experiments/mediation_latency/` | ✅ **Pi 5, 2026-08-24.** One mediated request over the channel: **30.0 µs** median, p99 33.9 µs; ~33k req/s. Floor only — excludes manifest check and audit write. Feeds §5.11.4 |
@@ -37,14 +38,22 @@ that does not belong in the report, including anticipated viva questions.
 
 ## Next session — start here
 
-**Chapters 1–4 are complete. Chapter 5 is §5.1–§5.13 of 15.** Pick up at §5.14. The section
+**Chapters 1–4 are complete. Chapter 5 is §5.1–§5.14 of 15.** Pick up at §5.15. The section
 plan, with what each remaining section owes, is in `notes/ch5_working_notes.md`.
 
 | # | Task | Notes |
 |---|---|---|
-| **1** | **§5.14 — Figure 5.1 and threat-to-control traceability** | Figure 5.1 is Figure 4.1 **with TB1/TB3/TB5/TB6 instantiated**; work from a *copy* of `figures/fig_4_1_current_state.py` and keep the element positions so the delta is legible. Then check every Ch. 4 control against where §5.6–§5.13 actually put it |
-| 2 | §5.15 — what the design does not do | Includes L2 (fixing the platform) as the *better* answer for the platform project, which C2 puts out of reach for this one |
-| 3 | Read Chapter 5 end to end | It was written across thirteen sections; it has not yet been read as a whole for repetition or drift |
+| **1** | **§5.15 — what the design does not do** | Includes L2 (fixing the platform) as the *better* answer for the platform project, which C2 puts out of reach for this one |
+| 2 | Read Chapter 5 end to end | It was written across fourteen sections; it has not yet been read as a whole for repetition or drift |
+
+**⚠ §5.14's traceability check generated three obligations. They are cheap now and expensive
+in November.**
+
+| Owed by | What | Why |
+|---|---|---|
+| **Ch. 6** | A surface where the user encounters the declaration | T13's control has two halves; "enforcement bounded to the declaration" is placed thoroughly and **"declaration made visible" is placed nowhere in Ch. 5**. Bounded by §3.7 — a surface is owed, not evidence anyone reads it |
+| **Ch. 7** | Never repeat §4.10's phrase "filesystem isolation *to declared resources*" | §5.10.2 removed the filesystem clause entirely. The design is stricter than the control, but the phrase now misdescribes the artifact |
+| **Ch. 7** | State S9's boot-time precondition when evaluating it | The Pi's `memory` cgroup controller is disabled by Pi OS (§5.7.4). Testing on a machine where that was quietly fixed, without saying so, is the dishonest version |
 
 **Then Chapter 6 (implementation).** Its first task is fixed by §5.6.5: measure whether the
 sandbox needs the platform's base `homeassistant` component. That is **60 MB of the 176 MB**,
@@ -134,15 +143,14 @@ theatre (`00_METHOD.md` §3); two divergences out of four is the evidence it was
 | **§1.9** — relocation without scoping | §5.2 | **Discharged.** Authority is *positional*, so moving code moves authority unless the new position confers less |
 | **§3.9 Q1** — who authors the manifest | §5.9 | Plural provenance, ordered, default-deny. The file's location is the provenance signal |
 | **§3.9 Q2** — how unmodified code runs elsewhere | §5.6 | R2: a real stripped platform in the sandbox. **G2 divergence** |
+| **§5.1 item 5** — traceability in the other direction | §5.14 | **Discharged.** All 18 Ch. 4 controls placed; **four rows differ from what §4.10 assumed**, and the check was run control-to-threat as well |
 | **§1.6** — defence in depth | §5.13 | **Discharged.** Six layers named, honestly counted as **three** independent ones plus a detective record; every layer this work adds is on the impact side |
 
 **Still owed by Chapter 5:**
 
-- **The paired figure.** Ch. 4's figure is drawn; Ch. 5 draws the fix, with TB1/TB3/TB5/TB6
-  instantiated, and the delta is the argument. `notes/decision_threat_model_diagrams.md` has
-  the bounds; `notes/ch4_figure_4_1_spec.md` §9 says to work from a copy and keep positions.
-- **Threat-to-control traceability** — §5.14 checks every Ch. 4 control against where the
-  design actually put it, rather than asserting coverage.
+- **§5.15 — what the design does not do**, including L2 (fixing the platform) as the
+  *better* answer for the platform project, which C2 puts out of reach for this one. It is
+  the last section of the chapter.
 
 **Two framings to reuse, both stronger than when they were first written:**
 

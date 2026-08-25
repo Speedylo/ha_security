@@ -22,8 +22,8 @@ questions a viva will probe.
 | 5.11 | The mediator interface and the channel (T02, K4) | ✅ drafted — identity is the socket; 30 µs measured on the Pi |
 | 5.12 | Identity and the audit record (S7) | ✅ drafted — identity is a 3-part tuple; **all three open questions in `decision_audit_identity_and_trust_layer.md` answered** |
 | 5.13 | Defence in depth — **§1.6 discharged here** (L1 returns as a layer, never as the boundary) | ✅ drafted — six layers named, **honestly counted as three**; §1.6 discharged in §5.13.6 |
-| 5.14 | Figure 5.1, paired with Figure 4.1; threat-to-control traceability | ⬅ **next** |
-| 5.15 | What the design does not do; L2 as the platform's own better answer | not started |
+| 5.14 | Figure 5.1, paired with Figure 4.1; threat-to-control traceability | ✅ drafted — figure drawn on Figure 4.1's canvas; the check found **four** rows where the design differs from what §4.10 assumed |
+| 5.15 | What the design does not do; L2 as the platform's own better answer | ⬅ **next** |
 
 ## Measurement: what integrations actually talk to
 
@@ -272,6 +272,38 @@ instead, which is the honest picture and is already the chapter's figure.
 **Fixed while writing this:** §5.3 said L1 "reappears in §5.12", written before the section
 numbers settled. §5.12 became identity and the audit record. Corrected to §5.13.
 
+## §5.14 — the traceability check earned its keep
+
+Written 2026-08-25. The temptation was to write §5.14 as a coverage table where all eighteen
+rows read "yes". Running it honestly turned up **four rows where the design is not what §4.10
+assumed**, and three of the four generate work for later chapters. That is the argument for
+doing this as a check rather than a summary.
+
+| Row | What it is | Who owes what |
+|---|---|---|
+| **T02** | Met by a mechanism §4.10's own wording rules out — identity is the socket, so there is no per-request identity field | Nobody. Stated so a viva does not find it first |
+| **T13** | **Half of it is placed nowhere in Ch. 5.** "Enforcement bounded to the declaration" is thorough; "declaration made visible" is not | **Chapter 6 owes a surface.** Bounded by §3.7, which excludes user comprehension — a surface, not evidence anyone reads it |
+| **T14** | The design *overshot*: §4.10 says "filesystem isolation to declared resources", but §5.10.2 removed the filesystem clause entirely | **Chapter 7 must not repeat "to declared resources"** — it would misdescribe the artifact |
+| **T16** | The control has an operational precondition Ch. 4 could not know: the Pi's `memory` cgroup controller is disabled at boot (§5.7.4) | **Chapter 7 must state it** rather than testing on a machine where it was quietly fixed |
+
+**The reverse check is the part most traceability sections skip.** Running control-to-threat
+instead of threat-to-control found three chapter elements answering no threat: manifest
+provenance (answers §3.9 Q1 — legitimate), the identity tuple (defines a term S7 left
+undefined — legitimate), and in-process checking from §5.13.3 (**answers nothing**). The third
+is listed in §5.14.5 on purpose: it was declared as answering nothing where it was introduced,
+and a traceability table that silently omitted it would be the place that concession quietly
+disappeared.
+
+**What the figure produced that the prose had not.** TB5 and TB6 are crossed by no flow at
+all — nobody noticed until it was drawn — and in Figure 4.1 those same two locations carried
+five flows. It is now §5.14.2 and it is the best illustration available of §5.13.4. Also
+worth keeping: Figure 4.1's caption said the gap between TB1 and TB2 "is where a mediating
+component would stand, and today nothing does". Figure 5.1 puts the mediator at exactly those
+coordinates. Chapter 4 set the shot up a day before there was anything to put in it.
+
+**Held to honestly:** TB2 is drawn UNCHANGED, not EXISTS, so the figure itself carries R3.
+Labelling all six EXISTS was the easy edit and the dishonest one.
+
 ## Questions a viva will probe here
 
 - *Why not just fix Home Assistant?* — L2 is the better answer for the platform project and
@@ -288,6 +320,11 @@ numbers settled. §5.12 became identity and the audit record. Corrected to §5.1
 - *Which layer stops R2 — the lock unlocked at 03:00?* — **None, and that is stated in
   §5.13.5.** Every layer works correctly and the door opens. Answering it needs contextual
   integrity (§2.3), which is a different mechanism, not another layer of this one.
+- *Your threat model says "identity on every request" and your design has no such field —
+  which is right?* — §5.14.4. The design is stronger than the control's wording; the wording
+  anticipated the weaker construction. Do not defend this by rereading §4.10 charitably.
+- *Show me a Chapter 4 control you failed to place.* — T13's visible half, and §5.14.4 says so
+  before being asked. It is owed by Chapter 6 and bounded by §3.7.
 - *What if the integration fetches code at runtime?* — Conceded in
   `decision_audit_identity_and_trust_layer.md`: the hash records what was loaded, not what
   executed. It belongs in the limitations section, stated rather than discovered.

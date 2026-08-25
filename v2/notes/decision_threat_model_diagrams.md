@@ -1,7 +1,7 @@
 # Decision — diagramming the threat model, and the ordering it has to respect
 
 **Decided:** 2026-08-22 · Not part of the report. · **Affects:** Ch. 4 §4.6 (figure),
-Ch. 5 (paired figure), `figures/`. · **Status:** decided, not yet drawn.
+Ch. 5 (paired figure), `figures/`. · **Status:** decided; Figure 4.1 drawn 2026-08-24, Figure 5.1 drawn 2026-08-25.
 
 ## The decision
 
@@ -14,7 +14,7 @@ a method. ISO 31000 supplies the process and STRIDE supplies the identification 
 | Figure | Chapter | Shows |
 |---|---|---|
 | 4.1 | Ch. 4 §4.6 | Home Assistant **as it stands today** — one process holding the platform and every integration, with the six boundaries overlaid and four of them drawn as absent |
-| 5.x | Ch. 5 | The same data-flow diagram with TB1, TB3, TB5 and TB6 instantiated |
+| 5.1 | Ch. 5 §5.14.1 | The same data-flow diagram with TB1, TB3, TB5 and TB6 instantiated |
 
 **The delta between the two is the argument.** §4.9 already makes it in prose — four
 Critical risks sharing one cause, integration and platform in one process with no boundary
