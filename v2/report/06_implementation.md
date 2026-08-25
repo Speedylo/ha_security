@@ -1155,9 +1155,107 @@ for exactly the reason §6.4.5 warned about.
   with a marker that draws the eye rather than a tick, because a permit in an adversarial run is
   the thing a reader should check.
 
+## 6.10 What is not built, and what Gate G3 has to decide
+
+§6.1 fixed three strengths of evidence — it exists, it runs, it was measured — and said the
+chapter would name which applied every time. This section applies the same discipline to the
+chapter as a whole, and then reports against §5.6.5's re-decision triggers so that Gate G3 is
+decided on evidence rather than on the calendar.
+
+### 6.10.1 §5.8.2's four scope items, honestly scored
+
+§5.8.2 derived the implemented scope by reading Chapter 3's verification column, and named four
+things the artifact must contain. Two are done, one is half, one is not started.
+
+| # | Scope item | Status |
+|---|---|---|
+| 4 | **Adversarial cases** — S1, S2, S6, S8 | ✅ **Measured.** §6.9: 37 attempts, the published garbage-collector attack among them, no canary reached |
+| 2 | **Mediated egress with per-integration attribution** — F2, S4 | ◐ **Half.** The attribution half is measured — §6.5.2 shows two sandboxes, one lying about which it is, correctly distinguished. **The egress half does not exist**: no proxy, no resolve-then-pin at connection time, no traffic |
+| 3 | **One `lock`-domain service path** — S5, T05 | ◐ **Schema only.** §6.6.2 shows a manifest granting `lock.lock` refusing `lock.unlock`, and that wildcards cannot be written. No service call has travelled through a running system |
+| 1 | **Sensor publication on real unmodified community integrations** — F1, C1 | ❌ **Not started.** No community integration has been run against this framework |
+
+**Nothing here has been quietly redefined.** Item 1's verification criterion is "integrations run
+with zero source lines changed", and that has not been demonstrated by this framework. §5.6.3
+showed a *synthetic* integration running against a minimal Home Assistant, and §6.3.2 showed the
+same instance without the base component — both of which establish the sandbox's interior works,
+and neither of which is C1.
+
+### 6.10.2 The largest gap is step 5, and the bridge that depends on it
+
+§5.11.3 gives the mediator five steps. Four are built (§6.5, §6.6, §6.8). **Step 5 — "act, only
+now, and only using the mediator's own platform credential" — is not**, and with it the whole
+compatibility half of the design:
+
+| Missing | What it is | What it blocks |
+|---|---|---|
+| **The bridge** | The single component inside the sandbox that mirrors declared entities into the local state machine and forwards permitted effects out (§5.6.2, §5.11.3's push shape) | Scope items 1 and 3. Without it a sandbox's Home Assistant is real but disconnected |
+| **Step 5 itself** | The mediator holding a platform credential and applying effects to the real instance (S2) | The same, from the other side |
+| **The egress proxy** | Per-integration outbound network, with T11's resolve-then-pin at connection time | Scope item 2's second half |
+| **Dependency installation** | Resolving and installing an integration's `requirements` into its sandbox | §6.8.1's third identity component, which stays vestigial until this exists |
+
+So the honest summary of where Chapter 6 leaves the work is sharper than a percentage:
+
+> **§5.15.6 said the design's central claim is empirical and that Chapter 6 is where it stops
+> being an argument. Half of it has. The security half is now measured — a hostile integration
+> cannot reach `secrets.yaml`, cannot see another process, cannot escape, and cannot be mistaken
+> for another integration. The compatibility half is still an argument**, because no unmodified
+> integration has run against this framework, and C1 is the constraint that makes the whole
+> problem hard.
+
+That asymmetry matters for how the remaining time is spent, and §6.10.4 returns to it.
+
+### 6.10.3 The Gate G3 report §5.6.5 asked for
+
+§5.6.5 named three conditions that would send the design back from R2 to R1, and required them
+to be reported at G3 rather than judged by feel. **None has fired. None has been tested. All
+three are testable cheaply, and the reason to say so now is that each becomes expensive in
+November.**
+
+| Trigger | Status | What would settle it |
+|---|---|---|
+| Footprint with the mediator and bridge attached leaves fewer sandboxes than a realistic installation needs | **Not fired; direction favourable** | §6.3.2 measured 26 sandboxes without either. The mediator is **one process for all sandboxes**, so it does not scale with them — but the bridge is per-sandbox and its cost is unmeasured. Re-running `experiments/base_component`'s scale arm with the bridge loaded settles it in an afternoon |
+| Real community integrations fail against a minimal instance for reasons a *fuller* instance would fix | **Untested — and this is the one that matters** | It requires only the bridge and the corpus that `figures/fetch_hacs_corpus.py` already rebuilds. Until it is run, R2's central premise rests on one synthetic integration |
+| Version coupling between sandbox and host proves unmanageable | **Untested** | Cheapest of the three: build sandboxes against two Home Assistant releases and record what breaks |
+
+**The second row is the one to act on.** It is the trigger most likely to fire, it is the one
+whose failure would be most expensive to discover late, and it is blocked on exactly the
+component §6.10.2 names as the largest gap. That is a coincidence worth exploiting rather than
+noting: **building the bridge discharges scope items 1 and 3 and tests the G3 trigger most
+likely to fire, in one piece of work.**
+
+### 6.10.4 What Chapter 6 adds to the cut-order conflict
+
+§5.8.5 recorded a conflict and deliberately did not resolve it: `01_PLAN.md` §6 says the actuator
+proof of concept is cut first if G3 fires, while §5.8.2 found that cutting it leaves S5
+unverified against its own criterion and T05 — the register's joint-highest risk — without a
+demonstrated control. §5.8.5 recommended cutting coverage-widening instead, and left the decision
+to Gate G3.
+
+Chapter 6 changes the arithmetic in one respect, and it is worth stating precisely because it
+cuts against the recommendation it inherits. **The actuator path is now much cheaper than it
+was when §5.8.5 was written.** The manifest layer that makes S5 true is built and tested
+(§6.6.2); what remains for scope item 3 is a service call travelling through the bridge, which is
+the *same* bridge scope item 1 needs. Once the bridge exists, the lock path is close to free.
+
+That does not resolve the conflict — it is still Younes's call at G3 — but it narrows it. The
+question is no longer "actuator or coverage" but "**bridge, or neither**", because the bridge is
+what both remaining scope items now depend on.
+
+### 6.10.5 Where the chapter leaves the work
+
+Ten self-tests run on the C4 device, and each names the claim it checks. What they establish is
+that the enforcement mechanisms Chapter 5 specified exist, work unprivileged on the target
+hardware, and behave as specified under attack — including three corrections to Chapter 5 found
+by building it (§6.3.2, §6.4.1, §6.6.6), each of which was an inference written in the register
+of a result.
+
+What they do not establish is that any of it is *compatible* with the software it exists to
+confine. That is Chapter 7's question, it is blocked on one component, and it is the half of the
+claim that a hostile reader will go to first.
+
 ---
 
-*Chapter 6 in progress: §6.1–§6.3, §6.4.1–§6.4.6 and §6.5–§6.9 drafted 2026-08-25. Ten
-self-tests, all passing on the C4 device. Next: §6.10 — what is not built, and the report against
-§5.6.5's three re-decision triggers for Gate G3. The section plan and the obligations this
-chapter inherits are in `notes/ch6_working_notes.md`.*
+*Chapter 6 drafted 2026-08-25, §6.1–§6.10. Ten self-tests passing on the C4 device. The chapter
+is complete in structure and **open in one place**: the bridge of §6.10.2, which scope items 1
+and 3 and the second G3 trigger all depend on. The section plan, the obligations this chapter
+inherits, and the questions a viva will probe are in `notes/ch6_working_notes.md`.*

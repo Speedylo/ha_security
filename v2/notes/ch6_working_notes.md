@@ -18,7 +18,7 @@ questions a viva will probe.
 | 6.7 | Where the user meets the declaration — **T13's unplaced half discharged** | ✅ drafted; `describe.py` + `selftest_describe.py`, 14 assertions over four states |
 | 6.8 | Identity and the audit record — three components, two chains, the durable ordering | ✅ drafted; `audit.py` + `selftest_audit.py`, 14 assertions |
 | 6.9 | The adversarial cases — one canary, three outcomes, 37 attempts | ✅ drafted; `selftest_adversary.py`, 21 blocked / 9 empty / 6 denied / 1 permitted |
-| 6.10 | What is not built; the report against §5.6.5's G3 triggers | ⬜ |
+| 6.10 | What is not built; §5.8.2's scope items scored; the G3 report | ✅ drafted |
 
 ## Obligations this chapter inherits
 
@@ -407,6 +407,41 @@ part-way. The fix was to emit each attempt as it completes. That is §6.8.3's ru
 place: write the record before the thing that might not survive. It took two failures to apply
 a lesson already written down twice in this chapter.
 
+## §6.10 — the honest score, and what G3 has to decide
+
+**§5.8.2's four scope items:** item 4 measured, items 2 and 3 half, item 1 not started. Nothing
+redefined to make the score look better — item 1's criterion is "zero source lines changed" and
+no community integration has run against this framework. §5.6.3 and §6.3.2 ran a *synthetic*
+one, which establishes the sandbox's interior works and is not C1.
+
+**The sentence the chapter turns on:**
+
+> §5.15.6 said the design's central claim is empirical and Chapter 6 is where it stops being an
+> argument. **The security half has. The compatibility half has not**, because no unmodified
+> integration has run, and C1 is what makes the problem hard.
+
+Say that before anyone else does. It is the honest score and it is also the argument for what to
+build next.
+
+**The G3 report: none of §5.6.5's three triggers has fired, and none has been tested.** The
+useful contribution is converting that into a cheap test plan rather than leaving it as a gap:
+
+1. *Footprint with mediator and bridge* — direction favourable, because the mediator is one
+   process for all sandboxes and does not scale with them. The bridge is per-sandbox and
+   unmeasured. Re-run `experiments/base_component`'s scale arm with the bridge: an afternoon.
+2. *Real integrations fail against a minimal instance* — **the one that matters**, untested,
+   and blocked on the bridge.
+3. *Version coupling* — cheapest; build against two HA releases and record what breaks.
+
+**The coincidence worth exploiting:** the bridge discharges scope items 1 and 3 *and* tests the
+trigger most likely to fire. One piece of work, three obligations.
+
+**What this does to §5.8.5's cut-order conflict** — and it cuts against the recommendation
+Chapter 5 left. The actuator path is now much cheaper than when §5.8.5 was written, because the
+manifest layer that makes S5 true is built and tested; what remains is a service call through
+the *same* bridge item 1 needs. So the G3 question is no longer "actuator or coverage" but
+"**bridge, or neither**". Still Younes's call, but a narrower one.
+
 ## Anticipated viva questions
 
 **"Your Chapter 5 predicted the budget would double and Chapter 6 says 1.53×. Which of your
@@ -437,6 +472,15 @@ marker, and that is the defect: not that an inference was wrong, but that it rea
 result. The audit that follows is §6.1's three strengths of "built", applied backwards to
 Chapter 5's claims, and the two corrections found so far (§6.3.2, §6.4.1) are both inferences
 sitting next to measurements. The measurements have all replicated.
+
+**"You have built a security framework and never run a real integration through it. Isn't the
+compatibility claim unevidenced?"** — Yes, and §6.10.2 says so in those words rather than
+waiting to be asked. The security half is measured and the compatibility half is still an
+argument; C1 is the constraint that makes the problem hard and it is exactly the one not yet
+demonstrated. What the chapter does instead of hedging is name the single component that blocks
+it, show that the same component tests the G3 trigger most likely to fire, and put both in the
+plan. The alternative — reporting a percentage of "the framework" as complete — would have hidden
+which half was missing.
 
 **"Your adversary was written by you. What does it actually prove?"** — That the attacks
 §5.8.2 names do not succeed, and nothing more; §6.9.5 says so. The one result that does not
