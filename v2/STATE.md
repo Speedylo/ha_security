@@ -1,6 +1,6 @@
 # Where the rebuild stands
 
-**Last updated:** 2026-08-24, end of session · **Read this first when resuming.**
+**Last updated:** 2026-08-25 · **Read this first when resuming.**
 
 **That session in one line:** Chapter 4 closed, Chapter 5 taken from nothing to §5.12 of 15,
 Gate G2 closed with two divergences, and four measurements run on the Pi 5 and the corpora
@@ -29,7 +29,7 @@ that does not belong in the report, including anticipated viva questions.
 | `notes/ch5_evidence_ha_coupling.md` | ✅ Written 2026-08-24 — the in-process coupling re-derived from source. **Discharges item 1 of `00_METHOD.md` §2** |
 | `notes/ch5_12_audit_explained.md` | ✅ §5.12 from first principles — what a hash is, why the manifest is part of identity, unreachable vs tamper-evident, and six self-test questions |
 | `notes/ch5_evidence_ha_coupling_explained.md` | ✅ The same finding from first principles, for defending it aloud — what `import` really does, why `hass` is everything, a 30-second version, and six self-test questions |
-| `report/05_architecture.md` | 🔶 §5.1–§5.12 drafted; §5.13 next. **All four G2 decisions settled** (two confirmed, two diverged) and **§3.9's open question 1 — who authors the manifest — closed in §5.9** |
+| `report/05_architecture.md` | 🔶 §5.1–§5.13 drafted; §5.14 next. **All four G2 decisions settled** (two confirmed, two diverged), **§3.9's open question 1 closed in §5.9**, and **§1.6's defence-in-depth promise discharged in §5.13** |
 | `figures/api_surface.py`, `fetch_hacs_corpus.py` | ✅ **2026-08-24.** The API surface re-derived by `ast` parsing over two corpora — 1,458 shipped and 144 community integrations, zero parse failures. Write-up in `notes/ch5_evidence_api_surface.md`; corpus reproducible from `hacs_corpus_manifest.json` |
 | `experiments/r2_footprint/` | ✅ **Pi 5, 2026-08-24.** R2's premise holds and it fits: minimal HA builds without `bootstrap`, an ordinary integration runs against it, 176 MB first sandbox / 136 MB marginal / ~17 in 60% of 4 GB. Feeds §5.6.3 |
 | `experiments/mediation_latency/` | ✅ **Pi 5, 2026-08-24.** One mediated request over the channel: **30.0 µs** median, p99 33.9 µs; ~33k req/s. Floor only — excludes manifest check and audit write. Feeds §5.11.4 |
@@ -37,15 +37,14 @@ that does not belong in the report, including anticipated viva questions.
 
 ## Next session — start here
 
-**Chapters 1–4 are complete. Chapter 5 is §5.1–§5.12 of 15.** Pick up at §5.13. The section
+**Chapters 1–4 are complete. Chapter 5 is §5.1–§5.13 of 15.** Pick up at §5.14. The section
 plan, with what each remaining section owes, is in `notes/ch5_working_notes.md`.
 
 | # | Task | Notes |
 |---|---|---|
-| **1** | **§5.13 — defence in depth** | **Discharges the §1.6 promise** (likelihood control + impact control). L1 from §5.3 returns here as a layer and never as the boundary — that distinction is the section's spine |
-| 2 | §5.14 — Figure 5.1 and threat-to-control traceability | Figure 5.1 is Figure 4.1 **with TB1/TB3/TB5/TB6 instantiated**; work from a *copy* of `figures/fig_4_1_current_state.py` and keep the element positions so the delta is legible. Then check every Ch. 4 control against where §5.6–§5.12 actually put it |
-| 3 | §5.15 — what the design does not do | Includes L2 (fixing the platform) as the *better* answer for the platform project, which C2 puts out of reach for this one |
-| 4 | Read Chapter 5 end to end | It was written in one long session across twelve sections; it has not yet been read as a whole for repetition or drift |
+| **1** | **§5.14 — Figure 5.1 and threat-to-control traceability** | Figure 5.1 is Figure 4.1 **with TB1/TB3/TB5/TB6 instantiated**; work from a *copy* of `figures/fig_4_1_current_state.py` and keep the element positions so the delta is legible. Then check every Ch. 4 control against where §5.6–§5.13 actually put it |
+| 2 | §5.15 — what the design does not do | Includes L2 (fixing the platform) as the *better* answer for the platform project, which C2 puts out of reach for this one |
+| 3 | Read Chapter 5 end to end | It was written across thirteen sections; it has not yet been read as a whole for repetition or drift |
 
 **Then Chapter 6 (implementation).** Its first task is fixed by §5.6.5: measure whether the
 sandbox needs the platform's base `homeassistant` component. That is **60 MB of the 176 MB**,
@@ -135,12 +134,11 @@ theatre (`00_METHOD.md` §3); two divergences out of four is the evidence it was
 | **§1.9** — relocation without scoping | §5.2 | **Discharged.** Authority is *positional*, so moving code moves authority unless the new position confers less |
 | **§3.9 Q1** — who authors the manifest | §5.9 | Plural provenance, ordered, default-deny. The file's location is the provenance signal |
 | **§3.9 Q2** — how unmodified code runs elsewhere | §5.6 | R2: a real stripped platform in the sandbox. **G2 divergence** |
+| **§1.6** — defence in depth | §5.13 | **Discharged.** Six layers named, honestly counted as **three** independent ones plus a detective record; every layer this work adds is on the impact side |
 
 **Still owed by Chapter 5:**
 
-- **§1.6's defence-in-depth framing** — likelihood control plus impact control. §5.13, and the
-  only Chapter 1 promise still outstanding.
-- **The paired figure.** Ch. 4 drew today; Ch. 5 draws the fix, with TB1/TB3/TB5/TB6
+- **The paired figure.** Ch. 4's figure is drawn; Ch. 5 draws the fix, with TB1/TB3/TB5/TB6
   instantiated, and the delta is the argument. `notes/decision_threat_model_diagrams.md` has
   the bounds; `notes/ch4_figure_4_1_spec.md` §9 says to work from a copy and keep positions.
 - **Threat-to-control traceability** — §5.14 checks every Ch. 4 control against where the

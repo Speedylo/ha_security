@@ -119,7 +119,7 @@ import hooks, audit hooks, module-level shadowing. All of it executes in the int
 is trying to police. Against a buggy integration it works; against a hostile one it is an
 object in a heap the adversary can enumerate. This distinction — effective against accident,
 void against intent — is precisely the likelihood/impact split of §1.6, and it is why L1
-reappears in §5.12 as a defence-in-depth layer and never as the boundary.
+reappears in §5.13 as a defence-in-depth layer and never as the boundary.
 
 **L3 is therefore the architecture**, and the choice is forced rather than preferred: S1
 requires enforcement outside the integration's execution context, C2 forbids putting it in
@@ -1337,7 +1337,158 @@ What the design does buy is that the option stays open at no cost: Chapter 8 can
 the artifact already emits the record such a layer would consume, which is a more useful
 piece of future work than an unevidenced suggestion.
 
+## 5.13 Defence in depth
+
+§1.6 made a promise this chapter has to keep. It argued that community review and confinement
+occupy **different roles in risk treatment** — review acts on *likelihood*, confinement acts on
+*impact* — that the two are complementary rather than substitutes, and that the point would be
+"developed as defence in depth in Chapter 5". This section is that development, and §5.13.6
+states the discharge explicitly.
+
+It is worth saying at the outset what this section is not doing. Defence in depth is the most
+casually invoked phrase in security architecture, and its casual use is a coverage claim
+wearing a disguise: a system with many controls is asserted to be safer than a system with
+few, and the count does the arguing. This design cannot make that move. §4.11 retains four
+High residual risks, and **not one of them is reduced by adding a layer** — §5.13.5 says why,
+because a defence-in-depth section that omits that paragraph is the section that overclaims.
+
+### 5.13.1 What counts as a layer
+
+A control earns the name *layer* in this design only if it passes three tests.
+
+1. **It has a stated failure mode.** A control whose failure conditions have not been written
+   down cannot be reasoned about, and is counted at whatever strength its author assumed.
+2. **Something survives its failure.** A layer with nothing behind it is a boundary, and
+   should be argued as one — which §5.7.5 does for the kernel.
+3. **Its failure cause is independent of the layer behind it.** Two controls that fail
+   together are one layer described twice.
+
+The third test is the one routinely skipped, and it is where most defence-in-depth arguments
+quietly fail. §5.13.4 applies it to this design and finds that two of the layers below
+collapse into one.
+
+### 5.13.2 The layers, and what each survives
+
+| # | Layer | Acts on | Fails when | What is behind it |
+|---|---|---|---|---|
+| **D0** | Community review of published source (§1.6) | Likelihood | The integration is in the long tail, the review predates the running release, or the malice is not blatant [3][5][10] | Everything below. **This project builds none of D0** |
+| **D1** | The declaration, visible before install (§5.9, §5.10; F4) | Likelihood | The author over-declares (R1), or the user does not read it (R6) | Enforcement, which does not depend on the manifest being read |
+| **D2** | Structural absence — the sandbox cannot express the request (§5.6.2, §5.10.2, §5.11.1) | Impact | The sandbox is constructed with the wrong mounts, namespaces or mirrored state | The mediator, for anything that does reach it |
+| **D3** | The mediator's per-request decision (§5.10, §5.11.3; S6) | Impact | A manifest clause is evaluated wrongly, or the grant is broader than the author needed | The kernel boundary, which holds everything not routed through the mediator |
+| **D4** | The kernel boundary — namespaces, seccomp, cgroup v2 (§5.7) | Impact | A kernel vulnerability is reachable through the syscalls seccomp still permits (§5.7.5) | The audit record, if the write happens before the adversary reaches it |
+| **D5** | The attributed, tamper-evident record (§5.12) | Neither — it is *detective* | An event is never recorded, or whoever controls the machine rebuilds the chain (R4) | Nothing. D5 is the last layer |
+
+**The table is ordered by the adversary each layer survives.** D0 and D1 are defeated by
+intent: a hostile author writes the manifest, and chooses how visible their code is. D2, D3
+and D4 do not care about intent, because none of them asks the integration anything. That
+ordering is §1.6's likelihood/impact split made structural rather than asserted — **every
+layer this work contributes sits on the impact side, and every layer that fails against a
+determined author is one this work did not build.**
+
+### 5.13.3 L1 returns as a layer, and never as the boundary
+
+§5.3 eliminated L1 — enforcement inside the integration's own process — on S1. Python's
+interception machinery is real (import hooks, audit hooks, module-level shadowing), but all of
+it executes in the interpreter it is trying to police, which makes it an object in a heap the
+adversary can enumerate; §2.4.1's garbage-collector attack is the published demonstration that
+this is not a theoretical concern. **That elimination stands and is not reopened here.**
+
+Eliminated as the boundary is not the same as worthless, and the difference is the
+likelihood/impact split again at a smaller scale. Against a *careless* integration — which
+§1.6 gives reason to expect is the common case, since blatant malice is the thing informal
+review does catch — an in-process check is useful in a way the outer layers are not, because
+it can fail *legibly*. Under D2 alone, an integration reading an entity it did not declare
+receives silence: the sandbox's state machine simply has nothing there (§5.6.2), so the author
+sees a wrong value rather than an error. An in-process check turns that into a diagnostic that
+names the missing manifest clause.
+
+That is a real gain and it costs the security argument nothing, **provided it is never
+counted**. The discipline is stated here so that Chapter 6 cannot quietly promote it: L1
+appears in no threat's treatment in Chapter 4, no requirement depends on it, and **deleting it
+entirely would change no security claim in this report**. That deletion test is what separates
+a convenience layer from a load-bearing one, and §5.14's traceability check will not list L1
+among the places a control lives.
+
+### 5.13.4 Two of these layers are one layer
+
+Applying test 3 of §5.13.1 honestly: **D2 and D4 are not independent.** Structural absence
+*is* the namespace. `secrets.yaml` is unreachable because it is not in the mount namespace;
+the state machine starts empty because the sandbox's platform instance is a separate process
+with a private one. Both properties are produced by the same act — the supervisor's
+construction of the sandbox — and both are lost to the same two failures: a sandbox
+constructed wrongly, or a kernel escape. Counting them separately would be counting the
+supervisor's correctness twice.
+
+The honest count is therefore not six layers but **three independent ones and a record**:
+
+| | Independent layers | Why independent of the others |
+|---|---|---|
+| Likelihood | D0 and D1 | Review is other people reading the code; declaration is the author writing an intent. Neither failure causes the other |
+| Impact | (D2 + D4) as one, and D3 | A mediator bug does not open the mount namespace; a namespace escape does not consult the mediator |
+| Detective | D5 | Fails to under-recording and to machine-owner tampering (R4), neither of which is a preventive failure |
+
+One relationship runs *between* the columns and is worth naming, because it is the sharpest
+form of §1.6's complementarity: **D1 makes D0 cheaper.** A reviewer holding a declaration has
+a specification to read the code against, which is a different and smaller task than inferring
+intent from code with none stated. An impact control improves a likelihood control without
+either depending on the other.
+
+Three independent layers is a weaker claim than six, and it is the one the design supports. It
+is also enough for the property that matters: **no single failure here reproduces the condition
+Chapter 1 described**, in which a third-party integration silently holds the platform's full
+authority. A mediator bug grants one capability too many; a construction mistake exposes one
+path. Those are bounded failures where the status quo is an unbounded one — with the single
+exception named in §5.7.5, where a kernel escape is unbounded and is the assumption this
+design rests on.
+
+### 5.13.5 What layering does not do
+
+The four High residual risks of §4.11 survive every layer above, and the reason is the same in
+each case: **they are not failures of enforcement.**
+
+| Residual risk | Why no layer catches it |
+|---|---|
+| **R1** — the over-declaring manifest | D2 mirrors in what was declared, D3 permits what was declared, D4 sees permitted syscalls, D5 records a correct decision. Every layer works |
+| **R2** — abuse of legitimately declared authority | An integration unlocking the door at 03:00 with `lock.unlock` declared is, at every layer, indistinguishable from one operating correctly |
+| **R3** — the mediator's unscoped credential | Upstream: Home Assistant issues no read-only or per-domain token. Layering the mediator does not change what the token is |
+| **R5** — exfiltration through a declared host | D3 pins the destination (§5.10.5, T11); it does not read the payload, and TLS means it could not |
+
+Stated as one sentence: **each of these is enforcement working exactly as specified, on a
+specification that was too generous.** More layers of the same kind cannot help, because they
+would each reach the same verdict. Reducing R1 and R2 requires either review of the
+declaration — D0, on the likelihood side, which this project does not build — or contextual
+integrity, which §4.11 already identifies as a different mechanism (ContexIoT, §2.3) carrying
+its own usability costs.
+
+This is not a defect in the layering. It is the boundary of what confinement is, and §3.7
+drew the same line when it excluded "guaranteeing the manifest is minimal or honest" from
+scope.
+
+### 5.13.6 §1.6 discharged
+
+§1.6's promise was that review and confinement are complementary and that neither substitutes
+for the other. The design makes that concrete in three ways rather than asserting it:
+
+1. **Every layer this work adds is on the impact side** (§5.13.2). It builds nothing that
+   reduces the chance of a hostile integration being published or installed, and claims
+   nothing there.
+2. **The dependency runs one way only, and that way is *none*.** No enforcement in this
+   design depends on review having happened: D2 is a property of how the sandbox is built,
+   D3 defaults to denial (S6), and neither consults an integration's reputation, popularity
+   or history. An integration nobody has ever read is confined identically to one that has
+   been audited — which is precisely what §1.6's long-tail finding requires, given that
+   3,095 of 4,220 custom integrations have fewer than 100 installs and the median has 20.
+3. **The traffic in the other direction is a gain, not a dependency** (§5.13.4). The
+   declaration gives review a specification to work from; review's absence costs enforcement
+   nothing.
+
+The closing qualification matters as much as the claim. This is complementarity, **not
+sufficiency**. §1.6 observed that the impact control "does not exist at all" in this
+ecosystem and this chapter specifies it; nothing here argues that review plus confinement is
+enough. §4.11's residual statement — four High risks, each structural, each written down — is
+the record of what remains standing after both.
+
 ---
 
-*Chapter in progress. §5.13 (defence in depth) onward is next; the section plan is in
-`notes/ch5_working_notes.md`.*
+*Chapter in progress. §5.14 (Figure 5.1 and threat-to-control traceability) and §5.15 are
+next; the section plan is in `notes/ch5_working_notes.md`.*

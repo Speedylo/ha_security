@@ -21,8 +21,8 @@ questions a viva will probe.
 | 5.10 | The manifest — schema and granularity (S5) | ✅ drafted — 8 declarable clauses, 4 ambient, no wildcards in `services.call` |
 | 5.11 | The mediator interface and the channel (T02, K4) | ✅ drafted — identity is the socket; 30 µs measured on the Pi |
 | 5.12 | Identity and the audit record (S7) | ✅ drafted — identity is a 3-part tuple; **all three open questions in `decision_audit_identity_and_trust_layer.md` answered** |
-| 5.13 | Defence in depth — **§1.6 discharged here** (L1 returns as a layer, never as the boundary) | ⬅ **next** |
-| 5.14 | Figure 5.1, paired with Figure 4.1; threat-to-control traceability | not started |
+| 5.13 | Defence in depth — **§1.6 discharged here** (L1 returns as a layer, never as the boundary) | ✅ drafted — six layers named, **honestly counted as three**; §1.6 discharged in §5.13.6 |
+| 5.14 | Figure 5.1, paired with Figure 4.1; threat-to-control traceability | ⬅ **next** |
 | 5.15 | What the design does not do; L2 as the platform's own better answer | not started |
 
 ## Measurement: what integrations actually talk to
@@ -235,6 +235,43 @@ cut it *and state in Chapter 7 that S5 is unverified*, rather than to claim it. 
 requirement that says so is defensible; a verification criterion quietly rewritten to match
 what was built is not.
 
+## §5.13 — why it is a counting discipline and not a list of controls
+
+Written 2026-08-25. The temptation in this section is to enumerate every control the chapter
+has produced and let the length of the list carry the argument. That is the standard failure
+of defence-in-depth writing, and this advisor audits for exactly it.
+
+So the section leads with a **three-part test** for what counts as a layer — stated failure
+mode, something behind it, independent failure cause — and then applies it to its own list
+in §5.13.4, where **D2 (structural absence) and D4 (the kernel boundary) collapse into one**.
+Both are produced by the supervisor constructing the sandbox and both are lost to the same
+failures. Six named layers, three independent ones. Reporting the smaller number is the point
+of the section, not a concession made inside it.
+
+**The move that makes §5.13.5 necessary.** R1, R2, R3 and R5 pass through every layer
+untouched, because each is *enforcement working as specified on a specification that was too
+generous*. A section claiming depth without saying this would be claiming coverage. The
+sentence to keep is that more layers of the same kind cannot help, since each would reach the
+same verdict.
+
+**D1 makes D0 cheaper** — a reviewer with a declaration has a specification to diff the code
+against. This is the strongest form of §1.6's complementarity available and it was not in the
+first pass's material at all. It runs from the impact side to the likelihood side, which is
+the direction nobody expects.
+
+**The deletion test for L1.** §5.13.3 lets in-process checking back as a diagnostic aid and
+then fixes it in place: it appears in no threat treatment, no requirement depends on it, and
+deleting it changes no security claim. That test is stated in the report on purpose, so
+Chapter 6 cannot promote a convenience into a control by implementing it well.
+
+**Rejected framing:** the "onion" / concentric-rings diagram. It implies every layer wraps
+every asset, which is false here — D3 covers only what is routed through the mediator, and D0
+covers only what someone read. Figure 5.1 in §5.14 shows where controls sit on the boundaries
+instead, which is the honest picture and is already the chapter's figure.
+
+**Fixed while writing this:** §5.3 said L1 "reappears in §5.12", written before the section
+numbers settled. §5.12 became identity and the audit record. Corrected to §5.13.
+
 ## Questions a viva will probe here
 
 - *Why not just fix Home Assistant?* — L2 is the better answer for the platform project and
@@ -245,6 +282,12 @@ what was built is not.
   surface, not a second hub.
 - *What stops the integration talking to the mediator directly and lying about its identity?*
   — §5.11. Identity is a property of the channel, not a field in the message.
+- *Isn't "defence in depth" just a longer list of the same control?* — §5.13.1's third test,
+  and §5.13.4 answers it against this design's own list: two of the six collapse. The count
+  reported is three independent layers plus a detective record.
+- *Which layer stops R2 — the lock unlocked at 03:00?* — **None, and that is stated in
+  §5.13.5.** Every layer works correctly and the door opens. Answering it needs contextual
+  integrity (§2.3), which is a different mechanism, not another layer of this one.
 - *What if the integration fetches code at runtime?* — Conceded in
   `decision_audit_identity_and_trust_layer.md`: the hash records what was loaded, not what
   executed. It belongs in the limitations section, stated rather than discovered.
