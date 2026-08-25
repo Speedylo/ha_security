@@ -50,7 +50,7 @@ corrections came from running a measurement rather than re-reading the argument.
 
 | # | Task | Notes |
 |---|---|---|
-| **1** | **Ch. 6 §6.4.4 — the sandbox's mount namespace** | §5.6.2's structural denial, filesystem half: the sandbox sees the paths the manifest declares and nothing else. §5.10.2 and §5.11.1 are the specification |
+| **1** | **Ch. 6 §6.4.4 — finish the mount namespace: it is written and does NOT yet run** | `confine/sandbox.py`, `enter.py`, `spawn.py`, `selftest.py` are committed but the selftest fails with `demo_a: the sandbox never reported a pid` — the child never wrote to the status pipe. **Debug that first**; nothing is written up in the report, deliberately, because §6.1's standard says a claim needs evidence. Likely suspects, untested: the status fd is closed by `subprocess` before `enter.py` reads `CONFINE_STATUS_FD`; `pass_fds` interacting with `preexec_fn`; or `enter.py` dying before its first `_report` and the traceback going to the DEVNULL stderr — **run it once with stderr inherited** |
 | **2** | **Then the seccomp filter** | §5.7.3's third primitive. `user_notif` is present on the target (probe, 2026-08-24) |
 | 3 | §6.5–§6.9 | Bridge and channel, mediator, the manifest surface the user meets (T13), the audit record, the adversarial cases |
 | 4 | §6.10 | The report against §5.6.5's three R1 re-decision triggers, for G3 |
