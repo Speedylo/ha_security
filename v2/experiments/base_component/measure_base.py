@@ -118,11 +118,19 @@ async def build_arm(with_base: bool, config_dir: str, stages: list | None = None
 
     `legacy_start` reproduces the recipe §5.6.3 published, which reaches the running state
     by calling `hass.set_state(CoreState.running)` directly. That is not the same thing as
-    starting: it changes the flag without firing `EVENT_HOMEASSISTANT_START`, so every
-    callback registered through `helpers.start.async_at_start` never runs. State restoration
-    is one of them. This experiment found that by accident and the finding is kept rather
-    than quietly patched, because a sandbox that silently loses state restoration is exactly
-    the kind of defect a compatibility evaluation would later blame on confinement.
+    starting: it changes the flag without firing `EVENT_HOMEASSISTANT_START`, which splits
+    `helpers.start.async_at_start` callbacks into two failure modes. Those registered
+    *before* the flag is set — the helper layer's own, wired during construction, state
+    restoration among them — wait for an event that never arrives and are lost permanently.
+    Those registered *after* see `hass.is_running` already true and fire immediately, which
+    is not where Home Assistant fires them: its own order is to set every component up first
+    and start afterwards, so a callback that should run once the instance is complete instead
+    runs in the middle of assembling it.
+
+    The corrected arm therefore does not merely add a start; it starts in Home Assistant's
+    order. This experiment found the defect by accident, and it is kept rather than quietly
+    patched, because a sandbox that silently loses state restoration is exactly the kind of
+    defect a compatibility evaluation would later charge to confinement.
     """
     def mark(label: str) -> None:
         if stages is not None:
@@ -137,13 +145,6 @@ async def build_arm(with_base: bool, config_dir: str, stages: list | None = None
     hass = await build_minimal_hass(config_dir)
     mark("+ minimal hass constructed")
 
-    if not legacy_start:
-        # The correction. `build_minimal_hass` is imported unmodified from
-        # experiments/r2_footprint so §5.6.3's numbers stay reproducible exactly as
-        # published; the fix is applied here, where this experiment is answerable for it.
-        await hass.async_start()
-        mark("+ hass.async_start() — fires EVENT_HOMEASSISTANT_START")
-
     base_ok = None
     if with_base:
         from homeassistant.setup import async_setup_component
@@ -155,6 +156,14 @@ async def build_arm(with_base: bool, config_dir: str, stages: list | None = None
         entries[domain] = await ensure_entry(hass, domain)
     await hass.async_block_till_done()
     mark("+ probe integrations set up")
+
+    if not legacy_start:
+        # The correction, in Home Assistant's own order: everything is set up, and *then*
+        # the instance is started. `build_minimal_hass` is imported unmodified from
+        # experiments/r2_footprint so §5.6.3's figures stay reproducible exactly as
+        # published; the fix is applied here, where this experiment is answerable for it.
+        await hass.async_start()
+        mark("+ hass.async_start() — fires EVENT_HOMEASSISTANT_START")
     return hass, entries, base_ok
 
 

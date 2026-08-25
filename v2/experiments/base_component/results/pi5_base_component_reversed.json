@@ -50,15 +50,15 @@
             "rss_mb": 109.0
           },
           {
-            "stage": "+ hass.async_start() \u2014 fires EVENT_HOMEASSISTANT_START",
-            "rss_mb": 109.1
-          },
-          {
             "stage": "  (base component skipped)",
-            "rss_mb": 109.1
+            "rss_mb": 109.0
           },
           {
             "stage": "+ probe integrations set up",
+            "rss_mb": 109.4
+          },
+          {
+            "stage": "+ hass.async_start() \u2014 fires EVENT_HOMEASSISTANT_START",
             "rss_mb": 109.4
           }
         ],
@@ -66,12 +66,12 @@
       },
       "scale": {
         "count": 6,
-        "sum_rss_mb": 656.3,
+        "sum_rss_mb": 656.4,
         "sum_pss_mb": 539.8,
         "pss_per_sandbox_mb": 90.0,
-        "machine_delta_mb": 462.8,
-        "first_sandbox_mb": 72.3,
-        "marginal_mb": 78.1
+        "machine_delta_mb": 478.3,
+        "first_sandbox_mb": 81.6,
+        "marginal_mb": 79.3
       },
       "restore": {
         "corrected": {
@@ -167,15 +167,15 @@
             "rss_mb": 109.0
           },
           {
-            "stage": "+ hass.async_start() \u2014 fires EVENT_HOMEASSISTANT_START",
-            "rss_mb": 109.0
-          },
-          {
             "stage": "+ base 'homeassistant' component",
             "rss_mb": 161.1
           },
           {
             "stage": "+ probe integrations set up",
+            "rss_mb": 161.3
+          },
+          {
+            "stage": "+ hass.async_start() \u2014 fires EVENT_HOMEASSISTANT_START",
             "rss_mb": 161.3
           }
         ],
@@ -183,12 +183,12 @@
       },
       "scale": {
         "count": 6,
-        "sum_rss_mb": 968.0,
-        "sum_pss_mb": 819.9,
+        "sum_rss_mb": 967.9,
+        "sum_pss_mb": 819.8,
         "pss_per_sandbox_mb": 136.6,
-        "machine_delta_mb": 699.9,
-        "first_sandbox_mb": 80.9,
-        "marginal_mb": 123.8
+        "machine_delta_mb": 676.3,
+        "first_sandbox_mb": 57.7,
+        "marginal_mb": 123.7
       },
       "restore": {
         "corrected": {
@@ -232,7 +232,7 @@
   "delta": {
     "single_rss_saved_mb": 51.9,
     "pss_saved_per_sandbox_mb": 46.6,
-    "memavailable_marginal_saved_mb": 45.7,
+    "memavailable_marginal_saved_mb": 44.4,
     "capacity": [
       17,
       26

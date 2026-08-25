@@ -47,24 +47,26 @@ before quoting the consequence.
 
 ### The control that decides which number to quote
 
-Two marginal figures were available and they disagreed, so the arms were run in both orders:
+Two marginal figures were available and they disagreed, so both arms were run in both orders:
 
 | | with base | without base |
 |---|---|---|
 | PSS per sandbox, arm run **first** | 136.6 MB | 90.0 MB |
-| PSS per sandbox, arm run **second** | 136.6 MB | 90.0 MB |
-| `MemAvailable` marginal, arm run **first** | 136.0 MB | 78.1 MB |
-| `MemAvailable` marginal, arm run **second** | **123.8 MB** | 78.3 MB |
+| PSS per sandbox, arm run **second** | **136.6 MB** | **90.0 MB** |
+| `MemAvailable` marginal, arm run **first** | 127.5 MB | 79.3 MB |
+| `MemAvailable` marginal, arm run **second** | **123.7 MB** | **74.1 MB** |
 
-`MemAvailable` moved by 12 MB — 9% — depending only on which arm ran first, because the second
-arm reads files the first left in the page cache. PSS did not move at all. §5.6.3 called
-`MemAvailable` ground truth, which it is for a single measurement on a quiet machine and is not
-for a comparison of two arms; **PSS is what this experiment quotes**, and `--order` exists so
-that the choice can be checked rather than asserted.
+`MemAvailable` moved by 4–5 MB purely on running order, always downward for the arm that ran
+second, because that arm reads files the first left in the page cache. PSS did not move at
+all — the same figure to 0.1 MB, in both orders and across two full runs of the experiment.
+§5.6.3 called `MemAvailable` ground truth, which it is for a single measurement on a quiet
+machine and is not for a comparison of two arms. **PSS is what this experiment quotes**, and
+`--order` exists so that the choice can be checked rather than asserted.
 
 **One independent confirmation worth noting.** The with-base arm's PSS per sandbox is
 **136.6 MB** against §5.6.3's **136.5 MB**, measured a day earlier by a different script. The
-two agree to 0.1 MB, which is the strongest available evidence that these are the same system.
+two agree to 0.1 MB, which is the strongest available evidence that these are the same system
+and that the change being measured is the only change.
 
 ## What is actually lost (Q3)
 
@@ -99,46 +101,60 @@ Three observations, and the first is the one that decides:
 ## The defect this experiment found by accident (Q4)
 
 The restore probe was written to fail loudly if dropping the base component broke state
-restoration, since the base component registers `homeassistant.save_persistent_states`. It
-failed — **in both arms**, including the one that keeps the base component. A result that is
-identical on both sides of the variable is not a finding about the variable; it is a broken
-test, and it was treated as one.
+restoration, since the base component is what registers
+`homeassistant.save_persistent_states`. It failed — **in both arms**, including the one that
+keeps the base component. A result identical on both sides of the variable is not a finding
+about the variable; it is a broken test, and it was treated as one.
 
-The cause is in §5.6.3's recipe, not in the base component. `build_minimal_hass` reaches the
-running state with:
+The cause is in §5.6.3's recipe, and not in the base component at all. `build_minimal_hass`
+reaches the running state with:
 
 ```python
 hass.set_state(CoreState.running)
 ```
 
-That sets the flag without firing `EVENT_HOMEASSISTANT_START`. Every callback registered
-through `homeassistant.helpers.start.async_at_start` therefore never runs — and
-`RestoreStateData.async_setup` registers exactly that way. The consequence is that **no state
-is ever dumped, and every `RestoreEntity` in the sandbox silently restores nothing.**
+That sets the flag without firing `EVENT_HOMEASSISTANT_START`, and
+`homeassistant.helpers.start.async_at_start` — the platform's standard way of deferring work
+until the instance is up — behaves differently on each side of that flag. So the omission has
+**two** distinct failure modes, and only the first is loud enough to find by accident:
 
-The fix is to start the instance rather than to declare it started:
+| Registered | `hass.is_running` | What happens | Real HA |
+|---|---|---|---|
+| **Before** the flag is set | `False` | Waits for an event that never arrives — **lost permanently** | Runs at start |
+| **After** the flag is set | `True` | Runs **immediately**, part-way through assembling the instance | Runs at start, after every component is set up |
+
+The helper layer wires itself during construction, so it lands in the first row.
+`RestoreStateData.async_setup` registers there, which is why **no state is ever dumped and
+every `RestoreEntity` in the sandbox silently restores nothing.** Integrations, set up after
+the flag, land in the second row instead: they are not lost, they are merely run in the wrong
+place. In Home Assistant 2026.8.3 the helper is used by **28 shipped components**, `mqtt`,
+`template`, `group`, `filter`, `utility_meter`, `history_stats` and `zwave_js` among them, and
+a callback written on the assumption that its peers already exist is a plausible way for that
+to matter.
+
+**The fix is to start the instance rather than to declare it started, and to start it where
+Home Assistant does** — after everything is set up, not before:
 
 ```python
-await hass.async_start()      # fires EVENT_HOMEASSISTANT_START, then runs startup jobs
+hass = await build_minimal_hass(config_dir)
+...                              # base component, config entries, platforms
+await hass.async_start()         # fires EVENT_HOMEASSISTANT_START, then runs startup jobs
 ```
 
-With that one line, the round trip passes in both arms: generation 1 → 2, `restored_from: 1`.
-
-**Why this matters more than restoration.** `async_at_start` is a general deferral surface, not
-a restore-state detail. In Home Assistant 2026.8.3 it is used by one helper and by **28 shipped
-components**, `mqtt`, `template`, `group`, `filter`, `utility_meter`, `history_stats` and
-`zwave_js` among them. A minimal instance that never starts drops all of it — silently, with
-no error and no log line. Chapter 7 would have measured the resulting breakage and attributed
-it to confinement.
+With that, the round trip passes in both arms: generation 1 → 2, `restored_from: 1`. Adding
+the start *before* the integrations are loaded also repairs restoration, and was the first fix
+tried; it is the wrong one, because it leaves every integration in the second row of the table
+above. The order is part of the fix.
 
 Two things follow for Chapter 6:
 
-- **The supervisor must call `hass.async_start()`**, and the sandbox is not ready until it
-  returns.
-- **The failure mode is the one to watch for.** This defect produced no exception and no
-  warning; it produced a sensor that quietly reported the wrong number. Any future
-  compatibility failure should be checked against the minimal instance before it is charged to
-  the design.
+- **The supervisor must call `hass.async_start()`, last.** The sandbox is not ready until it
+  returns, and nothing may be set up after it.
+- **The failure mode is the one to watch for.** This defect produced no exception, no warning
+  and no log line; it produced a sensor that quietly reported the wrong number. Any future
+  compatibility failure must be checked against the minimal instance before it is charged to
+  the design — otherwise Chapter 7 measures the recipe and reports it as the cost of
+  confinement.
 
 `experiments/r2_footprint/measure.py` is deliberately **left unmodified**, so §5.6.3's
 published figures remain reproducible exactly as reported; this experiment imports its
@@ -169,8 +185,10 @@ Needs the environment from `../r2_footprint/README.md`, and that directory besid
 - **Two probes, both synthetic.** They establish that the loading path and the restoration path
   survive; they are not the compatibility evaluation, which is Chapter 7's and needs real
   community integrations. In particular no probe here calls a `homeassistant.*` service.
-- **The `async_at_start` bound is over shipped components only.** How many *community*
-  integrations defer work to start-up is not measured here;
+- **The `async_at_start` bound is over shipped components only, and it bounds exposure, not
+  breakage.** Twenty-eight components use the helper; how many of them would actually misbehave
+  when run early is not measured, and how many *community* integrations defer work to start-up
+  is not measured either.
   `figures/fetch_hacs_corpus.py` rebuilds the corpus that would answer it, and this belongs
   with the uniform-sample re-run already owed before Chapter 7 reports coverage.
 - **Idle, and without a mediator.** Unchanged from §5.6.3: both arms were measured at rest,
