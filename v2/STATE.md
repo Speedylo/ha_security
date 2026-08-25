@@ -2,10 +2,11 @@
 
 **Last updated:** 2026-08-25 · **Read this first when resuming.**
 
-**Where it stands in one line:** Chapters 1–5 complete and **Chapter 6 started at §6.3 of 10**
-— Gate G2 closed with two divergences, and six measurements run on the Pi 5 and the corpora
-rather than argued, **the two most recent of which corrected Chapter 5, and one of which corrected Chapter 6** — see `experiments/`
-and `figures/`.
+**Where it stands in one line:** **Chapters 1–5 complete, Chapter 6 drafted §6.1–§6.14, Gate G3
+answered.** The framework exists and runs on the Pi 5; nine measurements were run rather than
+argued; **84% of the 37 most-installed community integrations import clean, unmodified, at +19.1
+MB per sandbox.** Chapter 6 corrected Chapter 5 four times and itself twice. **Chapter 6 is not
+finished**: scope item 2 (mediated egress, F2/S4) has no implementation — see "Next session".
 
 Read alongside `00_METHOD.md` (ground rules — especially the evidence rule) and
 `01_PLAN.md` (stage plan and gates). Chapter working notes in `notes/` carry the reasoning
@@ -40,9 +41,7 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/base_component/` | ✅ **Pi 5, 2026-08-25.** The measurement §5.6.5 deferred to Chapter 6. The base component **can** be dropped — 46.6 MB per sandbox, budget 17 → **26** (1.53×, **not** the 2× §5.6.5 predicted). Two controls: both arm orders, and a 0.1 MB replication of §5.6.3's marginal figure. It also found a defect in §5.6.3's own recipe — see below. Feeds §6.3 |
 | `experiments/cgroup_placement/` | ✅ **Pi 5, 2026-08-25.** Four placement mechanisms × two positions, unprivileged. **Corrects §5.7.4:** `clone3(CLONE_INTO_CGROUP)` fails with the same `EACCES` as migration, so what binds is *where the supervisor runs*, not when it places the sandbox. Feeds §6.4.1 |
 | **`framework/confine/`** | ✅ **The artifact, as far as it goes, 2026-08-25.** `cgroup.py`, `namespaces.py`, `preflight.py`, `sandbox.py`, `enter.py`, `spawn.py`, `selftest.py` — standard library plus `ctypes`, no dependencies, no override flag. **Preflight: 8/8 on the Pi. Self-test: passes** — uid 0 inside mapped to 1000 outside, one visible process, `lo` only, `secrets.yaml`/`.storage`/the other integration all **absent**. Plus `seccomp.py` — 29 calls denied, verified by behaviour on both architectures. **All three of §5.7.3's primitives are built and measured.** Plus `channel.py`, `mediator.py` and `selftest_channel.py` — **identity is the socket, demonstrated with two sandboxes both claiming to be the same integration**. Plus `manifest.py` and `selftest_policy.py` — validation, S5's asymmetry, resolve-then-pin, clause pointers. Plus `describe.py` (the F4 surface, discharging T13's unplaced half) and `audit.py` (three-part identity, hash chain **and** keyed MAC chain, failing independently). **Eight self-tests, all passing on the Pi** — including `selftest_adversary.py`: 37 attempts, 21 blocked, 9 **empty** (succeeded and found nothing), 6 denied, 1 permitted, neither canary reached. Described by §6.4.2, §6.4.4–§6.4.6 and §6.5–§6.8 |
-| `report/06_implementation.md` | 🔵 **In progress.** **§6.1–§6.12 drafted 2026-08-25. The bridge is built, the corpus has been run, and Gate G3 has
-its numbers.** 37 community integrations, unmodified, one sandbox each: **46% import clean on the
-minimal instance, 70% un-stripped**, for +75.9 MB PSS per sandbox. Section plan and inherited obligations in `notes/ch6_working_notes.md` |
+| `report/06_implementation.md` | 🔵 **§6.1–§6.14 drafted 2026-08-25; one scope item still unbuilt.** The bridge is built, the corpus has been run four ways, and **Gate G3 has its recommendation**: `declared` + core package set, **31/37 — 84% — at +19.1 MB**, strictly dominating every other profile measured. What is *not* built is §5.8.2's scope item 2 — mediated egress, F2 and S4 — recorded in §6.11.1 as "◐ Half. Egress does not exist." Section plan, the §6.13–§6.14 reasoning and the viva answers in `notes/ch6_working_notes.md` |
 | `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24; re-run 2026-08-25.** Namespaces (unprivileged), seccomp and cgroup v2 all present. `memory` was absent on the stock install; after the boot change it is present **and the cap is verified to bite, unprivileged**. Feeds §5.7.4 |
 
 ## Next session — start here
@@ -56,21 +55,39 @@ percentage that would hide which half is missing.
 **§5.8.5's cut-order conflict is moot (§6.11.4).** The actuator path is built and measured, so
 there is nothing left to cut that would save time. G3 is now a question about coverage alone.
 
-**Chapters 1–5 are complete. Chapter 6 is drafted through §6.4.3, and the first code of the
-artifact exists in `framework/confine/`.** Chapter 6 has now corrected Chapter 5 twice — the
-base-component prediction (§6.3.2) and the cgroup placement rule (§6.4.1) — and both
-corrections came from running a measurement rather than re-reading the argument.
+**Read this paragraph first if nothing else.** Chapters 1–5 are complete; Chapter 6 is drafted
+§6.1–§6.14 and its artifact runs; Gate G3 has an answer that is not close. **Two things are
+open, and only one of them is a decision.**
+
+- **Not a decision — just do it.** The baseline arm. Half an hour of compute. Until it runs, 84%
+  is a fact about the corpus and the design together and nobody can say which.
+- **A decision, and it is Younes's.** §5.8.2's scope item 2 — mediated egress, F2 and S4 — has no
+  implementation, and T11's control is therefore undemonstrated. Build it and Chapter 6's derived
+  scope is complete; defer it and Chapter 7 evaluates a design with a quarter of its declared
+  scope unbuilt. **Recommendation: build it**, because a requirements table that does not match
+  the artifact is exactly what an auditor-by-profession reads for, and there is roughly six weeks
+  of slack against `01_PLAN.md`. **The argument against** is the standing instruction to prefer
+  code that can be personally owned and defended over code volume — if the proxy would arrive
+  undefendable, deferring it and saying so plainly is the better thesis. The prior spike has an
+  egress broker (`RESULTS_2026-08-14_egress_broker.md`) to cite as feasibility; under
+  `00_METHOD.md` §5 it is **not** retyped.
+
+**⚠ This repository has no remote.** `git remote -v` is empty; everything lives on this machine
+and the Pi. Six chapters and 5,118 lines of framework exist in exactly one place.
+
+Chapter 6 has now corrected Chapter 5 four times (§6.3.2, §6.4.1, §6.6.6, §6.11.4) and itself
+twice (§6.13 on §6.12.4, §6.14 on §6.13.4). Every correction came from running a measurement
+rather than re-reading the argument. **Two successive predictions bracketed the truth from
+opposite sides** — §6.12.4 over-predicted, §6.13.4 under-predicted — which is what
+`00_METHOD.md` §2's evidence rule looks like when it is working.
 
 | # | Task | Notes |
 |---|---|---|
-| ~~1~~ | ~~Run the `declared` profile over the full corpus~~ | ✅ **Done 2026-08-25, §6.13.** **57%** (21/37) at **+9.0 MB** median over the minimal instance, against the blanket profile's 70% at +32.2 MB. §6.12.4 predicted 70–76% and was wrong; see below |
-| ~~1~~ | ~~`declared` + the platform's core package set~~ | ✅ **Done 2026-08-25, §6.14. 31/37 — 84% — at +19.1 MB.** Strictly dominates the blanket profile on both axes. **This is the profile G3 should take.** See below |
-| **1** | **The baseline arm** | Now the only thing standing between 84% and a claim about the design. §6.14 could settle exactly one failure (`eufy_security`, on a removed constant) from its error string; the rest need the comparison. **Chapter 7's first task** |
-| **2** | **Then PSS as a function of what is declared** | `experiments/unstrip/scale.py --components http,websocket_api` etc. The blanket profile costs 130.4 MB; an integration declaring nothing costs 54.5 MB. Measuring two or three points gives the *expected* budget over the corpus's real declaration distribution — and §6.13 now supplies that distribution: twelve of the 37 declare no components at all, and the median declaration is two |
-| **3** | **Then the uniform-sample corpus** | The 37 are head-weighted by install count. A uniform sample answers "what most integrations do" rather than "what most installations run"; `figures/fetch_hacs_corpus.py` already takes the corpus and only the selection changes |
-| **3** | Then the egress proxy | Scope item 2's second half: per-integration outbound network with T11's resolve-then-pin at connection time |
-| 3 | §6.5–§6.9 | Bridge and channel, mediator, the manifest surface the user meets (T13), the audit record, the adversarial cases |
-| 4 | §6.10 | The report against §5.6.5's three R1 re-decision triggers, for G3 |
+| **1** | **The baseline arm — do this first** | The same 37 against a **full** Home Assistant, same release, same host. One run, ~30 min, mostly waiting. Until it lands, 84% does not decompose into "confinement broke it" and "broken anyway on 2026.8.3". §6.14 settled exactly one failure (`eufy_security`, on the removed `SOURCE_TYPE_GPS`) from its error string; the rest need the comparison. Everything Chapter 7 says about compatibility is provisional without it |
+| **2** | **Then the egress proxy — and this is still Chapter 6** | §5.8.2 scope item 2's second half: per-integration outbound network with T11's resolve-then-pin **at connection time**. Closes F2, S4 and T11. See the decision paragraph above |
+| **3** | **Then PSS as a function of what is declared** | `experiments/unstrip/scale.py --components http,websocket_api` etc. The blanket profile costs 130.4 MB; an integration declaring nothing costs 54.5 MB. Measuring two or three points gives the *expected* budget over the corpus's real declaration distribution — and §6.13 now supplies that distribution: twelve of the 37 declare no components at all, and the median declaration is two |
+| **4** | **Then the uniform-sample corpus** | The 37 are head-weighted by install count. A uniform sample answers "what most integrations do" rather than "what most installations run"; `figures/fetch_hacs_corpus.py` already takes the corpus and only the selection changes |
+| **5** | **Then Chapter 7** | Seven obligations are already recorded for it below. The two most likely to bite: mediation latency at realistic sandbox counts (two clients moved p99 **85%**; the budget is ~26), and whether `fsync`-per-decision is affordable, since §5.11.3's ordering guarantee is only real if the record is durable before the action |
 
 **✅ Gate G3 has a recommendation, and it is no longer close (§6.14, 2026-08-25).**
 
