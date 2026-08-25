@@ -30,6 +30,7 @@ describes can be read side by side.
 | `confine/selftest_policy.py` | §6.6 | S5's asymmetry, resolve-then-pin, and what is refused at parse time |
 | `confine/selftest_describe.py` | §6.7 | Four states an integration can be in, four renderings |
 | `confine/selftest_audit.py` | §6.8 | Identity's three components, and every form of tampering |
+| `confine/selftest_adversary.py` | §6.9 | A hostile integration, inside a sandbox, trying everything |
 
 ## Running the preflight
 
@@ -56,6 +57,15 @@ python3 -m confine.selftest_policy     # what the manifest refuses, and S5's asy
 python3 -m confine.selftest_describe   # what the user is shown, in each of four states
 python3 -m confine.selftest_audit      # identity, and every form of tampering with the log
 ```
+
+The adversarial suite needs a sandbox, and takes about a minute — two of its attacks are
+deliberately stopped by the memory limit and it waits for them:
+
+```bash
+systemd-run --user --scope -q python3 -m confine.selftest_adversary
+```
+
+It fails if either canary string reaches the adversary. Everything else it prints is diagnosis.
 
 `confine.selftest` builds a configuration directory containing a secrets file, the config-entry
 store and a second integration, grants one integration one unrelated file, and reports what it

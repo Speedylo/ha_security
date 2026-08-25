@@ -17,7 +17,7 @@ questions a viva will probe.
 | 6.6 | The manifest and the permit path — validation, S5, clause pointers, what a decision costs | ✅ drafted; `manifest.py` + `selftest_policy.py` pass |
 | 6.7 | Where the user meets the declaration — **T13's unplaced half discharged** | ✅ drafted; `describe.py` + `selftest_describe.py`, 14 assertions over four states |
 | 6.8 | Identity and the audit record — three components, two chains, the durable ordering | ✅ drafted; `audit.py` + `selftest_audit.py`, 14 assertions |
-| 6.9 | The adversarial cases, as built — §5.8.2's fourth scope item | ⬜ |
+| 6.9 | The adversarial cases — one canary, three outcomes, 37 attempts | ✅ drafted; `selftest_adversary.py`, 21 blocked / 9 empty / 6 denied / 1 permitted |
 | 6.10 | What is not built; the report against §5.6.5's G3 triggers | ⬜ |
 
 ## Obligations this chapter inherits
@@ -362,6 +362,51 @@ recompute one HMAC.
 an earlier run stay hash-verifiable and stop being MAC-verifiable — including by the mediator
 that wrote them. Persisting the key would hand it to exactly the adversary it exists to stop.
 
+## §6.9 — the adversary
+
+**The single strongest result in the chapter, and it is a success rather than a block.**
+§2.4.1's garbage-collector attack — the published finding §5.3 used to eliminate every
+in-process design — runs perfectly inside the sandbox. 11,473 objects enumerated, no error, and
+nothing found, because every object in that heap belongs to the integration running it. An
+in-process defence would have to *catch* the sweep, which means being an object in the heap the
+sweep enumerates. Here there is nothing to catch.
+
+**Three outcomes, not two, and the report says why.** `BLOCKED` (it raised), `EMPTY` (it
+succeeded and found nothing), `LEAKED`. §5.6.2's claim is that denial is structural rather than
+procedural, so a design producing only `BLOCKED` would be the procedural one. All twelve 2021
+traversal paths return `FileNotFoundError`, not `PermissionError`.
+
+**Honesty items to volunteer:**
+- `setuid(0)` succeeds. It is meaningless — the sandbox is already uid 0 inside its own user
+  namespace, mapped to an unprivileged uid outside — and omitting it would look like hiding it.
+- The adversary is synthetic and written by the same person as the framework. It shows the
+  attacks §5.8.2 names do not succeed, not that no attack does.
+- There is no baseline arm here. Chapter 7's comparison against an unconfined Home Assistant is
+  what turns this from a demonstration into a measurement.
+
+### S9 fired at something it was not built for
+
+Both bulk-search attacks were OOM-killed: `oom_kill=1`, peak exactly `memory.max`. **cgroup v2
+charges page cache to whichever cgroup faulted it in**, so a sandbox reading enough file data
+hits its memory limit without holding anything.
+
+S9 exists for T16. Nothing in Chapters 4 or 5 predicted it would also bound how much of a
+filesystem an integration can search. §5.13 argues layer independence; this is an instance
+observed rather than argued, and it is the best defence-in-depth evidence the project has.
+
+**But it is not free, and both costs go in the report:**
+1. **The kill destroys the evidence.** The adversary died before reporting. §6.4.6 chose EPERM
+   over KILL for seccomp precisely to keep refusals legible — the cgroup has no EPERM. The
+   audit trail is weakest exactly where the control is strongest. Chapter 8 limitation.
+2. **A legitimate integration hits the same wall.** `resources.memory_mb` now bounds file
+   reading, which no reader of §5.10.6 would expect. Chapter 7 must measure it.
+
+**Process note worth keeping:** the first two versions of this suite reported *nothing at all*,
+because they built one report and printed it at the end — and the framework killed them
+part-way. The fix was to emit each attempt as it completes. That is §6.8.3's rule in a third
+place: write the record before the thing that might not survive. It took two failures to apply
+a lesson already written down twice in this chapter.
+
 ## Anticipated viva questions
 
 **"Your Chapter 5 predicted the budget would double and Chapter 6 says 1.53×. Which of your
@@ -392,6 +437,13 @@ marker, and that is the defect: not that an inference was wrong, but that it rea
 result. The audit that follows is §6.1's three strengths of "built", applied backwards to
 Chapter 5's claims, and the two corrections found so far (§6.3.2, §6.4.1) are both inferences
 sitting next to measurements. The measurements have all replicated.
+
+**"Your adversary was written by you. What does it actually prove?"** — That the attacks
+§5.8.2 names do not succeed, and nothing more; §6.9.5 says so. The one result that does not
+depend on my imagination is the garbage-collector sweep, because it is *published* — Corno &
+Mannella's attack, run unmodified, working exactly as they describe and finding nothing. The
+rest is a demonstration until Chapter 7 adds the baseline arm, which is what makes the 2021
+comparison a measurement.
 
 **"Your audit log is described as tamper-evident. Evident to whom, and for how long?"** —
 Within a run, to anyone with the mediator's key, against every attack in §6.8.2's table including

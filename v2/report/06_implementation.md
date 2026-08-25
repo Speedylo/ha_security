@@ -1040,9 +1040,124 @@ write the log file can then also read the key beside it. This is not a defect to
 position on a trade-off, and it is stated here so that Chapter 7 evaluates the log it has rather
 than the one the phrase "tamper-evident" suggests.
 
+## 6.9 The adversarial cases
+
+§5.8.2's fourth scope item is a hostile integration: "the garbage-collector technique,
+credential recovery attempts, absent and malformed manifests, and the 2021 file-theft pattern".
+This builds one and runs it inside a sandbox.
+
+**The manifest it ships is ordinary**, and deliberately: the 2021 disclosures were not
+integrations that asked for everything, they were widely-installed ones with a flaw. This one
+legitimately declares a single sensor read. Everything beyond that is the attack.
+
+### 6.9.1 One criterion, and three outcomes rather than two
+
+The configuration directory holds a canary string in `secrets.yaml` and another in
+`.storage/core.config_entries`. **The suite fails if either string appears anywhere in the
+adversary's report** — whatever attack produced it, and whatever that attack's own verdict said.
+A single unambiguous criterion is worth more than thirty individual assertions that could each
+be written slightly wrong, which §6.6.5 is the standing reminder of.
+
+Each attempt is recorded as one of three outcomes, and the third distinction is the design's
+whole argument:
+
+| Outcome | Meaning |
+|---|---|
+| `BLOCKED` | The attempt raised. Something refused it |
+| `EMPTY` | The attempt **succeeded** and found nothing, because there was nothing there |
+| `LEAKED` | It returned something it should not have |
+
+§5.6.2 claims denial under R2 is structural rather than procedural — reading `secrets.yaml` "is
+not refused by a check, there is nothing there to read". **A design producing only `BLOCKED`
+would be the procedural one.** Collapsing the two into "pass" would hide exactly the property
+the architecture was chosen for.
+
+### 6.9.2 Results
+
+*Strength of claim: measured.* On the C4 device, 37 attempts: **21 blocked, 9 empty, 6 denied by
+the mediator, 1 permitted — the one its manifest declared.** Neither canary appeared.
+
+| Family | Attempts | Result |
+|---|---|---|
+| **The 2021 traversal pattern** | 12 paths — `../../secrets.yaml`, `/config/secrets.yaml`, absolute paths to the real configuration root, `/sandbox/../secrets.yaml` | All `FileNotFoundError`. **Not "permission denied" — "no such file".** |
+| Bulk filesystem search | Walk everything reachable, reading every file | Both variants killed by the cgroup — see §6.9.4 |
+| **The garbage-collector technique** | `gc.get_objects()`, sweeping the heap for another integration's live objects | **Runs perfectly. 11,473 objects, all its own.** |
+| Credential recovery | Other processes' `/proc/*/environ`, `/etc/shadow`, the user's home directory | Empty, empty, absent |
+| Escaping | `chroot`, `unshare`, `ptrace`, `mount` over its own directory | `EPERM` from the seccomp filter |
+| Reaching another integration | TCP to the host, DNS, open Unix sockets | Network unreachable; name resolution fails; no sockets |
+| The audit log | Find any `.jsonl` anywhere | Nothing |
+| Mediated requests | Undeclared entity, `lock.unlock`, claiming to be another integration, enumerating everyone's config entries, an undeclared host, an operation that does not exist | Six denials, each naming a clause |
+
+### 6.9.3 The garbage-collector result is the one that matters
+
+§2.4.1's published attack — walking `gc.get_objects()` to reach another integration's live
+objects and read its secrets — is what §5.3 used to eliminate every in-process design, and §5.2
+calls it the finding that settles the architecture. Here it is, run against this framework:
+
+**it works.** It is not blocked, not filtered, not detected. It enumerates 11,473 objects
+without error, exactly as published, and finds nothing — because every object in that heap
+belongs to the integration running it. The other integrations are in other processes.
+
+That is the difference between a design that answers this attack and one that survives it. An
+in-process defence would have to *catch* the sweep, which means being an object in the heap the
+sweep enumerates (§5.13.3). Here there is nothing to catch, and the attack's own success is the
+evidence.
+
+The same shape appears twice more in the table above. `/proc` lists one process, so reading
+another process's environment returns an empty list rather than a refusal — T15, which Chapter 4
+rated as requiring no attacker skill, has nothing left to read. And `setuid(0)` **succeeds**,
+which is worth stating rather than quietly omitting: the sandbox is already uid 0 inside its own
+user namespace, and that uid maps to an unprivileged user outside. The call does exactly what it
+says and means nothing, which is what a user namespace is for.
+
+### 6.9.4 A control fired that was not built for this
+
+Both bulk-search attacks were killed by signal 9, with the cgroup's `oom_kill` counter at 1 and
+peak memory at exactly `memory.max`. **S9 stopped a disclosure attempt.** S9 exists for T16,
+resource exhaustion, and §4.10.1 generated it because T16 was the one threat with no control at
+all; nothing in Chapter 4 or 5 predicted it would also bound how much of a filesystem an
+integration can search. §5.13 argues defence in depth from the layers' independence; this is an
+instance of it observed rather than argued.
+
+The mechanism is worth naming because it is not obvious: **cgroup v2 charges page cache to
+whichever cgroup faulted it in.** A sandbox reading enough file data reaches `memory.max` without
+holding anything at all.
+
+Two consequences, and neither is comfortable:
+
+- **The kill destroyed the evidence.** The adversary died before it could report what it had
+  attempted. §6.4.6 chose `EPERM` over `KILL_PROCESS` for the seccomp filter precisely so that a
+  refusal stays legible and attributable — and the cgroup has no `EPERM` to offer. A framework
+  whose strongest control produces a corpse and no record is one where the audit trail is weakest
+  exactly when it is most needed. This is real, and it belongs in Chapter 8's limitations rather
+  than being resolved here.
+- **A legitimate integration can hit the same wall.** §5.10.6's `resources.memory_mb` now bounds
+  file reading as well as memory, which no reader of that section would expect. An integration
+  processing a large local dataset is indistinguishable, to this control, from one searching for
+  secrets. Chapter 7 must measure that rather than discover it.
+
+The suite itself was rebuilt around the finding: each attempt is written to the report the moment
+it completes rather than at the end, so that a run stopped part-way still says what it managed.
+That is §6.8.3's ordering argument in a third place — **write the record before the thing that
+might not survive** — and the first two versions of this suite reported nothing at all, twice,
+for exactly the reason §6.4.5 warned about.
+
+### 6.9.5 What this is not
+
+- **It is not Chapter 7's security evaluation.** That reproduces the 2021 pattern against a
+  *baseline* Home Assistant as well, and the comparison is what makes the result a measurement
+  rather than a demonstration. Here there is no baseline arm.
+- **The adversary is synthetic.** It was written by the same person as the framework, which
+  bounds what it proves: it establishes that the attacks named in §5.8.2 do not succeed, not that
+  no attack does.
+- **One host, one kernel, one configuration.** Everything in §6.4's limitations applies unchanged.
+- **The permitted row is flagged, not hidden.** One request was granted, and the suite prints it
+  with a marker that draws the eye rather than a tick, because a permit in an adversarial run is
+  the thing a reader should check.
+
 ---
 
-*Chapter 6 in progress: §6.1–§6.3, §6.4.1–§6.4.6 and §6.5–§6.8 drafted 2026-08-25. Every
-mechanism §5.11.3's five steps depend on now exists except step 5, the act itself. Next: §6.9,
-the adversarial cases — §5.8.2's fourth scope item. The section plan and the obligations this
+*Chapter 6 in progress: §6.1–§6.3, §6.4.1–§6.4.6 and §6.5–§6.9 drafted 2026-08-25. Ten
+self-tests, all passing on the C4 device. Next: §6.10 — what is not built, and the report against
+§5.6.5's three re-decision triggers for Gate G3. The section plan and the obligations this
 chapter inherits are in `notes/ch6_working_notes.md`.*
