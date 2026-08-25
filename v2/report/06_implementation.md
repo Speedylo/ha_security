@@ -1422,8 +1422,7 @@ measurement was run to make available.
 
 ### 6.11.6 Where the chapter leaves the work
 
-Twelve self-tests and one corpus measurement run on the C4 device, each naming the claim it
-checks. Together they establish that the mechanisms Chapter 5 specified exist, work unprivileged
+Eight self-tests run on the C4 device, each naming the claim it checks. Together they establish that the mechanisms Chapter 5 specified exist, work unprivileged
 on the target, behave as specified under attack, host an unmodified integration, and are
 compatible with **46% of the most-installed community integrations at import level, without
 modification**.
@@ -1571,7 +1570,7 @@ that were never attempted — a bug fixed here rather than left to flatter the e
 
 ---
 
-*Chapter 6 drafted 2026-08-25, §6.1–§6.12. Twelve self-tests and three corpus measurements
+*Chapter 6 drafted 2026-08-25, §6.1–§6.12. Eight self-tests and three corpus measurements
 passing on the C4 device, including an unmodified integration running inside a sandbox and **70%
 of the most-installed community integrations importing clean** against an un-stripped one. Gate
 G3 has its numbers. The section plan, the obligations this chapter inherits, and the questions a
