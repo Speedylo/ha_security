@@ -551,9 +551,73 @@ find a file it declared is not evidence that confinement broke it until the gran
 shown to have arrived — the same procedure §6.3.3 established for the minimal instance, now
 with a second reason to follow it.
 
+### 6.4.6 The seccomp filter, and a narrowing that should not be glossed
+
+§5.7.3 gives seccomp one job: it "denies syscalls outside the set an integration needs". Read
+literally that is an allow-list, and an allow-list for a real CPython running a real Home
+Assistant is several hundred entries that change with the interpreter's version and would have
+to be re-derived at every upgrade. **What is implemented is a deny-list, and that is a genuine
+narrowing of what Chapter 5 specified rather than a different way of achieving it.**
+
+The argument for it being sufficient *here* is specific, and it does not generalise:
+
+> By the time the filter is installed, the other six namespaces have already removed most of
+> what a syscall could reach. There is no network to open, no other process to signal, no host
+> filesystem to name. What is left for seccomp is the set of calls dangerous **in themselves**,
+> whatever namespace they are made from — the ones that attack the kernel, or that rearrange or
+> leave the boundary the other six mechanisms have just built.
+
+That set is small and enumerable, which is why the deny-list is defensible in this position and
+would not be in a design where seccomp was the only boundary. Twenty-nine calls, in four
+groups: leaving or rearranging the sandbox (`mount`, `pivot_root`, `chroot`, `unshare`, `setns`
+and the newer mount API); reaching into another process (`ptrace`, `process_vm_readv/writev`);
+attacking or reconfiguring the kernel (`bpf`, `perf_event_open`, the module calls, `kexec_load`,
+`reboot`, `swapon/swapoff`, `acct`, `syslog`); and the kernel keyring together with the two
+calls that bypass path resolution entirely (`name_to_handle_at`, `open_by_handle_at`).
+
+**The residual risk this accepts** is the one a deny-list always carries: a syscall that is not
+on the list is allowed, so a kernel vulnerability in anything else is unmitigated by this layer.
+§5.13 already counts seccomp as one layer of three rather than as a boundary, and §5.7.5's
+residual risk on kernel surface stands unchanged. What has changed is that the residual is now
+concrete enough to state as a number, and Chapter 7 reports it that way.
+
+Three implementation decisions are worth recording.
+
+**The architecture is checked before the syscall number is.** A filter that compares numbers
+without first confirming the calling ABI is the classic way a seccomp filter is bypassed: the
+same number means different things in different tables. A call from an unexpected architecture
+is killed rather than filtered.
+
+**Denial is `EPERM`, not death.** A killed sandbox is indistinguishable from a crashed one, and
+§6.4.5 has already established what this design pays for making its failures look like
+absences. An errno leaves the sandbox alive to be observed, keeps the failure attributable to
+the call that caused it, and leaves something for the audit record of §5.12 to say.
+
+**The syscall numbers are hard-coded per architecture, so they are not trusted.** There is no
+portable way to ask Python for them, and a wrong number denies the wrong call silently — the
+§6.4.5 failure mode again. So the filter is verified by behaviour: a throwaway child installs it
+and *makes* the calls. `chroot` and `unshare` are the useful probes, because both **succeed**
+inside a user namespace; seeing them refused is evidence of the filter rather than of the
+namespace around it.
+
+*Strength of claim: measured.* On aarch64 (the C4 device) and on x86_64. The preflight's eighth
+check reports `chroot denied, keyctl denied, ptrace denied, unshare denied`, and the self-test
+makes the same three calls **from inside a real sandbox**, after the filter was installed
+immediately before that interpreter was executed:
+
+```
+  ok    chroot(2)                  Operation not permitted
+  ok    ptrace(2)                  Operation not permitted
+  ok    unshare(2)                 Operation not permitted
+```
+
+Ordering, one more time: the filter is installed **last**, after the mounts and immediately
+before `exec`. Installed any earlier it would confine the construction of the sandbox rather
+than the sandbox — `mount` and `pivot_root` are both on its own deny-list.
+
 ---
 
-*Chapter 6 in progress: §6.1–§6.3 and §6.4.1–§6.4.5 drafted 2026-08-25, with the code in
-`framework/confine/` passing its self-test on the C4 device. Next: the seccomp filter, the
-third of §5.7.3's primitives. The section plan and the obligations this chapter inherits are in
-`notes/ch6_working_notes.md`.*
+*Chapter 6 in progress: §6.1–§6.3 and §6.4.1–§6.4.6 drafted 2026-08-25. All three of §5.7.3's
+isolation primitives are now built and measured on the C4 device, in `framework/confine/`.
+Next: §6.5, the bridge and the channel. The section plan and the obligations this chapter
+inherits are in `notes/ch6_working_notes.md`.*

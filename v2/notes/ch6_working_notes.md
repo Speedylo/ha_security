@@ -12,7 +12,7 @@ questions a viva will probe.
 | 6.1 | What the chapter must deliver; the three strengths of "built" | ✅ drafted |
 | 6.2 | The prior artifact — what survives R2, what is superseded, what may be cited | ✅ drafted |
 | 6.3 | The sandbox — constructed not booted; the base component; the defect that found | ✅ drafted |
-| 6.4 | The supervisor — where it must run (§6.4.1), the preflight (§6.4.2), the ordering bug (§6.4.3), the sandbox's filesystem (§6.4.4–§6.4.5); seccomp still to come | 🔵 §6.4.1–§6.4.5 drafted; `framework/confine/` passes its self-test on the Pi |
+| 6.4 | The supervisor — where it must run (§6.4.1), the preflight (§6.4.2), the ordering bug (§6.4.3), the sandbox's filesystem (§6.4.4–§6.4.5) and the seccomp filter (§6.4.6) | ✅ **§6.4 complete.** All three of §5.7.3's primitives built and measured on the Pi; preflight 8/8, self-test passes |
 | 6.5 | The bridge and the channel | ⬜ |
 | 6.6 | The mediator — manifest evaluation, resolve-then-pin | ⬜ |
 | 6.7 | The manifest as the user meets it — **T13's unplaced half**, owed by §5.14.4 | ⬜ |
@@ -181,6 +181,34 @@ nothing defeats it.
 - Spec on stdin, not `argv`: `/proc/<pid>/cmdline` is readable by anything running as the same
   user, and a sandbox's declared paths are not something to publish.
 
+## §6.4.6 — the seccomp narrowing, stated rather than glossed
+
+§5.7.3 specifies an allow-list ("denies syscalls outside the set an integration needs"). What
+is built is a **deny-list of 29 calls**. That is a real narrowing and the report says so in the
+section rather than in a footnote.
+
+**The argument that it is sufficient here does not generalise**, and that is the point to make
+first if challenged: by the time the filter is installed the other six namespaces have removed
+most of what a syscall could reach, so what is left for seccomp is calls dangerous in
+themselves. In a design where seccomp was the boundary rather than one of three layers, the
+same choice would be indefensible.
+
+**Residual risk, stated as a number rather than a gesture:** anything not among the 29 is
+allowed, so a kernel vulnerability elsewhere is unmitigated by this layer. §5.13 already counts
+seccomp as one of three layers and §5.7.5's kernel-surface residual stands; what is new is that
+it is now countable.
+
+**Why EPERM and not KILL_PROCESS.** A killed sandbox is indistinguishable from a crashed one —
+§6.4.5's absence problem in another costume. An errno keeps the sandbox alive to be observed,
+keeps the failure attributable, and gives the §5.12 audit record something to say. If Chapter 7
+finds an integration probing denied calls in a loop, that is data; a corpse is not.
+
+**Why the numbers are verified rather than trusted.** Hard-coded per architecture, no portable
+way to ask Python, and a wrong number denies the wrong call *silently*. So a throwaway child
+installs the filter and makes the calls. `chroot` and `unshare` are the probes worth having
+because both **succeed** inside a user namespace — refusal is then evidence of seccomp, not of
+the namespace surrounding it.
+
 ## Anticipated viva questions
 
 **"Your Chapter 5 predicted the budget would double and Chapter 6 says 1.53×. Which of your
@@ -211,6 +239,14 @@ marker, and that is the defect: not that an inference was wrong, but that it rea
 result. The audit that follows is §6.1's three strengths of "built", applied backwards to
 Chapter 5's claims, and the two corrections found so far (§6.3.2, §6.4.1) are both inferences
 sitting next to measurements. The measurements have all replicated.
+
+**"Chapter 5 specifies an allow-list and you built a deny-list. Why should I accept that?"** —
+Because of where it sits, and the report argues it from position rather than from convenience.
+An allow-list for CPython plus Home Assistant is several hundred entries that move with the
+interpreter version; more to the point, it would be doing work the other six namespaces have
+already done. The 29 calls denied are the ones that are dangerous whatever namespace they are
+made from. The residual — anything else is allowed — is stated in §6.4.6 and is consistent with
+§5.13 already counting seccomp as one layer of three rather than as the boundary.
 
 **"You said the sandbox sees only its own directory. Your own listing shows `/usr`, `/bin`,
 `/lib`. Which is it?"** — The second. R2 runs a real interpreter against a real Home Assistant

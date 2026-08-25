@@ -24,7 +24,7 @@ import subprocess
 import sys
 from dataclasses import dataclass, field
 
-from . import namespaces
+from . import namespaces, seccomp
 from .cgroup import CGROUP_FS, Delegation, PlacementUnavailable, SandboxCgroup, spawn_confined
 
 # The enforcement check asks a child for three times its cap. Large enough that no interpreter
@@ -137,7 +137,30 @@ def run(deep: bool = True) -> Preflight:
         "the kernel must allow unprivileged user namespaces; on Debian-family hosts check "
         "kernel.unprivileged_userns_clone and user.max_user_namespaces",
     ))
+    if not pre.ok:
+        return pre
+
+    pre.checks.append(_check_seccomp())
     return pre
+
+
+def _check_seccomp() -> Check:
+    """Install the filter in a throwaway child and make the calls it claims to deny.
+
+    The syscall numbers are hard-coded per architecture and a wrong one denies the wrong call
+    silently, so what is checked is behaviour. `chroot` and `unshare` are the useful probes:
+    both *succeed* inside a user namespace, so seeing them refused is evidence of the filter
+    rather than of the namespace.
+    """
+    result = seccomp.probe()
+    if "_error" in result:
+        return Check("seccomp filter", False, result["_error"],
+                     "this architecture needs a syscall table in confine/seccomp.py")
+    allowed = [name for name, verdict in result.items() if verdict != "DENIED"]
+    detail = ", ".join(f"{k} {v.lower()}" for k, v in sorted(result.items()))
+    return Check("seccomp filter", not allowed, detail,
+                 f"these were not denied: {', '.join(allowed)} — check the syscall numbers "
+                 f"for this architecture" if allowed else "")
 
 
 def _scratch_name() -> str:

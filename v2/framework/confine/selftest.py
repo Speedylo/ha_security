@@ -34,8 +34,15 @@ SECRET = "api_key: THIS-STRING-MUST-NOT-BE-READABLE"
 # rather than verdicts: the assertions belong out here, where they can be read next to the
 # claims they check.
 INSIDE = r"""
-import json, os, socket
+import ctypes, ctypes.util, json, os, socket
 from pathlib import Path
+
+libc = ctypes.CDLL(ctypes.util.find_library("c") or "libc.so.6", use_errno=True)
+
+# Make one syscall the filter should refuse, and report what came back.
+def attempt(fn):
+    ctypes.set_errno(0)
+    return "allowed" if fn() == 0 else os.strerror(ctypes.get_errno())
 
 def probe(p):
     path = Path(p)
@@ -69,6 +76,15 @@ report = {
     # What the configuration root looks like from in here. It exists — binding a declared
     # path necessarily creates the directories above it — so the question worth asking is
     # not whether it is there but whether anything is in it.
+    # Made from inside the real sandbox, not a test harness: the filter is installed
+    # immediately before this interpreter was executed. chroot and unshare both succeed
+    # inside a user namespace, so refusal here is evidence of seccomp and not of the
+    # namespace that surrounds it.
+    "syscalls": {
+        "chroot": attempt(lambda: libc.chroot(b"/")),
+        "unshare": attempt(lambda: libc.unshare(0x10000000)),
+        "ptrace": attempt(lambda: libc.ptrace(0, 0, 0, 0)),
+    },
     "config_root_listing": (sorted(os.listdir(CONFIG_ROOT))
                             if Path(CONFIG_ROOT).is_dir() else None),
 }
@@ -193,6 +209,13 @@ def render(report: dict, watched: dict[str, str]) -> int:
           f"{listing}")
     if not granted_only:
         failures.append(f"the configuration root holds {listing}, expected only ['shared']")
+
+    print()
+    for call, outcome in sorted(report["syscalls"].items()):
+        denied = outcome == "Operation not permitted"
+        print(f"  {'ok  ' if denied else 'FAIL'}  {call + '(2)':<{width}}  {outcome}")
+        if not denied:
+            failures.append(f"{call} was {outcome} inside the sandbox")
 
     if len(report["processes"]) != 1:
         failures.append("the PID namespace shows more than the sandbox itself")

@@ -24,7 +24,7 @@ from __future__ import annotations
 import os
 import sys
 
-from . import namespaces, sandbox
+from . import namespaces, sandbox, seccomp
 from .sandbox import SandboxSpec
 
 # The supervisor names the descriptor rather than the child assuming one: `pass_fds` preserves
@@ -99,8 +99,18 @@ def main() -> int:
     os.dup2(devnull, 0)
     os.close(devnull)
 
+    # Last, because everything above needs syscalls the filter denies — `mount` and
+    # `pivot_root` most obviously. A filter installed earlier would confine the construction
+    # of the sandbox rather than the sandbox.
+    try:
+        covered = seccomp.install()
+    except (OSError, seccomp.Unsupported) as err:
+        _report(f"fail seccomp {err}")
+        os._exit(71)
+
     env = dict(BASE_ENV)
     env.update(spec.env)
+    _report(f"seccomp {len(covered)}")
     _report("ready")
     os.close(STATUS_FD)  # so the supervisor's read returns rather than blocking on exec
     try:

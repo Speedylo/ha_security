@@ -16,6 +16,11 @@ describes can be read side by side.
 | `confine/cgroup.py` | §6.4.1 | Where a sandbox may be placed, and by whom |
 | `confine/namespaces.py` | §5.7.3 | The seven namespaces, and whether this host grants them |
 | `confine/preflight.py` | §6.4.2 | What is checked before anything is confined, and the N3 refusal |
+| `confine/sandbox.py` | §6.4.4 | What a sandbox can see of the filesystem, and how that view is built |
+| `confine/enter.py` | §6.4.4 | The child side: unshare, identity maps, the fork into the PID namespace, pivot, seccomp, exec |
+| `confine/spawn.py` | §6.4.4 | The supervisor side: subreaper, spec over stdin, wait |
+| `confine/seccomp.py` | §6.4.6 | The BPF filter, built by hand and verified by behaviour |
+| `confine/selftest.py` | §6.4.5 | One sandbox built around a hostile configuration directory |
 
 ## Running the preflight
 
@@ -31,7 +36,12 @@ and doing so is the check working rather than the host being wrong.
 
 ```bash
 systemd-run --user --scope -q python3 -m confine.preflight   # the right position, ad hoc
+systemd-run --user --scope -q python3 -m confine.selftest    # build a sandbox and look inside
 ```
+
+`confine.selftest` builds a configuration directory containing a secrets file, the config-entry
+store and a second integration, grants one integration one unrelated file, and reports what it
+can see. The interesting rows are the ones that come back **absent**.
 
 ## Why the preflight is a self-test and not an inspection
 
