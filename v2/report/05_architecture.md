@@ -1642,6 +1642,15 @@ strictly more restrictive than the one Chapter 4 described — but the phrase "t
 resources" now describes something the design deliberately does not have, and repeating it in
 Chapter 7 would misdescribe the artifact.
 
+> **Corrected in §6.6.6, 2026-08-25 — this paragraph contradicts §5.10.3 and §5.10.5, and it is
+> this paragraph that is wrong.** §5.10.3 lists `files` among the eight declarable capabilities
+> ("Paths outside its own directory", 33.3% of community integrations) and the whole of §5.10.5
+> constrains it. What §5.10.2 makes ambient is the integration's *own* directory, not the
+> filesystem. So a manifest clause naming filesystem paths does exist, §4.10's wording is
+> accurate, and the obligation this paragraph placed on Chapter 7 — never to repeat that phrase
+> — is withdrawn. Found by implementing the clause: §6.4.5's self-test shows a declared file
+> present and read-only inside a sandbox, which nothing here could have produced.
+
 **T16 — the control has a precondition Chapter 4 could not have known.** §4.10.1 derived S9 and
 its control, resource limits, from an identified threat. §5.7.4 then probed the target and
 found the cgroup v2 `memory` controller absent by distribution default. The control is placed

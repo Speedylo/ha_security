@@ -15,7 +15,7 @@ questions a viva will probe.
 | 6.4 | The supervisor — where it must run (§6.4.1), the preflight (§6.4.2), the ordering bug (§6.4.3), the sandbox's filesystem (§6.4.4–§6.4.5) and the seccomp filter (§6.4.6) | ✅ **§6.4 complete.** All three of §5.7.3's primitives built and measured on the Pi; preflight 8/8, self-test passes |
 | 6.5 | The channel — framing, identity by construction, and what it costs when real | ✅ drafted; `channel.py`, `mediator.py`, `selftest_channel.py` pass on the Pi |
 | 6.6 | The manifest and the permit path — validation, S5, clause pointers, what a decision costs | ✅ drafted; `manifest.py` + `selftest_policy.py` pass |
-| 6.7 | The manifest as the user meets it — **T13's unplaced half**, owed by §5.14.4 | ⬜ |
+| 6.7 | Where the user meets the declaration — **T13's unplaced half discharged** | ✅ drafted; `describe.py` + `selftest_describe.py`, 14 assertions over four states |
 | 6.8 | The audit record — three-part identity, the hash chain | ⬜ |
 | 6.9 | The adversarial cases, as built — §5.8.2's fourth scope item | ⬜ |
 | 6.10 | What is not built; the report against §5.6.5's G3 triggers | ⬜ |
@@ -272,6 +272,57 @@ producing an absence, where absence means denied; this is a bug producing a reje
 rejection is what the test wanted. **Safe answers are exactly what tests do not investigate.**
 Chapter 7's negative cases must assert on *why* something was refused, never that it was.
 
+## §6.6.6 — the third correction to Chapter 5, and the pattern in all three
+
+§5.14.4 states "Nothing about the filesystem is declared (§5.10.2)" while §5.10.3 lists `files`
+among the eight declarable capabilities and §5.10.5 spends two paragraphs constraining it. The
+misreading is specific: §5.10.2 makes the integration's *own directory* ambient, and §5.14.4
+read that as the filesystem being ambient.
+
+It had a consequence beyond a sentence — it placed an obligation on Chapter 7 never to repeat
+§4.10's phrase "filesystem isolation to declared resources". That obligation is **withdrawn**;
+the phrase is accurate.
+
+**What settles it is a result, not a re-reading.** §6.4.5's self-test shows a declared file
+present and read-only inside a running sandbox next to an absent `secrets.yaml`. Nothing about
+the filesystem being undeclared could produce that row.
+
+**The pattern across all three corrections is the thing to be able to say at a viva.** §6.3.2
+(the budget would double), §6.4.1 (the sandbox must be placed at creation), §6.6.6 (nothing about
+the filesystem is declared): every one was an **inference stated in the register of a result**.
+The measurements have all replicated — §5.6.3's 136.5 MB came back at 136.6 a day later from a
+different script. It is the sentences *next to* the measurements that need auditing, and §6.1's
+three strengths of "built" exist precisely to keep them apart. Worth volunteering rather than
+being caught by.
+
+Uncomfortable but honest addition: §5.14 was the traceability check, the section whose entire
+purpose was catching this class of error. It caught three others correctly, including the T13
+gap §6.7 discharges. On T14 it produced a confident finding, with an obligation attached, from a
+misreading of the section it cited.
+
+## §6.7 — the F4 surface
+
+**Discharges the oldest outstanding obligation** (§5.14.4, T13's unplaced half).
+
+**The design idea worth defending:** the denials are printed at the same weight as the grants,
+because §5.10.7's worked example denies nine of ten capabilities by absence. Showing only grants
+would show the smaller half of what enforcement does. Two grants, nine denials, from a four-line
+`permissions` block.
+
+**Four states, four renderings**, and the unreadable one is the one to argue for: rendering
+nothing when a manifest fails to parse reproduces §1.8 exactly, except the framework knows and
+did not say — and it is the state the user is most likely to be looking at, because something is
+wrong.
+
+**Three things declined, each because including it would over-claim:** risk labels (an
+unvalidated ranking presented as authoritative is a claim about how users decide — §3.7 declines
+it, and §5.10.4's no-wildcard rule already makes `lock.unlock` visible as a line of text without
+anything flagging it); the content hash (§5.12.5: no for the digest, yes for the change); and a
+consent flow (§3.7, and what was owed is a surface).
+
+**What this is not:** evidence anyone understands it. R6 stays open at Medium, and §6.7.3 says
+so in the section rather than in a footnote.
+
 ## Anticipated viva questions
 
 **"Your Chapter 5 predicted the budget would double and Chapter 6 says 1.53×. Which of your
@@ -302,6 +353,14 @@ marker, and that is the defect: not that an inference was wrong, but that it rea
 result. The audit that follows is §6.1's three strengths of "built", applied backwards to
 Chapter 5's claims, and the two corrections found so far (§6.3.2, §6.4.1) are both inferences
 sitting next to measurements. The measurements have all replicated.
+
+**"Chapter 6 has now corrected Chapter 5 three times. Should I trust Chapter 5?"** — Trust its
+measurements and audit its inferences, and the report now makes that separation visible rather
+than asking for it. All three corrections (§6.3.2, §6.4.1, §6.6.6) were inferences written in the
+register of results; no measurement has failed to replicate, and §5.6.3's marginal figure came
+back to within 0.1 MB a day later from a different script. The corrections are in the report
+with the wrong sentences left standing and pointers added, because a chain that shows where it
+was wrong is worth more than one that was quietly tidied.
 
 **"How do you know your negative tests are testing anything?"** — Because one of them was not,
 and it is in the report (§6.6.5). Three path-rejection cases were passing through the wrong rule

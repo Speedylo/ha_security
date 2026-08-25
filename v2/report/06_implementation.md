@@ -816,10 +816,134 @@ reason it was caught at all. Two things follow, and the second is the one worth 
   mistake produces the safe answer, and safe answers are exactly what tests do not investigate.
   Chapter 7's negative cases have to assert on *why* something was refused, not that it was.
 
+### 6.6.6 A contradiction inside Chapter 5, found by implementing it
+
+Building the validator meant implementing §5.10.5's constraints on the `files` clause. That
+clause turns out to be one Chapter 5 both specifies and denies the existence of.
+
+| Section | Says |
+|---|---|
+| §5.10.3 | `files` is one of the eight declarable capabilities — "Paths outside its own directory", used by 33.3% of community integrations, "individual paths with `read`/`write`" |
+| §5.10.5 | Two full paragraphs constraining it: the configuration root and `.storage/` are not grantable, and paths are resolved before comparison |
+| **§5.14.4** | "**Nothing about the filesystem is declared** (§5.10.2)" |
+
+**§5.14.4 is the one that is wrong**, and the mistake is a specific misreading rather than a
+slip. §5.10.2 makes the integration's *own* directory ambient — it is in the sandbox by
+construction, so no clause is needed for it. §5.14.4 read that as the filesystem being ambient,
+which is a different and much larger claim.
+
+The consequence was not confined to a sentence. §5.14.4 placed an obligation on Chapter 7 —
+never to repeat §4.10's phrase "filesystem isolation *to declared resources*", on the ground
+that the phrase misdescribed the artifact. It does not: filesystem access *is* bounded to
+declared resources, §4.10's wording is accurate, and **the obligation is withdrawn.**
+
+What settles it is not a re-reading but a result. §6.4.5's self-test shows a declared file
+present and read-only inside a running sandbox, alongside a `secrets.yaml` that is absent.
+Nothing about the filesystem being undeclared could have produced that row.
+
+**Why this is worth a subsection.** §5.14 was the traceability check — the section whose whole
+purpose was to catch exactly this class of error, and which did catch three others. It found the
+T13 gap that §6.7 discharges, correctly. On T14 it produced a *confident* finding, complete with
+an obligation for a later chapter, from a misreading of the section it cited. That is the third
+correction Chapter 6 has made to Chapter 5 (§6.3.2, §6.4.1, and this), and all three share a
+shape worth naming: **each was an inference stated in the register of a result.** The
+measurements have all replicated; it is the sentences next to them that need auditing.
+
+## 6.7 Where the user meets the declaration
+
+§5.14.4's traceability check found T13's control split in two, with one half unplaced.
+"Enforcement bounded to the declaration" is thorough — §5.9 says who may author one and §5.10
+says what it can express. "Declaration made visible" was specified by F4 and placed nowhere.
+This section places it, and it is the oldest outstanding obligation in the chapter.
+
+**What is owed is bounded, and the bound is worth stating first.** §3.7 excludes user
+*comprehension* as a human-factors question with its own literature, and F4 says explicitly that
+it "concerns *availability* of the information, not user comprehension". So what Chapter 6 owes
+is a surface, not evidence that anyone reads it — and R6 already retains, as a Medium residual,
+the risk that the user is not equipped to evaluate a declaration. Nothing here reduces R6.
+
+### 6.7.1 The denials are most of what there is to show
+
+§5.10.7 makes the observation this rendering is built around: in its worked example, **nine of
+the ten capabilities are denied by their absence**. The manifest never mentions them. A
+rendering that shows only what was granted therefore shows the smaller half of what enforcement
+does, so what an integration *cannot* do is printed at the same weight as what it can:
+
+```
+Example Weather  1.4.2
+====================
+
+These permissions were declared by whoever wrote this integration.
+
+If you install this, it will be allowed to:
+  - read the state of:
+    sensor.outdoor_temperature
+  - contact these addresses on the internet:
+    api.example-weather.invalid
+
+It will NOT be allowed to:
+  - control anything — it cannot ask any other integration to do anything
+  - change the state of any of your devices
+  - be told when anything in your home changes
+  - read any file outside its own folder
+  - change any file outside its own folder
+  - announce anything to the rest of Home Assistant
+  - listen to what other parts of Home Assistant are doing
+  - see any other integration's settings or saved passwords
+  - add anything to Home Assistant's web interface
+
+It is limited to 192 MB of memory, 8 processes.
+```
+
+Two grants, nine denials, from a manifest whose `permissions` block is four lines long. That
+ratio is not a presentation trick; it is what default-deny means, made visible.
+
+### 6.7.2 Four states, four renderings
+
+An integration is in one of four states with respect to its declaration, and the third is the
+one that would otherwise reproduce §1.8 exactly.
+
+| State | Rendering |
+|---|---|
+| Author-declared | As above, with "declared by whoever wrote this integration" |
+| Derived (§5.9.4 precedence 2) | "worked out for you, **not declared by the author** — check them before continuing", which is where §5.9.4's requirement for explicit user confirmation attaches |
+| **Unreadable** | "could not be read, so it will be given no permissions at all", **with the reason** |
+| Absent | "declares nothing… no permissions at all… nothing it asks for will be granted, because it has asked for nothing" |
+
+**The unreadable case is the one worth arguing for.** A framework that rendered nothing when a
+manifest failed to parse would leave the user unable to see what the integration intends —
+§1.8's complaint precisely, except that this time the framework knows and did not say. It is
+also the state in which the user is *most* likely to be looking, because something is wrong.
+
+### 6.7.3 Three things this deliberately does not do
+
+Each was considered and left out because including it would claim more than the project can
+support:
+
+- **Risk labels.** Marking `lock.unlock` as dangerous and a sensor read as harmless is an
+  unvalidated ranking presented as authoritative — a claim about how users decide, which is
+  exactly what §3.7 declines to make. The schema already does the legibility work structurally:
+  §5.10.4's no-wildcard rule means a lock grant must name each operation, so a weather
+  integration asking for `lock.unlock` is visible as a line of text without anything having to
+  flag it.
+- **The content hash.** §5.12.5 settled this — *no for the digest, yes for the change*. A hex
+  string means nothing to the reader F4 exists to serve. A change in it is a sentence a
+  non-programmer can act on, and the rendering carries that instead: *this integration's code
+  has changed since you approved these permissions. What it is allowed to do has not changed.*
+- **A consent flow.** Buttons, prompts, a wizard. §3.7 puts the interaction out of scope, and
+  what §5.14.4 recorded as owed is a surface.
+
+*Strength of claim: it runs, and its output is checked.* Fourteen assertions over the four
+states — that the grants and denials are both named, that the provenance is stated, that no
+digest appears, and that an unreadable declaration reports why. **This is not evidence that a
+user understands any of it**, which is R6 and stays open.
+
+**T13 is now placed in both halves**, and §5.14.4's oldest obligation is discharged.
+
 ---
 
-*Chapter 6 in progress: §6.1–§6.3, §6.4.1–§6.4.6, §6.5 and §6.6 drafted 2026-08-25. The
-supervisor confines, the channel carries identity by construction, and the manifest decides.
-Next: §6.7, the surface at which the user encounters the declaration — T13's unplaced half,
-owed by §5.14.4. The section plan and the obligations this chapter inherits are in
+*Chapter 6 in progress: §6.1–§6.3, §6.4.1–§6.4.6 and §6.5–§6.7 drafted 2026-08-25. The
+supervisor confines, the channel carries identity by construction, the manifest decides, and the
+declaration is presentable. Next: §6.8, the audit record — §5.12's three-part identity and the
+hash chain. The section plan and the obligations this chapter inherits are in
 `notes/ch6_working_notes.md`.*
