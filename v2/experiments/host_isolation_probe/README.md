@@ -1,6 +1,6 @@
 # Experiment — what isolation primitives does the target host actually offer?
 
-**Run:** 2026-08-24; re-run after a reboot 2026-08-25, same result · **Target:** Raspberry Pi 5, Raspberry Pi OS trixie, kernel 6.12.47,
+**Run:** 2026-08-24 · **Re-run 2026-08-25** after enabling the memory controller · **Target:** Raspberry Pi 5, Raspberry Pi OS trixie, kernel 6.12.47,
 aarch64 · **Feeds:** §5.7.4
 
 §5.7 chooses Linux namespaces + seccomp-BPF + cgroup v2 as the isolation primitive. That
@@ -15,9 +15,11 @@ probed rather than assumed.
 | All seven namespace types (mnt, uts, ipc, pid, net, user, cgroup) | Present |
 | seccomp-BPF | Present — `kill_process kill_thread trap errno user_notif trace log allow` |
 | cgroup v2, controllers `pids` `cpu` `io` `cpuset` | Available |
-| cgroup v2 `memory` | **MISSING** |
+| cgroup v2 `memory` | **MISSING** on a stock install → **AVAILABLE and enforcing** after the boot change below |
+| **S9 cap actually bites** | **Yes** — 192 MB against a 64 MB cap is OOM-killed; the same allocation uncapped succeeds. **Run unprivileged** |
 
-Raw output in `results/pi5.txt`; the post-reboot re-run is `results/pi5_after_reboot.txt`.
+Raw output: `results/pi5.txt` (stock, memory controller absent) and
+`results/pi5_memory_enabled.txt` (after the boot change, with the enforcement check).
 
 ## The two findings that changed the design
 
@@ -65,12 +67,29 @@ reason** when the memory controller is unavailable, which is N3 applied to a con
 Needs only coreutils and util-linux, and deliberately does not require root — needing root
 would itself have been a finding.
 
+## A third finding, from the re-run: how the sandbox must be placed in its cgroup
+
+Verifying enforcement turned up an implementation constraint the first probe could not have
+found. **An unprivileged process cannot create a cgroup and then migrate an existing process
+into it** — migration requires write access to the *common ancestor* of source and
+destination, and that is root-owned. The first attempt failed with `Permission denied` for
+exactly this reason.
+
+The consequence for the supervisor is concrete: a sandbox must be placed in its cgroup **at
+creation** (`CLONE_INTO_CGROUP`, or the equivalent), not confined after it is already running.
+That is the same ordering the design already relies on for the socket pair (§5.11.2) and for
+identity (§5.12.2), and §5.7.4 now names the pattern the three share.
+
 ## Limits
 
 - **One host, one distribution.** It establishes that the primitives exist on the target, not
   that they exist across the deployment landscape. Home Assistant OS and Docker deployments
   are different environments and are Chapter 6's problem.
-- **Presence, not correctness.** The probe shows the kernel offers these features; it does
-  not test that a sandbox built on them actually confines anything. That is the adversarial
-  evaluation in Chapter 7.
+- **Presence, not correctness — with one exception, added 2026-08-25.** The probe shows the
+  kernel offers these features; it does not test that a sandbox built on them actually confines
+  anything, which is the adversarial evaluation in Chapter 7. The exception is S9: because
+  "the controller is listed" and "the limit is enforced" are different claims, and only the
+  second is what S9 requires, the memory cap is now tested for effect rather than presence.
+  That check is deliberately the *only* correctness test here, and it needs `systemd-run` and
+  `python3` where the rest of the script needs neither.
 - **Nothing was built.** No supervisor exists yet. This measures the ground, not the building.

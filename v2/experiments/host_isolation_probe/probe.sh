@@ -85,6 +85,34 @@ if ! grep -qw memory /sys/fs/cgroup/cgroup.controllers 2>/dev/null; then
   fi
 fi
 
+# ── S9, actually enforced? ────────────────────────────────────────────────────────────
+# The rest of this script reports what the kernel OFFERS. This one block tests whether the
+# memory cap BITES, because "the controller is listed" and "the limit is enforced" are
+# different claims and S9 needs the second. Optional by design: it needs systemd-run and
+# python3, where everything above needs only coreutils and util-linux.
+if grep -qw memory /sys/fs/cgroup/cgroup.controllers 2>/dev/null; then
+  rule "S9 enforcement (does the cap bite?)"
+  if command -v systemd-run >/dev/null && command -v python3 >/dev/null; then
+    # Placed in the cgroup AT CREATION. An unprivileged process cannot migrate itself into
+    # a cgroup it just made: that needs write access to the common ancestor, which is
+    # root-owned. The supervisor therefore has to place the sandbox at fork time.
+    if systemd-run --user --scope -q -p MemoryMax=64M -p MemorySwapMax=0 \
+         python3 -c 'bytearray(192*1024*1024)' >/dev/null 2>&1; then
+      say "192 MB against a 64 MB cap" "ALLOCATED — cap NOT enforced"
+    else
+      say "192 MB against a 64 MB cap" "KILLED — cap enforced"
+    fi
+    if python3 -c 'bytearray(192*1024*1024)' >/dev/null 2>&1; then
+      say "same allocation, uncapped" "succeeds (so the kill above was the cap)"
+    else
+      say "same allocation, uncapped" "ALSO failed — machine is short of memory; test void"
+    fi
+    say "ran as" "$(id -un), uid $(id -u)$([ "$(id -u)" -eq 0 ] && echo ' — ROOT, not the target case')"
+  else
+    say "skipped" "needs systemd-run and python3"
+  fi
+fi
+
 rule "verdict"
 ok=1
 unshare -Urnpf --mount-proc true 2>/dev/null || { echo "namespaces: NO"; ok=0; }

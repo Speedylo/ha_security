@@ -484,7 +484,7 @@ Raspberry Pi OS trixie, kernel 6.12.47, on the Pi 5):
 | All seven namespace types | Present |
 | seccomp-BPF | Present, including `user_notif` |
 | cgroup v2 with `pids`, `cpu`, `io`, `cpuset` | Available |
-| cgroup v2 `memory` | **Missing** |
+| cgroup v2 `memory` | **Missing** on a stock installation — see below |
 
 Two consequences follow, and the second is a genuine constraint on deployment rather than a
 detail.
@@ -506,6 +506,23 @@ and leave T16 uncontrolled while implying protection. N3 requires a stated failu
 precisely because §1.6's complaint about the status quo is that the user's exposure is
 invisible; a framework that silently ran without the one control T16 has would reproduce that
 property under a security label.
+
+**The change was made and the limit was then verified to bite, not merely to be settable**
+(re-probed 2026-08-25). With `cgroup_enable=memory cgroup_memory=1` on the boot command line,
+the `memory` controller is present and delegated to the ordinary user's own subtree. A process
+capped at 64 MB and asked to allocate 192 MB is killed by the cgroup OOM killer; the identical
+allocation without a cap succeeds. **Both were run as an unprivileged user**, which is what
+makes S9 and the unprivileged-supervisor finding above compatible rather than in tension — a
+question the first probe could not answer, because the controller it needed was absent.
+
+**One implementation constraint came out of that verification and belongs to Chapter 6.** An
+unprivileged supervisor **cannot** create a cgroup and then move an existing process into it:
+migration requires write access to the common ancestor of source and destination, which is
+root-owned. The sandbox must therefore be placed in its cgroup **at creation**, not confined
+after the fact. That is the same ordering the design already relies on elsewhere — the socket
+pair exists before the sandbox does (§5.11.2), and identity is computed before any integration
+code runs (§5.12.2) — and it is worth noticing that three separate mechanisms have now landed
+on the same rule: **construction precedes execution, or the property is not available at all.**
 
 ### 5.7.5 What is being given up, and the residual risk
 

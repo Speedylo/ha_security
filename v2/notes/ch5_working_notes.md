@@ -382,6 +382,46 @@ measured compatibility cost, a schema, and a threat model against a published ba
 transfer to L2 unchanged. That is a much better Chapter 8 future-work paragraph than
 "the platform should adopt this".
 
+## S9 verified on the Pi, 2026-08-25 — and what verifying it turned up
+
+The memory controller was enabled and the cap tested for *effect*. Three things came out, in
+increasing order of usefulness.
+
+**1. The original fix instruction was impossible on this hardware.** `cgroup_disable=memory`
+is prepended by the Pi 5 firmware and is not in `/boot/firmware/cmdline.txt`, so "remove it"
+sends an operator looking for a string that is not there — and they reasonably conclude the
+machine is already configured, which is exactly what happened. Appending
+`cgroup_enable=memory cgroup_memory=1` is what overrides it, because `cgroup_enable` is parsed
+after `cgroup_disable`. `probe.sh` now inspects the file and prints whichever instruction
+applies.
+
+**2. S9 and the unprivileged supervisor are compatible, and that was not obvious.** §5.7.4
+claims both that the supervisor need not be root and that cgroup v2 bounds memory. Those are in
+tension if the memory controller requires privilege — and the first probe could not settle it,
+because the controller was absent. It is now settled empirically: systemd delegates
+`cpu memory pids` to the user manager's subtree, and 192 MB against a 64 MB cap is OOM-killed
+as uid 1000, while the same allocation uncapped succeeds. **Worth having ready in a viva** —
+"you claim an unprivileged supervisor enforces memory limits; show me" now has an answer with a
+command behind it.
+
+**3. The finding worth the most is the one from a *failed* test.** The first enforcement
+attempt failed with `Permission denied`, because an unprivileged process cannot create a cgroup
+and then migrate an existing process into it: migration needs write access to the common
+ancestor of source and destination, which is root-owned. So **the sandbox must be placed in its
+cgroup at creation, not confined afterwards** — a concrete constraint on Chapter 6's supervisor.
+
+That third one connects to something already in the chapter. The socket pair exists before the
+sandbox does (§5.11.2), identity is computed before any integration code runs (§5.12.2), and now
+the cgroup must be joined at fork. **Three independent mechanisms, one rule: construction
+precedes execution, or the property is not available at all.** §5.7.4 names it. It is a good
+candidate for the Chapter 6 opening, because it is a design principle that was *discovered*
+rather than chosen, which is the kind a viva rewards.
+
+**Process note.** The first run of the enforcement test was broken by nested shell quoting —
+`$D` never expanded, the process never joined the cgroup, and the output read
+"CAP NOT ENFORCED". That was a broken test, not a finding, and it would have been a bad one to
+record. The check now lives in `probe.sh` where it can be re-run rather than retyped.
+
 ## Questions a viva will probe here
 
 - *Why not just fix Home Assistant?* — L2 is the better answer for the platform project and

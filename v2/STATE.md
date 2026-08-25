@@ -34,7 +34,7 @@ that does not belong in the report, including anticipated viva questions.
 | `figures/api_surface.py`, `fetch_hacs_corpus.py` | ✅ **2026-08-24.** The API surface re-derived by `ast` parsing over two corpora — 1,458 shipped and 144 community integrations, zero parse failures. Write-up in `notes/ch5_evidence_api_surface.md`; corpus reproducible from `hacs_corpus_manifest.json` |
 | `experiments/r2_footprint/` | ✅ **Pi 5, 2026-08-24.** R2's premise holds and it fits: minimal HA builds without `bootstrap`, an ordinary integration runs against it, 176 MB first sandbox / 136 MB marginal / ~17 in 60% of 4 GB. Feeds §5.6.3 |
 | `experiments/mediation_latency/` | ✅ **Pi 5, 2026-08-24.** One mediated request over the channel: **30.0 µs** median, p99 33.9 µs; ~33k req/s. Floor only — excludes manifest check and audit write. Feeds §5.11.4 |
-| `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24.** Namespaces (unprivileged), seccomp and cgroup v2 all present; **`memory` controller absent** — Pi OS ships `cgroup_disable=memory`, so S9 needs a boot change. Feeds §5.7.4 |
+| `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24; re-run 2026-08-25.** Namespaces (unprivileged), seccomp and cgroup v2 all present. `memory` was absent on the stock install; after the boot change it is present **and the cap is verified to bite, unprivileged**. Feeds §5.7.4 |
 
 ## Next session — start here
 
@@ -46,14 +46,23 @@ applied. **Chapter 6 is next**, and its first task is already fixed by §5.6.5.
 | **1** | **Ch. 6 — measure whether the sandbox needs the base `homeassistant` component** | **60 MB of the 176 MB.** Dropping it roughly doubles the ~17-sandbox budget and largely dissolves §5.8.1's third qualification |
 | 2 | Then the rest of Chapter 6 | The spike is cited as prior feasibility work, then reconciled with the design Ch. 5 produced |
 
-**⚠ S9 is still unverifiable on the Pi.** Re-probed after the 2026-08-25 reboot: the memory
-controller is **still missing**. The cause is sharper than §5.7.4 recorded —
-`cgroup_disable=memory` is *prepended by the Pi 5 firmware* and **is not in
-`/boot/firmware/cmdline.txt` at all**, so "remove it" cannot be followed. The fix is to
-**append** `cgroup_enable=memory cgroup_memory=1` to the single line in that file and reboot;
-`cgroup_enable` is parsed after `cgroup_disable` and overrides it. `probe.sh` now detects which
-case applies and prints the applicable instruction, and
-`experiments/host_isolation_probe/README.md` records the correction.
+**✅ S9 is now verified on the Pi (2026-08-25).** The blocker is cleared and the result is
+stronger than "the controller is present":
+
+- The cause was sharper than §5.7.4 first recorded — `cgroup_disable=memory` is *prepended by
+  the Pi 5 firmware* and is **not in `/boot/firmware/cmdline.txt` at all**, so the original
+  "remove it" advice could not be followed. `cgroup_enable=memory cgroup_memory=1` was
+  **appended** to that file (backup at `cmdline.txt.bak-20260825-124406`) and the Pi rebooted.
+- **The cap bites, unprivileged.** 192 MB against a 64 MB cap is OOM-killed; the same
+  allocation uncapped succeeds. Both as uid 1000. This is what makes S9 and the
+  unprivileged-supervisor finding compatible rather than in tension.
+- **A third finding came out of it, owed to Chapter 6.** An unprivileged process cannot create
+  a cgroup and then migrate an existing process into it — that needs write access to the
+  root-owned common ancestor. **The sandbox must be placed in its cgroup at creation**, not
+  confined afterwards. §5.7.4 notes that this is the third mechanism to land on the same rule:
+  construction precedes execution, or the property is not available at all.
+- `probe.sh` now tests the cap for *effect*, not presence, and prints the applicable boot
+  instruction for whichever case the host is in.
 
 **⚠ §5.14's traceability check generated three obligations. They are cheap now and expensive
 in November.**
