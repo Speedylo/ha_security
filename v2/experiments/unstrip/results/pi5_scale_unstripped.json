@@ -1,0 +1,9 @@
+{
+  "profile": "unstripped",
+  "count": 6,
+  "sum_rss_mb": 1022.6,
+  "sum_pss_mb": 782.2,
+  "pss_per_sandbox_mb": 130.4,
+  "capacity": 18,
+  "mem_total_mb": 4046
+}

@@ -1,0 +1,139 @@
+{
+  "host": {
+    "machine": "aarch64",
+    "python": "3.14.7"
+  },
+  "baseline_mb": 68.3,
+  "minimal_mb": 73.4,
+  "components": [
+    {
+      "component": "http",
+      "ok": false,
+      "error": "",
+      "cost_mb": 37.8,
+      "total_mb": 111.2,
+      "log": [
+        "WARNING aiohttp_fast_zlib: zlib_ng and isal are not available, falling back to zlib, performance will be degraded.",
+        "ERROR homeassistant.setup: Error during setup of component http: 'HomeAssistant' object has no attribute 'auth'"
+      ],
+      "in_components": false
+    },
+    {
+      "component": "websocket_api",
+      "ok": false,
+      "error": "",
+      "cost_mb": 0.0,
+      "total_mb": 111.2,
+      "log": [
+        "ERROR homeassistant.setup: Unable to set up dependencies of 'websocket_api'. Setup failed for dependencies: ['http']",
+        "ERROR homeassistant.setup: Setup failed for 'websocket_api': Could not setup dependencies: http"
+      ],
+      "in_components": false
+    },
+    {
+      "component": "frontend",
+      "ok": false,
+      "error": "",
+      "cost_mb": 0.9,
+      "total_mb": 112.1,
+      "log": [
+        "ERROR homeassistant.setup: Unable to set up dependencies of 'api'. Setup failed for dependencies: ['http']",
+        "ERROR homeassistant.setup: Setup failed for 'api': Could not setup dependencies: http",
+        "ERROR homeassistant.setup: Unable to set up dependencies of 'auth'. Setup failed for dependencies: ['http']",
+        "ERROR homeassistant.setup: Setup failed for 'auth': Could not setup dependencies: http"
+      ],
+      "in_components": false
+    },
+    {
+      "component": "lovelace",
+      "ok": false,
+      "error": "",
+      "cost_mb": 0.0,
+      "total_mb": 112.1,
+      "log": [],
+      "in_components": false
+    },
+    {
+      "component": "panel_custom",
+      "ok": false,
+      "error": "",
+      "cost_mb": 0.0,
+      "total_mb": 112.1,
+      "log": [
+        "ERROR homeassistant.setup: Unable to set up dependencies of 'panel_custom'. Setup failed for dependencies: ['frontend']",
+        "ERROR homeassistant.setup: Setup failed for 'panel_custom': Could not setup dependencies: frontend"
+      ],
+      "in_components": false
+    },
+    {
+      "component": "repairs",
+      "ok": false,
+      "error": "",
+      "cost_mb": 0.0,
+      "total_mb": 112.1,
+      "log": [],
+      "in_components": false
+    },
+    {
+      "component": "python_script",
+      "ok": false,
+      "error": "",
+      "cost_mb": 1.9,
+      "total_mb": 114.0,
+      "log": [
+        "WARNING homeassistant.components.python_script: Folder python_scripts not found in configuration folder",
+        "ERROR homeassistant.setup: Setup failed for 'python_script': Integration failed to initialize."
+      ],
+      "in_components": false
+    },
+    {
+      "component": "media_source",
+      "ok": false,
+      "error": "",
+      "cost_mb": 0.0,
+      "total_mb": 114.0,
+      "log": [
+        "ERROR homeassistant.setup: Unable to set up dependencies of 'media_source'. Setup failed for dependencies: ['http']",
+        "ERROR homeassistant.setup: Setup failed for 'media_source': Could not setup dependencies: http"
+      ],
+      "in_components": false
+    },
+    {
+      "component": "notify",
+      "ok": false,
+      "error": "",
+      "cost_mb": 0.0,
+      "total_mb": 114.0,
+      "log": [
+        "ERROR homeassistant.setup: Unable to set up dependencies of 'notify'. Setup failed for dependencies: ['repairs']",
+        "ERROR homeassistant.setup: Setup failed for 'notify': Could not setup dependencies: repairs"
+      ],
+      "in_components": false
+    },
+    {
+      "component": "mqtt",
+      "ok": false,
+      "error": "",
+      "cost_mb": 0.0,
+      "total_mb": 114.0,
+      "log": [
+        "ERROR homeassistant.setup: Unable to set up dependencies of 'mqtt'. Setup failed for dependencies: ['file_upload', 'http']",
+        "ERROR homeassistant.setup: Setup failed for 'mqtt': Could not setup dependencies: file_upload, http"
+      ],
+      "in_components": false
+    },
+    {
+      "component": "stream",
+      "ok": false,
+      "error": "",
+      "cost_mb": 0.1,
+      "total_mb": 114.1,
+      "log": [
+        "ERROR homeassistant.setup: Unable to set up dependencies of 'stream'. Setup failed for dependencies: ['http']",
+        "ERROR homeassistant.setup: Setup failed for 'stream': Could not setup dependencies: http"
+      ],
+      "in_components": false
+    }
+  ],
+  "final_mb": 114.1
+}

@@ -55,6 +55,16 @@ MODULE_RE = re.compile(r"No module named '([^']+)'")
 # Assistant installs an integration's `requirements` at setup; under R2 they belong to the
 # sandbox and to nothing else, so each gets its own directory and no two share one.
 DEPS = "/sandbox/deps"
+# The platform's own optional components live here. Shared between sandboxes read-only, and
+# deliberately: these are Home Assistant's packages, not any integration's, and the sandbox
+# already shares the `homeassistant` library itself the same way. An integration's *own*
+# dependencies stay in DEPS, one directory per sandbox.
+PLATFORM_DEPS = "/sandbox/platform-deps"
+
+# What "un-stripping toward http" means concretely (§6.12). Ordered so a failure is attributable
+# to the component that caused it rather than to the cascade behind it.
+UNSTRIPPED = ["http", "websocket_api", "frontend", "lovelace", "panel_custom", "repairs",
+              "media_source", "notify", "mqtt", "stream"]
 
 
 def install_requirements(requirements: list[str], target: Path, python: Path,
@@ -166,10 +176,19 @@ def classify(entry: dict) -> tuple[str, str]:
         key = root.lower().replace("-", "_")
         if key in declared_packages and key not in installed:
             return "dependency_install_failed", root
-        if declared_components:
-            # It declares components it did not get. Those components' own requirements are
-            # where this module would have come from in a full installation.
-            return "needs_component", f"{root} <- {'/'.join(declared_components[:3])}"
+        # It only counts as a component problem if a component it declared actually failed.
+        # Once every declared component sets up and the module is *still* missing, nothing
+        # about the instance explains it — the integration imports something neither it nor
+        # any component it names provides. An earlier version of this function stopped at
+        # "it declares components", which mislabelled six residual failures under the
+        # un-stripped profile and would have blamed the design for them.
+        setup = entry.get("components_setup") or {}
+        # Measured against what the integration *declared*, not against what happened to be
+        # attempted. A profile that sets up ten components successfully says nothing about an
+        # eleventh the integration asked for and nobody tried.
+        unmet = [c for c in declared_components if setup.get(c) is not True]
+        if unmet:
+            return "needs_component", f"{root} <- {'/'.join(unmet[:3])}"
         return "undeclared_dependency", root
 
     if modules:
@@ -182,7 +201,8 @@ def classify(entry: dict) -> tuple[str, str]:
 def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Path,
             delegation: Delegation, uv: str | None,
             setup_components: list[str] | None = None,
-            extra_requirements: list[str] | None = None) -> dict:
+            extra_requirements: list[str] | None = None,
+            profile: str = "minimal", platform_deps: Path | None = None) -> dict:
     """One integration, one sandbox. Nothing is shared between them but the corpus on disk."""
     root = Path(tempfile.mkdtemp(prefix=f"compat-{domain}-"))
     mediator = Mediator()
@@ -210,9 +230,12 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
         mediator.register(domain, Channel(mediator_end))
 
         spec_file = root / "sandbox-spec.json"
+        components = list(setup_components or [])
+        if profile == "unstripped":
+            components = UNSTRIPPED + [c for c in components if c not in UNSTRIPPED]
         spec_file.write_text(json.dumps({
             "domain": domain, "mode": "inspect", "entities": [], "services": [],
-            "setup_components": setup_components or []}))
+            "auth": profile == "unstripped", "setup_components": components}))
         spec = SandboxSpec(
             domain=domain, own_dir=str(own), data_dir=str(data),
             argv=[str(sandbox_python), "/sandbox/runtime.py"],
@@ -220,6 +243,9 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
                            str(spec_file): "/sandbox/spec.json",
                            str(deps_dir): DEPS},
             env={"PYTHONPATH": DEPS})
+        if profile == "unstripped" and platform_deps:
+            spec.runtime_files[str(platform_deps)] = PLATFORM_DEPS
+            spec.env["PYTHONPATH"] = f"{DEPS}:{PLATFORM_DEPS}"
         for extra in (*interpreter_trees(sandbox_python), sys.base_prefix):
             if extra and extra not in spec.runtime_paths:
                 spec.runtime_paths.append(extra)
@@ -257,6 +283,7 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
     report["peak_mb"] = round(peak / 2**20, 1)
     report["install"] = install
     report["setup_components"] = setup_components or []
+    report["profile"] = profile
     return report
 
 
@@ -269,6 +296,9 @@ def main() -> int:
                     help="uv, used to install each integration's declared requirements into a "
                          "directory of its own (§5.2). --no-install skips it")
     ap.add_argument("--no-install", action="store_true")
+    ap.add_argument("--profile", choices=["minimal", "unstripped"], default="minimal")
+    ap.add_argument("--platform-deps", type=Path,
+                    help="a directory holding the un-stripped components' own requirements")
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
 
@@ -286,11 +316,12 @@ def main() -> int:
         components = components[: args.limit]
 
     print(f"compatibility — {len(components)} community integrations, one sandbox each\n")
-    print("  ARM A — the minimal instance §6.3.2 measured\n")
+    print(f"  ARM A — the {args.profile} instance\n")
     results = []
     for index, component in enumerate(components, 1):
         report = run_one(component.name, component, args.corpus, sandbox_python,
-                         delegation, uv)
+                         delegation, uv, profile=args.profile,
+                         platform_deps=args.platform_deps)
         category, detail = classify(report)
         report["category"] = category
         results.append(report)
@@ -336,7 +367,8 @@ def main() -> int:
             extra = component_requirements(wanted, ha_components)
             report = run_one(row["domain"], by_domain[row["domain"]], args.corpus,
                              sandbox_python, delegation, uv, setup_components=wanted,
-                             extra_requirements=extra)
+                             extra_requirements=extra, profile=args.profile,
+                             platform_deps=args.platform_deps)
             category, detail = classify(report)
             report["category"] = category
             report["arm"] = "B"

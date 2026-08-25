@@ -1,0 +1,116 @@
+{
+  "host": {
+    "machine": "aarch64",
+    "python": "3.14.7"
+  },
+  "baseline_mb": 68.3,
+  "minimal_mb": 73.5,
+  "with_auth": true,
+  "components": [
+    {
+      "component": "http",
+      "ok": true,
+      "error": "",
+      "cost_mb": 37.8,
+      "total_mb": 111.3,
+      "log": [
+        "WARNING aiohttp_fast_zlib: zlib_ng and isal are not available, falling back to zlib, performance will be degraded."
+      ],
+      "in_components": true
+    },
+    {
+      "component": "websocket_api",
+      "ok": true,
+      "error": "",
+      "cost_mb": 0.0,
+      "total_mb": 111.3,
+      "log": [],
+      "in_components": true
+    },
+    {
+      "component": "frontend",
+      "ok": true,
+      "error": "",
+      "cost_mb": 26.1,
+      "total_mb": 137.4,
+      "log": [],
+      "in_components": true
+    },
+    {
+      "component": "lovelace",
+      "ok": true,
+      "error": "",
+      "cost_mb": 0.0,
+      "total_mb": 137.4,
+      "log": [],
+      "in_components": true
+    },
+    {
+      "component": "panel_custom",
+      "ok": true,
+      "error": "",
+      "cost_mb": 0.1,
+      "total_mb": 137.5,
+      "log": [],
+      "in_components": true
+    },
+    {
+      "component": "repairs",
+      "ok": true,
+      "error": "",
+      "cost_mb": 0.0,
+      "total_mb": 137.5,
+      "log": [],
+      "in_components": true
+    },
+    {
+      "component": "python_script",
+      "ok": false,
+      "error": "",
+      "cost_mb": 0.2,
+      "total_mb": 137.7,
+      "log": [
+        "WARNING homeassistant.components.python_script: Folder python_scripts not found in configuration folder",
+        "ERROR homeassistant.setup: Setup failed for 'python_script': Integration failed to initialize."
+      ],
+      "in_components": false
+    },
+    {
+      "component": "media_source",
+      "ok": true,
+      "error": "",
+      "cost_mb": 0.5,
+      "total_mb": 138.2,
+      "log": [],
+      "in_components": true
+    },
+    {
+      "component": "notify",
+      "ok": true,
+      "error": "",
+      "cost_mb": 0.0,
+      "total_mb": 138.2,
+      "log": [],
+      "in_components": true
+    },
+    {
+      "component": "mqtt",
+      "ok": true,
+      "error": "",
+      "cost_mb": 12.2,
+      "total_mb": 150.4,
+      "log": [],
+      "in_components": true
+    },
+    {
+      "component": "stream",
+      "ok": true,
+      "error": "",
+      "cost_mb": 28.3,
+      "total_mb": 178.8,
+      "log": [],
+      "in_components": true
+    }
+  ],
+  "final_mb": 178.8
+}

@@ -76,6 +76,9 @@ def main() -> int:
     try:
         namespaces.unshare(namespaces.SANDBOX_NAMESPACES)
         namespaces.write_identity_maps(outer_uid, outer_gid)
+        # The new namespace's loopback is down. Anything that binds a socket fails until it is
+        # raised, and the interface reaches nothing outside this namespace (§6.12).
+        namespaces.bring_loopback_up()
     except OSError as err:
         _report(f"fail unshare {err.strerror or err}")
         return 71

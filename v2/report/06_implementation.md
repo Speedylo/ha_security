@@ -1369,9 +1369,16 @@ stripping.** `battery_notes` imports `async_timeout`, `dreame_vacuum` imports `t
 `dwd_weather` imports `numpy` — none declared, none shipped by the platform. In a real
 installation they work because *another* integration installed the package into the shared
 environment. R2 gives each sandbox its own declared dependencies and nothing else, so this class
-breaks under confinement however complete the instance is. It is counted separately for that
-reason, and it is the sharpest illustration available of what a shared interpreter has been
-providing invisibly.
+breaks under confinement, and it is the sharpest illustration available of what a shared
+interpreter has been providing invisibly.
+
+> **Refined by §6.12, and the correction is mine rather than Chapter 5's.** Two of the three —
+> `dreame_vacuum` and `dwd_weather` — turn out to be reachable after all: `turbojpeg` and `numpy`
+> arrive with the requirements of components the platform ships, so an instance that sets those
+> up has them. Only `battery_notes` is a genuine shared-environment dependency, and
+> `async_timeout` is a package Home Assistant's own `pyproject.toml` **bans** ("use
+> `asyncio.timeout` instead"). The class is real and it is a third the size this paragraph
+> claims.
 
 ### 6.11.4 The two triggers are coupled, which Chapter 5 did not anticipate
 
@@ -1433,10 +1440,139 @@ fourth by running it: §6.11.4's coupling of two triggers Chapter 5 treated as i
 of the first three was an inference written in the register of a result. No measurement failed to
 replicate. That asymmetry is the most useful thing this chapter hands to the next one.
 
+## 6.12 Un-stripping toward `http`, and what it costs
+
+§6.11.5 offered Gate G3 three options and called the first the smallest step with the largest
+expected return: un-strip toward `http`, and pay the footprint. §6.11.3 makes it the obvious one
+to try — `http` alone blocks ten of the sixteen component failures. This section pays.
+
+### 6.12.1 Two changes, and one of them is free
+
+**`http` will not set up without an authentication manager.** On a minimal instance
+`async_setup_component(hass, "http", {})` returns `False` with no exception and no explanation.
+Capturing Home Assistant's own log — which §6.11.3's arm B did not, and which is why it reported
+eleven bare `False`s and said nothing about any of them — gives the reason at once:
+
+```
+AttributeError: 'HomeAssistant' object has no attribute 'auth'
+    homeassistant/components/http/auth.py:113   hass.auth.async_create_system_user(...)
+```
+
+§5.6.3 built the instance with "no HTTP server, no recorder, no frontend and **no
+authentication**", and the third turns out to gate the first. One line —
+`auth_manager_from_config(hass, [], [])` — takes the cascade from **0 of 11 components to 10**,
+and costs **0.1 MB**. Everything else was failing because `http` had.
+
+**This collides with §5.10.3 and the collision is worth arguing rather than stepping around.**
+That section says `hass.auth` "has no clause and cannot be declared. Users and tokens are the
+platform's authentication state; a design whose whole purpose is to keep credentials away from
+third-party code should not offer a permission that hands them over."
+
+The manager built here has **no providers**, so its store holds no users, no credentials and no
+tokens belonging to anyone. The system user `http` creates belongs to the sandbox's own store and
+authenticates against the sandbox's own server, bound to the sandbox's own loopback in its own
+network namespace, reaching nothing. It is the same pattern as the empty state machine (§5.6.2)
+and the empty service registry (§6.3.2): **a real object whose contents are nothing.** §5.10.3's
+refusal is about any route to the *installation's* auth manager, and this is not one. What would
+violate it is mirroring real users in, and nothing does.
+
+**A new network namespace's loopback is down.** With auth wired, `http` set up on the host and
+still failed inside a sandbox, leaving only `homeassistant.components.network: Because the system
+does not have any enabled IPv4 addresses`. §5.7.3 describes the network namespace as giving "no
+route to anywhere" — accurate, and incomplete. It also gives no *working loopback*, which is a
+different thing, and anything that binds a socket fails until it is raised. One `SIOCSIFFLAGS`
+ioctl in the supervisor fixes it, and the grant is narrow by construction: the interface exists
+only inside that namespace, so the sandbox gains the ability to talk to itself and nothing else.
+
+### 6.12.2 What it buys
+
+*Strength of claim: measured.* Same 37 integrations, same harness, one sandbox each.
+
+| | Minimal | Un-stripped |
+|---|---|---|
+| **Imports clean, all entity platforms** | 17/37 — **46%** | 26/37 — **70%** |
+| ...plus each integration's own declared components | 21/37 — 57% | 28/37 — **76%** |
+| Failing for want of a component | 16 | 8 |
+| Failing on a package nobody provides | 3 | 2 |
+
+Nine integrations move from failing to clean and **none regresses**: `alarmo`, `browser_mod`,
+`dreame_vacuum`, `dwd_weather`, `homematicip_local`, `llmvision`, `meross_lan`, `powercalc`,
+`webrtc`. Every one of the ten components sets up in every sandbox.
+
+### 6.12.3 What it costs, and peak memory is not the answer
+
+Per-component cost, measured in-process, in the order Home Assistant resolves them:
+
+| Component | Cost | Running total | Integrations unblocked |
+|---|---|---|---|
+| auth manager | **0.1 MB** | 73.5 MB | all of the below |
+| **`http`** | **37.8 MB** | 111.3 MB | **10** |
+| `frontend` | 26.1 MB | 137.4 MB | 3 |
+| `mqtt` | 12.2 MB | 150.4 MB | 6 |
+| `stream` | 28.3 MB | 178.8 MB | 2 |
+| `websocket_api`, `lovelace`, `panel_custom`, `repairs`, `media_source`, `notify` | 0.6 MB total | — | 3, 4, 2, 1, 1, 1 |
+
+But the budget is proportional set size across live sandboxes, not peak resident memory, and the
+two tell different stories. Measured the way §6.3.2 measured it — six sandboxes, same probe in
+both arms:
+
+| | PSS per sandbox | Sandboxes in 60% of 4 GB |
+|---|---|---|
+| Minimal | 54.5 MB | 44 |
+| Un-stripped | **130.4 MB** | **18** |
+
+**+75.9 MB per sandbox, and the budget more than halves.** The per-sandbox *peak* moved only from
+a median of 100 MB to 133 MB, which would have suggested a third; PSS at scale says 139%. This is
+the same distinction §6.3.2 was built around and it matters again in the opposite direction —
+there, a peak-based reading would have overstated a *saving*; here it understates a *cost*.
+
+> **Translating to §6.3.2's published figure.** That harness used a probe with a sensor platform
+> and a coordinator and measured 90.0 MB; this one uses a trivial probe. Applying the same
+> +75.9 MB delta puts a realistic integration in an un-stripped sandbox at roughly **166 MB PSS,
+> about 14 sandboxes** — an estimate from a measured delta rather than a measurement, and
+> Chapter 7 should take it directly.
+
+Against §5.8.1's mean of **4.02** community integrations per HACS-using installation, fourteen is
+still three and a half times what a typical installation needs. The 449 MB of packages these
+components require sit on disk rather than in each sandbox: they are the platform's own, bound
+read-only and shared exactly as the `homeassistant` library already is.
+
+### 6.12.4 The answer Gate G3 now has, and the option none of this measured
+
+| Option | Compatibility | Budget |
+|---|---|---|
+| Keep the minimal instance | 46% | ~26 sandboxes |
+| **Un-strip to the ten-component profile** | **70%** | **~14 sandboxes** |
+| Un-strip, plus each integration's declared components | 76% | lower still, unmeasured |
+
+**+24 points of import-level compatibility for roughly half the sandbox budget, and the budget
+that remains is still 3.5× a typical installation.** On those numbers the trade is worth taking,
+and §6.11.5's third option — reverting to R1 — is not indicated: the failures were never about
+how the integration is hosted.
+
+**The measured profile is not the one to build, though, and the data says why.** It pays for
+`stream` (28 MB, two integrations) and `frontend` (26 MB, three) in every sandbox including those
+that need neither, while the change that actually unblocks the cascade costs 0.1 MB. The
+indicated design is therefore: **wire the auth manager always, and set up components per
+integration from its own manifest.**
+
+That was not measured. The per-integration arm ran with auth unwired — which is precisely why it
+reached only 57% — and re-running it now that auth is free is the obvious next measurement. It
+should approach 70–76% at well under 130 MB for integrations that declare little, and it is what
+Chapter 7 should evaluate rather than the blanket profile.
+
+**One correction of my own to record.** §6.11.3 reported three integrations failing on packages
+nobody provides. Two of them — `dreame_vacuum` and `dwd_weather` — turn out to be reachable:
+`turbojpeg` and `numpy` arrive with the requirements of components the platform ships. Only
+`battery_notes` is a genuine shared-environment dependency, and the package it wants,
+`async_timeout`, is one Home Assistant's own `pyproject.toml` bans. The class is real and a third
+the size §6.11.3 claimed, and the classifier that produced the larger number credited components
+that were never attempted — a bug fixed here rather than left to flatter the earlier result.
+
 ---
 
-*Chapter 6 drafted 2026-08-25, §6.1–§6.11. Twelve self-tests and one corpus measurement passing
-on the C4 device, including an unmodified integration running inside a sandbox and 46% of the
-most-installed community integrations importing clean against a minimal instance. The section
-plan, the obligations this chapter inherits, and the questions a viva will probe are in
-`notes/ch6_working_notes.md`.*
+*Chapter 6 drafted 2026-08-25, §6.1–§6.12. Twelve self-tests and three corpus measurements
+passing on the C4 device, including an unmodified integration running inside a sandbox and **70%
+of the most-installed community integrations importing clean** against an un-stripped one. Gate
+G3 has its numbers. The section plan, the obligations this chapter inherits, and the questions a
+viva will probe are in `notes/ch6_working_notes.md`.*

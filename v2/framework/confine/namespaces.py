@@ -71,6 +71,42 @@ def write_identity_maps(outer_uid: int, outer_gid: int) -> None:
         f.write(f"0 {outer_gid} 1")
 
 
+# Bringing an interface up is an ioctl on any socket. `ip link set lo up` would do the same
+# thing and would put util-linux and iproute2 in the sandbox's dependency list, which §6.4.6's
+# argument about checks applies to equally: the supervisor should make the syscall it means.
+SIOCGIFFLAGS = 0x8913
+SIOCSIFFLAGS = 0x8914
+IFF_UP = 0x1
+
+
+def bring_loopback_up() -> None:
+    """Raise `lo` inside the calling process's network namespace.
+
+    A freshly created network namespace contains a loopback interface and it is **down**.
+    §5.7.3 describes the namespace as giving "no route to anywhere", which is accurate and
+    incomplete: it also gives no working loopback, and that is a different thing. Home
+    Assistant's HTTP server binds a socket, and on a namespace with no enabled address the
+    bind fails — which presented as `async_setup_component(hass, "http", {})` returning False
+    with nothing but a warning about source-address detection.
+
+    The grant is narrow by construction: the interface exists only inside this namespace, so
+    the sandbox gains the ability to talk to itself and nothing else. Nothing routes out; that
+    is still the mediator's job (§5.11.1).
+
+    Requires `CAP_NET_ADMIN`, which the sandbox holds *over its own namespace* by virtue of
+    having created it — the same property that makes the other six unshares unprivileged.
+    """
+    import fcntl
+    import socket as _socket
+    import struct
+
+    with _socket.socket(_socket.AF_INET, _socket.SOCK_DGRAM) as sock:
+        request = struct.pack("16sh14s", b"lo", 0, b"")
+        current = struct.unpack("16sh14s", fcntl.ioctl(sock, SIOCGIFFLAGS, request))[1]
+        fcntl.ioctl(sock, SIOCSIFFLAGS,
+                    struct.pack("16sh14s", b"lo", current | IFF_UP, b""))
+
+
 def probe() -> tuple[bool, str]:
     """Can this process actually create the sandbox's namespaces, right now?
 

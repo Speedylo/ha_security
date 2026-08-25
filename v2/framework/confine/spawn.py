@@ -22,6 +22,7 @@ import os
 import subprocess
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 
 from .cgroup import SandboxCgroup, spawn_confined
 from .sandbox import SandboxSpec
@@ -88,10 +89,21 @@ def start(spec: SandboxSpec, cgroup: SandboxCgroup, *,
         os.set_inheritable(channel_end, True)
         spec.channel_fd = channel_end
 
+    # `confine.enter` runs in a fresh interpreter, which finds the package on `sys.path` and
+    # not on the caller's. A supervisor started from anywhere but the package's parent
+    # directory would otherwise fail with `No module named 'confine'` — and, because that
+    # happens before the child can write to the status pipe, it presents as "the sandbox never
+    # reported a pid" with nothing else. This is the third time that message has meant
+    # something different (§6.4.5, §6.10.4).
+    package_parent = str(Path(__file__).resolve().parent.parent)
+    existing = os.environ.get("PYTHONPATH", "")
+    child_env = {**os.environ, "CONFINE_STATUS_FD": str(status_w),
+                 "PYTHONPATH": f"{package_parent}:{existing}" if existing else package_parent}
+
     proc = spawn_confined(
         [sys.executable, "-m", "confine.enter"], cgroup,
         stdin=subprocess.PIPE, stdout=stdout, stderr=stderr,
-        pass_fds=passed, env={**os.environ, "CONFINE_STATUS_FD": str(status_w)},
+        pass_fds=passed, env=child_env,
     )
     os.close(status_w)
     try:

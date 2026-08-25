@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import os
 import socket
 import struct
@@ -76,7 +77,7 @@ class Channel:
 
 # ------------------------------------------------------------------ the minimal instance
 
-async def build_hass(config_dir: str):
+async def build_hass(config_dir: str, with_auth: bool = False):
     """Construct a Home Assistant without `bootstrap`, and start it in the platform's order.
 
     This is §5.6.3's recipe with §6.3.2's and §6.3.3's corrections applied: the base
@@ -117,6 +118,14 @@ async def build_hass(config_dir: str):
     for reg in (area_registry, category_registry, device_registry, entity_registry,
                 floor_registry, issue_registry, label_registry, restore_state):
         await reg.async_load(hass)
+    if with_auth:
+        # `http` cannot set up without an authentication manager: its `async_setup_auth`
+        # creates a system user. The manager is built with **no providers**, so its store holds
+        # no users, no credentials and no tokens — a real object that is empty, which is the
+        # same pattern §5.6.2 relies on everywhere else. §6.12 argues why that is compatible
+        # with §5.10.3's refusal to make `hass.auth` declarable.
+        from homeassistant import auth
+        hass.auth = await auth.auth_manager_from_config(hass, [], [])
     hass.data[HassKey("bootstrap_registries_loaded")] = None
     return hass
 
@@ -299,7 +308,7 @@ async def run() -> dict:
     result: dict = {"domain": spec["domain"]}
 
     place_component(spec["domain"])
-    hass = await build_hass(DATA)
+    hass = await build_hass(DATA, with_auth=bool(spec.get("auth")))
 
     # Optionally set up the components the integration says it depends on. §6.3.2 dropped the
     # base component because nothing needed it; a real integration's `dependencies` are a
@@ -308,13 +317,34 @@ async def run() -> dict:
     wanted = spec.get("setup_components") or []
     if wanted:
         from homeassistant.setup import async_setup_component
+
+        # Home Assistant reports a refused setup by logging it and returning False, so a bare
+        # False is not a diagnosis. §6.11.3's arm B reported eleven of them and said nothing
+        # about any; capturing the log is what turned that into §6.12's finding.
+        captured: list[str] = []
+
+        class _Capture(logging.Handler):
+            def emit(self, record: logging.LogRecord) -> None:
+                if record.levelno >= logging.WARNING:
+                    try:
+                        captured.append(f"{record.name}: {record.getMessage()}"[:200])
+                    except Exception:  # noqa: BLE001
+                        pass
+
+        handler = _Capture()
+        logging.getLogger().addHandler(handler)
+        logging.getLogger().setLevel(logging.WARNING)
         result["components_setup"] = {}
         for name in wanted:
+            mark = len(captured)
             try:
                 result["components_setup"][name] = bool(
                     await async_setup_component(hass, name, {}))
             except Exception as err:  # noqa: BLE001
                 result["components_setup"][name] = f"{type(err).__name__}: {err}"[:120]
+            if result["components_setup"][name] is not True:
+                result.setdefault("setup_log", {})[name] = captured[mark:][:3]
+        logging.getLogger().removeHandler(handler)
 
     bridge = Bridge(hass, channel, spec)
 
@@ -345,6 +375,15 @@ async def run() -> dict:
     # §6.3.3: start last, after every component is set up.
     await hass.async_start()
     await hass.async_block_till_done()
+
+    if spec.get("mode") == "idle":
+        # Built, started, and holding still, so the supervisor can read its proportional set
+        # size from outside. §6.3.2's budget was measured this way and the figure only means
+        # anything if the successor is measured the same way.
+        sys.stdout.write(json.dumps({"ready": True, "domain": spec["domain"]}) + "\n")
+        sys.stdout.flush()
+        while True:
+            await asyncio.sleep(3600)
 
     result["entry_state"] = str(entry.state)
     result["loaded"] = entry.state is ConfigEntryState.LOADED

@@ -20,6 +20,7 @@ questions a viva will probe.
 | 6.9 | The adversarial cases — one canary, three outcomes, 37 attempts | ✅ drafted; `selftest_adversary.py`, 21 blocked / 9 empty / 6 denied / 1 permitted |
 | 6.10 | **The bridge** — an unmodified integration running inside a sandbox | ✅ drafted; `sandbox_runtime.py`, `platform.py`, `selftest_bridge.py` |
 | 6.11 | What is not built; §5.8.2's scope items scored; the G3 report | ✅ drafted |
+| 6.12 | **Un-stripping toward `http`** — what it buys and what it costs | ✅ drafted; `experiments/unstrip/`, 46% → 70% for +75.9 MB PSS |
 
 ## Obligations this chapter inherits
 
@@ -513,6 +514,46 @@ concrete): un-strip toward `http` and pay the footprint; or accept a 46–57% im
 and report it honestly; or revert to R1 — which would get these components free by proxying, and
 pay §5.6's original price of emulating a helper layer that **100%** of this corpus imports.
 
+## §6.12 — un-stripping
+
+**The headline trade:** 46% → **70%** import-level compatibility, for **+75.9 MB PSS per
+sandbox** and a budget that more than halves (44 → 18 on the same harness; ~26 → ~14 translated
+to §6.3.2's probe). Against §5.8.1's mean of 4.02 integrations per installation, 14 is still 3.5×.
+Worth taking.
+
+**The two changes, and the asymmetry between them.** `http` needs `hass.auth`; wiring a manager
+with no providers costs **0.1 MB** and takes the cascade from 0/11 components to 10/11. The
+expensive part is the components themselves — `http` 37.8 MB, `frontend` 26.1, `stream` 28.3,
+`mqtt` 12.2.
+
+**The §5.10.3 collision, to raise before anyone else does.** That section refuses to make
+`hass.auth` declarable. The manager here has no providers, so no users, no credentials, no
+tokens; the system user `http` creates belongs to the sandbox's own store and authenticates
+against the sandbox's own server on its own loopback. Same pattern as the empty state machine —
+a real object whose contents are nothing. What §5.10.3 forbids is a route to the *installation's*
+auth manager, and nothing mirrors real users in.
+
+**The loopback finding.** A fresh network namespace's `lo` is DOWN. §5.7.3's "no route to
+anywhere" is accurate and incomplete — anything that binds a socket fails until it is raised. One
+ioctl, and the interface reaches only inside that namespace.
+
+**Peak memory would have misled, in the opposite direction from §6.3.2.** Per-sandbox peak moved
+100 → 133 MB (a third); PSS at scale moved 54.5 → 130.4 (139%). §6.3.2 was built on that
+distinction to avoid overstating a *saving*; here the same distinction stops a *cost* being
+understated. Say this — it shows the discipline generalising rather than being a one-off.
+
+**The recommendation is not the profile measured.** The blanket profile pays for `stream` and
+`frontend` in every sandbox including those needing neither, while the free change is what
+unblocks everything. Wire auth always; set up components **per integration** from its own
+manifest. Not measured — the per-integration arm ran with auth unwired, which is exactly why it
+reached only 57%. That re-run is the next measurement and Chapter 7 should evaluate it rather
+than the blanket profile.
+
+**A correction of my own** (§6.12.4): §6.11.3 said three integrations depend on packages nobody
+provides; two were reachable via component requirements. Only `battery_notes` qualifies, wanting
+`async_timeout` — a package HA's own pyproject *bans*. The classifier that produced the larger
+number credited components never attempted; fixed rather than left to flatter the earlier result.
+
 ## Anticipated viva questions
 
 **"Your Chapter 5 predicted the budget would double and Chapter 6 says 1.53×. Which of your
@@ -543,6 +584,15 @@ marker, and that is the defect: not that an inference was wrong, but that it rea
 result. The audit that follows is §6.1's three strengths of "built", applied backwards to
 Chapter 5's claims, and the two corrections found so far (§6.3.2, §6.4.1) are both inferences
 sitting next to measurements. The measurements have all replicated.
+
+**"You put an authentication manager inside a sandbox after Chapter 5 said `hass.auth` must
+never be declarable. Which is it?"** — Both, and they are not the same object. §5.10.3 refuses
+any route to the *installation's* auth manager, because that holds the user's credentials. What
+the sandbox gets is a manager constructed with no providers: no users, no credentials, no tokens.
+The only principal in it is a system user `http` created for itself, valid against a server bound
+to that sandbox's own loopback inside its own network namespace. It is the same pattern as the
+empty state machine and the empty service registry — a real object whose contents are nothing —
+and if anything ever mirrors a real user into it, §5.10.3 is violated and this argument fails.
 
 **"46% sounds low. Is your framework simply incompatible with Home Assistant?"** — 46% is
 imports-clean against a *minimal* instance, and 43% of the corpus fails for one identifiable
