@@ -125,6 +125,46 @@ def component_requirements(names: list[str], ha_components: Path | None) -> list
     return sorted(set(wanted))
 
 
+def core_requirements(ha_components: Path | None,
+                      root: str = "default_config") -> list[str]:
+    """The packages a *stock* Home Assistant has installed, computed from the platform's source.
+
+    §6.13.2 found that six integrations import `numpy` or `PyTurboJPEG` without declaring
+    either, and work in the wild only because some core component dragged those wheels into the
+    shared environment. "Some core component" is not a specification, so this makes it one: the
+    dependency closure of `default_config` — the component set a default installation sets up —
+    and the union of the `requirements` those components declare.
+
+    This is the honest reading of "what an integration may assume is present". It is bounded
+    (57 components, 39 packages on 2026.8.3), derived from source rather than typed, and it
+    grants nothing an ordinary installation does not already grant. What it costs is that the
+    sandbox then contains code no integration declared, which is §5.6.2's whole complaint —
+    hence a separate profile and a measurement rather than a default.
+    """
+    if ha_components is None:
+        return []
+    seen: set[str] = set()
+    stack = [root]
+    while stack:
+        name = stack.pop()
+        if name in seen:
+            continue
+        try:
+            data = json.loads((ha_components / name / "manifest.json").read_text())
+        except (OSError, ValueError):
+            continue
+        seen.add(name)
+        stack += (data.get("dependencies") or []) + (data.get("after_dependencies") or [])
+    wanted: set[str] = set()
+    for name in seen:
+        try:
+            data = json.loads((ha_components / name / "manifest.json").read_text())
+        except (OSError, ValueError):
+            continue
+        wanted |= set(data.get("requirements") or [])
+    return sorted(wanted)
+
+
 def find_ha_components(python: Path) -> Path | None:
     """Locate `homeassistant/components` inside the interpreter the sandbox will run."""
     for lib in sorted(python.parent.parent.glob("lib/python*/site-packages")):
@@ -257,7 +297,10 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
                            str(spec_file): "/sandbox/spec.json",
                            str(deps_dir): DEPS},
             env={"PYTHONPATH": DEPS})
-        if profile == "unstripped" and platform_deps:
+        # Bound for any profile that was given one, not only `unstripped`. §6.13.4's
+        # measurement is `declared` plus this directory, and the two are independent knobs:
+        # one decides which components set up, the other which packages exist.
+        if platform_deps:
             spec.runtime_files[str(platform_deps)] = PLATFORM_DEPS
             spec.env["PYTHONPATH"] = f"{DEPS}:{PLATFORM_DEPS}"
         for extra in (*interpreter_trees(sandbox_python), sys.base_prefix):
@@ -316,9 +359,20 @@ def main() -> int:
                          "profile of §6.12. declared: auth, plus only the components this "
                          "integration's own manifest asks for")
     ap.add_argument("--platform-deps", type=Path,
-                    help="a directory holding the un-stripped components' own requirements")
+                    help="a directory of packages bound read-only into every sandbox and shared "
+                         "between them, as the `homeassistant` library already is. Combine with "
+                         "--profile declared for §6.13.4's measurement")
+    ap.add_argument("--print-core-requirements", action="store_true",
+                    help="print the default_config closure's requirements and exit, so the "
+                         "--platform-deps directory is built from the platform's source rather "
+                         "than from a list somebody typed")
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
+
+    if args.print_core_requirements:
+        for requirement in core_requirements(find_ha_components(Path(args.python))):
+            print(requirement)
+        return 0
 
     require_ready(deep=False)
     become_subreaper()
