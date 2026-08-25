@@ -1,0 +1,272 @@
+{
+  "host": {
+    "machine": "aarch64",
+    "python": "3.14.7",
+    "node": "raspberrypi",
+    "mem_total_mb": 4046
+  },
+  "count": 6,
+  "order": [
+    "with_base",
+    "without_base"
+  ],
+  "arms": {
+    "with_base": {
+      "report": {
+        "base_component_setup": true,
+        "entry_states": {
+          "probe_sensor": "ConfigEntryState.LOADED",
+          "probe_restore": "ConfigEntryState.LOADED"
+        },
+        "all_loaded": true,
+        "entities": [
+          "sensor.generation",
+          "sensor.ticks"
+        ],
+        "services": {
+          "homeassistant": [
+            "check_config",
+            "reload_all",
+            "reload_config_entry",
+            "reload_core_config",
+            "reload_custom_templates",
+            "restart",
+            "save_persistent_states",
+            "set_location",
+            "stop",
+            "toggle",
+            "turn_off",
+            "turn_on",
+            "update_entity"
+          ]
+        },
+        "components": [
+          "homeassistant",
+          "probe_restore",
+          "probe_restore.sensor",
+          "probe_sensor",
+          "probe_sensor.sensor",
+          "sensor"
+        ],
+        "restore": {
+          "entity_id": "sensor.generation",
+          "generation": "1",
+          "restored_from": null
+        },
+        "stages": [
+          {
+            "stage": "bare interpreter",
+            "rss_mb": 24.5
+          },
+          {
+            "stage": "+ import helper layer + sensor platform",
+            "rss_mb": 108.9
+          },
+          {
+            "stage": "+ minimal hass constructed",
+            "rss_mb": 109.0
+          },
+          {
+            "stage": "+ hass.async_start() \u2014 fires EVENT_HOMEASSISTANT_START",
+            "rss_mb": 109.0
+          },
+          {
+            "stage": "+ base 'homeassistant' component",
+            "rss_mb": 161.1
+          },
+          {
+            "stage": "+ probe integrations set up",
+            "rss_mb": 161.3
+          }
+        ],
+        "rss_mb": 161.3
+      },
+      "scale": {
+        "count": 6,
+        "sum_rss_mb": 967.9,
+        "sum_pss_mb": 819.8,
+        "pss_per_sandbox_mb": 136.6,
+        "machine_delta_mb": 815.6,
+        "first_sandbox_mb": 135.8,
+        "marginal_mb": 136.0
+      },
+      "restore": {
+        "corrected": {
+          "phase_a": {
+            "entity_id": "sensor.generation",
+            "generation": "1",
+            "restored_from": null
+          },
+          "phase_b": {
+            "entity_id": "sensor.generation",
+            "generation": "2",
+            "restored_from": 1
+          },
+          "restored": true,
+          "generation_advanced": [
+            "1",
+            "2"
+          ]
+        },
+        "legacy_5_6_3": {
+          "phase_a": {
+            "entity_id": "sensor.generation",
+            "generation": "1",
+            "restored_from": null
+          },
+          "phase_b": {
+            "entity_id": "sensor.generation",
+            "generation": "1",
+            "restored_from": null
+          },
+          "restored": false,
+          "generation_advanced": [
+            "1",
+            "1"
+          ]
+        }
+      },
+      "capacity": 17
+    },
+    "without_base": {
+      "report": {
+        "base_component_setup": null,
+        "entry_states": {
+          "probe_sensor": "ConfigEntryState.LOADED",
+          "probe_restore": "ConfigEntryState.LOADED"
+        },
+        "all_loaded": true,
+        "entities": [
+          "sensor.generation",
+          "sensor.ticks"
+        ],
+        "services": {},
+        "components": [
+          "probe_restore",
+          "probe_restore.sensor",
+          "probe_sensor",
+          "probe_sensor.sensor",
+          "sensor"
+        ],
+        "restore": {
+          "entity_id": "sensor.generation",
+          "generation": "1",
+          "restored_from": null
+        },
+        "stages": [
+          {
+            "stage": "bare interpreter",
+            "rss_mb": 24.5
+          },
+          {
+            "stage": "+ import helper layer + sensor platform",
+            "rss_mb": 108.9
+          },
+          {
+            "stage": "+ minimal hass constructed",
+            "rss_mb": 109.0
+          },
+          {
+            "stage": "+ hass.async_start() \u2014 fires EVENT_HOMEASSISTANT_START",
+            "rss_mb": 109.1
+          },
+          {
+            "stage": "  (base component skipped)",
+            "rss_mb": 109.1
+          },
+          {
+            "stage": "+ probe integrations set up",
+            "rss_mb": 109.4
+          }
+        ],
+        "rss_mb": 109.4
+      },
+      "scale": {
+        "count": 6,
+        "sum_rss_mb": 656.3,
+        "sum_pss_mb": 539.7,
+        "pss_per_sandbox_mb": 90.0,
+        "machine_delta_mb": 409.0,
+        "first_sandbox_mb": 17.3,
+        "marginal_mb": 78.3
+      },
+      "restore": {
+        "corrected": {
+          "phase_a": {
+            "entity_id": "sensor.generation",
+            "generation": "1",
+            "restored_from": null
+          },
+          "phase_b": {
+            "entity_id": "sensor.generation",
+            "generation": "2",
+            "restored_from": 1
+          },
+          "restored": true,
+          "generation_advanced": [
+            "1",
+            "2"
+          ]
+        },
+        "legacy_5_6_3": {
+          "phase_a": {
+            "entity_id": "sensor.generation",
+            "generation": "1",
+            "restored_from": null
+          },
+          "phase_b": {
+            "entity_id": "sensor.generation",
+            "generation": "1",
+            "restored_from": null
+          },
+          "restored": false,
+          "generation_advanced": [
+            "1",
+            "1"
+          ]
+        }
+      },
+      "capacity": 26
+    }
+  },
+  "delta": {
+    "single_rss_saved_mb": 51.9,
+    "pss_saved_per_sandbox_mb": 46.6,
+    "memavailable_marginal_saved_mb": 57.7,
+    "capacity": [
+      17,
+      26
+    ],
+    "capacity_ratio": 1.53,
+    "services_lost": {
+      "homeassistant": [
+        "check_config",
+        "reload_all",
+        "reload_config_entry",
+        "reload_core_config",
+        "reload_custom_templates",
+        "restart",
+        "save_persistent_states",
+        "set_location",
+        "stop",
+        "toggle",
+        "turn_off",
+        "turn_on",
+        "update_entity"
+      ]
+    },
+    "components_lost": [
+      "homeassistant"
+    ],
+    "entities_lost": [],
+    "still_loads": true,
+    "restore_corrected": {
+      "with_base": true,
+      "without_base": true
+    },
+    "restore_legacy": {
+      "with_base": false,
+      "without_base": false
+    }
+  }
+}

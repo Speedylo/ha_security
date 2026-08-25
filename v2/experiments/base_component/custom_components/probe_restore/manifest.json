@@ -1,0 +1,11 @@
+{
+  "domain": "probe_restore",
+  "name": "Base-component Probe (restore)",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://example.invalid/probe_restore",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "requirements": [],
+  "version": "1.0.0"
+}
