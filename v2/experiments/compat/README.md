@@ -139,8 +139,10 @@ Raw output: `results/compat_declared.json`, `results/compat_declared.txt`.
 **§6.12.4 predicted 70–76%. It got 57%, over exactly the same twenty-one integrations as the
 earlier per-integration arm that ran with auth unwired.** Wiring auth changed eleven integrations'
 reported failure reason and moved the corpus figure by zero. The budget half of the prediction
-held — +9.0 MB over the minimal instance against the blanket profile's +32.2 MB, and sixteen
-integrations declare no components and are charged nothing.
+held — +9.0 MB over the minimal instance against the blanket profile's +32.2 MB, and twelve
+integrations declare no components and are charged nothing. The declaration distribution, which
+is what task 2's budget curve needs: 12 declare nothing, 3 declare one component, 9 declare two,
+and the tail runs to `spook` at seventeen. The median is two, and `http` is declared by 15 of 37.
 
 **Why the blanket profile is still ahead, and it is not components.** Nine integrations pass under
 `unstripped` that fail under `declared`; `nodered` goes the other way (it declares `conversation`,

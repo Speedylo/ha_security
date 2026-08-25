@@ -1600,7 +1600,7 @@ same machine, one sandbox each.
 The budget half of §6.12.4's prediction held, and comfortably. The declared profile costs **+9.0
 MB** over the minimal instance where the blanket profile costs **+32.2 MB** — about 28% of the
 premium, and each integration pays only for what it asked for. `nordpool` sets up `http` and
-nothing else; `adaptive_lighting` sets up `light`; sixteen of the 37 declare no components at all
+nothing else; `adaptive_lighting` sets up `light`; twelve of the 37 declare no components at all, and the median declaration is two
 and are charged nothing.
 
 The compatibility half did not hold. 57%, not 70–76%.

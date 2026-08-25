@@ -65,7 +65,7 @@ corrections came from running a measurement rather than re-reading the argument.
 |---|---|---|
 | ~~1~~ | ~~Run the `declared` profile over the full corpus~~ | ✅ **Done 2026-08-25, §6.13.** **57%** (21/37) at **+9.0 MB** median over the minimal instance, against the blanket profile's 70% at +32.2 MB. §6.12.4 predicted 70–76% and was wrong; see below |
 | **1** | **`declared` + the platform's core package set** | The measurement §6.13.4 indicates and the cheapest one left. `declared` unchanged, but with the requirements of the platform's *own* components present in the sandbox environment rather than only those of the components the integration declares. Packages bind read-only like `homeassistant` itself, so the cost is disk, not per-sandbox memory. Should recover most of the six at close to `declared`'s memory |
-| **2** | **Then PSS as a function of what is declared** | `experiments/unstrip/scale.py --components http,websocket_api` etc. The blanket profile costs 130.4 MB; an integration declaring nothing costs 54.5 MB. Measuring two or three points gives the *expected* budget over the corpus's real declaration distribution — and §6.13 now supplies that distribution: sixteen of 37 declare no components at all |
+| **2** | **Then PSS as a function of what is declared** | `experiments/unstrip/scale.py --components http,websocket_api` etc. The blanket profile costs 130.4 MB; an integration declaring nothing costs 54.5 MB. Measuring two or three points gives the *expected* budget over the corpus's real declaration distribution — and §6.13 now supplies that distribution: twelve of the 37 declare no components at all, and the median declaration is two |
 | **2** | **The baseline arm** | Run the same 37 against a *full* Home Assistant. Without it, 46% does not decompose into "confinement broke it" and "it was broken anyway". **Chapter 7's first task** |
 | **3** | Then the egress proxy | Scope item 2's second half: per-integration outbound network with T11's resolve-then-pin at connection time |
 | 3 | §6.5–§6.9 | Bridge and channel, mediator, the manifest surface the user meets (T13), the audit record, the adversarial cases |
@@ -78,7 +78,7 @@ twenty-one integrations* as the earlier arm that ran with auth unwired. Wiring a
 failure reasons and moved the corpus figure by zero.
 
 - **The budget half of the prediction held.** +9.0 MB median over the minimal instance, against
-  the blanket profile's +32.2 MB. Sixteen of the 37 declare no components and are charged nothing.
+  the blanket profile's +32.2 MB. Twelve of the 37 declare no components and are charged nothing; the median declaration is two.
 - **The blanket profile's entire lead is dependency spillover, not components.** Six integrations
   pass under it and fail under `declared`, and all six fail on a missing *package* — `numpy`
   (`browser_mod`, `dwd_weather`, `llmvision`, `webrtc`) or `turbojpeg` (`dreame_vacuum`,
