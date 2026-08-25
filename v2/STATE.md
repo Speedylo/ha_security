@@ -37,8 +37,8 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/mediation_latency/` | ✅ **Pi 5, 2026-08-24.** One mediated request over the channel: **30.0 µs** median, p99 33.9 µs; ~33k req/s. Floor only — excludes manifest check and audit write. Feeds §5.11.4 |
 | `experiments/base_component/` | ✅ **Pi 5, 2026-08-25.** The measurement §5.6.5 deferred to Chapter 6. The base component **can** be dropped — 46.6 MB per sandbox, budget 17 → **26** (1.53×, **not** the 2× §5.6.5 predicted). Two controls: both arm orders, and a 0.1 MB replication of §5.6.3's marginal figure. It also found a defect in §5.6.3's own recipe — see below. Feeds §6.3 |
 | `experiments/cgroup_placement/` | ✅ **Pi 5, 2026-08-25.** Four placement mechanisms × two positions, unprivileged. **Corrects §5.7.4:** `clone3(CLONE_INTO_CGROUP)` fails with the same `EACCES` as migration, so what binds is *where the supervisor runs*, not when it places the sandbox. Feeds §6.4.1 |
-| **`framework/confine/`** | ✅ **The artifact, as far as it goes, 2026-08-25.** `cgroup.py`, `namespaces.py`, `preflight.py`, `sandbox.py`, `enter.py`, `spawn.py`, `selftest.py` — standard library plus `ctypes`, no dependencies, no override flag. **Preflight: 8/8 on the Pi. Self-test: passes** — uid 0 inside mapped to 1000 outside, one visible process, `lo` only, `secrets.yaml`/`.storage`/the other integration all **absent**. Plus `seccomp.py` — 29 calls denied, verified by behaviour on both architectures. **All three of §5.7.3's primitives are now built and measured.** Described by §6.4.2 and §6.4.4–§6.4.6 |
-| `report/06_implementation.md` | 🔵 **In progress.** §6.1–§6.3 and §6.4.1–§6.4.6 drafted 2026-08-25. **§6.4 is complete.** Next: §6.5, the bridge and the channel. Section plan and inherited obligations in `notes/ch6_working_notes.md` |
+| **`framework/confine/`** | ✅ **The artifact, as far as it goes, 2026-08-25.** `cgroup.py`, `namespaces.py`, `preflight.py`, `sandbox.py`, `enter.py`, `spawn.py`, `selftest.py` — standard library plus `ctypes`, no dependencies, no override flag. **Preflight: 8/8 on the Pi. Self-test: passes** — uid 0 inside mapped to 1000 outside, one visible process, `lo` only, `secrets.yaml`/`.storage`/the other integration all **absent**. Plus `seccomp.py` — 29 calls denied, verified by behaviour on both architectures. **All three of §5.7.3's primitives are built and measured.** Plus `channel.py`, `mediator.py` and `selftest_channel.py` — **identity is the socket, demonstrated with two sandboxes both claiming to be the same integration**. Described by §6.4.2, §6.4.4–§6.4.6 and §6.5 |
+| `report/06_implementation.md` | 🔵 **In progress.** §6.1–§6.3, §6.4.1–§6.4.6 and §6.5 drafted 2026-08-25. Next: §6.6, the mediator's manifest evaluation — the permit path S6 currently has nothing to permit with. Section plan and inherited obligations in `notes/ch6_working_notes.md` |
 | `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24; re-run 2026-08-25.** Namespaces (unprivileged), seccomp and cgroup v2 all present. `memory` was absent on the stock install; after the boot change it is present **and the cap is verified to bite, unprivileged**. Feeds §5.7.4 |
 
 ## Next session — start here
@@ -50,7 +50,7 @@ corrections came from running a measurement rather than re-reading the argument.
 
 | # | Task | Notes |
 |---|---|---|
-| **1** | **Ch. 6 §6.5 — the bridge and the channel** | §5.11: the socket pair created before the sandbox exists, identity as the socket rather than a field, and the 5-step protocol of §5.11.3. The measured floor is 30.0 µs (`experiments/mediation_latency/`) |
+| **1** | **Ch. 6 §6.6 — the mediator's manifest evaluation** | The permit path. §5.10's eight clauses, §5.10.4's no-wildcard rule for `services.call`, §5.10.5's resolve-then-pin and the ungrantable paths, §5.10.8's clause pointer in every response |
 | 3 | §6.5–§6.9 | Bridge and channel, mediator, the manifest surface the user meets (T13), the audit record, the adversarial cases |
 | 4 | §6.10 | The report against §5.6.5's three R1 re-decision triggers, for G3 |
 
@@ -131,6 +131,7 @@ identical position, because the kernel checks the common ancestor either way.
 | **Ch. 6** | A surface where the user encounters the declaration | T13's control has two halves; "enforcement bounded to the declaration" is placed thoroughly and **"declaration made visible" is placed nowhere in Ch. 5**. Bounded by §3.7 — a surface is owed, not evidence anyone reads it |
 | **Ch. 7** | Never repeat §4.10's phrase "filesystem isolation *to declared resources*" | §5.10.2 removed the filesystem clause entirely. The design is stricter than the control, but the phrase now misdescribes the artifact |
 | **Ch. 7** | State S9's boot-time precondition when evaluating it | The Pi's `memory` cgroup controller is disabled by Pi OS (§5.7.4). Testing on a machine where that was quietly fixed, without saying so, is the dishonest version |
+| **Ch. 7** | Measure mediation latency at realistic sandbox counts | §6.5.3. Two sandboxes moved the median 19% and p99 **85%** — queueing, not work. The budget is 26 sandboxes (§6.3.2), and two clients say nothing about twenty-six |
 | **Ch. 7** | Check every compatibility failure against the minimal instance **before** charging it to the design | §6.3.3. The `async_at_start` defect broke state restoration silently — no exception, no log line. Left in, it would have been measured as the cost of confinement |
 
 **⚠ One conflict is open and deliberately unresolved.** `01_PLAN.md` §6 says the actuator PoC

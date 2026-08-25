@@ -13,7 +13,7 @@ questions a viva will probe.
 | 6.2 | The prior artifact — what survives R2, what is superseded, what may be cited | ✅ drafted |
 | 6.3 | The sandbox — constructed not booted; the base component; the defect that found | ✅ drafted |
 | 6.4 | The supervisor — where it must run (§6.4.1), the preflight (§6.4.2), the ordering bug (§6.4.3), the sandbox's filesystem (§6.4.4–§6.4.5) and the seccomp filter (§6.4.6) | ✅ **§6.4 complete.** All three of §5.7.3's primitives built and measured on the Pi; preflight 8/8, self-test passes |
-| 6.5 | The bridge and the channel | ⬜ |
+| 6.5 | The channel — framing, identity by construction, and what it costs when real | ✅ drafted; `channel.py`, `mediator.py`, `selftest_channel.py` pass on the Pi |
 | 6.6 | The mediator — manifest evaluation, resolve-then-pin | ⬜ |
 | 6.7 | The manifest as the user meets it — **T13's unplaced half**, owed by §5.14.4 | ⬜ |
 | 6.8 | The audit record — three-part identity, the hash chain | ⬜ |
@@ -209,6 +209,36 @@ installs the filter and makes the calls. `chroot` and `unshare` are the probes w
 because both **succeed** inside a user namespace — refusal is then evidence of seccomp, not of
 the namespace surrounding it.
 
+## §6.5 — the channel
+
+**The demonstration is the section.** Two sandboxes both send
+`{"integration": "demo_a", ...}`; the audit shows `demo_a` and `demo_b`, each with the claim
+recorded *beside* the identity that came from the socket. §5.11.2 argued that a protocol in
+which the sandbox names itself "asks the adversary to self-report the one fact the decision
+turns on"; this is that argument with the adversary actually doing it.
+
+**Default-deny was built before the permit path**, deliberately. S6 is the behaviour every later
+addition has to preserve, and a default-deny added after the permit path is one that has already
+been forgotten once. It also means the first working version of the mediator is trivially
+correct in the only respect that matters, and everything after it is a controlled relaxation.
+
+**The latency result is the more interesting half.** Against §5.11.4's stated floor:
+
+| | floor (§5.11.4) | real channel, 2 sandboxes |
+|---|---|---|
+| median | 30.0 µs | 35.6 µs (+19%) |
+| p99 | 33.9 µs | 62.7 µs (**+85%**) |
+
+A cost that lands almost entirely in the tail is **queueing, not work**. The added per-request
+work — one policy call and one audit append — moved the median 19%; the contention between two
+clients on a single-threaded mediator nearly doubled p99. That decomposition is worth being able
+to state aloud, because it says which fix would help: not a faster protocol, a mediator that
+does not serialise.
+
+**Owed to Chapter 7, and it is new:** latency at realistic sandbox counts. Two clients say
+nothing about twenty-six (§6.3.2's budget), and the shape of the curve between them is what a
+single-threaded mediator deserves to be judged on.
+
 ## Anticipated viva questions
 
 **"Your Chapter 5 predicted the budget would double and Chapter 6 says 1.53×. Which of your
@@ -239,6 +269,14 @@ marker, and that is the defect: not that an inference was wrong, but that it rea
 result. The audit that follows is §6.1's three strengths of "built", applied backwards to
 Chapter 5's claims, and the two corrections found so far (§6.3.2, §6.4.1) are both inferences
 sitting next to measurements. The measurements have all replicated.
+
+**"Your mediator is single-threaded and your own numbers show the tail doubling with two
+clients. Isn't that a design flaw you have measured and shrugged at?"** — It is a design flaw
+that has been measured and *scheduled*. The decomposition matters: the median moved 19% and p99
+moved 85%, which locates the cost in queueing rather than in the work per request, so the fix is
+concurrency in the mediator and not a change to the protocol or to the boundary. §6.5.3 states
+the obligation and Chapter 7 measures the curve to twenty-six sandboxes. What would be
+indefensible is reporting the median and not the tail, which is why both are in the report.
 
 **"Chapter 5 specifies an allow-list and you built a deny-list. Why should I accept that?"** —
 Because of where it sits, and the report argues it from position rather than from convenience.
