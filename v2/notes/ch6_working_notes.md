@@ -475,6 +475,44 @@ diagnosed by asking the sandbox what it could see. **Chapter 7 consequence: a co
 failure inside a sandbox is silent by default**, because the thing that would report it is the
 thing that failed to start.
 
+## §6.11.3 — the corpus, and the trigger firing
+
+**The headline: 46% of the 37 most-installed community integrations import clean, with all their
+entity platforms, inside a sandbox, unmodified.** 57% once their declared components are supplied.
+First compatibility evidence in the project.
+
+**The classification decision is the part to defend.** A missing Python module is *not*
+automatically a packaging gap — HA installs a component's requirements when that component is set
+up, so `dependencies: ["mqtt"]` is why `paho-mqtt` exists. In a minimal instance the module is
+missing *because the component is*. The first version of this measurement classified it as
+packaging, reported 17%, and could not test the trigger at all. Every dependency install
+succeeded across all 37, so nothing in the result is packaging.
+
+**`http` is the finding.** It blocks 10 of the 16 component failures; then mqtt (6), lovelace (4),
+frontend and websocket_api (3 each). §5.6.3 built the instance with "no HTTP server" and 27% of
+the corpus declares a dependency on it. So the open question is not "is R2 compatible" but **"can
+a sandbox run `http`, and what does it cost"** — a far narrower thing to answer.
+
+**The three undeclared-dependency cases are the sharpest illustration in the chapter.**
+`battery_notes` imports `async_timeout`, `dreame_vacuum` `turbojpeg`, `dwd_weather` `numpy` —
+none declared, none shipped by HA. They work in the wild only because *another* integration
+installed the package into the shared environment. That class breaks under R2 however complete
+the instance is: it is a cost of **isolation**, not of stripping, and worth separating for that
+reason.
+
+**§6.11.4 — the fourth correction to Chapter 5, and the first found by *running* rather than
+building.** §5.6.5 lists footprint and compatibility as independent G3 triggers. They are
+coupled: every component added to fix trigger 2 costs footprint, which is trigger 1. Arm B's peak
+went 151 → 209 MB for four recovered integrations.
+
+**Do not overstate the memory numbers.** `memory.peak` includes page cache; §6.3.2's 90 MB is PSS
+at rest. Not comparable. They indicate direction. Say so before being asked.
+
+**What G3 actually has to decide now** (Younes's call, and the measurement exists to make it
+concrete): un-strip toward `http` and pay the footprint; or accept a 46–57% import-level ceiling
+and report it honestly; or revert to R1 — which would get these components free by proxying, and
+pay §5.6's original price of emulating a helper layer that **100%** of this corpus imports.
+
 ## Anticipated viva questions
 
 **"Your Chapter 5 predicted the budget would double and Chapter 6 says 1.53×. Which of your
@@ -505,6 +543,14 @@ marker, and that is the defect: not that an inference was wrong, but that it rea
 result. The audit that follows is §6.1's three strengths of "built", applied backwards to
 Chapter 5's claims, and the two corrections found so far (§6.3.2, §6.4.1) are both inferences
 sitting next to measurements. The measurements have all replicated.
+
+**"46% sounds low. Is your framework simply incompatible with Home Assistant?"** — 46% is
+imports-clean against a *minimal* instance, and 43% of the corpus fails for one identifiable
+reason: components the instance strips, `http` above all. Supplying declared components recovers
+a quarter of those immediately. What the number cannot yet do is separate "confinement broke it"
+from "it was broken anyway on this release", because there is no baseline arm — the same 37
+against a full Home Assistant. That is Chapter 7's first task and I would not defend the figure
+as a property of the design until it exists.
 
 **"You ran one integration and you wrote it yourself. How is that a compatibility result?"** —
 It is not, and §6.11.1 scores it as half. What it establishes is that the *mechanism* works on an

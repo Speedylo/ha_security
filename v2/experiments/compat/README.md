@@ -1,0 +1,121 @@
+# Experiment — do real community integrations run inside the sandbox?
+
+**Run:** 2026-08-25 · **Target:** Raspberry Pi 5, 4 GB, aarch64 (the C4 hardware), Python
+3.14.7, Home Assistant 2026.8.3 · **Feeds:** §6.12 · **Settles:** §5.6.5's second G3 trigger
+
+§5.6.5 named three conditions that would send the design back from R2 to R1, and §6.11.3 called
+the second the one most likely to fire:
+
+> "Real community integrations fail against a minimal instance for reasons a *fuller* instance
+> would fix — would mean the stripping, not the architecture, is what breaks compatibility, and
+> R1 would then be no worse."
+
+Until the bridge existed (§6.10) this could not be tested. It can now.
+
+## Result
+
+**37 community integrations, taken by install count, each in its own sandbox, source untouched.**
+
+| | Arm A — the minimal instance | Arm B — with declared components |
+|---|---|---|
+| **Imports clean, all entity platforms** | **17/37 — 46%** | +4 → **21/37 — 57%** |
+| Failed for want of a declared component | 16 | 12 |
+| Failed on a dependency they never declared | 3 | 3 |
+| Corpus artifact (`spook`, integration directory not found) | 1 | 1 |
+| Peak memory, median / max | 100.6 / 151.0 MB | 110.8 / **209.4** MB |
+
+**The trigger fires, and it fires in a qualified way that matters more than a yes.** A fuller
+instance fixes **4 of the 16** — the rest fail because the components they declare *do not
+themselves set up* in a stripped instance.
+
+Raw output: `results/pi5_compat.json`. Corpus: `results/hacs_corpus_manifest.json`, rebuildable
+with `figures/fetch_hacs_corpus.py`.
+
+## What a pass/fail number would have hidden
+
+An integration that cannot import a package nobody installed has said nothing about R2, so every
+failure is classified by *what* failed. One classification decision carries an argument and is
+worth stating:
+
+> **A missing Python module is not automatically a packaging gap.** Home Assistant installs a
+> component's `requirements` when that component is *set up*. An integration declaring
+> `dependencies: ["mqtt"]` gets `paho-mqtt` because mqtt was set up — so in a minimal instance
+> the module is missing *because the component is missing*, and calling that a packaging problem
+> would have hidden the finding entirely.
+
+Arm B therefore installs each declared component's own requirements from Home Assistant's
+manifests and sets the component up, which is what a real installation does. Every dependency
+install succeeded — **0 install failures across 37 integrations** — so nothing here is
+attributable to packaging.
+
+## The single biggest blocker is `http`
+
+Of the components declared and unavailable:
+
+| Component | Integrations blocked |
+|---|---|
+| **`http`** | **10** |
+| `mqtt` | 6 |
+| `lovelace` | 4 |
+| `frontend`, `websocket_api` | 3 each |
+| `panel_custom`, `stream` | 2 each |
+| `notify`, `bluetooth_adapters`, `private_ble_device`, `media_source`, `repairs`, `python_script`, `backup` | 1 each |
+
+And the ones that *did* set up inside a minimal instance, which is the encouraging half:
+`persistent_notification` (4), `ffmpeg` (4), `device_automation`, `device_tracker`, `dhcp`,
+`light`, `group`, `template`, `select`, `utility_meter`, `integration`, `onvif`, `network`.
+
+**`http` is the decisive one.** §5.6.3 built the minimal instance with "no HTTP server, no
+recorder, no frontend and no authentication", and 27% of this corpus declares a dependency on
+exactly the first of those. Whether a sandbox can run `http` — and what it costs — is now the
+question R2 turns on, and it is a narrower question than "is R2 compatible".
+
+## Three integrations depend on packages nobody declares
+
+`battery_notes` imports `async_timeout`, `dreame_vacuum` imports `turbojpeg`, `dwd_weather`
+imports `numpy` — and none of the three declares them, nor is any shipped by Home Assistant.
+
+In a real installation they work only because *some other* integration installed the package
+into the shared environment. R2 gives each sandbox its own declared dependencies and nothing
+else, so this class breaks. **It is a compatibility cost of isolation, not of stripping**, and it
+is counted separately for that reason.
+
+## The two triggers are coupled, and Chapter 5 treated them as independent
+
+§5.6.5 lists footprint and compatibility as separate conditions. They are not:
+
+**Every component added to fix trigger 2 costs footprint, which is trigger 1.** Arm B's peak
+memory rose from a 151 MB maximum to **209 MB**, for four recovered integrations. Un-stripping
+far enough to run `http` for a quarter of the corpus would move it further.
+
+> **A caution on that number.** `memory.peak` is the cgroup's own high-water mark and includes
+> page cache; §6.3.2's 90 MB is proportional set size at rest. The two are not comparable and
+> the figures above are an indication of direction, not a revised budget. Chapter 7 must
+> re-measure PSS at scale with real integrations loaded.
+
+## Limits
+
+- **Imports-clean is an upper bound on compatibility, and the other number is not measured
+  here.** N2 requires "executed end-to-end" be reported separately; this run stops at importing
+  the integration and its entity platforms. A config entry needs configuration data that only
+  each integration's own config flow can produce.
+- **There is no baseline arm.** Without running the same 37 against a *full* Home Assistant, 46%
+  does not decompose into "confinement broke it" and "it was broken anyway on this release".
+  Chapter 7 owes that comparison, and it is what turns this into a measurement of the design
+  rather than of the corpus.
+- **Head-weighted corpus.** The top 40 by install count, which describes what most installations
+  run and not what most integrations do — the same limitation
+  `notes/ch5_evidence_api_surface.md` §6 records, and the same uniform-sample re-run is owed.
+- **One release, one host.** Home Assistant 2026.8.3, Python 3.14.7, aarch64.
+
+## Reproducing
+
+```bash
+python3 fetch_hacs_corpus.py --top 40 --out ~/corpus          # figures/
+systemd-run --user --scope -q python3 -m confine.compat \
+    --corpus ~/corpus --python <interpreter-with-homeassistant> --json results/pi5_compat.json
+```
+
+`--no-install` skips dependency installation, which reproduces the first version of this
+measurement and shows why it was wrong: without it, 5 of the first 6 integrations fail on their
+own declared packages and the trigger cannot be tested at all.

@@ -1297,13 +1297,13 @@ than on the calendar.
 |---|---|---|
 | 4 | **Adversarial cases** — S1, S2, S6, S8 | ✅ **Measured** (§6.9). 37 attempts, the published garbage-collector attack among them, no canary reached |
 | 3 | **One `lock`-domain service path** — S5, T05 | ✅ **Measured end to end** (§6.10.1). `lock.lock` travels to the platform; `lock.unlock` is not in the sandbox's registry to be called |
-| 1 | **Sensor publication on unmodified integrations** — F1, C1 | ◐ **Half.** An integration ran with its source untouched, published its entity through the mediator, and read only what it declared (§6.10.1). **But it was written for this test**, not taken from HACS |
+| 1 | **Sensor publication on unmodified integrations** — F1, C1 | ◐ **Half, and the half has moved.** One integration ran end to end and published through the mediator (§6.10.1); **37 real community integrations were then run, of which 46% import clean with all their entity platforms, unmodified** (§6.11.3). What is unmeasured is what happens past import |
 | 2 | **Mediated egress with per-integration attribution** — F2, S4 | ◐ **Half.** Attribution is measured (§6.5.2). **Egress does not exist**: no proxy, no resolve-then-pin at connection time, no traffic |
 
-**The remaining halves are different in kind, and the difference decides what to do next.** Item
-2's missing half is a component nobody has written. Item 1's is a *population*: the mechanism
-works, and what is unevidenced is that it works on integrations this project did not author. The
-first is engineering, the second is the compatibility claim itself.
+**The remaining halves are different in kind.** Item 2's is a component nobody has written. Item
+1's is no longer a population — it is a *depth*: the corpus has been run, and what is unmeasured
+is what happens after an integration imports. N2 requires those two numbers be reported
+separately for exactly this reason, and this chapter has the first.
 
 ### 6.11.2 What is still missing
 
@@ -1311,7 +1311,8 @@ The bridge of §6.10 removed the largest gap. Four remain, in descending order o
 
 | Missing | What it blocks |
 |---|---|
-| **Real community integrations** | Scope item 1's second half, and §5.6.5's second G3 trigger. Needs no new code — `figures/fetch_hacs_corpus.py` already rebuilds the corpus |
+| **A baseline arm** | Whether 46% is the design's doing or the corpus's. Running the same 37 against a *full* Home Assistant is what decomposes it, and without it the number describes both |
+| **Executed end-to-end** | N2's second number. Needs configuration data that only each integration's own config flow produces |
 | **The egress proxy** | Scope item 2's second half, and F2 |
 | **The push loop** | §5.11.3's push shape. Declared entities are mirrored once at construction, so an integration sees the value that existed when its sandbox was built |
 | **The real Home Assistant component** | Step 5 currently acts on a stand-in. §6.10.2 records what a real instance would add, and why it is more than realism |
@@ -1325,53 +1326,117 @@ precisely because it moved:
 > evidenced**: an unmodified integration runs, publishes and is confined, and the population it
 > was drawn from is one.
 
-### 6.11.3 The Gate G3 report §5.6.5 asked for
+### 6.11.3 Real integrations, and the trigger that fires
 
-§5.6.5 named three conditions that would send the design back from R2 to R1. **None has fired.
-One is now cheap to test and the other two are cheaper than they were.**
+§5.6.5's second re-decision trigger was untestable until the bridge existed. It is now tested,
+on 37 community integrations taken by install count, each in its own sandbox with its source
+untouched (`experiments/compat/`).
 
-| Trigger | Status | What would settle it |
+| | Arm A — the minimal instance | Arm B — with declared components |
 |---|---|---|
-| Footprint with the mediator and bridge attached leaves too few sandboxes | **Not fired; now testable** | §6.3.2 measured 26 sandboxes without either. The mediator is **one process for all sandboxes** and does not scale with them; the bridge is per-sandbox and now exists, so re-running `experiments/base_component`'s scale arm against `sandbox_runtime.py` settles it in an afternoon |
-| Real community integrations fail against a minimal instance for reasons a *fuller* instance would fix | **Untested, and now unblocked** | The bridge was the blocker. What remains is the corpus, which `figures/fetch_hacs_corpus.py` already fetches. **This is the one to run next** |
-| Version coupling between sandbox and host proves unmanageable | **Untested** | Build sandboxes against two Home Assistant releases and record what breaks |
+| **Imports clean, all entity platforms** | **17/37 — 46%** | +4 → **21/37 — 57%** |
+| Failed for want of a declared component | 16 | 12 |
+| Failed on a dependency they never declared | 3 | 3 |
+| Peak memory, median / max | 100.6 / 151.0 MB | 110.8 / **209.4** MB |
 
-**The second row is where the remaining risk is concentrated.** It is the trigger most likely to
-fire, the most expensive to discover late, and it is now the *cheapest* of the three to run.
+*Strength of claim: measured.* On the C4 device. **Every dependency install succeeded**, across
+all 37, so nothing here is attributable to packaging.
 
-### 6.11.4 What Chapter 6 does to the cut-order conflict
+**The trigger fires, and the qualification matters more than the verdict.** §5.6.5 asked whether
+integrations fail "for reasons a *fuller* instance would fix". Sixteen fail for want of a
+component they declare — and making the instance fuller fixes only **four**. The other twelve
+fail because the components they declare *do not themselves set up* in a stripped instance.
 
-§5.8.5 recorded a conflict and deliberately left it to Gate G3: `01_PLAN.md` §6 cuts the actuator
-proof of concept first, while §5.8.2 found that doing so leaves S5 unverified and T05 — the
-register's joint-highest risk — without a demonstrated control. §5.8.5 recommended cutting
-coverage-widening instead.
+**One component accounts for most of it.** `http` blocks ten of the sixteen; then `mqtt` (6),
+`lovelace` (4), `frontend` and `websocket_api` (3 each). §5.6.3 built the minimal instance with
+"no HTTP server, no recorder, no frontend and no authentication", and 27% of this corpus declares
+a dependency on the first of those. The encouraging half is that `ffmpeg`,
+`persistent_notification`, `device_automation`, `dhcp`, `template`, `group`, `light`,
+`utility_meter` and `onvif` all set up inside a minimal instance without complaint.
 
-**Chapter 6 resolves it by making it moot.** The actuator path is built and measured (§6.10.1):
-`lock.lock` travels end to end and `lock.unlock` is unreachable. There is nothing left to cut that
-would save time. The G3 decision is therefore no longer a choice between the actuator and
-coverage; it is a question about coverage alone — how many community integrations to run, and how
-to report the number.
+So the question R2 turns on is now much narrower than "is R2 compatible": **can a sandbox run
+`http`, and what does it cost?**
 
-That is a better position than either working document anticipated, and it arrived by building the
-cheaper thing first rather than by deciding between them.
+**A classification decision worth defending**, because getting it wrong would have hidden the
+finding. A missing Python module is not automatically a packaging gap: Home Assistant installs a
+component's `requirements` when that component is set up, so an integration declaring
+`dependencies: ["mqtt"]` receives `paho-mqtt` *because mqtt was set up*. In a minimal instance
+the module is missing because the component is. The first version of this measurement did call
+it packaging, reported 17% imports-clean, and could not test the trigger at all.
 
-### 6.11.5 Where the chapter leaves the work
+**Three integrations fail for a different reason, and it is a cost of isolation rather than of
+stripping.** `battery_notes` imports `async_timeout`, `dreame_vacuum` imports `turbojpeg`,
+`dwd_weather` imports `numpy` — none declared, none shipped by the platform. In a real
+installation they work because *another* integration installed the package into the shared
+environment. R2 gives each sandbox its own declared dependencies and nothing else, so this class
+breaks under confinement however complete the instance is. It is counted separately for that
+reason, and it is the sharpest illustration available of what a shared interpreter has been
+providing invisibly.
 
-Eleven self-tests run on the C4 device, each naming the claim it checks. Together they establish
-that the mechanisms Chapter 5 specified exist, work unprivileged on the target hardware, behave as
-specified under attack, and are compatible with an integration written the way the corpus is
-written.
+### 6.11.4 The two triggers are coupled, which Chapter 5 did not anticipate
 
-They do not establish that the framework is compatible with the corpus itself. That is one
-measurement, it is unblocked, and it is Chapter 7's first task.
+§5.6.5 lists footprint and compatibility as independent conditions. This measurement shows they
+are not, and the coupling runs in the unhelpful direction:
 
-Three corrections to Chapter 5 were found by building it — §6.3.2, §6.4.1 and §6.6.6 — and each
-was an inference written in the register of a result. No measurement failed to replicate. That
-asymmetry is the most useful thing this chapter can hand to the next one.
+> **Every component added to fix trigger 2 costs footprint, which is trigger 1.** Arm B's peak
+> memory rose from a 151 MB maximum to 209 MB for four recovered integrations. Un-stripping far
+> enough to run `http` for a quarter of the corpus would move it further.
+
+*A caution on those figures.* `memory.peak` is the cgroup's high-water mark and includes page
+cache; §6.3.2's 90 MB is proportional set size at rest. They are not comparable, and the numbers
+above indicate direction rather than a revised budget. Chapter 7 must re-measure PSS at scale
+with real integrations loaded — which is now a different measurement from the one §6.3.2 ran,
+because the subject has changed from a synthetic probe to a corpus.
+
+### 6.11.5 The Gate G3 report §5.6.5 asked for
+
+| Trigger | Status |
+|---|---|
+| Footprint with the mediator and bridge attached | **Not fired, and now entangled with the second.** The mediator is one process for all sandboxes; the bridge is per-sandbox and cheap. What is not cheap is the components trigger 2 wants added |
+| Real integrations fail for reasons a fuller instance would fix | **FIRES, qualified.** 16/37 fail for want of a component; 4 are recovered by supplying them. The residue needs `http` and its relatives, which a stripped instance cannot currently set up |
+| Version coupling between sandbox and host | **Still untested.** Cheapest of the three: build sandboxes against two Home Assistant releases and record what breaks |
+
+**What this does not say is that R2 should be abandoned.** §5.6.5's own wording is that a firing
+trigger "would mean the stripping, not the architecture, is what breaks compatibility, and R1
+would then be no worse". The measurement supports the first half and not the second: the failures
+are at *import* of packages that arrive with components, and the fix is to supply those
+components rather than to change how the integration is hosted. R1 would get them free by
+proxying to the real instance — that advantage is real — and it would pay §5.6's original price,
+which was emulating a helper layer that 100% of this corpus imports.
+
+**The decision G3 now faces is therefore concrete rather than architectural**, and it is Younes's:
+
+1. Un-strip toward `http` and measure the footprint cost, keeping R2.
+2. Accept 46–57% import-level compatibility and report the ceiling honestly.
+3. Revert to R1 on the strength of this result, and re-run §5.6.1's argument against it.
+
+The first is the smallest step with the largest expected return, and it is the one this
+measurement was run to make available.
+
+### 6.11.6 Where the chapter leaves the work
+
+Twelve self-tests and one corpus measurement run on the C4 device, each naming the claim it
+checks. Together they establish that the mechanisms Chapter 5 specified exist, work unprivileged
+on the target, behave as specified under attack, host an unmodified integration, and are
+compatible with **46% of the most-installed community integrations at import level, without
+modification**.
+
+What they do not establish is what happens past import. N2 requires "executed end-to-end" to be
+reported separately from "imports-clean" precisely because the first flatters the second, and
+this chapter has only the first number. Nor is there a baseline arm: without running the same 37
+against a *full* Home Assistant, 46% does not decompose into "confinement broke it" and "it was
+broken anyway on this release". **That comparison is Chapter 7's first task**, and it is what
+turns this into a measurement of the design rather than of the corpus.
+
+Three corrections to Chapter 5 were found by building it — §6.3.2, §6.4.1 and §6.6.6 — and a
+fourth by running it: §6.11.4's coupling of two triggers Chapter 5 treated as independent. Each
+of the first three was an inference written in the register of a result. No measurement failed to
+replicate. That asymmetry is the most useful thing this chapter hands to the next one.
 
 ---
 
-*Chapter 6 drafted 2026-08-25, §6.1–§6.11. Eleven self-tests passing on the C4 device, including
-an unmodified integration running inside a sandbox, publishing through the mediator, and unable to
-reach the service it did not declare. The section plan, the obligations this chapter inherits, and
-the questions a viva will probe are in `notes/ch6_working_notes.md`.*
+*Chapter 6 drafted 2026-08-25, §6.1–§6.11. Twelve self-tests and one corpus measurement passing
+on the C4 device, including an unmodified integration running inside a sandbox and 46% of the
+most-installed community integrations importing clean against a minimal instance. The section
+plan, the obligations this chapter inherits, and the questions a viva will probe are in
+`notes/ch6_working_notes.md`.*
