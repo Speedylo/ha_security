@@ -3,9 +3,9 @@
 **Last updated:** 2026-08-25 · **Read this first when resuming.**
 
 **Where it stands in one line:** Chapters 1–5 complete and **Chapter 6 started at §6.3 of 10**
-— Gate G2 closed with two divergences, and five measurements run on the Pi 5 and the corpora
-rather than argued, the latest of which corrected Chapter 5 — see `experiments/` and
-`figures/`.
+— Gate G2 closed with two divergences, and six measurements run on the Pi 5 and the corpora
+rather than argued, **the two most recent of which corrected Chapter 5** — see `experiments/`
+and `figures/`.
 
 Read alongside `00_METHOD.md` (ground rules — especially the evidence rule) and
 `01_PLAN.md` (stage plan and gates). Chapter working notes in `notes/` carry the reasoning
@@ -36,7 +36,8 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/r2_footprint/` | ✅ **Pi 5, 2026-08-24.** R2's premise holds and it fits: minimal HA builds without `bootstrap`, an ordinary integration runs against it, 176 MB first sandbox / 136 MB marginal / ~17 in 60% of 4 GB. Feeds §5.6.3 |
 | `experiments/mediation_latency/` | ✅ **Pi 5, 2026-08-24.** One mediated request over the channel: **30.0 µs** median, p99 33.9 µs; ~33k req/s. Floor only — excludes manifest check and audit write. Feeds §5.11.4 |
 | `experiments/base_component/` | ✅ **Pi 5, 2026-08-25.** The measurement §5.6.5 deferred to Chapter 6. The base component **can** be dropped — 46.6 MB per sandbox, budget 17 → **26** (1.53×, **not** the 2× §5.6.5 predicted). Two controls: both arm orders, and a 0.1 MB replication of §5.6.3's marginal figure. It also found a defect in §5.6.3's own recipe — see below. Feeds §6.3 |
-| `report/06_implementation.md` | 🔵 **In progress.** §6.1–§6.3 drafted 2026-08-25; §6.4 (the supervisor) next. Section plan and inherited obligations in `notes/ch6_working_notes.md` |
+| `experiments/cgroup_placement/` | ✅ **Pi 5, 2026-08-25.** Four placement mechanisms × two positions, unprivileged. **Corrects §5.7.4:** `clone3(CLONE_INTO_CGROUP)` fails with the same `EACCES` as migration, so what binds is *where the supervisor runs*, not when it places the sandbox. Feeds §6.4.1 |
+| `report/06_implementation.md` | 🔵 **In progress.** §6.1–§6.3 and §6.4.1 drafted 2026-08-25; §6.4.2 (how the supervisor confines, and in what order) next. Section plan and inherited obligations in `notes/ch6_working_notes.md` |
 | `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24; re-run 2026-08-25.** Namespaces (unprivileged), seccomp and cgroup v2 all present. `memory` was absent on the stock install; after the boot change it is present **and the cap is verified to bite, unprivileged**. Feeds §5.7.4 |
 
 ## Next session — start here
@@ -46,7 +47,7 @@ base-component measurement §5.6.5 deferred to it — is done, and it corrected 
 
 | # | Task | Notes |
 |---|---|---|
-| **1** | **Ch. 6 §6.4 — the supervisor** | Namespaces, **cgroup joined at creation** (§5.7.4), seccomp, distinct uid. The construction-order table in §6.3.4 is what it has to satisfy |
+| **1** | **Ch. 6 §6.4.2 — how the supervisor confines** | Namespaces, seccomp, distinct uid, and the startup refusal of §6.4.1's fourth consequence. Placement is settled: **systemd user unit, child self-migrates before `exec`, no C needed** |
 | 2 | §6.5–§6.9 | Bridge and channel, mediator, the manifest surface the user meets (T13), the audit record, the adversarial cases |
 | 3 | §6.10 | The report against §5.6.5's three R1 re-decision triggers, for G3 |
 
@@ -91,6 +92,23 @@ stronger than "the controller is present":
   construction precedes execution, or the property is not available at all.
 - `probe.sh` now tests the cap for *effect*, not presence, and prints the applicable boot
   instruction for whichever case the host is in.
+
+**⚠ §5.7.4's cgroup rule was wrong, and §6.4.1 corrects it (2026-08-25).** The *finding* —
+migration refused with `EACCES` because the common ancestor is root-owned — stands. The *rule*
+inferred from it in the same paragraph, that the sandbox must therefore be placed in its cgroup
+at creation, does not: `clone3(CLONE_INTO_CGROUP)` fails with the identical `EACCES` from the
+identical position, because the kernel checks the common ancestor either way.
+
+- **What binds is the supervisor's own position.** It must run inside the cgroup subtree
+  systemd delegates to its user — a systemd **user unit**. An ssh session lands in
+  `user-1000.slice/session-N.scope`, outside it, and from there *nothing* works.
+- **`clone3` is not needed, so the supervisor stays in Python.** Migration works from the right
+  position. The child writes its own pid immediately before `exec`, which closes the uncapped
+  window without C.
+- **The trap:** `mkdir` succeeds from the wrong position. Everything looks right and only
+  placement fails — so the supervisor must test placement at startup and refuse under N3.
+- Chapter 5 was **not** edited to be right; §5.7.4 carries a pointer to §6.4.1, and
+  `experiments/host_isolation_probe/README.md` is marked superseded on that one paragraph.
 
 **⚠ Four obligations are outstanding — three from §5.14's traceability check, one added by
 §6.3.3. They are cheap now and expensive in November.**

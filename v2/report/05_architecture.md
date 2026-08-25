@@ -532,6 +532,15 @@ pair exists before the sandbox does (§5.11.2), and identity is computed before 
 code runs (§5.12.2) — and it is worth noticing that three separate mechanisms have now landed
 on the same rule: **construction precedes execution, or the property is not available at all.**
 
+> **Corrected in §6.4.1, 2026-08-25 — the finding stands, the rule drawn from it does not.**
+> The paragraph above assumes that placing the sandbox at creation is permitted where moving it
+> afterwards is not. It is not: `clone3(CLONE_INTO_CGROUP)` fails with the same `EACCES`, from
+> the same position, because the kernel checks the common ancestor either way. The real
+> constraint is about **where the supervisor runs**, not when it places the sandbox — it must
+> be inside the cgroup subtree systemd delegates to its user, which an ssh session is not.
+> Measured in `experiments/cgroup_placement/`. Two mechanisms land on "construction precedes
+> execution", not three; this was never one of them.
+
 ### 5.7.5 What is being given up, and the residual risk
 
 **The kernel is the boundary.** I1's confinement is enforced by the same kernel the sandboxed

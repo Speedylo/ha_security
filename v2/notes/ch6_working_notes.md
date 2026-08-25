@@ -12,7 +12,7 @@ questions a viva will probe.
 | 6.1 | What the chapter must deliver; the three strengths of "built" | ✅ drafted |
 | 6.2 | The prior artifact — what survives R2, what is superseded, what may be cited | ✅ drafted |
 | 6.3 | The sandbox — constructed not booted; the base component; the defect that found | ✅ drafted |
-| 6.4 | The supervisor — namespaces, cgroup at creation, seccomp, distinct uid | ⬜ |
+| 6.4 | The supervisor — where it must run (§6.4.1 ✅), namespaces, seccomp, distinct uid | 🔵 §6.4.1 drafted |
 | 6.5 | The bridge and the channel | ⬜ |
 | 6.6 | The mediator — manifest evaluation, resolve-then-pin | ⬜ |
 | 6.7 | The manifest as the user meets it — **T13's unplaced half**, owed by §5.14.4 | ⬜ |
@@ -25,7 +25,7 @@ questions a viva will probe.
 | From | What | State |
 |---|---|---|
 | §5.6.5 | Measure whether the sandbox needs the base `homeassistant` component | ✅ **done 2026-08-25** — `experiments/base_component/`. It can go; **1.53×**, not the predicted 2× |
-| §5.7.4 | The sandbox is placed in its cgroup **at creation**, not migrated afterwards | ⬜ §6.4 |
+| §5.7.4 | The sandbox is placed in its cgroup **at creation**, not migrated afterwards | ✅ **discharged by correction, 2026-08-25** — §6.4.1. The rule was wrong; the supervisor's *position* is what binds |
 | §5.14.4 | A surface where the user encounters the declaration (T13's unplaced half), bounded by §3.7 | ⬜ §6.7 |
 | §5.8.2 | The four scope items, read out of Chapter 3's verification column | ⬜ §6.5–§6.9 |
 | §5.6.5 | Report against the three R1 re-decision triggers at G3 | ⬜ §6.10 |
@@ -72,6 +72,34 @@ is the second time this pass that a failing test has been worth more than a pass
 first was the cgroup migration failure of 2026-08-25 that produced the placement-at-creation
 rule.
 
+## §6.4.1 — the correction to §5.7.4
+
+**What happened.** §5.7.4 saw a migration refused with `EACCES` and concluded that the sandbox
+must be placed in its cgroup at creation. That conclusion has an untested premise: that
+creation is permitted where migration is not. `clone3(CLONE_INTO_CGROUP)` — the only mechanism
+that would do it — was never tried, because Python has no `clone3` and trying it meant writing
+C. So the cheapest available inference was written down as a design rule.
+
+Measured: `clone3` fails with the identical `EACCES` from the identical position. The kernel
+checks the common ancestor either way. **The rule was not merely unproven, it was false.**
+
+**Why this one is more embarrassing than §6.3.2's**, and worth saying so in the viva rather
+than being caught: §6.3.2's error was an arithmetic shortcut on a figure explicitly labelled a
+prediction, in a section titled "the re-decision point". This one was stated as a finding, in
+bold, and generalised in the same paragraph into "three separate mechanisms have now landed on
+the same rule". A pleasing generalisation is exactly what should have triggered the check, and
+instead it discouraged one — the pattern felt like confirmation.
+
+**What survives.** The observed failure was real, and so is the instinct behind the rule: the
+window between fork and placement is a window in which the sandbox runs uncapped. Self-migration
+by the child immediately before `exec` closes it, works from the right position, and needs no C.
+So the design lands where §5.7.4 wanted it, by a route §5.7.4 had wrong.
+
+**The trap to keep.** `mkdir` succeeds from the wrong position. Everything the supervisor
+inspects looks right and only the placement fails. This is the third distinction in the same
+area — controller *present* (probe, 2026-08-24), limit *enforced* (probe re-run, 2026-08-25),
+and now *permission to enforce* — and all three were discovered by testing rather than reading.
+
 ## Anticipated viva questions
 
 **"Your Chapter 5 predicted the budget would double and Chapter 6 says 1.53×. Which of your
@@ -93,6 +121,15 @@ regression you chose?"** — Yes, and it is stated as one. It is not a regressio
 *confinement*, though: those calls are `homeassistant.turn_on` and friends against arbitrary
 entities, which the design mediates whether the local copy exists or not. Keeping the
 component would have made them silently no-op instead of visibly fail, which is worse.
+
+**"Chapter 5 states a rule in bold and Chapter 6 says it is false. How much of Chapter 5 is
+inference dressed as measurement?"** — The report distinguishes the two and this is where the
+distinction is tested rather than claimed. §5.7.4's *finding* — the `EACCES` on migration — was
+measured and stands. The *rule* was an inference from it, made in the same paragraph without a
+marker, and that is the defect: not that an inference was wrong, but that it read like a
+result. The audit that follows is §6.1's three strengths of "built", applied backwards to
+Chapter 5's claims, and the two corrections found so far (§6.3.2, §6.4.1) are both inferences
+sitting next to measurements. The measurements have all replicated.
 
 **"How do you know PSS is the right figure and not `MemAvailable`?"** — Both were recorded,
 and the arms were run in both orders. PSS was identical to 0.1 MB across four arm-runs;

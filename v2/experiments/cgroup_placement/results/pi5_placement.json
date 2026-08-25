@@ -1,0 +1,79 @@
+{
+  "host": {
+    "machine": "aarch64",
+    "kernel": "6.12.47+rpt-rpi-2712",
+    "node": "raspberrypi"
+  },
+  "positions": [
+    {
+      "position": "as launched",
+      "uid": 1000,
+      "user": "younes",
+      "own_cgroup": "user.slice/user-1000.slice/session-40.scope",
+      "delegated_root": "user.slice/user-1000.slice/user@1000.service",
+      "inside_delegated_subtree": false,
+      "ops": {
+        "mkdir": {
+          "ok": true,
+          "detail": "controllers: memory pids"
+        },
+        "migrate_other": {
+          "ok": false,
+          "errno": "EACCES",
+          "detail": "Permission denied"
+        },
+        "migrate_self": {
+          "ok": false,
+          "errno": "EACCES",
+          "detail": "Permission denied"
+        },
+        "clone3_into_cgroup": {
+          "ok": false,
+          "errno": "clone3",
+          "detail": "Permission denied"
+        },
+        "cap_enforced": {
+          "ok": false,
+          "errno": "UNTESTED",
+          "detail": "the child could not enter the cgroup, so nothing was tested"
+        }
+      },
+      "destination": "user.slice/user-1000.slice/user@1000.service/app.slice/capstone-place-3479",
+      "common_ancestor": "user.slice/user-1000.slice",
+      "common_ancestor_owner": "root"
+    },
+    {
+      "position": "systemd-run --user --scope",
+      "uid": 1000,
+      "user": "younes",
+      "own_cgroup": "user.slice/user-1000.slice/user@1000.service/app.slice/run-p3485-i3785.scope",
+      "delegated_root": "user.slice/user-1000.slice/user@1000.service",
+      "inside_delegated_subtree": true,
+      "ops": {
+        "mkdir": {
+          "ok": true,
+          "detail": "controllers: memory pids"
+        },
+        "migrate_other": {
+          "ok": true,
+          "detail": "child now in /user.slice/user-1000.slice/user@1000.service/app.slice/capstone-place-3485"
+        },
+        "migrate_self": {
+          "ok": true,
+          "detail": "self now in /user.slice/user-1000.slice/user@1000.service/app.slice/capstone-place-3485"
+        },
+        "clone3_into_cgroup": {
+          "ok": true,
+          "detail": "/user.slice/user-1000.slice/user@1000.service/app.slice/capstone-place-3485"
+        },
+        "cap_enforced": {
+          "ok": true,
+          "detail": "killed (rc=-9) \u2014 cap enforced"
+        }
+      },
+      "destination": "user.slice/user-1000.slice/user@1000.service/app.slice/capstone-place-3485",
+      "common_ancestor": "user.slice/user-1000.slice/user@1000.service/app.slice",
+      "common_ancestor_owner": "younes"
+    }
+  ]
+}

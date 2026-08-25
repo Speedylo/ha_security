@@ -259,18 +259,102 @@ Four ordering constraints have accumulated, from four unrelated mechanisms:
 
 | Constraint | Source | Reason |
 |---|---|---|
-| The sandbox joins its cgroup **at creation** | §5.7.4 | An unprivileged process cannot migrate another into a cgroup; that needs the root-owned common ancestor |
 | The socket pair exists **before the sandbox does** | §5.11.2 | Identity is the socket, so it cannot be established afterwards |
 | Identity is computed **before any integration code runs** | §5.12.2 | A hash taken after execution is a hash of whatever execution left behind |
 | `async_start()` is called **last**, after every component is set up | §6.3.3 | Deferred work is lost before the flag and misplaced after it |
+| The supervisor runs **inside its user's delegated cgroup subtree** | §6.4.1 | Otherwise no placement mechanism is permitted at all — including placement at creation |
 
-The first three are one rule — **construction precedes execution, or the property is not
-available at all** — which §5.7.4 named when the third instance of it appeared. The fourth is
-the same rule turned inward: the sandbox must be fully placed before it is assembled, and fully
-assembled before it is started. Both halves are violated by the obvious implementation, which
-is why the rule is worth stating rather than merely following.
+The first two are one rule — **construction precedes execution, or the property is not
+available at all** — which §5.7.4 named. The third is the same rule turned inward: the sandbox
+must be fully assembled before it is started. Both halves are violated by the obvious
+implementation, which is why the rule is worth stating rather than merely following.
+
+The fourth row is a different kind of constraint, and §6.4.1 is where it displaces one that
+§5.7.4 put here. §5.7.4 required the sandbox to join its cgroup *at creation*, on the reasoning
+that migration was refused and creation would not be. Measured, creation is refused too, and
+the constraint that actually binds is on the supervisor's own position rather than on the order
+of its operations.
+
+## 6.4 The supervisor
+
+The supervisor is the process that builds a sandbox: it creates the cgroup and the namespaces,
+installs the seccomp filter, creates the socket that carries the sandbox's identity, computes
+that identity, and starts the confined process. §5.15.4 named it the component nothing checks,
+and §6.3.3 has already produced one instance of what that means in practice.
+
+This section is answerable for four things: where the supervisor must run, how it confines,
+what it does in what order, and what it refuses to do. The first is settled below, and it
+settles it by correcting Chapter 5.
+
+### 6.4.1 Where the supervisor must run, which is not where Chapter 5 thought
+
+§5.7.4 recorded a real finding — an unprivileged process could not create a cgroup and then
+move a running process into it, because migration requires write access to the **common
+ancestor** of source and destination, and that ancestor was root-owned — and drew a design rule
+from it: *the sandbox must be placed in its cgroup at creation, not confined after the fact*.
+
+The rule contains an assumption the failed command could not test. It presumes that placement
+at creation is permitted where migration is not, and the mechanism that would do it —
+`clone3(CLONE_INTO_CGROUP)` — was never tried. §6.4 has to implement whichever is true, and
+the two lead to very different supervisors: one needs `clone3` and therefore a C component, the
+other needs only to be started in the right place. So it was measured
+(`experiments/cgroup_placement/`), from two positions, as an ordinary user.
+
+| Operation | From an ssh session | From inside the delegated subtree |
+|---|---|---|
+| Common ancestor with the destination | `user-1000.slice` — **root-owned** | `…/app.slice` — **user-owned** |
+| `mkdir` the sandbox's cgroup | **OK** | **OK** |
+| Migrate a running child into it | `EACCES` | **OK** |
+| Have the child migrate itself | `EACCES` | **OK** |
+| `clone3(CLONE_INTO_CGROUP)` | `EACCES` | **OK** |
+| 192 MB against a 64 MB cap | not testable | **killed — enforced** |
+
+**Placement at creation is governed by the same rule as migration.** `clone3` fails with the
+same `EACCES`, in the same position, because the kernel checks the common ancestor either way;
+creating the process there is not a way around a rule about moving it there, since it is not a
+rule about moving. §5.7.4's finding stands and the rule drawn from it does not.
+
+What binds is the supervisor's own position:
+
+> **The supervisor must run inside the cgroup subtree that its user's manager delegates to it.**
+> On a systemd host that means being started as a systemd *user unit*. An interactive login or
+> an ssh session lands in `user-<uid>.slice/session-N.scope`, outside that subtree, and from
+> there no placement mechanism works at all.
+
+**The trap worth naming, because it is what made the original reading plausible.** `mkdir`
+succeeds from the wrong position. The supervisor can create the cgroup, write `memory.max` into
+it, read every file it expects to find, and fail only at the one step that matters. A framework
+that checked for the cgroup's existence and concluded it was enforcing would be reporting a
+control it does not have — §1.6's complaint about the status quo, wearing a security label.
+§5.7.4 already distinguished the controller being *present* from the limit being *enforced*;
+this adds a third distinction, between enforcement and **permission to enforce**.
+
+Four consequences for the rest of §6.4:
+
+1. **The supervisor ships as a systemd user unit**, and that is a security property rather than
+   packaging convenience. The unprivileged design §5.7.4 chose depends on it, and the only
+   alternative is privilege.
+2. **`clone3` is not needed, so the supervisor stays in Python.** From the right position,
+   migration works and `clone3` buys nothing that migration does not already give. A C
+   component would have been a real cost against maintainability by one person, and it is worth
+   recording that the measurement removed it rather than the preference removing the
+   measurement.
+3. **The child places itself, immediately before `exec`.** Ordinary migration leaves a window
+   between fork and the parent's write in which the sandbox runs uncapped. Having the child
+   write its own pid closes that window without `clone3`, and self-migration was measured to
+   work from the right position. This keeps what was *right* about §5.7.4's rule — nothing
+   substantial executes before the limit applies — while dropping the premise that was wrong.
+4. **The supervisor tests placement at startup and refuses to start if it fails**, with the
+   position it is in named in the message. This is N3 applied to the same case §5.7.4 applied
+   it to, and the same argument holds a second time: a framework that ran anyway would leave
+   T16 uncontrolled while implying protection.
+
+*Strength of claim: measured.* All four operations, both positions, on the C4 device, as
+uid 1000. What has not been built is the supervisor itself; this establishes which of two
+designs is available to it.
 
 ---
 
-*Chapter 6 in progress: §6.1–§6.3 drafted 2026-08-25. §6.4 (the supervisor) is next. The
-section plan and the obligations this chapter inherits are in `notes/ch6_working_notes.md`.*
+*Chapter 6 in progress: §6.1–§6.3 and §6.4.1 drafted 2026-08-25. §6.4.2 — how the supervisor
+confines, and in what order — is next. The section plan and the obligations this chapter
+inherits are in `notes/ch6_working_notes.md`.*

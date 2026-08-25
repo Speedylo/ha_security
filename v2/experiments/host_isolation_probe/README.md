@@ -75,10 +75,18 @@ into it** — migration requires write access to the *common ancestor* of source
 destination, and that is root-owned. The first attempt failed with `Permission denied` for
 exactly this reason.
 
-The consequence for the supervisor is concrete: a sandbox must be placed in its cgroup **at
-creation** (`CLONE_INTO_CGROUP`, or the equivalent), not confined after it is already running.
-That is the same ordering the design already relies on for the socket pair (§5.11.2) and for
-identity (§5.12.2), and §5.7.4 now names the pattern the three share.
+The consequence drawn at the time was that a sandbox must be placed in its cgroup **at
+creation** (`CLONE_INTO_CGROUP`, or the equivalent), rather than confined after it is already
+running.
+
+> **Superseded 2026-08-25 by `../cgroup_placement/`, and the correction matters.** That
+> consequence does not follow. `clone3(CLONE_INTO_CGROUP)` fails with the same `EACCES` from
+> the same position, because the kernel checks the common ancestor whether the process is being
+> moved into the cgroup or created inside it. What actually binds is **where the supervisor
+> runs**: inside the subtree systemd delegates to its user — a systemd user unit — and not an
+> ssh session, which is where this probe was run from and which is outside it. The finding
+> above is correct; only the rule inferred from it was wrong, and it was inferred from a single
+> failed command rather than measured. §6.4.1 carries the corrected version.
 
 ## Limits
 
