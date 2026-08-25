@@ -114,6 +114,10 @@ class SandboxSpec:
     files_ro: list[str] = field(default_factory=list)
     files_rw: list[str] = field(default_factory=list)
     env: dict[str, str] = field(default_factory=dict)
+    # The descriptor the sandbox's end of the mediator channel arrives on. The supervisor
+    # chooses it, because `pass_fds` preserves a descriptor's number rather than letting the
+    # child pick (§6.4.5 is the version of that lesson learned expensively).
+    channel_fd: int | None = None
 
     # Inside the sandbox, an integration's own things are always in the same two places,
     # whatever they were called outside. A fixed layout means the sandbox runner needs no

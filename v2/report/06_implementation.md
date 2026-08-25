@@ -615,9 +615,92 @@ Ordering, one more time: the filter is installed **last**, after the mounts and 
 before `exec`. Installed any earlier it would confine the construction of the sandbox rather
 than the sandbox — `mount` and `pivot_root` are both on its own deny-list.
 
+## 6.5 The channel
+
+§5.11.2 makes the design's sharpest claim about identity: it is *a property of the channel, not
+a claim in the message*. The supervisor creates one connected Unix domain socket before the
+sandbox exists, keeps one end for the mediator and passes the other into the child; the mediator
+knows who is speaking because it created that socket for that sandbox. There is no field to
+forge and no authentication step to bypass.
+
+That is a testable claim, and §6.5.2 tests it the only way worth testing it — by having both
+sandboxes lie.
+
+### 6.5.1 What is built, and what a hostile far end forces
+
+The wire format is §5.11.3's: a four-byte big-endian length followed by a JSON object. The
+sandbox's side of it is implemented in the self-test *without importing anything from this
+framework*, which is not a stylistic choice — `confine` is not in the sandbox's mount namespace
+and cannot be. That the far end needs no library is what keeps the sandbox's half of the
+protocol auditable.
+
+**The sandbox is the untrusted end of this socket**, and two decisions follow that would be
+unnecessary between cooperating processes:
+
+- **A frame's declared length is checked against a cap before anything is allocated for it.**
+  The number came from the sandbox. Reading it and then allocating is how a one-line change to
+  an integration becomes a denial of service against the mediator.
+- **A malformed frame costs that sandbox its channel and nothing else.** One sandbox must not
+  be able to stop the mediator by sending rubbish, and §5.15.4 has already named the supervisor
+  as the component nothing checks.
+
+The mediator implements steps 1, 3 and 4 of §5.11.3's five, and its **default is the whole of
+S6**: a mediator holding no manifest denies everything. That was built before any permit path
+rather than after it, because default-deny that arrives second is default-deny that has already
+been forgotten once.
+
+### 6.5.2 Both sandboxes claim to be the same integration
+
+Two sandboxes are started, `demo_a` and `demo_b`. Both send
+`{"integration": "demo_a", "op": "service.call", "service": "lock.unlock", …}`. One of them is
+lying. The mediator's audit record:
+
+| True identity | Claimed to be | Allowed | Reason |
+|---|---|---|---|
+| `demo_a` | `demo_a` | no | no manifest is bound to this integration |
+| `demo_b` | **`demo_a`** | no | no manifest is bound to this integration |
+
+*Strength of claim: measured.* On the C4 device, two concurrent sandboxes, 4,002 requests.
+
+The claim in the message is recorded — as a *claim*, in its own field, beside the identity that
+came from the socket — and it changes nothing. This is the demonstration §5.11.2's argument
+needs, and it is also the S4 mechanism in miniature: attribution is a property of the topology
+rather than a deduction from it, which is precisely what §2.4.2's prior work cannot do.
+
+Both requests were denied, which is S6 with nothing bound yet. The permit path is §6.6's.
+
+### 6.5.3 What the channel costs when it is real
+
+§5.11.4 measured a **floor** of 30.0 µs median, p99 33.9 µs, and said so — it excluded the
+manifest check and the audit write, and it did not cross a sandbox boundary. This measurement
+does all three, with two sandboxes contending for one single-threaded mediator:
+
+| | §5.11.4 floor | Measured here | Change |
+|---|---|---|---|
+| median | 30.0 µs | **35.6 µs** | +19% |
+| p99 | 33.9 µs | **62.7 µs** | **+85%** |
+
+**The median held and the tail did not, and the asymmetry is the finding.** A cost that lands
+almost entirely in the tail is the signature of queueing, not of work: two sandboxes share one
+single-threaded mediator, so a request can wait behind another sandbox's rather than behind
+anything of its own. That the median moved only 19% while p99 nearly doubled says the added
+per-request work — the policy call and the audit append — is small, and that the contention is
+not.
+
+N1 is unaffected either way. A polling integration reading ten entities every thirty seconds
+now spends 0.36 ms per cycle in mediation rather than 0.30 ms, against a thirty-second period.
+
+**It is a real obligation for Chapter 7, though, and a new one.** This was two sandboxes;
+§6.3.2 puts the device's budget at twenty-six. A tail that doubles at two clients is not
+evidence about twenty-six, and the shape of the curve between them is exactly what a
+single-threaded mediator's design deserves to be judged on. Chapter 7 measures latency at
+realistic sandbox counts, and if the tail is unacceptable the mediator's concurrency — not the
+protocol — is what changes.
+
 ---
 
-*Chapter 6 in progress: §6.1–§6.3 and §6.4.1–§6.4.6 drafted 2026-08-25. All three of §5.7.3's
-isolation primitives are now built and measured on the C4 device, in `framework/confine/`.
-Next: §6.5, the bridge and the channel. The section plan and the obligations this chapter
-inherits are in `notes/ch6_working_notes.md`.*
+*Chapter 6 in progress: §6.1–§6.3, §6.4.1–§6.4.6 and §6.5 drafted 2026-08-25. All three of
+§5.7.3's isolation primitives are built and measured on the C4 device, and the channel carries
+identity by construction. Next: §6.6, the mediator's manifest evaluation — the permit path S6
+currently has nothing to permit with. The section plan and the obligations this chapter inherits
+are in `notes/ch6_working_notes.md`.*

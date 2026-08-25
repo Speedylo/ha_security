@@ -72,15 +72,26 @@ class Sandbox:
 
 
 def start(spec: SandboxSpec, cgroup: SandboxCgroup, *,
-          stdout: int | None = None, stderr: int | None = None) -> Sandbox:
-    """Start one sandbox and return once it has reported that it is about to execute."""
+          stdout: int | None = None, stderr: int | None = None,
+          channel_end: int | None = None) -> Sandbox:
+    """Start one sandbox and return once it has reported that it is about to execute.
+
+    `channel_end` is the sandbox's half of a socket pair the caller has already created —
+    already, because §5.11.2 requires the channel to exist before the sandbox does. The
+    supervisor closes its copy on return, so that the mediator's end is the only one left and
+    the socket closes when the sandbox dies.
+    """
     status_r, status_w = os.pipe()
     os.set_inheritable(status_w, True)
+    passed = (status_w,) if channel_end is None else (status_w, channel_end)
+    if channel_end is not None:
+        os.set_inheritable(channel_end, True)
+        spec.channel_fd = channel_end
 
     proc = spawn_confined(
         [sys.executable, "-m", "confine.enter"], cgroup,
         stdin=subprocess.PIPE, stdout=stdout, stderr=stderr,
-        pass_fds=(status_w,), env={**os.environ, "CONFINE_STATUS_FD": str(status_w)},
+        pass_fds=passed, env={**os.environ, "CONFINE_STATUS_FD": str(status_w)},
     )
     os.close(status_w)
     try:
@@ -103,4 +114,6 @@ def start(spec: SandboxSpec, cgroup: SandboxCgroup, *,
 
     if sandbox_pid is None:
         raise SandboxFailed(f"{spec.domain}: the sandbox never reported a pid")
+    if channel_end is not None:
+        os.close(channel_end)
     return Sandbox(spec.domain, sandbox_pid, cgroup)

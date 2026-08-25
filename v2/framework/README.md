@@ -20,7 +20,10 @@ describes can be read side by side.
 | `confine/enter.py` | §6.4.4 | The child side: unshare, identity maps, the fork into the PID namespace, pivot, seccomp, exec |
 | `confine/spawn.py` | §6.4.4 | The supervisor side: subreaper, spec over stdin, wait |
 | `confine/seccomp.py` | §6.4.6 | The BPF filter, built by hand and verified by behaviour |
+| `confine/channel.py` | §6.5.1 | The one socket that crosses the boundary, and its framing |
+| `confine/mediator.py` | §6.5.1 | Who is asking, and what happens to the answer. Default-deny is S6 |
 | `confine/selftest.py` | §6.4.5 | One sandbox built around a hostile configuration directory |
+| `confine/selftest_channel.py` | §6.5.2 | Two sandboxes, both claiming to be the same integration |
 
 ## Running the preflight
 
@@ -37,6 +40,7 @@ and doing so is the check working rather than the host being wrong.
 ```bash
 systemd-run --user --scope -q python3 -m confine.preflight   # the right position, ad hoc
 systemd-run --user --scope -q python3 -m confine.selftest    # build a sandbox and look inside
+systemd-run --user --scope -q python3 -m confine.selftest_channel   # two sandboxes, both lying
 ```
 
 `confine.selftest` builds a configuration directory containing a secrets file, the config-entry

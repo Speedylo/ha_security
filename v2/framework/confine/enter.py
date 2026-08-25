@@ -46,6 +46,9 @@ BASE_ENV = {
     "PYTHONDONTWRITEBYTECODE": "1",
 }
 
+# The sandbox is told the number, never the identity. §5.11.2: there is nothing to tell.
+CHANNEL_FD_ENV = "CONFINE_CHANNEL_FD"
+
 
 def _report(message: str) -> None:
     """Send one line to the supervisor, and complain loudly if that is not possible.
@@ -95,6 +98,10 @@ def main() -> int:
         os._exit(71)
 
     os.chdir(SandboxSpec.COMPONENT)
+    if spec.channel_fd is not None:
+        # It has to survive `exec`: this descriptor is the sandbox's only way to reach the
+        # mediator, and its number is the mediator's only way to know who is calling.
+        os.set_inheritable(spec.channel_fd, True)
     devnull = os.open("/dev/null", os.O_RDONLY)
     os.dup2(devnull, 0)
     os.close(devnull)
@@ -109,6 +116,8 @@ def main() -> int:
         os._exit(71)
 
     env = dict(BASE_ENV)
+    if spec.channel_fd is not None:
+        env[CHANNEL_FD_ENV] = str(spec.channel_fd)
     env.update(spec.env)
     _report(f"seccomp {len(covered)}")
     _report("ready")
