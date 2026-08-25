@@ -58,9 +58,28 @@ if ! grep -qw memory /sys/fs/cgroup/cgroup.controllers 2>/dev/null; then
   echo "  ⚠ the memory controller is missing, so S9 cannot bound memory on this host."
   if grep -q 'cgroup_disable=memory' /proc/cmdline; then
     echo "    cause: 'cgroup_disable=memory' is on the kernel command line"
-    echo "    (Raspberry Pi OS ships this by default)"
-    echo "    fix:   add 'cgroup_enable=memory cgroup_memory=1' to the boot cmdline,"
-    echo "           remove cgroup_disable=memory, reboot"
+    # Where the parameter actually LIVES decides what the operator can do about it.
+    # On a Pi 5 the firmware prepends its own parameters, so cgroup_disable=memory is
+    # on /proc/cmdline while the file an operator would edit does not contain it.
+    # Telling them to "remove it" then sends them looking for a string that is not there.
+    cf=""
+    for f in /boot/firmware/cmdline.txt /boot/cmdline.txt; do
+      [ -r "$f" ] && { cf="$f"; break; }
+    done
+    if [ -n "$cf" ] && grep -q 'cgroup_disable=memory' "$cf"; then
+      echo "    it is in $cf, so it can be removed there"
+      echo "    fix:   remove cgroup_disable=memory from $cf, add"
+      echo "           'cgroup_enable=memory cgroup_memory=1', reboot"
+    elif [ -n "$cf" ]; then
+      echo "    it is NOT in $cf — the firmware prepends it, so there is"
+      echo "    nothing to remove. cgroup_enable is parsed after cgroup_disable,"
+      echo "    so appending the enable is what overrides it."
+      echo "    fix:   append 'cgroup_enable=memory cgroup_memory=1' to the single"
+      echo "           line in $cf, reboot"
+    else
+      echo "    fix:   append 'cgroup_enable=memory cgroup_memory=1' to the boot"
+      echo "           cmdline, reboot (no cmdline.txt found to inspect)"
+    fi
   else
     echo "    cause: not cgroup_disable=memory; check the kernel build"
   fi

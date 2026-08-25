@@ -3,7 +3,7 @@
 ## 5.1 What this chapter must settle
 
 Chapters 3 and 4 constrain this design tightly enough that most of it is determined. Chapter
-3 fixed nineteen requirements and four constraints; Chapter 4 enumerated eighteen threats
+3 fixed nineteen requirements, four of them constraints; Chapter 4 enumerated eighteen threats
 against a system that has none of them, found four Critical risks, and observed that those
 four share a single cause. This chapter converts that into an architecture, and it is
 answerable for five things:
@@ -1443,8 +1443,9 @@ design rests on.
 
 ### 5.13.5 What layering does not do
 
-The four High residual risks of §4.11 survive every layer above, and the reason is the same in
-each case: **they are not failures of enforcement.**
+The four High residual risks of §4.11 survive every layer above, and **none of them is a
+failure of enforcement.** Three share a single reason; R3 is different in kind, and §5.15.1
+separates them on exactly that basis.
 
 | Residual risk | Why no layer catches it |
 |---|---|
@@ -1453,12 +1454,16 @@ each case: **they are not failures of enforcement.**
 | **R3** — the mediator's unscoped credential | Upstream: Home Assistant issues no read-only or per-domain token. Layering the mediator does not change what the token is |
 | **R5** — exfiltration through a declared host | D3 pins the destination (§5.10.5, T11); it does not read the payload, and TLS means it could not |
 
-Stated as one sentence: **each of these is enforcement working exactly as specified, on a
-specification that was too generous.** More layers of the same kind cannot help, because they
-would each reach the same verdict. Reducing R1 and R2 requires either review of the
-declaration — D0, on the likelihood side, which this project does not build — or contextual
+Stated as one sentence, and true of R1, R2 and R5: **this is enforcement working exactly as
+specified, on a specification that was too generous.** More layers of the same kind cannot
+help, because each would reach the same verdict. Reducing R1 and R2 requires either review of
+the declaration — D0, on the likelihood side, which this project does not build — or contextual
 integrity, which §4.11 already identifies as a different mechanism (ContexIoT, §2.3) carrying
 its own usability costs.
+
+**R3 is not that.** It is not a specification that was too generous but a limit on what the
+mediator can be given to hold, and no arrangement of layers changes what kind of credential
+the platform issues. §5.15.3 names the one upstream change that would lift it.
 
 This is not a defect in the layering. It is the boundary of what confinement is, and §3.7
 drew the same line when it excluded "guaranteeing the manifest is minimal or honest" from
@@ -1535,10 +1540,9 @@ strongest form a boundary takes in this design and the sharpest available illust
 component has to decide anything for it to hold.
 
 **One boundary did not improve, and the figure says so.** TB2 is labelled UNCHANGED, not
-EXISTS. The mediator holds a Home Assistant long-lived token, which the platform issues with
-no read-only and no per-domain variant, so the mediator's credential is exactly as unscoped as
-the one an integration holds today. That is residual risk R3 (§4.11), and drawing it as
-enforced would have been the easiest and least honest edit available. A reader comparing the
+EXISTS: the mediator's credential is exactly as unscoped as the one an integration holds
+today, which is residual risk R3 (§4.11) and is taken up with its upstream fix in §5.15.3.
+Drawing it as enforced would have been the easiest and least honest edit available. A reader comparing the
 two figures should be able to see what this design does *not* fix as readily as what it does.
 
 ### 5.14.3 Every Chapter 4 control, and where it actually lives
@@ -1604,8 +1608,8 @@ Chapter 7 would misdescribe the artifact.
 
 **T16 — the control has a precondition Chapter 4 could not have known.** §4.10.1 derived S9 and
 its control, resource limits, from an identified threat. §5.7.4 then probed the target and
-found the cgroup v2 `memory` controller absent, because Raspberry Pi OS ships
-`cgroup_disable=memory` on the kernel command line. The control is placed (§5.10.6) and the
+found the cgroup v2 `memory` controller absent by distribution default. The control is placed
+(§5.10.6) and the
 framework refuses to start when the controller is missing rather than running unbounded — but
 **on the project's own reference hardware, S9 requires a boot-time change before it can be
 verified at all.** That is information flowing from Chapter 5 back into Chapter 4's treatment,
@@ -1649,11 +1653,14 @@ reading that the design has an unbounded number of holes.
 | **Chosen** | Could have been otherwise; the reason is scope, cost or readability, and each is recorded where it was taken | §5.8's implemented scope; §5.10.9's four excluded schema features; §5.12.6's refusal to define an off-box format; §3.7's non-goals | **This project**, at the price stated in each place. These are the ones a viva is entitled to press on |
 | **Inherited** | Imposed by the platform or the host, not by this design | R3 (the unscoped token); the kernel assumption (§5.7.5); the absent memory controller (§5.7.4) | **Someone else**, and in each case the fix is nameable — see §5.15.3 |
 
-The row that carries the most weight is the first, and it should be read together with
-§5.13.5. R1, R2 and R5 are not failures of enforcement; they are enforcement working exactly
-as specified on a specification that was too generous. **The correct response to them is to
-say so, not to add mechanism** — which is why this design adds none, and why §4.11 rates all
-three as residual High rather than treating them.
+§5.13.5 has already shown why no layer of this design catches R1, R2 or R5, and does not need
+repeating. What this table adds is the consequence: **the correct response to a structural
+limit is to state it, not to add mechanism** — which is why this design adds none for the
+three, and why §4.11 rates them residual High rather than treating them.
+
+The substantive claim here is the third row. Separating R3 from the other three says that one
+of §4.11's four High residuals is not a property of confinement at all, and therefore has an
+owner and a specific fix. §5.15.3 acts on that.
 
 ### 5.15.2 L2 — the better answer, which this project cannot give
 
@@ -1700,17 +1707,18 @@ included — and the design is already shaped to take one: the mediator acquires
 in one place and uses it at step 5 of §5.11.3, so a scoped token would be a substitution
 rather than a redesign. §4.11 says it should be reported to the platform, and it should.
 
-**The kernel is the boundary (§5.7.5).** A kernel vulnerability reachable through the syscalls
-seccomp permits defeats the sandbox. The fix is a stronger isolation primitive — I3 or I4 in
-§5.7.2, both rejected on C4 — and the architecture does not prevent it: the supervisor's
-interface to the sandbox is process creation, so a deployment whose threat model justifies the
-expense can substitute one without changing the design.
+**The kernel is the boundary (§5.7.5).** The fix is a stronger isolation primitive — I3 or I4,
+both rejected on C4 in §5.7.2 — and §5.7.5 has already established that the architecture does
+not prevent one. What belongs here is the owner: **it is the deployer, not this project.** A
+deployment whose threat model justifies the expense can substitute a stronger sandbox on its
+own, which is a different position from a limit nobody can act on.
 
-**The memory controller is absent on the reference hardware (§5.7.4).** Raspberry Pi OS ships
-`cgroup_disable=memory`, so S9 cannot bound memory until the boot command line is changed and
-the machine rebooted. The framework refuses to start rather than running unbounded, which is
-the right failure, but it is a real precondition on deployment and §5.14.4 records that
-Chapter 7 must state it rather than evaluate S9 on a machine where it was quietly fixed.
+**The memory controller is absent on the reference hardware (§5.7.4).** **The owner is the
+distribution**, and the fix is a boot-time change the operator makes once. What matters here is
+the classification: this is a precondition on deployment, not a defect in the design. The
+framework refuses to start rather than running unbounded (N3), and §5.14.4 records that
+Chapter 7 must state the precondition rather than evaluate S9 on a machine where it was quietly
+satisfied.
 
 ### 5.15.4 The component nothing checks
 
@@ -1731,9 +1739,8 @@ This is stated rather than treated, and three things bound it without removing i
   has no part in any decision; the mediator handles those. The trusted component is therefore
   small and its behaviour is enumerable, which is not true of a component that participates in
   every request.
-- **It is unprivileged** (§5.7.4). Unprivileged user namespaces work on the target, so the
-  supervisor does not hold root, and a confinement mechanism that must be root to confine
-  anything enlarges the surface it exists to reduce.
+- **It is unprivileged** (§5.7.4). The supervisor does not hold root, so a supervisor that is
+  compromised — or merely wrong — is bounded by an unprivileged uid rather than by nothing.
 - **Its correctness is testable in a way a running policy is not.** What a constructed sandbox
   can reach is a question with a definite answer at a definite moment, which is what Chapter
   7's adversarial testing is for.
@@ -1771,8 +1778,8 @@ not the compatibility evaluation and this chapter does not report it as one.
 Chapter 5 set out to settle five things (§5.1) and has settled them: Chapter 3's two open
 questions are closed in §5.6 and §5.9, the four re-opened decisions are settled in §5.4,
 §5.6, §5.7 and §5.8 with two divergences reported as divergences, the manifest is specified in
-§5.10, §1.6's defence-in-depth promise is discharged in §5.13, and §5.14 checks the controls
-rather than asserting them.
+§5.10, the two arguments promised earlier are discharged — §1.9's in §5.2 and §1.6's in §5.13 —
+and §5.14 checks the controls rather than asserting them.
 
 What it has not done is build any of it. The design's central claim — that unmodified,
 pre-existing integrations can be confined at a cost worth paying — is an empirical claim, and

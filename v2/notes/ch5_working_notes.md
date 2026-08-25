@@ -25,7 +25,44 @@ questions a viva will probe.
 | 5.14 | Figure 5.1, paired with Figure 4.1; threat-to-control traceability | ✅ drafted — figure drawn on Figure 4.1's canvas; the check found **four** rows where the design differs from what §4.10 assumed |
 | 5.15 | What the design does not do; L2 as the platform's own better answer | ✅ drafted — limits sorted **by who could fix them**; L2 conceded as the better design; the supervisor named as the component nothing checks |
 
-**Chapter 5 is drafted end to end. It has not yet been READ end to end** — fifteen sections written across two days, and the repetition/drift pass is owed.
+**Chapter 5 is complete: drafted, and read end to end on 2026-08-25.** Eight fixes, recorded
+below.
+
+## The read-through, 2026-08-25 — what it caught
+
+Cross-references and numbers were checked mechanically first (every §x.y in the chapter
+resolves to a real heading in Chapters 1–5; the footprint and latency figures are consistent
+throughout). Those were clean. The eight fixes all came from reading it as a whole.
+
+| # | Fix | Kind |
+|---|---|---|
+| 1 | §5.1 said "nineteen requirements **and** four constraints" — Ch. 3's nineteen *include* the four | Miscount |
+| 2 | §5.13.5 claimed one reason for all four residual Highs, then gave R3 a different reason in its own table | **Logic** |
+| 3 | §5.15.1 restated §5.13.5's "too generous specification" sentence almost verbatim, two sections later | Repetition |
+| 4 | R3's mechanism explained in full in both §5.14.2 and §5.15.3 | Repetition |
+| 5 | The memory-controller finding stated three times — §5.7.4, §5.14.4, §5.15.3 | Repetition |
+| 6 | §5.15.3 restated §5.7.5 and §5.7.4 rather than naming owners, which §5.15's own opening promises not to do | Repetition |
+| 7 | §5.15.4 restated §5.7.4's unprivileged-namespace sentence | Repetition |
+| 8 | §5.15.6's closing recital of §5.1's five promises **dropped §1.9**, discharged in §5.2 | **Omission** |
+
+**Fix 2 is the one worth remembering.** §5.13.5 asserted that all four High residuals share a
+single reason — "they are not failures of enforcement" — and then its own table gave R3 a
+completely different one (the platform issues no scoped token). §5.15.1, written two days
+later, correctly sorted R3 into *inherited* rather than *structural*. So two sections quietly
+disagreed about what kind of thing R3 is. Only reading them together shows it. §5.13.5 now
+says three share a reason and R3 is different in kind, which sets §5.15.1 up instead of
+colliding with it.
+
+**Fix 8 is the cheapest kind of error to make and the most embarrassing to be caught on.** A
+chapter that opens by promising five things and closes by reciting four of them invites the
+question of which one was quietly dropped. §1.9 *was* discharged, in §5.2; the recital just
+did not say so.
+
+**What the mechanical checks did not catch, and could not.** Every one of the eight is a
+relationship between two passages. A link checker cannot see that two sections disagree about
+R3, or that a closing summary is missing an item its own opening promised. That is the whole
+argument for the read pass being a separate task rather than something assumed to fall out of
+writing carefully.
 
 ## Measurement: what integrations actually talk to
 

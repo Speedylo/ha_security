@@ -30,7 +30,7 @@ that does not belong in the report, including anticipated viva questions.
 | `notes/ch5_evidence_ha_coupling.md` | ✅ Written 2026-08-24 — the in-process coupling re-derived from source. **Discharges item 1 of `00_METHOD.md` §2** |
 | `notes/ch5_12_audit_explained.md` | ✅ §5.12 from first principles — what a hash is, why the manifest is part of identity, unreachable vs tamper-evident, and six self-test questions |
 | `notes/ch5_evidence_ha_coupling_explained.md` | ✅ The same finding from first principles, for defending it aloud — what `import` really does, why `hass` is everything, a 30-second version, and six self-test questions |
-| `report/05_architecture.md` | 🔶 **§5.1–§5.15 all drafted.** Not yet read end to end. **All four G2 decisions settled** (two confirmed, two diverged), **§3.9's open question 1 closed in §5.9**, and **§1.6's defence-in-depth promise discharged in §5.13** |
+| `report/05_architecture.md` | ✅ **Complete.** §5.1–§5.15 drafted and read end to end 2026-08-25 (eight fixes; see `notes/ch5_working_notes.md`). **All four G2 decisions settled** (two confirmed, two diverged), **§3.9's open question 1 closed in §5.9**, and **§1.6's defence-in-depth promise discharged in §5.13** |
 | `figures/api_surface.py`, `fetch_hacs_corpus.py` | ✅ **2026-08-24.** The API surface re-derived by `ast` parsing over two corpora — 1,458 shipped and 144 community integrations, zero parse failures. Write-up in `notes/ch5_evidence_api_surface.md`; corpus reproducible from `hacs_corpus_manifest.json` |
 | `experiments/r2_footprint/` | ✅ **Pi 5, 2026-08-24.** R2's premise holds and it fits: minimal HA builds without `bootstrap`, an ordinary integration runs against it, 176 MB first sandbox / 136 MB marginal / ~17 in 60% of 4 GB. Feeds §5.6.3 |
 | `experiments/mediation_latency/` | ✅ **Pi 5, 2026-08-24.** One mediated request over the channel: **30.0 µs** median, p99 33.9 µs; ~33k req/s. Floor only — excludes manifest check and audit write. Feeds §5.11.4 |
@@ -38,13 +38,22 @@ that does not belong in the report, including anticipated viva questions.
 
 ## Next session — start here
 
-**Chapters 1–5 are drafted. Chapter 5 is complete at §5.15 of 15.** The one thing owed before
-Chapter 6 is a read-through. The section plan is in `notes/ch5_working_notes.md`.
+**Chapters 1–5 are complete.** Chapter 5 was read end to end on 2026-08-25 and its eight fixes
+applied. **Chapter 6 is next**, and its first task is already fixed by §5.6.5.
 
 | # | Task | Notes |
 |---|---|---|
-| **1** | **Read Chapter 5 end to end** | 1,784 lines written across fifteen sections over two days, and **never read as a whole**. Look for: repetition between §5.13.5, §5.14.4 and §5.15.1, which all touch the residual risks; drift in how R2's footprint numbers are quoted; and whether §5.1's five promises all read as kept |
-| 2 | Then Chapter 6 | See below — its first task is already fixed |
+| **1** | **Ch. 6 — measure whether the sandbox needs the base `homeassistant` component** | **60 MB of the 176 MB.** Dropping it roughly doubles the ~17-sandbox budget and largely dissolves §5.8.1's third qualification |
+| 2 | Then the rest of Chapter 6 | The spike is cited as prior feasibility work, then reconciled with the design Ch. 5 produced |
+
+**⚠ S9 is still unverifiable on the Pi.** Re-probed after the 2026-08-25 reboot: the memory
+controller is **still missing**. The cause is sharper than §5.7.4 recorded —
+`cgroup_disable=memory` is *prepended by the Pi 5 firmware* and **is not in
+`/boot/firmware/cmdline.txt` at all**, so "remove it" cannot be followed. The fix is to
+**append** `cgroup_enable=memory cgroup_memory=1` to the single line in that file and reboot;
+`cgroup_enable` is parsed after `cgroup_disable` and overrides it. `probe.sh` now detects which
+case applies and prints the applicable instruction, and
+`experiments/host_isolation_probe/README.md` records the correction.
 
 **⚠ §5.14's traceability check generated three obligations. They are cheap now and expensive
 in November.**

@@ -1,0 +1,40 @@
+host isolation probe — 2026-08-25T12:39:42+01:00
+kernel                                 Linux 6.12.47+rpt-rpi-2712 aarch64
+distribution                           Debian GNU/Linux 13 (trixie)
+board                                  Raspberry Pi 5 Model B Rev 1.0
+memory total                           4046 MB
+
+── namespaces (S1, S8 — the sandbox boundary) ──────────────────────────────
+max user namespaces                    15850
+unprivileged user+net+pid ns           YES  (uid=0 pid=1 ifaces=1)
+  mnt          present
+  uts          present
+  ipc          present
+  pid          present
+  net          present
+  user         present
+  cgroup       present
+
+── seccomp (S8 — syscall surface) ──────────────────────────────
+actions available                      kill_process kill_thread trap errno user_notif trace log allow
+  user_notif                           YES — supervisor can decide syscalls, not only kill/deny
+
+── cgroup v2 (S9 — resource limits) ──────────────────────────────
+mount type                             cgroup2fs
+controllers at root                    cpuset cpu io pids
+  memory       MISSING
+  pids         AVAILABLE
+  cpu          AVAILABLE
+  io           AVAILABLE
+  cpuset       AVAILABLE
+
+  ⚠ the memory controller is missing, so S9 cannot bound memory on this host.
+    cause: 'cgroup_disable=memory' is on the kernel command line
+    it is NOT in /boot/firmware/cmdline.txt — the firmware prepends it, so there is
+    nothing to remove. cgroup_enable is parsed after cgroup_disable,
+    so appending the enable is what overrides it.
+    fix:   append 'cgroup_enable=memory cgroup_memory=1' to the single
+           line in /boot/firmware/cmdline.txt, reboot
+
+── verdict ──────────────────────────────
+namespaces + seccomp + cgroup v2 present; MEMORY LIMITS need a boot change

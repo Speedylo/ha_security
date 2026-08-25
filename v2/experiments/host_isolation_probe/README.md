@@ -1,6 +1,6 @@
 # Experiment — what isolation primitives does the target host actually offer?
 
-**Run:** 2026-08-24 · **Target:** Raspberry Pi 5, Raspberry Pi OS trixie, kernel 6.12.47,
+**Run:** 2026-08-24; re-run after a reboot 2026-08-25, same result · **Target:** Raspberry Pi 5, Raspberry Pi OS trixie, kernel 6.12.47,
 aarch64 · **Feeds:** §5.7.4
 
 §5.7 chooses Linux namespaces + seccomp-BPF + cgroup v2 as the isolation primitive. That
@@ -17,7 +17,7 @@ probed rather than assumed.
 | cgroup v2, controllers `pids` `cpu` `io` `cpuset` | Available |
 | cgroup v2 `memory` | **MISSING** |
 
-Raw output in `results/pi5.txt`.
+Raw output in `results/pi5.txt`; the post-reboot re-run is `results/pi5_after_reboot.txt`.
 
 ## The two findings that changed the design
 
@@ -32,9 +32,22 @@ memory controller is absent and **S9 cannot bound memory on a stock installation
 it needs a boot-time change and a reboot:
 
 ```
-# /boot/firmware/cmdline.txt — remove cgroup_disable=memory, then add:
+# /boot/firmware/cmdline.txt — append to the single line, then reboot:
 cgroup_enable=memory cgroup_memory=1
 ```
+
+> **Corrected 2026-08-25, and the correction is the useful part.** This README first said to
+> *remove* `cgroup_disable=memory` from `cmdline.txt`. On a Pi 5 that instruction cannot be
+> followed: the parameter is on `/proc/cmdline` but **is not in `cmdline.txt` at all** — the
+> firmware prepends its own parameters ahead of the file's contents. An operator following the
+> original advice searches the file, does not find the string, and reasonably concludes the
+> machine is already configured. `cgroup_enable` is parsed after `cgroup_disable`, so
+> *appending* the enable is what overrides it, and there is nothing to remove.
+>
+> This was found by re-running the probe after a reboot and getting the same `MISSING` result.
+> `probe.sh` now inspects `cmdline.txt` and prints whichever of the two instructions applies,
+> because a probe that diagnoses correctly and then prescribes something impossible is worse
+> than one that says nothing.
 
 S9 exists because T16 is the one threat Chapter 4 found with no control at all. A framework
 that started anyway, silently unable to enforce it, would leave T16 uncontrolled while

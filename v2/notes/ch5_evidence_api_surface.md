@@ -34,6 +34,13 @@ Script: `figures/api_surface.py`. Corpus fetcher: `figures/fetch_hacs_corpus.py`
 | Corpus | What it is | n | Files |
 |---|---|---|---|
 | `core-2026.8.3` | Every integration shipped with Home Assistant 2026.8.3 | 1,458 | 9,633 |
+
+> **Why 1,458 and not 1,482.** `homeassistant/components/` holds 1,482 directories, which is
+> the figure §5.6.1 and §5.9.1 quote because those measurements count manifests and grep over
+> files. This parser skips a directory containing no `.py` file at all, and 24 shipped
+> integrations are exactly that — brand and translation metadata with no code. Both totals are
+> correct for what they count; the denominators differ because the questions do. Any figure
+> quoted from this file is out of 1,458.
 | `hacs-top150` | Community integrations, by install count, fetched 2026-08-24 | 144 | 4,628 |
 
 The community corpus is sampled **by install count, not at random**. The argument §5.10 needs
