@@ -23,7 +23,9 @@ questions a viva will probe.
 | 5.12 | Identity and the audit record (S7) | ✅ drafted — identity is a 3-part tuple; **all three open questions in `decision_audit_identity_and_trust_layer.md` answered** |
 | 5.13 | Defence in depth — **§1.6 discharged here** (L1 returns as a layer, never as the boundary) | ✅ drafted — six layers named, **honestly counted as three**; §1.6 discharged in §5.13.6 |
 | 5.14 | Figure 5.1, paired with Figure 4.1; threat-to-control traceability | ✅ drafted — figure drawn on Figure 4.1's canvas; the check found **four** rows where the design differs from what §4.10 assumed |
-| 5.15 | What the design does not do; L2 as the platform's own better answer | ⬅ **next** |
+| 5.15 | What the design does not do; L2 as the platform's own better answer | ✅ drafted — limits sorted **by who could fix them**; L2 conceded as the better design; the supervisor named as the component nothing checks |
+
+**Chapter 5 is drafted end to end. It has not yet been READ end to end** — fifteen sections written across two days, and the repetition/drift pass is owed.
 
 ## Measurement: what integrations actually talk to
 
@@ -304,6 +306,45 @@ coordinates. Chapter 4 set the shot up a day before there was anything to put in
 **Held to honestly:** TB2 is drawn UNCHANGED, not EXISTS, so the figure itself carries R3.
 Labelling all six EXISTS was the easy edit and the dishonest one.
 
+## §5.15 — the trap was repetition, and the way out was a different axis
+
+Written 2026-08-25. Six places in the report already state a limit: §3.7, §4.11, §5.6.5,
+§5.7.5, §5.10.9, §5.12.6. A closing "limitations" section that walked through them again would
+be padding, and worse, it would present every limit in the same voice — which invites the
+reading that the design has an unbounded number of holes.
+
+**The way out was to sort them by a question none of the six answers: who could fix this?**
+That gives three kinds — structural to confinement (nobody, within this approach), chosen
+(this project, at a stated price), inherited (someone else, with a nameable fix). The
+taxonomy does real work: it separates what Younes must defend from what he must merely report,
+and it converts §4.11's R3 from a weakness into a specific upstream ask.
+
+**Two things in §5.15 are new rather than re-sorted.**
+
+1. **§5.15.4 — the supervisor is trusted absolutely and verified by nothing.** This falls out
+   of §5.13.4 (D2 and D4 are one layer because both come from the supervisor) and it is not in
+   any of the six places. The three bounds are honest ones: it is off the request path, it is
+   unprivileged (§5.7.4 established that), and what a constructed sandbox can reach is testable
+   at a moment in a way a running policy is not. The framing that makes it defensible rather
+   than damaging: **every confinement design has a component that builds the boundary and is
+   not inside one** — the VMM, the container runtime. Naming it first is the whole move.
+2. **§5.15.5 — what would refute the design.** Five observations, each answerable by Ch. 6 or
+   Ch. 7 rather than by argument. Two would be fatal (integrations largely fail; confinement
+   requires modifying them). A design chapter that cannot say what would refute it has not
+   made a claim, and this advisor audits methodology.
+
+**§5.15.2 concedes that L2 is the better design, on every axis but one.** This was deliberate
+and it is the opposite of the instinct to defend the chosen architecture. The concession is
+safe because the one axis L3 wins — deployability — is the only one the population in §1.3
+experiences, and because C2 makes it the axis this project is answerable for. The line worth
+keeping: *the distinction is between a better design and an available one.*
+
+The second-order point is the more valuable one and was not in the plan for this section:
+**this project's most durable contribution to L2 may be the evidence L2 would need** — a
+measured compatibility cost, a schema, and a threat model against a published baseline. Those
+transfer to L2 unchanged. That is a much better Chapter 8 future-work paragraph than
+"the platform should adopt this".
+
 ## Questions a viva will probe here
 
 - *Why not just fix Home Assistant?* — L2 is the better answer for the platform project and
@@ -325,6 +366,12 @@ Labelling all six EXISTS was the easy edit and the dishonest one.
   anticipated the weaker construction. Do not defend this by rereading §4.10 charitably.
 - *Show me a Chapter 4 control you failed to place.* — T13's visible half, and §5.14.4 says so
   before being asked. It is owed by Chapter 6 and bounded by §3.7.
+- *Who verifies your supervisor?* — **Nothing does, and §5.15.4 says so before being asked.**
+  Answer with the three bounds and the framing: every confinement design has a component that
+  builds the boundary and is not inside one. Do not reach for the audit log — R4 already
+  concedes it is not authoritative against whoever controls the machine.
+- *Wouldn't it be better to just fix Home Assistant?* — **Yes, and §5.15.2 concedes it on every
+  axis but deployability.** Do not defend L3 as superior; defend it as available.
 - *What if the integration fetches code at runtime?* — Conceded in
   `decision_audit_identity_and_trust_layer.md`: the hash records what was loaded, not what
   executed. It belongs in the limitations section, stated rather than discovered.

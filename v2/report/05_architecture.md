@@ -1628,7 +1628,157 @@ The third row is the one worth keeping in view. It is the only element in the ch
 traceable source, it says so where it is introduced, and it is listed here so that the absence
 is on the record in both directions rather than in only the one where it was convenient.
 
+## 5.15 What this design does not do
+
+Six places in this report already state a limit: §3.7's non-goals, §4.11's residual risks,
+§5.6.5's re-decision point, §5.7.5's kernel assumption, §5.10.9's schema exclusions and
+§5.12.6's line on distribution. A closing section that repeated them would be padding, and
+this one does not.
+
+What it does instead is sort them by the question a reader actually has, which none of the six
+answers: **who could fix this, and what would it take?** That question separates limits that
+are this project's to defend from limits that belong to someone else, and the separation
+matters because a limitation section which presents all of them in the same voice invites the
+reading that the design has an unbounded number of holes.
+
+### 5.15.1 Three kinds of limit, and only one has an owner elsewhere
+
+| Kind | What it means | Which limits | Who could fix it |
+|---|---|---|---|
+| **Structural to confinement** | No amount of engineering *of this kind* reduces it, because the limit is what confinement *is* | R1 (over-declaration), R2 (abuse of declared authority), R5 (exfiltration through a declared host) | Nobody, within this approach. A *different* mechanism — contextual integrity, §2.3 — addresses R2 at its own cost |
+| **Chosen** | Could have been otherwise; the reason is scope, cost or readability, and each is recorded where it was taken | §5.8's implemented scope; §5.10.9's four excluded schema features; §5.12.6's refusal to define an off-box format; §3.7's non-goals | **This project**, at the price stated in each place. These are the ones a viva is entitled to press on |
+| **Inherited** | Imposed by the platform or the host, not by this design | R3 (the unscoped token); the kernel assumption (§5.7.5); the absent memory controller (§5.7.4) | **Someone else**, and in each case the fix is nameable — see §5.15.3 |
+
+The row that carries the most weight is the first, and it should be read together with
+§5.13.5. R1, R2 and R5 are not failures of enforcement; they are enforcement working exactly
+as specified on a specification that was too generous. **The correct response to them is to
+say so, not to add mechanism** — which is why this design adds none, and why §4.11 rates all
+three as residual High rather than treating them.
+
+### 5.15.2 L2 — the better answer, which this project cannot give
+
+§5.3 eliminated L2 — enforcement inside Home Assistant core — on C2, and promised to return
+to it. The return is not a formality: **L2 is the better design, and this chapter should say so
+plainly rather than defending its own architecture against a rival it has already excluded on
+a technicality.**
+
+A capability check in the platform's own loader and service registry would be better than this
+design on every axis it is measured on:
+
+| Axis | L2 | This design (L3) |
+|---|---|---|
+| Footprint | None. No second platform instance, no per-sandbox memory | 176 MB first sandbox, 136 MB marginal (§5.6.3) |
+| Compatibility | Perfect by construction — integrations run where they always ran | The question Chapter 7 has to measure (N2) |
+| Version coupling | None | The sandbox's platform tracks the host's (§5.6.5) |
+| TB2 | **Fixable.** The platform could issue scoped credentials to itself | Not fixable here; R3 stands (§5.14.2) |
+| Deployability | Requires the maintainers to adopt it | Installable by a user today |
+
+Only the last row favours L3, and it is the row C2 is about. **C2 is not an evasion.** A
+control that requires a platform's maintainers to adopt it is a proposal, not a deployable
+control, and the population this work is about — the users running 4,220 community
+integrations today (§1.3) — is not protected by a proposal. The distinction is between a
+better design and an available one, and this project is answerable for the second.
+
+There is a more useful thing to say than a defence, though. **This project's most durable
+contribution to L2 may be the evidence L2 would need.** A platform proposal to confine
+integrations has to answer three questions before anyone will adopt it: what does confinement
+cost in compatibility, what should the declaration be able to express, and what threats does it
+actually close. Chapter 7 measures the first, §5.10 specifies the second, and Chapter 4
+supplies the third against a published model (§2.4.3). Those answers do not depend on the L3
+architecture that produced them, and they transfer to L2 unchanged.
+
+### 5.15.3 The three inherited limits, and the named fix for each
+
+Inherited limits are worth separating precisely because each has an owner and a specific ask.
+None is a wish; each is one change to one artifact.
+
+**R3 — Home Assistant issues no scoped credential.** The mediator holds a long-lived access
+token with no read-only and no per-domain variant, so compromising the mediator is total
+compromise, and TB2 is drawn UNCHANGED in Figure 5.1 for this reason. **This is the single
+upstream change that would most improve any confinement scheme for this platform**, this one
+included — and the design is already shaped to take one: the mediator acquires its credential
+in one place and uses it at step 5 of §5.11.3, so a scoped token would be a substitution
+rather than a redesign. §4.11 says it should be reported to the platform, and it should.
+
+**The kernel is the boundary (§5.7.5).** A kernel vulnerability reachable through the syscalls
+seccomp permits defeats the sandbox. The fix is a stronger isolation primitive — I3 or I4 in
+§5.7.2, both rejected on C4 — and the architecture does not prevent it: the supervisor's
+interface to the sandbox is process creation, so a deployment whose threat model justifies the
+expense can substitute one without changing the design.
+
+**The memory controller is absent on the reference hardware (§5.7.4).** Raspberry Pi OS ships
+`cgroup_disable=memory`, so S9 cannot bound memory until the boot command line is changed and
+the machine rebooted. The framework refuses to start rather than running unbounded, which is
+the right failure, but it is a real precondition on deployment and §5.14.4 records that
+Chapter 7 must state it rather than evaluate S9 on a machine where it was quietly fixed.
+
+### 5.15.4 The component nothing checks
+
+One limit is not in any of the six places, and it follows from §5.13.4 rather than from a
+threat: **the supervisor is trusted absolutely and verified by nothing in this design.**
+
+§5.13.4 showed that D2 and D4 are one layer because both are produced by the supervisor
+constructing the sandbox. It builds the namespaces and mounts, applies the seccomp filter and
+the cgroup limits, creates the socket pair that *is* the integration's identity (§5.11.2), and
+computes the identity tuple recorded in the audit log (§5.12.2). A supervisor that builds a
+sandbox with one mount too many produces a system that looks correct at every other layer:
+the mediator still checks the manifest, the audit record still attributes correctly, and the
+extra path is simply there.
+
+This is stated rather than treated, and three things bound it without removing it.
+
+- **It is off the request path.** The supervisor runs once per sandbox construction and then
+  has no part in any decision; the mediator handles those. The trusted component is therefore
+  small and its behaviour is enumerable, which is not true of a component that participates in
+  every request.
+- **It is unprivileged** (§5.7.4). Unprivileged user namespaces work on the target, so the
+  supervisor does not hold root, and a confinement mechanism that must be root to confine
+  anything enlarges the surface it exists to reduce.
+- **Its correctness is testable in a way a running policy is not.** What a constructed sandbox
+  can reach is a question with a definite answer at a definite moment, which is what Chapter
+  7's adversarial testing is for.
+
+None of that is a proof, and the honest statement is the one this position always deserves:
+**every confinement design has a component that constructs the boundary and is not itself
+inside one.** For a hypervisor it is the VMM; for a container runtime it is the runtime. This
+design's version is smaller than either and it is named here rather than left for a reader to
+find.
+
+### 5.15.5 What would show this design wrong
+
+A design chapter that cannot say what would refute it has not made a claim. §5.6.5 already
+states the conditions that would revert Decision 2 to R1; those are about one decision. The
+conditions below are about the design as a whole, and each is answerable by Chapter 7 rather
+than by argument.
+
+| Observation that would refute it | What it would mean | Where it is settled |
+|---|---|---|
+| Real, unmodified integrations largely **fail** under confinement | The compatibility premise fails, and with it §2.8's contribution 3. The confinement would be real and the thing being confined unusable | Ch. 7, N2 |
+| A realistic installation cannot afford one sandbox per confined integration | C4 fails. An unadoptable control protects nobody, whatever it enforces | Ch. 6 first (the 60 MB base component), then Ch. 7 |
+| Mediated latency at realistic request rates breaks the platform's responsiveness | N1 fails. §5.11.4's 30 µs is a floor with no manifest check and no audit write in it, and the honest number is the one measured with both | Ch. 7 |
+| The 2021 file-theft pattern still succeeds against the framework | The central security claim fails outright | Ch. 7's strongest single test |
+| Confining an integration requires **modifying** it | C1 fails, and the work becomes a proposal to the ecosystem rather than a control for it | Ch. 6, on real integrations |
+
+The first and the last are the two that would be fatal, and neither is settled by anything in
+this chapter. **That is the correct position at the end of a design chapter** — the design is
+argued from evidence gathered in Chapters 1 to 4 and from four measurements taken to settle
+specific decisions, and it is not yet evaluated. §5.6.3's footprint experiment establishes that
+the shape works and the cost is affordable on one synthetic integration measured idle; it is
+not the compatibility evaluation and this chapter does not report it as one.
+
+### 5.15.6 Where the chapter leaves the work
+
+Chapter 5 set out to settle five things (§5.1) and has settled them: Chapter 3's two open
+questions are closed in §5.6 and §5.9, the four re-opened decisions are settled in §5.4,
+§5.6, §5.7 and §5.8 with two divergences reported as divergences, the manifest is specified in
+§5.10, §1.6's defence-in-depth promise is discharged in §5.13, and §5.14 checks the controls
+rather than asserting them.
+
+What it has not done is build any of it. The design's central claim — that unmodified,
+pre-existing integrations can be confined at a cost worth paying — is an empirical claim, and
+Chapter 6 is where it stops being an argument.
+
 ---
 
-*Chapter in progress. §5.15 (what the design does not do) is next; the section plan is in
-`notes/ch5_working_notes.md`.*
+*Chapter 5 complete, §5.1–§5.15. Not yet read end to end as a whole; that read and Chapter 6
+are next. The section plan is in `notes/ch5_working_notes.md`.*
