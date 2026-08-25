@@ -1687,6 +1687,10 @@ available in the sandbox's environment rather than only the requirements of the 
 declares. It should recover most of the six at close to the declared profile's memory, because
 what those six were missing was never a component.
 
+> **Measured in §6.14: 84%, at +19.1 MB.** The range predicted here was 57–73%; the result is
+> above it. §6.12.4 over-predicted and this section under-predicts, which is the argument for
+> running the measurement rather than either time.
+
 **§6.11.5's third option — reverting to R1 — remains unindicated, and for the same reason as
 before, now better evidenced.** Not one failure in this run is a failure of hosting. Sixteen are
 missing packages or missing components; two are the corpus's own defects. Nothing here would be
@@ -1702,9 +1706,162 @@ the design until it is done.
 
 ---
 
-*Chapter 6 drafted 2026-08-25, §6.1–§6.13. Eight self-tests and four corpus measurements
-passing on the C4 device, including an unmodified integration running inside a sandbox and **70%
-of the most-installed community integrations importing clean** against an un-stripped one — of
-which §6.13 shows 57 points are earned by what integrations declare and 16 borrowed from packages
-they do not. Gate G3 has its numbers. The section plan, the obligations this chapter inherits, and the questions a
+## 6.14 The core package set, and the profile that dominates every other
+
+§6.13.2 found that the blanket profile's whole compatibility lead was six integrations importing
+`numpy` or `PyTurboJPEG` — packages no component they declare would install, which are present in
+a real Home Assistant because some *other* core component dragged them in. §6.13.4 named the
+measurement that follows: the declared profile unchanged, with the packages a stock installation
+has, supplied to every sandbox.
+
+### 6.14.1 "What a stock installation has" had to become a specification
+
+"Some core component dragged them in" is a description, not something a framework can implement,
+so `confine/compat.py` gained `core_requirements()`, which computes it from the platform's own
+source: **the dependency closure of `default_config`** — the component set a default installation
+sets up — and the union of the `requirements` those components declare.
+
+On 2026.8.3 that is **57 components and 39 distinct packages**, printable with
+`--print-core-requirements` so the set is derived rather than typed. Resolved with their own
+transitive dependencies it comes to **641 MB on disk**, bound read-only into every sandbox and
+shared between them exactly as the `homeassistant` library already is. Nothing here is charged
+per sandbox twice.
+
+Two facts about that set matter later: it contains `numpy` and `PyTurboJPEG`, and it does **not**
+contain `aiofiles`.
+
+`--platform-deps` was decoupled from the `unstripped` profile in the same change, because the two
+things are independent and conflating them is what made §6.13's diagnosis take a second run:
+*which components set up* and *which packages exist* are different knobs, and the finding was that
+the second one was doing all the work.
+
+### 6.14.2 The result
+
+| Profile | Imports clean, all platforms | Peak memory, median | Premium over minimal |
+|---|---|---|---|
+| Minimal instance (§6.11.3) | 17/37 — 46% | 100.6 MB | — |
+| Declared, per integration (§6.13) | 21/37 — 57% | 109.6 MB | +9.0 MB |
+| Blanket ten-component (§6.12) | 26/37 — 70% | 132.8 MB | +32.2 MB |
+| **Declared + core package set** | **31/37 — 84%** | **119.7 MB** | **+19.1 MB** |
+
+**It strictly dominates the blanket profile on both axes.** Every integration that passes under
+the blanket profile passes under this one — the set difference is empty in that direction — and
+five more pass that the blanket profile could not: `alexa_media`, `battery_notes`, `frigate`,
+`nodered` and `xiaomi_miot`. It does that for **13.1 MB less per sandbox**. There is no trade to
+weigh here and no judgement call to make; one profile is better than the other in every respect
+measured.
+
+Every component any integration declared now sets up, with one exception — `python_script` for
+`hacs`, which needs `RestrictedPython`, a package outside `default_config`'s closure. The
+component-level failures that dominated §6.11.3's minimal run, sixteen of them, are gone.
+
+*(A replication worth noting in passing: this run's minimal arm was measured at 99.9 MB median
+against §6.11.3's 100.6 MB, on separate runs days apart. 0.7 MB is the noise floor for this
+harness, which is what makes the 9-to-32 MB differences above worth reading at all.)*
+
+### 6.14.3 The six that remain, and only three belong to the design
+
+A percentage would hide the composition again, so:
+
+| Integration | Why it failed | Whose problem |
+|---|---|---|
+| `bambu_lab`, `bermuda`, `tapo_control` | `ModuleNotFoundError: aiofiles` | **The design's.** |
+| `eufy_security` | `ImportError: cannot import name 'SOURCE_TYPE_GPS' from 'homeassistant.components.device_tracker'` | Home Assistant 2026.8.3 — the constant has been removed |
+| `hacs` | `ModuleNotFoundError: custom_components.hacs.hacs_frontend` | The corpus — HACS bundles its frontend at release-build time, and this is a git checkout |
+| `spook` | `IntegrationNotFound` | The corpus — directory layout, known since §6.11.3 |
+
+`eufy_security` is the case §6.11.1 said could not be settled without the baseline arm, and here
+the error string settles it: the symbol it imports does not exist in this release of Home
+Assistant, so it would fail identically outside a sandbox. **That is one case, not a licence.**
+The baseline arm is still owed, and it is owed precisely because most failures do not announce
+themselves this legibly.
+
+`hacs` is also a misclassification worth recording, and it is §6.6.5's lesson a third time. The
+classifier called it `needs_component` on the strength of `python_script: False`, while the actual
+import error is HACS's own bundled module. The verdict was right by accident and the reason was
+wrong — read the reason.
+
+Set the release incompatibility and the two corpus artifacts aside and the figure is **31 of 34 —
+91%** of the integrations this corpus actually delivered in a state 2026.8.3 can load.
+
+### 6.14.4 `aiofiles`, and the platform testifying against its own manifests
+
+The three remaining failures are the design's own cost, and they are the same shape as §6.13.3's
+finding: all three import `aiofiles`; none declares it; none of their declared packages pulls it
+in. `bambu_lab` imports it in `__init__.py` and declares only `beautifulsoup4`; `bermuda` imports
+it in `coordinator.py` and declares no packages at all; `tapo_control` reaches it through a
+declared package that does not declare it either.
+
+They work in the wild, and Home Assistant's own source says why. `package_constraints.txt` carries
+this:
+
+```
+# aiofiles keeps getting downgraded by custom components
+aiofiles>=24.1.0
+```
+
+**Upstream knows.** No component in `default_config` requires `aiofiles`; only `matrix` and
+`slack` do, and neither is in a default installation. So custom components are installing it
+themselves, at versions that break the platform, often enough that the platform added a defensive
+pin rather than asking anyone to declare it properly. That comment is independent corroboration of
+§6.13.3's bound, written by the platform's maintainers about their own ecosystem, and it is worth
+more to Chapter 8 than the three failures it explains.
+
+It also sharpens the bound. §6.13.3 measured that 16% of this corpus imports a package it never
+declared. With the core set supplied, **8% still does** — three of 37 — and those three are not
+reachable by any amount of supplying-what-the-platform-has, because what they want is a package
+the platform does not have either.
+
+### 6.14.5 What this costs, stated plainly
+
+The sandbox now contains 641 MB of library code no integration asked for. Three things are true
+about that at once and the section is dishonest if it reports only the first:
+
+- **It costs almost nothing per sandbox.** +19.1 MB median, against +32.2 for the blanket profile.
+  The packages are bound read-only and shared; the disk they occupy is the platform's own, in the
+  same sense that `homeassistant` is.
+- **It widens what an integration can import**, and §5.6.2 spent a section arguing against exactly
+  that. The argument is weakened rather than broken, and the reason is worth being precise about:
+  these are **libraries, not capabilities**. None of the 39 is a `hass` object, a mediator, or a
+  path into the user's data. `numpy` in a sandbox with no filesystem grant and no network is
+  arithmetic. The structural denial §5.6.2 relies on is denial of *the platform's objects*, and
+  none of those objects is here.
+- **It makes the sandbox less honest about what an integration needs.** With the core set present,
+  a framework cannot tell from behaviour which packages an integration actually depends on, and
+  §6.8.1's third identity component — the resolved dependency set — becomes a weaker statement
+  about that integration. The declared profile of §6.13, at 57%, is the version that keeps that
+  property intact. That is what 27 points of compatibility cost.
+
+### 6.14.6 Gate G3
+
+| Option | Compatibility | Per-sandbox premium | Disk |
+|---|---|---|---|
+| Keep the minimal instance | 46% | — | — |
+| Declared, per integration | 57% | +9.0 MB | per integration |
+| Blanket ten-component | 70% | +32.2 MB | 449 MB |
+| **Declared + core package set** | **84%** | **+19.1 MB** | 641 MB |
+| Revert to R1 (§6.11.5) | not indicated | — | — |
+
+**The recommendation to G3 is the last row but one, and it is no longer a close call.** 84%
+import-level compatibility on the most-installed community integrations, unmodified, at a
+per-sandbox cost that leaves the §6.3.2 budget comfortably above §5.8.1's mean of 4.02
+integrations per installation. R1 remains unindicated for the same reason as in §6.11.5, now with
+four profiles of evidence rather than one: **not a single failure across any of them is a failure
+of hosting.** They are missing packages, missing components, one removed platform constant and two
+corpus defects. Nothing in that list is fixed by moving the integration out of the sandbox.
+
+**And the caveat has not moved.** These are import-level figures with entity platforms exercised,
+against a minimal instance whose own defects §6.3.3 documents, on one release and one host. Until
+the baseline arm runs, 84% is a measurement of this corpus under this design and not yet a
+property of the design. Chapter 7 owes that comparison first.
+
+
+---
+
+*Chapter 6 drafted 2026-08-25, §6.1–§6.14. Eight self-tests and five corpus measurements
+passing on the C4 device, including an unmodified integration running inside a sandbox and **84%
+of the most-installed community integrations importing clean** under the profile §6.14 recommends
+to Gate G3 — a profile that dominates every other measured here on both compatibility and memory,
+and whose three remaining failures are a package Home Assistant's own constraints file
+complains about. Gate G3 has its numbers. The section plan, the obligations this chapter inherits, and the questions a
 viva will probe are in `notes/ch6_working_notes.md`.*

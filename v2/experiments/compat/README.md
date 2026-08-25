@@ -177,3 +177,70 @@ systemd-run --user --scope -q python3 -m confine.compat \
     --corpus ~/r2exp/corpus --python ~/r2exp/ha314/bin/python \
     --profile declared --json results/compat_declared.json
 ```
+
+---
+
+## Fourth run, 2026-08-25 — `declared` + the core package set
+
+The measurement §6.13.4 indicated. `--profile declared` unchanged, plus `--platform-deps`
+pointing at a directory holding the packages a *stock* installation has. "Stock" is computed
+rather than asserted: `core_requirements()` takes the dependency closure of `default_config`
+(**57 components** on 2026.8.3) and the union of the `requirements` those components declare
+(**39 packages**, `results/core_requirements.txt`, printable with `--print-core-requirements`).
+Resolved with transitive dependencies: **641 MB on disk**, bound read-only and shared between
+sandboxes as the `homeassistant` library already is.
+
+| Profile | Imports clean, all platforms | Peak memory, median | Premium |
+|---|---|---|---|
+| `minimal` | 17/37 — 46% | 100.6 MB | — |
+| `declared` | 21/37 — 57% | 109.6 MB | +9.0 MB |
+| `unstripped` — blanket ten | 26/37 — 70% | 132.8 MB | +32.2 MB |
+| **`declared` + core packages** | **31/37 — 84%** | **119.7 MB** | **+19.1 MB** |
+
+Raw output: `results/compat_declared_core.json`, `results/compat_declared_core.txt`.
+
+**It strictly dominates the blanket profile.** Every integration passing under `unstripped` passes
+under this one — the set difference is empty in that direction — plus `alexa_media`,
+`battery_notes`, `frigate`, `nodered` and `xiaomi_miot`, at **13.1 MB less** per sandbox. All
+sixteen of §6.11.3's component-level failures are gone; the only declared component that still
+fails to set up is `python_script` for `hacs`, which wants `RestrictedPython`.
+
+**The six residual failures, and only three are the design's:**
+
+| Integration | Failure | Whose |
+|---|---|---|
+| `bambu_lab`, `bermuda`, `tapo_control` | `ModuleNotFoundError: aiofiles` | the design's |
+| `eufy_security` | `SOURCE_TYPE_GPS` no longer exists in `homeassistant.components.device_tracker` | HA 2026.8.3 — would fail unsandboxed |
+| `hacs` | `custom_components.hacs.hacs_frontend` absent | the corpus — bundled at release-build time |
+| `spook` | `IntegrationNotFound` | the corpus — directory layout |
+
+Setting aside the release incompatibility and the two corpus artifacts: **31/34 — 91%**. Setting
+them aside is what the baseline arm exists to justify; `eufy_security` is the one case the error
+string settles on its own, and that is one case rather than a licence.
+
+**`aiofiles`, and Home Assistant testifying about its own ecosystem.** All three remaining
+failures import it; none declares it; no declared package pulls it in. No component in
+`default_config` requires it — only `matrix` and `slack` do. And `package_constraints.txt` says:
+
+```
+# aiofiles keeps getting downgraded by custom components
+aiofiles>=24.1.0
+```
+
+Upstream knows custom components install packages nobody declared, and pinned defensively rather
+than requiring a declaration. **8% of this corpus still imports a package no amount of supplying
+what the platform has would provide**, down from 16% before the core set.
+
+**A classifier defect found by reading reasons, not verdicts (§6.6.5, third occurrence).** `hacs`
+was classified `needs_component` because `python_script: False` appears in its setup record, while
+the actual `ImportError` is HACS's own bundled module. Right verdict, wrong reason.
+
+```bash
+python3 -m confine.compat --python <interp> --corpus <corpus> --print-core-requirements \
+    > core-reqs.txt
+uv pip install --python <interp> --target ./platform-deps $(tr '\n' ' ' < core-reqs.txt)
+systemd-run --user --scope -q python3 -m confine.compat \
+    --corpus ~/r2exp/corpus --python ~/r2exp/ha314/bin/python \
+    --profile declared --platform-deps ./platform-deps \
+    --json results/compat_declared_core.json
+```

@@ -64,12 +64,38 @@ corrections came from running a measurement rather than re-reading the argument.
 | # | Task | Notes |
 |---|---|---|
 | ~~1~~ | ~~Run the `declared` profile over the full corpus~~ | ✅ **Done 2026-08-25, §6.13.** **57%** (21/37) at **+9.0 MB** median over the minimal instance, against the blanket profile's 70% at +32.2 MB. §6.12.4 predicted 70–76% and was wrong; see below |
-| **1** | **`declared` + the platform's core package set** | The measurement §6.13.4 indicates and the cheapest one left. `declared` unchanged, but with the requirements of the platform's *own* components present in the sandbox environment rather than only those of the components the integration declares. Packages bind read-only like `homeassistant` itself, so the cost is disk, not per-sandbox memory. Should recover most of the six at close to `declared`'s memory |
+| ~~1~~ | ~~`declared` + the platform's core package set~~ | ✅ **Done 2026-08-25, §6.14. 31/37 — 84% — at +19.1 MB.** Strictly dominates the blanket profile on both axes. **This is the profile G3 should take.** See below |
+| **1** | **The baseline arm** | Now the only thing standing between 84% and a claim about the design. §6.14 could settle exactly one failure (`eufy_security`, on a removed constant) from its error string; the rest need the comparison. **Chapter 7's first task** |
 | **2** | **Then PSS as a function of what is declared** | `experiments/unstrip/scale.py --components http,websocket_api` etc. The blanket profile costs 130.4 MB; an integration declaring nothing costs 54.5 MB. Measuring two or three points gives the *expected* budget over the corpus's real declaration distribution — and §6.13 now supplies that distribution: twelve of the 37 declare no components at all, and the median declaration is two |
-| **2** | **The baseline arm** | Run the same 37 against a *full* Home Assistant. Without it, 46% does not decompose into "confinement broke it" and "it was broken anyway". **Chapter 7's first task** |
+| **3** | **Then the uniform-sample corpus** | The 37 are head-weighted by install count. A uniform sample answers "what most integrations do" rather than "what most installations run"; `figures/fetch_hacs_corpus.py` already takes the corpus and only the selection changes |
 | **3** | Then the egress proxy | Scope item 2's second half: per-integration outbound network with T11's resolve-then-pin at connection time |
 | 3 | §6.5–§6.9 | Bridge and channel, mediator, the manifest surface the user meets (T13), the audit record, the adversarial cases |
 | 4 | §6.10 | The report against §5.6.5's three R1 re-decision triggers, for G3 |
+
+**✅ Gate G3 has a recommendation, and it is no longer close (§6.14, 2026-08-25).**
+
+| Profile | Clean | Median peak | Premium | Disk |
+|---|---|---|---|---|
+| `minimal` | 17/37 — 46% | 100.6 MB | — | — |
+| `declared` | 21/37 — 57% | 109.6 MB | +9.0 MB | per integration |
+| `unstripped` blanket ten | 26/37 — 70% | 132.8 MB | +32.2 MB | 449 MB |
+| **`declared` + core packages** | **31/37 — 84%** | **119.7 MB** | **+19.1 MB** | 641 MB |
+
+- **The last row strictly dominates the blanket profile** — every integration the blanket profile
+  passes, plus five more, for 13.1 MB *less* per sandbox. No trade to weigh.
+- **"What a stock installation has" is computed, not asserted.** `core_requirements()` takes the
+  `default_config` dependency closure (57 components) and the union of their declared requirements
+  (39 packages), from the platform's source. `--print-core-requirements`.
+- **Six failures remain and only three are the design's.** `aiofiles` ×3; `eufy_security` is
+  broken on 2026.8.3 itself (`SOURCE_TYPE_GPS` removed from `device_tracker`); `hacs` and `spook`
+  are corpus artifacts. **31/34 — 91%** of what the corpus delivered in a loadable state.
+- **Home Assistant's own `package_constraints.txt` corroborates §6.13.3**: `# aiofiles keeps
+  getting downgraded by custom components`. Upstream pinned defensively rather than requiring a
+  declaration. **8% of the corpus still imports a package nothing would supply**, down from 16%.
+- **The cost is stated in §6.14.5 and Chapter 8 owes it**: the sandbox holds 641 MB of code no
+  integration declared. Cheap per sandbox and shared, and these are *libraries, not capabilities*
+  — but it does weaken §6.8.1's third identity component, and 57% is the version that keeps that
+  property intact. That is what 27 points cost.
 
 **⚠ §6.12.4's prediction failed, and the failure is the better result (§6.13, 2026-08-25).**
 The per-integration `declared` profile — auth wired, only the components an integration's own
