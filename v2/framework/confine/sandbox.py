@@ -118,6 +118,10 @@ class SandboxSpec:
     # chooses it, because `pass_fds` preserves a descriptor's number rather than letting the
     # child pick (§6.4.5 is the version of that lesson learned expensively).
     channel_fd: int | None = None
+    # Framework files bound read-only at fixed paths inside the sandbox: the runtime itself
+    # and the spec it reads. Kept separate from `files_ro`, which is the manifest's `files`
+    # clause and appears at host paths.
+    runtime_files: dict[str, str] = field(default_factory=dict)
 
     # Inside the sandbox, an integration's own things are always in the same two places,
     # whatever they were called outside. A fixed layout means the sandbox runner needs no
@@ -227,7 +231,12 @@ def build_root(spec: SandboxSpec, scratch: str = "/tmp/.confine-root") -> None:
     Path(tmp).mkdir(parents=True, exist_ok=True)
     mount("tmpfs", tmp, "tmpfs", MS_NOSUID | MS_NODEV, "mode=1777,size=64m")
 
-    # 8. Whatever the manifest declared, at the paths it declared. Resolution happened when
+    # 8a. The framework's own files, at fixed paths. Read-only: the sandbox executes this
+    #     code, and code a sandbox can rewrite is not a boundary.
+    for source, target in spec.runtime_files.items():
+        _bind(source, inside(target), read_only=True)
+
+    # 8b. Whatever the manifest declared, at the paths it declared. Resolution happened when
     #    the supervisor built the spec, so these are already the real paths.
     #
     #    **These are bound last, and the order is the fix for a real defect.** A mount made

@@ -33,12 +33,15 @@ class Decision:
     allowed: bool
     reason: str
     clause: str | None = None
+    data: dict | None = None
 
     def as_response(self, request_id: object) -> dict:
         response: dict = {"id": request_id, "ok": self.allowed, "reason": self.reason}
         # §5.11.3: every response carries the clause that decided it, so that attribution is
         # a property of the protocol rather than something reconstructed from logs later.
         response["clause"] = self.clause
+        if self.data:
+            response.update(self.data)
         return response
 
 

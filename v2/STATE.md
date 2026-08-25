@@ -37,17 +37,20 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/mediation_latency/` | ✅ **Pi 5, 2026-08-24.** One mediated request over the channel: **30.0 µs** median, p99 33.9 µs; ~33k req/s. Floor only — excludes manifest check and audit write. Feeds §5.11.4 |
 | `experiments/base_component/` | ✅ **Pi 5, 2026-08-25.** The measurement §5.6.5 deferred to Chapter 6. The base component **can** be dropped — 46.6 MB per sandbox, budget 17 → **26** (1.53×, **not** the 2× §5.6.5 predicted). Two controls: both arm orders, and a 0.1 MB replication of §5.6.3's marginal figure. It also found a defect in §5.6.3's own recipe — see below. Feeds §6.3 |
 | `experiments/cgroup_placement/` | ✅ **Pi 5, 2026-08-25.** Four placement mechanisms × two positions, unprivileged. **Corrects §5.7.4:** `clone3(CLONE_INTO_CGROUP)` fails with the same `EACCES` as migration, so what binds is *where the supervisor runs*, not when it places the sandbox. Feeds §6.4.1 |
-| **`framework/confine/`** | ✅ **The artifact, as far as it goes, 2026-08-25.** `cgroup.py`, `namespaces.py`, `preflight.py`, `sandbox.py`, `enter.py`, `spawn.py`, `selftest.py` — standard library plus `ctypes`, no dependencies, no override flag. **Preflight: 8/8 on the Pi. Self-test: passes** — uid 0 inside mapped to 1000 outside, one visible process, `lo` only, `secrets.yaml`/`.storage`/the other integration all **absent**. Plus `seccomp.py` — 29 calls denied, verified by behaviour on both architectures. **All three of §5.7.3's primitives are built and measured.** Plus `channel.py`, `mediator.py` and `selftest_channel.py` — **identity is the socket, demonstrated with two sandboxes both claiming to be the same integration**. Plus `manifest.py` and `selftest_policy.py` — validation, S5's asymmetry, resolve-then-pin, clause pointers. Plus `describe.py` (the F4 surface, discharging T13's unplaced half) and `audit.py` (three-part identity, hash chain **and** keyed MAC chain, failing independently). **Ten self-tests, all passing on the Pi** — including `selftest_adversary.py`: 37 attempts, 21 blocked, 9 **empty** (succeeded and found nothing), 6 denied, 1 permitted, neither canary reached. Described by §6.4.2, §6.4.4–§6.4.6 and §6.5–§6.8 |
-| `report/06_implementation.md` | 🔵 **In progress.** **§6.1–§6.10 drafted 2026-08-25 — complete in structure, open in one place.** The bridge (§6.10.2) is what scope items 1 and 3 and the second G3 trigger all depend on. Section plan and inherited obligations in `notes/ch6_working_notes.md` |
+| **`framework/confine/`** | ✅ **The artifact, as far as it goes, 2026-08-25.** `cgroup.py`, `namespaces.py`, `preflight.py`, `sandbox.py`, `enter.py`, `spawn.py`, `selftest.py` — standard library plus `ctypes`, no dependencies, no override flag. **Preflight: 8/8 on the Pi. Self-test: passes** — uid 0 inside mapped to 1000 outside, one visible process, `lo` only, `secrets.yaml`/`.storage`/the other integration all **absent**. Plus `seccomp.py` — 29 calls denied, verified by behaviour on both architectures. **All three of §5.7.3's primitives are built and measured.** Plus `channel.py`, `mediator.py` and `selftest_channel.py` — **identity is the socket, demonstrated with two sandboxes both claiming to be the same integration**. Plus `manifest.py` and `selftest_policy.py` — validation, S5's asymmetry, resolve-then-pin, clause pointers. Plus `describe.py` (the F4 surface, discharging T13's unplaced half) and `audit.py` (three-part identity, hash chain **and** keyed MAC chain, failing independently). **Eleven self-tests, all passing on the Pi** — including `selftest_adversary.py`: 37 attempts, 21 blocked, 9 **empty** (succeeded and found nothing), 6 denied, 1 permitted, neither canary reached. Described by §6.4.2, §6.4.4–§6.4.6 and §6.5–§6.8 |
+| `report/06_implementation.md` | 🔵 **In progress.** **§6.1–§6.11 drafted 2026-08-25. The bridge is built (§6.10):** an unmodified integration runs inside a sandbox, publishes its entity through the mediator, reads only what it declared, and cannot reach `lock.unlock` — S5 end to end. Section plan and inherited obligations in `notes/ch6_working_notes.md` |
 | `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24; re-run 2026-08-25.** Namespaces (unprivileged), seccomp and cgroup v2 all present. `memory` was absent on the stock install; after the boot change it is present **and the cap is verified to bite, unprivileged**. Feeds §5.7.4 |
 
 ## Next session — start here
 
 **The one-line score.** §5.15.6 said the design's central claim is empirical and Chapter 6 is
-where it stops being an argument. **The security half has; the compatibility half has not** — no
-unmodified community integration has run against this framework, and C1 is the constraint that
-makes the problem hard. §6.10 says so plainly rather than reporting a percentage that would hide
-which half is missing.
+where it stops being an argument. The security half is **measured**. The compatibility half is now
+**demonstrated but not evidenced** — an unmodified integration runs, publishes and is confined,
+and the population it was drawn from is one. §6.11.1 scores it as half rather than reporting a
+percentage that would hide which half is missing.
+
+**§5.8.5's cut-order conflict is moot (§6.11.4).** The actuator path is built and measured, so
+there is nothing left to cut that would save time. G3 is now a question about coverage alone.
 
 **Chapters 1–5 are complete. Chapter 6 is drafted through §6.4.3, and the first code of the
 artifact exists in `framework/confine/`.** Chapter 6 has now corrected Chapter 5 twice — the
@@ -56,9 +59,9 @@ corrections came from running a measurement rather than re-reading the argument.
 
 | # | Task | Notes |
 |---|---|---|
-| **1** | **Build the bridge** | The single largest gap (§6.10.2), and **one piece of work that discharges three obligations**: §5.8.2's scope item 1 (a real unmodified integration publishing a sensor), scope item 3 (the `lock` service path), and §5.6.5's second G3 trigger — the one most likely to fire. It is the sandbox-side component that mirrors declared entities in from mediator pushes and forwards permitted effects out, plus step 5 of §5.11.3 on the mediator side |
+| **1** | **Run real HACS integrations through the bridge** | §5.8.2's scope item 1 second half, and **§5.6.5's second G3 trigger — the one most likely to fire and now the cheapest to test.** No new code: `figures/fetch_hacs_corpus.py` already fetches the corpus |
 | **2** | Then the egress proxy | Scope item 2's second half: per-integration outbound network with T11's resolve-then-pin at connection time |
-| **3** | Then Chapter 7 | Its methodology and pass/fail criteria are written **before** results are collected, and dated (`01_PLAN.md` Stage 4) |
+| **3** | Then Chapter 7 | Its methodology and pass/fail criteria written **before** results are collected, and dated (`01_PLAN.md` Stage 4) |
 | 3 | §6.5–§6.9 | Bridge and channel, mediator, the manifest surface the user meets (T13), the audit record, the adversarial cases |
 | 4 | §6.10 | The report against §5.6.5's three R1 re-decision triggers, for G3 |
 

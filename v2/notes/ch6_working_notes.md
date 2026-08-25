@@ -18,7 +18,8 @@ questions a viva will probe.
 | 6.7 | Where the user meets the declaration — **T13's unplaced half discharged** | ✅ drafted; `describe.py` + `selftest_describe.py`, 14 assertions over four states |
 | 6.8 | Identity and the audit record — three components, two chains, the durable ordering | ✅ drafted; `audit.py` + `selftest_audit.py`, 14 assertions |
 | 6.9 | The adversarial cases — one canary, three outcomes, 37 attempts | ✅ drafted; `selftest_adversary.py`, 21 blocked / 9 empty / 6 denied / 1 permitted |
-| 6.10 | What is not built; §5.8.2's scope items scored; the G3 report | ✅ drafted |
+| 6.10 | **The bridge** — an unmodified integration running inside a sandbox | ✅ drafted; `sandbox_runtime.py`, `platform.py`, `selftest_bridge.py` |
+| 6.11 | What is not built; §5.8.2's scope items scored; the G3 report | ✅ drafted |
 
 ## Obligations this chapter inherits
 
@@ -442,6 +443,38 @@ manifest layer that makes S5 true is built and tested; what remains is a service
 the *same* bridge item 1 needs. So the G3 question is no longer "actuator or coverage" but
 "**bridge, or neither**". Still Younes's call, but a narrower one.
 
+## §6.10 — the bridge
+
+**The result to lead with:** an integration whose source was never touched ran inside a sandbox,
+published its entity through the mediator, read the one entity it declared, and **could not reach
+a refusal** for `lock.unlock` — the service is not in its registry, so Home Assistant's own
+dispatch fails before this framework is consulted. That is S5 end to end and it is stronger than
+§6.6.2's schema result, where the manifest *refused* the call.
+
+**The bridge is not an enforcement point, and say so before being asked.** It registers handlers
+for declared services and mirrors declared entities so the sandbox has a local shape; every
+forwarded request is checked again by the mediator. A bridge trusting its own copy of the manifest
+would be in-process enforcement, which §5.3 eliminated on Corno & Mannella's evidence.
+
+**What the spike gave, and what it did not.** §6.2.2's sorting held up under test: the R1 shim and
+`runner.py`'s path-shadow trick are superseded — under R2 the import must resolve to the *real*
+homeassistant, so the trick is wrong and not merely unnecessary. `sandbox_bridge` and
+`registry_gap.py`'s finding are orthogonal to the divergence and carry over, because step 5 is the
+same problem under R1 and R2. The registry finding is **cited with its date, not relied on**
+(00_METHOD §2) — and it is independently plausible from §5.6.1's own numbers, since 83% publish
+through `async_add_entities` and the registry row is what that path produces.
+
+**The ownership rule (§6.10.3)** is authority the design grants ambiently that Chapter 5 never
+states: first publisher of an entity id owns it; anyone else writing to it needs `entities.write`.
+Without it an integration publishes `lock.front_door` and impersonates a lock. Chapter 4 does not
+enumerate that path because it modelled a platform where entity publication is unmediated.
+
+**Three failures, all exit 126 with no output** — resolve() following the venv symlink; the venv's
+target being a symlink whose own target was unbound; the component not being where HA looks. Each
+diagnosed by asking the sandbox what it could see. **Chapter 7 consequence: a compatibility
+failure inside a sandbox is silent by default**, because the thing that would report it is the
+thing that failed to start.
+
 ## Anticipated viva questions
 
 **"Your Chapter 5 predicted the budget would double and Chapter 6 says 1.53×. Which of your
@@ -472,6 +505,14 @@ marker, and that is the defect: not that an inference was wrong, but that it rea
 result. The audit that follows is §6.1's three strengths of "built", applied backwards to
 Chapter 5's claims, and the two corrections found so far (§6.3.2, §6.4.1) are both inferences
 sitting next to measurements. The measurements have all replicated.
+
+**"You ran one integration and you wrote it yourself. How is that a compatibility result?"** —
+It is not, and §6.11.1 scores it as half. What it establishes is that the *mechanism* works on an
+integration written in the idiom §5.6.1 measured as dominant, with its source untouched. What is
+unevidenced is the population. The distinction matters because the two halves need different
+work: the mechanism needed a component, and the population needs a corpus that
+`figures/fetch_hacs_corpus.py` already fetches. That is Chapter 7's first task and it is now
+unblocked.
 
 **"You have built a security framework and never run a real integration through it. Isn't the
 compatibility claim unevidenced?"** — Yes, and §6.10.2 says so in those words rather than

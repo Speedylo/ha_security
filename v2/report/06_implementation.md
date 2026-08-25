@@ -1155,107 +1155,223 @@ for exactly the reason §6.4.5 warned about.
   with a marker that draws the eye rather than a tick, because a permit in an adversarial run is
   the thing a reader should check.
 
-## 6.10 What is not built, and what Gate G3 has to decide
+## 6.10 The bridge
+
+§6.11.2 names the bridge as the single component everything remaining depends on. This is it, and
+it is smaller than its position suggests — about 290 lines, all of it inside the sandbox.
+
+Its shape follows from §5.6.2 rather than from convenience. Three mechanisms, and each is the
+structural form of something a procedural design would have to check:
+
+| Mechanism | What it does | What makes denial structural |
+|---|---|---|
+| **Declared services are registered** | One local handler per `services.call` clause, each forwarding to the mediator | The registry starts empty — §6.3.2 measured that it is *literally* empty. An undeclared service raises `ServiceNotFound` from Home Assistant's own registry: nothing refused it, there was nothing to call |
+| **Declared entities are mirrored in** | The bridge asks the mediator for each declared entity at construction and sets it locally | An undeclared entity is **absent**. The integration reads `None`, not an error |
+| **Local publications are forwarded out** | A state change for an entity the integration created becomes an `entity.publish` request | — |
+
+**The bridge imports nothing from the framework.** The framing is reimplemented in thirty lines,
+which §6.5.1 argued is a property worth having: the sandbox's half of the protocol needs no
+library, so the trusted code inside a sandbox is exactly one reviewable file.
+
+**And it is not an enforcement point.** The declared clauses arrive in the spec so the bridge can
+construct local handlers, never so it can decide anything — every forwarded request is checked
+again by the mediator. A bridge that trusted its own copy of the manifest would be in-process
+enforcement, which §5.3 eliminated on published evidence.
+
+### 6.10.1 An unmodified integration, running
+
+*Strength of claim: measured.* On the C4 device, an integration written in the ordinary idiom —
+config entry, `DataUpdateCoordinator`, `SensorEntity`, `async_add_entities`, the shape §5.6.1
+measured at 83% of community integrations — placed in a sandbox with its source untouched.
+
+| Claim | Result |
+|---|---|
+| **C1** — runs with zero source lines changed | Config entry reaches `LOADED` |
+| **F1** — its entity is published | `sensor.ticks` appears locally, reaches the platform through the mediator, and is attributed to `demo_weather` at publish time |
+| **§5.6.2** — a declared entity is readable | `sensor.outdoor_temperature` reads `11.5` from the integration's *own* state machine, mirrored in at construction rather than fetched per read |
+| **§5.6.2** — an undeclared entity is absent | `sensor.bedroom_occupancy` reads `None` |
+| **S5** — the declared service call goes through | `lock.lock` → called, and the platform saw exactly one call |
+| **S5** — its counterpart does not | `lock.unlock` → **`ServiceNotFound`** |
+
+**The `lock.unlock` row is S5 end to end**, and it is stronger than the schema result of §6.6.2.
+There, a manifest granting `lock.lock` *refused* `lock.unlock`. Here the integration cannot reach
+a refusal: the service is not in its registry, so Home Assistant's own dispatch fails before
+anything of this framework is consulted. The permission that would have been checked does not
+need to be — and §5.10.4's no-wildcard rule is what makes the registration set exact enough for
+that to hold.
+
+### 6.10.2 What the prior feasibility work contributed, and what it did not
+
+`00_METHOD.md` §5 permits reusing the spike's working code rather than retyping it, and §6.2.2
+sorted its components by whether they survive Gate G2's divergences. Building the bridge tested
+that sorting.
+
+| From the spike | Verdict |
+|---|---|
+| The R1 shim, its generator, its coverage scorer | **Superseded, and confirmed so.** R2's sandbox imports the genuine `homeassistant`; there is no proxy surface to generate |
+| `runner.py`'s "path shadow" — making `import homeassistant` resolve to the fake package | **Superseded with it.** Under R2 the import must resolve to the *real* package, so the trick is not merely unnecessary but wrong |
+| `bridge_integration/sandbox_bridge/` — the trusted component inside real Home Assistant | **Carried, and orthogonal to the divergence.** It answers step 5, which R1 and R2 face identically |
+| `registry_gap.py`'s finding | **Cited as prior work, not relied on** — see below |
+
+The finding is worth stating because it constrains work not yet done. The spike measured that
+publishing an entity over Home Assistant's states API produces *states without identity*: no
+entity-registry row, no `unique_id`, no config entry, no device, and nothing surviving a restart.
+Its `sandbox_bridge` exists to close that — it owns a config entry and creates registry-backed
+entities on a sandboxed integration's behalf, in about 250 lines that load and execute nothing
+from any integration.
+
+Under `00_METHOD.md` §2 that is private knowledge and **is not evidence in this chapter**; it is
+cited with its date (2026-08) as prior work. What it does is tell Chapter 7 where to look, and
+the shape of the claim is independently plausible from §5.6.1's own measurement: 83% of community
+integrations publish through `async_add_entities` rather than through the state machine, and the
+registry row is what that path produces and the state machine does not.
+
+### 6.10.3 One rule Chapter 5 implies and does not state
+
+Implementing `entity.publish` forced a decision. §5.10.2 makes an integration's own things ambient
+— its own config entry, its own storage, registering *its own* services, on the ground that "the
+risk is in *calling* others', not in offering one's own". §5.10.3 makes `entities.write` —
+"setting state on entities it does not own" — declarable at 6.9%.
+
+Publishing therefore splits on **ownership**, and ownership has to be recorded somewhere. The rule
+adopted is the smallest one that works:
+
+> **The first integration to publish an entity id owns it. Any other integration writing to that
+> id needs an `entities.write` clause.**
+
+Without it, an integration could publish `lock.front_door` and impersonate a lock — a spoofing
+path Chapter 4 does not enumerate, because Chapter 4 modelled a platform in which entity
+publication is not mediated at all. It is recorded here rather than folded in silently, because it
+is authority the design grants ambiently and Chapter 5 never says so.
+
+### 6.10.4 Three failures, all the same failure
+
+Getting an interpreter to start inside a sandbox took three attempts, and all three produced
+**exit code 126 with no output at all** — `execve` failing, which by construction happens before
+anything can report.
+
+1. `Path.resolve()` on the interpreter followed the symlink, so the *base* interpreter was bound
+   and the virtual environment was not. Python found no `homeassistant`, because a virtual
+   environment is located from the path it was *invoked* as.
+2. Following the chain unresolved fixed that and exposed the next link: the directory the
+   environment points at is itself a symlink — uv names one directory by minor version and
+   another by patch — and `build_root` recreates a symlinked runtime path as a symlink rather
+   than binding it. That is correct, and it leaves the link dangling unless the target is bound
+   too.
+3. The integration then loaded but its config entry stayed `NOT_LOADED`, because Home Assistant
+   looks for a custom integration under `<config_dir>/custom_components/<domain>` and
+   `/sandbox/component` is not that path.
+
+Each was diagnosed by asking the sandbox what it could see rather than reasoning about what it
+should have been able to see — the move that also settled §6.4.1 and §6.4.3. The general point is
+worth keeping for Chapter 7: **a compatibility failure inside a sandbox is silent by default**,
+because the thing that would report it is the thing that failed to start. Every one of these would
+have been indistinguishable from "this integration is incompatible" had the harness not been made
+to report the exit status and the cgroup's own counters.
+
+### 6.10.5 What the bridge does not yet do
+
+- **No push loop.** Declared entities are mirrored once, at construction. §5.11.3's push shape —
+  the mediator sending a declared entity's changes as they happen — is not implemented, so an
+  integration sees the value that existed when its sandbox was built.
+- **No egress.** Scope item 2's second half is untouched: no proxy, no resolve-then-pin at
+  connection time.
+- **The platform is a stand-in.** Step 5 acts on an in-memory object, not a running Home
+  Assistant. §5.8.2 makes the same concession about the lock and the reason is the same: what is
+  under test is the mediator's decision. What a real instance would add is §6.10.2's registry
+  identity, which is not nothing.
+- **The integration is written for this test.** It is written in the idiom §5.6.1 measured as
+  dominant and its source is never touched, which is what C1 asks — but it is not a community
+  integration off HACS, and §6.11.1 scores it accordingly.
+
+## 6.11 What is not built, and what Gate G3 has to decide
 
 §6.1 fixed three strengths of evidence — it exists, it runs, it was measured — and said the
-chapter would name which applied every time. This section applies the same discipline to the
-chapter as a whole, and then reports against §5.6.5's re-decision triggers so that Gate G3 is
-decided on evidence rather than on the calendar.
+chapter would name which applied every time. This section applies that to the chapter as a whole,
+and then reports against §5.6.5's re-decision triggers so Gate G3 is decided on evidence rather
+than on the calendar.
 
-### 6.10.1 §5.8.2's four scope items, honestly scored
-
-§5.8.2 derived the implemented scope by reading Chapter 3's verification column, and named four
-things the artifact must contain. Two are done, one is half, one is not started.
+### 6.11.1 §5.8.2's four scope items, honestly scored
 
 | # | Scope item | Status |
 |---|---|---|
-| 4 | **Adversarial cases** — S1, S2, S6, S8 | ✅ **Measured.** §6.9: 37 attempts, the published garbage-collector attack among them, no canary reached |
-| 2 | **Mediated egress with per-integration attribution** — F2, S4 | ◐ **Half.** The attribution half is measured — §6.5.2 shows two sandboxes, one lying about which it is, correctly distinguished. **The egress half does not exist**: no proxy, no resolve-then-pin at connection time, no traffic |
-| 3 | **One `lock`-domain service path** — S5, T05 | ◐ **Schema only.** §6.6.2 shows a manifest granting `lock.lock` refusing `lock.unlock`, and that wildcards cannot be written. No service call has travelled through a running system |
-| 1 | **Sensor publication on real unmodified community integrations** — F1, C1 | ❌ **Not started.** No community integration has been run against this framework |
+| 4 | **Adversarial cases** — S1, S2, S6, S8 | ✅ **Measured** (§6.9). 37 attempts, the published garbage-collector attack among them, no canary reached |
+| 3 | **One `lock`-domain service path** — S5, T05 | ✅ **Measured end to end** (§6.10.1). `lock.lock` travels to the platform; `lock.unlock` is not in the sandbox's registry to be called |
+| 1 | **Sensor publication on unmodified integrations** — F1, C1 | ◐ **Half.** An integration ran with its source untouched, published its entity through the mediator, and read only what it declared (§6.10.1). **But it was written for this test**, not taken from HACS |
+| 2 | **Mediated egress with per-integration attribution** — F2, S4 | ◐ **Half.** Attribution is measured (§6.5.2). **Egress does not exist**: no proxy, no resolve-then-pin at connection time, no traffic |
 
-**Nothing here has been quietly redefined.** Item 1's verification criterion is "integrations run
-with zero source lines changed", and that has not been demonstrated by this framework. §5.6.3
-showed a *synthetic* integration running against a minimal Home Assistant, and §6.3.2 showed the
-same instance without the base component — both of which establish the sandbox's interior works,
-and neither of which is C1.
+**The remaining halves are different in kind, and the difference decides what to do next.** Item
+2's missing half is a component nobody has written. Item 1's is a *population*: the mechanism
+works, and what is unevidenced is that it works on integrations this project did not author. The
+first is engineering, the second is the compatibility claim itself.
 
-### 6.10.2 The largest gap is step 5, and the bridge that depends on it
+### 6.11.2 What is still missing
 
-§5.11.3 gives the mediator five steps. Four are built (§6.5, §6.6, §6.8). **Step 5 — "act, only
-now, and only using the mediator's own platform credential" — is not**, and with it the whole
-compatibility half of the design:
+The bridge of §6.10 removed the largest gap. Four remain, in descending order of what they block:
 
-| Missing | What it is | What it blocks |
-|---|---|---|
-| **The bridge** | The single component inside the sandbox that mirrors declared entities into the local state machine and forwards permitted effects out (§5.6.2, §5.11.3's push shape) | Scope items 1 and 3. Without it a sandbox's Home Assistant is real but disconnected |
-| **Step 5 itself** | The mediator holding a platform credential and applying effects to the real instance (S2) | The same, from the other side |
-| **The egress proxy** | Per-integration outbound network, with T11's resolve-then-pin at connection time | Scope item 2's second half |
-| **Dependency installation** | Resolving and installing an integration's `requirements` into its sandbox | §6.8.1's third identity component, which stays vestigial until this exists |
+| Missing | What it blocks |
+|---|---|
+| **Real community integrations** | Scope item 1's second half, and §5.6.5's second G3 trigger. Needs no new code — `figures/fetch_hacs_corpus.py` already rebuilds the corpus |
+| **The egress proxy** | Scope item 2's second half, and F2 |
+| **The push loop** | §5.11.3's push shape. Declared entities are mirrored once at construction, so an integration sees the value that existed when its sandbox was built |
+| **The real Home Assistant component** | Step 5 currently acts on a stand-in. §6.10.2 records what a real instance would add, and why it is more than realism |
+| **Dependency installation** | §6.8.1's third identity component, which stays vestigial until resolved versions exist |
 
-So the honest summary of where Chapter 6 leaves the work is sharper than a percentage:
+So the honest summary of where Chapter 6 leaves the work has moved, and it is worth stating
+precisely because it moved:
 
-> **§5.15.6 said the design's central claim is empirical and that Chapter 6 is where it stops
-> being an argument. Half of it has. The security half is now measured — a hostile integration
-> cannot reach `secrets.yaml`, cannot see another process, cannot escape, and cannot be mistaken
-> for another integration. The compatibility half is still an argument**, because no unmodified
-> integration has run against this framework, and C1 is the constraint that makes the whole
-> problem hard.
+> **§5.15.6 said the design's central claim is empirical and Chapter 6 is where it stops being an
+> argument.** The security half is measured. The compatibility half is now **demonstrated but not
+> evidenced**: an unmodified integration runs, publishes and is confined, and the population it
+> was drawn from is one.
 
-That asymmetry matters for how the remaining time is spent, and §6.10.4 returns to it.
+### 6.11.3 The Gate G3 report §5.6.5 asked for
 
-### 6.10.3 The Gate G3 report §5.6.5 asked for
-
-§5.6.5 named three conditions that would send the design back from R2 to R1, and required them
-to be reported at G3 rather than judged by feel. **None has fired. None has been tested. All
-three are testable cheaply, and the reason to say so now is that each becomes expensive in
-November.**
+§5.6.5 named three conditions that would send the design back from R2 to R1. **None has fired.
+One is now cheap to test and the other two are cheaper than they were.**
 
 | Trigger | Status | What would settle it |
 |---|---|---|
-| Footprint with the mediator and bridge attached leaves fewer sandboxes than a realistic installation needs | **Not fired; direction favourable** | §6.3.2 measured 26 sandboxes without either. The mediator is **one process for all sandboxes**, so it does not scale with them — but the bridge is per-sandbox and its cost is unmeasured. Re-running `experiments/base_component`'s scale arm with the bridge loaded settles it in an afternoon |
-| Real community integrations fail against a minimal instance for reasons a *fuller* instance would fix | **Untested — and this is the one that matters** | It requires only the bridge and the corpus that `figures/fetch_hacs_corpus.py` already rebuilds. Until it is run, R2's central premise rests on one synthetic integration |
-| Version coupling between sandbox and host proves unmanageable | **Untested** | Cheapest of the three: build sandboxes against two Home Assistant releases and record what breaks |
+| Footprint with the mediator and bridge attached leaves too few sandboxes | **Not fired; now testable** | §6.3.2 measured 26 sandboxes without either. The mediator is **one process for all sandboxes** and does not scale with them; the bridge is per-sandbox and now exists, so re-running `experiments/base_component`'s scale arm against `sandbox_runtime.py` settles it in an afternoon |
+| Real community integrations fail against a minimal instance for reasons a *fuller* instance would fix | **Untested, and now unblocked** | The bridge was the blocker. What remains is the corpus, which `figures/fetch_hacs_corpus.py` already fetches. **This is the one to run next** |
+| Version coupling between sandbox and host proves unmanageable | **Untested** | Build sandboxes against two Home Assistant releases and record what breaks |
 
-**The second row is the one to act on.** It is the trigger most likely to fire, it is the one
-whose failure would be most expensive to discover late, and it is blocked on exactly the
-component §6.10.2 names as the largest gap. That is a coincidence worth exploiting rather than
-noting: **building the bridge discharges scope items 1 and 3 and tests the G3 trigger most
-likely to fire, in one piece of work.**
+**The second row is where the remaining risk is concentrated.** It is the trigger most likely to
+fire, the most expensive to discover late, and it is now the *cheapest* of the three to run.
 
-### 6.10.4 What Chapter 6 adds to the cut-order conflict
+### 6.11.4 What Chapter 6 does to the cut-order conflict
 
-§5.8.5 recorded a conflict and deliberately did not resolve it: `01_PLAN.md` §6 says the actuator
-proof of concept is cut first if G3 fires, while §5.8.2 found that cutting it leaves S5
-unverified against its own criterion and T05 — the register's joint-highest risk — without a
-demonstrated control. §5.8.5 recommended cutting coverage-widening instead, and left the decision
-to Gate G3.
+§5.8.5 recorded a conflict and deliberately left it to Gate G3: `01_PLAN.md` §6 cuts the actuator
+proof of concept first, while §5.8.2 found that doing so leaves S5 unverified and T05 — the
+register's joint-highest risk — without a demonstrated control. §5.8.5 recommended cutting
+coverage-widening instead.
 
-Chapter 6 changes the arithmetic in one respect, and it is worth stating precisely because it
-cuts against the recommendation it inherits. **The actuator path is now much cheaper than it
-was when §5.8.5 was written.** The manifest layer that makes S5 true is built and tested
-(§6.6.2); what remains for scope item 3 is a service call travelling through the bridge, which is
-the *same* bridge scope item 1 needs. Once the bridge exists, the lock path is close to free.
+**Chapter 6 resolves it by making it moot.** The actuator path is built and measured (§6.10.1):
+`lock.lock` travels end to end and `lock.unlock` is unreachable. There is nothing left to cut that
+would save time. The G3 decision is therefore no longer a choice between the actuator and
+coverage; it is a question about coverage alone — how many community integrations to run, and how
+to report the number.
 
-That does not resolve the conflict — it is still Younes's call at G3 — but it narrows it. The
-question is no longer "actuator or coverage" but "**bridge, or neither**", because the bridge is
-what both remaining scope items now depend on.
+That is a better position than either working document anticipated, and it arrived by building the
+cheaper thing first rather than by deciding between them.
 
-### 6.10.5 Where the chapter leaves the work
+### 6.11.5 Where the chapter leaves the work
 
-Ten self-tests run on the C4 device, and each names the claim it checks. What they establish is
-that the enforcement mechanisms Chapter 5 specified exist, work unprivileged on the target
-hardware, and behave as specified under attack — including three corrections to Chapter 5 found
-by building it (§6.3.2, §6.4.1, §6.6.6), each of which was an inference written in the register
-of a result.
+Eleven self-tests run on the C4 device, each naming the claim it checks. Together they establish
+that the mechanisms Chapter 5 specified exist, work unprivileged on the target hardware, behave as
+specified under attack, and are compatible with an integration written the way the corpus is
+written.
 
-What they do not establish is that any of it is *compatible* with the software it exists to
-confine. That is Chapter 7's question, it is blocked on one component, and it is the half of the
-claim that a hostile reader will go to first.
+They do not establish that the framework is compatible with the corpus itself. That is one
+measurement, it is unblocked, and it is Chapter 7's first task.
+
+Three corrections to Chapter 5 were found by building it — §6.3.2, §6.4.1 and §6.6.6 — and each
+was an inference written in the register of a result. No measurement failed to replicate. That
+asymmetry is the most useful thing this chapter can hand to the next one.
 
 ---
 
-*Chapter 6 drafted 2026-08-25, §6.1–§6.10. Ten self-tests passing on the C4 device. The chapter
-is complete in structure and **open in one place**: the bridge of §6.10.2, which scope items 1
-and 3 and the second G3 trigger all depend on. The section plan, the obligations this chapter
-inherits, and the questions a viva will probe are in `notes/ch6_working_notes.md`.*
+*Chapter 6 drafted 2026-08-25, §6.1–§6.11. Eleven self-tests passing on the C4 device, including
+an unmodified integration running inside a sandbox, publishing through the mediator, and unable to
+reach the service it did not declare. The section plan, the obligations this chapter inherits, and
+the questions a viva will probe are in `notes/ch6_working_notes.md`.*

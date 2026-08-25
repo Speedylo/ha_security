@@ -26,11 +26,14 @@ describes can be read side by side.
 | `confine/manifest.py` | §6.6 | Reading a manifest, refusing a bad one, deciding one request |
 | `confine/describe.py` | §6.7 | Rendering a declaration for the person deciding whether to install |
 | `confine/audit.py` | §6.8 | Three-part identity, and the two chains over the record |
+| `confine/platform.py` | §6.10 | Step 5 — acting, against a stand-in Home Assistant |
+| `confine/sandbox_runtime.py` | §6.10 | **The bridge.** Runs inside the sandbox; imports nothing from this package |
 | `confine/selftest_channel.py` | §6.5.2 | Two sandboxes, both claiming to be the same integration |
 | `confine/selftest_policy.py` | §6.6 | S5's asymmetry, resolve-then-pin, and what is refused at parse time |
 | `confine/selftest_describe.py` | §6.7 | Four states an integration can be in, four renderings |
 | `confine/selftest_audit.py` | §6.8 | Identity's three components, and every form of tampering |
 | `confine/selftest_adversary.py` | §6.9 | A hostile integration, inside a sandbox, trying everything |
+| `confine/selftest_bridge.py` | §6.10 | An unmodified integration running, publishing, and confined |
 
 ## Running the preflight
 
@@ -66,6 +69,13 @@ systemd-run --user --scope -q python3 -m confine.selftest_adversary
 ```
 
 It fails if either canary string reaches the adversary. Everything else it prints is diagnosis.
+
+The bridge test needs an interpreter with `homeassistant` importable, which the supervisor does
+not need itself:
+
+```bash
+systemd-run --user --scope -q python3 -m confine.selftest_bridge --python ~/r2exp/ha314/bin/python
+```
 
 `confine.selftest` builds a configuration directory containing a secrets file, the config-entry
 store and a second integration, grants one integration one unrelated file, and reports what it
