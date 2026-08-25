@@ -63,7 +63,8 @@ corrections came from running a measurement rather than re-reading the argument.
 
 | # | Task | Notes |
 |---|---|---|
-| **1** | **Re-run the per-integration arm with auth wired** | §6.12.4. The blanket profile pays for `stream` and `frontend` in every sandbox; the change that actually unblocks the cascade costs **0.1 MB**. Wire auth always, set up components **per integration** from its own manifest. The earlier per-integration arm reached only 57% *because auth was unwired* — this is expected to approach 70–76% at well under 130 MB |
+| **1** | **Run the `declared` profile over the full corpus** | The code is **written, committed and smoke-tested** (`--profile declared`: auth wired + only the components an integration's own manifest asks for + their requirements). On the first six it already matches the blanket profile's result. One command: `systemd-run --user --scope -q python3 -m confine.compat --corpus ~/r2exp/corpus --python ~/r2exp/ha314/bin/python --profile declared --json ~/r2exp/compat_declared.json` (~25 min). Compare against 46% minimal / 70% blanket |
+| **2** | **Then PSS as a function of what is declared** | `experiments/unstrip/scale.py --components http,websocket_api` etc. The blanket profile costs 130.4 MB; an integration declaring nothing costs 54.5 MB. Measuring two or three points gives the *expected* budget over the corpus's real declaration distribution, which is the honest budget figure — a single number is not |
 | **2** | **The baseline arm** | Run the same 37 against a *full* Home Assistant. Without it, 46% does not decompose into "confinement broke it" and "it was broken anyway". **Chapter 7's first task** |
 | **3** | Then the egress proxy | Scope item 2's second half: per-integration outbound network with T11's resolve-then-pin at connection time |
 | 3 | §6.5–§6.9 | Bridge and channel, mediator, the manifest surface the user meets (T13), the audit record, the adversarial cases |

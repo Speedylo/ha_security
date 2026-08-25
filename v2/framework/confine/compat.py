@@ -134,6 +134,16 @@ def find_ha_components(python: Path) -> Path | None:
     return None
 
 
+def declared_components_of(component: Path) -> list[str]:
+    """The components an integration says it needs, in manifest order and without duplicates."""
+    try:
+        data = json.loads((component / "manifest.json").read_text())
+    except (OSError, ValueError):
+        return []
+    return list(dict.fromkeys((data.get("dependencies") or [])
+                              + (data.get("after_dependencies") or [])))
+
+
 def declared_requirements(component: Path) -> list[str]:
     try:
         return list(json.loads((component / "manifest.json").read_text())
@@ -235,7 +245,11 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
             components = UNSTRIPPED + [c for c in components if c not in UNSTRIPPED]
         spec_file.write_text(json.dumps({
             "domain": domain, "mode": "inspect", "entities": [], "services": [],
-            "auth": profile == "unstripped", "setup_components": components}))
+            # The authentication manager is wired for every profile but the bare minimal one.
+            # §6.12.3 measured it at 0.1 MB, and without it `http` cannot set up at all — which
+            # is why the first per-integration arm reached 57% rather than what it should have.
+            "auth": profile in ("unstripped", "declared"),
+            "setup_components": components}))
         spec = SandboxSpec(
             domain=domain, own_dir=str(own), data_dir=str(data),
             argv=[str(sandbox_python), "/sandbox/runtime.py"],
@@ -296,7 +310,11 @@ def main() -> int:
                     help="uv, used to install each integration's declared requirements into a "
                          "directory of its own (§5.2). --no-install skips it")
     ap.add_argument("--no-install", action="store_true")
-    ap.add_argument("--profile", choices=["minimal", "unstripped"], default="minimal")
+    ap.add_argument("--profile", choices=["minimal", "unstripped", "declared"],
+                    default="minimal",
+                    help="minimal: §6.3.2's instance. unstripped: the blanket ten-component "
+                         "profile of §6.12. declared: auth, plus only the components this "
+                         "integration's own manifest asks for")
     ap.add_argument("--platform-deps", type=Path,
                     help="a directory holding the un-stripped components' own requirements")
     ap.add_argument("--json", type=Path)
@@ -319,9 +337,14 @@ def main() -> int:
     print(f"  ARM A — the {args.profile} instance\n")
     results = []
     for index, component in enumerate(components, 1):
+        wanted, extra = [], []
+        if args.profile == "declared":
+            wanted = declared_components_of(component)
+            extra = component_requirements(wanted, find_ha_components(sandbox_python))
         report = run_one(component.name, component, args.corpus, sandbox_python,
                          delegation, uv, profile=args.profile,
-                         platform_deps=args.platform_deps)
+                         platform_deps=args.platform_deps,
+                         setup_components=wanted, extra_requirements=extra)
         category, detail = classify(report)
         report["category"] = category
         results.append(report)

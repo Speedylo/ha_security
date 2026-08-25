@@ -70,6 +70,9 @@ def main() -> int:
     ap.add_argument("--count", type=int, default=6)
     ap.add_argument("--python", required=True)
     ap.add_argument("--profile", choices=["minimal", "unstripped"], default="unstripped")
+    ap.add_argument("--components", default="",
+                    help="an explicit component list, for measuring what one integration's own "
+                         "declaration costs rather than the blanket profile")
     ap.add_argument("--platform-deps", type=Path)
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
@@ -83,7 +86,8 @@ def main() -> int:
     avail_before = meminfo_kb("MemAvailable")
     mediator = Mediator()
     roots, cgroups, sandboxes = [], [], []
-    print(f"un-stripped scale — {args.count} sandboxes, profile '{args.profile}'\n")
+    label = args.components or args.profile
+    print(f"scale — {args.count} sandboxes, {label}\n")
     try:
         for index in range(args.count):
             root = Path(tempfile.mkdtemp(prefix=f"scale-{index}-"))
@@ -102,8 +106,10 @@ def main() -> int:
             spec_file = root / "spec.json"
             spec_file.write_text(json.dumps({
                 "domain": "scale_probe", "mode": "idle", "entities": [], "services": [],
-                "auth": args.profile == "unstripped",
-                "setup_components": UNSTRIPPED if args.profile == "unstripped" else []}))
+                "auth": args.profile == "unstripped" or bool(args.components),
+                "setup_components": ([c.strip() for c in args.components.split(",") if c.strip()]
+                                     if args.components
+                                     else (UNSTRIPPED if args.profile == "unstripped" else []))}))
 
             spec = SandboxSpec(
                 domain="scale_probe", own_dir=str(own), data_dir=str(data),
@@ -111,7 +117,7 @@ def main() -> int:
                 runtime_files={str(RUNTIME): "/sandbox/runtime.py",
                                str(spec_file): "/sandbox/spec.json", str(deps): "/sandbox/deps"},
                 env={"PYTHONPATH": "/sandbox/deps"})
-            if args.profile == "unstripped" and args.platform_deps:
+            if (args.profile == "unstripped" or args.components) and args.platform_deps:
                 spec.runtime_files[str(args.platform_deps)] = PLATFORM_DEPS
                 spec.env["PYTHONPATH"] = f"/sandbox/deps:{PLATFORM_DEPS}"
             for extra in (*interpreter_trees(sandbox_python), sys.base_prefix):
