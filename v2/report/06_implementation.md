@@ -353,8 +353,97 @@ Four consequences for the rest of §6.4:
 uid 1000. What has not been built is the supervisor itself; this establishes which of two
 designs is available to it.
 
+### 6.4.2 What the supervisor checks before it confines anything
+
+§5.7.4 required the framework to refuse to start, with a stated reason, when the memory
+controller is unavailable — N3 applied to one case, on the ground that starting anyway would
+leave T16 uncontrolled while implying protection. §6.4.1 found a second case with the same
+shape. The supervisor therefore runs a preflight, and the interesting property of it is not the
+list of checks but that **every check exercises the operation it is checking.**
+
+That is a reaction to three findings in sequence, each invisible to the check before it:
+
+| Found | What the previous check could not see |
+|---|---|
+| The `memory` controller is absent by default on Raspberry Pi OS (§5.7.4) | Listing the design's primitives says nothing about this host |
+| A controller being *listed* is not a limit being *enforced* (§5.7.4, re-probed) | Reading `cgroup.controllers` says nothing about behaviour |
+| A limit being enforceable is not this supervisor being *permitted* to enforce it (§6.4.1) | `mkdir`, `memory.max` and every file read succeed from the position where placement does not |
+
+The third is what makes the pattern worth stating rather than merely following. A framework
+that checked what it could see would have reported itself ready in a position where it could
+confine nothing whatever — and it would have been reporting a control it did not have, which is
+§1.6's complaint about the status quo under a security label.
+
+The seven checks, and what each does rather than reads:
+
+| Check | What it actually does |
+|---|---|
+| cgroup v2 hierarchy | Requires a `0::` line in `/proc/self/cgroup`; v1 and hybrid hosts are refused |
+| cgroup subtree delegated | Locates the delegated root by **ownership of `cgroup.subtree_control`**, not by assuming a path |
+| supervisor inside it | Compares the supervisor's own cgroup against that root (§6.4.1) |
+| memory controller | Requires `memory` in the *parent* cgroup's controllers, where a sandbox would be created |
+| placement permitted | Creates a cgroup, starts a child that places itself, and **reads back the cgroup the child reports from inside itself** |
+| memory limit enforced | Caps a child at 64 MB, asks it for 192 MB, and requires both a non-zero exit **and** `oom_kill` on the cgroup's own counter |
+| unprivileged namespaces | Forks, unshares all seven, and writes the identity maps — the same calls the supervisor will make, not `unshare(1)` |
+
+*Strength of claim: measured.* On the C4 device, as uid 1000: seven of seven pass inside a
+systemd user scope, and from an ssh session the run stops at `supervisor inside it` and prints
+the position it is in together with what to do about it. The refusal is the check working.
+
+**The last row is not a formality.** The earlier probe used `unshare(1)`, and a check that
+exercises a different mechanism from the one the supervisor uses is not a check — it was this
+row that caught the implementation bug in §6.4.3.
+
+Three constraints on the supervisor came out of writing this, none of them visible from the
+design:
+
+1. **The supervisor must be single-threaded.** The sandbox places itself between `fork` and
+   `exec`, which in Python means `preexec_fn`, which is unsafe in a process that has threads.
+   The alternative — migrating the sandbox from the parent afterwards — reopens the window in
+   which the sandbox runs uncapped, so the constraint is accepted rather than worked around.
+2. **Swap must be capped along with memory.** `memory.max` alone bounds *resident* memory; a
+   sandbox that exceeds it is slowly swapped rather than stopped, which satisfies the file and
+   not S9.
+3. **`oom_kill` is read from the cgroup, not inferred from the exit status.** A process can die
+   for many reasons and only one of them is the one under test.
+
+### 6.4.3 An ordering constraint found by the check that was meant to be a formality
+
+The namespace check failed on its first run, reporting `Operation not permitted` — on a host
+where `experiments/host_isolation_probe/` had already shown all seven namespaces available to
+an ordinary user. Two explanations were available: the host had changed, or the code was wrong.
+
+Testing each flag separately settled it in a minute. `unshare` succeeded for all seven,
+individually and together; the failure was in the next call, writing the user namespace's
+identity map, and it was a defect in this framework's own code.
+
+The kernel lets an unprivileged process write only a single-line map, and only one whose outer
+id is the id the process already had — it compares the value written against the credentials
+the `/proc` file was opened with. The function read that id itself, with `os.getuid()`, *after*
+the `unshare`. By then the correct answer is `nobody`, so it faithfully wrote `0 65534 1` and
+was refused.
+
+**The identity has to be captured before the namespace that hides it exists.** That is the
+third instance of the ordering §6.3.4 tabulates, arriving from a fourth mechanism: the socket
+pair before the sandbox, the identity hash before any integration code, and now the supervisor's
+own credentials before the namespace. The function's signature now requires them as arguments,
+so that the mistake cannot be made silently a second time.
+
+Two smaller points are worth keeping, because both are about diagnosis rather than about
+namespaces:
+
+- **The probe now reports which stage failed.** `Operation not permitted` from a check that
+  does four things is not a diagnosis, and it cost twenty minutes to find out which of the four
+  it was.
+- **The disagreement was the signal.** A check that contradicts an earlier measurement is
+  usually the check being wrong, and treating it as a host finding would have produced a
+  limitation in Chapter 7 about namespaces on Raspberry Pi OS that is simply untrue. This is
+  the same discipline that turned §6.3.3's failure in both arms into a finding rather than a
+  wasted afternoon.
+
 ---
 
-*Chapter 6 in progress: §6.1–§6.3 and §6.4.1 drafted 2026-08-25. §6.4.2 — how the supervisor
-confines, and in what order — is next. The section plan and the obligations this chapter
+*Chapter 6 in progress: §6.1–§6.3 and §6.4.1–§6.4.3 drafted 2026-08-25, with the first code in
+`framework/`. Next: the sandbox's mount namespace and the seccomp filter, which are the two
+halves of §5.6.2's structural denial. The section plan and the obligations this chapter
 inherits are in `notes/ch6_working_notes.md`.*

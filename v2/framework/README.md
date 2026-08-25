@@ -1,0 +1,58 @@
+# The framework — supervisor-side code
+
+**Started:** 2026-08-25 · **Described by:** `report/06_implementation.md`
+
+This is the artifact Chapter 6 builds. It is new code written against the design Chapter 5
+produced; the earlier feasibility spike in `~/capstone/spike/` is prior work, cited in §6.2 and
+not imported here.
+
+## Layout
+
+Modules follow Chapter 6's sections rather than convenience, so that a section and the code it
+describes can be read side by side.
+
+| Module | Section | What it is |
+|---|---|---|
+| `confine/cgroup.py` | §6.4.1 | Where a sandbox may be placed, and by whom |
+| `confine/namespaces.py` | §5.7.3 | The seven namespaces, and whether this host grants them |
+| `confine/preflight.py` | §6.4.2 | What is checked before anything is confined, and the N3 refusal |
+
+## Running the preflight
+
+```bash
+python3 -m confine.preflight            # every check, including the enforcement test
+python3 -m confine.preflight --shallow  # skip the check that allocates 192 MB
+```
+
+It exits non-zero and names the first failure. **It must be run from inside the cgroup subtree
+delegated to the user** — a systemd user unit — because §6.4.1 established that placement is
+refused anywhere else. From an ssh session it is expected to fail at `supervisor inside it`,
+and doing so is the check working rather than the host being wrong.
+
+```bash
+systemd-run --user --scope -q python3 -m confine.preflight   # the right position, ad hoc
+```
+
+## Why the preflight is a self-test and not an inspection
+
+Every check here exercises the operation it is checking, and that is a reaction to three
+findings in a row, each of which was invisible to the check that preceded it:
+
+| Found | The check that was not enough |
+|---|---|
+| `experiments/host_isolation_probe/`, 2026-08-24 | The `memory` controller is absent by default on Raspberry Pi OS — so *listing* the design's primitives is not enough |
+| The same probe, re-run 2026-08-25 | A controller being **listed** is not a limit being **enforced** — so reading `cgroup.controllers` is not enough |
+| `experiments/cgroup_placement/`, 2026-08-25 | A limit being enforceable is not this supervisor being **permitted** to enforce it — and `mkdir`, `memory.max` and every file read succeed from the position where placement does not |
+
+The last one is the reason the pattern is worth stating: a framework that checked what it could
+see would have reported itself ready in a position where it could confine nothing at all.
+
+## No dependencies, and no override
+
+Standard library only, and `ctypes` for the two syscalls Python does not wrap. That is a
+constraint on the artifact rather than an accident: this code has to be defensible line by
+line by one person.
+
+There is also deliberately no flag that starts the framework with a failed check. N3 asks for a
+stated failure mode; a framework that can be told to run without its controls is one whose
+users will eventually be running without them, which is §1.6's complaint about the status quo.

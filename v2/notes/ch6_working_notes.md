@@ -12,7 +12,7 @@ questions a viva will probe.
 | 6.1 | What the chapter must deliver; the three strengths of "built" | ✅ drafted |
 | 6.2 | The prior artifact — what survives R2, what is superseded, what may be cited | ✅ drafted |
 | 6.3 | The sandbox — constructed not booted; the base component; the defect that found | ✅ drafted |
-| 6.4 | The supervisor — where it must run (§6.4.1 ✅), namespaces, seccomp, distinct uid | 🔵 §6.4.1 drafted |
+| 6.4 | The supervisor — where it must run (§6.4.1), the preflight (§6.4.2), the ordering bug (§6.4.3); mount namespace and seccomp still to come | 🔵 §6.4.1–§6.4.3 drafted, `framework/confine/` written and passing on the Pi |
 | 6.5 | The bridge and the channel | ⬜ |
 | 6.6 | The mediator — manifest evaluation, resolve-then-pin | ⬜ |
 | 6.7 | The manifest as the user meets it — **T13's unplaced half**, owed by §5.14.4 | ⬜ |
@@ -100,6 +100,46 @@ inspects looks right and only the placement fails. This is the third distinction
 area — controller *present* (probe, 2026-08-24), limit *enforced* (probe re-run, 2026-08-25),
 and now *permission to enforce* — and all three were discovered by testing rather than reading.
 
+## §6.4.2–§6.4.3 — the first code
+
+**What exists:** `framework/confine/` — `cgroup.py` (delegation discovery, sandbox cgroup,
+self-placement), `namespaces.py` (the seven flags, identity maps, availability probe),
+`preflight.py` (seven checks and the N3 refusal). Standard library only, plus `ctypes` for the
+two syscalls Python does not wrap. Seven of seven pass on the Pi inside a systemd user scope;
+from an ssh session the run stops at `supervisor inside it` and says what to do.
+
+**The design point worth defending:** every check exercises the operation it checks. That is
+not thoroughness for its own sake — it is the third correction in a row in the same area, and
+each was invisible to the check that preceded it (controller listed → limit enforced →
+permitted to enforce). A framework that checked what it could *see* would have declared itself
+ready in a position where it could confine nothing.
+
+**No override flag, deliberately.** Asked at a viva "what if an operator needs to run without
+it", the answer is that such an operator is running unconfined and the framework's whole claim
+is that the user cannot tell — §1.6. A `--i-know-what-im-doing` flag reproduces the status quo
+with a nicer name.
+
+### The bug in the namespace check, and why it is in the report
+
+The check failed with `Operation not permitted` on a host where `host_isolation_probe` had
+already shown all seven namespaces available. Two candidate explanations: the host changed, or
+the code is wrong. Testing each flag separately took a minute and settled it — `unshare`
+succeeded for all seven; the failure was the next call.
+
+`write_identity_maps` read the uid to map with `os.getuid()` *after* the `unshare`, when the
+answer is already `nobody`. It wrote `0 65534 1` and the kernel refused, because an
+unprivileged process may write only a single-line map whose outer id is the one it already had.
+
+**Why this is in the report rather than just fixed.** It is the third instance of the ordering
+§6.3.4 tabulates, arriving from a fourth mechanism, and it is the one that shows the rule is
+not about sandboxes: *the supervisor's own credentials must be captured before the namespace
+that hides them exists.* The signature now takes them as arguments so the mistake cannot recur
+silently.
+
+**The transferable habit:** a check that contradicts an earlier measurement is usually the
+check being wrong. Believing it would have put a false limitation about Raspberry Pi OS
+namespaces into Chapter 7.
+
 ## Anticipated viva questions
 
 **"Your Chapter 5 predicted the budget would double and Chapter 6 says 1.53×. Which of your
@@ -130,6 +170,20 @@ marker, and that is the defect: not that an inference was wrong, but that it rea
 result. The audit that follows is §6.1's three strengths of "built", applied backwards to
 Chapter 5's claims, and the two corrections found so far (§6.3.2, §6.4.1) are both inferences
 sitting next to measurements. The measurements have all replicated.
+
+**"Your preflight allocates 192 MB every time the framework starts. Is that reasonable?"** —
+It is the only way to distinguish a limit that is set from a limit that bites, and §5.7.4's
+re-probe exists because those came apart on this exact host. It takes about a second on the C4
+device and there is a `--shallow` flag for when the caller has other reasons to trust it. If
+start-up cost becomes a real objection the right answer is to cache the result against the boot
+id, not to stop checking.
+
+**"Why is the supervisor single-threaded? That sounds like a limitation you backed into."** —
+It is a consequence of self-placement. The sandbox has to enter its cgroup between `fork` and
+`exec`, which in Python means `preexec_fn`, which is unsafe with threads. The alternative is to
+migrate the sandbox from the parent afterwards, which reopens a window in which it runs
+uncapped — and T16 is a sandbox consuming memory. So the constraint was accepted rather than
+worked around, and it is recorded in §6.4.2 as a constraint rather than as a design feature.
 
 **"How do you know PSS is the right figure and not `MemAvailable`?"** — Both were recorded,
 and the arms were run in both orders. PSS was identical to 0.1 MB across four arm-runs;

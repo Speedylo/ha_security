@@ -37,19 +37,23 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/mediation_latency/` | ✅ **Pi 5, 2026-08-24.** One mediated request over the channel: **30.0 µs** median, p99 33.9 µs; ~33k req/s. Floor only — excludes manifest check and audit write. Feeds §5.11.4 |
 | `experiments/base_component/` | ✅ **Pi 5, 2026-08-25.** The measurement §5.6.5 deferred to Chapter 6. The base component **can** be dropped — 46.6 MB per sandbox, budget 17 → **26** (1.53×, **not** the 2× §5.6.5 predicted). Two controls: both arm orders, and a 0.1 MB replication of §5.6.3's marginal figure. It also found a defect in §5.6.3's own recipe — see below. Feeds §6.3 |
 | `experiments/cgroup_placement/` | ✅ **Pi 5, 2026-08-25.** Four placement mechanisms × two positions, unprivileged. **Corrects §5.7.4:** `clone3(CLONE_INTO_CGROUP)` fails with the same `EACCES` as migration, so what binds is *where the supervisor runs*, not when it places the sandbox. Feeds §6.4.1 |
-| `report/06_implementation.md` | 🔵 **In progress.** §6.1–§6.3 and §6.4.1 drafted 2026-08-25; §6.4.2 (how the supervisor confines, and in what order) next. Section plan and inherited obligations in `notes/ch6_working_notes.md` |
+| **`framework/confine/`** | ✅ **First code of the artifact, 2026-08-25.** `cgroup.py`, `namespaces.py`, `preflight.py` — standard library plus `ctypes`, no dependencies, no override flag. **Seven of seven checks pass on the Pi** inside a systemd user scope; from an ssh session it refuses and names the position. Described by §6.4.2 |
+| `report/06_implementation.md` | 🔵 **In progress.** §6.1–§6.3 and §6.4.1–§6.4.3 drafted 2026-08-25. Next: the sandbox's mount namespace and the seccomp filter — the two halves of §5.6.2's structural denial. Section plan and inherited obligations in `notes/ch6_working_notes.md` |
 | `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24; re-run 2026-08-25.** Namespaces (unprivileged), seccomp and cgroup v2 all present. `memory` was absent on the stock install; after the boot change it is present **and the cap is verified to bite, unprivileged**. Feeds §5.7.4 |
 
 ## Next session — start here
 
-**Chapters 1–5 are complete. Chapter 6 is drafted through §6.3.** Its first task — the
-base-component measurement §5.6.5 deferred to it — is done, and it corrected Chapter 5.
+**Chapters 1–5 are complete. Chapter 6 is drafted through §6.4.3, and the first code of the
+artifact exists in `framework/confine/`.** Chapter 6 has now corrected Chapter 5 twice — the
+base-component prediction (§6.3.2) and the cgroup placement rule (§6.4.1) — and both
+corrections came from running a measurement rather than re-reading the argument.
 
 | # | Task | Notes |
 |---|---|---|
-| **1** | **Ch. 6 §6.4.2 — how the supervisor confines** | Namespaces, seccomp, distinct uid, and the startup refusal of §6.4.1's fourth consequence. Placement is settled: **systemd user unit, child self-migrates before `exec`, no C needed** |
-| 2 | §6.5–§6.9 | Bridge and channel, mediator, the manifest surface the user meets (T13), the audit record, the adversarial cases |
-| 3 | §6.10 | The report against §5.6.5's three R1 re-decision triggers, for G3 |
+| **1** | **Ch. 6 §6.4.4 — the sandbox's mount namespace** | §5.6.2's structural denial, filesystem half: the sandbox sees the paths the manifest declares and nothing else. §5.10.2 and §5.11.1 are the specification |
+| **2** | **Then the seccomp filter** | §5.7.3's third primitive. `user_notif` is present on the target (probe, 2026-08-24) |
+| 3 | §6.5–§6.9 | Bridge and channel, mediator, the manifest surface the user meets (T13), the audit record, the adversarial cases |
+| 4 | §6.10 | The report against §5.6.5's three R1 re-decision triggers, for G3 |
 
 **✅ The base component is dropped (2026-08-25, `experiments/base_component/`).**
 
