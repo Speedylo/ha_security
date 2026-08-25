@@ -1812,6 +1812,38 @@ declared. With the core set supplied, **8% still does** — three of 37 — and 
 reachable by any amount of supplying-what-the-platform-has, because what they want is a package
 the platform does not have either.
 
+**The obvious objection, answered here so it is not left hanging.** *Would this not be solved by
+asking the author to declare it?* Two reasons it would not, and the second is the one that
+matters.
+
+First, a category distinction. §5.9's authority manifest declares **capabilities** — hosts, files,
+services. A library import is not a capability: `aiofiles` says nothing about what an integration
+may *do*. A correctly written authority manifest would not mention it and should not. The field
+where `aiofiles` belongs is `requirements` in Home Assistant's own `manifest.json`, which is a
+packaging declaration and not a security one.
+
+Second — and this is why the finding is worth more than the three failures — **that field already
+exists, the platform already asks, and these authors did not fill it in.** `bambu_lab` filled it
+in with `beautifulsoup4` and imports `aiofiles` on the first line of `__init__.py` anyway;
+`bermuda` declares no packages at all. So "the author will declare it" is not an assumption this
+evidence supports; it is an assumption this evidence contradicts, and the platform's own
+constraints file is upstream conceding the same point. §5.9.3 rejected M1 as a sole source for
+exactly this shape of reason, and §5.5 eliminated R5 for it: *a mechanism that works only for
+future, cooperating authors does not address the existing corpus, and the existing corpus is the
+problem.* The 84% in §6.14.2 is worth what it is worth **because nothing was asked of anyone**.
+
+What does address it is already in the design and is not author trust. §5.9.3 accepts **M3,
+static analysis, as a contributor**: `import aiofiles` is a top-level import and trivially
+detectable, and §5.9.4's precedence 2 already provides for a manifest derived by analysis,
+marked *derived*, and presented to the user as such rather than as the author's word. The
+plural-provenance decision is what makes that path available without weakening the enforcement
+path, and this is the first measured case that calls for it.
+
+One last distinction, because it decides how the three failures are counted: **a missing package
+is a compatibility failure, not a security one.** The integration does not start. Nothing crossed
+a boundary, default-deny is untouched, and the sandbox contains one library too few. Three of 37
+is the price of asking nothing of anybody.
+
 ### 6.14.5 What this costs, stated plainly
 
 The sandbox now contains 641 MB of library code no integration asked for. Three things are true

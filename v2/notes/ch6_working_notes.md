@@ -554,7 +554,107 @@ provides; two were reachable via component requirements. Only `battery_notes` qu
 `async_timeout` — a package HA's own pyproject *bans*. The classifier that produced the larger
 number credited components never attempted; fixed rather than left to flatter the earlier result.
 
+## §6.13–§6.14 — the declared profile, and the finding underneath it
+
+**Two predictions, one over and one under, and that is the argument for measuring.** §6.12.4
+predicted the per-integration profile would reach 70–76%; it reached **57%**. §6.13.4 then
+predicted the core-package profile would reach 57–73%; it reached **84%**. Neither miss was
+careless — both were reasoned from the run before — and that is the point worth making aloud: two
+successive predictions bracketing the truth from opposite sides is what "the answer was not
+already known" looks like in practice.
+
+**The 57% coincidence must be stated, not buried.** The declared profile with auth wired landed on
+the *same 21 integrations* as the earlier arm that ran without auth. §6.12.4 had blamed that arm's
+57% on the missing auth manager and was wrong. Wiring auth changed eleven integrations' failure
+*reason* and the corpus figure by zero. A reader comparing headline numbers alone would conclude
+the change did nothing; it did a great deal, and none of it was this.
+
+**The diagnosis is the result.** All six integrations the blanket profile passes and the declared
+profile fails, fail on a missing *package* — `numpy` or `PyTurboJPEG`, both requirements of
+`stream`, which none of the six declares and none needs. So the blanket profile's entire
+compatibility lead was dependency spillover: 70% = 57% earned + 16 points borrowed. Setting up
+more components bought none of it. That took a second run to see because `--platform-deps` was
+wired to the `unstripped` profile, conflating "which components set up" with "which packages
+exist". Decoupling them was a two-line change and it was the whole experiment.
+
+**Why the core set is `default_config` and not something else.** "What a stock installation has"
+had to become computable or it could not be implemented. The `default_config` dependency closure
+is the honest reading: 57 components, 39 declared requirements, derived from the platform's source
+with `--print-core-requirements` rather than typed. It grants nothing an ordinary installation
+does not already grant, which is the sentence that defends it. 641 MB resolved, read-only, shared.
+
+**The result dominates rather than trades**, which is rare enough to say plainly: every
+integration the blanket profile passes, plus five more, for 13.1 MB *less* per sandbox. There is
+no judgement call at G3 between those two rows.
+
+**Do not let 84% stand alone.** Six failures remain; three are the design's (`aiofiles`), one is
+Home Assistant's (`eufy_security` imports `SOURCE_TYPE_GPS`, removed from `device_tracker` in
+2026.8.3 — it would fail unsandboxed), two are the corpus's. 31/34 = 91% of what the corpus
+delivered loadable. `eufy_security` is the single case an error string settles without the
+baseline arm, and it is worth saying *one case, not a licence* before an examiner says it.
+
+**The classifier was wrong again, in the same direction (§6.6.5, third occurrence).** `hacs` was
+classified `needs_component` off `python_script: False` while the real `ImportError` was HACS's own
+bundled frontend module, absent from a git checkout. Right verdict, wrong reason. Three for three:
+in a default-deny system the verdict is nearly always right and nearly never informative.
+
+### The `aiofiles` finding, and why it is the most valuable thing in these two sections
+
+Three integrations import `aiofiles`; none declares it; no declared package pulls it in.
+`bambu_lab` imports it at the top of `__init__.py` and declares only `beautifulsoup4`; `bermuda`
+imports it in `coordinator.py` and declares no packages at all; `tapo_control` reaches it through a
+declared package that does not declare it either. No component in `default_config` requires it —
+only `matrix` and `slack` do. And `homeassistant/package_constraints.txt` carries:
+
+```
+# aiofiles keeps getting downgraded by custom components
+aiofiles>=24.1.0
+```
+
+**That comment is the platform's maintainers documenting §6.13.3's finding about their own
+ecosystem, in their own source tree.** It is corroboration this project did not have to
+manufacture, and it belongs in Chapter 8. It says: custom components install packages nobody
+declared, at versions that break the platform, often enough that upstream pinned defensively
+rather than requiring anyone to declare properly.
+
+Measured bound: **16% of the corpus imports at least one package its manifest never names**; with
+the core set supplied, **8% still does**, and those three are unreachable by supplying more,
+because they want something the platform does not have either.
+
 ## Anticipated viva questions
+
+**"Wouldn't the missing `aiofiles` declaration simply not happen under your framework? The author
+writes a manifest, so they would list it."** — No, and the question conflates two files. Home
+Assistant's `manifest.json` already has a `requirements` field: that is exactly where `aiofiles`
+belongs, the platform already asks for it, and these three authors did not fill it in.
+`bambu_lab` filled it in with `beautifulsoup4` and imports `aiofiles` on the first line of
+`__init__.py` anyway. The authority manifest of §5.9 is a different document and declares
+*capabilities* — hosts, files, services. A Python library import is not a capability; it says
+nothing about what the integration may do. So a perfectly written authority manifest would not
+mention `aiofiles` either, and should not.
+
+The sharper answer is that this finding is **evidence against** the assumption in the question.
+Authors have been asked, in the file the platform already requires, and they under-declare —
+enough that upstream added a defensive pin rather than keep asking. Any design whose answer to a
+compatibility failure is "the author will fix their manifest" works only for future, cooperating
+authors, which is precisely what §5.9.3 rejected M1-alone for and what §5.5 eliminated R5 for:
+*a mechanism that works only for cooperating authors does not address the existing corpus, and
+the existing corpus is the problem.* The 84% is worth something **because nobody was asked to do
+anything.** Buying 100% by assuming authors will do work they demonstrably do not do today would
+cost the contribution claim G1 left standing.
+
+What *would* address it is already in the design and is not author trust: **M3, static analysis,
+accepted in §5.9.3 as a contributor.** `import aiofiles` is a top-level import — trivially
+detectable — and §5.9.4's precedence 2 already covers a manifest derived by analysis or
+observation, used, marked *derived*, and shown to the user as derived rather than as the author's
+word. That is the constructive path, and the plural-provenance decision is what makes it
+available.
+
+Last point, and it is a category distinction worth having ready: **a missing package is a
+compatibility failure, not a security failure.** The integration does not start. Nothing got
+through, default-deny is untouched, and the sandbox simply contains one library too few. Three of
+37 is the price of not asking anyone for anything.
+
 
 **"Your Chapter 5 predicted the budget would double and Chapter 6 says 1.53×. Which of your
 other numbers are wrong?"** — The prediction was labelled as one, in a section explicitly
