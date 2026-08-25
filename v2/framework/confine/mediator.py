@@ -22,6 +22,7 @@ import selectors
 from dataclasses import dataclass, field
 from typing import Callable
 
+from .audit import AuditLog
 from .channel import Channel, ProtocolError
 
 
@@ -52,12 +53,15 @@ class Mediator:
 
     policy: Callable[[str, dict], Decision] = deny_everything
     audit: list[dict] = field(default_factory=list)
+    log: AuditLog | None = None
+    _runs: dict[str, str] = field(default_factory=dict)
     _by_fd: dict[int, tuple[str, Channel]] = field(default_factory=dict)
     _selector: selectors.BaseSelector = field(default_factory=selectors.DefaultSelector)
 
-    def register(self, identity: str, channel: Channel) -> None:
+    def register(self, identity: str, channel: Channel, run_id: str = "") -> None:
         """Bind one socket to one integration. The only place identity is ever established."""
         self._by_fd[channel.fileno()] = (identity, channel)
+        self._runs[identity] = run_id
         self._selector.register(channel.sock, selectors.EVENT_READ)
 
     def unregister(self, fd: int) -> None:
@@ -103,7 +107,8 @@ class Mediator:
         decision = self.policy(identity, request)
 
         # Step 4 before step 5: the record is written before anything is acted on, so an
-        # action that succeeds and then crashes the mediator is still attributable.
+        # action that succeeds and then crashes the mediator is still attributable. The
+        # durable write happens here too — a record still in a buffer is not a record.
         self.audit.append({
             "identity": identity,
             "op": request.get("op"),
@@ -112,6 +117,9 @@ class Mediator:
             "clause": decision.clause,
             "reason": decision.reason,
         })
+        if self.log is not None:
+            self.log.decision(self._runs.get(identity, ""), identity, request,
+                              decision.allowed, decision.clause, decision.reason)
         try:
             channel.send(decision.as_response(request.get("id")))
         except OSError:

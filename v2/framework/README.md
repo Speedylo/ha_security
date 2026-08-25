@@ -23,7 +23,13 @@ describes can be read side by side.
 | `confine/channel.py` | §6.5.1 | The one socket that crosses the boundary, and its framing |
 | `confine/mediator.py` | §6.5.1 | Who is asking, and what happens to the answer. Default-deny is S6 |
 | `confine/selftest.py` | §6.4.5 | One sandbox built around a hostile configuration directory |
+| `confine/manifest.py` | §6.6 | Reading a manifest, refusing a bad one, deciding one request |
+| `confine/describe.py` | §6.7 | Rendering a declaration for the person deciding whether to install |
+| `confine/audit.py` | §6.8 | Three-part identity, and the two chains over the record |
 | `confine/selftest_channel.py` | §6.5.2 | Two sandboxes, both claiming to be the same integration |
+| `confine/selftest_policy.py` | §6.6 | S5's asymmetry, resolve-then-pin, and what is refused at parse time |
+| `confine/selftest_describe.py` | §6.7 | Four states an integration can be in, four renderings |
+| `confine/selftest_audit.py` | §6.8 | Identity's three components, and every form of tampering |
 
 ## Running the preflight
 
@@ -41,6 +47,14 @@ and doing so is the check working rather than the host being wrong.
 systemd-run --user --scope -q python3 -m confine.preflight   # the right position, ad hoc
 systemd-run --user --scope -q python3 -m confine.selftest    # build a sandbox and look inside
 systemd-run --user --scope -q python3 -m confine.selftest_channel   # two sandboxes, both lying
+```
+
+Three of the self-tests need no sandbox and so need no delegated subtree:
+
+```bash
+python3 -m confine.selftest_policy     # what the manifest refuses, and S5's asymmetry
+python3 -m confine.selftest_describe   # what the user is shown, in each of four states
+python3 -m confine.selftest_audit      # identity, and every form of tampering with the log
 ```
 
 `confine.selftest` builds a configuration directory containing a secrets file, the config-entry

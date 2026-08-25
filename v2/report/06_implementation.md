@@ -940,10 +940,109 @@ user understands any of it**, which is R6 and stays open.
 
 **T13 is now placed in both halves**, and §5.14.4's oldest obligation is discharged.
 
+## 6.8 Identity, and the record that makes a decision attributable
+
+§5.12 defines identity as the domain name plus a content hash of what was loaded, hashed as a
+tuple of three components — source, manifest, declared requirements — "each hashed separately
+and then together". The separation is the design decision it asks to be judged on: a single
+composite says *something changed*, three components say *what* changed.
+
+### 6.8.1 The three components, and the one that does not yet earn its place
+
+| Change made | Components that moved |
+|---|---|
+| A line of code | `source` |
+| A `permissions` clause, code untouched | `manifest` |
+| A declared dependency | `manifest` **and** `requirements` |
+
+The first two are what §5.12.1 promises, and the second is the one that matters most: a manifest
+swapped without a source change is an authority change, and an identity blind to it would miss
+the most direct attack on this design.
+
+**The third row is not what §5.12.1 promises, and the reason is structural.** Home Assistant
+declares an integration's dependencies *inside* `manifest.json`, so a declared-dependency change
+necessarily moves the manifest hash too. As implemented, `requirements` is therefore not an
+independent component — it tells the log nothing the manifest hash has not already said.
+
+It becomes independent exactly where §5.12.1 says it matters. That section asks for declared
+requirements **with resolved versions**, and resolution happens when dependencies are installed
+into the sandbox. A dependency that ships a new release under an unchanged declaration is
+precisely the supply-chain case, and it moves the resolved versions while leaving both the source
+and the manifest identical. **That install step is not built**, so the component is presently
+vestigial, and the self-test asserts the dependent behaviour rather than the promised one so that
+the gap cannot be mistaken for the feature.
+
+### 6.8.2 Two chains, failing independently
+
+§5.12.4 describes an escalation: the chain is evident against tampering, and "a keyed MAC over
+each link, with the key held only in the mediator's memory, raises the bar — an attacker who can
+write the file but not read that memory can no longer forge a consistent chain". Both are
+implemented, and each record carries both links.
+
+| Attack | `hash` chain | `mac` chain |
+|---|---|---|
+| Flip a denial into a permit | **breaks** at that record and every one after | **breaks** |
+| ...and repair that record's own stored hash | **breaks** — see below | **breaks** |
+| Delete a record | **breaks**, with a sequence gap | **breaks** |
+| Reorder two records | **breaks** | **breaks** |
+| Rewrite the whole file, recomputing every `sha256` link | **verifies cleanly** | **breaks at every record from the edit onward** |
+
+*Strength of claim: measured.* Fourteen assertions, on both machines.
+
+**The last row is the point of having two.** An attacker who can write the log but cannot read
+the mediator's memory can recompute every `sha256` link, because `sha256` needs no secret — and
+cannot recompute one HMAC. That is `01_PLAN.md` §5's "makes two controls fail independently",
+and it is what the row above it costs: nothing, because both chains are computed over the same
+canonical bytes in the same pass.
+
+**A bug this found, which is the reason the second row is in the table.** The first version of
+the verifier carried the *stored* hash forward from record to record rather than the one it had
+just recomputed. An attacker who edited a record and repaired that record's own hash then broke
+exactly one downstream link instead of all of them, and §5.12.4's "breaks every link after it"
+was quietly false. The fix is one line — carry the computed value forward, never the one in the
+file — and the principle behind it generalises: **a stored hash is a convenience for a reader
+and must never be an input to verification.**
+
+It was caught only because the self-test asserted the *strong* form of §5.12.4's claim rather
+than that tampering is "detected". Under the weak form the bug passes: the tamper was still
+detected, just at one record instead of four.
+
+### 6.8.3 The order §5.11.3 requires, made durable
+
+§5.11.3 puts the record before the action, "so an action that succeeds and then crashes the
+mediator is still attributable", and says the ordering "is not an implementation detail". Two
+things were needed to make it true rather than nominal:
+
+- **The record is written and `fsync`ed before the action is attempted.** An ordering that
+  leaves the record in a buffer is an ordering in the source code only; the crash it exists to
+  survive takes the buffer with it.
+- **The self-test crashes on purpose.** An action that raises immediately after the record is
+  written leaves the record on disk, saying what was permitted. That is a two-line test and it
+  is the only thing standing between this ordering and a comment claiming it.
+
+The cost is real and belongs in Chapter 7's performance axis rather than hidden here: an
+`fsync` per decision is far more expensive than the 2.4 µs §6.6.4 measured for the decision
+itself, and §6.5.3's latency figures do **not** include it. Whether S7's durability is worth
+that per-decision, or whether decisions should be batched with a bounded window of loss, is a
+question with a real trade-off and Chapter 7 is where it gets measured rather than assumed.
+
+### 6.8.4 What the key costs
+
+The MAC key is generated at mediator start and held only in memory, which is what §5.12.4
+specifies and what makes the last row of §6.8.2's table possible. It has a consequence that
+section does not draw: **the key does not outlive the mediator.** Records written by an earlier
+run remain hash-verifiable by anyone and are no longer MAC-verifiable by anyone, including the
+mediator that wrote them.
+
+So the strong property holds within a run and decays to the weak one across restarts. Persisting
+the key would trade that away for exactly the adversary the key exists to stop — anyone who can
+write the log file can then also read the key beside it. This is not a defect to be fixed but a
+position on a trade-off, and it is stated here so that Chapter 7 evaluates the log it has rather
+than the one the phrase "tamper-evident" suggests.
+
 ---
 
-*Chapter 6 in progress: §6.1–§6.3, §6.4.1–§6.4.6 and §6.5–§6.7 drafted 2026-08-25. The
-supervisor confines, the channel carries identity by construction, the manifest decides, and the
-declaration is presentable. Next: §6.8, the audit record — §5.12's three-part identity and the
-hash chain. The section plan and the obligations this chapter inherits are in
-`notes/ch6_working_notes.md`.*
+*Chapter 6 in progress: §6.1–§6.3, §6.4.1–§6.4.6 and §6.5–§6.8 drafted 2026-08-25. Every
+mechanism §5.11.3's five steps depend on now exists except step 5, the act itself. Next: §6.9,
+the adversarial cases — §5.8.2's fourth scope item. The section plan and the obligations this
+chapter inherits are in `notes/ch6_working_notes.md`.*

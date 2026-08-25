@@ -16,7 +16,7 @@ questions a viva will probe.
 | 6.5 | The channel — framing, identity by construction, and what it costs when real | ✅ drafted; `channel.py`, `mediator.py`, `selftest_channel.py` pass on the Pi |
 | 6.6 | The manifest and the permit path — validation, S5, clause pointers, what a decision costs | ✅ drafted; `manifest.py` + `selftest_policy.py` pass |
 | 6.7 | Where the user meets the declaration — **T13's unplaced half discharged** | ✅ drafted; `describe.py` + `selftest_describe.py`, 14 assertions over four states |
-| 6.8 | The audit record — three-part identity, the hash chain | ⬜ |
+| 6.8 | Identity and the audit record — three components, two chains, the durable ordering | ✅ drafted; `audit.py` + `selftest_audit.py`, 14 assertions |
 | 6.9 | The adversarial cases, as built — §5.8.2's fourth scope item | ⬜ |
 | 6.10 | What is not built; the report against §5.6.5's G3 triggers | ⬜ |
 
@@ -323,6 +323,45 @@ consent flow (§3.7, and what was owed is a surface).
 **What this is not:** evidence anyone understands it. R6 stays open at Medium, and §6.7.3 says
 so in the section rather than in a footnote.
 
+## §6.8 — the audit record
+
+**Two things worth volunteering rather than being caught on.**
+
+1. **The third identity component is currently vestigial.** Home Assistant declares requirements
+   inside `manifest.json`, so a declared-dependency change moves the manifest hash anyway.
+   §5.12.1 asks for *resolved* versions, which is where the separation earns its place — a
+   dependency shipping a new release under an unchanged declaration moves nothing else — and the
+   install step that would resolve them does not exist. The self-test asserts the dependent
+   behaviour (`["manifest", "requirements"]`) rather than the promised independent one, so the
+   gap cannot be read as the feature.
+
+2. **`fsync` per decision is not in §6.5.3's latency figures.** The ordering §5.11.3 requires is
+   only real if the record is durable before the action is attempted, and that costs far more
+   than the 2.4 µs of the decision itself. Whether S7's durability is worth it per-decision, or
+   whether a bounded window of loss is the right trade, is Chapter 7's to measure. Stating it
+   here is better than being asked why the numbers do not add up.
+
+**The bug the strong assertion caught.** `verify()` first carried the *stored* hash forward
+between records instead of the recomputed one. An attacker who edited a record and repaired that
+record's own hash then broke exactly one downstream link, and §5.12.4's "breaks every link after
+it" was quietly false. One-line fix; the generalisation is that **a stored hash is a convenience
+for a reader and must never be an input to verification.**
+
+Note what would have hidden it: asserting that tampering is "detected". It was — at one record
+instead of four. The test asserted the strong form of the claim, which is why it failed. This is
+the same lesson as §6.6.5 from the other direction: there, a green test proved nothing because
+the safe answer arrived by the wrong route; here, a weak assertion would have accepted a
+materially weaker property.
+
+**Why two chains cost nothing.** Both are computed over the same canonical bytes in the same
+pass. The payoff is `01_PLAN.md` §5's "two controls that fail independently": an attacker who can
+write the file but not read the mediator's memory recomputes every sha256 link cleanly and cannot
+recompute one HMAC.
+
+**The key's cost, which §5.12.4 does not draw:** it does not outlive the mediator. Records from
+an earlier run stay hash-verifiable and stop being MAC-verifiable — including by the mediator
+that wrote them. Persisting the key would hand it to exactly the adversary it exists to stop.
+
 ## Anticipated viva questions
 
 **"Your Chapter 5 predicted the budget would double and Chapter 6 says 1.53×. Which of your
@@ -353,6 +392,15 @@ marker, and that is the defect: not that an inference was wrong, but that it rea
 result. The audit that follows is §6.1's three strengths of "built", applied backwards to
 Chapter 5's claims, and the two corrections found so far (§6.3.2, §6.4.1) are both inferences
 sitting next to measurements. The measurements have all replicated.
+
+**"Your audit log is described as tamper-evident. Evident to whom, and for how long?"** —
+Within a run, to anyone with the mediator's key, against every attack in §6.8.2's table including
+a full consistent rewrite. Across restarts, the MAC key is gone, so old records are
+hash-verifiable only and a complete rewrite by someone with filesystem write access is no longer
+detectable. Against the confined integration it is stronger than either, and for a reason that
+has nothing to do with cryptography: §5.12.4's structural argument is that the sandbox has no
+path to the log at all. The claim the architecture supports is "authoritative against the
+confined integration, evidentiary against everything else", and §6.8.4 keeps it there.
 
 **"Chapter 6 has now corrected Chapter 5 three times. Should I trust Chapter 5?"** — Trust its
 measurements and audit its inferences, and the report now makes that separation visible rather
