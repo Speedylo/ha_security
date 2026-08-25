@@ -66,6 +66,11 @@ report = {
         for line in Path("/proc/net/dev").read_text().splitlines()[2:] if ":" in line
     ),
     "paths": {p: probe(p) for p in PATHS},
+    # What the configuration root looks like from in here. It exists — binding a declared
+    # path necessarily creates the directories above it — so the question worth asking is
+    # not whether it is there but whether anything is in it.
+    "config_root_listing": (sorted(os.listdir(CONFIG_ROOT))
+                            if Path(CONFIG_ROOT).is_dir() else None),
 }
 print(json.dumps(report))
 """
@@ -124,7 +129,8 @@ def main() -> int:
             "the configuration root": str(root),
             "the user's home directory": os.path.expanduser("~"),
         }
-        script = f"PATHS = {json.dumps(list(watched.values()))}\n" + INSIDE
+        script = (f"PATHS = {json.dumps(list(watched.values()))}\n"
+                  f"CONFIG_ROOT = {json.dumps(str(root))}\n" + INSIDE)
         spec = SandboxSpec(
             domain="demo_a",
             own_dir=str(layout["own"]),
@@ -161,7 +167,10 @@ def render(report: dict, watched: dict[str, str]) -> int:
         ("secrets.yaml",              False, None),
         ("the .storage directory",    False, None),
         ("another integration",       False, None),
-        ("the configuration root",    False, None),
+        # Present, and that is not a failure: a bind mount creates the directories above its
+        # target, so granting one path inside the configuration directory makes the
+        # directory itself exist. What matters is that it is a skeleton — see below.
+        ("the configuration root",    True,  None),
         ("the user's home directory", False, None),
     ]
     failures = []
@@ -178,6 +187,13 @@ def render(report: dict, watched: dict[str, str]) -> int:
             failures.append(label)
         print(f"  {'ok  ' if ok else 'FAIL'}  {label:<{width}}  {detail}")
 
+    listing = report["config_root_listing"]
+    granted_only = listing == ["shared"]
+    print(f"  {'ok  ' if granted_only else 'FAIL'}  {'…and it holds only':<{width}}  "
+          f"{listing}")
+    if not granted_only:
+        failures.append(f"the configuration root holds {listing}, expected only ['shared']")
+
     if len(report["processes"]) != 1:
         failures.append("the PID namespace shows more than the sandbox itself")
     if report["interfaces"] != ["lo"]:
@@ -187,8 +203,9 @@ def render(report: dict, watched: dict[str, str]) -> int:
     if failures:
         print(f"FAILED: {'; '.join(failures)}")
         return 1
-    print("PASS — every claim §5.6.2 and §5.10.2 make about the sandbox's filesystem held,")
-    print("       and the two absent rows are absent rather than refused.")
+    print("PASS — every claim §5.6.2 and §5.10.2 make about the sandbox's filesystem held.")
+    print("       The absent rows are absent rather than refused, and the configuration")
+    print("       root exists only as the skeleton one granted path requires.")
     return 0
 
 

@@ -441,9 +441,119 @@ namespaces:
   the same discipline that turned §6.3.3's failure in both arms into a finding rather than a
   wasted afternoon.
 
+### 6.4.4 The sandbox's filesystem
+
+§5.6.2's central claim is that under R2 default denial is *structural* rather than procedural:
+an integration reading `secrets.yaml` is not refused by a check, because the file is not in its
+mount namespace and there is nothing there to refuse. §5.10.2 says the same of everything the
+manifest does not declare. This is where those sentences become a filesystem.
+
+The construction is conventional — private mount propagation, a fresh tmpfs root, bind mounts
+for what is allowed, then `pivot_root` — and four decisions in it are not.
+
+**`pivot_root`, not `chroot`.** A process inside a user namespace holds `CAP_SYS_CHROOT` over
+that namespace, and a `chroot` is escapable by anything holding it. Using `chroot` here would
+produce a boundary indistinguishable from the inside and not one in fact — which is precisely
+the failure §6.4.2's preflight exists to catch in a different form.
+
+**The sandbox is not "its own directory and nothing else", and the report should not imply it
+is.** R2 runs a real Python against a real Home Assistant, and neither can execute out of
+nothing, so the sandbox also holds a read-only copy of the interpreter and the libraries
+beneath it. §5.10.2's phrasing is about *declared* resources; the runtime is ambient in the
+same sense the sandbox's own data dictionary is. Stating this is better than letting a reader
+infer an emptier sandbox than exists, and it is what the self-test's `/` listing shows:
+`bin dev lib proc sandbox sbin tmp usr`.
+
+**The integration's own two directories are at fixed paths inside**, `/sandbox/component` and
+`/sandbox/data`, whatever they were called outside. The sandbox runner then needs no
+configuration, and an integration cannot learn where on the host it was installed.
+
+**The `pivot_root` syscall number is per-architecture**, and glibc does not export the call
+everywhere, so it is issued directly with a small table of numbers. This is a portability
+limit rather than an incidental detail: isolation code of this kind couples to the machine, and
+a framework claiming to run "on Linux" should say which Linux it was run on. Chapter 7 reports
+the architectures tested rather than generalising from one.
+
+Two consequences fell out of the process structure rather than the filesystem:
+
+- **`unshare(CLONE_NEWPID)` does not move the caller into the new PID namespace**; it arranges
+  for its *children* to be born there. So the process that unshares can never be PID 1, can
+  never mount a `/proc` showing only the sandbox, and keeps an ordinary view of every process
+  on the machine. A second fork is what makes the PID namespace real, and the process that
+  unshared then exits immediately rather than idling — an idle Python interpreter per sandbox
+  would be a measurable share of §6.3.2's budget, spent on waiting.
+- **The supervisor declares itself a child subreaper**, so that the sandbox stays waitable once
+  its parent has gone. The alternative is keeping that parent alive, which is the cost just
+  avoided.
+
+The sandbox's specification travels on stdin rather than on `argv`, because a sandbox's
+declared paths are readable in `/proc/<pid>/cmdline` by anything running as the same user.
+
+### 6.4.5 What the sandbox can see, and the failure mode this design has
+
+The claims above are testable, so `confine/selftest.py` tests them. It builds a configuration
+directory containing exactly what an attacker would want — a secrets file, the config-entry
+store, and a second integration's source — grants one integration one unrelated file, and asks
+it to report what it can see.
+
+| | |
+|---|---|
+| uid inside / outside | **0** / 1000 |
+| processes visible | **1** — itself |
+| network interfaces | **`lo`** only |
+| its own directory | present, **read-only** |
+| its own data directory | present, writable |
+| the one declared file | present, read-only |
+| `secrets.yaml` | **absent** |
+| the `.storage` directory | **absent** |
+| the other integration | **absent** |
+| the user's home directory | **absent** |
+| the configuration root | present — and holding only the granted path |
+
+*Strength of claim: measured.* On the C4 device, as uid 1000, from inside a systemd user scope.
+
+**The configuration root is present, and that row is worth reading carefully.** A bind mount
+creates the directories above its target, so granting one path inside the configuration
+directory necessarily makes that directory exist. It is a skeleton: it holds the granted path
+and nothing else, and §5.10.5's claim — that the configuration root is not *grantable* — is
+untouched. What does leak is the host path itself, which the sandbox would not otherwise learn.
+That is a small and real disclosure, and it is recorded here rather than in Chapter 7's
+limitations because the design chose the behaviour that causes it: declared paths appear at
+their host locations so that an integration's own absolute paths keep working.
+
+**Three defects were found writing this, and all three are the same defect.**
+
+| What happened | How it presented |
+|---|---|
+| The child wrote its status to a hard-coded descriptor number, while the supervisor passed the real one in the environment — and the failed write was swallowed | "the sandbox never reported a pid", with no other information |
+| The private `/tmp` was mounted *after* the declared paths, so a declared path under `/tmp` was covered by it | The file was simply not there |
+| The self-test expected the configuration root to be absent | A failing check, against correct code |
+
+Each produced an **absence** where something should have been, and that is the property worth
+extracting, because it is a cost of §5.6.2's argument that Chapter 5 did not identify:
+
+> **This design uses absence to mean "not granted". Any bug that makes something absent is
+> therefore indistinguishable, from inside the sandbox, from the framework working correctly.**
+> Structural denial is stronger than a check against an adversary — there is no code path to
+> forget — and weaker against implementer error, because a check that is missing raises nothing
+> and a check that is wrong denies silently.
+
+Two responses, both in the code rather than in the prose:
+
+1. **Declared paths are bound last**, so that a later mount cannot cover a grant.
+2. **Ordering is not trusted to be enough.** Before the sandbox is allowed to run, every
+   declared path is verified to exist in the new root, and construction fails loudly if one
+   does not. This is §6.4.2's preflight argument at the scale of a single sandbox, and it is
+   what turns a silently unhonoured grant into a refusal that names the path.
+
+This also settles how Chapter 7 must read a compatibility failure. An integration that cannot
+find a file it declared is not evidence that confinement broke it until the grant has been
+shown to have arrived — the same procedure §6.3.3 established for the minimal instance, now
+with a second reason to follow it.
+
 ---
 
-*Chapter 6 in progress: §6.1–§6.3 and §6.4.1–§6.4.3 drafted 2026-08-25, with the first code in
-`framework/`. Next: the sandbox's mount namespace and the seccomp filter, which are the two
-halves of §5.6.2's structural denial. The section plan and the obligations this chapter
-inherits are in `notes/ch6_working_notes.md`.*
+*Chapter 6 in progress: §6.1–§6.3 and §6.4.1–§6.4.5 drafted 2026-08-25, with the code in
+`framework/confine/` passing its self-test on the C4 device. Next: the seccomp filter, the
+third of §5.7.3's primitives. The section plan and the obligations this chapter inherits are in
+`notes/ch6_working_notes.md`.*

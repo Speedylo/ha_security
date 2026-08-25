@@ -204,18 +204,11 @@ def build_root(spec: SandboxSpec, scratch: str = "/tmp/.confine-root") -> None:
     _bind(spec.own_dir, inside(SandboxSpec.COMPONENT), read_only=True)
     _bind(spec.data_dir, inside(SandboxSpec.DATA), read_only=False)
 
-    # 5. Whatever the manifest declared, at the paths it declared. Resolution happened when
-    #    the supervisor built the spec; these are already the real paths.
-    for path in spec.files_ro:
-        _bind(path, inside(path), read_only=True)
-    for path in spec.files_rw:
-        _bind(path, inside(path), read_only=False)
-
-    # 6. /proc, which is a view of *this* PID namespace and therefore lists only the sandbox.
+    # 5. /proc, which is a view of *this* PID namespace and therefore lists only the sandbox.
     Path(inside("/proc")).mkdir(parents=True, exist_ok=True)
     mount("proc", inside("/proc"), "proc", MS_NOSUID | MS_NODEV | MS_NOEXEC)
 
-    # 7. A /dev holding six device nodes and no devices. Bound from the host rather than
+    # 6. A /dev holding six device nodes and no devices. Bound from the host rather than
     #    created, because creating a device node needs privilege the sandbox must not have.
     dev = inside("/dev")
     Path(dev).mkdir(parents=True, exist_ok=True)
@@ -225,12 +218,37 @@ def build_root(spec: SandboxSpec, scratch: str = "/tmp/.confine-root") -> None:
         if Path(source).exists():
             _bind(source, f"{dev}/{node}", read_only=False)
 
-    # 8. A private /tmp. Whatever the sandbox writes there is its own and disappears with it.
+    # 7. A private /tmp. Whatever the sandbox writes there is its own and disappears with it.
     tmp = inside("/tmp")
     Path(tmp).mkdir(parents=True, exist_ok=True)
     mount("tmpfs", tmp, "tmpfs", MS_NOSUID | MS_NODEV, "mode=1777,size=64m")
 
-    # 9. Pivot. The old root is moved to a directory inside the new one and then detached, so
+    # 8. Whatever the manifest declared, at the paths it declared. Resolution happened when
+    #    the supervisor built the spec, so these are already the real paths.
+    #
+    #    **These are bound last, and the order is the fix for a real defect.** A mount made
+    #    later covers one made earlier, so a declared path that happens to fall under one of
+    #    the sandbox's own synthetic filesystems — /tmp above all — is shadowed by it if the
+    #    synthetic mount comes second. The file is then simply not there, with no error
+    #    anywhere: the sandbox sees an absence, and an absence is what this design uses to
+    #    mean "not granted". A silently unhonoured grant is therefore indistinguishable from
+    #    a refused one, which is the same class of failure as §6.3.3's.
+    for path in spec.files_ro:
+        _bind(path, inside(path), read_only=True)
+    for path in spec.files_rw:
+        _bind(path, inside(path), read_only=False)
+
+    # 9. Ordering alone is not a guarantee, so the grants are checked rather than assumed.
+    #    Every declared path must be reachable in the new root before the sandbox is allowed
+    #    to run in it — the same argument as §6.4.2's preflight, at the scale of one sandbox.
+    missing = [p for p in (*spec.files_ro, *spec.files_rw)
+               if not Path(inside(p)).exists()]
+    if missing:
+        raise GrantRefused(
+            "declared paths did not survive the mount construction and would have been "
+            f"invisible to the sandbox: {', '.join(missing)}")
+
+    # 10. Pivot. The old root is moved to a directory inside the new one and then detached, so
     #    that no path from inside names anything outside. `chdir` first, because pivot_root
     #    leaves the working directory where it was and a process whose cwd is outside the new
     #    root has kept a way back in.

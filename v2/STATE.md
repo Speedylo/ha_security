@@ -37,8 +37,8 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/mediation_latency/` | ✅ **Pi 5, 2026-08-24.** One mediated request over the channel: **30.0 µs** median, p99 33.9 µs; ~33k req/s. Floor only — excludes manifest check and audit write. Feeds §5.11.4 |
 | `experiments/base_component/` | ✅ **Pi 5, 2026-08-25.** The measurement §5.6.5 deferred to Chapter 6. The base component **can** be dropped — 46.6 MB per sandbox, budget 17 → **26** (1.53×, **not** the 2× §5.6.5 predicted). Two controls: both arm orders, and a 0.1 MB replication of §5.6.3's marginal figure. It also found a defect in §5.6.3's own recipe — see below. Feeds §6.3 |
 | `experiments/cgroup_placement/` | ✅ **Pi 5, 2026-08-25.** Four placement mechanisms × two positions, unprivileged. **Corrects §5.7.4:** `clone3(CLONE_INTO_CGROUP)` fails with the same `EACCES` as migration, so what binds is *where the supervisor runs*, not when it places the sandbox. Feeds §6.4.1 |
-| **`framework/confine/`** | ✅ **First code of the artifact, 2026-08-25.** `cgroup.py`, `namespaces.py`, `preflight.py` — standard library plus `ctypes`, no dependencies, no override flag. **Seven of seven checks pass on the Pi** inside a systemd user scope; from an ssh session it refuses and names the position. Described by §6.4.2 |
-| `report/06_implementation.md` | 🔵 **In progress.** §6.1–§6.3 and §6.4.1–§6.4.3 drafted 2026-08-25. Next: the sandbox's mount namespace and the seccomp filter — the two halves of §5.6.2's structural denial. Section plan and inherited obligations in `notes/ch6_working_notes.md` |
+| **`framework/confine/`** | ✅ **The artifact, as far as it goes, 2026-08-25.** `cgroup.py`, `namespaces.py`, `preflight.py`, `sandbox.py`, `enter.py`, `spawn.py`, `selftest.py` — standard library plus `ctypes`, no dependencies, no override flag. **Preflight: 7/7 on the Pi. Self-test: passes** — uid 0 inside mapped to 1000 outside, one visible process, `lo` only, `secrets.yaml`/`.storage`/the other integration all **absent**. Described by §6.4.2 and §6.4.4–§6.4.5 |
+| `report/06_implementation.md` | 🔵 **In progress.** §6.1–§6.3 and §6.4.1–§6.4.5 drafted 2026-08-25. Next: the seccomp filter, the third of §5.7.3's primitives. Section plan and inherited obligations in `notes/ch6_working_notes.md` |
 | `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24; re-run 2026-08-25.** Namespaces (unprivileged), seccomp and cgroup v2 all present. `memory` was absent on the stock install; after the boot change it is present **and the cap is verified to bite, unprivileged**. Feeds §5.7.4 |
 
 ## Next session — start here
@@ -50,8 +50,7 @@ corrections came from running a measurement rather than re-reading the argument.
 
 | # | Task | Notes |
 |---|---|---|
-| **1** | **Ch. 6 §6.4.4 — finish the mount namespace: it is written and does NOT yet run** | `confine/sandbox.py`, `enter.py`, `spawn.py`, `selftest.py` are committed but the selftest fails with `demo_a: the sandbox never reported a pid` — the child never wrote to the status pipe. **Debug that first**; nothing is written up in the report, deliberately, because §6.1's standard says a claim needs evidence. Likely suspects, untested: the status fd is closed by `subprocess` before `enter.py` reads `CONFINE_STATUS_FD`; `pass_fds` interacting with `preexec_fn`; or `enter.py` dying before its first `_report` and the traceback going to the DEVNULL stderr — **run it once with stderr inherited** |
-| **2** | **Then the seccomp filter** | §5.7.3's third primitive. `user_notif` is present on the target (probe, 2026-08-24) |
+| **1** | **Ch. 6 §6.4.6 — the seccomp filter** | §5.7.3's third primitive, and the last one. `user_notif` is present on the target (probe, 2026-08-24). No libseccomp dependency: the BPF program is built by hand, which is also what makes it defensible line by line |
 | 3 | §6.5–§6.9 | Bridge and channel, mediator, the manifest surface the user meets (T13), the audit record, the adversarial cases |
 | 4 | §6.10 | The report against §5.6.5's three R1 re-decision triggers, for G3 |
 
@@ -96,6 +95,16 @@ stronger than "the controller is present":
   construction precedes execution, or the property is not available at all.
 - `probe.sh` now tests the cap for *effect*, not presence, and prints the applicable boot
   instruction for whichever case the host is in.
+
+**⚠ A finding from building the mount namespace, and it is a cost of the design's best idea
+(§6.4.5).** Three separate defects came up and all three presented as an *absence* — a swallowed
+write to the wrong descriptor, a `/tmp` mounted over a declared path, and a test expecting the
+configuration root to be gone when it is legitimately a skeleton. **§5.6.2's structural denial
+uses absence to mean "not granted", so any bug producing an absence is indistinguishable from
+the framework working.** Responses in code, not prose: declared paths are bound last, and every
+one is verified to exist before the sandbox is allowed to run. **Chapter 7 consequence:** an
+integration that cannot find a file it declared is not evidence that confinement broke it until
+the grant is shown to have arrived.
 
 **⚠ §5.7.4's cgroup rule was wrong, and §6.4.1 corrects it (2026-08-25).** The *finding* —
 migration refused with `EACCES` because the common ancestor is root-owned — stands. The *rule*

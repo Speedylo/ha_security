@@ -14,7 +14,9 @@ interpreter per sandbox would be a measurable share of §6.3.2's budget, spent o
 The sandbox is then reparented to the supervisor, which has declared itself a child subreaper
 so that it stays waitable.
 
-Not run directly. `python -m confine.enter` with the spec on stdin and a status pipe on fd 3.
+Not run directly. `python -m confine.enter`, with the spec on stdin and a status pipe whose
+descriptor number is named by `CONFINE_STATUS_FD` — the supervisor cannot choose the number,
+because `subprocess` keeps a passed descriptor at whatever number it already had.
 """
 
 from __future__ import annotations
@@ -25,7 +27,11 @@ import sys
 from . import namespaces, sandbox
 from .sandbox import SandboxSpec
 
-STATUS_FD = 3
+# The supervisor names the descriptor rather than the child assuming one: `pass_fds` preserves
+# a descriptor's *number*, and that number is whatever the supervisor's `os.pipe()` returned.
+# An earlier version of this file assumed 3, wrote into whatever happened to be there, and
+# reported nothing at all — see §6.4.5.
+STATUS_FD = int(os.environ.get("CONFINE_STATUS_FD", "3"))
 
 # What the sandbox's environment is, in full. Inherited environments carry the host's home
 # directory, its proxy settings and whatever else the user's shell exported, none of which the
@@ -42,10 +48,17 @@ BASE_ENV = {
 
 
 def _report(message: str) -> None:
+    """Send one line to the supervisor, and complain loudly if that is not possible.
+
+    Failing silently here is worse than crashing: the supervisor's only view of this process
+    is what arrives on this pipe, so a swallowed error becomes "the sandbox never reported a
+    pid" with no indication of why.
+    """
     try:
         os.write(STATUS_FD, (message + "\n").encode())
-    except OSError:
-        pass
+    except OSError as err:
+        print(f"confine.enter: cannot write to status fd {STATUS_FD}: {err}",
+              file=sys.stderr, flush=True)
 
 
 def main() -> int:

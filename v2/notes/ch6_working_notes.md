@@ -12,7 +12,7 @@ questions a viva will probe.
 | 6.1 | What the chapter must deliver; the three strengths of "built" | ✅ drafted |
 | 6.2 | The prior artifact — what survives R2, what is superseded, what may be cited | ✅ drafted |
 | 6.3 | The sandbox — constructed not booted; the base component; the defect that found | ✅ drafted |
-| 6.4 | The supervisor — where it must run (§6.4.1), the preflight (§6.4.2), the ordering bug (§6.4.3); mount namespace and seccomp still to come | 🔵 §6.4.1–§6.4.3 drafted, `framework/confine/` written and passing on the Pi |
+| 6.4 | The supervisor — where it must run (§6.4.1), the preflight (§6.4.2), the ordering bug (§6.4.3), the sandbox's filesystem (§6.4.4–§6.4.5); seccomp still to come | 🔵 §6.4.1–§6.4.5 drafted; `framework/confine/` passes its self-test on the Pi |
 | 6.5 | The bridge and the channel | ⬜ |
 | 6.6 | The mediator — manifest evaluation, resolve-then-pin | ⬜ |
 | 6.7 | The manifest as the user meets it — **T13's unplaced half**, owed by §5.14.4 | ⬜ |
@@ -140,6 +140,47 @@ silently.
 check being wrong. Believing it would have put a false limitation about Raspberry Pi OS
 namespaces into Chapter 7.
 
+## §6.4.4–§6.4.5 — the mount namespace, and the finding that came out of building it
+
+**The result.** A sandbox built around a configuration directory holding `secrets.yaml`,
+`.storage/` and a second integration: uid 0 inside mapped to 1000 outside, one visible process,
+`lo` only, its own directory read-only, its data directory writable, the one declared file
+present, and everything else absent. Passes on the Pi.
+
+**The finding worth carrying into the viva, and into Chapter 7.** Three separate defects came up
+while getting there, and all three presented identically — as an *absence*:
+
+1. the status descriptor was hard-coded while the supervisor passed the real number in the
+   environment, and the failed write was swallowed → "the sandbox never reported a pid";
+2. the private `/tmp` was mounted after the declared paths and covered one of them → the file
+   was simply not there;
+3. the self-test expected the configuration root to be absent, and it is legitimately present
+   as a skeleton → a failing check against correct code.
+
+That is not a coincidence, it is the shape of the design. **§5.6.2's structural denial uses
+absence to mean "not granted", so any bug producing an absence is indistinguishable from the
+framework working.** Chapter 5 argued that structural denial beats a procedural check because
+there is no code path to forget; the other half of that trade is that a check which is missing
+raises nothing and a check which is wrong denies silently. Worth saying aloud: it is a cost of
+the design's best idea, found by building it, and it is the sort of thing a viva rewards
+volunteering.
+
+**Two things the self-test is not.** It uses a synthetic integration, and it tests the
+filesystem view rather than an adversary trying to break out of it — that is Chapter 7's
+adversarial evaluation. It establishes that the construction does what §5.6.2 says, not that
+nothing defeats it.
+
+**Design points to be able to defend aloud:**
+
+- `pivot_root`, not `chroot`: a process in a user namespace holds `CAP_SYS_CHROOT` over it, so
+  a chroot there is a boundary only from a distance.
+- The second fork: `unshare(CLONE_NEWPID)` puts *children* in the new namespace, not the
+  caller. Without it there is no PID 1, no honest `/proc`, and no PID isolation at all.
+- The parent exits instead of waiting: an idle interpreter per sandbox would eat §6.3.2's
+  budget. `PR_SET_CHILD_SUBREAPER` keeps the sandbox waitable without it.
+- Spec on stdin, not `argv`: `/proc/<pid>/cmdline` is readable by anything running as the same
+  user, and a sandbox's declared paths are not something to publish.
+
 ## Anticipated viva questions
 
 **"Your Chapter 5 predicted the budget would double and Chapter 6 says 1.53×. Which of your
@@ -170,6 +211,21 @@ marker, and that is the defect: not that an inference was wrong, but that it rea
 result. The audit that follows is §6.1's three strengths of "built", applied backwards to
 Chapter 5's claims, and the two corrections found so far (§6.3.2, §6.4.1) are both inferences
 sitting next to measurements. The measurements have all replicated.
+
+**"You said the sandbox sees only its own directory. Your own listing shows `/usr`, `/bin`,
+`/lib`. Which is it?"** — The second. R2 runs a real interpreter against a real Home Assistant
+and neither executes out of nothing, so the sandbox holds a read-only copy of the runtime.
+§5.10.2's "its own directory and nothing else" is about *declared* resources; the runtime is
+ambient in the same way the sandbox's own data dictionary is. §6.4.4 says so explicitly and
+prints the root listing rather than describing it, because the alternative is letting a reader
+infer an emptier sandbox than exists.
+
+**"The configuration root is visible inside your sandbox. Isn't that exactly what §5.10.5
+forbids?"** — §5.10.5 forbids *granting* it, and it is not granted: it holds the one declared
+path and nothing else, with `secrets.yaml` and `.storage/` absent. What is disclosed is the
+host path's name, because declared paths appear at their host locations so an integration's own
+absolute paths keep working. That is a design choice with a stated cost, recorded in §6.4.5
+rather than in Chapter 7's limitations, because the design caused it rather than inherited it.
 
 **"Your preflight allocates 192 MB every time the framework starts. Is that reasonable?"** —
 It is the only way to distinguish a limit that is set from a limit that bites, and §5.7.4's
