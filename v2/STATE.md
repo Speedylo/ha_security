@@ -4,7 +4,7 @@
 
 **Where it stands in one line:** Chapters 1–5 complete and **Chapter 6 started at §6.3 of 10**
 — Gate G2 closed with two divergences, and six measurements run on the Pi 5 and the corpora
-rather than argued, **the two most recent of which corrected Chapter 5** — see `experiments/`
+rather than argued, **the two most recent of which corrected Chapter 5, and one of which corrected Chapter 6** — see `experiments/`
 and `figures/`.
 
 Read alongside `00_METHOD.md` (ground rules — especially the evidence rule) and
@@ -36,7 +36,7 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/r2_footprint/` | ✅ **Pi 5, 2026-08-24.** R2's premise holds and it fits: minimal HA builds without `bootstrap`, an ordinary integration runs against it, 176 MB first sandbox / 136 MB marginal / ~17 in 60% of 4 GB. Feeds §5.6.3 |
 | `experiments/mediation_latency/` | ✅ **Pi 5, 2026-08-24.** One mediated request over the channel: **30.0 µs** median, p99 33.9 µs; ~33k req/s. Floor only — excludes manifest check and audit write. Feeds §5.11.4 |
 | `experiments/unstrip/` | ✅ **Pi 5, 2026-08-25.** Un-stripping toward `http`: **46% → 70%** import-level compatibility for **+75.9 MB PSS** per sandbox (budget 44 → 18 on that harness, ~26 → ~14 translated). Two findings — `http` needs an auth manager (**0.1 MB**, takes the cascade 0/11 → 10/11) and a fresh netns's loopback is DOWN. Feeds §6.12 |
-| `experiments/compat/` | ✅ **Pi 5, 2026-08-25.** 37 community integrations by install count, each in its own sandbox, source untouched. **46% import clean with all entity platforms** against the minimal instance; 57% once their declared components are supplied. §5.6.5's second G3 trigger **fires, qualified** — and `http` alone blocks 10 of the 16 component failures. Feeds §6.11.3 |
+| `experiments/compat/` | ✅ **Pi 5, 2026-08-25, three profiles.** 37 community integrations by install count, each in its own sandbox, source untouched. **46% import clean with all entity platforms** against the minimal instance; 57% once their declared components are supplied. §5.6.5's second G3 trigger **fires, qualified** — and `http` alone blocks 10 of the 16 component failures. Third run added the per-integration `declared` profile: **57% at +9.0 MB**, and the blanket profile's lead over it is *entirely* package spillover from `stream`. Feeds §6.11.3 and §6.13 |
 | `experiments/base_component/` | ✅ **Pi 5, 2026-08-25.** The measurement §5.6.5 deferred to Chapter 6. The base component **can** be dropped — 46.6 MB per sandbox, budget 17 → **26** (1.53×, **not** the 2× §5.6.5 predicted). Two controls: both arm orders, and a 0.1 MB replication of §5.6.3's marginal figure. It also found a defect in §5.6.3's own recipe — see below. Feeds §6.3 |
 | `experiments/cgroup_placement/` | ✅ **Pi 5, 2026-08-25.** Four placement mechanisms × two positions, unprivileged. **Corrects §5.7.4:** `clone3(CLONE_INTO_CGROUP)` fails with the same `EACCES` as migration, so what binds is *where the supervisor runs*, not when it places the sandbox. Feeds §6.4.1 |
 | **`framework/confine/`** | ✅ **The artifact, as far as it goes, 2026-08-25.** `cgroup.py`, `namespaces.py`, `preflight.py`, `sandbox.py`, `enter.py`, `spawn.py`, `selftest.py` — standard library plus `ctypes`, no dependencies, no override flag. **Preflight: 8/8 on the Pi. Self-test: passes** — uid 0 inside mapped to 1000 outside, one visible process, `lo` only, `secrets.yaml`/`.storage`/the other integration all **absent**. Plus `seccomp.py` — 29 calls denied, verified by behaviour on both architectures. **All three of §5.7.3's primitives are built and measured.** Plus `channel.py`, `mediator.py` and `selftest_channel.py` — **identity is the socket, demonstrated with two sandboxes both claiming to be the same integration**. Plus `manifest.py` and `selftest_policy.py` — validation, S5's asymmetry, resolve-then-pin, clause pointers. Plus `describe.py` (the F4 surface, discharging T13's unplaced half) and `audit.py` (three-part identity, hash chain **and** keyed MAC chain, failing independently). **Eight self-tests, all passing on the Pi** — including `selftest_adversary.py`: 37 attempts, 21 blocked, 9 **empty** (succeeded and found nothing), 6 denied, 1 permitted, neither canary reached. Described by §6.4.2, §6.4.4–§6.4.6 and §6.5–§6.8 |
@@ -63,12 +63,32 @@ corrections came from running a measurement rather than re-reading the argument.
 
 | # | Task | Notes |
 |---|---|---|
-| **1** | **Run the `declared` profile over the full corpus** | The code is **written, committed and smoke-tested** (`--profile declared`: auth wired + only the components an integration's own manifest asks for + their requirements). On the first six it already matches the blanket profile's result. One command: `systemd-run --user --scope -q python3 -m confine.compat --corpus ~/r2exp/corpus --python ~/r2exp/ha314/bin/python --profile declared --json ~/r2exp/compat_declared.json` (~25 min). Compare against 46% minimal / 70% blanket |
-| **2** | **Then PSS as a function of what is declared** | `experiments/unstrip/scale.py --components http,websocket_api` etc. The blanket profile costs 130.4 MB; an integration declaring nothing costs 54.5 MB. Measuring two or three points gives the *expected* budget over the corpus's real declaration distribution, which is the honest budget figure — a single number is not |
+| ~~1~~ | ~~Run the `declared` profile over the full corpus~~ | ✅ **Done 2026-08-25, §6.13.** **57%** (21/37) at **+9.0 MB** median over the minimal instance, against the blanket profile's 70% at +32.2 MB. §6.12.4 predicted 70–76% and was wrong; see below |
+| **1** | **`declared` + the platform's core package set** | The measurement §6.13.4 indicates and the cheapest one left. `declared` unchanged, but with the requirements of the platform's *own* components present in the sandbox environment rather than only those of the components the integration declares. Packages bind read-only like `homeassistant` itself, so the cost is disk, not per-sandbox memory. Should recover most of the six at close to `declared`'s memory |
+| **2** | **Then PSS as a function of what is declared** | `experiments/unstrip/scale.py --components http,websocket_api` etc. The blanket profile costs 130.4 MB; an integration declaring nothing costs 54.5 MB. Measuring two or three points gives the *expected* budget over the corpus's real declaration distribution — and §6.13 now supplies that distribution: sixteen of 37 declare no components at all |
 | **2** | **The baseline arm** | Run the same 37 against a *full* Home Assistant. Without it, 46% does not decompose into "confinement broke it" and "it was broken anyway". **Chapter 7's first task** |
 | **3** | Then the egress proxy | Scope item 2's second half: per-integration outbound network with T11's resolve-then-pin at connection time |
 | 3 | §6.5–§6.9 | Bridge and channel, mediator, the manifest surface the user meets (T13), the audit record, the adversarial cases |
 | 4 | §6.10 | The report against §5.6.5's three R1 re-decision triggers, for G3 |
+
+**⚠ §6.12.4's prediction failed, and the failure is the better result (§6.13, 2026-08-25).**
+The per-integration `declared` profile — auth wired, only the components an integration's own
+manifest asks for — was predicted to reach 70–76%. It reaches **57%**, over *exactly the same
+twenty-one integrations* as the earlier arm that ran with auth unwired. Wiring auth changed eleven
+failure reasons and moved the corpus figure by zero.
+
+- **The budget half of the prediction held.** +9.0 MB median over the minimal instance, against
+  the blanket profile's +32.2 MB. Sixteen of the 37 declare no components and are charged nothing.
+- **The blanket profile's entire lead is dependency spillover, not components.** Six integrations
+  pass under it and fail under `declared`, and all six fail on a missing *package* — `numpy`
+  (`browser_mod`, `dwd_weather`, `llmvision`, `webrtc`) or `turbojpeg` (`dreame_vacuum`,
+  `powercalc`). Both are requirements of `stream`, which none of the six declares and none needs.
+  **70% = 57% earned + 16 points borrowed.**
+- **It bounds Chapter 5's central premise with a number. 16% of this corpus imports at least one
+  package its manifest never names.** "The declaration always already exists" survives — those six
+  still declare components, platforms and config flow truthfully — but for packages it is
+  *incomplete*, and Chapter 8 owes that rather than letting 57% stand as though nothing were.
+- Chapter 5 was **not** edited; §6.12.4 carries a pointer to §6.13.
 
 **✅ The base component is dropped (2026-08-25, `experiments/base_component/`).**
 

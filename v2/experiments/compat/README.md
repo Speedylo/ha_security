@@ -119,3 +119,59 @@ systemd-run --user --scope -q python3 -m confine.compat \
 `--no-install` skips dependency installation, which reproduces the first version of this
 measurement and shows why it was wrong: without it, 5 of the first 6 integrations fail on their
 own declared packages and the trigger cannot be tested at all.
+
+---
+
+## Third run, 2026-08-25 evening — the `declared` profile, and where the blanket profile's lead comes from
+
+`--profile declared` was added after §6.12.4 named it as the design to build: wire the auth
+manager for every sandbox, then set up **only the components the integration's own
+`manifest.json` asks for**, plus their requirements. All 37 re-run under it.
+
+| Profile | Imports clean, all platforms | Peak memory, median | Peak, max |
+|---|---|---|---|
+| `minimal` — stripped instance | 17/37 — 46% | 100.6 MB | 151.0 MB |
+| **`declared` — per integration** | **21/37 — 57%** | **109.6 MB** | 207.8 MB |
+| `unstripped` — blanket ten components | 26/37 — 70% | 132.8 MB | 226.2 MB |
+
+Raw output: `results/compat_declared.json`, `results/compat_declared.txt`.
+
+**§6.12.4 predicted 70–76%. It got 57%, over exactly the same twenty-one integrations as the
+earlier per-integration arm that ran with auth unwired.** Wiring auth changed eleven integrations'
+reported failure reason and moved the corpus figure by zero. The budget half of the prediction
+held — +9.0 MB over the minimal instance against the blanket profile's +32.2 MB, and sixteen
+integrations declare no components and are charged nothing.
+
+**Why the blanket profile is still ahead, and it is not components.** Nine integrations pass under
+`unstripped` that fail under `declared`; `nodered` goes the other way (it declares `conversation`,
+which the blanket list omits). Net six — and **all six fail on a missing Python package**, not a
+missing component:
+
+| Integration | Missing | Declares it? |
+|---|---|---|
+| `browser_mod`, `dwd_weather`, `llmvision`, `webrtc` | `numpy` | no |
+| `dreame_vacuum`, `powercalc` | `turbojpeg` | no |
+
+Both are requirements of `stream` (`PyTurboJPEG==1.8.3`, `av==17.0.1`, `numpy==2.3.2`). None of the
+six declares `stream`; none lists either package in its own `requirements`; four declare no
+packages at all. They work in a real installation because some core component has always pulled
+those wheels into the shared environment, and the blanket profile reproduced that accident.
+
+**So the blanket profile's whole compatibility advantage is dependency spillover.** 70% =
+57% earned by what integrations declare + 16 points borrowed from packages they do not. Setting up
+more components bought none of it.
+
+**The measurement this indicates**, and it is the cheap one: `declared` unchanged, with the
+platform's own component requirements present in the sandbox environment rather than only those of
+the components it declares. Packages are bound read-only like the `homeassistant` library, so the
+cost is disk, not per-sandbox memory. Written up in §6.13.
+
+**A bound on Chapter 5's premise, worth recording as a number:** 16% of this corpus imports at
+least one package its manifest never names. The declaration exists; for those six it is
+incomplete.
+
+```bash
+systemd-run --user --scope -q python3 -m confine.compat \
+    --corpus ~/r2exp/corpus --python ~/r2exp/ha314/bin/python \
+    --profile declared --json results/compat_declared.json
+```

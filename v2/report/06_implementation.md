@@ -1560,6 +1560,12 @@ reached only 57% — and re-running it now that auth is free is the obvious next
 should approach 70–76% at well under 130 MB for integrations that declare little, and it is what
 Chapter 7 should evaluate rather than the blanket profile.
 
+> **Measured in §6.13, and this paragraph is wrong.** The per-integration profile with the auth
+> manager wired reaches **57%** — the same figure, over the same twenty-one integrations, as the
+> arm that ran without it. The budget half of the prediction held; the compatibility half did
+> not, and the reason it failed turned out to be worth more than the prediction would have been.
+> The paragraph is left standing rather than corrected, for the reason given in §6.3.2.
+
 **One correction of my own to record.** §6.11.3 reported three integrations failing on packages
 nobody provides. Two of them — `dreame_vacuum` and `dwd_weather` — turn out to be reachable:
 `turbojpeg` and `numpy` arrive with the requirements of components the platform ships. Only
@@ -1570,8 +1576,135 @@ that were never attempted — a bug fixed here rather than left to flatter the e
 
 ---
 
-*Chapter 6 drafted 2026-08-25, §6.1–§6.12. Eight self-tests and three corpus measurements
+## 6.13 The declared profile, and a prediction that did not survive
+
+§6.12.4 ended by naming a design it had not measured: wire the auth manager for every sandbox,
+and set up components per integration from its own `manifest.json` rather than from a fixed list.
+It predicted 70–76% compatibility at well under the blanket profile's memory. The code for it was
+written the same day; this section is what happened when it ran.
+
+The harness gained a third profile, `declared`, which differs from the blanket profile in one
+respect: instead of un-stripping the same ten components into every sandbox, it reads the
+integration's own `dependencies` and `after_dependencies`, sets up exactly those, and installs
+exactly their requirements. Auth is wired in both. The same 37 integrations, the same corpus, the
+same machine, one sandbox each.
+
+### 6.13.1 The three profiles side by side
+
+| Profile | Imports clean, all platforms | Peak memory, median | Peak, max |
+|---|---|---|---|
+| Minimal instance (§6.11.3) | 17/37 — **46%** | 100.6 MB | 151.0 MB |
+| **Declared, per integration** | **21/37 — 57%** | **109.6 MB** | 207.8 MB |
+| Blanket ten-component (§6.12) | 26/37 — **70%** | 132.8 MB | 226.2 MB |
+
+The budget half of §6.12.4's prediction held, and comfortably. The declared profile costs **+9.0
+MB** over the minimal instance where the blanket profile costs **+32.2 MB** — about 28% of the
+premium, and each integration pays only for what it asked for. `nordpool` sets up `http` and
+nothing else; `adaptive_lighting` sets up `light`; sixteen of the 37 declare no components at all
+and are charged nothing.
+
+The compatibility half did not hold. 57%, not 70–76%.
+
+**And it is 57% over exactly the same twenty-one integrations as the earlier arm that ran with
+auth unwired** — `alarmo`, `homematicip_local`, `meross_lan` and `nodered` added to §6.11.3's
+seventeen, the same four, no others. §6.12.4 attributed that arm's 57% to the missing auth
+manager. That attribution was wrong: wiring auth changed which integrations reached `http`
+successfully, and changed the reported failure reasons for eleven of them, but moved the corpus
+figure by zero. The coincidence of the number is worth stating plainly, because a reader
+comparing only the headline figures would conclude the change did nothing, and it did a great
+deal — it just did not do *this*.
+
+### 6.13.2 Why the blanket profile is ahead, and the answer is not components
+
+Nine integrations pass under the blanket profile that fail under the declared one; one —
+`nodered`, which declares `conversation`, a component the blanket list does not include — goes
+the other way. Net six. The interesting question is what those six get from the blanket profile
+that their own declarations do not give them.
+
+Not a component. **All six fail on a missing Python package**: `browser_mod`, `dwd_weather`,
+`llmvision` and `webrtc` on `numpy`; `dreame_vacuum` and `powercalc` on `turbojpeg`. Both
+packages arrive as requirements of `stream`:
+
+```json
+"requirements": ["PyTurboJPEG==1.8.3", "av==17.0.1", "numpy==2.3.2"]
+```
+
+None of the six declares `stream`. None of the six lists `numpy` or `PyTurboJPEG` in its own
+`requirements` — four of them declare no packages at all. They import them and they work, because
+in a real Home Assistant installation some core component has always pulled those wheels into the
+shared environment, and the blanket profile reproduced that accident by un-stripping `stream`
+into every sandbox whether or not the integration had any use for it.
+
+**So the blanket profile's entire compatibility advantage over the declared one is dependency
+spillover.** Setting up more components bought nothing; installing more packages bought all six.
+The 70% in §6.12.4's table decomposes into 57% earned by what integrations declare and 16 points
+borrowed from what they happened to find lying around.
+
+That is a sharper result than the prediction it replaces, and it changes what §6.12's 75.9 MB was
+buying. `stream` was charged at 28.3 MB per sandbox on the reading that two integrations needed
+it. Six more needed its *requirements* and not the component — which is a much cheaper thing to
+supply, and supplying it does not put a video pipeline in the sandbox of a weather integration.
+
+### 6.13.3 The premise this dents
+
+Chapter 5 rests on a claim stated three times in three independent forms: **the declaration always
+already exists, and is never load-bearing.** Six integrations here import a package their manifest
+does not name. For those six the declaration exists but is *incomplete*, and the framework cannot
+tell the difference between an integration that needs `numpy` and one that does not by reading the
+file that is supposed to say so.
+
+This does not break the premise — the premise is about what the framework may *rely* on, and the
+six still declare their components, their platforms and their config-flow surface truthfully. But
+it bounds it, and the bound is measurable rather than rhetorical: **16% of this corpus imports at
+least one package it never declared.** A design that hands each integration only what it asked for
+will break those six, and it will break them at import time with a clean `ModuleNotFoundError`
+rather than silently — which is the right failure, but it is still a failure, and Chapter 8 should
+say so rather than let 57% stand as though nothing were owed.
+
+The honest options are three, and none of them is free:
+
+- **Supply the union of core requirements to every sandbox.** Cheap in engineering, and it is what
+  a real installation does. It costs disk, not per-sandbox memory, since the packages are bound
+  read-only like the `homeassistant` library itself. It also means the sandbox contains code no
+  integration declared, which is the thing §5.6.2 spent a section arguing against.
+- **Let the integration declare its packages and fail if it does not.** Consistent with every
+  other decision in the design, and it takes 57% as the honest figure. Six integrations become
+  incompatible for a reason that is theirs, not the framework's.
+- **Report both.** Which is what this chapter does.
+
+### 6.13.4 What Gate G3 reads now
+
+| Option | Compatibility | Per-sandbox premium |
+|---|---|---|
+| Keep the minimal instance | 46% | — |
+| Declared, per integration | 57% | +9.0 MB |
+| Blanket ten-component | 70% | +32.2 MB |
+| Declared **+ core package set** | 57–73%, unmeasured | +9.0 MB, plus disk |
+
+The last row is the design §6.13.2 indicates and the one measurement that is now obviously worth
+running: the declared profile, unchanged, with the requirements of the platform's own components
+available in the sandbox's environment rather than only the requirements of the components it
+declares. It should recover most of the six at close to the declared profile's memory, because
+what those six were missing was never a component.
+
+**§6.11.5's third option — reverting to R1 — remains unindicated, and for the same reason as
+before, now better evidenced.** Not one failure in this run is a failure of hosting. Sixteen are
+missing packages or missing components; two are the corpus's own defects. Nothing here would be
+fixed by moving the integration back out of the sandbox.
+
+**The caveat §6.11.1 attached still applies and has not moved.** These are import-level figures
+with entity platforms exercised, against a minimal instance whose own defects §6.3.3 documents.
+Until the baseline arm runs — the same 37 against a full Home Assistant on the same release — 57%
+and 70% do not decompose into "confinement broke it" and "it was broken already". That remains
+Chapter 7's first task, and none of the numbers in this chapter should be quoted as a property of
+the design until it is done.
+
+
+---
+
+*Chapter 6 drafted 2026-08-25, §6.1–§6.13. Eight self-tests and four corpus measurements
 passing on the C4 device, including an unmodified integration running inside a sandbox and **70%
-of the most-installed community integrations importing clean** against an un-stripped one. Gate
-G3 has its numbers. The section plan, the obligations this chapter inherits, and the questions a
+of the most-installed community integrations importing clean** against an un-stripped one — of
+which §6.13 shows 57 points are earned by what integrations declare and 16 borrowed from packages
+they do not. Gate G3 has its numbers. The section plan, the obligations this chapter inherits, and the questions a
 viva will probe are in `notes/ch6_working_notes.md`.*
