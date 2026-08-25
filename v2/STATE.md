@@ -2,9 +2,10 @@
 
 **Last updated:** 2026-08-25 · **Read this first when resuming.**
 
-**Where it stands in one line:** Chapters 1–5 drafted — Chapter 5 complete at §5.15 of 15,
-Gate G2 closed with two divergences, and four measurements run on the Pi 5 and the corpora
-rather than argued — see `experiments/` and `figures/`.
+**Where it stands in one line:** Chapters 1–5 complete and **Chapter 6 started at §6.3 of 10**
+— Gate G2 closed with two divergences, and five measurements run on the Pi 5 and the corpora
+rather than argued, the latest of which corrected Chapter 5 — see `experiments/` and
+`figures/`.
 
 Read alongside `00_METHOD.md` (ground rules — especially the evidence rule) and
 `01_PLAN.md` (stage plan and gates). Chapter working notes in `notes/` carry the reasoning
@@ -34,17 +35,44 @@ that does not belong in the report, including anticipated viva questions.
 | `figures/api_surface.py`, `fetch_hacs_corpus.py` | ✅ **2026-08-24.** The API surface re-derived by `ast` parsing over two corpora — 1,458 shipped and 144 community integrations, zero parse failures. Write-up in `notes/ch5_evidence_api_surface.md`; corpus reproducible from `hacs_corpus_manifest.json` |
 | `experiments/r2_footprint/` | ✅ **Pi 5, 2026-08-24.** R2's premise holds and it fits: minimal HA builds without `bootstrap`, an ordinary integration runs against it, 176 MB first sandbox / 136 MB marginal / ~17 in 60% of 4 GB. Feeds §5.6.3 |
 | `experiments/mediation_latency/` | ✅ **Pi 5, 2026-08-24.** One mediated request over the channel: **30.0 µs** median, p99 33.9 µs; ~33k req/s. Floor only — excludes manifest check and audit write. Feeds §5.11.4 |
+| `experiments/base_component/` | ✅ **Pi 5, 2026-08-25.** The measurement §5.6.5 deferred to Chapter 6. The base component **can** be dropped — 46.6 MB per sandbox, budget 17 → **26** (1.53×, **not** the 2× §5.6.5 predicted). Two controls: both arm orders, and a 0.1 MB replication of §5.6.3's marginal figure. It also found a defect in §5.6.3's own recipe — see below. Feeds §6.3 |
+| `report/06_implementation.md` | 🔵 **In progress.** §6.1–§6.3 drafted 2026-08-25; §6.4 (the supervisor) next. Section plan and inherited obligations in `notes/ch6_working_notes.md` |
 | `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24; re-run 2026-08-25.** Namespaces (unprivileged), seccomp and cgroup v2 all present. `memory` was absent on the stock install; after the boot change it is present **and the cap is verified to bite, unprivileged**. Feeds §5.7.4 |
 
 ## Next session — start here
 
-**Chapters 1–5 are complete.** Chapter 5 was read end to end on 2026-08-25 and its eight fixes
-applied. **Chapter 6 is next**, and its first task is already fixed by §5.6.5.
+**Chapters 1–5 are complete. Chapter 6 is drafted through §6.3.** Its first task — the
+base-component measurement §5.6.5 deferred to it — is done, and it corrected Chapter 5.
 
 | # | Task | Notes |
 |---|---|---|
-| **1** | **Ch. 6 — measure whether the sandbox needs the base `homeassistant` component** | **60 MB of the 176 MB.** Dropping it roughly doubles the ~17-sandbox budget and largely dissolves §5.8.1's third qualification |
-| 2 | Then the rest of Chapter 6 | The spike is cited as prior feasibility work, then reconciled with the design Ch. 5 produced |
+| **1** | **Ch. 6 §6.4 — the supervisor** | Namespaces, **cgroup joined at creation** (§5.7.4), seccomp, distinct uid. The construction-order table in §6.3.4 is what it has to satisfy |
+| 2 | §6.5–§6.9 | Bridge and channel, mediator, the manifest surface the user meets (T13), the audit record, the adversarial cases |
+| 3 | §6.10 | The report against §5.6.5's three R1 re-decision triggers, for G3 |
+
+**✅ The base component is dropped (2026-08-25, `experiments/base_component/`).**
+
+- **It can go.** Both probes load, the same entities are published, and the only loss is the
+  `homeassistant` domain's thirteen services — which are cross-integration by nature and the
+  design routes through the mediator anyway. The sandbox's service registry is then *empty*,
+  which makes §5.6.2's claim literally true.
+- **But §5.6.5's "roughly doubles" was wrong.** 46.6 MB per sandbox, budget 17 → 26, a factor
+  of **1.53**. The prediction came from subtracting single-process figures — the arithmetic
+  §5.6.3 warns against, four paragraphs earlier in the same chapter. **Chapter 5 was not
+  edited to be right**; §5.6.5 and §5.8.1 now carry a pointer to §6.3.2 instead.
+- **Compatibility cost, bounded:** 8 of 144 community integrations (5.6%) call a
+  `homeassistant.*` service with a literal domain; 13 (9.0%) import the component. Lower bounds.
+
+**⚠ The more valuable finding was accidental, and Chapter 7 depends on it.** §5.6.3's
+`build_minimal_hass` reaches the running state with `set_state(CoreState.running)`, which never
+fires `EVENT_HOMEASSISTANT_START`. `async_at_start` branches on `hass.is_running`, so this
+*splits* deferred callbacks rather than dropping them: those registered before the flag (the
+helper layer's own — **state restoration among them**) are lost permanently; those registered
+after fire immediately, mid-assembly, instead of at start. **The fix is `await
+hass.async_start()` called last**, after every component is set up — starting earlier also
+repairs restoration and is the wrong fix. The defect was silent: no exception, no log line,
+just a sensor reporting the wrong number. **Chapter 7 must check any compatibility failure
+against the minimal instance before charging it to the design.**
 
 **✅ S9 is now verified on the Pi (2026-08-25).** The blocker is cleared and the result is
 stronger than "the controller is present":
@@ -64,18 +92,15 @@ stronger than "the controller is present":
 - `probe.sh` now tests the cap for *effect*, not presence, and prints the applicable boot
   instruction for whichever case the host is in.
 
-**⚠ §5.14's traceability check generated three obligations. They are cheap now and expensive
-in November.**
+**⚠ Four obligations are outstanding — three from §5.14's traceability check, one added by
+§6.3.3. They are cheap now and expensive in November.**
 
 | Owed by | What | Why |
 |---|---|---|
 | **Ch. 6** | A surface where the user encounters the declaration | T13's control has two halves; "enforcement bounded to the declaration" is placed thoroughly and **"declaration made visible" is placed nowhere in Ch. 5**. Bounded by §3.7 — a surface is owed, not evidence anyone reads it |
 | **Ch. 7** | Never repeat §4.10's phrase "filesystem isolation *to declared resources*" | §5.10.2 removed the filesystem clause entirely. The design is stricter than the control, but the phrase now misdescribes the artifact |
 | **Ch. 7** | State S9's boot-time precondition when evaluating it | The Pi's `memory` cgroup controller is disabled by Pi OS (§5.7.4). Testing on a machine where that was quietly fixed, without saying so, is the dishonest version |
-
-**Then Chapter 6 (implementation).** Its first task is fixed by §5.6.5: measure whether the
-sandbox needs the platform's base `homeassistant` component. That is **60 MB of the 176 MB**,
-and dropping it roughly doubles the ~17-sandbox budget.
+| **Ch. 7** | Check every compatibility failure against the minimal instance **before** charging it to the design | §6.3.3. The `async_at_start` defect broke state restoration silently — no exception, no log line. Left in, it would have been measured as the cost of confinement |
 
 **⚠ One conflict is open and deliberately unresolved.** `01_PLAN.md` §6 says the actuator PoC
 is cut first if G3 fires. §5.8.2 derived scope from Chapter 3's verification column and found

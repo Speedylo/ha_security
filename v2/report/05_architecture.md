@@ -384,6 +384,14 @@ threshold — so the footprint trigger has room before it fires. And **60 MB of 
 the platform's own base component**, which Chapter 6 tests first for removability; if it can
 go, capacity roughly doubles.
 
+> **Measured, 2026-08-25 — and this paragraph's last clause is wrong (§6.3.2).** The base
+> component can indeed be dropped: an ordinary integration loads without it, and all that is
+> lost is thirteen services the design routes through the mediator anyway. But the saving is
+> **46.6 MB per sandbox**, not 60, and the budget goes from 17 to **26** — a factor of 1.53,
+> not 2. The "roughly doubles" above was obtained by subtracting single-process figures, which
+> is the arithmetic §5.6.3 warns against four paragraphs earlier. It is left as written,
+> because Chapter 6 correcting it is worth more than this section being quietly right.
+
 **A consequence for §5.8.** Seventeen sandboxes is sufficient but not generous, and an
 installation with more integrations than that cannot have one sandbox each. The implemented
 scope decision is therefore load-bearing rather than cosmetic, and it now has a number to be
@@ -603,7 +611,9 @@ Three qualifications, because the margin is comfortable rather than unlimited:
 - **The budget is idle-state.** §5.6.3's sandboxes were measured at rest and without a
   mediator attached. Both figures will move.
 - **60 MB of the 176 is the platform's base component.** If Chapter 6 finds it removable, the
-  budget roughly doubles and this qualification largely dissolves.
+  budget roughly doubles and this qualification largely dissolves. *(Measured in §6.3.2: it is
+  removable, but the budget goes to **26**, not to 34. This qualification shrinks; it does not
+  dissolve. The other two stand unchanged.)*
 
 If an installation does exceed the budget, the design degrades in a way N3 already governs:
 the framework states the limit and refuses to confine beyond it, rather than silently
@@ -1804,5 +1814,6 @@ Chapter 6 is where it stops being an argument.
 
 ---
 
-*Chapter 5 complete, §5.1–§5.15. Not yet read end to end as a whole; that read and Chapter 6
-are next. The section plan is in `notes/ch5_working_notes.md`.*
+*Chapter 5 complete, §5.1–§5.15, and read end to end on 2026-08-25 (eight fixes, recorded in
+`notes/ch5_working_notes.md` along with the section plan). Chapter 6 is next, and its first
+task — the base-component measurement §5.6.5 defers to it — is done and reported in §6.3.2.*
