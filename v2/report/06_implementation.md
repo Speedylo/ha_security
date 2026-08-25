@@ -652,22 +652,28 @@ been forgotten once.
 ### 6.5.2 Both sandboxes claim to be the same integration
 
 Two sandboxes are started, `demo_a` and `demo_b`. Both send
-`{"integration": "demo_a", "op": "service.call", "service": "lock.unlock", …}`. One of them is
-lying. The mediator's audit record:
+`{"integration": "demo_a", …}`. One of them is lying — and the integration it claims to be is
+one that **holds a grant**, so the lie has something to win. `demo_a`'s manifest permits reading
+one sensor; `demo_b` declares nothing. The mediator's audit record:
 
-| True identity | Claimed to be | Allowed | Reason |
-|---|---|---|---|
-| `demo_a` | `demo_a` | no | no manifest is bound to this integration |
-| `demo_b` | **`demo_a`** | no | no manifest is bound to this integration |
+| True identity | Claimed | Request | Verdict | Clause |
+|---|---|---|---|---|
+| `demo_a` | `demo_a` | `entity.read` | **permit** | `/permissions/entities/read/0` |
+| `demo_a` | `demo_a` | `service.call` | deny | `/permissions/services/call` |
+| `demo_b` | **`demo_a`** | `entity.read` | **deny** | `/permissions/entities/read` |
+| `demo_b` | **`demo_a`** | `service.call` | deny | `/permissions/services/call` |
 
-*Strength of claim: measured.* On the C4 device, two concurrent sandboxes, 4,002 requests.
+*Strength of claim: measured.* On the C4 device, two concurrent sandboxes, 4,004 requests.
 
-The claim in the message is recorded — as a *claim*, in its own field, beside the identity that
-came from the socket — and it changes nothing. This is the demonstration §5.11.2's argument
-needs, and it is also the S4 mechanism in miniature: attribution is a property of the topology
-rather than a deduction from it, which is precisely what §2.4.2's prior work cannot do.
+The third row is the one that matters. `demo_b` asked for exactly what `demo_a` was permitted,
+while claiming to be `demo_a`, and was refused — because the claim is recorded as a *claim*, in
+its own field, beside an identity that came from the socket. There was nothing in the protocol
+to check and therefore nothing to get wrong.
 
-Both requests were denied, which is S6 with nothing bound yet. The permit path is §6.6's.
+This is the demonstration §5.11.2's argument needs, and it is the S4 mechanism in miniature:
+attribution is a property of the topology rather than a deduction from it, which is precisely
+what §2.4.2's prior work cannot do. A demonstration in which everything is denied would not have
+shown it; the permit path has to exist for the refusal to mean anything.
 
 ### 6.5.3 What the channel costs when it is real
 
@@ -694,13 +700,126 @@ now spends 0.36 ms per cycle in mediation rather than 0.30 ms, against a thirty-
 §6.3.2 puts the device's budget at twenty-six. A tail that doubles at two clients is not
 evidence about twenty-six, and the shape of the curve between them is exactly what a
 single-threaded mediator's design deserves to be judged on. Chapter 7 measures latency at
-realistic sandbox counts, and if the tail is unacceptable the mediator's concurrency — not the
-protocol — is what changes.
+realistic sandbox counts.
+
+**How much concurrency could help is bounded, and the bound is in Chapter 5.** §5.12.4 makes
+the audit log a hash chain, in which "modifying, deleting **or reordering** any record breaks
+every link after it" — and a chain requires a total order. Step 4 of §5.11.3's five must
+therefore serialise however concurrent the rest becomes. Steps 1, 2, 3 and 5 can proceed in
+parallel; the record cannot.
+
+That reframes the measurement above rather than excusing it. **The mediator does not yet
+implement step 5**, so these figures are almost entirely the part that has to stay serial, and
+adding the platform call will make the tail worse before any concurrency makes it better. The
+fix, when it is needed, is an asynchronous mediator rather than a threaded one — the work at
+step 5 is I/O to the platform, so the constraint that the supervisor be single-threaded at the
+moment it forks (§6.4.2) need not be given up to get it.
+
+## 6.6 The manifest, and the permit path
+
+§5.10 specifies what a manifest can say and §5.9.4 specifies where one comes from. Both are
+security properties rather than presentational ones, so the implementation is written to two
+rules that are worth stating before anything else.
+
+**Reject at parse time, not at use time.** §5.10.5 already required this of one thing — a
+declared path enclosing the configuration root "is rejected when the manifest is parsed, not
+when it is first used" — and the same discipline is applied to every constraint: a wildcard in
+`services.call`, a pattern without a domain, an unknown capability, a wrong schema version. A
+manifest that reaches the mediator has already been found well-formed, so **the decision path
+contains no error cases at all**. That matters more than it sounds: the decision path runs
+thousands of times a second and an error branch there is a branch that can be got wrong under
+load.
+
+**An unknown key is a rejection, not something to ignore.** Ignoring an unrecognised capability
+means a manifest written against a later schema is silently under-enforced — the exact failure
+this design exists to remove, and §6.4.5's absence problem in yet another costume. It is also
+what the platform's own tooling does: `hassfest`'s voluptuous schemas default to `PREVENT_EXTRA`
+(§5.10.1).
+
+### 6.6.1 What is refused when a manifest is read
+
+| Refused | The rule |
+|---|---|
+| `lock.*` in `services.call` | §5.10.4. **Every entry names one `domain.service`** — the rule S5 exists to produce |
+| `*` as an entity pattern | §5.10.4. A domain is always required, so `*` alone is never a grant |
+| `*.temperature` | The same rule, wildcarding the domain rather than the object |
+| `*` in `events.subscribe` | §5.10.3. The bus carries every state change in the home |
+| An unknown capability, or an unknown member of a known one | §5.10.1 |
+| `schema_version` other than 1 | §5.10.1 |
+| A `files` grant naming the configuration root, `.storage/`, or `secrets.yaml` **reached through `..`** | §5.10.5, resolve-then-pin |
+
+The last row is the resolve-then-pin principle doing visible work: `…/shared/../secrets.yaml` is
+resolved before it is compared, so the traversal cannot name what the declaration could not.
+
+### 6.6.2 S5, which is the one rule the schema exists for
+
+A manifest permitting `lock.lock`:
+
+```json
+{"schema_version": 1, "services": {"call": ["lock.lock"]}}
+```
+
+permits `lock.lock` at `/permissions/services/call/0`, and refuses `lock.unlock` with
+*"'lock.unlock' matches no clause at /permissions/services/call"*.
+
+*Strength of claim: measured*, though of the schema and not yet of the artifact end to end.
+§5.8.2 requires a `lock`-domain service path through the running system to verify S5 against its
+own stated criterion, and that is still owed — this establishes that the manifest layer cannot
+express the grant that would defeat it. Because validation rejects wildcards outright, the
+comparison in the decision path is exact string equality: **S5 is a property of the comparison
+itself rather than of a rule applied to it.**
+
+### 6.6.3 Every decision names a clause
+
+F3 requires every enforcement decision to be attributable to a manifest clause, and §5.10.8
+makes that mechanical by giving each clause a JSON pointer. All three of its rows are
+implemented, and the pointer is constructed *by the branch that decided* rather than looked up
+afterwards — so a decision that cannot name a clause is not merely a bug that Chapter 7 could
+detect, it is a state this module cannot reach.
+
+| Decision | Pointer recorded |
+|---|---|
+| Permitted | the clause that permitted it — `/permissions/entities/read/0` |
+| Denied by absence | the capability that held no matching clause — `/permissions/services/call` |
+| Denied by rule | the constraint that rejected it, at parse time, with the path that triggered it |
+
+### 6.6.4 What the decision costs
+
+The channel measurement of §6.5.3 was repeated with the real manifest evaluation in place of
+the placeholder that denied everything:
+
+| | deny-everything (§6.5.3) | real manifest evaluation |
+|---|---|---|
+| median | 35.6 µs | **38.0 µs** |
+| p99 | 62.7 µs | 64.6 µs |
+
+**Step 3 costs about 2.4 µs**, and the tail is unchanged within noise. That is the useful shape:
+the decision itself is nearly free, and §6.5.3's conclusion that the cost lives in queueing
+rather than in per-request work survives contact with a real policy.
+
+### 6.6.5 A test that passed for the wrong reason
+
+The three `files` rejections above initially passed — and proved nothing. `files` had been
+omitted from the table of known capability members, so those manifests were being refused as
+*"unknown member 'read'"* and never reached §5.10.5's path check at all. The suite was green,
+the rule was untested, and the output said `rejected` in both cases.
+
+It was caught by reading the rejection *reasons* rather than the verdicts, which is the only
+reason it was caught at all. Two things follow, and the second is the one worth keeping:
+
+- The self-test prints the rejection *reason* beside every verdict, not just the verdict. That
+  is what made the defect visible, and it is why the practice is worth keeping rather than
+  trimming as noise.
+- **This is the same failure as §6.4.5's, one level up.** There, a bug produced an absence and
+  absence is what the design uses to mean "denied". Here, a bug produced a rejection and
+  rejection is what the test was looking for. A default-deny system is one in which almost every
+  mistake produces the safe answer, and safe answers are exactly what tests do not investigate.
+  Chapter 7's negative cases have to assert on *why* something was refused, not that it was.
 
 ---
 
-*Chapter 6 in progress: §6.1–§6.3, §6.4.1–§6.4.6 and §6.5 drafted 2026-08-25. All three of
-§5.7.3's isolation primitives are built and measured on the C4 device, and the channel carries
-identity by construction. Next: §6.6, the mediator's manifest evaluation — the permit path S6
-currently has nothing to permit with. The section plan and the obligations this chapter inherits
-are in `notes/ch6_working_notes.md`.*
+*Chapter 6 in progress: §6.1–§6.3, §6.4.1–§6.4.6, §6.5 and §6.6 drafted 2026-08-25. The
+supervisor confines, the channel carries identity by construction, and the manifest decides.
+Next: §6.7, the surface at which the user encounters the declaration — T13's unplaced half,
+owed by §5.14.4. The section plan and the obligations this chapter inherits are in
+`notes/ch6_working_notes.md`.*

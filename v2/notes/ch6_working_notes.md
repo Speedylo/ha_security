@@ -14,7 +14,7 @@ questions a viva will probe.
 | 6.3 | The sandbox — constructed not booted; the base component; the defect that found | ✅ drafted |
 | 6.4 | The supervisor — where it must run (§6.4.1), the preflight (§6.4.2), the ordering bug (§6.4.3), the sandbox's filesystem (§6.4.4–§6.4.5) and the seccomp filter (§6.4.6) | ✅ **§6.4 complete.** All three of §5.7.3's primitives built and measured on the Pi; preflight 8/8, self-test passes |
 | 6.5 | The channel — framing, identity by construction, and what it costs when real | ✅ drafted; `channel.py`, `mediator.py`, `selftest_channel.py` pass on the Pi |
-| 6.6 | The mediator — manifest evaluation, resolve-then-pin | ⬜ |
+| 6.6 | The manifest and the permit path — validation, S5, clause pointers, what a decision costs | ✅ drafted; `manifest.py` + `selftest_policy.py` pass |
 | 6.7 | The manifest as the user meets it — **T13's unplaced half**, owed by §5.14.4 | ⬜ |
 | 6.8 | The audit record — three-part identity, the hash chain | ⬜ |
 | 6.9 | The adversarial cases, as built — §5.8.2's fourth scope item | ⬜ |
@@ -239,6 +239,39 @@ does not serialise.
 nothing about twenty-six (§6.3.2's budget), and the shape of the curve between them is what a
 single-threaded mediator deserves to be judged on.
 
+## §6.6 — the manifest
+
+**Two rules the module is written to**, both worth being able to state as decisions rather than
+as style: reject at parse time so the decision path has no error branches in it, and treat an
+unknown key as a rejection rather than ignoring it, because ignoring under-enforces silently.
+The second matches what `hassfest` already does (`PREVENT_EXTRA`), which is a useful thing to be
+able to point at.
+
+**S5 is a property of the comparison, not a rule applied to it.** Validation rejects wildcards in
+`services.call` outright, so the decision path is exact string equality. There is no code that
+could be written slightly wrong and let `lock.*` through, because `lock.*` never gets past
+parsing. That is the strongest form of the argument and it is worth putting that way round.
+
+**Still owed for S5:** §5.8.2 requires a `lock`-domain service path through the *running* system.
+§6.6.2 establishes the manifest layer cannot express the defeating grant; it is not the end-to-end
+verification and says so.
+
+**Cost of a decision: ~2.4 µs** (median 35.6 → 38.0 µs against the deny-everything placeholder),
+tail unchanged. Confirms §6.5.3's decomposition: the work per request is small, the queueing is
+not.
+
+### The test that passed for the wrong reason
+
+Three `files` rejections were green and proved nothing: `files` was missing from the known-members
+table, so those manifests were refused as *"unknown member 'read'"* and never reached §5.10.5's
+path check. Caught only by reading the rejection *reasons* rather than the verdicts.
+
+**Why this keeps happening, and the generalisation to carry into Chapter 7:** a default-deny
+system is one in which almost every mistake produces the safe answer. §6.4.5's version was a bug
+producing an absence, where absence means denied; this is a bug producing a rejection, where
+rejection is what the test wanted. **Safe answers are exactly what tests do not investigate.**
+Chapter 7's negative cases must assert on *why* something was refused, never that it was.
+
 ## Anticipated viva questions
 
 **"Your Chapter 5 predicted the budget would double and Chapter 6 says 1.53×. Which of your
@@ -269,6 +302,13 @@ marker, and that is the defect: not that an inference was wrong, but that it rea
 result. The audit that follows is §6.1's three strengths of "built", applied backwards to
 Chapter 5's claims, and the two corrections found so far (§6.3.2, §6.4.1) are both inferences
 sitting next to measurements. The measurements have all replicated.
+
+**"How do you know your negative tests are testing anything?"** — Because one of them was not,
+and it is in the report (§6.6.5). Three path-rejection cases were passing through the wrong rule
+entirely. The structural answer is that a default-deny system produces the safe answer for almost
+any mistake, so a passing negative test is weak evidence by construction; the practice that
+follows is asserting on the reason rather than the verdict, and Chapter 7's adversarial cases are
+written that way.
 
 **"Your mediator is single-threaded and your own numbers show the tail doubling with two
 clients. Isn't that a design flaw you have measured and shrugged at?"** — It is a design flaw

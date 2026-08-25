@@ -26,6 +26,7 @@ from pathlib import Path
 
 from .channel import Channel
 from .cgroup import Delegation, SandboxCgroup
+from .manifest import Manifest, policy_for
 from .mediator import Mediator
 from .preflight import require_ready
 from .sandbox import SandboxSpec
@@ -57,20 +58,26 @@ def recv():
         body += sock.recv(length - len(body))
     return json.loads(body)
 
-# The lie. Both sandboxes send the same one.
-send({"id": 1, "op": "service.call", "integration": CLAIM, "service": "lock.unlock"})
+# The lie. Both sandboxes send the same one, and demo_a really does have a manifest — so
+# demo_b is not claiming to be nobody, it is claiming to be the integration that was granted
+# something.
+send({"id": 1, "op": "entity.read", "integration": CLAIM,
+      "entity": "sensor.outdoor_temperature"})
 first = recv()
+send({"id": 2, "op": "service.call", "integration": CLAIM, "service": "lock.unlock"})
+second = recv()
 
 times = []
 for i in range(ROUND_TRIPS):
     started = time.perf_counter_ns()
-    send({"id": i + 2, "op": "entity.read", "entity": "sensor.outdoor_temperature"})
+    send({"id": i + 3, "op": "entity.read", "entity": "sensor.outdoor_temperature"})
     recv()
     times.append(time.perf_counter_ns() - started)
 
 times.sort()
 print(json.dumps({
-    "first_response": first,
+    "declared_read": first,
+    "undeclared_call": second,
     "n": len(times),
     "median_us": times[len(times) // 2] / 1000,
     "p99_us": times[int(len(times) * 0.99)] / 1000,
@@ -79,12 +86,21 @@ sock.close()
 """
 
 
-def make_component(root: Path, domain: str) -> tuple[Path, Path]:
+# demo_a may read one sensor. demo_b declares nothing at all — so the only thing that could
+# get demo_b a permit is being mistaken for demo_a, which is exactly what it tries.
+GRANT = {"schema_version": 1, "entities": {"read": ["sensor.outdoor_temperature"]}}
+
+
+def make_component(root: Path, domain: str, permissions: dict | None) -> tuple[Path, Path]:
     component = root / "custom_components" / domain
     data = root / ".confine" / domain
     component.mkdir(parents=True)
     data.mkdir(parents=True)
     (component / "__init__.py").write_text("# nothing\n")
+    manifest = {"domain": domain, "name": domain, "version": "1.0.0"}
+    if permissions is not None:
+        manifest["permissions"] = permissions
+    (component / "manifest.json").write_text(json.dumps(manifest))
     return component, data
 
 
@@ -99,8 +115,16 @@ def main() -> int:
     cgroups = []
     try:
         delegation = Delegation.discover()
+        manifests = {}
         for domain in ("demo_a", "demo_b"):
-            component, data = make_component(root, domain)
+            component, data = make_component(root, domain,
+                                             GRANT if domain == "demo_a" else None)
+            manifests[domain] = Manifest.load(component, root)
+        mediator.policy = policy_for(manifests)
+
+        for domain in ("demo_a", "demo_b"):
+            component = root / "custom_components" / domain
+            data = root / ".confine" / domain
             # §5.11.2: the pair exists before the sandbox does. The supervisor is the only
             # party that can create this mapping, which is what makes it trustworthy.
             mediator_end, sandbox_end = Channel.pair()
@@ -138,26 +162,39 @@ def render(mediator: Mediator, reports: dict[str, dict]) -> int:
     print("channel self-test — identity is the socket, not a field\n")
     failures = []
 
-    print("  what the mediator recorded for the first request from each sandbox:")
-    print(f"    {'true identity':<16} {'claimed to be':<16} {'allowed':<9} reason")
-    firsts = {}
+    print("  both sandboxes sent {\"integration\": \"demo_a\"}. demo_a holds a manifest")
+    print("  granting one sensor read; demo_b holds none.\n")
+    print(f"    {'true identity':<14} {'claimed':<10} {'request':<26} {'verdict':<8} clause")
+    firsts: dict[str, list] = {}
     for entry in mediator.audit:
-        firsts.setdefault(entry["identity"], entry)
-    for identity, entry in sorted(firsts.items()):
-        print(f"    {identity:<16} {str(entry['claimed_identity']):<16} "
-              f"{str(entry['allowed']):<9} {entry['reason']}")
-        if entry["claimed_identity"] != "demo_a":
-            failures.append(f"{identity} did not send the expected claim")
-        if entry["allowed"]:
-            failures.append(f"{identity}: S6 requires denial with no manifest bound")
+        bucket = firsts.setdefault(entry["identity"], [])
+        if len(bucket) < 2:
+            bucket.append(entry)
+    for identity, entries in sorted(firsts.items()):
+        for entry in entries:
+            verdict = "PERMIT" if entry["allowed"] else "deny"
+            print(f"    {identity:<14} {str(entry['claimed_identity']):<10} "
+                  f"{str(entry['op']):<26} {verdict:<8} {entry['clause']}")
+            if entry["claimed_identity"] != "demo_a":
+                failures.append(f"{identity} did not send the expected claim")
+
+    expected = {("demo_a", "entity.read"): True, ("demo_a", "service.call"): False,
+                ("demo_b", "entity.read"): False, ("demo_b", "service.call"): False}
+    for identity, entries in firsts.items():
+        for entry in entries:
+            key = (identity, entry["op"])
+            if key in expected and entry["allowed"] is not expected[key]:
+                failures.append(f"{identity} {entry['op']}: expected "
+                                f"{'permit' if expected[key] else 'deny'}")
 
     identities = set(firsts)
     if identities != {"demo_a", "demo_b"}:
         failures.append(f"the mediator saw {sorted(identities)}, expected both sandboxes")
     else:
-        print("\n  ok    both sandboxes claimed 'demo_a'; the mediator recorded demo_a and "
-              "demo_b")
-        print("  ok    every request denied — S6, with no manifest bound")
+        print("\n  ok    demo_a read its declared sensor — the permit path works")
+        print("  ok    demo_a was refused lock.unlock — denied by absence, S6")
+        print("  ok    demo_b claimed to be demo_a and was refused the same read")
+        print("  ok    every decision, permit or deny, named a clause — F3 / §5.10.8")
 
     print("\n  round trip on the real channel, measured from inside the sandbox:")
     for domain, report in sorted(reports.items()):
@@ -167,17 +204,21 @@ def render(mediator: Mediator, reports: dict[str, dict]) -> int:
         print(f"    {domain:<16} median {report['median_us']:6.1f} µs   "
               f"p99 {report['p99_us']:6.1f} µs   n={report['n']}")
 
+    # Two probe requests each, then the timing loop. §5.12.3: one record per decision.
+    expected_entries = 2 * (ROUND_TRIPS + 2)
     print(f"\n  audit entries: {len(mediator.audit)}  "
-          f"(2 sandboxes x {ROUND_TRIPS + 1} requests = {2 * (ROUND_TRIPS + 1)})")
-    if len(mediator.audit) != 2 * (ROUND_TRIPS + 1):
-        failures.append("the mediator did not record one entry per request")
+          f"(2 sandboxes x {ROUND_TRIPS + 2} requests = {expected_entries})")
+    if len(mediator.audit) != expected_entries:
+        failures.append(f"the mediator recorded {len(mediator.audit)} entries for "
+                        f"{expected_entries} requests")
 
     print()
     if failures:
         print(f"FAILED: {'; '.join(failures)}")
         return 1
-    print("PASS — the mediator attributed every request to the socket it arrived on,")
-    print("       and neither sandbox's claim about itself made any difference.")
+    print("PASS — the mediator attributed every request to the socket it arrived on.")
+    print("       demo_b claimed to be an integration that holds a grant, and the claim")
+    print("       bought it nothing, because there was nothing in the protocol to check.")
     return 0
 
 
