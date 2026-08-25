@@ -232,6 +232,67 @@ def place_component(domain: str) -> None:
         link.symlink_to(COMPONENT)
 
 
+# The platform names Home Assistant recognises. An integration declares a platform by having
+# a module of that name, so the set of files is what says which platforms to try importing.
+PLATFORM_NAMES = (
+    "sensor", "binary_sensor", "switch", "light", "climate", "cover", "fan", "lock",
+    "media_player", "camera", "vacuum", "water_heater", "alarm_control_panel", "button",
+    "number", "select", "text", "update", "siren", "humidifier", "valve", "device_tracker",
+    "calendar", "notify", "todo", "weather", "remote", "scene", "image", "event", "time",
+    "date", "datetime", "button", "conversation", "image_processing",
+)
+
+
+async def inspect(hass, domain: str) -> dict:
+    """Ask, in order, the three questions N2 requires be reported separately.
+
+    §3.5's N2 says "executed end-to-end" must be reported apart from "imports-clean", because
+    the two measure different things and reporting only the larger flatters the result. This
+    is that separation, one level at a time, so a failure is attributable to a level rather
+    than to "it did not work".
+    """
+    from homeassistant import loader
+
+    result: dict = {"domain": domain}
+    try:
+        integration = await loader.async_get_integration(hass, domain)
+    except Exception as err:  # noqa: BLE001
+        result["level"] = "not_found"
+        result["error"] = f"{type(err).__name__}: {err}"[:200]
+        return result
+
+    result["requirements"] = list(getattr(integration, "requirements", []) or [])
+    result["dependencies"] = list(getattr(integration, "dependencies", []) or [])
+    result["after_dependencies"] = list(getattr(integration, "after_dependencies", []) or [])
+
+    # L1 — does the integration's own module import inside the sandbox?
+    try:
+        await integration.async_get_component()
+    except Exception as err:  # noqa: BLE001
+        result["level"] = "import_failed"
+        result["error"] = f"{type(err).__name__}: {err}"[:300]
+        return result
+    result["level"] = "imports_clean"
+
+    # L2 — do its entity platforms import? This is where a dependency on another component
+    # shows up, which is exactly what §5.6.5's second trigger is about.
+    present = [name for name in PLATFORM_NAMES
+               if (Path(COMPONENT) / f"{name}.py").is_file()]
+    result["platforms"] = present
+    failed = {}
+    for name in present:
+        try:
+            await integration.async_get_platform(name)
+        except Exception as err:  # noqa: BLE001
+            failed[name] = f"{type(err).__name__}: {err}"[:200]
+    if failed:
+        result["level"] = "platform_import_failed"
+        result["platform_errors"] = failed
+        return result
+    result["level"] = "platforms_clean"
+    return result
+
+
 async def run() -> dict:
     spec = json.loads(Path(SPEC_PATH).read_text())
     channel = Channel(int(os.environ["CONFINE_CHANNEL_FD"]))
@@ -239,6 +300,22 @@ async def run() -> dict:
 
     place_component(spec["domain"])
     hass = await build_hass(DATA)
+
+    # Optionally set up the components the integration says it depends on. §6.3.2 dropped the
+    # base component because nothing needed it; a real integration's `dependencies` are a
+    # different claim, and whether the sandbox must honour them is what §5.6.5's second
+    # trigger asks.
+    wanted = spec.get("setup_components") or []
+    if wanted:
+        from homeassistant.setup import async_setup_component
+        result["components_setup"] = {}
+        for name in wanted:
+            try:
+                result["components_setup"][name] = bool(
+                    await async_setup_component(hass, name, {}))
+            except Exception as err:  # noqa: BLE001
+                result["components_setup"][name] = f"{type(err).__name__}: {err}"[:120]
+
     bridge = Bridge(hass, channel, spec)
 
     # Order, and it is the order §5.6.2 implies: the sandbox is furnished with exactly what
@@ -249,6 +326,11 @@ async def run() -> dict:
     bridge.watch_local_state()
 
     from homeassistant.config_entries import ConfigEntryState, ConfigEntry, SOURCE_USER
+
+    if spec.get("mode") == "inspect":
+        result.update(await inspect(hass, spec["domain"]))
+        await hass.async_stop()
+        return result
 
     entry = ConfigEntry(version=1, minor_version=1, domain=spec["domain"],
                         title=spec["domain"], data=spec.get("entry_data", {}),
