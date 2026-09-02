@@ -313,7 +313,7 @@ They are not convertible to a calendar while §9.7's first row stands.
 | Ch. 2 finds close prior art | Medium | **Occurred.** G1 fired, claim reframed, and §7.12 has now made the reframed claim good |
 | Rebuild becomes a rewrite and eats the semester | Medium | **Did not occur.** Five weeks ahead |
 | Performance work blocked on hardware | Low | **Did not occur**, though the Pi was unreachable on 2026-09-02 until powered on. Single point of failure |
-| **The repository has no remote** | not listed in August | **New, and the highest-severity item.** Seven chapters and 5,118 lines exist on one laptop and one Pi. Deliberately not addressed at the user's instruction of 2026-09-02 |
+| ~~**The repository has no remote**~~ | not listed in August | ✅ **Closed 2026-09-02.** Pushed to a private `git@github.com:Speedylo/ha_security.git`; 68 commits, 272 files. It was the highest-severity item on this list for twelve days and it cost ten minutes |
 
 ## 9.8 What this section supersedes
 

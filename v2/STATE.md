@@ -84,8 +84,11 @@ open, and only one of them is a decision.**
   egress broker (`RESULTS_2026-08-14_egress_broker.md`) to cite as feasibility; under
   `00_METHOD.md` §5 it is **not** retyped.
 
-**⚠ This repository has no remote.** `git remote -v` is empty; everything lives on this machine
-and the Pi. Six chapters and 5,118 lines of framework exist in exactly one place.
+**✅ The repository has a remote, as of 2026-09-02.** `git@github.com:Speedylo/ha_security.git`,
+**private**. `main` tracks `origin/main`; the branch was renamed from `master` when the remote was
+added. `.ha_token`, `spike/.ha_config/`, the HACS cache and the telemetry snapshot stay ignored,
+and no tracked file carries a credential. **If this is ever made public, remove `v2/refs/*.pdf`
+first** — four third-party papers, fine to store privately and not to redistribute.
 
 Chapter 6 has now corrected Chapter 5 four times (§6.3.2, §6.4.1, §6.6.6, §6.11.4) and itself
 twice (§6.13 on §6.12.4, §6.14 on §6.13.4). Every correction came from running a measurement
