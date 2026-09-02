@@ -1,0 +1,265 @@
+[
+  {
+    "domain": "scheduler",
+    "arm": "unconfined",
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false,
+      "http": true,
+      "websocket_api": true
+    },
+    "setup_errors": [
+      "homeassistant.config_entries: Error setting up entry Scheduler for scheduler || ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<2 lines>...\n        custom_integration_behavior=frame.ReportBehavior.IGNORE,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/frame.py\", line 185, in report_usage\n    raise RuntimeError(\"Frame helper not set up\")\nRuntimeError: Frame helper not set up\n"
+    ],
+    "flow": {
+      "steps": [],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "entries": [
+      {
+        "title": "Scheduler",
+        "state": "ConfigEntryState.SETUP_ERROR",
+        "loaded": false
+      }
+    ],
+    "loaded": false,
+    "own_entities": [
+      "conversation.home_assistant",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sun.sun",
+      "zone.home"
+    ]
+  },
+  {
+    "domain": "adaptive_lighting",
+    "arm": "unconfined",
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false,
+      "light": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "name"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "entries": [
+      {
+        "title": "confined test",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "conversation.home_assistant",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sun.sun",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+      "switch.confined_test_adaptive_lighting_confined_test",
+      "zone.home"
+    ]
+  },
+  {
+    "domain": "thermal_comfort",
+    "arm": "unconfined",
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "custom_icons",
+            "enabled_sensors",
+            "humidity_sensor",
+            "name",
+            "poll",
+            "scan_interval",
+            "temperature_sensor"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "entries": [
+      {
+        "title": "living room",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "conversation.home_assistant",
+      "sensor.living_room_absolute_humidity",
+      "sensor.living_room_dew_point",
+      "sensor.living_room_dew_point_perception",
+      "sensor.living_room_frost_point",
+      "sensor.living_room_frost_risk",
+      "sensor.living_room_heat_index",
+      "sensor.living_room_humidex",
+      "sensor.living_room_humidex_perception",
+      "sensor.living_room_moist_air_enthalpy",
+      "sensor.living_room_relative_strain_perception",
+      "sensor.living_room_summer_scharlau_perception",
+      "sensor.living_room_summer_simmer_index",
+      "sensor.living_room_summer_simmer_perception",
+      "sensor.living_room_thoms_discomfort_perception",
+      "sensor.living_room_winter_scharlau_perception",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sun.sun",
+      "zone.home"
+    ]
+  },
+  {
+    "domain": "powercalc",
+    "arm": "unconfined",
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false,
+      "light": true,
+      "group": true,
+      "template": true,
+      "select": true,
+      "utility_meter": true,
+      "integration": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "menu": "virtual_power"
+        },
+        {
+          "step": "virtual_power",
+          "sent": [
+            "create_energy_sensor",
+            "create_standby_energy_sensor",
+            "create_utility_meters",
+            "entity_id",
+            "mode",
+            "name"
+          ]
+        },
+        {
+          "step": "fixed",
+          "sent": [
+            "fixed_value"
+          ]
+        },
+        {
+          "step": "power_advanced",
+          "sent": [
+            "energy_filter_outlier_enabled",
+            "energy_integration_method"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "entries": [
+      {
+        "title": "lamp power",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "conversation.home_assistant",
+      "sensor.all_standby_energy",
+      "sensor.all_standby_power",
+      "sensor.lamp_power_energy",
+      "sensor.lamp_power_power",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sun.sun",
+      "zone.home"
+    ]
+  },
+  {
+    "domain": "watchman",
+    "arm": "unconfined",
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "entries": [
+      {
+        "title": "Watchman",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "button.watchman_create_report_file",
+      "conversation.home_assistant",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sensor.watchman_ignored_files",
+      "sensor.watchman_last_parse",
+      "sensor.watchman_last_update",
+      "sensor.watchman_missing_actions",
+      "sensor.watchman_missing_entities",
+      "sensor.watchman_parse_duration",
+      "sensor.watchman_processed_files",
+      "sensor.watchman_status",
+      "sun.sun",
+      "text.watchman_ignored_labels",
+      "zone.home"
+    ]
+  }
+]

@@ -1015,13 +1015,72 @@ component form, and it extends that finding rather than repeating it: **the decl
 incomplete for components as well as for packages.** §6.14.4's argument stands unchanged — the
 answer is §5.9.3's static analysis marked *derived*, not asking the author.
 
-### 7.17.5 What this does not establish
+> **A design refinement this measurement justifies, and Chapter 8 owes it.** §5.9.3 accepts M3,
+> static analysis, as a contributor to a *derived* manifest, and §6.14.4 proposed it for the
+> undeclared-package case: `import aiofiles` is a top-level import and trivially detectable.
+> `powercalc` shows the same treatment is needed one level up — **the analysis must also resolve
+> `homeassistant.components.*` imports and the transitive component closure**, not only
+> third-party package imports. That is a strictly larger analysis and a strictly easier one: a
+> component dependency is a name in the platform's own source, so the closure is computable
+> exactly rather than approximated, which `core_requirements()` in `confine/compat.py` already
+> does for `default_config`. Recorded here because the evidence for it arrived here; the
+> recommendation belongs in Chapter 8's future work alongside §6.14.4's.
+
+### 7.17.5 The baseline arm, which overturns half of §7.17.4
+
+§7.17.4 was written attributing both failures from their tracebacks, and recorded that doing so
+was weaker than §7.12's comparison and was the next thing owed. It was run the same day, and it
+was right to distrust the attribution: **one of the two conclusions does not survive it.**
+
+Same five integrations, same corpus, release, host, interpreter and world of entities, the same
+`drive_flow` shared rather than reimplemented, against a full unconfined Home Assistant.
+
+| Integration | Unconfined | Confined | |
+|---|---|---|---|
+| `thermal_comfort` | ✅ LOADED | ✅ LOADED | — |
+| `watchman` | ✅ LOADED | ✅ LOADED | — |
+| `adaptive_lighting` | ✅ LOADED | ✅ LOADED | — |
+| **`powercalc`** | ✅ **LOADED** | ❌ NOT_LOADED | **confinement's cost** |
+| **`scheduler`** | ❌ **SETUP_ERROR** | ❌ SETUP_ERROR | broken either way |
+
+```
+    loaded(unconfined) 4/5      loaded(confined) 3/5      cost of confinement: 1
+```
+
+**`scheduler` is withdrawn as a finding about confinement.** Unconfined it fails with a
+`RuntimeError` out of `homeassistant/helpers/frame.py: report_usage` — the platform's own
+frame-helper refusing a deprecated API pattern on 2026.8.3. It is broken on this release the way
+`eufy_security` is (§6.14.3), and it never reaches the socket that stopped it in the sandbox.
+
+The multicast observation itself stands as an **observation**: the sandbox's network namespace
+holds loopback only, and `zeroconf`'s `IP_ADD_MEMBERSHIP` fails there. What does **not** stand is
+the inference drawn from it in the first version of this section — that confinement was thereby
+shown to cost compatibility. To establish that, an integration is needed which **works
+unconfined and fails confined on discovery**, and this corpus has not produced one.
+
+> **A conclusion that was drawn from it and is now withdrawn.** The first version of this
+> section argued that network isolation costs more than "cannot reach the internet", and that an
+> egress proxy mediating outbound TCP would not answer multicast discovery. **The second clause
+> is still true as a statement about mechanisms; the first is not evidenced.** §9.5's decision
+> must not be taken on it.
+
+**`powercalc` is confirmed as confinement's cost, and it is the only one.** It loads unconfined —
+`default_config` sets up `network`, which it needs and does not declare — and fails confined with
+`KeyError: 'network'`. So the undeclared-component finding of §7.17.4 stands and is now measured
+by comparison rather than inferred, which is what makes it worth the paragraph it gets.
+
+**This is the second time in this chapter that a baseline arm has corrected a conclusion drawn
+without one** — §7.12.3 scored two predictions wrong, and this scores one attribution wrong. Both
+corrections went in the direction of *charging the design less*, which is the direction an
+author's own attributions will tend to get wrong in the opposite way, and is the argument for the
+paired discipline rather than for trusting a traceback.
+
+### 7.17.6 What this does not establish
 
 - **Five is a named set, not a sample**, and no rate is computed from it.
-- **There is no unconfined baseline for this arm.** §7.12 established import-level parity across
-  37, but whether these five *load* unconfined on 2026.8.3 is not measured, so the two failures
-  are attributed by their tracebacks rather than by comparison. That is weaker evidence than
-  §7.12's and is the next thing this axis owes.
+- **`published through the mediator` has no unconfined counterpart** and none is possible: there
+  is no mediator unconfined, so the column is blank there rather than zero. What the comparison
+  supports is `loaded`, and that is what §7.17.5 compares.
 - **The mediator acts on §6.10.2's stand-in.** What crossed the boundary is real and is recorded
   with its clause; what a live Home Assistant would do with those fifteen entities is not tested.
 

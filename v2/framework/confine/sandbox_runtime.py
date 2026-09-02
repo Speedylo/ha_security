@@ -288,6 +288,77 @@ def fill_schema(schema, overrides: dict) -> dict:
     return filled
 
 
+async def drive_flow(hass, domain: str, overrides: dict, menu_choice: dict,
+                     setup_log_into: dict | None = None) -> dict:
+    """Drive an integration's own config flow the way the frontend does, and record each step.
+
+    Shared by the confined and unconfined arms of §7.17 for the same reason `inspect()` is
+    shared by §7.12's: the two arms must differ in confinement and in nothing else. A second
+    copy of this loop that filled one field differently would make the comparison meaningless
+    without making it look wrong.
+    """
+    import logging
+    import traceback as _tb
+
+    from homeassistant.data_entry_flow import FlowResultType
+
+    flow: dict = {"steps": []}
+
+    # Installed **before** the flow runs. `async_configure` sets the entry up as it creates it,
+    # so a handler attached afterwards captures nothing and a SETUP_ERROR arrives with no
+    # reason at all — which is not a result, it is an unanswered question.
+    setup_log: list[str] = []
+
+    class _Capture(logging.Handler):
+        def emit(self, record: logging.LogRecord) -> None:
+            if record.levelno >= logging.ERROR:
+                try:
+                    line = f"{record.name}: {record.getMessage()}"
+                    if record.exc_info:
+                        line += " || " + "".join(_tb.format_exception(*record.exc_info))[-400:]
+                    setup_log.append(line[:700])
+                except Exception:  # noqa: BLE001
+                    pass
+
+    handler = _Capture()
+    logging.getLogger().addHandler(handler)
+    logging.getLogger().setLevel(logging.ERROR)
+
+    try:
+        outcome = await hass.config_entries.flow.async_init(domain, context={"source": "user"})
+        for _ in range(10):
+            step = outcome.get("step_id") or "?"
+            if outcome.get("type") == FlowResultType.MENU:
+                options = outcome.get("menu_options") or []
+                names = list(options)
+                wanted = menu_choice.get(step)
+                chosen = wanted if wanted in names else (names[0] if names else None)
+                if chosen is None:
+                    break
+                flow["steps"].append({"step": step, "menu": chosen})
+                outcome = await hass.config_entries.flow.async_configure(
+                    outcome["flow_id"], {"next_step_id": chosen})
+                continue
+            if outcome.get("type") != FlowResultType.FORM:
+                break
+            user_input = fill_schema(outcome.get("data_schema"), overrides)
+            flow["steps"].append({"step": step, "sent": sorted(user_input)})
+            outcome = await hass.config_entries.flow.async_configure(
+                outcome["flow_id"], user_input)
+        flow["type"] = str(outcome.get("type"))
+        flow["errors"] = outcome.get("errors")
+        flow["reason"] = outcome.get("reason")
+        if outcome.get("type") != FlowResultType.CREATE_ENTRY:
+            flow["step_id"] = outcome.get("step_id")
+    except Exception as err:  # noqa: BLE001 — a refused flow is the result
+        flow["error"] = f"{type(err).__name__}: {err}"[:300]
+    finally:
+        logging.getLogger().removeHandler(handler)
+    if setup_log_into is not None:
+        setup_log_into["setup_errors"] = setup_log[:6]
+    return flow
+
+
 async def inspect(hass, domain: str, component_dir: str = COMPONENT) -> dict:
     """Ask, in order, the three questions N2 requires be reported separately.
 
@@ -412,79 +483,9 @@ async def run() -> dict:
         from homeassistant.config_entries import ConfigEntryState
         from homeassistant.data_entry_flow import FlowResultType
 
-        flow = result.setdefault("flow", {})
-        overrides = dict(spec.get("flow_input") or {})
-        flow["steps"] = []
-
-        # Installed **before** the flow runs, not after. `async_configure` sets the entry up
-        # as soon as it creates it, so a handler attached afterwards captures nothing and a
-        # SETUP_ERROR arrives with no reason — which is not a compatibility result, it is an
-        # unanswered question. The first version of this harness made exactly that mistake.
-        setup_log: list[str] = []
-
-        class _Capture(logging.Handler):
-            def emit(self, record: logging.LogRecord) -> None:
-                if record.levelno >= logging.ERROR:
-                    try:
-                        line = f"{record.name}: {record.getMessage()}"
-                        if record.exc_info:
-                            # Home Assistant logs "Error setting up entry X" and puts the
-                            # cause in exc_info. Without this the record says only that
-                            # something failed, which is the shape §6.6.5 warns about.
-                            line += " || " + "".join(
-                                traceback.format_exception(*record.exc_info))[-400:]
-                        setup_log.append(line[:700])
-                    except Exception:  # noqa: BLE001
-                        pass
-
-        handler = _Capture()
-        logging.getLogger().addHandler(handler)
-        logging.getLogger().setLevel(logging.ERROR)
-
-        try:
-            outcome = await hass.config_entries.flow.async_init(
-                spec["domain"], context={"source": "user"})
-            # Drive the form the way the frontend does: **read the schema the integration
-            # returned and satisfy it**, rather than posting input guessed in advance. The
-            # first version of this harness hard-coded values and three integrations failed
-            # schema validation — a harness fault that §6.3.3 would have had charged to the
-            # design. What an integration asks for is its own business, and the only honest
-            # way to answer is to look.
-            for _ in range(10):
-                step = outcome.get("step_id") or "?"
-                if outcome.get("type") == FlowResultType.MENU:
-                    # A menu is a form whose only field is which branch to take. The frontend
-                    # shows a list; this takes the first, and records which so the choice is
-                    # visible rather than implied.
-                    options = outcome.get("menu_options") or []
-                    names = list(options) if isinstance(options, dict) else list(options)
-                    # A caller-supplied branch wins. Taking the first option is arbitrary and
-                    # was wrong for `powercalc`, whose first branch is global configuration
-                    # rather than the one that creates a sensor — which is a choice a user
-                    # makes knowingly, so the harness has to make it knowingly too.
-                    wanted = (spec.get("menu_choice") or {}).get(step)
-                    chosen = (wanted if wanted in names
-                              else names[0] if names else None)
-                    if chosen is None:
-                        break
-                    flow["steps"].append({"step": step, "menu": chosen})
-                    outcome = await hass.config_entries.flow.async_configure(
-                        outcome["flow_id"], {"next_step_id": chosen})
-                    continue
-                if outcome.get("type") != FlowResultType.FORM:
-                    break
-                user_input = fill_schema(outcome.get("data_schema"), overrides)
-                flow["steps"].append({"step": step, "sent": sorted(user_input)})
-                outcome = await hass.config_entries.flow.async_configure(
-                    outcome["flow_id"], user_input)
-            flow["type"] = str(outcome.get("type"))
-            flow["errors"] = outcome.get("errors")
-            flow["reason"] = outcome.get("reason")
-            if outcome.get("type") != FlowResultType.CREATE_ENTRY:
-                flow["step_id"] = outcome.get("step_id")
-        except Exception as err:  # noqa: BLE001 — a refused flow is the result
-            flow["error"] = f"{type(err).__name__}: {err}"[:300]
-
+        flow = await drive_flow(hass, spec["domain"], spec.get("flow_input") or {},
+                                spec.get("menu_choice") or {}, setup_log_into=result)
+        result["flow"] = flow
         await hass.async_block_till_done()
         await hass.async_start()
         await hass.async_block_till_done()
@@ -499,8 +500,6 @@ async def run() -> dict:
         # entity the integration created, forwarded to the mediator and accepted by it.
         result["published"] = bridge.published
         result["refused"] = bridge.refused
-        logging.getLogger().removeHandler(handler)
-        result["setup_errors"] = setup_log[:6]
         await hass.async_stop()
         return result
 

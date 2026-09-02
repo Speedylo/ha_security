@@ -37,6 +37,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+import os
+
 from .cgroup import Delegation, SandboxCgroup
 from .channel import Channel
 from .compat import (DEPS, PLATFORM_DEPS, component_requirements, declared_components_of,
@@ -204,26 +206,84 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
     return report
 
 
+def run_one_unconfined(domain: str, component: Path, subject: dict, python: Path,
+                       uv: str | None, platform_deps: Path | None) -> dict:
+    """The same integration, the same flow, no sandbox. §7.17.5's owed comparison."""
+    root = Path(tempfile.mkdtemp(prefix=f"e2e-base-{domain}-"))
+    try:
+        config = root / "config"
+        (config / "custom_components").mkdir(parents=True)
+        shutil.copytree(component, config / "custom_components" / domain)
+        for name in ("sandbox_runtime.py", "endtoend_unconfined.py"):
+            shutil.copy2(HERE / name, root / name)
+
+        deps = root / "deps"
+        wanted = declared_components_of(component)
+        extra = component_requirements(wanted, find_ha_components(python))
+        if uv:
+            try:
+                install_requirements(declared_requirements(component) + extra, deps, python, uv)
+            except (subprocess.TimeoutExpired, OSError):
+                pass
+        deps.mkdir(parents=True, exist_ok=True)
+
+        spec_file = root / "spec.json"
+        spec_file.write_text(json.dumps({
+            "domain": domain, "config_dir": str(config),
+            "setup_components": wanted,
+            "world": {k: list(v) for k, v in WORLD.items()},
+            "menu_choice": subject.get("menu_choice") or {},
+            "flow_input": subject["flow_input"]}))
+
+        path = [str(deps)] + ([str(platform_deps)] if platform_deps else [])
+        env = {**os.environ, "PYTHONPATH": ":".join(path)}
+        try:
+            proc = subprocess.run(
+                [str(python), str(root / "endtoend_unconfined.py"), str(spec_file)],
+                capture_output=True, text=True, timeout=600, env=env, cwd=str(root))
+        except subprocess.TimeoutExpired:
+            return {"domain": domain, "arm": "unconfined", "level": "timeout"}
+        text = (proc.stdout or "").strip()
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+    if not text:
+        tail = (proc.stderr or "").strip().splitlines()
+        return {"domain": domain, "arm": "unconfined", "level": "no_report",
+                "error": tail[-1][:200] if tail else ""}
+    report = json.loads(text.splitlines()[-1])
+    if "fatal" in report:
+        return {"domain": domain, "arm": "unconfined", "level": "fatal",
+                "error": report["fatal"].strip().splitlines()[-1][:200]}
+    return report
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--corpus", type=Path, required=True)
     ap.add_argument("--python", required=True)
     ap.add_argument("--uv", default=str(Path.home() / ".local/bin/uv"))
     ap.add_argument("--only", help="one domain, for iterating")
+    ap.add_argument("--baseline", action="store_true",
+                    help="§7.17.5's arm: the same five unconfined, so the two failures are "
+                         "attributed by comparison rather than by their tracebacks")
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
 
-    require_ready(deep=False)
-    become_subreaper()
-    delegation = Delegation.discover()
+    delegation = None
+    if not args.baseline:
+        require_ready(deep=False)
+        become_subreaper()
+        delegation = Delegation.discover()
     python = Path(args.python)
     uv = args.uv if Path(args.uv).exists() else None
     platform_deps = Path.home() / "r2exp/platform-deps"
     platform_deps = platform_deps if platform_deps.is_dir() else None
 
     subjects = {k: v for k, v in SUBJECTS.items() if not args.only or k == args.only}
+    arm = "UNCONFINED (§7.17.5's baseline)" if args.baseline else "confined"
     print(f"N2's second number — {len(subjects)} integrations through their own config flows, "
-          f"confined\n")
+          f"{arm}\n")
 
     results = []
     for index, (domain, subject) in enumerate(subjects.items(), 1):
@@ -231,9 +291,12 @@ def main() -> int:
         if not component.is_dir():
             print(f"  [{index}] {domain:<20} not in the corpus")
             continue
-        report = run_one(domain, component, subject, python, delegation, uv, platform_deps)
+        if args.baseline:
+            report = run_one_unconfined(domain, component, subject, python, uv, platform_deps)
+        else:
+            report = run_one(domain, component, subject, python, delegation, uv, platform_deps)
         results.append(report)
-        entities = [e for e in report.get("local_entities", [])
+        entities = [e for e in report.get("own_entities", report.get("local_entities", []))
                     if e.split(".")[0] not in ("persistent_notification",)
                     and e not in WORLD]
         published = len(report.get("published") or [])
