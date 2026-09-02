@@ -1120,6 +1120,16 @@ says and means nothing, which is what a user namespace is for.
 
 ### 6.9.4 A control fired that was not built for this
 
+> **Corrected twice by Chapter 7, and this section is left as written.** §7.13.4: one of the two
+> bulk-search attacks was killed for reading `/dev/zero`, which the sweep treated as a small file
+> because a character device reports size zero — so *"both"* is wrong, and restricted to regular
+> files that attack completes and finds nothing. §7.20.2: the page-cache mechanism this section
+> goes on to name is real but does **not** bound a legitimate integration — a process streaming a
+> 512 MB file inside a 64 MB cap is never killed, because clean page cache is reclaimed rather
+> than charged to the point of an OOM. **S9 bounds retention, not reading.** §7.21.1 adds a third
+> and larger caveat: no `resources` clause reaches an enforcement path at all, so the limit that
+> fired here is the harness's, not the integration's declaration.
+
 Both bulk-search attacks were killed by signal 9, with the cgroup's `oom_kill` counter at 1 and
 peak memory at exactly `memory.max`. **S9 stopped a disclosure attempt.** S9 exists for T16,
 resource exhaustion, and §4.10.1 generated it because T16 was the one threat with no control at

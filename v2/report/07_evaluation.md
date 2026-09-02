@@ -258,7 +258,7 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **S6** | An integration with **no** manifest and one with an **unparseable** manifest are each denied all mediated capability, each refusal naming its rule | Security |
 | **S7** | Decisions appear in the log bearing the integration's three-part identity, and modification, deletion **and reordering** are each independently detectable by both the hash chain and the keyed MAC chain | §6.8 — re-verified |
 | **S8** | The 2021 file-theft pattern **succeeds against an unconfined baseline installation** and is blocked under the framework, on the same host and release | Security — **requires the baseline arm** |
-| **S9** | An integration deliberately exhausting CPU, memory and disk in turn does not render the gateway unresponsive, demonstrated unprivileged, with the boot-time precondition stated | Performance |
+| **S9** | An integration deliberately exhausting CPU, memory and disk in turn does not render the gateway unresponsive, demonstrated unprivileged, with the boot-time precondition stated | ⚠ **Partially met — see §7.21.1.** Memory and processes are enforced but from harness configuration, not from the manifest; `cpu_percent` is validated, shown to the user and **not enforced**; disk is absent entirely |
 | **N1** | Added latency, per-integration memory and maximum concurrent integrations are all reported against an unconfined baseline on the target hardware. **No threshold** — §3.6 fixed this position in advance | Performance |
 | **N2** | This chapter reports "imports clean" and "executed end-to-end" as two separate numbers, never conflated, with the first labelled an upper bound wherever it appears | **This chapter** |
 | **N3** | Behaviour on mediator unavailability is specified in advance and tested; the framework refuses rather than degrades silently, including the wrong-cgroup-position case | Security |
@@ -1388,6 +1388,128 @@ deliberately preserved so §5.6.3's published figures stay reproducible, and the
 to move. **Unlikely is not measured**, and this chapter does not have the measurement. §5.6.3's
 figures are therefore quoted in this evaluation only with that caveat attached, and re-running
 the footprint experiment on the corrected builder is added to future work.
+
+## 7.21 A reconciliation pass, and what reading the chapter against Chapter 6 found
+
+**2026-09-02.** §7.1–§7.11 were written before the results; §7.12–§7.20 were written as each
+measurement landed, one at a time, over a single day. Neither half had been read against the
+other, and §7.7's fourth falsifier makes that a requirement rather than tidiness: *an evaluation
+that reports a requirement as passed when it cannot demonstrate it has failed on its own terms.*
+This section records what the pass found. One finding is serious and is stated first.
+
+### 7.21.1 S9 is reported against a criterion two thirds of which nothing enforces
+
+§4.10.1 states S9 as *"The framework shall bound an integration's consumption of **CPU, memory
+and disk**"*, and §7.5's criterion follows it: *"an integration deliberately exhausting CPU,
+memory and disk in turn does not render the gateway unresponsive."*
+
+What the artifact does:
+
+| Resource | In the manifest schema | Shown to the user by `describe.py` | **Enforced** |
+|---|---|---|---|
+| Memory | `resources.memory_mb` | *"192 MB of memory"* | ✅ `memory.max`, but **not from the manifest** |
+| Processes | `resources.max_processes` | *"8 processes"* | ✅ `pids.max`, **not from the manifest** |
+| **CPU** | `resources.cpu_percent` | *"50% of one processor"* | ❌ **nothing** |
+| **Disk** | absent from the schema | — | ❌ **nothing** |
+
+Three separate defects, and they compound:
+
+**1. No `resources` clause reaches an enforcement path.** `SandboxCgroup.create` is called with
+`memory_max` and `pids_max` **hard-coded by each harness** — 640 MB in `compat.py` and
+`endtoend.py`, 512 MB in `selftest_adversary.py`, 256 MB in `selftest_channel.py`. Grep finds no
+reader of `resources.memory_mb` anywhere except `describe.py`. So the memory limit that §7.13
+demonstrates is real, and it is the *test harness's* limit, not the integration's declaration.
+
+**2. `cpu_percent` is validated, displayed, and silently ignored.** This is the sharper defect,
+because it is the exact failure §5.10 legislates against one level up. §7.16.1 quotes the
+manifest refusing an invented capability with *"unknown capabilities ['process']. An unrecognised
+capability is rejected rather than ignored, because ignoring it under-enforces silently."* A
+**recognised** capability that is ignored is worse than an unrecognised one that is rejected, and
+the schema currently accepts one.
+
+**3. It reaches the user, which makes it an F4 problem and not only an S9 one.**
+`describe.py` renders *"It is limited to 192 MB of memory, 8 processes, 50% of one processor."*
+The last clause is false. §1.8's gap is that a user "cannot see what an integration intends to
+access"; F4 closes it by making authority visible. **A visible limit that is not enforced is
+worse than an invisible one**, because it converts an unknown into a wrong belief, and §1.6's
+argument about invisible exposure applies with more force to a stated exposure that is untrue.
+
+**How this chapter reports S9, corrected.** §7.13's memory demonstrations stand: the allocation
+attack and the unbounded read are both OOM-killed by a real `memory.max`, and §6.4.1's
+unprivileged cap check is independent of the manifest. What does **not** stand is any claim that
+S9 as written is met. S9 is **partially discharged — memory and processes, from harness
+configuration rather than from the declaration; CPU and disk not at all.** §7.5's row is scored
+accordingly, and this is the third row after F2 and S4 that the artifact does not satisfy.
+
+Chapter 8 owes the fix and it is small: read the clause, pass it to `SandboxCgroup.create`, add
+`cpu.max` from `cpu_percent`, and either implement `io.max` for disk or **remove disk from S9's
+text and say why** — a requirement narrowed on evidence is legitimate, a requirement quietly
+unmet is not.
+
+### 7.21.2 Where the methodology half is now out of date, and why it is not edited
+
+§7.1 froze §7.5's criteria and §7.6's predictions. It did not freeze §7.4's *narrative*, which
+was written before any result and still says so — §7.4.1 calls the baseline arm "the one that
+does not yet exist", §7.4.3's table lists durability as "Not measured", and §7.4.1 records the
+level-2 population as one.
+
+**These are left as written**, on the same principle Chapter 6 applies to Chapter 5 and this
+chapter applies to Chapter 6: the methodology half is evidence of what was planned before the
+results, and editing it into agreement destroys the only thing that makes §7.1's claim checkable.
+Each is now answered downstream — the baseline in §7.12, durability in §7.20.1, level 2 in
+§7.17 — and a reader who meets a stale sentence in §7.4 finds the result under the same heading
+number in the seventies.
+
+### 7.21.3 Obligations: five pointed at a plan rather than a result
+
+§7.8 listed eleven inherited obligations, and five were discharged "in §7.4.1" or "in §7.4.3" —
+which are *methodology* sections. An obligation is not discharged by a section that promises to
+discharge it. Corrected:
+
+| Owed from | Obligation | Now discharged in |
+|---|---|---|
+| §6.14.6 | Run the baseline arm | **§7.12** |
+| §6.5.3 | Latency at realistic sandbox counts | **§7.19** |
+| §6.8.3 | Decide whether `fsync` per decision is affordable | **§7.20.1** — yes, at 3.6 ms and 63× headroom |
+| §6.9.4 | What `resources.memory_mb` costs a legitimate integration | **§7.20.2** — *withdrawn*, P5 falsified |
+| §3.6 (N2) | Report both numbers separately | **§7.12 and §7.17** |
+| §6.3.3 | Check failures against the harness before charging them to the design | **§7.17.4**, where three of five were harness faults |
+| §5.14 | Uniform-corpus re-run | **Still owed** — §7.10's item 7, not run |
+
+### 7.21.4 The schedule, closed out
+
+§7.10's eight items: **1–6 are complete** (§7.12, §7.13–§7.14, §7.19, §7.20.3, §7.20.1, §7.20.2).
+**Item 7, the uniform-sample corpus, was not run** and is the only scheduled measurement this
+chapter did not attempt; §7.9's external-validity limit therefore stands undischarged and
+Chapter 8 carries it. **Item 8 is conditional on a decision not yet taken.**
+
+### 7.21.5 Predictions, scored in one place
+
+| | Prediction | Outcome | |
+|---|---|---|---|
+| P1 | Baseline 34/37 | 31/37 | ✗ |
+| P2 | Baseline passes the `aiofiles` three | It fails all three | ✗ |
+| P3 | Confinement costs 0–3 integrations | **0** | ✓ at the floor |
+| P4 | Median ≤2×, p99 ~10× worse at 26 | Both ~16–20× — saturation, not tail queueing | ✗ |
+| P5 | S9 kills a legitimate large-file reader | Never killed; page cache is reclaimable | ✗ |
+
+**Four of five wrong, every one caught by a measurement, none revised after the fact.** §7.1
+argued that a pre-registered prediction is worth having precisely because it can be wrong; this
+is what that looks like when it is working, and Chapter 8 should present the scorecard rather
+than bury it. The one correct prediction was correct at the extreme edge of its stated range.
+
+### 7.21.6 Cross-chapter corrections, consolidated
+
+Chapter 7 has corrected Chapter 6 five times. Each correction is a pointer in place and Chapter 6
+keeps its original text, per the convention §6.4.1 established for Chapter 5:
+
+| Chapter 6 | Corrected by | What changed |
+|---|---|---|
+| §6.9.2's counts | §7.13.4 | 21 blocked / 9 empty → **20 / 10**; the sweep was killed reading `/dev/zero`, not by the resource limit |
+| §6.9.4's S9 concern | §7.20.2 | **Withdrawn.** Page cache is reclaimable; S9 bounds retention, not reading |
+| §6.8.3's open question | §7.20.1 | **Answered.** 3.6 ms, 59×, and affordable at 63× headroom |
+| §6.5.3's two-client figure | §7.19 | Extended to 26; the shape is saturation, not tail queueing |
+| §6.13.2's undeclared packages | §7.17.4 | Extended to undeclared **components** (`powercalc`, `network`) |
 
 ---
 
