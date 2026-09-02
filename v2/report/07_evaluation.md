@@ -1188,6 +1188,93 @@ now supports:
   ranks first — a requirements register that does not match the artifact — not a measured
   compatibility loss.
 
+## 7.19 Mediation latency at the budget, and why the number that matters is the other one
+
+**Run 2026-09-02**, `experiments/mediation_latency/scale.py`. §6.5.3 measured two clients and
+found p99 moving **85%** — queueing rather than work — and left the obligation explicit: the
+budget is 26 sandboxes (§6.3.2) and two says nothing about twenty-six.
+
+**This measures the real mediator, not the socket floor.** Every request goes through
+`confine.Mediator` with a `Manifest` bound and `acting_policy` deciding it, so what is timed is
+steps 1, 2, 3 and 5 of §5.11.3 — identity, decision, clause, reply. The audit write is not
+included; §6.8.3 flags that as the open question and §7.10 schedules it separately.
+
+### 7.19.1 Result
+
+| Sandboxes | Median µs | p95 | p99 | Max | Aggregate req/s |
+|---|---|---|---|---|---|
+| 1 | 31.5 | 46.1 | 52.7 | 810 | 25,739 |
+| 2 | 43.1 | 47.5 | 55.9 | 1,536 | 44,736 |
+| 4 | 60.9 | 124.0 | 132.9 | 3,418 | 46,115 |
+| 8 | 139.9 | 282.4 | 293.0 | 7,686 | 47,582 |
+| 16 | 302.4 | 602.4 | 619.9 | 16,967 | 48,462 |
+| **26** | **512.2** | 568.9 | **1,039.0** | 28,124 | 47,693 |
+
+### 7.19.2 P4 was wrong, and its shape was wrong in an informative way
+
+§7.6 predicted *"median within 2× of the single-client figure, p99 an order of magnitude worse"* —
+the signature of queueing that spares the median and punishes the tail. What happened:
+
+```
+    median   31.5 → 512.2 µs    16.3×      predicted ≤ 2×
+    p99      52.7 → 1039.0 µs   19.7×      predicted ~10×
+```
+
+**Both degraded, and by almost the same factor.** That is not tail-heavy queueing; it is a
+**saturated serial server**. The aggregate throughput column is what gives it away: it reaches
+~45,000 req/s at two clients and stays flat to twenty-six. The mediator is at capacity from two
+clients onward, so every further client simply lengthens the queue, and latency rises close to
+linearly with the queue rather than disproportionately in the tail.
+
+The prediction assumed the tail would separate from the median. It does not, because there is no
+burst behaviour to create a tail — there is a single-threaded selector loop serving a saturated
+queue, which is the fairest possible scheduler and produces a *narrow* distribution at every
+level. §5.11.2's "identity is the socket" and its one-loop-owns-every-socket consequence is
+directly visible in this table.
+
+*(p95 and p99 at 26 are not cleanly ordered against 16 — 568.9 against 602.4 — which is scheduling
+noise at that level rather than a real inversion, and it is left in the table rather than
+smoothed.)*
+
+### 7.19.3 The number that decides N1 is the headroom, not the latency
+
+512 µs per request at twenty-six saturated sandboxes is the wrong figure to judge N1 by, because
+**no installation generates that load.** The measurement drives twenty-six clients issuing
+requests back to back with no think time; a real integration polls. §5.8.1 measured a mean of
+4.02 integrations per installation, and Home Assistant's ordinary polling interval is thirty
+seconds.
+
+Taking the budget rather than the mean, and being generous about how chatty an integration is:
+
+```
+    26 sandboxes × 5 mediated operations × (1 / 30 s)  =  4.33 req/s
+    measured capacity                                  =  47,693 req/s
+    headroom                                           =  ~11,000×   (0.009% utilised)
+```
+
+**The mediator's capacity exceeds realistic demand by about four orders of magnitude.** The
+queueing that dominates §7.19.1 therefore does not occur in practice: at 0.009% utilisation the
+observed latency is the one-client figure, **31.5 µs**, and that is the number N1's discussion
+should carry.
+
+§3.6 fixed in advance that no threshold would be asserted and the figures would be reported and
+discussed. The discussion is this: the design's per-request cost does not change what a user can
+run, and it is not close. What *would* change it is a mediated operation on a hot path — a
+subscription delivering every state change rather than a poll — and §7.14.4 records that the push
+loop does not exist yet, so that path is unmeasured and this conclusion is bounded to the
+request/response shape §5.11.1 calls "mediated".
+
+### 7.19.4 Limits
+
+- **The audit write is excluded**, and §6.8.3 expects `fsync` per decision to cost far more than
+  the decision. §7.10's item 5 measures it; until then the headroom above is an upper bound.
+- **Saturation, not realism.** The table is a stress measurement; §7.19.3 is the one that bears
+  on N1, and the two must not be quoted interchangeably.
+- **Python 3.13.5**, not the 3.14.7 the sandboxes run — the harness executes under the host
+  interpreter, as the supervisor does (§6.4.1). The mediator is the component measured and it is
+  the supervisor's, so this is the right interpreter for it, but the version differs from every
+  other figure in this chapter and is recorded rather than glossed.
+
 ---
 
 *§7.1–§7.11 written 2026-09-02, before any measurement specified here had been run. Criteria in
