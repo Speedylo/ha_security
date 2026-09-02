@@ -1,12 +1,16 @@
 # Where the rebuild stands
 
-**Last updated:** 2026-08-25 · **Read this first when resuming.**
+**Last updated:** 2026-09-02 · **Read this first when resuming.**
 
-**Where it stands in one line:** **Chapters 1–5 complete, Chapter 6 drafted §6.1–§6.14, Gate G3
-answered.** The framework exists and runs on the Pi 5; nine measurements were run rather than
-argued; **84% of the 37 most-installed community integrations import clean, unmodified, at +19.1
-MB per sandbox.** Chapter 6 corrected Chapter 5 four times and itself twice. **Chapter 6 is not
-finished**: scope item 2 (mediated egress, F2/S4) has no implementation — see "Next session".
+**Where it stands in one line:** **Chapters 1–5 complete, Chapter 6 drafted §6.1–§6.14, Chapter 7
+opened with its methodology pre-registered and its first result in.** The framework exists and
+runs on the Pi 5; ten measurements were run rather than argued. **The baseline arm has landed and
+it is the strongest result the project has: the confined and unconfined arms fail on the same six
+integrations, for the same reasons — the import-level compatibility cost of confinement is zero
+of 37.** 84% was never a fact about confinement; it is the fraction of the corpus that loads on
+2026.8.3 at all. Chapter 6 corrected Chapter 5 four times and itself twice; Chapter 7 has now
+corrected two of its own pre-registered predictions. **Still unbuilt**: scope item 2 (mediated
+egress, F2/S4) — see "Next session".
 
 Read alongside `00_METHOD.md` (ground rules — especially the evidence rule) and
 `01_PLAN.md` (stage plan and gates). Chapter working notes in `notes/` carry the reasoning
@@ -41,6 +45,9 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/base_component/` | ✅ **Pi 5, 2026-08-25.** The measurement §5.6.5 deferred to Chapter 6. The base component **can** be dropped — 46.6 MB per sandbox, budget 17 → **26** (1.53×, **not** the 2× §5.6.5 predicted). Two controls: both arm orders, and a 0.1 MB replication of §5.6.3's marginal figure. It also found a defect in §5.6.3's own recipe — see below. Feeds §6.3 |
 | `experiments/cgroup_placement/` | ✅ **Pi 5, 2026-08-25.** Four placement mechanisms × two positions, unprivileged. **Corrects §5.7.4:** `clone3(CLONE_INTO_CGROUP)` fails with the same `EACCES` as migration, so what binds is *where the supervisor runs*, not when it places the sandbox. Feeds §6.4.1 |
 | **`framework/confine/`** | ✅ **The artifact, as far as it goes, 2026-08-25.** `cgroup.py`, `namespaces.py`, `preflight.py`, `sandbox.py`, `enter.py`, `spawn.py`, `selftest.py` — standard library plus `ctypes`, no dependencies, no override flag. **Preflight: 8/8 on the Pi. Self-test: passes** — uid 0 inside mapped to 1000 outside, one visible process, `lo` only, `secrets.yaml`/`.storage`/the other integration all **absent**. Plus `seccomp.py` — 29 calls denied, verified by behaviour on both architectures. **All three of §5.7.3's primitives are built and measured.** Plus `channel.py`, `mediator.py` and `selftest_channel.py` — **identity is the socket, demonstrated with two sandboxes both claiming to be the same integration**. Plus `manifest.py` and `selftest_policy.py` — validation, S5's asymmetry, resolve-then-pin, clause pointers. Plus `describe.py` (the F4 surface, discharging T13's unplaced half) and `audit.py` (three-part identity, hash chain **and** keyed MAC chain, failing independently). **Eight self-tests, all passing on the Pi** — including `selftest_adversary.py`: 37 attempts, 21 blocked, 9 **empty** (succeeded and found nothing), 6 denied, 1 permitted, neither canary reached. Described by §6.4.2, §6.4.4–§6.4.6 and §6.5–§6.8 |
+| `report/07_evaluation.md` | 🔵 **§7.1–§7.11 written 2026-09-02 *before* any result, and dated so; §7.12 is the first result.** Criteria for **all 20 requirements** fixed in advance (§7.5), five predictions recorded (§7.6), falsifiers stated (§7.7), inherited obligations consolidated (§7.8), validity threats named (§7.9). **Two rows are ⛔ blocked — F2 and S4 — because egress does not exist**, named in the criteria table rather than buried in a limitations section. §7.12 scores P1 and P2 as **wrong** rather than revising them |
+| `experiments/compat/results/compat_baseline.json` | ✅ **Pi 5, 2026-09-02. The baseline arm.** 37 against a full, unconfined HA — same release, host, interpreter, corpus, and the *same* `inspect()` function, shared not copied. **31/37 — 84%, identical to confined, same six failures, same reasons.** `failures(design) = 0`. Baseline loads a median of **52** components; the sandbox sets up **2** |
+| `framework/confine/baseline_runtime.py` | ✅ The unconfined arm. `--profile baseline` in `compat.py`. Bias deliberately resolved toward the baseline throughout |
 | `report/06_implementation.md` | 🔵 **§6.1–§6.14 drafted 2026-08-25; one scope item still unbuilt.** The bridge is built, the corpus has been run four ways, and **Gate G3 has its recommendation**: `declared` + core package set, **31/37 — 84% — at +19.1 MB**, strictly dominating every other profile measured. What is *not* built is §5.8.2's scope item 2 — mediated egress, F2 and S4 — recorded in §6.11.1 as "◐ Half. Egress does not exist." Section plan, the §6.13–§6.14 reasoning and the viva answers in `notes/ch6_working_notes.md` |
 | `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24; re-run 2026-08-25.** Namespaces (unprivileged), seccomp and cgroup v2 all present. `memory` was absent on the stock install; after the boot change it is present **and the cap is verified to bite, unprivileged**. Feeds §5.7.4 |
 
@@ -59,8 +66,9 @@ there is nothing left to cut that would save time. G3 is now a question about co
 §6.1–§6.14 and its artifact runs; Gate G3 has an answer that is not close. **Two things are
 open, and only one of them is a decision.**
 
-- **Not a decision — just do it.** The baseline arm. Half an hour of compute. Until it runs, 84%
-  is a fact about the corpus and the design together and nobody can say which.
+- ~~**Not a decision — just do it.** The baseline arm.~~ ✅ **Done 2026-09-02, and the answer is
+  zero.** The design costs nothing in import-level compatibility on this corpus. What replaces it
+  as the cheap-and-load-bearing item is S8's paired baseline.
 - **A decision, and it is Younes's.** §5.8.2's scope item 2 — mediated egress, F2 and S4 — has no
   implementation, and T11's control is therefore undemonstrated. Build it and Chapter 6's derived
   scope is complete; defer it and Chapter 7 evaluates a design with a quarter of its declared
@@ -83,7 +91,8 @@ opposite sides** — §6.12.4 over-predicted, §6.13.4 under-predicted — which
 
 | # | Task | Notes |
 |---|---|---|
-| **1** | **The baseline arm — do this first** | The same 37 against a **full** Home Assistant, same release, same host. One run, ~30 min, mostly waiting. Until it lands, 84% does not decompose into "confinement broke it" and "broken anyway on 2026.8.3". §6.14 settled exactly one failure (`eufy_security`, on the removed `SOURCE_TYPE_GPS`) from its error string; the rest need the comparison. Everything Chapter 7 says about compatibility is provisional without it |
+| ~~**1**~~ | ~~**The baseline arm**~~ | ✅ **Done 2026-09-02.** Zero. See §7.12 |
+| **1** | **S8's and S3's paired baselines** | §7.5 makes them criteria: the 2021 file-theft pattern must **succeed** unconfined and be blocked confined, and S3 needs a paired baseline quantifying what is readable without the framework. The baseline arm supplies the instance but not the attack. This is now the cheapest high-value item and it is the project's single strongest security result |
 | **2** | **Then the egress proxy — and this is still Chapter 6** | §5.8.2 scope item 2's second half: per-integration outbound network with T11's resolve-then-pin **at connection time**. Closes F2, S4 and T11. See the decision paragraph above |
 | **3** | **Then PSS as a function of what is declared** | `experiments/unstrip/scale.py --components http,websocket_api` etc. The blanket profile costs 130.4 MB; an integration declaring nothing costs 54.5 MB. Measuring two or three points gives the *expected* budget over the corpus's real declaration distribution — and §6.13 now supplies that distribution: twelve of the 37 declare no components at all, and the median declaration is two |
 | **4** | **Then the uniform-sample corpus** | The 37 are head-weighted by install count. A uniform sample answers "what most integrations do" rather than "what most installations run"; `figures/fetch_hacs_corpus.py` already takes the corpus and only the selection changes |
