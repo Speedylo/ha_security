@@ -1254,8 +1254,14 @@ Taking the budget rather than the mean, and being generous about how chatty an i
 
 **The mediator's capacity exceeds realistic demand by about four orders of magnitude.** The
 queueing that dominates §7.19.1 therefore does not occur in practice: at 0.009% utilisation the
-observed latency is the one-client figure, **31.5 µs**, and that is the number N1's discussion
-should carry.
+observed latency is the one-client figure, **31.5 µs**.
+
+> **Corrected by §7.20.1, and the correction is large.** This figure excludes the audit write,
+> which §7.20.1 measures at **3.67 ms per decision** — 59× the non-durable write and a hundred
+> times the mediated request itself. Capacity is therefore **272 decisions per second, not
+> 47,693**, and the headroom over realistic load is **63×, not 11,000×**. The conclusion for N1
+> survives and the arithmetic behind it does not, so the corrected numbers are the ones to
+> quote.
 
 §3.6 fixed in advance that no threshold would be asserted and the figures would be reported and
 discussed. The discussion is this: the design's per-request cost does not change what a user can
@@ -1274,6 +1280,114 @@ request/response shape §5.11.1 calls "mediated".
   interpreter, as the supervisor does (§6.4.1). The mediator is the component measured and it is
   the supervisor's, so this is the right interpreter for it, but the version differs from every
   other figure in this chapter and is recorded rather than glossed.
+
+## 7.20 What durability costs, what S9 costs, and one measurement that would not resolve
+
+**Run 2026-09-02**, `experiments/durability/`. Three of Phase C's obligations, and the first is
+the one that bounds §7.19.
+
+**Both measurements were invalid on their first run, for the same reason, and it is worth
+recording before either number.** They were written to `tempfile`'s default directory, which is
+`/tmp`, which is **tmpfs on the C4 device** — RAM. `fsync` to RAM is a no-op, so durability
+appeared to cost **−0.1 µs**; and a 512 MB "file" in RAM is not a file, so the page-cache
+measurement was reading memory. A second defect compounded the second: the harness called a
+`cgroup.add()` that does not exist, caught the `AttributeError`, recorded it in a field it never
+printed, and reported a peak of **0.0 MB** — a process that was never in the cgroup at all. Both
+now use real storage and `spawn_confined`, which places the child per §6.4.1's rule.
+
+### 7.20.1 §6.8.3 — `fsync` per decision, answered
+
+`audit.py` already calls `os.fsync` on every decision, so the question was never whether to pay
+but what is being paid. On ext4 on the SD card:
+
+| | Median µs | p95 | p99 | Max |
+|---|---|---|---|---|
+| **With `fsync`, as built** | **3,670.7** | 4,327.9 | 4,937.9 | 27,543 |
+| Without `fsync` | 61.8 | 71.4 | 79.2 | 195 |
+
+**Durability costs 3.6 ms per decision — 59× the non-durable write, and roughly a hundred times
+the mediated request it accompanies (§7.19.1's 31.5 µs).** §6.8.3 predicted it would cost "far
+more than the 2.4 µs decision" and that is a considerable understatement.
+
+**It is nonetheless affordable, and §7.19.3's conclusion survives with different arithmetic:**
+
+```
+    capacity with the audit write   1 / 3.67 ms   =    272 decisions/s
+    realistic demand (§7.19.3)                    =   4.33 req/s
+    headroom                                      =    63×
+```
+
+63× is not 11,000×, and the difference matters for how the claim is stated: the mediator is no
+longer four orders of magnitude clear of demand, it is *comfortably but finitely* clear. The
+answer to §6.8.3 is therefore **yes, keep the `fsync`** — §5.11.3's ordering guarantee is real,
+and it is bought at a cost the deployment can carry. The alternative §6.8.3 raised, a bounded
+window of loss, is not needed and should not be taken.
+
+**Two things this bounds.** A hot path would consume the margin quickly: at 272 decisions/s a
+subscription delivering every state change in a busy home is not obviously affordable, and
+§7.14.4 records that the push loop does not exist to measure. And the figure is storage-bound —
+an SD card is the worst realistic case and also the most common one for this deployment (C4).
+
+### 7.20.2 §6.9.4 and P5 — falsified, and S9 is narrower than feared
+
+§6.9.4 raised the concern that cgroup v2 charges page cache, so `resources.memory_mb` would bound
+file *reading*, making "an integration processing a large local dataset indistinguishable, to
+this control, from one searching for secrets". §7.6's P5 predicted this was reproducible and a
+genuine usability cost.
+
+A process streaming a **512 MB** file, discarding each block, inside caps of 64, 128 and 256 MB:
+
+| Cap | File | Outcome | Peak |
+|---|---|---|---|
+| 64 MB | 512 MB | **completed** | 6.4 MB |
+| 128 MB | 512 MB | **completed** | 6.4 MB |
+| 256 MB | 512 MB | **completed** | 9.0 MB |
+
+**P5 is falsified.** Not one was killed, and the peak never approached any cap. Page cache is
+*reclaimable*: under pressure the kernel drops clean cache rather than invoking the OOM killer,
+so streaming a file eight times the size of the limit costs nothing measurable.
+
+**This narrows S9's cost claim in the design's favour, and sharpens what the control does:**
+**S9 bounds retention, not reading.** An integration that reads a large dataset and discards it
+is unaffected; one that reads and *keeps* is killed — which is precisely §7.13's `exhaust`
+attack, and precisely the behaviour the control is for. §6.9.4's obligation is therefore
+discharged by being withdrawn, and Chapter 8 should carry the narrower statement rather than the
+original concern.
+
+### 7.20.3 PSS against declaration depth — not resolved, and reported as such
+
+§7.10's item 4 asked for the per-sandbox footprint as a function of what an integration declares,
+so that §6.3.2's budget of 26 could be expressed over the corpus's real declaration distribution
+(§6.13: twelve declare nothing, the median is two). Three points, three sandboxes each:
+
+| Declared components | PSS per sandbox | Capacity |
+|---|---|---|
+| none | 136.3 MB | 17 |
+| `http`, `websocket_api` | 95.7 MB | 25 |
+| `frontend`, `http`, `websocket_api`, `lovelace` | 115.8 MB | 20 |
+
+**The series is non-monotonic and therefore does not resolve a curve.** More components ought not
+to reduce the footprint, and the middle point is the lowest of the three. At three sandboxes per
+point the measurement is dominated by how much of the interpreter and library happens to be
+shared at that moment, and PSS is exquisitely sensitive to that — it is a *proportional*
+attribution, so a page shared three ways counts a third as much as the same page mapped once.
+
+**No trend is claimed and none should be read into these numbers.** §6.3.2's budget of 26 stands
+as measured there; refining it over the declaration distribution needs more sandboxes per point
+and repeated runs, and is left to future work rather than reported as a curve drawn through
+noise. Recording the attempt and its failure to resolve is the alternative to quietly omitting a
+scheduled measurement.
+
+### 7.20.4 §7.9's outstanding defect
+
+`experiments/r2_footprint/measure.py` still carries the pre-§6.3.3 recipe — the instance reaches
+the running state via `set_state(CoreState.running)`, which never fires
+`EVENT_HOMEASSISTANT_START`. §5.6.3's 176/136 MB figures were produced by it. That builder is
+deliberately preserved so §5.6.3's published figures stay reproducible, and the defect affects
+*deferred callbacks*, not the size of the process, so a proportional-set-size figure is unlikely
+to move. **Unlikely is not measured**, and this chapter does not have the measurement. §5.6.3's
+figures are therefore quoted in this evaluation only with that caveat attached, and re-running
+the footprint experiment on the corrected builder is added to future work.
 
 ---
 
