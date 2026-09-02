@@ -252,6 +252,42 @@ PLATFORM_NAMES = (
 )
 
 
+def fill_schema(schema, overrides: dict) -> dict:
+    """Answer a config flow's form from the schema it returned, as the frontend would.
+
+    Precedence: an override the caller supplied by key name, then the field's own default,
+    then the first value of an enumerated choice. A field with none of the three is left out
+    and the integration decides whether it was required — which is the right party to decide.
+    """
+    import voluptuous as vol
+
+    if schema is None:
+        return dict(overrides)
+    filled: dict = {}
+    for marker, validator in getattr(schema, "schema", {}).items():
+        name = getattr(marker, "schema", marker)
+        if not isinstance(name, str):
+            continue
+        if name in overrides:
+            filled[name] = overrides[name]
+            continue
+        default = getattr(marker, "default", None)
+        if callable(default):
+            try:
+                value = default()
+                if value is not vol.UNDEFINED:
+                    filled[name] = value
+                    continue
+            except Exception:  # noqa: BLE001
+                pass
+        container = getattr(validator, "container", None)
+        if isinstance(container, dict) and container:
+            filled[name] = next(iter(container))
+        elif isinstance(container, (list, tuple)) and container:
+            filled[name] = container[0]
+    return filled
+
+
 async def inspect(hass, domain: str, component_dir: str = COMPONENT) -> dict:
     """Ask, in order, the three questions N2 requires be reported separately.
 
@@ -365,6 +401,106 @@ async def run() -> dict:
 
     if spec.get("mode") == "inspect":
         result.update(await inspect(hass, spec["domain"]))
+        await hass.async_stop()
+        return result
+
+    if spec.get("mode") == "flow":
+        # §7.17. N2's second number: an integration set up through **its own config flow**,
+        # not through a ConfigEntry the harness constructed. The distinction is the whole point
+        # — a hand-built entry skips the validation an integration does on its own input, and
+        # `thermal_comfort` for one reads the sensors it was given *during* the flow.
+        from homeassistant.config_entries import ConfigEntryState
+        from homeassistant.data_entry_flow import FlowResultType
+
+        flow = result.setdefault("flow", {})
+        overrides = dict(spec.get("flow_input") or {})
+        flow["steps"] = []
+
+        # Installed **before** the flow runs, not after. `async_configure` sets the entry up
+        # as soon as it creates it, so a handler attached afterwards captures nothing and a
+        # SETUP_ERROR arrives with no reason — which is not a compatibility result, it is an
+        # unanswered question. The first version of this harness made exactly that mistake.
+        setup_log: list[str] = []
+
+        class _Capture(logging.Handler):
+            def emit(self, record: logging.LogRecord) -> None:
+                if record.levelno >= logging.ERROR:
+                    try:
+                        line = f"{record.name}: {record.getMessage()}"
+                        if record.exc_info:
+                            # Home Assistant logs "Error setting up entry X" and puts the
+                            # cause in exc_info. Without this the record says only that
+                            # something failed, which is the shape §6.6.5 warns about.
+                            line += " || " + "".join(
+                                traceback.format_exception(*record.exc_info))[-400:]
+                        setup_log.append(line[:700])
+                    except Exception:  # noqa: BLE001
+                        pass
+
+        handler = _Capture()
+        logging.getLogger().addHandler(handler)
+        logging.getLogger().setLevel(logging.ERROR)
+
+        try:
+            outcome = await hass.config_entries.flow.async_init(
+                spec["domain"], context={"source": "user"})
+            # Drive the form the way the frontend does: **read the schema the integration
+            # returned and satisfy it**, rather than posting input guessed in advance. The
+            # first version of this harness hard-coded values and three integrations failed
+            # schema validation — a harness fault that §6.3.3 would have had charged to the
+            # design. What an integration asks for is its own business, and the only honest
+            # way to answer is to look.
+            for _ in range(10):
+                step = outcome.get("step_id") or "?"
+                if outcome.get("type") == FlowResultType.MENU:
+                    # A menu is a form whose only field is which branch to take. The frontend
+                    # shows a list; this takes the first, and records which so the choice is
+                    # visible rather than implied.
+                    options = outcome.get("menu_options") or []
+                    names = list(options) if isinstance(options, dict) else list(options)
+                    # A caller-supplied branch wins. Taking the first option is arbitrary and
+                    # was wrong for `powercalc`, whose first branch is global configuration
+                    # rather than the one that creates a sensor — which is a choice a user
+                    # makes knowingly, so the harness has to make it knowingly too.
+                    wanted = (spec.get("menu_choice") or {}).get(step)
+                    chosen = (wanted if wanted in names
+                              else names[0] if names else None)
+                    if chosen is None:
+                        break
+                    flow["steps"].append({"step": step, "menu": chosen})
+                    outcome = await hass.config_entries.flow.async_configure(
+                        outcome["flow_id"], {"next_step_id": chosen})
+                    continue
+                if outcome.get("type") != FlowResultType.FORM:
+                    break
+                user_input = fill_schema(outcome.get("data_schema"), overrides)
+                flow["steps"].append({"step": step, "sent": sorted(user_input)})
+                outcome = await hass.config_entries.flow.async_configure(
+                    outcome["flow_id"], user_input)
+            flow["type"] = str(outcome.get("type"))
+            flow["errors"] = outcome.get("errors")
+            flow["reason"] = outcome.get("reason")
+            if outcome.get("type") != FlowResultType.CREATE_ENTRY:
+                flow["step_id"] = outcome.get("step_id")
+        except Exception as err:  # noqa: BLE001 — a refused flow is the result
+            flow["error"] = f"{type(err).__name__}: {err}"[:300]
+
+        await hass.async_block_till_done()
+        await hass.async_start()
+        await hass.async_block_till_done()
+
+        entries = hass.config_entries.async_entries(spec["domain"])
+        result["entries"] = [{"title": e.title, "state": str(e.state),
+                              "loaded": e.state is ConfigEntryState.LOADED} for e in entries]
+        result["loaded"] = any(e.state is ConfigEntryState.LOADED for e in entries)
+        result["local_entities"] = sorted(s.entity_id for s in hass.states.async_all())
+        result["mirrored"] = sorted(bridge.mirrored)
+        # What actually crossed the boundary outward. This is the number F1 is about: an
+        # entity the integration created, forwarded to the mediator and accepted by it.
+        result["published"] = bridge.published
+        result["refused"] = bridge.refused
+        logging.getLogger().removeHandler(handler)
+        result["setup_errors"] = setup_log[:6]
         await hass.async_stop()
         return result
 

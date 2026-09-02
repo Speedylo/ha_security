@@ -930,6 +930,101 @@ The five that are not divide into three kinds, and the distinction matters more 
   stream (§7.14.4); N2's executed-end-to-end population is one (§6.11.1). Both are gaps in the
   artifact rather than in the measurement, and both are named where the figure appears.
 
+## 7.17 N2's second number — integrations executed end-to-end
+
+**Run 2026-09-02**, `experiments/end_to_end/`. §3.6's N2 requires "executed end-to-end" be
+reported separately from "imports-clean" and never conflated. §7.12 supplied the first number
+across 37 integrations; §6.11.1 scored the population for the second as **one**. This raises it,
+and states what bounds it.
+
+### 7.17.1 The ceiling is eleven, and that is a property of the ecosystem
+
+A config entry needs data only each integration's own flow can produce. Surveying all 37 by what
+`config_flow.py` asks for: **26 of 37 require an API key, token, password, username, host or
+email** before any flow can complete. Eleven require none — they are configured from other
+entities, or from nothing.
+
+**So the denominator for any end-to-end measurement of this corpus is 11, not 37**, and an
+unconfined baseline meets exactly the same wall. Reporting a rate over 37 would conflate N2's two
+numbers *and* imply a denominator no measurement of any confinement scheme could reach. This
+chapter therefore reports a **named set of five with its selection stated**, and computes no rate.
+
+### 7.17.2 Result
+
+| Integration | Outcome | Own entities | Published through the mediator |
+|---|---|---|---|
+| `thermal_comfort` | ✅ **LOADED** | 15 | **15** |
+| `watchman` | ✅ LOADED | 10 | 13 |
+| `adaptive_lighting` | ✅ LOADED | 4 | 7 |
+| `scheduler` | ❌ SETUP_ERROR | 0 | 0 |
+| `powercalc` | ❌ NOT_LOADED | 0 | 0 |
+
+Three of five set up through their own config flows and published entities across the boundary.
+§6.11.1's population of one becomes three, which is a named set and still not a rate.
+
+### 7.17.3 The round trip, in one integration
+
+`thermal_comfort` is the case that discharges F1 rather than merely illustrating it:
+
+```
+mirrored in   sensor.living_room_temperature  21.4 °C   ─┐ the two entities its
+              sensor.living_room_humidity       48 %    ─┘ manifest declared
+                          ↓ computed inside the sandbox
+published out sensor.living_room_dew_point          9.96
+              sensor.living_room_absolute_humidity  9.00
+              sensor.living_room_frost_point        7.06   … 15 in total
+              every one accepted, clause `(ambient: §5.10.2)`, `refused: []`
+```
+
+Unmodified source, its own config flow, its own arithmetic, its own entities — in across the
+mediated read path, out across the publish path. **A dew point of 9.96 °C from 21.4 °C at 48 %
+relative humidity is physically correct**, so what is demonstrated is not that the integration
+loads but that it *works*: the values it computed depend on the two entities the mediator handed
+it, and they are right.
+
+The published entities are accepted as **ambient** rather than checked against a clause, which is
+§5.10.2's rule that an integration publishing its own entities is what being an integration is.
+Nothing it did was refused.
+
+### 7.17.4 Both failures diagnosed, and neither is the harness
+
+§6.3.3 obliges this chapter to check a failure against the harness before charging it to the
+design. Three earlier failures were harness faults and are recorded in the experiment README;
+these two survive that check.
+
+**`scheduler` — the first measured compatibility cost of network isolation.**
+
+```
+zeroconf/_utils/net.py: add_multicast_member
+    listen_socket.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, …)
+```
+
+The sandbox's network namespace holds loopback only, so joining a multicast group fails. It
+declares `http` and `websocket_api`, and zeroconf arrives through that chain. **This is
+confinement costing compatibility**, and §7.12 could not have found it: at import level the
+integration is fine, and only setting it up reaches the socket. It bears directly on §9.5's open
+decision — network isolation costs more than "cannot reach the internet", and an egress proxy
+that mediates outbound TCP does not by itself answer multicast discovery.
+
+**`powercalc` — an undeclared component.** Its flow completed all four steps and created the
+entry; setup then failed with `KeyError: 'network'` out of
+`homeassistant.components.network.async_get_loaded_network`. It declares `light`, `group`,
+`template`, `select`, `utility_meter` and `integration` — **not `network`** — and does not import
+it directly, so it arrives transitively. This is §6.13.2's undeclared-*package* finding in its
+component form, and it extends that finding rather than repeating it: **the declaration is
+incomplete for components as well as for packages.** §6.14.4's argument stands unchanged — the
+answer is §5.9.3's static analysis marked *derived*, not asking the author.
+
+### 7.17.5 What this does not establish
+
+- **Five is a named set, not a sample**, and no rate is computed from it.
+- **There is no unconfined baseline for this arm.** §7.12 established import-level parity across
+  37, but whether these five *load* unconfined on 2026.8.3 is not measured, so the two failures
+  are attributed by their tracebacks rather than by comparison. That is weaker evidence than
+  §7.12's and is the next thing this axis owes.
+- **The mediator acts on §6.10.2's stand-in.** What crossed the boundary is real and is recorded
+  with its clause; what a live Home Assistant would do with those fifteen entities is not tested.
+
 ---
 
 *§7.1–§7.11 written 2026-09-02, before any measurement specified here had been run. Criteria in
