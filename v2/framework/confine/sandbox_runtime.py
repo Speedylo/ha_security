@@ -288,6 +288,61 @@ def fill_schema(schema, overrides: dict) -> dict:
     return filled
 
 
+# Which part of the run is executing. Set by `run()` as it moves through construction,
+# component setup and the integration itself, so an attempt can be attributed to whoever made
+# it. §7.18.2 depends entirely on this being right.
+CURRENT_PHASE = ["platform"]
+
+
+def record_egress_attempts(into: list) -> None:
+    """Record what the integration *tries* to reach, instead of only that it failed.
+
+    The sandbox's network namespace holds loopback only, so every outbound attempt already
+    fails. What it does not do is say **what was attempted**, and that is the number §7.18
+    needs: an egress proxy's value is bounded by how many integrations want egress and where
+    they want to go. `iot_class` is the *declared* answer; this is the observed one.
+
+    **It is an in-process observation, not a kernel one.** `socket` is patched before the
+    integration is imported, so anything going through the standard library or `aiohttp` is
+    seen. Code issuing raw syscalls would not be, and a hostile integration would not be
+    measured this way at all — which is fine, because this measures *demand from ordinary
+    integrations*, not an adversary. §7.18 states the limit.
+    """
+    import socket as _socket
+
+    real_getaddrinfo = _socket.getaddrinfo
+    real_connect = _socket.socket.connect
+
+    def note(kind: str, host: object, port: object) -> None:
+        # **Phase, not just host.** The first version of this recorder reported that 23 of 37
+        # integrations attempted egress at import, all three of them reaching exactly
+        # `224.0.0.251`, `8.8.8.8` and `127.0.0.1`. An identical triple across two thirds of a
+        # corpus is not integrations behaving alike — it is something else doing it. It was:
+        # the *platform's* own components. `network` probes 8.8.8.8 to find which adapter holds
+        # the default route and `zeroconf` joins the mDNS group, both while `async_setup_component`
+        # runs, before the integration is imported at all. Attributing that to the integration
+        # would have inflated observed demand by a factor of twenty and pointed the egress
+        # decision at a number the integrations had no part in.
+        entry = {"kind": kind, "host": str(host)[:120], "port": port,
+                 "phase": CURRENT_PHASE[0]}
+        if entry not in into:
+            into.append(entry)
+
+    def getaddrinfo(host, port, *args, **kwargs):
+        note("resolve", host, port)
+        return real_getaddrinfo(host, port, *args, **kwargs)
+
+    def connect(self, address):
+        if isinstance(address, tuple) and len(address) >= 2:
+            note("connect", address[0], address[1])
+        else:
+            note("connect", address, None)
+        return real_connect(self, address)
+
+    _socket.getaddrinfo = getaddrinfo
+    _socket.socket.connect = connect
+
+
 async def drive_flow(hass, domain: str, overrides: dict, menu_choice: dict,
                      setup_log_into: dict | None = None) -> dict:
     """Drive an integration's own config flow the way the frontend does, and record each step.
@@ -421,12 +476,17 @@ async def run() -> dict:
     result: dict = {"domain": spec["domain"]}
 
     place_component(spec["domain"])
+    egress: list = []
+    if spec.get("record_egress"):
+        record_egress_attempts(egress)
+        result["egress_attempts"] = egress
     hass = await build_hass(DATA, with_auth=bool(spec.get("auth")))
 
     # Optionally set up the components the integration says it depends on. §6.3.2 dropped the
     # base component because nothing needed it; a real integration's `dependencies` are a
     # different claim, and whether the sandbox must honour them is what §5.6.5's second
     # trigger asks.
+    CURRENT_PHASE[0] = "components"
     wanted = spec.get("setup_components") or []
     if wanted:
         from homeassistant.setup import async_setup_component
@@ -459,6 +519,7 @@ async def run() -> dict:
                 result.setdefault("setup_log", {})[name] = captured[mark:][:3]
         logging.getLogger().removeHandler(handler)
 
+    CURRENT_PHASE[0] = "integration"
     bridge = Bridge(hass, channel, spec)
 
     # Order, and it is the order §5.6.2 implies: the sandbox is furnished with exactly what

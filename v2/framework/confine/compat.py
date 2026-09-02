@@ -290,6 +290,9 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
             # §6.12.3 measured it at 0.1 MB, and without it `http` cannot set up at all — which
             # is why the first per-integration arm reached 57% rather than what it should have.
             "auth": profile in ("unstripped", "declared"),
+            # §7.18: record what each integration tries to reach at import, so the demand for
+            # an egress proxy is measured rather than inferred from `iot_class` alone.
+            "record_egress": True,
             "setup_components": components}))
         spec = SandboxSpec(
             domain=domain, own_dir=str(own), data_dir=str(data),

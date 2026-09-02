@@ -1,0 +1,3051 @@
+{
+  "arm_a": [
+    {
+      "domain": "adaptive_lighting",
+      "egress_attempts": [],
+      "components_setup": {
+        "light": true
+      },
+      "requirements": [
+        "ulid-transform"
+      ],
+      "dependencies": [
+        "light"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "switch"
+      ],
+      "oom": 0,
+      "peak_mb": 92.9,
+      "install": {
+        "ok": true,
+        "installed": [
+          "ulid_transform"
+        ],
+        "resolved": [
+          "ulid_transform-2.2.9"
+        ]
+      },
+      "setup_components": [
+        "light"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "alarmo",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "http": true,
+        "panel_custom": true,
+        "mqtt": true,
+        "notify": true
+      },
+      "requirements": [],
+      "dependencies": [
+        "http",
+        "panel_custom"
+      ],
+      "after_dependencies": [
+        "mqtt",
+        "notify"
+      ],
+      "level": "platforms_clean",
+      "platforms": [
+        "alarm_control_panel",
+        "event"
+      ],
+      "oom": 0,
+      "peak_mb": 135.3,
+      "install": {
+        "ok": true,
+        "installed": [
+          "home_assistant_frontend",
+          "paho_mqtt"
+        ],
+        "resolved": [
+          "home_assistant_frontend-20260729.7",
+          "paho_mqtt-2.1.0"
+        ]
+      },
+      "setup_components": [
+        "http",
+        "panel_custom",
+        "mqtt",
+        "notify"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "alexa_media",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "persistent_notification": true,
+        "http": true
+      },
+      "requirements": [
+        "alexapy==1.30.0",
+        "packaging>=20.3",
+        "wrapt>=1.14.0",
+        "dictor>=0.1.12,<0.2"
+      ],
+      "dependencies": [
+        "persistent_notification",
+        "http"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "light",
+        "media_player",
+        "alarm_control_panel",
+        "notify"
+      ],
+      "oom": 0,
+      "peak_mb": 125.1,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiofiles",
+          "aiohappyeyeballs",
+          "aiohttp",
+          "aiosignal",
+          "alexapy",
+          "annotated_doc",
+          "anyio",
+          "attrs",
+          "authcaptureproxy",
+          "backoff",
+          "beautifulsoup4",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "cryptography",
+          "dictor",
+          "frozenlist",
+          "h11",
+          "h2",
+          "hpack",
+          "httpcore",
+          "httpx",
+          "hyperframe",
+          "idna",
+          "markdown_it_py",
+          "mdurl",
+          "multidict",
+          "packaging",
+          "propcache",
+          "pycparser",
+          "pygments",
+          "pyotp",
+          "requests",
+          "rich",
+          "shellingham",
+          "simplejson",
+          "soupsieve",
+          "typer",
+          "typing_extensions",
+          "urllib3",
+          "wrapt",
+          "yarl"
+        ],
+        "resolved": [
+          "aiofiles-24.1.0",
+          "aiohappyeyeballs-2.7.1",
+          "aiohttp-3.14.3",
+          "aiosignal-1.4.0",
+          "alexapy-1.30.0",
+          "annotated_doc-0.0.5",
+          "anyio-4.14.2",
+          "attrs-26.1.0",
+          "authcaptureproxy-1.3.7",
+          "backoff-2.2.1",
+          "beautifulsoup4-4.15.0",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.1",
+          "cryptography-50.0.1",
+          "dictor-0.1.12",
+          "frozenlist-1.8.0",
+          "h11-0.16.0",
+          "h2-4.4.1",
+          "hpack-4.2.0",
+          "httpcore-1.0.9",
+          "httpx-0.28.1",
+          "hyperframe-6.1.0",
+          "idna-3.19",
+          "markdown_it_py-4.2.0",
+          "mdurl-0.1.2",
+          "multidict-6.7.1",
+          "packaging-26.3",
+          "propcache-0.5.2",
+          "pycparser-3.0",
+          "pygments-2.21.0",
+          "pyotp-2.10.0",
+          "requests-2.34.2",
+          "rich-15.0.0",
+          "shellingham-1.5.4",
+          "simplejson-4.1.2",
+          "soupsieve-2.9.2",
+          "typer-0.27.2",
+          "typing_extensions-4.16.0",
+          "urllib3-2.7.0",
+          "wrapt-2.4.0",
+          "yarl-1.24.5"
+        ]
+      },
+      "setup_components": [
+        "persistent_notification",
+        "http"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "bambu_lab",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "device_automation": true,
+        "ffmpeg": true,
+        "frontend": true,
+        "http": true,
+        "lovelace": true,
+        "mqtt": true,
+        "websocket_api": true
+      },
+      "requirements": [
+        "beautifulsoup4"
+      ],
+      "dependencies": [
+        "device_automation",
+        "ffmpeg",
+        "frontend",
+        "http",
+        "lovelace",
+        "mqtt",
+        "websocket_api"
+      ],
+      "after_dependencies": [],
+      "level": "import_failed",
+      "error": "ModuleNotFoundError: No module named 'aiofiles'",
+      "oom": 0,
+      "peak_mb": 138.1,
+      "install": {
+        "ok": true,
+        "installed": [
+          "async_timeout",
+          "beautifulsoup4",
+          "ha_ffmpeg",
+          "home_assistant_frontend",
+          "paho_mqtt",
+          "soupsieve",
+          "typing_extensions"
+        ],
+        "resolved": [
+          "async_timeout-5.0.1",
+          "beautifulsoup4-4.15.0",
+          "ha_ffmpeg-3.2.2",
+          "home_assistant_frontend-20260729.7",
+          "paho_mqtt-2.1.0",
+          "soupsieve-2.9.2",
+          "typing_extensions-4.16.0"
+        ]
+      },
+      "setup_components": [
+        "device_automation",
+        "ffmpeg",
+        "frontend",
+        "http",
+        "lovelace",
+        "mqtt",
+        "websocket_api"
+      ],
+      "profile": "declared",
+      "category": "undeclared_dependency"
+    },
+    {
+      "domain": "battery_notes",
+      "egress_attempts": [],
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "button",
+        "button"
+      ],
+      "oom": 0,
+      "peak_mb": 93.9,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "setup_components": [],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "bermuda",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "/var/run/dbus/system_bus_socket",
+          "port": null,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "bluetooth_adapters": true,
+        "device_tracker": true,
+        "private_ble_device": true
+      },
+      "requirements": [],
+      "dependencies": [
+        "bluetooth_adapters",
+        "device_tracker",
+        "private_ble_device"
+      ],
+      "after_dependencies": [],
+      "level": "import_failed",
+      "error": "ModuleNotFoundError: No module named 'aiofiles'",
+      "oom": 0,
+      "peak_mb": 113.2,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiooui",
+          "async_interrupt",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "btsocket",
+          "cffi",
+          "cryptography",
+          "dbus_fast",
+          "habluetooth",
+          "pycparser",
+          "pyric",
+          "uart_devices",
+          "usb_devices"
+        ],
+        "resolved": [
+          "aiooui-0.1.9",
+          "async_interrupt-1.2.2",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "btsocket-0.3.0",
+          "cffi-2.1.1",
+          "cryptography-50.0.1",
+          "dbus_fast-5.0.22",
+          "habluetooth-6.26.5",
+          "pycparser-3.0",
+          "pyric-0.1.6.3",
+          "uart_devices-0.1.1",
+          "usb_devices-0.5.1"
+        ]
+      },
+      "setup_components": [
+        "bluetooth_adapters",
+        "device_tracker",
+        "private_ble_device"
+      ],
+      "profile": "declared",
+      "category": "undeclared_dependency"
+    },
+    {
+      "domain": "ble_monitor",
+      "egress_attempts": [],
+      "requirements": [
+        "pycryptodomex>=3.23.0",
+        "janus>=2.0.0",
+        "aioblescan>=0.2.14",
+        "btsocket>=0.3.0",
+        "pyric>=0.1.6.3"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "device_tracker"
+      ],
+      "oom": 0,
+      "peak_mb": 93.5,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aioblescan",
+          "btsocket",
+          "janus",
+          "pycryptodomex",
+          "pyric"
+        ],
+        "resolved": [
+          "aioblescan-0.2.14",
+          "btsocket-0.3.0",
+          "janus-2.0.0",
+          "pycryptodomex-3.23.0",
+          "pyric-0.1.6.3"
+        ]
+      },
+      "setup_components": [],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "browser_mod",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "panel_custom": true,
+        "websocket_api": true,
+        "http": true,
+        "frontend": true,
+        "lovelace": true
+      },
+      "requirements": [],
+      "dependencies": [
+        "panel_custom",
+        "websocket_api",
+        "http",
+        "frontend",
+        "lovelace"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "light",
+        "media_player",
+        "camera"
+      ],
+      "oom": 0,
+      "peak_mb": 121.2,
+      "install": {
+        "ok": true,
+        "installed": [
+          "home_assistant_frontend"
+        ],
+        "resolved": [
+          "home_assistant_frontend-20260729.7"
+        ]
+      },
+      "setup_components": [
+        "panel_custom",
+        "websocket_api",
+        "http",
+        "frontend",
+        "lovelace"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "dreame_vacuum",
+      "egress_attempts": [],
+      "requirements": [
+        "pillow",
+        "numpy",
+        "pybase64",
+        "requests",
+        "pycryptodome",
+        "python-miio",
+        "mini-racer",
+        "paho-mqtt"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "camera",
+        "vacuum",
+        "button",
+        "number",
+        "select",
+        "button"
+      ],
+      "oom": 0,
+      "peak_mb": 141.2,
+      "install": {
+        "ok": true,
+        "installed": [
+          "android_backup",
+          "appdirs",
+          "attrs",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "click",
+          "construct",
+          "croniter",
+          "cryptography",
+          "defusedxml",
+          "idna",
+          "ifaddr",
+          "micloud",
+          "mini_racer",
+          "netifaces",
+          "numpy",
+          "paho_mqtt",
+          "pillow",
+          "pybase64",
+          "pycparser",
+          "pycryptodome",
+          "python_dateutil",
+          "python_miio",
+          "pytz",
+          "pyyaml",
+          "requests",
+          "six",
+          "tqdm",
+          "tzlocal",
+          "urllib3",
+          "zeroconf"
+        ],
+        "resolved": [
+          "android_backup-0.2.0",
+          "appdirs-1.4.4",
+          "attrs-26.1.0",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.1",
+          "click-8.5.0",
+          "construct-2.10.70",
+          "croniter-6.2.4",
+          "cryptography-50.0.1",
+          "defusedxml-0.7.1",
+          "idna-3.19",
+          "ifaddr-0.2.0",
+          "micloud-0.6",
+          "mini_racer-0.14.1",
+          "netifaces-0.11.0",
+          "numpy-2.5.2",
+          "paho_mqtt-2.1.0",
+          "pillow-12.3.0",
+          "pybase64-1.5.0",
+          "pycparser-3.0",
+          "pycryptodome-3.23.0",
+          "python_dateutil-2.9.0.post0",
+          "python_miio-0.5.12",
+          "pytz-2026.3.post1",
+          "pyyaml-6.0.3",
+          "requests-2.34.2",
+          "six-1.17.0",
+          "tqdm-4.70.0",
+          "tzlocal-5.4.4",
+          "urllib3-2.7.0",
+          "zeroconf-0.151.3"
+        ]
+      },
+      "setup_components": [],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "dwd_weather",
+      "egress_attempts": [],
+      "requirements": [
+        "simple_dwd_weatherforecast==3.5.0",
+        "markdownify>=1.2",
+        "suntimes==1.1.2"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "camera",
+        "weather"
+      ],
+      "oom": 0,
+      "peak_mb": 122.4,
+      "install": {
+        "ok": true,
+        "installed": [
+          "anyio",
+          "arrow",
+          "beautifulsoup4",
+          "certifi",
+          "charset_normalizer",
+          "h11",
+          "httpcore",
+          "httpx",
+          "idna",
+          "jdcal",
+          "lxml",
+          "markdownify",
+          "pillow",
+          "pycryptodome",
+          "python_dateutil",
+          "pytz",
+          "requests",
+          "simple_dwd_weatherforecast",
+          "six",
+          "soupsieve",
+          "stream_inflate",
+          "stream_unzip",
+          "suntimes",
+          "typing_extensions",
+          "tzdata",
+          "tzlocal",
+          "urllib3"
+        ],
+        "resolved": [
+          "anyio-4.14.2",
+          "arrow-1.4.0",
+          "beautifulsoup4-4.15.0",
+          "certifi-2026.7.22",
+          "charset_normalizer-3.5.1",
+          "h11-0.16.0",
+          "httpcore-1.0.9",
+          "httpx-0.28.1",
+          "idna-3.19",
+          "jdcal-1.4.1",
+          "lxml-6.1.3",
+          "markdownify-1.2.3",
+          "pillow-12.3.0",
+          "pycryptodome-3.23.0",
+          "python_dateutil-2.9.0.post0",
+          "pytz-2026.3.post1",
+          "requests-2.34.2",
+          "simple_dwd_weatherforecast-3.5.0",
+          "six-1.17.0",
+          "soupsieve-2.9.2",
+          "stream_inflate-0.0.43",
+          "stream_unzip-0.0.101",
+          "suntimes-1.1.2",
+          "typing_extensions-4.16.0",
+          "tzdata-2026.3",
+          "tzlocal-5.4.4",
+          "urllib3-2.7.0"
+        ]
+      },
+      "setup_components": [],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "eufy_security",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "ffmpeg": true,
+        "stream": true
+      },
+      "requirements": [
+        "websocket-client==1.8.0",
+        "aiortsp==1.4.0"
+      ],
+      "dependencies": [
+        "ffmpeg",
+        "stream"
+      ],
+      "after_dependencies": [],
+      "level": "platform_import_failed",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "lock",
+        "camera",
+        "alarm_control_panel",
+        "button",
+        "number",
+        "select",
+        "device_tracker",
+        "image",
+        "button"
+      ],
+      "platform_errors": {
+        "device_tracker": "ImportError: cannot import name 'SOURCE_TYPE_GPS' from 'homeassistant.components.device_tracker' (/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/device_tracker/__init__"
+      },
+      "oom": 0,
+      "peak_mb": 117.1,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiortsp",
+          "async_timeout",
+          "av",
+          "dpkt",
+          "ha_ffmpeg",
+          "numpy",
+          "pyturbojpeg",
+          "websocket_client"
+        ],
+        "resolved": [
+          "aiortsp-1.4.0",
+          "async_timeout-5.0.1",
+          "av-17.0.1",
+          "dpkt-1.9.8",
+          "ha_ffmpeg-3.2.2",
+          "numpy-2.3.2",
+          "pyturbojpeg-1.8.3",
+          "websocket_client-1.8.0"
+        ]
+      },
+      "setup_components": [
+        "ffmpeg",
+        "stream"
+      ],
+      "profile": "declared",
+      "category": "other"
+    },
+    {
+      "domain": "frigate",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "http": true,
+        "media_source": true,
+        "mqtt": true
+      },
+      "requirements": [
+        "hass-web-proxy-lib==0.0.8",
+        "titlecase==2.4.1"
+      ],
+      "dependencies": [
+        "http",
+        "media_source",
+        "mqtt"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "camera",
+        "number",
+        "select",
+        "update",
+        "image"
+      ],
+      "oom": 0,
+      "peak_mb": 137.7,
+      "install": {
+        "ok": true,
+        "installed": [
+          "hass_web_proxy_lib",
+          "paho_mqtt",
+          "titlecase"
+        ],
+        "resolved": [
+          "hass_web_proxy_lib-0.0.8",
+          "paho_mqtt-2.1.0",
+          "titlecase-2.4.1"
+        ]
+      },
+      "setup_components": [
+        "http",
+        "media_source",
+        "mqtt"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "govee",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "/var/run/dbus/system_bus_socket",
+          "port": null,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "bluetooth": true,
+        "network": true
+      },
+      "requirements": [
+        "aiohttp-retry>=2.8.3",
+        "aiomqtt>=2.0.0",
+        "bleak-retry-connector>=3.0.0",
+        "cryptography>=41.0.0"
+      ],
+      "dependencies": [],
+      "after_dependencies": [
+        "bluetooth",
+        "network"
+      ],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "light",
+        "fan",
+        "button",
+        "number",
+        "select",
+        "humidifier",
+        "event",
+        "button"
+      ],
+      "oom": 0,
+      "peak_mb": 123.7,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiohappyeyeballs",
+          "aiohttp",
+          "aiohttp_retry",
+          "aiomqtt",
+          "aiooui",
+          "aiosignal",
+          "aiousbwatcher",
+          "async_interrupt",
+          "asyncinotify",
+          "attrs",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "btsocket",
+          "cffi",
+          "cryptography",
+          "dbus_fast",
+          "frozenlist",
+          "habluetooth",
+          "idna",
+          "ifaddr",
+          "multidict",
+          "paho_mqtt",
+          "propcache",
+          "pycparser",
+          "pyric",
+          "serialx",
+          "typing_extensions",
+          "uart_devices",
+          "usb_devices",
+          "yarl"
+        ],
+        "resolved": [
+          "aiohappyeyeballs-2.7.1",
+          "aiohttp-3.14.3",
+          "aiohttp_retry-2.9.1",
+          "aiomqtt-2.5.1",
+          "aiooui-0.1.9",
+          "aiosignal-1.4.0",
+          "aiousbwatcher-1.1.2",
+          "async_interrupt-1.2.2",
+          "asyncinotify-4.4.4",
+          "attrs-26.1.0",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "btsocket-0.3.0",
+          "cffi-2.1.1",
+          "cryptography-50.0.1",
+          "dbus_fast-5.0.22",
+          "frozenlist-1.8.0",
+          "habluetooth-6.26.5",
+          "idna-3.19",
+          "ifaddr-0.2.0",
+          "multidict-6.7.1",
+          "paho_mqtt-2.1.0",
+          "propcache-0.5.2",
+          "pycparser-3.0",
+          "pyric-0.1.6.3",
+          "serialx-1.8.2",
+          "typing_extensions-4.16.0",
+          "uart_devices-0.1.1",
+          "usb_devices-0.5.1",
+          "yarl-1.24.5"
+        ]
+      },
+      "setup_components": [
+        "bluetooth",
+        "network"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "hacs",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "http": true,
+        "websocket_api": true,
+        "frontend": true,
+        "persistent_notification": true,
+        "lovelace": true,
+        "repairs": true,
+        "python_script": false
+      },
+      "setup_log": {
+        "python_script": [
+          "homeassistant.components.python_script: Folder python_scripts not found in configuration folder",
+          "homeassistant.setup: Setup failed for 'python_script': Integration failed to initialize."
+        ]
+      },
+      "requirements": [
+        "aiogithubapi>=22.10.1"
+      ],
+      "dependencies": [
+        "http",
+        "websocket_api",
+        "frontend",
+        "persistent_notification",
+        "lovelace",
+        "repairs"
+      ],
+      "after_dependencies": [
+        "python_script"
+      ],
+      "level": "import_failed",
+      "error": "ModuleNotFoundError: No module named 'custom_components.hacs.hacs_frontend'",
+      "oom": 0,
+      "peak_mb": 114.4,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiogithubapi",
+          "aiohappyeyeballs",
+          "aiohttp",
+          "aiosignal",
+          "attrs",
+          "backoff",
+          "frozenlist",
+          "home_assistant_frontend",
+          "idna",
+          "multidict",
+          "propcache",
+          "restrictedpython",
+          "yarl"
+        ],
+        "resolved": [
+          "aiogithubapi-26.0.0",
+          "aiohappyeyeballs-2.7.1",
+          "aiohttp-3.14.3",
+          "aiosignal-1.4.0",
+          "attrs-26.1.0",
+          "backoff-2.2.1",
+          "frozenlist-1.8.0",
+          "home_assistant_frontend-20260729.7",
+          "idna-3.19",
+          "multidict-6.7.1",
+          "propcache-0.5.2",
+          "restrictedpython-8.1",
+          "yarl-1.24.5"
+        ]
+      },
+      "setup_components": [
+        "http",
+        "websocket_api",
+        "frontend",
+        "persistent_notification",
+        "lovelace",
+        "repairs",
+        "python_script"
+      ],
+      "profile": "declared",
+      "category": "needs_component"
+    },
+    {
+      "domain": "homematicip_local",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "backup": true,
+        "http": true,
+        "mqtt": true
+      },
+      "requirements": [
+        "openccu-data==2026.7.2",
+        "openccu-loom-client==2026.8.25",
+        "aiohomematic-config==2026.8.0",
+        "aiohomematic==2026.8.4"
+      ],
+      "dependencies": [],
+      "after_dependencies": [
+        "backup",
+        "http",
+        "mqtt"
+      ],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "light",
+        "climate",
+        "cover",
+        "lock",
+        "alarm_control_panel",
+        "button",
+        "number",
+        "select",
+        "text",
+        "update",
+        "siren",
+        "valve",
+        "notify",
+        "event",
+        "button"
+      ],
+      "oom": 0,
+      "peak_mb": 224.0,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiohappyeyeballs",
+          "aiohomematic",
+          "aiohomematic_config",
+          "aiohttp",
+          "aiosignal",
+          "annotated_types",
+          "attrs",
+          "cffi",
+          "cronsim",
+          "cryptography",
+          "frozenlist",
+          "idna",
+          "multidict",
+          "openccu_data",
+          "openccu_loom_client",
+          "openccu_loom_types",
+          "paho_mqtt",
+          "propcache",
+          "pycparser",
+          "pydantic",
+          "pydantic_core",
+          "pynacl",
+          "python_slugify",
+          "securetar",
+          "text_unidecode",
+          "typing_extensions",
+          "typing_inspection",
+          "yarl"
+        ],
+        "resolved": [
+          "aiohappyeyeballs-2.7.1",
+          "aiohomematic-2026.8.4",
+          "aiohomematic_config-2026.8.0",
+          "aiohttp-3.14.3",
+          "aiosignal-1.4.0",
+          "annotated_types-0.8.0",
+          "attrs-26.1.0",
+          "cffi-2.1.1",
+          "cronsim-2.7",
+          "cryptography-50.0.1",
+          "frozenlist-1.8.0",
+          "idna-3.19",
+          "multidict-6.7.1",
+          "openccu_data-2026.7.2",
+          "openccu_loom_client-2026.8.25",
+          "openccu_loom_types-0.5.4",
+          "paho_mqtt-2.1.0",
+          "propcache-0.5.2",
+          "pycparser-3.0",
+          "pydantic-2.13.5",
+          "pydantic_core-2.46.5",
+          "pynacl-1.6.2",
+          "python_slugify-8.0.4",
+          "securetar-2026.4.1",
+          "text_unidecode-1.3",
+          "typing_extensions-4.16.0",
+          "typing_inspection-0.4.4",
+          "yarl-1.24.5"
+        ]
+      },
+      "setup_components": [
+        "backup",
+        "http",
+        "mqtt"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "llmvision",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "http": true
+      },
+      "requirements": [
+        "boto3>=1.37.1",
+        "aiosqlite==0.21.0",
+        "aiofile==3.9.0"
+      ],
+      "dependencies": [
+        "http"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "calendar"
+      ],
+      "oom": 0,
+      "peak_mb": 119.4,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiofile",
+          "aiosqlite",
+          "boto3",
+          "botocore",
+          "caio",
+          "jmespath",
+          "python_dateutil",
+          "s3transfer",
+          "six",
+          "typing_extensions",
+          "urllib3"
+        ],
+        "resolved": [
+          "aiofile-3.9.0",
+          "aiosqlite-0.21.0",
+          "boto3-1.43.86",
+          "botocore-1.43.86",
+          "caio-0.9.25",
+          "jmespath-1.1.0",
+          "python_dateutil-2.9.0.post0",
+          "s3transfer-0.19.2",
+          "six-1.17.0",
+          "typing_extensions-4.16.0",
+          "urllib3-2.7.0"
+        ]
+      },
+      "setup_components": [
+        "http"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "localtuya",
+      "egress_attempts": [],
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "light",
+        "climate",
+        "cover",
+        "fan",
+        "vacuum",
+        "number",
+        "select"
+      ],
+      "oom": 0,
+      "peak_mb": 91.9,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "setup_components": [],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "meross_lan",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "mqtt": true,
+        "dhcp": true,
+        "recorder": false,
+        "persistent_notification": true
+      },
+      "setup_log": {
+        "recorder": [
+          "homeassistant.setup: Error during setup of component recorder: 'recorder'"
+        ]
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [
+        "mqtt",
+        "dhcp",
+        "recorder",
+        "persistent_notification"
+      ],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "light",
+        "climate",
+        "cover",
+        "fan",
+        "media_player",
+        "button",
+        "number",
+        "select",
+        "update",
+        "calendar",
+        "time",
+        "button"
+      ],
+      "oom": 0,
+      "peak_mb": 176.3,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiodhcpwatcher",
+          "aiodiscover",
+          "aiodns",
+          "cached_ipaddress",
+          "cffi",
+          "fnv_hash_fast",
+          "fnvhash",
+          "greenlet",
+          "ifaddr",
+          "paho_mqtt",
+          "propcache",
+          "psutil",
+          "psutil_home_assistant",
+          "pycares",
+          "pycparser",
+          "pyroute2",
+          "scapy",
+          "sqlalchemy",
+          "typing_extensions"
+        ],
+        "resolved": [
+          "aiodhcpwatcher-1.2.7",
+          "aiodiscover-3.3.2",
+          "aiodns-4.0.4",
+          "cached_ipaddress-1.1.2",
+          "cffi-2.1.1",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "greenlet-3.5.5",
+          "ifaddr-0.2.0",
+          "paho_mqtt-2.1.0",
+          "propcache-0.5.2",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pycares-5.0.1",
+          "pycparser-3.0",
+          "pyroute2-0.9.6",
+          "scapy-2.7.0",
+          "sqlalchemy-2.0.51",
+          "typing_extensions-4.16.0"
+        ]
+      },
+      "setup_components": [
+        "mqtt",
+        "dhcp",
+        "recorder",
+        "persistent_notification"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "midea_ac_lan",
+      "egress_attempts": [],
+      "requirements": [
+        "midea-lan==2026.8.0"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "light",
+        "climate",
+        "fan",
+        "lock",
+        "water_heater",
+        "button",
+        "number",
+        "select",
+        "humidifier",
+        "time",
+        "button"
+      ],
+      "oom": 0,
+      "peak_mb": 105.5,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiofiles",
+          "aiohappyeyeballs",
+          "aiohttp",
+          "aiosignal",
+          "attrs",
+          "colorlog",
+          "defusedxml",
+          "frozenlist",
+          "idna",
+          "ifaddr",
+          "midea_lan",
+          "multidict",
+          "platformdirs",
+          "propcache",
+          "pycryptodome",
+          "typing_extensions",
+          "yarl"
+        ],
+        "resolved": [
+          "aiofiles-25.1.0",
+          "aiohappyeyeballs-2.7.1",
+          "aiohttp-3.14.3",
+          "aiosignal-1.4.0",
+          "attrs-26.1.0",
+          "colorlog-6.12.0",
+          "defusedxml-0.7.1",
+          "frozenlist-1.8.0",
+          "idna-3.19",
+          "ifaddr-0.2.0",
+          "midea_lan-2026.8.0",
+          "multidict-6.7.1",
+          "platformdirs-4.11.7",
+          "propcache-0.5.2",
+          "pycryptodome-3.23.0",
+          "typing_extensions-4.16.0",
+          "yarl-1.24.5"
+        ]
+      },
+      "setup_components": [],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "nodered",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "conversation": true,
+        "mqtt": true
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [
+        "conversation",
+        "mqtt"
+      ],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "button",
+        "number",
+        "select",
+        "text",
+        "time",
+        "button"
+      ],
+      "oom": 0,
+      "peak_mb": 128.3,
+      "install": {
+        "ok": true,
+        "installed": [
+          "hassil",
+          "home_assistant_intents",
+          "paho_mqtt",
+          "pyyaml",
+          "unicode_rbnf"
+        ],
+        "resolved": [
+          "hassil-3.11.0",
+          "home_assistant_intents-2026.7.30",
+          "paho_mqtt-2.1.0",
+          "pyyaml-6.0.3",
+          "unicode_rbnf-2.4.0"
+        ]
+      },
+      "setup_components": [
+        "conversation",
+        "mqtt"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "nordpool",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "http": true
+      },
+      "requirements": [
+        "backoff"
+      ],
+      "dependencies": [],
+      "after_dependencies": [
+        "http"
+      ],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor"
+      ],
+      "oom": 0,
+      "peak_mb": 93.9,
+      "install": {
+        "ok": true,
+        "installed": [
+          "backoff"
+        ],
+        "resolved": [
+          "backoff-2.2.1"
+        ]
+      },
+      "setup_components": [
+        "http"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "octopus_energy",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "repairs": true,
+        "recorder": false
+      },
+      "setup_log": {
+        "recorder": [
+          "homeassistant.setup: Error during setup of component recorder: 'recorder'"
+        ]
+      },
+      "requirements": [
+        "pydantic"
+      ],
+      "dependencies": [
+        "repairs",
+        "recorder"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "climate",
+        "water_heater",
+        "number",
+        "select",
+        "text",
+        "calendar",
+        "event",
+        "time"
+      ],
+      "oom": 0,
+      "peak_mb": 149.1,
+      "install": {
+        "ok": true,
+        "installed": [
+          "annotated_types",
+          "fnv_hash_fast",
+          "fnvhash",
+          "greenlet",
+          "psutil",
+          "psutil_home_assistant",
+          "pydantic",
+          "pydantic_core",
+          "sqlalchemy",
+          "typing_extensions",
+          "typing_inspection"
+        ],
+        "resolved": [
+          "annotated_types-0.8.0",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "greenlet-3.5.5",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pydantic-2.13.5",
+          "pydantic_core-2.46.5",
+          "sqlalchemy-2.0.51",
+          "typing_extensions-4.16.0",
+          "typing_inspection-0.4.4"
+        ]
+      },
+      "setup_components": [
+        "repairs",
+        "recorder"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "pirateweather",
+      "egress_attempts": [],
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "weather"
+      ],
+      "oom": 0,
+      "peak_mb": 91.6,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "setup_components": [],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "powercalc",
+      "egress_attempts": [],
+      "components_setup": {
+        "light": true,
+        "group": true,
+        "template": true,
+        "select": true,
+        "utility_meter": true,
+        "integration": true
+      },
+      "requirements": [
+        "numpy>=1.21.1"
+      ],
+      "dependencies": [
+        "light",
+        "group",
+        "template",
+        "select",
+        "utility_meter"
+      ],
+      "after_dependencies": [
+        "integration",
+        "utility_meter"
+      ],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "select"
+      ],
+      "oom": 0,
+      "peak_mb": 154.5,
+      "install": {
+        "ok": true,
+        "installed": [
+          "cronsim",
+          "numpy"
+        ],
+        "resolved": [
+          "cronsim-2.7",
+          "numpy-2.5.2"
+        ]
+      },
+      "setup_components": [
+        "light",
+        "group",
+        "template",
+        "select",
+        "utility_meter",
+        "integration"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "scheduler",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "http": true,
+        "websocket_api": true
+      },
+      "requirements": [],
+      "dependencies": [
+        "http",
+        "websocket_api"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "switch"
+      ],
+      "oom": 0,
+      "peak_mb": 95.6,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "setup_components": [
+        "http",
+        "websocket_api"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "smartthinq_sensors",
+      "egress_attempts": [],
+      "requirements": [
+        "pycountry>=23.12.11",
+        "xmltodict>=0.13.0",
+        "charset_normalizer>=3.2.0"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "light",
+        "climate",
+        "fan",
+        "water_heater",
+        "button",
+        "number",
+        "select",
+        "humidifier",
+        "button"
+      ],
+      "oom": 0,
+      "peak_mb": 102.3,
+      "install": {
+        "ok": true,
+        "installed": [
+          "charset_normalizer",
+          "pycountry",
+          "xmltodict"
+        ],
+        "resolved": [
+          "charset_normalizer-3.5.1",
+          "pycountry-26.2.16",
+          "xmltodict-1.0.4"
+        ]
+      },
+      "setup_components": [],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "solarman",
+      "egress_attempts": [],
+      "requirements": [
+        "pyyaml",
+        "pysolarmanv5"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor"
+      ],
+      "oom": 0,
+      "peak_mb": 90.8,
+      "install": {
+        "ok": true,
+        "installed": [
+          "pyserial",
+          "pysolarmanv5",
+          "pyyaml",
+          "uModbus"
+        ],
+        "resolved": [
+          "pyserial-3.5",
+          "pysolarmanv5-3.0.6",
+          "pyyaml-6.0.3",
+          "uModbus-1.0.4"
+        ]
+      },
+      "setup_components": [],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "solcast_solar",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "recorder": false,
+        "http": true
+      },
+      "setup_log": {
+        "recorder": [
+          "homeassistant.loader: We found a custom integration solcast_solar which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you experience is",
+          "homeassistant.setup: Error during setup of component recorder: 'recorder'"
+        ]
+      },
+      "requirements": [
+        "aiofiles>=23.2.0",
+        "watchfiles>=1.0.0"
+      ],
+      "dependencies": [
+        "recorder"
+      ],
+      "after_dependencies": [
+        "http"
+      ],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "select"
+      ],
+      "oom": 0,
+      "peak_mb": 133.4,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiofiles",
+          "anyio",
+          "fnv_hash_fast",
+          "fnvhash",
+          "greenlet",
+          "idna",
+          "psutil",
+          "psutil_home_assistant",
+          "sqlalchemy",
+          "typing_extensions",
+          "watchfiles"
+        ],
+        "resolved": [
+          "aiofiles-25.1.0",
+          "anyio-4.14.2",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "greenlet-3.5.5",
+          "idna-3.19",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "sqlalchemy-2.0.51",
+          "typing_extensions-4.16.0",
+          "watchfiles-1.2.0"
+        ]
+      },
+      "setup_components": [
+        "recorder",
+        "http"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "sonoff",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "http": true,
+        "zeroconf": false
+      },
+      "setup_log": {
+        "zeroconf": [
+          "homeassistant.setup: Error during setup of component zeroconf: [Errno 19] No such device"
+        ]
+      },
+      "requirements": [],
+      "dependencies": [
+        "http",
+        "zeroconf"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "light",
+        "climate",
+        "cover",
+        "fan",
+        "media_player",
+        "alarm_control_panel",
+        "button",
+        "number",
+        "select",
+        "remote",
+        "button"
+      ],
+      "oom": 0,
+      "peak_mb": 106.8,
+      "install": {
+        "ok": true,
+        "installed": [
+          "ifaddr",
+          "zeroconf"
+        ],
+        "resolved": [
+          "ifaddr-0.2.0",
+          "zeroconf-0.150.0"
+        ]
+      },
+      "setup_components": [
+        "http",
+        "zeroconf"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "spook",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "homeassistant": true,
+        "input_number": true,
+        "input_select": true,
+        "lovelace": true,
+        "number": true,
+        "person": true,
+        "recorder": false,
+        "repairs": true,
+        "select": true,
+        "zone": true,
+        "blueprint": true,
+        "cloud": false,
+        "counter": true,
+        "energy": false,
+        "group": true,
+        "proximity": true,
+        "timer": true
+      },
+      "setup_log": {
+        "recorder": [
+          "homeassistant.setup: Error during setup of component recorder: 'recorder'"
+        ],
+        "cloud": [
+          "homeassistant.setup: Error during setup of component cloud: [Errno 19] No such device"
+        ],
+        "energy": [
+          "homeassistant.setup: Unable to set up dependencies of 'history'. Setup failed for dependencies: ['recorder']",
+          "homeassistant.setup: Setup failed for 'history': Could not setup dependencies: recorder",
+          "homeassistant.setup: Unable to set up dependencies of 'energy'. Setup failed for dependencies: ['history', 'recorder']"
+        ]
+      },
+      "level": "not_found",
+      "error": "IntegrationNotFound: Integration 'spook' not found.",
+      "oom": 0,
+      "peak_mb": 166.2,
+      "install": {
+        "ok": true,
+        "installed": [
+          "acme",
+          "aiohappyeyeballs",
+          "aiohttp",
+          "aiosignal",
+          "annotated_types",
+          "anyio",
+          "atomicwrites_homeassistant",
+          "attrs",
+          "boto3",
+          "botocore",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "ciso8601",
+          "cryptography",
+          "distro",
+          "envs",
+          "fnv_hash_fast",
+          "fnvhash",
+          "frozenlist",
+          "greenlet",
+          "grpcio",
+          "h11",
+          "hass_nabucasa",
+          "httpcore",
+          "httpx",
+          "icmplib",
+          "idna",
+          "jiter",
+          "jmespath",
+          "josepy",
+          "mashumaro",
+          "multidict",
+          "openai",
+          "orjson",
+          "pillow",
+          "propcache",
+          "psutil",
+          "psutil_home_assistant",
+          "pycognito",
+          "pycparser",
+          "pydantic",
+          "pydantic_core",
+          "pyjwt",
+          "pyopenssl",
+          "pyrfc3339",
+          "python_dateutil",
+          "regex",
+          "requests",
+          "s3transfer",
+          "sentence_stream",
+          "six",
+          "sniffio",
+          "snitun",
+          "sqlalchemy",
+          "tqdm",
+          "typing_extensions",
+          "typing_inspection",
+          "urllib3",
+          "voluptuous",
+          "webrtc_models",
+          "yarl"
+        ],
+        "resolved": [
+          "acme-5.4.0",
+          "aiohappyeyeballs-2.7.1",
+          "aiohttp-3.14.3",
+          "aiosignal-1.4.0",
+          "annotated_types-0.8.0",
+          "anyio-4.14.2",
+          "atomicwrites_homeassistant-1.4.1",
+          "attrs-26.1.0",
+          "boto3-1.43.86",
+          "botocore-1.43.86",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.1",
+          "ciso8601-2.3.3",
+          "cryptography-50.0.1",
+          "distro-1.9.0",
+          "envs-1.4",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "frozenlist-1.8.0",
+          "greenlet-3.5.5",
+          "grpcio-1.83.1",
+          "h11-0.16.0",
+          "hass_nabucasa-2.2.0",
+          "httpcore-1.0.9",
+          "httpx-0.28.1",
+          "icmplib-3.0.4",
+          "idna-3.19",
+          "jiter-0.16.0",
+          "jmespath-1.1.0",
+          "josepy-2.2.0",
+          "mashumaro-3.22",
+          "multidict-6.7.1",
+          "openai-2.45.0",
+          "orjson-3.12.0",
+          "pillow-12.3.0",
+          "propcache-0.5.2",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pycognito-2024.5.1",
+          "pycparser-3.0",
+          "pydantic-2.13.5",
+          "pydantic_core-2.46.5",
+          "pyjwt-2.13.0",
+          "pyopenssl-26.4.0",
+          "pyrfc3339-2.1.0",
+          "python_dateutil-2.9.0.post0",
+          "regex-2026.9.3",
+          "requests-2.34.2",
+          "s3transfer-0.19.2",
+          "sentence_stream-1.3.0",
+          "six-1.17.0",
+          "sniffio-1.3.1",
+          "snitun-0.45.1",
+          "sqlalchemy-2.0.51",
+          "tqdm-4.70.0",
+          "typing_extensions-4.16.0",
+          "typing_inspection-0.4.4",
+          "urllib3-2.7.0",
+          "voluptuous-0.16.0",
+          "webrtc_models-0.3.0",
+          "yarl-1.24.5"
+        ]
+      },
+      "setup_components": [
+        "homeassistant",
+        "input_number",
+        "input_select",
+        "lovelace",
+        "number",
+        "person",
+        "recorder",
+        "repairs",
+        "select",
+        "zone",
+        "blueprint",
+        "cloud",
+        "counter",
+        "energy",
+        "group",
+        "proximity",
+        "timer"
+      ],
+      "profile": "declared",
+      "category": "other"
+    },
+    {
+      "domain": "tapo_control",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "ffmpeg": true,
+        "onvif": true,
+        "stream": true,
+        "network": true
+      },
+      "requirements": [
+        "pytapo==3.4.18",
+        "python-kasa[speedups]==0.10.2"
+      ],
+      "dependencies": [
+        "ffmpeg",
+        "onvif",
+        "stream",
+        "network"
+      ],
+      "after_dependencies": [],
+      "level": "import_failed",
+      "error": "ModuleNotFoundError: No module named 'aiofiles'",
+      "oom": 0,
+      "peak_mb": 139.8,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiohappyeyeballs",
+          "aiohttp",
+          "aiosignal",
+          "anyio",
+          "async_timeout",
+          "asyncclick",
+          "attrs",
+          "av",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "ciso8601",
+          "click",
+          "cryptography",
+          "frozenlist",
+          "h11",
+          "ha_ffmpeg",
+          "httpcore",
+          "httpx",
+          "idna",
+          "ifaddr",
+          "isodate",
+          "kasa_crypt",
+          "lxml",
+          "mashumaro",
+          "multidict",
+          "numpy",
+          "onvif_parsers",
+          "onvif_zeep_async",
+          "orjson",
+          "packaging",
+          "platformdirs",
+          "propcache",
+          "pycparser",
+          "pycryptodome",
+          "pytapo",
+          "python_kasa",
+          "pyturbojpeg",
+          "requests",
+          "requests_file",
+          "requests_toolbelt",
+          "rtp",
+          "typing_extensions",
+          "urllib3",
+          "wsdiscovery",
+          "yarl",
+          "zeep"
+        ],
+        "resolved": [
+          "aiohappyeyeballs-2.7.1",
+          "aiohttp-3.14.3",
+          "aiosignal-1.4.0",
+          "anyio-4.14.2",
+          "async_timeout-5.0.1",
+          "asyncclick-8.4.2.1",
+          "attrs-26.1.0",
+          "av-17.0.1",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.1",
+          "ciso8601-2.3.3",
+          "click-8.5.0",
+          "cryptography-50.0.1",
+          "frozenlist-1.8.0",
+          "h11-0.16.0",
+          "ha_ffmpeg-3.2.2",
+          "httpcore-1.0.9",
+          "httpx-0.28.1",
+          "idna-3.19",
+          "ifaddr-0.2.0",
+          "isodate-0.7.2",
+          "kasa_crypt-1.1.0",
+          "lxml-6.1.3",
+          "mashumaro-3.22",
+          "multidict-6.7.1",
+          "numpy-2.3.2",
+          "onvif_parsers-2.3.0",
+          "onvif_zeep_async-4.2.1",
+          "orjson-3.12.0",
+          "packaging-26.3",
+          "platformdirs-4.11.7",
+          "propcache-0.5.2",
+          "pycparser-3.0",
+          "pycryptodome-3.23.0",
+          "pytapo-3.4.18",
+          "python_kasa-0.10.2",
+          "pyturbojpeg-1.8.3",
+          "requests-2.34.2",
+          "requests_file-3.0.1",
+          "requests_toolbelt-1.0.0",
+          "rtp-0.0.4",
+          "typing_extensions-4.16.0",
+          "urllib3-2.7.0",
+          "wsdiscovery-2.1.2",
+          "yarl-1.24.5",
+          "zeep-4.3.3"
+        ]
+      },
+      "setup_components": [
+        "ffmpeg",
+        "onvif",
+        "stream",
+        "network"
+      ],
+      "profile": "declared",
+      "category": "undeclared_dependency"
+    },
+    {
+      "domain": "thermal_comfort",
+      "egress_attempts": [],
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor"
+      ],
+      "oom": 0,
+      "peak_mb": 90.2,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "setup_components": [],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "waste_collection_schedule",
+      "egress_attempts": [],
+      "requirements": [
+        "pdfminer.six",
+        "icalendar",
+        "icalevents>=0.2.1",
+        "beautifulsoup4",
+        "lxml",
+        "pycryptodome",
+        "pypdf",
+        "curl_cffi>=0.7.0"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "calendar"
+      ],
+      "oom": 0,
+      "peak_mb": 106.9,
+      "install": {
+        "ok": true,
+        "installed": [
+          "beautifulsoup4",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "cryptography",
+          "curl_cffi",
+          "icalendar",
+          "icalevents",
+          "lxml",
+          "pdfminer_six",
+          "pycparser",
+          "pycryptodome",
+          "pypdf",
+          "python_dateutil",
+          "pytz",
+          "six",
+          "soupsieve",
+          "typing_extensions",
+          "tzdata",
+          "urllib3"
+        ],
+        "resolved": [
+          "beautifulsoup4-4.15.0",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.1",
+          "cryptography-50.0.1",
+          "curl_cffi-0.16.3",
+          "icalendar-7.3.0",
+          "icalevents-0.3.1",
+          "lxml-6.1.3",
+          "pdfminer_six-20260107",
+          "pycparser-3.0",
+          "pycryptodome-3.23.0",
+          "pypdf-6.16.2",
+          "python_dateutil-2.9.0.post0",
+          "pytz-2026.3.post1",
+          "six-1.17.0",
+          "soupsieve-2.9.2",
+          "typing_extensions-4.16.0",
+          "tzdata-2026.3",
+          "urllib3-2.7.0"
+        ]
+      },
+      "setup_components": [],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "watchman",
+      "egress_attempts": [],
+      "requirements": [
+        "prettytable==3.12.0"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "button",
+        "text",
+        "button"
+      ],
+      "oom": 0,
+      "peak_mb": 105.8,
+      "install": {
+        "ok": true,
+        "installed": [
+          "prettytable",
+          "wcwidth"
+        ],
+        "resolved": [
+          "prettytable-3.12.0",
+          "wcwidth-0.8.3"
+        ]
+      },
+      "setup_components": [],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "webrtc",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "http": true,
+        "lovelace": true
+      },
+      "requirements": [],
+      "dependencies": [
+        "http",
+        "lovelace"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "media_player"
+      ],
+      "oom": 0,
+      "peak_mb": 110.0,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "setup_components": [
+        "http",
+        "lovelace"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "xiaomi_home",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "http": true,
+        "persistent_notification": true,
+        "ffmpeg": true,
+        "zeroconf": false
+      },
+      "setup_log": {
+        "zeroconf": [
+          "homeassistant.setup: Error during setup of component zeroconf: [Errno 19] No such device"
+        ]
+      },
+      "requirements": [
+        "construct>=2.10.56",
+        "paho-mqtt",
+        "numpy",
+        "cryptography",
+        "psutil"
+      ],
+      "dependencies": [
+        "http",
+        "persistent_notification",
+        "ffmpeg",
+        "zeroconf"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "light",
+        "climate",
+        "cover",
+        "fan",
+        "media_player",
+        "vacuum",
+        "water_heater",
+        "button",
+        "number",
+        "select",
+        "text",
+        "humidifier",
+        "device_tracker",
+        "notify",
+        "event",
+        "button"
+      ],
+      "oom": 0,
+      "peak_mb": 107.5,
+      "install": {
+        "ok": true,
+        "installed": [
+          "async_timeout",
+          "cffi",
+          "construct",
+          "cryptography",
+          "ha_ffmpeg",
+          "ifaddr",
+          "numpy",
+          "paho_mqtt",
+          "psutil",
+          "pycparser",
+          "zeroconf"
+        ],
+        "resolved": [
+          "async_timeout-5.0.1",
+          "cffi-2.1.1",
+          "construct-2.10.70",
+          "cryptography-50.0.1",
+          "ha_ffmpeg-3.2.2",
+          "ifaddr-0.2.0",
+          "numpy-2.5.2",
+          "paho_mqtt-2.1.0",
+          "psutil-7.2.2",
+          "pycparser-3.0",
+          "zeroconf-0.150.0"
+        ]
+      },
+      "setup_components": [
+        "http",
+        "persistent_notification",
+        "ffmpeg",
+        "zeroconf"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    },
+    {
+      "domain": "xiaomi_miot",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "http": true,
+        "intent": true,
+        "persistent_notification": true,
+        "ffmpeg": true,
+        "homekit": true
+      },
+      "requirements": [
+        "construct>=2.10.68",
+        "python-miio>=0.5.12",
+        "micloud>=0.5"
+      ],
+      "dependencies": [
+        "http",
+        "intent",
+        "persistent_notification",
+        "ffmpeg"
+      ],
+      "after_dependencies": [
+        "homekit"
+      ],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "light",
+        "climate",
+        "cover",
+        "fan",
+        "media_player",
+        "camera",
+        "vacuum",
+        "water_heater",
+        "alarm_control_panel",
+        "button",
+        "number",
+        "select",
+        "text",
+        "humidifier",
+        "device_tracker",
+        "remote",
+        "time",
+        "button"
+      ],
+      "oom": 0,
+      "peak_mb": 159.2,
+      "install": {
+        "ok": true,
+        "installed": [
+          "android_backup",
+          "appdirs",
+          "async_timeout",
+          "attrs",
+          "base36",
+          "certifi",
+          "cffi",
+          "chacha20poly1305_reuseable",
+          "charset_normalizer",
+          "click",
+          "construct",
+          "croniter",
+          "cryptography",
+          "defusedxml",
+          "fnv_hash_fast",
+          "fnvhash",
+          "h11",
+          "ha_ffmpeg",
+          "hap_python",
+          "homekit_audio_proxy",
+          "idna",
+          "ifaddr",
+          "micloud",
+          "netifaces",
+          "orjson",
+          "pycparser",
+          "pycryptodome",
+          "pyqrcode",
+          "python_dateutil",
+          "python_miio",
+          "pytz",
+          "pyyaml",
+          "requests",
+          "six",
+          "tqdm",
+          "tzlocal",
+          "urllib3",
+          "zeroconf"
+        ],
+        "resolved": [
+          "android_backup-0.2.0",
+          "appdirs-1.4.4",
+          "async_timeout-5.0.1",
+          "attrs-26.1.0",
+          "base36-0.1.1",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "chacha20poly1305_reuseable-0.13.2",
+          "charset_normalizer-3.5.1",
+          "click-8.5.0",
+          "construct-2.10.70",
+          "croniter-6.2.4",
+          "cryptography-50.0.1",
+          "defusedxml-0.7.1",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "h11-0.16.0",
+          "ha_ffmpeg-3.2.2",
+          "hap_python-5.0.0",
+          "homekit_audio_proxy-1.2.1",
+          "idna-3.19",
+          "ifaddr-0.2.0",
+          "micloud-0.6",
+          "netifaces-0.11.0",
+          "orjson-3.12.0",
+          "pycparser-3.0",
+          "pycryptodome-3.23.0",
+          "pyqrcode-1.2.1",
+          "python_dateutil-2.9.0.post0",
+          "python_miio-0.5.12",
+          "pytz-2026.3.post1",
+          "pyyaml-6.0.3",
+          "requests-2.34.2",
+          "six-1.17.0",
+          "tqdm-4.70.0",
+          "tzlocal-5.4.4",
+          "urllib3-2.7.0",
+          "zeroconf-0.151.3"
+        ]
+      },
+      "setup_components": [
+        "http",
+        "intent",
+        "persistent_notification",
+        "ffmpeg",
+        "homekit"
+      ],
+      "profile": "declared",
+      "category": "ok"
+    }
+  ],
+  "arm_b": [
+    {
+      "domain": "hacs",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "components"
+        },
+        {
+          "kind": "connect",
+          "host": "127.0.0.1",
+          "port": 1,
+          "phase": "components"
+        }
+      ],
+      "components_setup": {
+        "http": true,
+        "websocket_api": true,
+        "frontend": true,
+        "persistent_notification": true,
+        "lovelace": true,
+        "repairs": true,
+        "python_script": false
+      },
+      "setup_log": {
+        "python_script": [
+          "homeassistant.components.python_script: Folder python_scripts not found in configuration folder",
+          "homeassistant.setup: Setup failed for 'python_script': Integration failed to initialize."
+        ]
+      },
+      "requirements": [
+        "aiogithubapi>=22.10.1"
+      ],
+      "dependencies": [
+        "http",
+        "websocket_api",
+        "frontend",
+        "persistent_notification",
+        "lovelace",
+        "repairs"
+      ],
+      "after_dependencies": [
+        "python_script"
+      ],
+      "level": "import_failed",
+      "error": "ModuleNotFoundError: No module named 'custom_components.hacs.hacs_frontend'",
+      "oom": 0,
+      "peak_mb": 112.6,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiogithubapi",
+          "aiohappyeyeballs",
+          "aiohttp",
+          "aiosignal",
+          "attrs",
+          "backoff",
+          "frozenlist",
+          "home_assistant_frontend",
+          "idna",
+          "multidict",
+          "propcache",
+          "restrictedpython",
+          "yarl"
+        ],
+        "resolved": [
+          "aiogithubapi-26.0.0",
+          "aiohappyeyeballs-2.7.1",
+          "aiohttp-3.14.3",
+          "aiosignal-1.4.0",
+          "attrs-26.1.0",
+          "backoff-2.2.1",
+          "frozenlist-1.8.0",
+          "home_assistant_frontend-20260729.7",
+          "idna-3.19",
+          "multidict-6.7.1",
+          "propcache-0.5.2",
+          "restrictedpython-8.1",
+          "yarl-1.24.5"
+        ]
+      },
+      "setup_components": [
+        "http",
+        "websocket_api",
+        "frontend",
+        "persistent_notification",
+        "lovelace",
+        "repairs",
+        "python_script"
+      ],
+      "profile": "declared",
+      "category": "needs_component",
+      "arm": "B"
+    }
+  ]
+}

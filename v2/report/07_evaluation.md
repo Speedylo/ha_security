@@ -1084,6 +1084,110 @@ paired discipline rather than for trusting a traceback.
 - **The mediator acts on §6.10.2's stand-in.** What crossed the boundary is real and is recorded
   with its clause; what a live Home Assistant would do with those fifteen entities is not tested.
 
+## 7.18 How much egress is actually needed, and of what kind
+
+**Run 2026-09-02**, `experiments/egress_demand/`. §9.5 leaves one decision open — whether to
+build §5.8.2's scope item 2 — and until now nothing in this evaluation measured the thing the
+decision turns on: **how many integrations need outbound network, and where they need to go.**
+
+§7.17 looked as though it might answer it and could not. Its five subjects were selected for
+being configurable without credentials, which selected almost exactly the integrations that need
+no network: three of the five declare `iot_class: calculated`. A set chosen for testability was
+therefore blind to the question by construction, and that is worth stating before any number.
+
+### 7.18.1 The declared answer
+
+Every Home Assistant integration declares an `iot_class` saying what it reaches. §5.9.1 already
+established this field's value to the design — 83% of the wider corpus declare it, and it is the
+third of the three findings behind "the declaration always already exists". Across the 37:
+
+| Declared `iot_class` | Count | What it needs | Served by scope item 2? |
+|---|---|---|---|
+| `cloud_polling` (13) + `cloud_push` (2) | **15 — 41%** | the internet | **yes** — hostnames, resolved and pinned (T11) |
+| `local_push` (12) + `local_polling` (3) | **15 — 41%** | devices on the home LAN | **only with §5.10.3's separate flag** for non-public destinations (T10) |
+| `calculated` | 6 — 16% | nothing | not applicable |
+| none declared | 1 — 3% | unknown | — |
+
+**Two things follow, and the second is the one Chapter 8 owes.**
+
+First, **the network need is real and is the majority position**: 30 of 37 — 81% — declare that
+they reach something over a network. The 16% that need nothing are the class §7.17 happened to
+test, which is why that section could not see this.
+
+Second, **the need splits almost exactly in half, and the two halves are not the same
+capability.** Scope item 2 as scoped in §5.8.2 is *"per-integration outbound network with T11's
+resolve-then-pin at connection time"* — that serves the cloud-facing 41% directly. The
+local-facing 41% need a private address, which §5.10.3 provides for but as a **separate explicit
+flag**, precisely because reaching the LAN is reaching the router's admin page and every other
+device in the house (T10). **So building the proxy does not by itself make 81% workable; it makes
+41% workable and puts the other 41% behind a declaration the user is meant to read differently.**
+Nothing in Chapters 1–7 has previously stated that the design's network position divides the
+corpus this way.
+
+### 7.18.2 The observed answer, and a measurement that had to be corrected first
+
+`sandbox_runtime.record_egress_attempts` patches `socket` before the integration is imported and
+records every resolve and connect. The namespace holds loopback only, so every attempt already
+failed; what was missing was **what was attempted**.
+
+**The first version of this measurement reported that 23 of 37 integrations attempted egress at
+import, and it was entirely an artifact.** Every one of the 23 reached exactly the same three
+addresses — `224.0.0.251`, `8.8.8.8` and `127.0.0.1`. Two thirds of a corpus reaching for an
+identical triple is not integrations behaving alike; it is something else doing it. It was Home
+Assistant itself: the `network` component probes `8.8.8.8` to find which adapter holds the
+default route, and `zeroconf` joins the mDNS group, both during `async_setup_component` and
+therefore **before the integration is imported at all**.
+
+The recorder now stamps each attempt with the phase that made it, and the corrected result is
+unambiguous:
+
+| Phase | Attempts | Integrations |
+|---|---|---|
+| Instance construction | 0 | 0 |
+| **Declared components being set up** | **71** | **23** |
+| **The integration's own code** | **0** | **0** |
+
+**Not one integration of the 37 attempts egress at import.** All seventy-one attempts belong to
+components the platform set up on their behalf. §6.6.5's rule — assert on *why*, not on *that* —
+has now caught a fourth case, and this one would have overstated observed demand by a factor of
+twenty-three and pointed §9.5 at a number the integrations had no part in producing.
+
+**The corrected figure is itself the finding: import-level observation cannot measure egress
+demand at all.** Integrations open connections when they are *set up*, not when they are
+imported, which is exactly what the zero says. Across §7.17's five, run through their own config
+flows, only `scheduler` reached for anything — the same mDNS triple, and it is the one that fails
+on this release regardless (§7.17.5). The other four attempted nothing, corroborating their
+declarations: three are `calculated`, and `watchman` inspects local configuration files rather
+than the network despite declaring `local_push`.
+
+**So observation is doubly bounded**, and the second bound is the interesting one. Demand appears
+at setup; setup needs a credential for 26 of 37 (§7.17.1); therefore **no observational method
+available to this project — or to an unconfined baseline — can measure egress demand across this
+corpus.** The declared figure is not merely the better estimator, it is the only one, which makes
+this the sharpest instance in the evaluation of the pattern §7.2 opens with: *the declaration
+already exists, and it is carrying evidence nothing else can supply.*
+
+**Two further limits.** The recorder is in-process, so an integration issuing raw syscalls would
+not be seen — acceptable here because this measures *demand from ordinary integrations*, not an
+adversary, and §7.13 covers the adversary. And `iot_class` is the author's claim, subject to R1
+like every other declaration, though over-declaring one's own network reach is not an attack that
+buys anything.
+
+### 7.18.3 What this means for §9.5
+
+The decision is better informed than it was and it has not been taken here. What the evidence
+now supports:
+
+- **The need is real and large.** 81% declare a network reach. An artifact that cannot serve any
+  of it leaves F2 unverified and most of the corpus non-functional beyond import.
+- **The proxy as scoped closes about half of it.** 41% cloud-facing, served directly; 41%
+  local-facing, served only through the non-public flag, which is a further design decision
+  §5.10.3 provides for but which §5.8.2's scope item does not mention.
+- **No measured evidence yet that confinement's *current* network position costs compatibility.**
+  §7.17.5 withdrew the one candidate. The argument for building the proxy remains the one §9.3
+  ranks first — a requirements register that does not match the artifact — not a measured
+  compatibility loss.
+
 ---
 
 *§7.1–§7.11 written 2026-09-02, before any measurement specified here had been run. Criteria in

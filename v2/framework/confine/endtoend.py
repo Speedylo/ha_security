@@ -154,6 +154,7 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
             "domain": domain, "mode": "flow", "auth": True,
             "entities": declared_entities, "services": [],
             "setup_components": wanted,
+            "record_egress": True,
             "menu_choice": subject.get("menu_choice") or {},
             "flow_input": subject["flow_input"]}))
 
@@ -232,6 +233,7 @@ def run_one_unconfined(domain: str, component: Path, subject: dict, python: Path
             "domain": domain, "config_dir": str(config),
             "setup_components": wanted,
             "world": {k: list(v) for k, v in WORLD.items()},
+            "record_egress": True,
             "menu_choice": subject.get("menu_choice") or {},
             "flow_input": subject["flow_input"]}))
 
