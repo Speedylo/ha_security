@@ -252,13 +252,19 @@ PLATFORM_NAMES = (
 )
 
 
-async def inspect(hass, domain: str) -> dict:
+async def inspect(hass, domain: str, component_dir: str = COMPONENT) -> dict:
     """Ask, in order, the three questions N2 requires be reported separately.
 
     §3.5's N2 says "executed end-to-end" must be reported apart from "imports-clean", because
     the two measure different things and reporting only the larger flatters the result. This
     is that separation, one level at a time, so a failure is attributable to a level rather
     than to "it did not work".
+
+    `component_dir` is a parameter for one reason and it is a methodological one. §7.4.1's
+    baseline arm has to hold the *measurement* fixed while varying confinement, so the
+    unconfined runner calls this same function rather than a copy of it. A copy that drifted
+    by one platform name or one truncation length would make the comparison meaningless, and
+    the drift would be invisible.
     """
     from homeassistant import loader
 
@@ -286,7 +292,7 @@ async def inspect(hass, domain: str) -> dict:
     # L2 — do its entity platforms import? This is where a dependency on another component
     # shows up, which is exactly what §5.6.5's second trigger is about.
     present = [name for name in PLATFORM_NAMES
-               if (Path(COMPONENT) / f"{name}.py").is_file()]
+               if (Path(component_dir) / f"{name}.py").is_file()]
     result["platforms"] = present
     failed = {}
     for name in present:
