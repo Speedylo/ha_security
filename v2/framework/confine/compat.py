@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -344,6 +345,92 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
     return report
 
 
+def run_one_baseline(domain: str, component: Path, sandbox_python: Path,
+                     uv: str | None, platform_deps: Path | None = None,
+                     setup_components: list[str] | None = None,
+                     extra_requirements: list[str] | None = None,
+                     timeout: int = 600) -> dict:
+    """One integration against a full, **unconfined** Home Assistant. §7.4.1's baseline arm.
+
+    Structurally parallel to `run_one` and deliberately so: same corpus copy, same dependency
+    installation, same measurement function, same result shape. What is absent is the whole
+    of the confinement — no namespaces, no seccomp, no cgroup, no mount view, no mediator and
+    no bridge. That absence is the independent variable, and it is the only one.
+
+    **The declared components are set up here as well, and the first version of this function
+    did not do that.** `default_config` is what a stock installation sets up, but it does not
+    contain `mqtt`, so `alarmo` — which declares it — failed against the "full" instance while
+    passing under confinement, where the `declared` profile sets up exactly what the manifest
+    asks for. A baseline stingier than the arm it is being compared against does not decompose
+    the figure, it inverts it. What a real installation running this integration looks like is
+    a stock install *plus* whatever that integration needs, so that is what this builds.
+    """
+    root = Path(tempfile.mkdtemp(prefix=f"baseline-{domain}-"))
+    try:
+        deps_dir = root / "deps"
+        install = {"ok": True, "installed": [], "note": "not attempted"}
+        if uv:
+            try:
+                install = install_requirements(
+                    declared_requirements(component) + list(extra_requirements or []),
+                    deps_dir, sandbox_python, uv)
+            except (subprocess.TimeoutExpired, OSError) as err:
+                install = {"ok": False, "installed": [], "error": str(err)[:200]}
+        deps_dir.mkdir(parents=True, exist_ok=True)
+
+        config_dir = root / "config"
+        config_dir.mkdir(parents=True, exist_ok=True)
+        spec_file = root / "baseline-spec.json"
+        spec_file.write_text(json.dumps({
+            "domain": domain,
+            "config_dir": str(config_dir),
+            "component_dir": str(component),
+            "setup_components": (["homeassistant", "default_config"]
+                                 + [c for c in (setup_components or [])
+                                    if c not in ("homeassistant", "default_config")]),
+        }))
+
+        # Both runtime files are copied beside each other and run from there, which mirrors
+        # what the sandbox does — it binds `sandbox_runtime.py` in as a standalone script at
+        # `/sandbox/runtime.py`, not as part of a package. Putting `confine/` on the path
+        # instead would shadow the standard library: `confine/platform.py` masks `platform`,
+        # which `multidict` imports on the way into `aiohttp`, and Home Assistant then fails
+        # to import for a reason that has nothing to do with the integration under test.
+        for name in ("sandbox_runtime.py", "baseline_runtime.py"):
+            shutil.copy2(HERE / name, root / name)
+
+        path = [str(deps_dir)]
+        if platform_deps:
+            path.append(str(platform_deps))
+        env = {**os.environ, "PYTHONPATH": ":".join(path)}
+        try:
+            proc = subprocess.run(
+                [str(sandbox_python), str(root / "baseline_runtime.py"), str(spec_file)],
+                capture_output=True, text=True, timeout=timeout, env=env, cwd=str(root))
+        except subprocess.TimeoutExpired:
+            return {"domain": domain, "level": "timeout", "install": install,
+                    "error": f"exceeded {timeout}s"}
+        text = (proc.stdout or "").strip()
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+    if not text:
+        tail = (proc.stderr or "").strip().splitlines()
+        return {"domain": domain, "level": "no_report", "install": install,
+                "error": tail[-1][:200] if tail else ""}
+    try:
+        report = json.loads(text.splitlines()[-1])
+    except ValueError:
+        return {"domain": domain, "level": "no_report", "install": install,
+                "error": text.splitlines()[-1][:200]}
+    if "fatal" in report:
+        return {"domain": domain, "level": "fatal", "install": install,
+                "error": report["fatal"].strip().splitlines()[-1][:200]}
+    report["install"] = install
+    report["profile"] = "baseline"
+    return report
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--corpus", type=Path, required=True)
@@ -353,11 +440,14 @@ def main() -> int:
                     help="uv, used to install each integration's declared requirements into a "
                          "directory of its own (§5.2). --no-install skips it")
     ap.add_argument("--no-install", action="store_true")
-    ap.add_argument("--profile", choices=["minimal", "unstripped", "declared"],
+    ap.add_argument("--profile",
+                    choices=["minimal", "unstripped", "declared", "baseline"],
                     default="minimal",
                     help="minimal: §6.3.2's instance. unstripped: the blanket ten-component "
                          "profile of §6.12. declared: auth, plus only the components this "
-                         "integration's own manifest asks for")
+                         "integration's own manifest asks for. baseline: §7.4.1's arm — a "
+                         "full, UNCONFINED Home Assistant, which is what decomposes the "
+                         "confined figure into the corpus's failures and the design's")
     ap.add_argument("--platform-deps", type=Path,
                     help="a directory of packages bound read-only into every sandbox and shared "
                          "between them, as the `homeassistant` library already is. Combine with "
@@ -374,9 +464,15 @@ def main() -> int:
             print(requirement)
         return 0
 
-    require_ready(deep=False)
-    become_subreaper()
-    delegation = Delegation.discover()
+    baseline = args.profile == "baseline"
+    delegation = None
+    if not baseline:
+        # None of this applies to the unconfined arm, and requiring it would make the baseline
+        # impossible to run on a host that cannot host a sandbox — which would defeat the
+        # point of having a baseline at all.
+        require_ready(deep=False)
+        become_subreaper()
+        delegation = Delegation.discover()
     sandbox_python = Path(args.python)
 
     uv = None if args.no_install else args.uv
@@ -392,13 +488,18 @@ def main() -> int:
     results = []
     for index, component in enumerate(components, 1):
         wanted, extra = [], []
-        if args.profile == "declared":
+        if args.profile in ("declared", "baseline"):
             wanted = declared_components_of(component)
             extra = component_requirements(wanted, find_ha_components(sandbox_python))
-        report = run_one(component.name, component, args.corpus, sandbox_python,
-                         delegation, uv, profile=args.profile,
-                         platform_deps=args.platform_deps,
-                         setup_components=wanted, extra_requirements=extra)
+        if baseline:
+            report = run_one_baseline(component.name, component, sandbox_python, uv,
+                                      platform_deps=args.platform_deps,
+                                      setup_components=wanted, extra_requirements=extra)
+        else:
+            report = run_one(component.name, component, args.corpus, sandbox_python,
+                             delegation, uv, profile=args.profile,
+                             platform_deps=args.platform_deps,
+                             setup_components=wanted, extra_requirements=extra)
         category, detail = classify(report)
         report["category"] = category
         results.append(report)
@@ -414,11 +515,13 @@ def main() -> int:
         print(f"    imports-clean or better   {clean:3}/{len(rows)}   {clean * 100 / n:.0f}%")
         print(f"    platforms-clean           {levels['platforms_clean']:3}/{len(rows)}   "
               f"{levels['platforms_clean'] * 100 / n:.0f}%")
-        peaks = [r["peak_mb"] for r in rows if r.get("peak_mb")]
+        key = "peak_rss_mb" if baseline else "peak_mb"
+        peaks = [r[key] for r in rows if r.get(key)]
         if peaks:
             peaks.sort()
+            note = " (RSS, not comparable to cgroup peak)" if baseline else ""
             print(f"    peak memory               median {peaks[len(peaks) // 2]:.0f} MB, "
-                  f"max {peaks[-1]:.0f} MB")
+                  f"max {peaks[-1]:.0f} MB{note}")
         return {"clean": clean, "n": len(rows), "levels": dict(levels)}
 
     arm_a = summarise(results, "arm A")
@@ -432,7 +535,11 @@ def main() -> int:
     # Everything that failed because the instance was minimal, retried with the components
     # it declared. §5.6.5's trigger asks whether a *fuller* instance would fix these; this
     # answers it by making the instance fuller and looking, rather than by reasoning.
-    retry = [r for r in results if r["category"] == "needs_component"]
+    # Arm B asks whether a *fuller* instance fixes a failure. The baseline instance is
+    # already as full as a stock installation gets, so there is nothing to make fuller and the
+    # retry would measure nothing.
+    retry = ([] if baseline else
+             [r for r in results if r["category"] == "needs_component"])
     arm_b: list[dict] = []
     if retry:
         print(f"\n  ARM B — the same {len(retry)}, with the components they declare\n")
