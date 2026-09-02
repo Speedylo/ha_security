@@ -774,6 +774,71 @@ Two further limits, neither of which the number should be read past:
   moves the unconfined figure up and the confined figure not at all, since the confined figure
   is the size of the declaration.
 
+## 7.15 S1's baseline — the attack that forced the architecture, made real
+
+**Run 2026-09-02**, `experiments/gc_attack/`. §7.5's S1 criterion is that the published
+garbage-collector technique (§2.4.1) is attempted from inside the sandbox and reaches no
+platform object. §7.13's suite established the confined half. This establishes the half that
+gives it meaning.
+
+### 7.15.1 Why §6.9's version was not enough
+
+§2.4.1 is the load-bearing citation of this whole project: Corno and Mannella walk
+`gc.get_objects()` to reach *another* integration's live object and read its secret, and that
+one result eliminates every in-process design and forces S1 and S2 (§3.5, §5.3). §6.9 ran the
+sweep confined and reported `EMPTY — 11,488 objects, all its own`. That is true and it is nearly
+a tautology: a process holding one integration holds one integration's objects, and §6.9's arm
+had no other secret in the process for the sweep to have found. A confined block is only evidence
+against §2.4.1 if the thing the attack looks for **exists, is live, and is reachable by the walk**
+in a process that holds it.
+
+### 7.15.2 The pairing
+
+| | Credential | Adversary |
+|---|---|---|
+| **Unconfined** | a victim integration's live client object, same process | co-resident integration, same process |
+| **Confined** | the **mediator's** process — S2's credential | a **sandbox** — S1 |
+
+The victim (`victim_cloud`) is a real custom integration set up through the platform's own
+config-entry path, so its token enters the heap through its actual `async_setup_entry`, exactly
+as a real integration's does. The same sweep runs in both arms.
+
+### 7.15.3 Result
+
+```
+UNCONFINED   victim's token reached by the heap walk : YES — 7 live objects held it
+             reached as: CloudClient.attr, dict-value (hass.data), module.attr
+
+CONFINED     adversary's heap  : 8,942 objects, all its own
+             token reached     : no
+             token live in the mediator process at the same time : yes, 7 references
+```
+
+**Unconfined, the published attack succeeds.** The credential is reached seven ways, including
+straight off the victim's `CloudClient` instance attribute and through the nested dict in
+`hass.data`. No traversal and no exploit: `gc.get_objects()` is a supported API returning live
+objects, which is precisely why §2.4.1 is fatal to in-process enforcement.
+
+**Confined, it finds nothing — and the same token is simultaneously confirmed live in the
+mediator's process, seven references deep.** The third line is not decoration: it is what turns
+"the adversary found nothing" from an uninformative absence into a measured result. The secret
+exists, it is exactly as gc-reachable as the unconfined arm proves, and the sandbox boundary is
+what the adversary cannot cross. S1 and S2 defeat the one result that forced them.
+
+### 7.15.4 What this does and does not establish
+
+- **The confined credential is the mediator's, which is the design's claim.** S2 places the
+  platform credential in the mediator, and that is the object worth protecting. This is not a
+  reproduction of two *confined* integrations failing to reach each other — each is in its own
+  sandbox by construction, and mutual isolation between two sandboxes is a separate demonstration
+  (§6.5's channel self-test).
+- **The adversary here runs only the sweep**, where §7.13's runs the full hostile integration.
+  The narrowing is deliberate: it is what lets the victim and the credential be made real, which
+  is the whole contribution of this section over §6.9.
+- **One published attack, faithfully.** §2.4.1 describes the `gc` reach; that is what is
+  reproduced. It is not a claim about every conceivable in-process reach, only about the one the
+  literature settled and this architecture is answerable to.
+
 ---
 
 *§7.1–§7.11 written 2026-09-02, before any measurement specified here had been run. Criteria in
