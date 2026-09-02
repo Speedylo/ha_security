@@ -102,7 +102,7 @@ because they are not interchangeable:
 | Corpus | Selection | Question it answers | State |
 |---|---|---|---|
 | **Head-weighted** | Top 37 by install count | What most *installations* run | Fetched, four arms run (§6.11.3, §6.12, §6.13, §6.14) |
-| **Uniform** | Random sample from the HACS index, same size | What most *integrations* do | Owed; `figures/fetch_hacs_corpus.py` takes it, only the selection changes |
+| **Uniform** | Random sample from the HACS index, same size | What most *integrations* do | **Run — §7.23.** Seed 20260902, 40 of 40 fetched, both arms |
 
 Reporting only the first would describe user-facing impact while implying ecosystem coverage.
 `notes/ch5_evidence_api_surface.md` §6 records the same limitation for the API-surface
@@ -376,6 +376,10 @@ is a live demonstration that a compatibility figure has a shelf life.
 **External validity — corpus selection.** The head-weighted corpus describes what most
 installations run. §7.4.1 owes the uniform sample for the other question, and neither number
 generalises to integrations outside HACS.
+
+> **Discharged in §7.23.** The uniform sample was drawn (seed 20260902) and both arms run: **92%
+> confined, 92% unconfined, identical failure sets.** The two corpora share 2 of 40 members, so
+> this is close to an independent sample. The clause about HACS stands unchanged.
 
 **Conclusion validity — a default-deny system passes negative tests for the wrong reasons.**
 §6.6.5 is the general form and §7.4.2 the response. This is the failure mode most likely to
@@ -1500,6 +1504,12 @@ discharge it. Corrected:
 chapter did not attempt; §7.9's external-validity limit therefore stands undischarged and
 Chapter 8 carries it. **Item 8 is conditional on a decision not yet taken.**
 
+> **Item 7 was run the same day — §7.23, and this paragraph is left as written.** All eight
+> scheduled items are now complete or conditional, and §7.9's external-validity limit is
+> discharged rather than carried: 92% confined and 92% unconfined on a uniform draw sharing 2 of
+> 40 members with the head corpus. §7.21.5's scorecard below is superseded by §7.23.7, which
+> scores eight predictions rather than five.
+
 ### 7.21.5 Predictions, scored in one place
 
 | | Prediction | Outcome | |
@@ -1672,6 +1682,179 @@ will otherwise read `resources` as a hole in default-deny.
   against a declaration**, and none of the corpus integrations declares a `resources` clause, so
   no number moves. That is worth checking rather than assuming, and it was: `compat.py` now
   takes `max(declared, 640)`, so the profile measurements reproduce exactly.
+
+
+
+## 7.23 The uniform-sample corpus — the last scheduled measurement
+
+**Run 2026-09-02**, predictions registered in `notes/ch7_uniform_prediction.md` and committed
+before the corpus was drawn. §7.10's item 7 was the only scheduled measurement this chapter had
+not attempted, and §7.9 names the threat it answers: every compatibility figure so far — 46%,
+57%, 70%, 84%, and §7.12's zero — was measured on the **most-installed** integrations, and so
+answers *what most installations run* rather than *what most integrations do*.
+
+`fetch_hacs_corpus.py` gained `--uniform SEED`, which draws from the whole HACS index with equal
+probability. Seed **20260902**, 40 requested, recorded in the manifest so the draw can be
+repeated. Everything else is held constant: same release, host, interpreter, profile
+(`declared` + core package set), harness and `inspect()` function.
+
+### 7.23.1 The two corpora are barely the same population
+
+| | Head-weighted (§6.14) | **Uniform (seed 20260902)** |
+|---|---|---|
+| Fetched | 39 of 40 | **40 of 40** |
+| Install count, median | **14,793** | **48** |
+| Install count, range | 7,816 – 379,326 | 0 – 26,109 |
+| Installs represented, total | **1,018,398** | 46,979 |
+| Python files, median | 19 (max 1,015) | **11 (max 143)** |
+| Declares no components at all | 18 of 37 | **26 of 40** |
+| Declared components, median | 1 | **0** |
+| Declared packages, median | 1 | **0** |
+| Overlap between the two | — | **2** (`bermuda`, `browser_mod`) |
+
+**Two of forty is the number that justifies having run this at all.** The corpora share 5% of
+their members, so this is close to an independent sample of the same ecosystem rather than a
+re-slicing of the same integrations. The install columns show why: the head corpus represents
+**twenty-two times** the deployed reach of the uniform one, from the same number of repositories.
+Neither figure is wrong; they are answers to different questions, which is what §7.4.1 said when
+it scheduled this.
+
+### 7.23.2 P6 is wrong, and wrong in the direction the prediction named
+
+**P6 predicted the uniform sample would import clean 10–30 points *below* the head sample's 84%.**
+
+| | Imports clean, all platforms | Peak memory, median |
+|---|---|---|
+| Head-weighted, `declared` + core | 31/37 — **84%** | 119.7 MB |
+| **Uniform, `declared` + core** | **37/40 — 92%** | **96.9 MB** |
+
+**The tail does better, and it is cheaper.** +8 points and −22.8 MB per sandbox. The prediction
+was not merely wrong in magnitude but in sign, and it is reported as registered rather than
+adjusted — the fifth prediction this chapter has scored wrong out of eight.
+
+The reasoning behind P6 was that tail integrations are less maintained and so more likely to have
+rotted against a release that moved. That effect is real and visible — `lightwave2` fails on a
+constant Home Assistant deleted, exactly as `eufy_security` does in the head corpus — but it is
+**smaller than the effect the prediction's own counter-argument named**, which the last three rows
+of §7.23.1 measure directly:
+
+> A tail integration declares a median of **zero** components and **zero** packages, against the
+> head's one and one, and 26 of 40 declare no components at all. It is usually a single sensor
+> file talking to one HTTP endpoint. **The head corpus's failures were overwhelmingly missing
+> packages and missing components — and an integration that asks for nothing cannot fail to
+> receive it.**
+
+That is the more useful form of the result. Compatibility here is not a property of confinement
+and not really a property of maintenance either; **it tracks how much of the platform an
+integration reaches for**, and the popular integrations reach for more because they do more.
+
+### 7.23.3 P8 is wrong in both halves
+
+**P8 predicted more corpus artefacts in the tail** — non-standard repository layouts, failed
+fetches, integrations unloadable for reasons that are nobody's design decision.
+
+| | Head | Uniform |
+|---|---|---|
+| Fetch failures | 1 of 40 | **0 of 40** |
+| Non-standard layout | 0 | **0** — all 40 use `custom_components/<domain>/` |
+| Corpus artefacts among failures | **2** (`hacs`, `spook`) | **0** |
+
+Every one of the forty followed the standard layout and every one downloaded. The head corpus's
+two artefacts are both consequences of *popularity* rather than obscurity: `hacs` bundles its
+frontend at release-build time because it ships releases, and `spook` uses a non-standard layout
+because it is large enough to have opinions. **A small integration has nothing to package
+unusually.**
+
+### 7.23.4 P7 holds — the design's compatibility cost is zero on a second corpus
+
+**P7 predicted the confined and unconfined arms would fail on the same set, or within one of it,
+and named what it would mean if they did not**: that §7.12's zero was an artefact of measuring
+only well-maintained code.
+
+| | Imports clean, all platforms | Failures |
+|---|---|---|
+| Uniform, **confined** | 37/40 — **92%** | `bermuda`, `lightwave2`, `next_rocket_launch` |
+| Uniform, **unconfined baseline** | 37/40 — **92%** | `bermuda`, `lightwave2`, `next_rocket_launch` |
+| **Broken only by confinement** | — | **none** |
+| **Broken only unconfined** | — | **none** |
+
+**Identical sets, identical error strings, `failures(design) = 0` for the second time on a corpus
+that shares 5% of its members with the first.** §7.12 established this on the head-weighted
+corpus and could not say whether the result was a property of the design or of measuring popular,
+actively maintained code. It is the design.
+
+The asymmetry underneath it is sharper here than in §7.12. The unconfined arm has **53 components
+available** to every integration; the sandbox sets up a **median of zero** and a maximum of seven.
+§7.12 measured 52 against 2 and called that the finding; on a corpus of simpler integrations the
+gap widens to 53 against 0 and the compatibility outcome still does not move. **Whatever those
+components are for, importing a community integration and bringing up its entity platforms is not
+it.**
+
+### 7.23.5 The three failures, composed rather than counted
+
+A percentage would hide what §6.14.3 established is the interesting part:
+
+| Integration | Why it failed | Whose problem | Fails unconfined too? |
+|---|---|---|---|
+| `bermuda` | `ModuleNotFoundError: aiofiles` | **The design's** — an undeclared package | ✅ Yes |
+| `lightwave2` | `cannot import name 'COLOR_MODE_BRIGHTNESS' from homeassistant.components.light` | Home Assistant 2026.8.3 — the constant is gone | ✅ Yes |
+| `next_rocket_launch` | `ImportError` importing its own `sensor` module | Its own, and the baseline is what settles it | ✅ Yes |
+
+**`bermuda` is the same integration failing on the same package as in §6.14.4**, and it is one of
+the two members the corpora share — so this is determinism rather than replication, and it is
+worth saying which. What *is* new is the rate: the head corpus had **three of 37 (8%)** failing on
+an undeclared package, this one has **one of 40 (2.5%)**. §6.13.3's bound on how far "the
+declaration always already exists" can be relied on is therefore **looser in the tail than in the
+head**, in the same direction and for the same reason as §7.23.2 — a simple integration declares
+less because it needs less.
+
+**`next_rocket_launch` is the case that shows why the baseline is not optional.** Its error is
+opaque — `ImportError: Exception importing custom_components.next_rocket_launch.sensor`, with no
+missing name and no missing module. Read from the confined arm alone it is exactly what a
+confinement failure would look like: something the sandbox did not provide, unnamed. The
+unconfined arm produces the identical string, so it is the integration's own defect and not this
+framework's. **That is the third time in this chapter that a baseline has stopped a
+misattribution** — after §7.13's three attacks blocked in both arms and §7.17.5's withdrawn
+multicast finding.
+
+### 7.23.6 What this does and does not settle
+
+**Settled.** §7.9's external-validity threat on corpus selection is discharged, not merely
+restated. Both questions now have an answer measured the same way:
+
+| Question | Corpus | Confined | Unconfined | Design's cost |
+|---|---|---|---|---|
+| What do most *installations* run? | Head, 37 | 84% | 84% | **0** |
+| What do most *integrations* do? | Uniform, 40 | **92%** | **92%** | **0** |
+
+**Not settled, and Chapter 8 owes both.**
+
+- **Neither corpus generalises beyond HACS.** §7.9 says so and this does not change it.
+- **Both are import-level.** §7.17's executed end-to-end arm ran on five head integrations and
+  has no uniform counterpart; the ceiling there was credentials, and a tail integration needs
+  them just as much.
+- **One draw, one seed.** A single uniform sample of 40 has real sampling error and no confidence
+  interval is claimed. The seed is recorded so the draw can be repeated or extended.
+
+### 7.23.7 The prediction scorecard, now at eight
+
+| | Registered | Outcome |
+|---|---|---|
+| P1 | Confinement costs compatibility on the corpus | ❌ **Wrong** (§7.12) |
+| P2 | The baseline will fail on fewer than the confined arm | ❌ **Wrong** (§7.12) |
+| P3 | Structural denial produces `EMPTY`, not `BLOCKED` | ✅ Right (§7.13) |
+| P4 | Latency degrades in the tail before the median | ❌ **Wrong** (§7.19) |
+| P5 | S9 bounds how much an integration can read | ❌ **Falsified** (§7.20.2) |
+| P6 | The uniform sample is 10–30 points *below* 84% | ❌ **Wrong in sign** — 92% (§7.23.2) |
+| **P7** | **The design's cost stays zero on a uniform sample** | ✅ **Right** (§7.23.4) |
+| P8 | More corpus artefacts in the tail | ❌ **Wrong in both halves** (§7.23.3) |
+
+**Six of eight wrong, none revised.** The two that held are the two that were predictions *about
+the design* rather than about the world — P3 that structural denial would look different from
+procedural denial, and P7 that a zero measured once would hold on an independent sample. Every
+wrong one was a prediction about what the ecosystem or the kernel would do. Chapter 8 should make
+that distinction rather than reporting a bare 6-of-8, because it is the more defensible claim:
+**the design behaved as designed; the world did not behave as assumed.**
 
 
 ---
