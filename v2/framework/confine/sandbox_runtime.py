@@ -368,6 +368,28 @@ async def run() -> dict:
         await hass.async_stop()
         return result
 
+    if spec.get("mode") == "visibility":
+        # §7.14's confined arm. What can this integration *see*, and what happens when it asks
+        # for what it did not declare? Reported as three separate things because they are three
+        # different mechanisms: what is present in its own state machine (structural), what the
+        # mediator will read for it (mediated), and what it may subscribe to (mediated).
+        result["visible"] = sorted(s.entity_id for s in hass.states.async_all())
+        result["mirrored"] = sorted(bridge.mirrored)
+        reads, subscribes = {}, {}
+        for entity_id in spec.get("probe_entities", []):
+            local = hass.states.get(entity_id)
+            answer = channel.request({"op": "entity.read", "entity": entity_id})
+            reads[entity_id] = {"present_locally": local is not None,
+                                "mediator_ok": bool(answer.get("ok")),
+                                "clause": answer.get("clause")}
+            answer = channel.request({"op": "entity.subscribe", "entity": entity_id})
+            subscribes[entity_id] = {"mediator_ok": bool(answer.get("ok")),
+                                     "clause": answer.get("clause")}
+        result["reads"] = reads
+        result["subscribes"] = subscribes
+        await hass.async_stop()
+        return result
+
     entry = ConfigEntry(version=1, minor_version=1, domain=spec["domain"],
                         title=spec["domain"], data=spec.get("entry_data", {}),
                         source=SOURCE_USER, options={}, unique_id=None,

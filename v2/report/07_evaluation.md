@@ -697,6 +697,83 @@ right — because an attack that ran out of time was not refused by anything, an
 - **S3's paired baseline is still owed.** §7.5 requires a paired measurement of what is readable
   *without* the framework, and that needs a running instance with entities. It is next.
 
+## 7.14 S3's paired baseline — the surveillance the framework removes
+
+**Run 2026-09-02**, `experiments/entity_visibility/`. §7.5's criterion required a confined
+integration to be denied both a **read** and a **subscription** to undeclared entities, each
+naming its clause, *against a paired baseline quantifying what is readable without the framework*.
+
+### 7.14.1 Why the pair, and why the sensitive subset is counted separately
+
+§3.5 derives S3 from §1.7's Table 1.2, whose first row is entity states, on the grounds that
+*"a design mediating only state changes would leave surveillance untouched, which is the
+majority of the privacy harm."* A refusal count alone cannot speak to that. What can is the
+size of what an integration otherwise holds.
+
+`confine/home.py` furnishes both arms with the same 36-entity home, of which **20 disclose
+occupancy, presence or routine** — device trackers, `person` entities, motion and occupancy
+sensors, door and lock states, the alarm panel, bed presence, media state, the family calendar.
+The subset is counted on its own because *"20 of 36 entities readable"* and *"every presence
+sensor in the house readable"* are the same fact at very different weights, and only the second
+is the one Chapter 1 is about.
+
+The integration under test declares one entity: an outdoor temperature reading.
+
+### 7.14.2 Result
+
+| | Unconfined | Confined |
+|---|---|---|
+| **Entities present to it** | **36 / 36** | **1 / 36** |
+| **Of those, occupancy or presence** | **20 / 20** | **0 / 20** |
+| Changes by other integrations delivered | 4 / 4 | none — §7.14.4 |
+
+Every undeclared probe — a phone's location, bedroom occupancy, the front door lock, the alarm
+panel, the family calendar — is **absent** from the confined integration's state machine, and
+every mediated read and subscription for it is refused naming `/permissions/entities/read`. The
+one entity it declared is present and readable.
+
+**The unconfined baseline is a single line, and that is the result rather than a shortcut:**
+
+```python
+hass.states.async_all()      # every state in the house, unasked, by any integration
+```
+
+No permission is consulted because none exists to consult. §1.8's "the user cannot see what an
+integration intends to access" is the same fact stated from the other side.
+
+### 7.14.3 Two mechanisms, and the report does not merge them
+
+- **Absent, not refused.** An undeclared entity is not in the sandbox's state machine, so the
+  integration reads `None` rather than being denied. Nothing decided; there was nothing to
+  decide. This is §5.6.2 on the read path, and it is why §5.11.1 can put entity reads of *its
+  own* mirrored state at zero marginal cost.
+- **Refused, with a clause.** What the integration asks the *mediator* for is a decision, and
+  every denial carries the manifest clause that produced it — F3 discharged by behaviour rather
+  than by inspection, and §6.6.5's rule satisfied: each negative case names the rule that
+  refused it, not merely that something did.
+
+### 7.14.4 The limit, stated because the figure would otherwise overstate it
+
+**The subscription half is verified at the decision layer only.** Unconfined, all four changes
+to entities the integration does not own arrive through `EVENT_STATE_CHANGED`, unasked and
+unfiltered. Confined, none arrive — but **that is an absent feature, not a demonstrated filter.**
+§6.11.2 records that no push loop exists: declared entities are mirrored once at construction,
+so there is no path by which any state change could arrive, filtered or otherwise.
+
+What is demonstrated: `entity.subscribe` on an undeclared entity is refused with a clause.
+What is not: a working subscription that delivers declared changes and withholds the rest. S3
+is therefore **discharged on reads and partially on subscriptions**, and the partial half is a
+gap in the artifact rather than in the measurement.
+
+Two further limits, neither of which the number should be read past:
+
+- **The confined arm's mediator acts on §6.10.2's stand-in, not a live instance.** What is under
+  test is which entities the mediator will surrender, and that is decided before any platform is
+  reached.
+- **36 entities is a small home.** The proportion is the finding, not the count; a larger home
+  moves the unconfined figure up and the confined figure not at all, since the confined figure
+  is the size of the declaration.
+
 ---
 
 *§7.1–§7.11 written 2026-09-02, before any measurement specified here had been run. Criteria in
