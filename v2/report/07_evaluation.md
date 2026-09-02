@@ -839,6 +839,97 @@ what the adversary cannot cross. S1 and S2 defeat the one result that forced the
   reproduced. It is not a claim about every conceivable in-process reach, only about the one the
   literature settled and this architecture is answerable to.
 
+## 7.16 C3, and the remaining security criteria re-verified
+
+**Run 2026-09-02.** §7.5's remaining security rows, discharged together because they are
+re-verifications over the evaluated artifact rather than new rigs.
+
+### 7.16.1 C3 — the manifest is a claim, not a description that is believed
+
+§3.3 named three shapes before any implementation existed: a manifest **absent**, **over-broad**,
+and **deliberately mismatched to behaviour**. The first two of those, plus S6's unparseable case,
+were already covered by `selftest_policy`; `selftest_c3` adds the two that carry an argument.
+
+**Over-broad is not a case the framework wins, and this section does not report it as one.**
+R1 (§4.11) retains over-declaration as a **High** residual risk: confinement bounds behaviour to
+the declaration, and does not make the declaration minimal. The measured result is that an
+over-broad grant **is honoured** — an integration declaring `binary_sensor.*` reads bedroom
+occupancy, and the clause pointer says so.
+
+What the test establishes instead is **the shape of the ceiling that over-declaration cannot
+raise**, because that is where §4.11's word "structural" is either true or empty:
+
+| An author who wants… | Outcome |
+|---|---|
+| `lock.*` in `services.call` | rejected at parse: *"contains a wildcard. Every entry names one domain.service"* (S5, §5.10.4) |
+| `*.temperature` | rejected: *"wildcards the domain, which grants across domains"* |
+| `*` alone as an entity grant | rejected: *"must be domain.object_id"* |
+| a path grant enclosing the configuration root | rejected at parse (§5.10.5) |
+| a path grant reaching `secrets.yaml` or `.storage/` | rejected at parse |
+| an invented capability — `process.spawn` | rejected: *"unknown capabilities ['process']"*, not ignored |
+
+Every rejection is at **parse** time and every one names the rule that produced it, which is
+§6.6.5's standard applied to a positive-looking case. So the honest statement of R1 is narrower
+and more defensible than "over-declaration is a residual risk": an author may declare more than
+they need **within a fixed ceiling**, and the ceiling contains exactly the authority Chapter 4
+rated Critical — `lock.unlock` (T05), `secrets.yaml` (T14), and cross-domain reach.
+
+**Mismatched is the case C3 is really about**, and it is the shortest result in the chapter. A
+manifest declaring one sensor read and `lock.lock` was attached to an integration that did none
+of it. Seven behaviours, seven denials, each naming a distinct clause:
+
+| Behaviour | Denied by |
+|---|---|
+| read the occupancy sensor it did not declare | `/permissions/entities/read` |
+| read a phone's location | `/permissions/entities/read` |
+| unlock the door it declared only locking | `/permissions/services/call` |
+| disarm the alarm | `/permissions/services/call` |
+| subscribe to a sensor it declared only *reading* | `/permissions/entities/subscribe` |
+| write to an entity it does not own | `/permissions/entities/write` |
+| claim to be another integration | `/permissions/entities/read` |
+
+…and what it *did* declare still works. The fifth row is worth pausing on: the integration
+declared `sensor.outdoor_temperature` for **read** and was refused **subscribe** on the same
+entity. Read and subscribe are separate members of the same capability (§5.10.3), which is S3's
+requirement expressed in the schema rather than in the enforcement path.
+
+The declaration bought its author nothing, because enforcement acts on behaviour and the
+manifest was never trusted as a description of what the code would do. That is C3.
+
+### 7.16.2 The suite, re-run against the evaluated artifact
+
+All eight self-tests, on the C4 device, 2026-09-02:
+
+| Self-test | Criteria it carries | |
+|---|---|---|
+| `selftest` | S8, filesystem and process isolation | ✅ |
+| `selftest_policy` | **S5** asymmetry, **S6** default-deny, absent and unparseable manifests | ✅ |
+| `selftest_c3` | **C3** over-broad and mismatched | ✅ |
+| `selftest_channel` | T02, identity from the socket | ✅ |
+| `selftest_audit` | **S7** — hash chain and keyed MAC chain failing independently | ✅ |
+| `selftest_describe` | **F4** — four states, denials at the same weight as grants | ✅ |
+| `selftest_bridge` | F1, C1 — an unmodified integration running confined | ✅ |
+| `selftest_gc` | **S1**, S2 — §7.15's pairing | ✅ |
+
+**N3** is carried by `preflight` rather than by a self-test: the framework refuses to start when
+the memory controller is absent (§5.7.4) or when the supervisor is in the wrong cgroup position
+(§6.4.1), and both refusals are stated failure modes rather than silent degradation. §7.4.4
+records why that case matters — `mkdir` succeeds from the wrong position, so everything looks
+right and only placement fails.
+
+### 7.16.3 Where §7.5 now stands
+
+Fifteen of twenty requirements are discharged with evidence in this chapter or in Chapter 6.
+The five that are not divide into three kinds, and the distinction matters more than the count:
+
+- **Blocked by an unbuilt component — F2, S4.** The egress proxy does not exist. Named in §7.5
+  on 2026-09-02 rather than discovered later.
+- **Reported, not thresholded — N1.** §3.6 fixed that position in advance; the figures are owed
+  at scale (§7.10 items 3 and 5) and the discussion criterion is stated.
+- **Partially discharged — S3, N2.** S3's subscription half is a decision without a delivered
+  stream (§7.14.4); N2's executed-end-to-end population is one (§6.11.1). Both are gaps in the
+  artifact rather than in the measurement, and both are named where the figure appears.
+
 ---
 
 *§7.1–§7.11 written 2026-09-02, before any measurement specified here had been run. Criteria in
