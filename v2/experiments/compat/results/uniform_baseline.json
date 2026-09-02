@@ -1,0 +1,1744 @@
+{
+  "arm_a": [
+    {
+      "domain": "alarm_clocks",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "http": true,
+        "lovelace": true
+      },
+      "requirements": [],
+      "dependencies": [
+        "http",
+        "lovelace"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "button",
+        "number",
+        "time",
+        "button"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 282.2,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "als_sundance_marin",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "http": true
+      },
+      "requirements": [],
+      "dependencies": [
+        "http"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "binary_sensor",
+        "switch",
+        "light",
+        "climate",
+        "select"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 281.4,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "apsystems_ecu_reader",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "button",
+        "number",
+        "button"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 279.5,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "bermuda",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "bluetooth_adapters": true,
+        "device_tracker": true,
+        "private_ble_device": true
+      },
+      "requirements": [],
+      "dependencies": [
+        "bluetooth_adapters",
+        "device_tracker",
+        "private_ble_device"
+      ],
+      "after_dependencies": [],
+      "level": "import_failed",
+      "error": "ModuleNotFoundError: No module named 'aiofiles'",
+      "components_available": 55,
+      "peak_rss_mb": 283.7,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiooui",
+          "async_interrupt",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "btsocket",
+          "cffi",
+          "cryptography",
+          "dbus_fast",
+          "habluetooth",
+          "pycparser",
+          "pyric",
+          "uart_devices",
+          "usb_devices"
+        ],
+        "resolved": [
+          "aiooui-0.1.9",
+          "async_interrupt-1.2.2",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "btsocket-0.3.0",
+          "cffi-2.1.1",
+          "cryptography-50.0.1",
+          "dbus_fast-5.0.22",
+          "habluetooth-6.26.5",
+          "pycparser-3.0",
+          "pyric-0.1.6.3",
+          "uart_devices-0.1.1",
+          "usb_devices-0.5.1"
+        ]
+      },
+      "profile": "baseline",
+      "category": "undeclared_dependency"
+    },
+    {
+      "domain": "browser_mod",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "panel_custom": true,
+        "websocket_api": true,
+        "http": true,
+        "frontend": true,
+        "lovelace": true
+      },
+      "requirements": [],
+      "dependencies": [
+        "panel_custom",
+        "websocket_api",
+        "http",
+        "frontend",
+        "lovelace"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "light",
+        "media_player",
+        "camera"
+      ],
+      "components_available": 54,
+      "peak_rss_mb": 280.0,
+      "install": {
+        "ok": true,
+        "installed": [
+          "home_assistant_frontend"
+        ],
+        "resolved": [
+          "home_assistant_frontend-20260729.7"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "circuitsetup_energy_analyzer",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "frontend": true,
+        "http": true,
+        "lovelace": true,
+        "panel_custom": true,
+        "recorder": false,
+        "sensor": true
+      },
+      "requirements": [],
+      "dependencies": [
+        "frontend",
+        "http",
+        "lovelace",
+        "panel_custom"
+      ],
+      "after_dependencies": [
+        "recorder",
+        "sensor"
+      ],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "button",
+        "number",
+        "select",
+        "text",
+        "time",
+        "button"
+      ],
+      "components_available": 54,
+      "peak_rss_mb": 319.9,
+      "install": {
+        "ok": true,
+        "installed": [
+          "fnv_hash_fast",
+          "fnvhash",
+          "greenlet",
+          "home_assistant_frontend",
+          "psutil",
+          "psutil_home_assistant",
+          "sqlalchemy",
+          "typing_extensions"
+        ],
+        "resolved": [
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "greenlet-3.5.5",
+          "home_assistant_frontend-20260729.7",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "sqlalchemy-2.0.51",
+          "typing_extensions-4.16.0"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "ecobot",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "calendar"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 282.7,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "enki",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "light",
+        "climate",
+        "cover",
+        "fan",
+        "camera",
+        "button",
+        "number",
+        "select",
+        "update",
+        "button"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 284.2,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "enphase_ev",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "logbook": false,
+        "recorder": false
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [
+        "logbook",
+        "recorder"
+      ],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "button",
+        "number",
+        "select",
+        "update",
+        "calendar",
+        "weather",
+        "time",
+        "button"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 316.0,
+      "install": {
+        "ok": true,
+        "installed": [
+          "fnv_hash_fast",
+          "fnvhash",
+          "greenlet",
+          "home_assistant_frontend",
+          "psutil",
+          "psutil_home_assistant",
+          "sqlalchemy",
+          "typing_extensions"
+        ],
+        "resolved": [
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "greenlet-3.5.5",
+          "home_assistant_frontend-20260729.7",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "sqlalchemy-2.0.51",
+          "typing_extensions-4.16.0"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "ha_insights",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "bluetooth": true,
+        "conversation": true,
+        "frontend": true,
+        "http": true,
+        "logbook": false,
+        "recorder": false,
+        "trace": true
+      },
+      "requirements": [
+        "aiosqlite>=0.19"
+      ],
+      "dependencies": [],
+      "after_dependencies": [
+        "bluetooth",
+        "conversation",
+        "frontend",
+        "http",
+        "logbook",
+        "recorder",
+        "trace"
+      ],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor"
+      ],
+      "components_available": 54,
+      "peak_rss_mb": 290.9,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiooui",
+          "aiosqlite",
+          "aiousbwatcher",
+          "async_interrupt",
+          "asyncinotify",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "btsocket",
+          "cffi",
+          "cryptography",
+          "dbus_fast",
+          "fnv_hash_fast",
+          "fnvhash",
+          "greenlet",
+          "habluetooth",
+          "hassil",
+          "home_assistant_frontend",
+          "home_assistant_intents",
+          "psutil",
+          "psutil_home_assistant",
+          "pycparser",
+          "pyric",
+          "pyyaml",
+          "serialx",
+          "sqlalchemy",
+          "typing_extensions",
+          "uart_devices",
+          "unicode_rbnf",
+          "usb_devices"
+        ],
+        "resolved": [
+          "aiooui-0.1.9",
+          "aiosqlite-0.22.1",
+          "aiousbwatcher-1.1.2",
+          "async_interrupt-1.2.2",
+          "asyncinotify-4.4.4",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "btsocket-0.3.0",
+          "cffi-2.1.1",
+          "cryptography-50.0.1",
+          "dbus_fast-5.0.22",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "greenlet-3.5.5",
+          "habluetooth-6.26.5",
+          "hassil-3.11.0",
+          "home_assistant_frontend-20260729.7",
+          "home_assistant_intents-2026.7.30",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pycparser-3.0",
+          "pyric-0.1.6.3",
+          "pyyaml-6.0.3",
+          "serialx-1.8.2",
+          "sqlalchemy-2.0.51",
+          "typing_extensions-4.16.0",
+          "uart_devices-0.1.1",
+          "unicode_rbnf-2.4.0",
+          "usb_devices-0.5.1"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "honor_x3",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [
+        "bs4",
+        "pycryptodome>=3.9.9"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "device_tracker"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 293.9,
+      "install": {
+        "ok": true,
+        "installed": [
+          "beautifulsoup4",
+          "bs4",
+          "pycryptodome",
+          "soupsieve",
+          "typing_extensions"
+        ],
+        "resolved": [
+          "beautifulsoup4-4.15.0",
+          "bs4-0.0.2",
+          "pycryptodome-3.23.0",
+          "soupsieve-2.9.2",
+          "typing_extensions-4.16.0"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "irrigationprogram",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "lovelace": true,
+        "sun": true,
+        "http": true,
+        "switch": true,
+        "sensor": true
+      },
+      "requirements": [],
+      "dependencies": [
+        "lovelace",
+        "sun",
+        "http"
+      ],
+      "after_dependencies": [
+        "switch",
+        "sensor"
+      ],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "switch",
+        "number",
+        "select",
+        "text",
+        "time"
+      ],
+      "components_available": 54,
+      "peak_rss_mb": 285.4,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "kamstrup_403",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [
+        "serialx"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 281.4,
+      "install": {
+        "ok": true,
+        "installed": [
+          "serialx",
+          "typing_extensions"
+        ],
+        "resolved": [
+          "serialx-1.9.0",
+          "typing_extensions-4.16.0"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "kroki",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "http": true
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [
+        "http"
+      ],
+      "level": "platforms_clean",
+      "platforms": [
+        "image"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 283.8,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "lifesmart",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "infrared": true
+      },
+      "requirements": [
+        "websocket-client==1.9.0"
+      ],
+      "dependencies": [
+        "infrared"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "light",
+        "climate",
+        "cover",
+        "button",
+        "remote",
+        "scene",
+        "button"
+      ],
+      "components_available": 54,
+      "peak_rss_mb": 281.3,
+      "install": {
+        "ok": true,
+        "installed": [
+          "infrared_protocols",
+          "websocket_client"
+        ],
+        "resolved": [
+          "infrared_protocols-8.2.1",
+          "websocket_client-1.9.0"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "lightwave2",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [
+        "lightwave2==0.8.23"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platform_import_failed",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "light",
+        "climate",
+        "cover",
+        "lock"
+      ],
+      "platform_errors": {
+        "light": "ImportError: cannot import name 'COLOR_MODE_BRIGHTNESS' from 'homeassistant.components.light' (/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/light/__init__.py)"
+      },
+      "components_available": 53,
+      "peak_rss_mb": 282.0,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiohappyeyeballs",
+          "aiohttp",
+          "aiosignal",
+          "attrs",
+          "frozenlist",
+          "idna",
+          "lightwave2",
+          "multidict",
+          "propcache",
+          "yarl"
+        ],
+        "resolved": [
+          "aiohappyeyeballs-2.7.1",
+          "aiohttp-3.14.3",
+          "aiosignal-1.4.0",
+          "attrs-26.1.0",
+          "frozenlist-1.8.0",
+          "idna-3.19",
+          "lightwave2-0.8.23",
+          "multidict-6.7.1",
+          "propcache-0.5.2",
+          "yarl-1.24.5"
+        ]
+      },
+      "profile": "baseline",
+      "category": "other"
+    },
+    {
+      "domain": "localtuya_rc",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [
+        "tinytuya>=1.20.0"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "remote"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 285.6,
+      "install": {
+        "ok": true,
+        "installed": [
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "colorama",
+          "cryptography",
+          "idna",
+          "pycparser",
+          "requests",
+          "tinytuya",
+          "urllib3"
+        ],
+        "resolved": [
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.1",
+          "colorama-0.4.6",
+          "cryptography-50.0.1",
+          "idna-3.19",
+          "pycparser-3.0",
+          "requests-2.34.2",
+          "tinytuya-1.20.0",
+          "urllib3-2.7.0"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "nature_remo",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "switch",
+        "light",
+        "climate",
+        "media_player"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 281.8,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "network_scanner",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [
+        "python-nmap"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 283.3,
+      "install": {
+        "ok": true,
+        "installed": [
+          "python_nmap"
+        ],
+        "resolved": [
+          "python_nmap-0.7.1"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "next_rocket_launch",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [
+        "ics==0.7.2"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platform_import_failed",
+      "platforms": [
+        "sensor"
+      ],
+      "platform_errors": {
+        "sensor": "ImportError: Exception importing custom_components.next_rocket_launch.sensor"
+      },
+      "components_available": 53,
+      "peak_rss_mb": 288.7,
+      "install": {
+        "ok": true,
+        "installed": [
+          "arrow",
+          "attrs",
+          "ics",
+          "python_dateutil",
+          "six",
+          "tatsu",
+          "tzdata"
+        ],
+        "resolved": [
+          "arrow-1.4.0",
+          "attrs-26.1.0",
+          "ics-0.7.2",
+          "python_dateutil-2.9.0.post0",
+          "six-1.17.0",
+          "tatsu-5.24.0",
+          "tzdata-2026.3"
+        ]
+      },
+      "profile": "baseline",
+      "category": "other"
+    },
+    {
+      "domain": "nuki_otp",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "http": true,
+        "frontend": true
+      },
+      "requirements": [],
+      "dependencies": [
+        "http",
+        "frontend"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "switch"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 281.2,
+      "install": {
+        "ok": true,
+        "installed": [
+          "home_assistant_frontend"
+        ],
+        "resolved": [
+          "home_assistant_frontend-20260729.7"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "ocado",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [
+        "python-dateutil>=2.9.0",
+        "BeautifulSoup4>=4.10.0"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "calendar"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 290.5,
+      "install": {
+        "ok": true,
+        "installed": [
+          "beautifulsoup4",
+          "python_dateutil",
+          "six",
+          "soupsieve",
+          "typing_extensions"
+        ],
+        "resolved": [
+          "beautifulsoup4-4.15.0",
+          "python_dateutil-2.9.0.post0",
+          "six-1.17.0",
+          "soupsieve-2.9.2",
+          "typing_extensions-4.16.0"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "oekofen_pellematic_compact",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "climate",
+        "number",
+        "select"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 282.7,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "polleninformation",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [
+        "async-timeout>=4.0.0",
+        "Unidecode>=1.3.6"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 280.3,
+      "install": {
+        "ok": true,
+        "installed": [
+          "Unidecode",
+          "async_timeout"
+        ],
+        "resolved": [
+          "Unidecode-1.4.0",
+          "async_timeout-5.0.1"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "pronote",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [
+        "pronotepy==2.15.6",
+        "python-slugify==8.0.4"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "calendar"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 296.7,
+      "install": {
+        "ok": true,
+        "installed": [
+          "autoslot",
+          "beautifulsoup4",
+          "certifi",
+          "charset_normalizer",
+          "idna",
+          "pronotepy",
+          "pycryptodome",
+          "python_slugify",
+          "requests",
+          "soupsieve",
+          "text_unidecode",
+          "typing_extensions",
+          "urllib3"
+        ],
+        "resolved": [
+          "autoslot-2025.11.1",
+          "beautifulsoup4-4.15.0",
+          "certifi-2026.7.22",
+          "charset_normalizer-3.5.1",
+          "idna-3.19",
+          "pronotepy-2.15.6",
+          "pycryptodome-3.23.0",
+          "python_slugify-8.0.4",
+          "requests-2.34.2",
+          "soupsieve-2.9.2",
+          "text_unidecode-1.3",
+          "typing_extensions-4.16.0",
+          "urllib3-2.7.0"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "qolsys_panel",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "network": true,
+        "zeroconf": true
+      },
+      "requirements": [
+        "qolsys-controller==1.7.1"
+      ],
+      "dependencies": [
+        "network",
+        "zeroconf"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "light",
+        "climate",
+        "cover",
+        "lock",
+        "media_player",
+        "alarm_control_panel",
+        "siren",
+        "valve",
+        "weather",
+        "scene"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 290.0,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiofiles",
+          "aiomqtt",
+          "cffi",
+          "cryptography",
+          "ifaddr",
+          "paho_mqtt",
+          "passlib",
+          "pycparser",
+          "qolsys_controller",
+          "zeroconf"
+        ],
+        "resolved": [
+          "aiofiles-25.1.0",
+          "aiomqtt-2.5.1",
+          "cffi-2.1.1",
+          "cryptography-50.0.0",
+          "ifaddr-0.2.0",
+          "paho_mqtt-2.1.0",
+          "passlib-1.7.4",
+          "pycparser-3.0",
+          "qolsys_controller-1.7.1",
+          "zeroconf-0.150.0"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "regensburg_transport",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 278.4,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "saj_esolar_air",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 283.6,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "sessy",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [
+        "sessypy==0.2.6"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "button",
+        "number",
+        "select",
+        "update",
+        "time",
+        "button"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 282.4,
+      "install": {
+        "ok": true,
+        "installed": [
+          "sessypy"
+        ],
+        "resolved": [
+          "sessypy-0.2.6"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "skybellgen",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "ffmpeg": true,
+        "go2rtc": true
+      },
+      "requirements": [
+        "aioskybellgen==0.1.6",
+        "boto3>=1.39.9"
+      ],
+      "dependencies": [
+        "ffmpeg",
+        "go2rtc"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "light",
+        "camera",
+        "button",
+        "number",
+        "select",
+        "text",
+        "button"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 286.7,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiofiles",
+          "aiohappyeyeballs",
+          "aiohttp",
+          "aiosignal",
+          "aioskybellgen",
+          "aresponses",
+          "ast_serialize",
+          "astroid",
+          "async_timeout",
+          "attrs",
+          "awesomeversion",
+          "black",
+          "boto3",
+          "botocore",
+          "build",
+          "cfgv",
+          "click",
+          "coverage",
+          "dill",
+          "distlib",
+          "filelock",
+          "flake8",
+          "flake8_docstrings",
+          "freezegun",
+          "frozenlist",
+          "go2rtc_client",
+          "ha_ffmpeg",
+          "identify",
+          "idna",
+          "iniconfig",
+          "isort",
+          "jmespath",
+          "librt",
+          "mashumaro",
+          "mccabe",
+          "multidict",
+          "mypy",
+          "mypy_extensions",
+          "nodeenv",
+          "numpy",
+          "orjson",
+          "packaging",
+          "pathspec",
+          "platformdirs",
+          "pluggy",
+          "pre_commit",
+          "propcache",
+          "pycodestyle",
+          "pydocstyle",
+          "pyflakes",
+          "pygments",
+          "pylint",
+          "pyproject_hooks",
+          "pytest",
+          "pytest_asyncio",
+          "pytest_cov",
+          "pytest_freezer",
+          "python_dateutil",
+          "python_discovery",
+          "pytokens",
+          "pyturbojpeg",
+          "pyyaml",
+          "s3transfer",
+          "six",
+          "snowballstemmer",
+          "tomlkit",
+          "types_aiofiles",
+          "typing_extensions",
+          "urllib3",
+          "virtualenv",
+          "webrtc_models",
+          "yarl"
+        ],
+        "resolved": [
+          "aiofiles-25.1.0",
+          "aiohappyeyeballs-2.7.1",
+          "aiohttp-3.14.3",
+          "aiosignal-1.4.0",
+          "aioskybellgen-0.1.6",
+          "aresponses-3.0.0",
+          "ast_serialize-0.9.0",
+          "astroid-4.0.4",
+          "async_timeout-5.0.1",
+          "attrs-26.1.0",
+          "awesomeversion-25.8.0",
+          "black-26.5.1",
+          "boto3-1.43.87",
+          "botocore-1.43.87",
+          "build-1.6.0",
+          "cfgv-3.5.0",
+          "click-8.5.0",
+          "coverage-7.16.0",
+          "dill-0.4.1",
+          "distlib-0.4.3",
+          "filelock-3.32.5",
+          "flake8-7.3.0",
+          "flake8_docstrings-1.7.0",
+          "freezegun-1.5.5",
+          "frozenlist-1.8.0",
+          "go2rtc_client-0.4.0",
+          "ha_ffmpeg-3.2.2",
+          "identify-2.6.19",
+          "idna-3.19",
+          "iniconfig-2.3.0",
+          "isort-9.0.1",
+          "jmespath-1.1.0",
+          "librt-0.15.0",
+          "mashumaro-3.22",
+          "mccabe-0.7.0",
+          "multidict-6.7.1",
+          "mypy-2.3.1",
+          "mypy_extensions-1.1.0",
+          "nodeenv-1.10.0",
+          "numpy-2.5.2",
+          "orjson-3.12.0",
+          "packaging-26.3",
+          "pathspec-1.1.1",
+          "platformdirs-4.11.7",
+          "pluggy-1.6.0",
+          "pre_commit-4.6.2",
+          "propcache-0.5.2",
+          "pycodestyle-2.14.0",
+          "pydocstyle-6.3.0",
+          "pyflakes-3.4.0",
+          "pygments-2.21.0",
+          "pylint-4.0.8",
+          "pyproject_hooks-1.2.0",
+          "pytest-9.1.1",
+          "pytest_asyncio-1.4.0",
+          "pytest_cov-7.1.0",
+          "pytest_freezer-0.4.9",
+          "python_dateutil-2.9.0.post0",
+          "python_discovery-1.6.0",
+          "pytokens-0.4.1",
+          "pyturbojpeg-1.8.3",
+          "pyyaml-6.0.3",
+          "s3transfer-0.19.2",
+          "six-1.17.0",
+          "snowballstemmer-3.1.1",
+          "tomlkit-0.15.1",
+          "types_aiofiles-25.1.0.20260518",
+          "typing_extensions-4.16.0",
+          "urllib3-2.7.0",
+          "virtualenv-21.7.8",
+          "webrtc_models-0.3.0",
+          "yarl-1.24.5"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "smhi_brandrisk",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 282.4,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "solis_modbus",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [
+        "pymodbus>=3.11.1"
+      ],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "switch",
+        "number",
+        "select",
+        "time"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 284.4,
+      "install": {
+        "ok": true,
+        "installed": [
+          "pymodbus"
+        ],
+        "resolved": [
+          "pymodbus-3.15.0"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "sonyavr",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "network": true
+      },
+      "requirements": [
+        "asyncping3"
+      ],
+      "dependencies": [
+        "network"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "media_player",
+        "remote"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 285.4,
+      "install": {
+        "ok": true,
+        "installed": [
+          "asyncping3",
+          "ifaddr"
+        ],
+        "resolved": [
+          "asyncping3-5.1.3",
+          "ifaddr-0.2.0"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "tasmota_mielhvac",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "mqtt": true
+      },
+      "requirements": [],
+      "dependencies": [
+        "mqtt"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "climate"
+      ],
+      "components_available": 54,
+      "peak_rss_mb": 294.1,
+      "install": {
+        "ok": true,
+        "installed": [
+          "paho_mqtt"
+        ],
+        "resolved": [
+          "paho_mqtt-2.1.0"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "trakt_tv",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 282.9,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "trmnl_webhook_push",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [],
+      "components_available": 53,
+      "peak_rss_mb": 280.6,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "tvoverlay_ui",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "number",
+        "select"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 282.1,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "vacation_mode",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "requirements": [],
+      "dependencies": [],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "weather"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 282.4,
+      "install": {
+        "ok": true,
+        "installed": [],
+        "note": "no requirements declared"
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "warema_wms",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "usb": true
+      },
+      "requirements": [
+        "pyserial>=3.5"
+      ],
+      "dependencies": [
+        "usb"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "light",
+        "cover",
+        "button",
+        "button"
+      ],
+      "components_available": 53,
+      "peak_rss_mb": 288.1,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiousbwatcher",
+          "asyncinotify",
+          "pyserial",
+          "serialx",
+          "typing_extensions"
+        ],
+        "resolved": [
+          "aiousbwatcher-1.1.2",
+          "asyncinotify-4.4.4",
+          "pyserial-3.5",
+          "serialx-1.8.2",
+          "typing_extensions-4.16.0"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    },
+    {
+      "domain": "zendure_ha",
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "bluetooth": true,
+        "mqtt": true,
+        "recorder": false
+      },
+      "requirements": [
+        "bleak-retry-connector>=3.9.0",
+        "paho-mqtt==2.1.0"
+      ],
+      "dependencies": [
+        "bluetooth",
+        "mqtt",
+        "recorder"
+      ],
+      "after_dependencies": [],
+      "level": "platforms_clean",
+      "platforms": [
+        "sensor",
+        "binary_sensor",
+        "switch",
+        "button",
+        "number",
+        "select",
+        "button"
+      ],
+      "components_available": 54,
+      "peak_rss_mb": 297.3,
+      "install": {
+        "ok": true,
+        "installed": [
+          "aiooui",
+          "aiousbwatcher",
+          "async_interrupt",
+          "asyncinotify",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "btsocket",
+          "cffi",
+          "cryptography",
+          "dbus_fast",
+          "fnv_hash_fast",
+          "fnvhash",
+          "greenlet",
+          "habluetooth",
+          "paho_mqtt",
+          "psutil",
+          "psutil_home_assistant",
+          "pycparser",
+          "pyric",
+          "serialx",
+          "sqlalchemy",
+          "typing_extensions",
+          "uart_devices",
+          "usb_devices"
+        ],
+        "resolved": [
+          "aiooui-0.1.9",
+          "aiousbwatcher-1.1.2",
+          "async_interrupt-1.2.2",
+          "asyncinotify-4.4.4",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "btsocket-0.3.0",
+          "cffi-2.1.1",
+          "cryptography-50.0.1",
+          "dbus_fast-5.0.22",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "greenlet-3.5.5",
+          "habluetooth-6.26.5",
+          "paho_mqtt-2.1.0",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pycparser-3.0",
+          "pyric-0.1.6.3",
+          "serialx-1.8.2",
+          "sqlalchemy-2.0.51",
+          "typing_extensions-4.16.0",
+          "uart_devices-0.1.1",
+          "usb_devices-0.5.1"
+        ]
+      },
+      "profile": "baseline",
+      "category": "ok"
+    }
+  ],
+  "arm_b": []
+}
