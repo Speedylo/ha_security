@@ -572,6 +572,131 @@ baseline** and be blocked under the framework. This arm supplies the unconfined 
 the attack; §7.10's second item is unchanged and remains owed before the security axis can be
 reported.
 
+## 7.13 S8's paired baseline — the 2021 pattern, with and without the framework
+
+**Run 2026-09-02**, `experiments/adversary_baseline/`. §7.5's criterion for S8 was fixed before
+any of this ran, and it is not "the attack is blocked":
+
+> The 2021 file-theft pattern **succeeds against an unconfined baseline installation** and is
+> blocked under the framework, on the same host and release.
+
+### 7.13.1 Method
+
+A deliberately hostile integration, and a configuration directory holding two canary strings —
+one in `secrets.yaml`, one in `.storage/core.config_entries`. The integration attempts
+thirty-eight attacks. **The identical attack payload runs twice**: once as an ordinary process
+with the invoking user's authority, which is what §5.2 establishes an integration has today, and
+once inside a sandbox. `ATTACKS`, both canaries and the configuration layout are imported from
+`selftest_adversary` rather than copied, on the same reasoning as §7.12.1.
+
+**The unconfined arm's verdict is inverted, and that is the point.** It passes when the canaries
+leak. An attack that cannot steal `secrets.yaml` from an ordinary process proves nothing when it
+is blocked from a sandbox, so a green light there is what licenses the green light here.
+
+### 7.13.2 Result
+
+| | Unconfined | Confined |
+|---|---|---|
+| **Canaries recovered** | **2 of 2** | **0 of 2** |
+| Attacks that returned data | 11 | 0 |
+| 2021 traversals that worked | **5** | 0 |
+| Outcome counts | BLOCKED 14 · EMPTY 4 · **LEAKED 11** · NOT RUN 2 · UNMEDIATED 1 | BLOCKED 21 · EMPTY 10 · DENY 6 · PERMIT 1 |
+| Verdict | **PASS** — the pattern reproduces | **PASS** — neither canary reached it |
+
+`open("../../secrets.yaml")` returns the credential unconfined and raises **`FileNotFoundError`**
+confined. Not `PermissionError`: the file was never in the sandbox's mount namespace, so no
+request was refused and nothing had to decide. §5.6.2's structural denial, in an error code.
+
+**An incidental result, and it is S7's.** Unconfined, the audit-log search found a real audit log
+on the host — `.../spike/audit/…jsonl`. An attacker that reaches the framework's own records can
+rewrite what §5.12 relies on. Confined the same search returns `EMPTY`. This was not a planned
+measurement and it belongs in Chapter 8's discussion of R4.
+
+### 7.13.3 What only the pairing could show, including against the design
+
+**Three attacks are blocked in both arms and are therefore not this framework's doing:**
+
+| Attack | Why it fails unconfined |
+|---|---|
+| `read /etc/shadow` | Root-only. The operating system, not the design |
+| `connect to 127.0.0.1:8123` | Nothing was listening |
+| `resolve example.invalid` | The name does not exist |
+
+Reported alone, the confined run credits the framework with three controls it does not provide.
+This is exactly the substitution §3.5 wrote the paired requirement to prevent, and it is the
+clearest argument in this chapter for why a baseline is not a formality.
+
+**Two attacks succeed unconfined and are refused confined, and those are the design's:**
+`unshare(CLONE_NEWUSER)` and `ptrace(PTRACE_TRACEME)` both return `True` unconfined and
+`PermissionError` confined. That is seccomp (§5.7.3), and it is a measured delta rather than an
+asserted one.
+
+**And the mediated family does not exist unconfined.** It reports `UNMEDIATED` — *"no mediator
+exists; this process acts directly and asks no one."* An unconfined integration is not denied
+`lock.unlock`; there is nobody to ask. Confined, all six undeclared operations are denied and
+each names the manifest clause that refused it (`/permissions/services/call`), which is F3
+discharged by behaviour.
+
+### 7.13.4 Two corrections to §6.9, and one withdrawn
+
+**Correction 1 — `/dev/zero`, and it stands.** The filesystem sweep called `os.path.getsize()`
+and read anything reported as small. A character device reports zero, so the attack opened
+`/dev/zero`, read an infinite stream, and was killed for memory. §6.9 recorded
+`BLOCKED — stopped by signal 9` and read it as the resource limit stopping a search for secrets.
+The verdict was right and the reason was wrong: the process died reading a device node. Restricted
+to regular files, the sweep **completes and finds nothing** — `EMPTY`, which the suite's own
+vocabulary ranks above `BLOCKED` because the attack ran to completion and there was nothing there.
+
+**Correction 2 — the counts.** For §6.9's original thirty-seven attacks, *21 blocked / 9 empty*
+becomes **20 blocked / 10 empty**. One attack moved, and it moved to the stronger column.
+
+**Withdrawn — S9's evidence was never in doubt.** An intermediate version of this work reported
+that the unbounded read no longer reached the memory cap, and inferred that §6.9's S9
+demonstration was invalid. **That inference was wrong, and its cause is worth recording because
+it is the same failure a third time.** The harness had been hardened to kill a child that
+overstayed, and in doing so it stopped distinguishing *the kernel killed this child* from *the
+harness ran out of patience* — collapsing an OOM kill into a timeout. With the distinction
+restored, the unbounded read is killed by the cgroup exactly as §6.9 reported. The sandbox binds
+the interpreter trees and the `homeassistant` library read-only, which is ample data to exhaust
+512 MB when held in memory.
+
+**S9 nonetheless gains a second demonstration, because the first is incidental.** Whether a
+file-reading attack reaches the cap depends on how much happens to be bound into the sandbox,
+which is a property of the configuration rather than of the control. A new attack allocates
+memory directly — an integration that wants to exhaust memory asks for memory rather than hunting
+for large files — and it is OOM-killed by the cgroup as well. Both now demonstrate S9, and only
+the second does so independently of what the sandbox contains.
+
+### 7.13.5 What the harness had to learn, and why it is a result
+
+The unconfined arm hung three times, for fifteen minutes each, reporting nothing. The cause is
+worth stating because it is not a testing anecdote:
+
+> **`PTRACE_TRACEME` succeeds unconfined.** From that moment the process is a tracee, and every
+> subsequent signal — including the `SIGCHLD` from the attack's own forked children — stops it
+> indefinitely for a tracer that will never answer.
+
+The harness had always trusted a forked child to finish and to die. That assumption held for the
+entire history of this suite, because **confined, seccomp refuses the call**. The harness was
+fragile only where the attacks succeed, and the only arm where they succeed had never been run.
+It now waits on `select`, kills what overstays, and reports `UNFINISHED` as an outcome in its own
+right — because an attack that ran out of time was not refused by anything, and recording it as
+`BLOCKED` is the same error as correction 1.
+
+### 7.13.6 What this does not establish
+
+- **One hostile integration, written here.** It exercises the *pattern* of the 2021 disclosures —
+  traversal to `secrets.yaml` and the config-entry store — not the eight disclosed integrations,
+  whose vulnerable versions are not in the corpus.
+- **The unconfined arm is a process with the user's authority, not a running Home Assistant.**
+  That is faithful to §5.2's finding about where integrations execute, and it is not the same as
+  reproducing the flaw inside a live instance.
+- **Two attacks were not run unconfined**, both by design and both recorded as `NOT RUN` rather
+  than omitted: the unbounded read and the memory allocation. Nothing would bound either on the
+  host, and T16 is not in dispute.
+- **S3's paired baseline is still owed.** §7.5 requires a paired measurement of what is readable
+  *without* the framework, and that needs a running instance with entities. It is next.
+
 ---
 
 *§7.1–§7.11 written 2026-09-02, before any measurement specified here had been run. Criteria in
