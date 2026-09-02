@@ -5,12 +5,21 @@
 population this project targets — §5.6.1 and §5.9.1 both carry that limitation explicitly.
 This script assembles the corpus that removes it.
 
-**Sampling.** Community integrations are sampled by *install count*, not at random. The
-argument §5.10 needs is about what confinement would break in practice, and breaking an
-integration on 40,000 installations is not equivalent to breaking one on twelve. §1.3
-records a long tail whose median integration has 20 installs; a uniform sample would be
-dominated by it and would describe a population almost nobody runs. Both views matter and
-the limitation of this one is stated in the write-up.
+**Sampling, and there are two of them.** By default community integrations are sampled by
+*install count*. The argument §5.10 needs is about what confinement would break in practice,
+and breaking an integration on 40,000 installations is not equivalent to breaking one on
+twelve. §1.3 records a long tail whose median integration has 20 installs; an install-weighted
+sample answers **"what do most installations run?"**
+
+That is one question and not the only one. `--uniform SEED` draws instead from the whole index
+with equal probability, which answers **"what do most integrations do?"** — the population a
+claim about the *ecosystem* is really about. §7.9 records the install-weighted corpus as a
+threat to external validity for exactly this reason, and §7.23 is the arm that measures it
+rather than continuing to caveat it.
+
+The seed is required rather than defaulted, and it is recorded in the manifest, because a
+sample nobody can redraw is not reproducible and a seed chosen after seeing a result is not a
+sample.
 
 **Sources.**
   - `https://data-v2.hacs.xyz/integration/data.json` — HACS's own index: 3,000+ repositories
@@ -34,6 +43,7 @@ import argparse
 import concurrent.futures as futures
 import io
 import json
+import random
 import shutil
 import sys
 import tarfile
@@ -53,7 +63,7 @@ def get(url: str, timeout: int = 60) -> bytes:
         return r.read()
 
 
-def candidates(top: int) -> list[dict]:
+def candidates(top: int, uniform_seed: int | None = None) -> list[dict]:
     index = json.loads(get(HACS_INDEX))
     # Same shape ecosystem_scale.py reads: {domain: {"total": n, "versions": {...}}}.
     installs = {domain: entry.get("total", 0)
@@ -73,6 +83,12 @@ def candidates(top: int) -> list[dict]:
             "hacs_downloads": entry.get("downloads", 0),
             "source": "analytics" if domain in installs else "hacs_downloads",
         })
+    if uniform_seed is not None:
+        # Every integration in the index has the same chance of selection, whatever anyone
+        # runs. Sorting first makes the draw depend on the seed alone rather than on the
+        # order the index happened to arrive in, which is not stable between fetches.
+        rows.sort(key=lambda r: r["domain"])
+        return random.Random(uniform_seed).sample(rows, min(top, len(rows)))
     rows.sort(key=lambda r: (r["installs"], r["hacs_downloads"]), reverse=True)
     return rows[:top]
 
@@ -133,11 +149,21 @@ def main() -> int:
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--manifest", type=Path, default=HERE / "hacs_corpus_manifest.json")
     ap.add_argument("--workers", type=int, default=8)
+    ap.add_argument("--uniform", type=int, default=None, metavar="SEED",
+                    help="draw uniformly from the whole HACS index with this seed, instead "
+                         "of taking the top by install count (§7.23). The seed is recorded "
+                         "in the manifest so the sample can be redrawn exactly")
     args = ap.parse_args()
 
     args.out.mkdir(parents=True, exist_ok=True)
-    rows = candidates(args.top)
-    print(f"selected {len(rows)} community integrations by install count")
+    rows = candidates(args.top, args.uniform)
+    if args.uniform is None:
+        print(f"selected {len(rows)} community integrations by install count")
+    else:
+        median = sorted(r["installs"] for r in rows)[len(rows) // 2]
+        print(f"selected {len(rows)} community integrations uniformly at random, "
+              f"seed {args.uniform}")
+        print(f"  median install count of the draw: {median}")
 
     done: list[dict] = []
     with futures.ThreadPoolExecutor(max_workers=args.workers) as pool:
@@ -151,7 +177,10 @@ def main() -> int:
     print(f"\nfetched {len(ok)}/{len(done)}; {sum(d['py_files'] for d in ok)} python files")
     args.manifest.write_text(json.dumps({
         "source_index": HACS_INDEX,
-        "selection": "top by Home Assistant analytics install count, HACS downloads as tiebreak",
+        "selection": ("top by Home Assistant analytics install count, HACS downloads as "
+                      "tiebreak") if args.uniform is None else
+                     f"uniform random draw from the whole index, seed {args.uniform}",
+        "uniform_seed": args.uniform,
         "requested": args.top,
         "fetched": len(ok),
         "repositories": done,
