@@ -423,6 +423,158 @@ Four things, named now rather than conceded later.
 
 ---
 
+# Results
+
+## 7.12 The baseline arm, and what 84% actually was
+
+**Run 2026-09-02**, after §7.1–§7.11 were written and with the criteria and predictions above
+already fixed. `experiments/compat/`, `--profile baseline`.
+
+### 7.12.1 The measurement
+
+The same 37 community integrations, the same corpus directories, the same release (2026.8.3),
+the same interpreter (Python 3.14.7) and the same host (the C4 device), against a **full,
+unconfined** Home Assistant. `confine/baseline_runtime.py` is the arm; what it omits is the whole
+of the confinement — no namespaces, no seccomp, no cgroup, no mount view, no mediator and no
+bridge — and that omission is the only independent variable.
+
+Two construction decisions carry the validity of the comparison and both are recorded because
+either could have produced a flattering number by accident.
+
+**The measurement function is shared, not copied.** `inspect()` is imported from
+`sandbox_runtime.py` and called with the same arguments, so both arms compute *not_found →
+import_failed → imports_clean → platform_import_failed → platforms_clean* with the same platform
+list and the same error handling. §7.9 required the measurement be held fixed; a reimplementation
+that drifted by one platform name would have satisfied that requirement in appearance only.
+
+**The baseline's bias runs toward the baseline, deliberately.** The base `homeassistant`
+component — dropped from the sandbox in §6.3.2 — is set up here; `default_config` is set up, the
+same definition of "stock" from which §6.13.4's core package set is computed; the integration's
+declared components are set up and their requirements installed; the core package set is present.
+A generous baseline makes the design's measured cost *larger*, which is the direction an
+evaluation of one's own artifact should err in.
+
+**The first version of this arm was biased the other way, and the correction is the reason to
+trust the second.** It set up `homeassistant` and `default_config` only. `default_config` does
+not contain `mqtt`, so `alarmo` — which declares it — failed against the "full" instance while
+passing under confinement. A baseline stingier than the arm it is compared against does not
+decompose a figure; it inverts it, and it would have reported a *negative* cost for confinement.
+
+### 7.12.2 The result
+
+| | Baseline — full, unconfined | Confined — `declared` + core packages |
+|---|---|---|
+| **Imports clean, all entity platforms** | **31/37 — 84%** | **31/37 — 84%** |
+| Components loaded in the instance | median **52** | median **2** |
+| Peak memory | median 291 MB, max 365 MB (RSS) | median 119.7 MB (cgroup peak) |
+
+The two arms fail on **the same six integrations**, and the failure reasons are identical — in
+four of six cases byte for byte, including the truncated exception text:
+
+| Integration | Failure, both arms |
+|---|---|
+| `bambu_lab`, `bermuda`, `tapo_control` | `ModuleNotFoundError: No module named 'aiofiles'` |
+| `eufy_security` | `ImportError: cannot import name 'SOURCE_TYPE_GPS' from 'homeassistant.components.device_tracker'` |
+| `hacs` | `ModuleNotFoundError: No module named 'custom_components.hacs.hacs_frontend'` |
+| `spook` | `IntegrationNotFound: Integration 'spook' not found.` |
+
+So the decomposition §7.4.1 was built to perform returns zero:
+
+```
+    failures(confined) = failures(baseline) + failures(design)
+          6            =        6           +        0
+```
+
+**The import-level compatibility cost of confinement, on this corpus, on this release, is zero
+integrations of thirty-seven.** No integration passes unconfined and fails confined, and the set
+difference is empty in both directions.
+
+**This changes what the headline number means, and the change is a demotion of the number in
+favour of the finding.** 84% was never a statement about confinement. It is the fraction of the
+most-installed community integrations that import cleanly on Home Assistant 2026.8.3 *at all* —
+a property of the corpus and the release — and confinement moves it by nothing. The result worth
+reporting is the difference, and the difference is zero.
+
+### 7.12.3 The predictions, scored
+
+§7.6 was fixed before the run. Two of its three compatibility predictions were wrong.
+
+| | Prediction | Actual | |
+|---|---|---|---|
+| **P1** | Baseline 34/37 | **31/37** | ✗ wrong |
+| **P2** | The baseline *passes* the three `aiofiles` integrations | It fails all three | ✗ wrong |
+| **P3** | Confinement's cost is 0–3 integrations, 0–8 points | **0 integrations, 0 points** | ✓ correct, at the floor |
+
+**P2 is the one that mattered and it was wrong for an interesting reason.** The prediction rested
+on `homeassistant/package_constraints.txt` pinning `aiofiles>=24.1.0` with the comment *"aiofiles
+keeps getting downgraded by custom components"* — reasoning that a package upstream bothers to
+constrain must be present in real installations. It is not:
+
+```
+ha314/lib/python3.14/site-packages/aiofiles*   -> absent
+platform-deps/aiofiles*                        -> absent
+```
+
+A stock `pip install homeassistant` on 2026.8.3 does not provide `aiofiles`, and neither does the
+`default_config` closure. **A constraint is not an installation** — upstream is pinning the
+version *in case* a custom component installs it, which is a defence against the ecosystem's
+behaviour rather than evidence of the platform's own. The constraint carries an issue reference,
+`home-assistant/core#118004`, which is a citable upstream acknowledgement of exactly the problem
+§6.14.4 describes.
+
+This strengthens §6.14.4 rather than qualifying it. That section argued that "the author would
+simply declare it" is an assumption the evidence contradicts; the baseline adds that these three
+integrations **do not work on an ordinary unconfined installation either**. They were already
+broken. Confinement is not what breaks them, and the design is charged nothing for them.
+
+### 7.12.4 What this licenses, and what it does not
+
+**Licensed.** §6.14.3 set aside `eufy_security` as a release incompatibility and `hacs` and
+`spook` as corpus artifacts, arriving at 31/34 — 91% — and conceded in the same paragraph that
+"setting them aside is what the baseline arm exists to justify". It is now justified: all three
+fail unconfined for the same reasons. The `aiofiles` three may be set aside on the same evidence,
+which §6.14.3 did not claim and could not have. On what the corpus delivered in a state that
+loads on this release at all, **confinement costs nothing**.
+
+**Not licensed, and the first is the one most likely to be over-read.**
+
+- **Both arms measure imports, not execution.** N2 requires the two numbers be reported
+  separately and never conflated; the executed-end-to-end population is still one (§6.11.1).
+  *Zero import-level compatibility cost* is not *zero compatibility cost*, and this chapter
+  attaches the qualifier every time the figure appears.
+- **One corpus, head-weighted.** §7.4.1's uniform sample is still owed and this result does not
+  substitute for it.
+- **One release, one host, one architecture.** `eufy_security` failing on a constant removed in
+  this very release demonstrates the shelf life directly.
+- **The memory columns are not comparable and are not compared.** The baseline figure is process
+  RSS; the confined figure is the cgroup's `memory.peak`, which includes page cache. §6.11.3
+  records the same caution. Both are reported because omitting one would be worse, and neither
+  supports a per-sandbox overhead claim — that is §6.3.2's PSS measurement, not this one.
+
+### 7.12.5 An unpredicted finding, and Chapter 8 should have it
+
+The baseline instance loads a **median of 52 components**. The confined sandbox sets up a
+**median of 2** — twelve of the 37 declare none at all (§6.13). The two reach identical
+import-level compatibility.
+
+Whatever the other fifty components do for a stock installation, the most-installed community
+integrations do not need them in order to load. This is a measured statement about how much of
+Home Assistant an integration actually touches, and it bears directly on §5.6's R2 decision:
+stripping the platform to what an integration declares is not a compromise that costs
+compatibility, on this evidence it costs none. It also sharpens §6.14.5's honesty cost — the
+sandbox carries 641 MB of packages no integration declared, but it carries fifty fewer
+*components*, and components are where capability lives.
+
+### 7.12.6 What this arm does not discharge
+
+S8's criterion in §7.5 requires the 2021 file-theft pattern to **succeed against an unconfined
+baseline** and be blocked under the framework. This arm supplies the unconfined instance but not
+the attack; §7.10's second item is unchanged and remains owed before the security axis can be
+reported.
+
+---
+
 *§7.1–§7.11 written 2026-09-02, before any measurement specified here had been run. Criteria in
-§7.5 and predictions in §7.6 are frozen at that date and are not revised in light of results.
-Results follow from §7.12.*
+§7.5 and predictions in §7.6 are frozen at that date and were not revised in light of results —
+§7.12.3 scores two of them as wrong rather than adjusting them. §7.12 is the first results
+section; the remaining measurements are scheduled in §7.10.*
