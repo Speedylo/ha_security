@@ -26,10 +26,11 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import Enum
 from pathlib import Path
 
+from .cgroup import ResourceLimits
 from .mediator import Decision
 from .sandbox import GrantRefused, reject_forbidden
 
@@ -71,7 +72,19 @@ KNOWN_MEMBERS = {
     "network": {"egress", "allow_private"},
     "config_entries": {"read_all"},
     "http": {"register"},
-    "resources": {"memory_mb", "cpu_percent", "max_processes"},
+    "resources": {"memory_mb", "cpu_percent", "max_processes", "disk_mb"},
+}
+
+# §5.10.6's clause, with the bounds each member is validated against at parse time. The upper
+# bounds are not security limits — a manifest asking for more than the device has is refused by
+# the device — they are there so that a typo declares a refusal rather than a limit so large it
+# is indistinguishable from none. `cpu_percent` is a percentage of one processor, so a value
+# above 100 is legitimate on a multi-core host and the ceiling is the host's core count × 100.
+RESOURCE_BOUNDS = {
+    "memory_mb": (16, 8192),
+    "cpu_percent": (1, 1600),
+    "max_processes": (1, 4096),
+    "disk_mb": (1, 4096),
 }
 
 
@@ -106,6 +119,26 @@ def _validate_services(services: list[str]) -> None:
         if not domain or not service:
             raise ManifestRejected(
                 f"/permissions/services/call: '{entry}' must be domain.service")
+
+
+def _validate_resources(resources: object) -> None:
+    """§5.10.6, at parse time — because the alternative is what §7.21.1 found.
+
+    Every member of this clause is a positive integer within a stated range. Validating the
+    *keys* and not the *values* is how `"memory_mb": "lots"` reached the point of being written
+    into a kernel file, and a limit that fails to apply at sandbox-construction time is a limit
+    the user was already told was in force (§6.7.1).
+    """
+    if not isinstance(resources, dict):
+        raise ManifestRejected("/permissions/resources must be an object")
+    for member, value in resources.items():
+        low, high = RESOURCE_BOUNDS[member]      # membership already checked by _validated
+        if isinstance(value, bool) or not isinstance(value, int):
+            raise ManifestRejected(
+                f"/permissions/resources/{member}: {value!r} is not an integer")
+        if not low <= value <= high:
+            raise ManifestRejected(
+                f"/permissions/resources/{member}: {value} is outside {low}–{high}")
 
 
 def _validate_events(events: list[str], where: str) -> None:
@@ -203,6 +236,9 @@ class Manifest:
                 _validate_events(_require_list(events[member], f"/permissions/events/{member}"),
                                  f"/permissions/events/{member}")
 
+        if "resources" in permissions:
+            _validate_resources(permissions["resources"])
+
         # §5.10.5, at parse time: a path that reaches the configuration root, its storage or
         # its secrets is rejected here rather than refused later.
         for entry in _require_list(permissions.get("files", {}).get("read", []),
@@ -215,6 +251,19 @@ class Manifest:
                 raise ManifestRejected(f"{source}: {err}") from err
 
         return cls(domain, provenance, permissions, source)
+
+    @property
+    def resources(self) -> ResourceLimits:
+        """S9's bound for this integration, from its own clause where it declared one.
+
+        **A manifest that declares nothing gets the defaults, not no limit.** S6 makes an
+        absent capability a denial everywhere else in this module, and the same reading here
+        would mean an integration that declares no `resources` clause runs unbounded — which
+        inverts default-deny for the one requirement whose threat, T16, is an integration
+        consuming everything. So absence means the framework's own bound rather than the
+        integration's, and §7.22 records that as the one place where absence is not denial.
+        """
+        return replace(ResourceLimits(), **self.permissions.get("resources", {}))
 
     # -- deciding ----------------------------------------------------------------------
 

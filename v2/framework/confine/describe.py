@@ -129,6 +129,8 @@ def describe(manifest: Manifest, *, name: str | None = None, version: str | None
             limits.append(f"{resources['max_processes']} processes")
         if "cpu_percent" in resources:
             limits.append(f"{resources['cpu_percent']}% of one processor")
+        if "disk_mb" in resources:
+            limits.append(f"{resources['disk_mb']} MB of temporary disk space")
         if limits:
             lines += ["", "It is limited to " + ", ".join(limits) + "."]
     return "\n".join(lines)

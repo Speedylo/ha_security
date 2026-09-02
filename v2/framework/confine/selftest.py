@@ -23,7 +23,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from .cgroup import Delegation, SandboxCgroup
+from .cgroup import Delegation, ResourceLimits, SandboxCgroup
 from .preflight import require_ready
 from .sandbox import SandboxSpec
 from .spawn import become_subreaper, start
@@ -157,7 +157,7 @@ def main() -> int:
 
         delegation = Delegation.discover()
         with SandboxCgroup.create(delegation, "confine-selftest",
-                                  memory_max=256 * 1024**2, pids_max=64) as cgroup:
+                                  ResourceLimits(memory_mb=256)) as cgroup:
             report = run_inside(spec, cgroup)
     finally:
         shutil.rmtree(root, ignore_errors=True)

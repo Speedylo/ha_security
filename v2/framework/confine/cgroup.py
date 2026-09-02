@@ -130,25 +130,87 @@ class Delegation:
         return f"supervisor in {here}; delegated subtree {there}"
 
 
+# The period `cpu.max` is expressed against. 100 ms is the kernel's own default and the
+# smallest unit of accounting that does not make a bursty process look throttled when it is
+# not; `cpu_percent` is converted into a quota against it.
+CPU_PERIOD_US = 100_000
+
+
+@dataclass(frozen=True)
+class ResourceLimits:
+    """S9's bound on one sandbox, as four numbers rather than as four hard-coded constants.
+
+    This type exists because of what §7.21.1 found: every caller was passing its own
+    `memory_max` and `pids_max` literals, `cpu_percent` was validated and rendered to the user
+    and enforced nowhere, and disk was absent entirely. A manifest clause that does not reach
+    an enforcement path is the exact failure §5.10 legislates against one level up, so the
+    clause and the enforcement now share one type and there is no second way to reach `create`.
+
+    **Disk is narrower than §4.10.1's wording, and the narrowing is measured rather than
+    assumed.** cgroup v2's `io` controller is not delegated to a user manager on the target
+    (`experiments/resource_limits/`): writing `+io` to the delegated subtree's
+    `cgroup.subtree_control` fails with `ENOENT` and `io.max` never appears in a child cgroup,
+    while `cpu`, `memory` and `pids` all arrive. That is §6.4.1's distinction — a controller
+    being *present* on the host is not this supervisor being *permitted* to use it — one layer
+    down. So `disk_mb` bounds the space a sandbox can consume in its own private `/tmp`, which
+    is enforceable unprivileged as a tmpfs `size=`, and I/O *bandwidth* is not bounded at all.
+    §7.22 states the narrowing and what stays uncovered.
+    """
+
+    memory_mb: int = 640
+    cpu_percent: int | None = None
+    max_processes: int = 64
+    disk_mb: int = 64
+
+    @property
+    def memory_max(self) -> int:
+        return self.memory_mb * 1024 ** 2
+
+    def cpu_quota(self) -> str | None:
+        """`cpu.max`'s two fields, or None when nothing was declared.
+
+        `cpu_percent` is a percentage of **one** processor, which is how §6.7.1 renders it to
+        the user, so 200 is a legitimate declaration on a multi-core host and is not clamped.
+        """
+        if self.cpu_percent is None:
+            return None
+        return f"{self.cpu_percent * CPU_PERIOD_US // 100} {CPU_PERIOD_US}"
+
+
 class SandboxCgroup:
     """One sandbox's cgroup: created by the supervisor, entered by the sandbox itself."""
 
     def __init__(self, path: Path) -> None:
         self.path = path
+        # What `create` actually put into the kernel's files, so that a caller — and
+        # `selftest_resources` — can assert on the limits in force rather than on the ones
+        # that were requested. The two were the same thing until §7.21.1 found they were not.
+        self.applied: ResourceLimits | None = None
 
     # -- supervisor side ---------------------------------------------------------------
 
     @classmethod
-    def create(cls, delegation: Delegation, name: str, *,
-               memory_max: int | None = None, pids_max: int | None = None) -> SandboxCgroup:
+    def create(cls, delegation: Delegation, name: str,
+               limits: ResourceLimits | None = None) -> SandboxCgroup:
+        """Create the cgroup and apply every limit in `limits`, or refuse and say which.
+
+        `limits` is not optional in the sense that matters — omitting it applies
+        `ResourceLimits()`'s defaults rather than applying nothing. There is deliberately no
+        way to reach this method with a limit that is declared and then quietly dropped, which
+        is what §7.21.1 found the previous signature permitting.
+        """
+        limits = ResourceLimits() if limits is None else limits
         if not delegation.available:
             raise PlacementUnavailable(delegation.unavailable or "placement unavailable")
         assert delegation.parent is not None
 
         # A controller only reaches children if the parent has delegated it downward. This is
         # ours to write, and writing it is idempotent, so it is done rather than required.
+        # `cpu` joins `memory` and `pids` only when something asked for it, so a host that
+        # delegates the other two stays usable by every manifest that declares no CPU bound.
+        needed = ["memory", "pids"] + (["cpu"] if limits.cpu_percent is not None else [])
         enabled = _text(delegation.parent / "cgroup.subtree_control").split()
-        wanted = [c for c in ("memory", "pids") if c not in enabled]
+        wanted = [c for c in needed if c not in enabled]
         if wanted:
             try:
                 (delegation.parent / "cgroup.subtree_control").write_text(
@@ -156,16 +218,35 @@ class SandboxCgroup:
             except OSError as err:
                 raise PlacementUnavailable(
                     f"cannot enable {' '.join(wanted)} in "
-                    f"{delegation.parent.relative_to(CGROUP_FS)}: {err.strerror}") from err
+                    f"{delegation.parent.relative_to(CGROUP_FS)}: {err.strerror}. The "
+                    f"controller is present on this host but not delegated to uid "
+                    f"{os.getuid()}") from err
 
         path = delegation.parent / name
         path.mkdir(exist_ok=True)
         cgroup = cls(path)
-        if memory_max is not None:
-            cgroup.limit_memory(memory_max)
-        if pids_max is not None:
-            (path / "pids.max").write_text(str(pids_max))
+        cgroup.limit_memory(limits.memory_max)
+        cgroup._write("pids.max", str(limits.max_processes), "max_processes")
+        quota = limits.cpu_quota()
+        if quota is not None:
+            cgroup._write("cpu.max", quota, "cpu_percent")
+        cgroup.applied = limits
         return cgroup
+
+    def _write(self, filename: str, value: str, clause: str) -> None:
+        """Write one limit, and refuse the sandbox if the kernel will not take it.
+
+        N3, in the form §6.4.2 argued for: a framework that could not apply a declared limit
+        and started the sandbox anyway would leave T16 uncontrolled while implying protection,
+        and §6.7.1 would meanwhile be telling the user the limit is in force. Failing here
+        makes an unenforceable declaration a refusal that names the clause instead.
+        """
+        try:
+            (self.path / filename).write_text(value)
+        except OSError as err:
+            raise PlacementUnavailable(
+                f"declared resources.{clause} cannot be enforced: writing {filename} in "
+                f"{self.path.name} failed with {err.strerror}") from err
 
     def limit_memory(self, limit_bytes: int) -> None:
         """Apply S9's memory bound.
@@ -174,7 +255,7 @@ class SandboxCgroup:
         *resident* memory only, and a sandbox that exceeds it gets slowly swapped instead of
         stopped — which satisfies the file and not the requirement.
         """
-        (self.path / "memory.max").write_text(str(limit_bytes))
+        self._write("memory.max", str(limit_bytes), "memory_mb")
         try:
             (self.path / "memory.swap.max").write_text("0")
         except OSError:
@@ -208,6 +289,27 @@ class SandboxCgroup:
 
     def peak_memory(self) -> int:
         return int(_text(self.path / "memory.peak") or 0)
+
+    def cpu_usage_us(self) -> int:
+        """Total CPU time charged to this cgroup, in microseconds.
+
+        `cpu.stat`'s `usage_usec`. This is what makes a CPU limit checkable by behaviour
+        rather than by reading back the file that was just written — the distinction
+        §6.4.2's preflight is built around, and §6.4.6 applied to the seccomp filter.
+        """
+        for line in _text(self.path / "cpu.stat").splitlines():
+            key, _, value = line.partition(" ")
+            if key == "usage_usec":
+                return int(value)
+        return 0
+
+    def throttled_us(self) -> int:
+        """Time this cgroup spent throttled by `cpu.max`, from `cpu.stat`."""
+        for line in _text(self.path / "cpu.stat").splitlines():
+            key, _, value = line.partition(" ")
+            if key == "throttled_usec":
+                return int(value)
+        return 0
 
     def remove(self) -> None:
         """Delete the cgroup. Only an empty cgroup can be removed, so it is emptied first."""

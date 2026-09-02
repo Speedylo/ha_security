@@ -27,7 +27,7 @@ from pathlib import Path
 
 import os
 
-from .cgroup import Delegation, SandboxCgroup
+from .cgroup import Delegation, ResourceLimits, SandboxCgroup
 from .channel import Channel
 from .manifest import Manifest
 from .mediator import Mediator
@@ -244,7 +244,7 @@ def main() -> int:
                                           delete=False)
         delegation = Delegation.discover()
         with SandboxCgroup.create(delegation, "confine-bridge",
-                                  memory_max=512 * 1024**2, pids_max=64) as cgroup:
+                                  ResourceLimits(memory_mb=512)) as cgroup:
             with open(out.name, "wb") as stdout, open(err.name, "wb") as stderr:
                 sandbox = start(spec, cgroup, stdout=stdout.fileno(), stderr=stderr.fileno(),
                                 channel_end=sandbox_end.fileno())

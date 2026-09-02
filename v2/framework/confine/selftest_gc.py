@@ -31,7 +31,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from .cgroup import Delegation, SandboxCgroup
+from .cgroup import Delegation, ResourceLimits, SandboxCgroup
 from .channel import Channel
 from .gc_probe import CANARY_CREDENTIAL, GC_SWEEP
 from .mediator import Mediator
@@ -109,8 +109,8 @@ def arm_confined(python: Path) -> dict:
         out = tempfile.NamedTemporaryFile(suffix=".json", delete=False)
         err = tempfile.NamedTemporaryFile(suffix=".txt", delete=False)
         delegation = Delegation.discover()
-        with SandboxCgroup.create(delegation, "confine-gc", memory_max=512 * 1024**2,
-                                  pids_max=64) as cgroup:
+        with SandboxCgroup.create(delegation, "confine-gc",
+                                  ResourceLimits(memory_mb=512)) as cgroup:
             with open(out.name, "wb") as stdout, open(err.name, "wb") as stderr:
                 sandbox: Sandbox = start(spec, cgroup, stdout=stdout.fileno(),
                                          stderr=stderr.fileno(),

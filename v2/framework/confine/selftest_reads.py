@@ -35,7 +35,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from .cgroup import Delegation, SandboxCgroup
+from .cgroup import Delegation, ResourceLimits, SandboxCgroup
 from .channel import Channel
 from .home import DECLARED, HOME, entity_ids, probe_set, sensitive_ids
 from .manifest import Manifest
@@ -115,7 +115,7 @@ def arm_confined(python: Path) -> dict:
         err = tempfile.NamedTemporaryFile(suffix=".txt", delete=False)
         delegation = Delegation.discover()
         with SandboxCgroup.create(delegation, "confine-reads",
-                                  memory_max=640 * 1024**2, pids_max=64) as cgroup:
+                                  ResourceLimits(memory_mb=640)) as cgroup:
             with open(out.name, "wb") as stdout, open(err.name, "wb") as stderr:
                 sandbox: Sandbox = start(spec, cgroup, stdout=stdout.fileno(),
                                          stderr=stderr.fileno(),

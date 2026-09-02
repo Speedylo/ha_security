@@ -33,7 +33,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "framework"))
 
 from confine.audit import AuditLog                        # noqa: E402
-from confine.cgroup import Delegation, SandboxCgroup, spawn_confined  # noqa: E402
+from confine.cgroup import (Delegation, ResourceLimits, SandboxCgroup,  # noqa: E402
+                            spawn_confined)
 
 
 def percentiles(samples: list[float]) -> dict:
@@ -114,7 +115,8 @@ def measure_page_cache(cap_mb: int, file_mb: int, scratch: Path) -> dict:
         delegation = Delegation.discover()
         outcome: dict = {"cap_mb": cap_mb, "file_mb": file_mb}
         with SandboxCgroup.create(delegation, f"durability-pc-{cap_mb}",
-                                  memory_max=cap_mb * 1024**2, pids_max=32) as cgroup:
+                                  ResourceLimits(memory_mb=cap_mb,
+                                                 max_processes=32)) as cgroup:
             # `spawn_confined`, not Popen-then-place. §6.4.1: the child writes its own pid
             # immediately before exec, which is the only ordering that leaves no uncapped
             # window. The first run of this called a `cgroup.add` that does not exist, caught

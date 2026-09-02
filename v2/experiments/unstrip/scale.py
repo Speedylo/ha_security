@@ -26,7 +26,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "framework"))
 
-from confine.cgroup import Delegation, SandboxCgroup            # noqa: E402
+from confine.cgroup import Delegation, ResourceLimits, SandboxCgroup  # noqa: E402
 from confine.channel import Channel                             # noqa: E402
 from confine.compat import PLATFORM_DEPS, UNSTRIPPED            # noqa: E402
 from confine.mediator import Mediator                           # noqa: E402
@@ -125,7 +125,7 @@ def main() -> int:
                     spec.runtime_paths.append(extra)
 
             cgroup = SandboxCgroup.create(delegation, f"scale-{index}",
-                                          memory_max=768 * 1024**2, pids_max=64)
+                                          ResourceLimits(memory_mb=768))
             cgroups.append(cgroup)
             out, errfile = root / "out.json", root / "err.txt"
             with open(out, "wb") as stdout, open(errfile, "wb") as stderr:

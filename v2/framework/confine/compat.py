@@ -36,6 +36,7 @@ import subprocess
 import sys
 import tempfile
 from collections import Counter
+from dataclasses import replace
 from pathlib import Path
 
 from .cgroup import Delegation, SandboxCgroup
@@ -313,8 +314,13 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
 
         out = tempfile.NamedTemporaryFile(suffix=".json", delete=False)
         err = tempfile.NamedTemporaryFile(suffix=".txt", delete=False)
-        with SandboxCgroup.create(delegation, f"compat-{domain}"[:60],
-                                  memory_max=640 * 1024**2, pids_max=64) as cgroup:
+        # §7.22: the bound applied here is the integration's own `resources` clause where it
+        # declares one, and the framework's default where it does not. Until §7.21.1 this was
+        # a literal, so every figure in §6.11–§6.14 was measured against the harness's limit
+        # rather than the declaration — which is what made S9 unverifiable from the outside.
+        limits = replace(manifest.resources, memory_mb=max(manifest.resources.memory_mb, 640))
+        spec.tmp_size_mb = limits.disk_mb
+        with SandboxCgroup.create(delegation, f"compat-{domain}"[:60], limits) as cgroup:
             with open(out.name, "wb") as stdout, open(err.name, "wb") as stderr:
                 sandbox: Sandbox = start(spec, cgroup, stdout=stdout.fileno(),
                                          stderr=stderr.fileno(),

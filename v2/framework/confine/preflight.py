@@ -25,11 +25,13 @@ import sys
 from dataclasses import dataclass, field
 
 from . import namespaces, seccomp
-from .cgroup import CGROUP_FS, Delegation, PlacementUnavailable, SandboxCgroup, spawn_confined
+from .cgroup import (CGROUP_FS, Delegation, PlacementUnavailable, ResourceLimits,
+                      SandboxCgroup, spawn_confined)
 
 # The enforcement check asks a child for three times its cap. Large enough that no interpreter
 # start-up could account for it, small enough to be over in a moment on the C4 device.
-CHECK_CAP_BYTES = 64 * 1024 * 1024
+CHECK_CAP_MB = 64
+CHECK_CAP_BYTES = CHECK_CAP_MB * 1024 * 1024
 CHECK_ASK_BYTES = 192 * 1024 * 1024
 
 
@@ -206,7 +208,7 @@ def _check_enforcement(delegation: Delegation) -> Check:
     """
     try:
         with SandboxCgroup.create(delegation, _scratch_name(),
-                                  memory_max=CHECK_CAP_BYTES) as cgroup:
+                                  ResourceLimits(memory_mb=CHECK_CAP_MB)) as cgroup:
             proc = spawn_confined(
                 [sys.executable, "-c", f"bytearray({CHECK_ASK_BYTES})"],
                 cgroup, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

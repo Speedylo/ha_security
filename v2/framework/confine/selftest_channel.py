@@ -25,7 +25,7 @@ import tempfile
 from pathlib import Path
 
 from .channel import Channel
-from .cgroup import Delegation, SandboxCgroup
+from .cgroup import Delegation, ResourceLimits, SandboxCgroup
 from .manifest import Manifest, policy_for
 from .mediator import Mediator
 from .preflight import require_ready
@@ -134,7 +134,7 @@ def main() -> int:
             spec = SandboxSpec(domain=domain, own_dir=str(component), data_dir=str(data),
                                argv=[sys.executable, "-c", script])
             cgroup = SandboxCgroup.create(delegation, f"confine-channel-{domain}",
-                                          memory_max=256 * 1024**2, pids_max=64)
+                                          ResourceLimits(memory_mb=256))
             cgroups.append(cgroup)
             outputs[domain] = tempfile.NamedTemporaryFile(
                 prefix=f"confine-channel-{domain}-", suffix=".json", delete=False)

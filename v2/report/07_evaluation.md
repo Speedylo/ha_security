@@ -258,7 +258,7 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **S6** | An integration with **no** manifest and one with an **unparseable** manifest are each denied all mediated capability, each refusal naming its rule | Security |
 | **S7** | Decisions appear in the log bearing the integration's three-part identity, and modification, deletion **and reordering** are each independently detectable by both the hash chain and the keyed MAC chain | §6.8 — re-verified |
 | **S8** | The 2021 file-theft pattern **succeeds against an unconfined baseline installation** and is blocked under the framework, on the same host and release | Security — **requires the baseline arm** |
-| **S9** | An integration deliberately exhausting CPU, memory and disk in turn does not render the gateway unresponsive, demonstrated unprivileged, with the boot-time precondition stated | ⚠ **Partially met — see §7.21.1.** Memory and processes are enforced but from harness configuration, not from the manifest; `cpu_percent` is validated, shown to the user and **not enforced**; disk is absent entirely |
+| **S9** | An integration deliberately exhausting CPU, memory and disk in turn does not render the gateway unresponsive, demonstrated unprivileged, with the boot-time precondition stated | ✅ **Met, against narrowed wording — §7.22.** All four bounds now come from the manifest and each is verified by a sandbox exceeding it: memory OOM-killed, forks refused at the cap, a 25% CPU cap holding at 25.1%, `ENOSPC` at `disk_mb`. **Disk means space, not I/O bandwidth** — the `io` controller is not delegated to a user manager (§7.22.2), so S9's text is narrowed on evidence and the residual is stated |
 | **N1** | Added latency, per-integration memory and maximum concurrent integrations are all reported against an unconfined baseline on the target hardware. **No threshold** — §3.6 fixed this position in advance | Performance |
 | **N2** | This chapter reports "imports clean" and "executed end-to-end" as two separate numbers, never conflated, with the first labelled an upper bound wherever it appears | **This chapter** |
 | **N3** | Behaviour on mediator unavailability is specified in advance and tested; the framework refuses rather than degrades silently, including the wrong-cgroup-position case | Security |
@@ -1439,7 +1439,8 @@ inference stated as a result*. It is still an F4 defect: §1.8's gap is that a u
 what an integration intends to access", F4 closes it by making authority visible, and **a visible
 limit that is not enforced is worse than an invisible one** because it converts an unknown into a
 wrong belief. The first author to write the key that the schema already accepts gets the false
-sentence.
+sentence. **Closed in §7.22**: `cpu_percent` is enforced, so the sentence is now true when it is
+produced, and the latent defect cannot be reached.
 
 **How this chapter reports S9, corrected.** §7.13's memory demonstrations stand: the allocation
 attack and the unbounded read are both OOM-killed by a real `memory.max`, and §6.4.1's
@@ -1452,6 +1453,15 @@ Chapter 8 owes the fix and it is small: read the clause, pass it to `SandboxCgro
 `cpu.max` from `cpu_percent`, and either implement `io.max` for disk or **remove disk from S9's
 text and say why** — a requirement narrowed on evidence is legitimate, a requirement quietly
 unmet is not.
+
+> **Done the same day, and §7.22 reports it — including the half this paragraph got wrong.**
+> The clause now reaches enforcement and each bound is verified by a sandbox exceeding it. But
+> `io.max` was not a choice between two options: the `io` controller is **not delegated to a
+> user manager**, so an unprivileged supervisor cannot implement it at any effort. The
+> alternative this paragraph offered as the weaker one was the only one available, and taking it
+> produced a better result than the fix would have — §6.4.1's *present-but-not-permitted*
+> distinction, found a second time in a place §6.4.1 did not reach. S9's row in §7.5 is ✅
+> against narrowed wording.
 
 ### 7.21.2 Where the methodology half is now out of date, and why it is not edited
 
@@ -1556,6 +1566,113 @@ rather than to a measurement, which is §6.6.6's observation about Chapter 5 hol
 later and about a different author's chapter — the same author's. That asymmetry is now
 consistent across three chapters and belongs in Chapter 8 as a methodological result, not as a
 run of luck.
+
+
+## 7.22 S9, wired to the manifest — the one finding this chapter acted on
+
+**Run 2026-09-02**, `framework/confine/selftest_resources.py`, on the C4 device inside a
+systemd user scope. §7.21.1 found that S9 was reported against a criterion two thirds of which
+nothing enforced, and said the fix was small. It was, and running it produced a measurement that
+changes what S9 can honestly claim — so the fix is reported here rather than deferred to
+Chapter 8's future work.
+
+### 7.22.1 What the clause now reaches
+
+`ResourceLimits` (in `cgroup.py`) is the single type both the manifest and the enforcement path
+speak. `SandboxCgroup.create` takes one and applies every field; **there is no longer a
+signature that accepts a limit and drops it**, which is what the previous `memory_max=` /
+`pids_max=` keywords permitted and what every harness in the repository was doing. `Manifest`
+grew a `resources` property, values are validated at parse time against stated bounds, and the
+two paths that run real integrations — `compat.py` and `endtoend.py` — take their bound from the
+integration's own clause instead of from a literal.
+
+Each bound is verified by a sandbox **trying to exceed it**, per §6.4.2's rule that a check
+exercising a different mechanism from the one the supervisor uses is not a check:
+
+| Bound | How it was checked | Result |
+|---|---|---|
+| `memory_mb` | 512 MB asked against a 64 MB cap | Killed, `oom_kill=1` |
+| `max_processes` | 200 forks attempted against a cap of 16 | **15 succeeded**, then the kernel refused |
+| **`cpu_percent`** | a busy loop capped at 25% of one processor | **25.1% consumed over 2.12 s, 1.55 s throttled** |
+| **`disk_mb`** | 64 MB written into an 8 MB private `/tmp` | **8 MB written, then `ENOSPC`** |
+| An unenforceable declared limit | `create` pointed at a cgroup the kernel refuses | **`PlacementUnavailable`**, naming the clause |
+
+Seven parse-time cases run alongside them, including the one §6.6.5 demands: a **well-formed**
+clause that must be *accepted* and arrive intact, so the suite is not passing by rejecting
+everything. **13 of 13.** All twelve pre-existing suites still pass, including the adversary
+suite at 21 blocked / 6 denied / 10 empty / 1 permitted with neither canary reached.
+
+### 7.22.2 Disk is narrower than §4.10.1 wrote it, and the reason is measured
+
+§4.10.1 wrote S9 as bounding *"CPU, memory and disk"*. Disk turns out to be two resources and
+this framework can bound only one of them.
+
+| | Mechanism | Available unprivileged? |
+|---|---|---|
+| **Disk space** a sandbox consumes in its own scratch | tmpfs `size=` on the private `/tmp` | ✅ **Yes** — and now from `resources.disk_mb` |
+| **Disk I/O bandwidth** | cgroup v2 `io.max` | ❌ **No** |
+
+The `io` controller is **present on the host and not delegated to a user manager**. Writing
+`+io` to the delegated subtree's `cgroup.subtree_control` fails with `ENOENT`, and `io.max`
+never appears in a child cgroup, while `cpu`, `memory` and `pids` all arrive:
+
+```
+host root delegates ['cpu', 'cpuset', 'io', 'memory', 'pids']
+this user's subtree has ['cpu', 'memory', 'pids']
+```
+
+**That is §6.4.1's distinction one layer down.** §6.4.1 found that a controller being present is
+not this supervisor being permitted to use it, and drew the rule about where the supervisor must
+run. Here the same gap appears within a supervisor that *is* correctly placed: `cpu` and `memory`
+are delegated and `io` is not, and no position on the host changes it. The only route to
+bounding I/O bandwidth is privilege or a systemd unit override on the user manager, and §5.7.4
+chose an unprivileged design.
+
+**So S9's disk clause is narrowed on evidence, and the narrowing is stated rather than absorbed.**
+S9 now reads: *the framework bounds CPU, memory, process count and the disk space a sandbox
+writes into its own scratch. Disk I/O bandwidth is not bounded.* §7.21.1 named this as the
+legitimate alternative to implementing `io.max` — *"a requirement narrowed on evidence is
+legitimate, a requirement quietly unmet is not"* — and this is that alternative taken.
+
+**Two things stay uncovered and neither should be read out of the table above.**
+
+- **`/sandbox/data` is not bounded.** The disk cap is the private `/tmp`'s tmpfs. An
+  integration's own writable directory is a bind mount of a host directory, and bounding it
+  needs filesystem quotas, which are a privileged operation. An integration can still fill the
+  user's disk through its own data directory.
+- **I/O bandwidth is a live T16 vector.** A sandbox cannot exhaust *space* outside its scratch
+  but it can saturate the device, and nothing here stops it. R‑numbered residual risk, and
+  Chapter 8 owes it a row.
+
+### 7.22.3 The one place absence is not denial
+
+Every other capability in this design denies by absence — S6, and §6.9.1's whole argument.
+`resources` cannot, and the asymmetry is worth stating because it looks like an inconsistency
+and is the opposite of one.
+
+If an absent `resources` clause meant "no limit", then **the integration that declares nothing
+would run unbounded** — inverting default-deny for the single requirement whose threat, T16, is
+an integration consuming everything. Absence therefore means *the framework's* bound rather than
+*the integration's*: 640 MB, 64 processes, 64 MB of scratch, CPU unset. A declaration can only
+be read as a request to be bound **more** tightly than the default, never less.
+
+That is the general rule the clause obeys, and it explains why `resources` sits in a permissions
+manifest at all despite granting nothing: **it is the one capability whose declaration is a
+constraint on its declarer.** Chapter 8 should say so, because a reader who has absorbed §6.9.1
+will otherwise read `resources` as a hole in default-deny.
+
+### 7.22.4 What this changes in the chapter
+
+- **§7.5's S9 row moves from ⚠ to ✅**, with the narrowed wording of §7.22.2 rather than
+  §4.10.1's. Two rows still fail — **F2 and S4, both egress** — and they are the only two.
+- **§7.21.1's F4 half is closed.** `describe.py` renders a `cpu_percent` clause that is now
+  true, and a `disk_mb` clause that is also true. The latent false sentence §7.21.7 recorded
+  can no longer be produced.
+- **Every memory figure in §6.11–§6.14 was measured against the harness's 640 MB literal, not
+  against a declaration**, and none of the corpus integrations declares a `resources` clause, so
+  no number moves. That is worth checking rather than assuming, and it was: `compat.py` now
+  takes `max(declared, 640)`, so the profile measurements reproduce exactly.
+
 
 ---
 

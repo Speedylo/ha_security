@@ -122,6 +122,12 @@ class SandboxSpec:
     # and the spec it reads. Kept separate from `files_ro`, which is the manifest's `files`
     # clause and appears at host paths.
     runtime_files: dict[str, str] = field(default_factory=dict)
+    # S9's disk bound, in megabytes, applied as the private /tmp's tmpfs `size=`. It is on the
+    # spec rather than on the cgroup because cgroup v2's `io` controller is not delegated to a
+    # user manager on the target (§7.22), so the only disk resource this framework can bound
+    # unprivileged is the space a sandbox writes into its own scratch. The supervisor takes the
+    # number from `resources.disk_mb`; the default is the framework's, not the integration's.
+    tmp_size_mb: int = 64
 
     # Inside the sandbox, an integration's own things are always in the same two places,
     # whatever they were called outside. A fixed layout means the sandbox runner needs no
@@ -229,7 +235,8 @@ def build_root(spec: SandboxSpec, scratch: str = "/tmp/.confine-root") -> None:
     # 7. A private /tmp. Whatever the sandbox writes there is its own and disappears with it.
     tmp = inside("/tmp")
     Path(tmp).mkdir(parents=True, exist_ok=True)
-    mount("tmpfs", tmp, "tmpfs", MS_NOSUID | MS_NODEV, "mode=1777,size=64m")
+    mount("tmpfs", tmp, "tmpfs", MS_NOSUID | MS_NODEV,
+          f"mode=1777,size={spec.tmp_size_mb}m")
 
     # 8a. The framework's own files, at fixed paths. Read-only: the sandbox executes this
     #     code, and code a sandbox can rewrite is not a boundary.

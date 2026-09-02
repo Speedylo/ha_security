@@ -38,7 +38,7 @@ import tempfile
 from pathlib import Path
 
 from .channel import Channel
-from .cgroup import Delegation, SandboxCgroup
+from .cgroup import Delegation, ResourceLimits, SandboxCgroup
 from .manifest import Manifest, policy_for
 from .mediator import Mediator
 from .preflight import require_ready
@@ -493,7 +493,7 @@ def main() -> int:
         err = tempfile.NamedTemporaryFile(prefix="confine-adversary-err-", suffix=".txt",
                                           delete=False)
         with SandboxCgroup.create(delegation, "confine-adversary",
-                                  memory_max=512 * 1024**2, pids_max=64) as cgroup:
+                                  ResourceLimits(memory_mb=512)) as cgroup:
             with open(out.name, "wb") as stdout, open(err.name, "wb") as stderr:
                 sandbox = start(spec, cgroup, stdout=stdout.fileno(),
                                 stderr=stderr.fileno(),

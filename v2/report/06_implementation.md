@@ -1136,7 +1136,10 @@ says and means nothing, which is what a user namespace is for.
 > 512 MB file inside a 64 MB cap is never killed, because clean page cache is reclaimed rather
 > than charged to the point of an OOM. **S9 bounds retention, not reading.** §7.21.1 adds a third
 > and larger caveat: no `resources` clause reaches an enforcement path at all, so the limit that
-> fired here is the harness's, not the integration's declaration.
+> fired here is the harness's, not the integration's declaration. **§7.22 closes that third
+> caveat** — the clause now reaches enforcement and all four bounds are verified by a sandbox
+> exceeding them — but it does not restore this section's claim, because §7.20.2's finding
+> stands: what fired here bounded *retention*, not reading.
 
 Both bulk-search attacks were killed by signal 9, with the cgroup's `oom_kill` counter at 1 and
 peak memory at exactly `memory.max`. **S9 stopped a disclosure attempt.** S9 exists for T16,
