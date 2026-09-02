@@ -1077,6 +1077,14 @@ the architecture was chosen for.
 *Strength of claim: measured.* On the C4 device, 37 attempts: **21 blocked, 9 empty, 6 denied by
 the mediator, 1 permitted — the one its manifest declared.** Neither canary appeared.
 
+> **Corrected in §7.13.4, and this paragraph is left as written.** The split is **20 blocked,
+> 10 empty** over these same 37 attempts. One attack — the filesystem sweep — was recorded here
+> as blocked by the resource limit when it had in fact been killed for reading `/dev/zero`, which
+> the sweep treated as a small file because a character device reports size zero. Restricted to
+> regular files it completes and finds nothing, which is the **stronger** of the two outcomes by
+> §6.9.1's own scale. The verdict was right and the reason was wrong, which is §6.6.5 a fourth
+> time and the first occurrence in a reported result rather than in test code.
+
 | Family | Attempts | Result |
 |---|---|---|
 | **The 2021 traversal pattern** | 12 paths — `../../secrets.yaml`, `/config/secrets.yaml`, absolute paths to the real configuration root, `/sandbox/../secrets.yaml` | All `FileNotFoundError`. **Not "permission denied" — "no such file".** |
