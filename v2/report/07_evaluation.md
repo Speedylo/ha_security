@@ -1405,11 +1405,11 @@ memory and disk in turn does not render the gateway unresponsive."*
 
 What the artifact does:
 
-| Resource | In the manifest schema | Shown to the user by `describe.py` | **Enforced** |
+| Resource | In the manifest schema | Rendered by `describe.py` when declared | **Enforced** |
 |---|---|---|---|
 | Memory | `resources.memory_mb` | *"192 MB of memory"* | ✅ `memory.max`, but **not from the manifest** |
 | Processes | `resources.max_processes` | *"8 processes"* | ✅ `pids.max`, **not from the manifest** |
-| **CPU** | `resources.cpu_percent` | *"50% of one processor"* | ❌ **nothing** |
+| **CPU** | `resources.cpu_percent` | *"N% of one processor"* | ❌ **nothing** |
 | **Disk** | absent from the schema | — | ❌ **nothing** |
 
 Three separate defects, and they compound:
@@ -1427,12 +1427,19 @@ capability is rejected rather than ignored, because ignoring it under-enforces s
 **recognised** capability that is ignored is worse than an unrecognised one that is rejected, and
 the schema currently accepts one.
 
-**3. It reaches the user, which makes it an F4 problem and not only an S9 one.**
-`describe.py` renders *"It is limited to 192 MB of memory, 8 processes, 50% of one processor."*
-The last clause is false. §1.8's gap is that a user "cannot see what an integration intends to
-access"; F4 closes it by making authority visible. **A visible limit that is not enforced is
-worse than an invisible one**, because it converts an unknown into a wrong belief, and §1.6's
-argument about invisible exposure applies with more force to a stated exposure that is untrue.
+**3. It would reach the user, which makes it an F4 problem and not only an S9 one — and the
+tense matters.** `describe.py:126–133` builds the limits sentence from whichever of the three
+keys the manifest carries, so a manifest declaring `cpu_percent` renders *"… and N% of one
+processor"* and that clause is false. **No manifest in this repository declares it**, so the
+sentence has never actually been produced: §6.7.1's transcript reads *"It is limited to 192 MB of
+memory, 8 processes."* because its example manifest omits the key, and `selftest_describe.py`
+asserts only on the memory phrase. The defect is therefore latent rather than observed, and
+saying so is the difference between this finding and the register error §6.6.6 names — *an
+inference stated as a result*. It is still an F4 defect: §1.8's gap is that a user "cannot see
+what an integration intends to access", F4 closes it by making authority visible, and **a visible
+limit that is not enforced is worse than an invisible one** because it converts an unknown into a
+wrong belief. The first author to write the key that the schema already accepts gets the false
+sentence.
 
 **How this chapter reports S9, corrected.** §7.13's memory demonstrations stand: the allocation
 attack and the unbounded read are both OOM-killed by a real `memory.max`, and §6.4.1's
@@ -1510,6 +1517,45 @@ keeps its original text, per the convention §6.4.1 established for Chapter 5:
 | §6.8.3's open question | §7.20.1 | **Answered.** 3.6 ms, 59×, and affordable at 63× headroom |
 | §6.5.3's two-client figure | §7.19 | Extended to 26; the shape is saturation, not tail queueing |
 | §6.13.2's undeclared packages | §7.17.4 | Extended to undeclared **components** (`powercalc`, `network`) |
+
+Two further pointers were placed in the second pass below: §6.5.3 now carries §7.19's refinement
+in the text rather than only in this table, and §6.12.3's un-measured PSS estimate now carries
+§7.20.3's failure to resolve it.
+
+### 7.21.7 A second pass, reading Chapter 6 end to end rather than by grep
+
+§7.21.1–§7.21.6 were produced by reading Chapter 7 in full and checking Chapter 6 against it with
+targeted searches. That is enough to find a disagreement between two chapters and not enough to
+find a chapter disagreeing with itself, so Chapter 6 was then read straight through. Three things
+came out of it, and the first is this section's own.
+
+**1. §7.21.1 quoted a string the artifact has never produced.** It reported `describe.py` as
+rendering *"192 MB of memory, 8 processes, 50% of one processor"*. The code will render that
+clause — but only for a manifest declaring `cpu_percent`, and **no manifest in this repository
+declares one**. §6.7.1's transcript is the two-limit form and is faithful. The S9 and F4 findings
+stand unchanged; what was wrong was their register, presenting a latent defect as an observed
+line. That is precisely the fault §6.6.6 names — *an inference stated as a result* — committed in
+the section written to catch it, which is worth recording rather than quietly repairing. §7.21.1
+now states the defect as a property of the code and says the sentence has never been produced.
+
+**2. §6.11.2 said "Four remain" over a table of six rows.** Not a superseded claim — a miscount
+contradicted by the table beneath it at the moment of writing. Corrected in place, because the
+leave-it-and-point convention exists to protect reasoning that later evidence overturned, and
+there is no reasoning here to protect.
+
+**3. §6.13.1 carried a sentence damaged by a later edit**, reading *"…twelve of the 37 declare no
+components at all, and the median declaration is two and are charged nothing."* The commit that
+corrected sixteen to twelve left the clause it displaced in place. Corrected in place, for the
+same reason.
+
+**What the pass did not find is the more useful half.** No figure in Chapter 6 disagrees with any
+figure in Chapter 7 — 46/57/70/84%, the 9.0/32.2/19.1 MB premiums, 31 of 37, the 0.7 MB noise
+floor and §6.3.2's 136.6-against-136.5 MB replication all hold as printed. Every correction this
+chapter has made to Chapter 6, in both passes, has been to a *sentence next to a measurement*
+rather than to a measurement, which is §6.6.6's observation about Chapter 5 holding a chapter
+later and about a different author's chapter — the same author's. That asymmetry is now
+consistent across three chapters and belongs in Chapter 8 as a methodological result, not as a
+run of luck.
 
 ---
 

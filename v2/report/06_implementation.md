@@ -702,6 +702,14 @@ evidence about twenty-six, and the shape of the curve between them is exactly wh
 single-threaded mediator's design deserves to be judged on. Chapter 7 measures latency at
 realistic sandbox counts.
 
+> **Measured in §7.19, and the reading above is refined rather than overturned.** At 1–26
+> sandboxes the median and p99 degrade by *almost the same factor*: the mediator saturates at
+> about four clients and every further client lengthens a queue that the selector loop serves
+> fairly, so latency rises close to linearly and the distribution stays narrow. Queueing is
+> confirmed as the cost; "lands almost entirely in the tail" is a property of two clients and not
+> of the curve. §7.19.2 also settles what it means for N1 — at a realistic duty cycle the
+> mediator runs at 0.009% utilisation, so the saturated figures are the wrong ones to judge N1 by.
+
 **How much concurrency could help is bounded, and the bound is in Chapter 5.** §5.12.4 makes
 the audit log a hash chain, in which "modifying, deleting **or reordering** any record breaks
 every link after it" — and a chain requires a total order. Step 4 of §5.11.3's five must
@@ -1325,7 +1333,7 @@ separately for exactly this reason, and this chapter has the first.
 
 ### 6.11.2 What is still missing
 
-The bridge of §6.10 removed the largest gap. Four remain, in descending order of what they block:
+The bridge of §6.10 removed the largest gap. Six remain, in descending order of what they block:
 
 | Missing | What it blocks |
 |---|---|
@@ -1548,6 +1556,12 @@ there, a peak-based reading would have overstated a *saving*; here it understate
 > +75.9 MB delta puts a realistic integration in an un-stripped sandbox at roughly **166 MB PSS,
 > about 14 sandboxes** — an estimate from a measured delta rather than a measurement, and
 > Chapter 7 should take it directly.
+>
+> **Chapter 7 attempted it and it did not resolve (§7.20.3).** Three declaration depths at three
+> sandboxes each produced a non-monotonic series — 136.3, 95.7, 115.8 MB — in which more
+> components appear to cost less. At that sample size PSS is dominated by how much of the
+> interpreter happens to be shared at the moment of measurement, so no curve is drawn and none
+> should be read. §6.3.2's budget of 26 stands as measured there; this estimate stays an estimate.
 
 Against §5.8.1's mean of **4.02** community integrations per HACS-using installation, fourteen is
 still three and a half times what a typical installation needs. The 449 MB of packages these
@@ -1618,8 +1632,8 @@ same machine, one sandbox each.
 The budget half of §6.12.4's prediction held, and comfortably. The declared profile costs **+9.0
 MB** over the minimal instance where the blanket profile costs **+32.2 MB** — about 28% of the
 premium, and each integration pays only for what it asked for. `nordpool` sets up `http` and
-nothing else; `adaptive_lighting` sets up `light`; twelve of the 37 declare no components at all, and the median declaration is two
-and are charged nothing.
+nothing else; `adaptive_lighting` sets up `light`; the median declaration is two components, and
+the twelve of the 37 that declare none at all are charged nothing.
 
 The compatibility half did not hold. 57%, not 70–76%.
 
