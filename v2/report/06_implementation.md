@@ -1638,6 +1638,12 @@ premium, and each integration pays only for what it asked for. `nordpool` sets u
 nothing else; `adaptive_lighting` sets up `light`; the median declaration is two components, and
 the twelve of the 37 that declare none at all are charged nothing.
 
+> **Precision added by §7.26.6, finding 5 (2026-09-03); the text above is not edited and both
+> figures stand.** *Two* and *twelve* count components **set up** — the declared set plus its
+> transitive closure — which is the right quantity for a sentence about cost. The strictly
+> *declared* figures are a median of **1** and **18 of 37** declaring none. §7.23.1 reports the
+> declared pair and this sentence reports the set-up pair; the two are not in conflict.
+
 The compatibility half did not hold. 57%, not 70–76%.
 
 **And it is 57% over exactly the same twenty-one integrations as the earlier arm that ran with

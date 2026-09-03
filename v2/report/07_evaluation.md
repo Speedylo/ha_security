@@ -586,8 +586,9 @@ loads on this release at all, **confinement costs nothing**.
 ### 7.12.5 An unpredicted finding, and Chapter 8 should have it
 
 The baseline instance loads a **median of 52 components**. The confined sandbox sets up a
-**median of 2** — twelve of the 37 declare none at all (§6.13). The two reach identical
-import-level compatibility.
+**median of 2**, and for **twelve of the 37 it sets up none at all** (§6.13; the *declared* figure
+is 18 of 37 with a median of 1 — §7.26.6, finding 5). The two reach identical import-level
+compatibility.
 
 Whatever the other fifty components do for a stock installation, the most-installed community
 integrations do not need them in order to load. This is a measured statement about how much of
@@ -1408,7 +1409,8 @@ original concern.
 
 §7.10's item 4 asked for the per-sandbox footprint as a function of what an integration declares,
 so that §6.3.2's budget of 26 could be expressed over the corpus's real declaration distribution
-(§6.13: twelve declare nothing, the median is two). Three points, three sandboxes each:
+(§6.13: twelve have no components set up at all, and the median set up is two — §7.26.6, finding
+5). Three points, three sandboxes each:
 
 | Declared components | PSS per sandbox | Capacity |
 |---|---|---|
@@ -2435,6 +2437,30 @@ each was true on the date it carries and the dates are the evidence; and §7.26.
 total, since a chapter that reports individual suite counts in four places and never the sum is
 inviting the reader to add them up wrongly.
 
+**5. Two sections say "declare" of a figure that counts what was *set up*, and it reads as a
+conflict between measurements when it is not.** §7.23.1's table reports **18 of 37** head
+integrations declaring no components, against §7.12.5's and §7.20.3's **twelve of the 37 declare
+none at all**. Recomputed from `compat_declared_core.json` and `uniform_confined.json`, both are
+right and they count different fields:
+
+| | Head, 37 | Uniform, 40 |
+|---|---|---|
+| **Declares** no components (`dependencies` in the manifest) | **18** — median 1 | **26** — median 0 |
+| Has none **set up** (the declared set plus its transitive closure) | **12** — median 2 | 23 — median 0 |
+
+§7.23.1's row is the declared figure and is precisely labelled. §7.12.5, §7.20.3 and §6.13's
+*"the median declaration is two components, and the twelve of the 37 that declare none at all are
+charged nothing"* use the set-up figure under the word *declare*. **The numbers are load-bearing
+and correct** — §6.13's argument is about cost, and cost follows what is set up rather than what is
+named — so the two Chapter 7 sentences are corrected in place and §6.13 gains a pointer, keeping
+its text.
+
+This one is worth the space it takes because of what it is **not**. Read quickly it looks like the
+first case in this report of two measurements disagreeing; it is instead the fifth case of a
+sentence being imprecise about a measurement that is fine, which is the pattern §7.21.7 identified
+and §7.26.8 restates. It was found by recomputing both figures from the recorded results rather
+than by reading either sentence again.
+
 ### 7.26.7 The suite, as it stands at the end of the chapter
 
 | | On 2026-09-02 (§7.16.2) | On 2026-09-03 |
@@ -2453,9 +2479,11 @@ it stopped being current the moment §7.22 ran.
 84% and the zero cost in §7.12 against §7.23's 92% and zero; 31.5 µs in §7.19 against §7.20.1's
 correction to 272 decisions per second, which §7.19.3 carries in place; 36-to-1 entities in §7.14;
 2-of-2 canaries in §7.13; 96% of resolutions via `aiodns` in §7.24. The four corrections in §7.26.6
-are **one misquotation of a register, one uncheckable sum, one convention lapse and three stale
-counts** — and, as in §7.21.7, every one of them is a sentence next to a measurement rather than a
-measurement.
+are **one misquotation of a register, one uncheckable sum, one convention lapse, three stale counts
+and one field named wrongly** — and, as in §7.21.7, every one of them is a sentence next to a
+measurement rather than a measurement. Finding 5 is the sharpest instance: two figures that look
+like a contradiction are both correct, and recomputing them from the recorded results is what
+established that rather than re-reading the prose.
 
 That asymmetry now holds across four chapters and two read-throughs, and §7.21.7 was right to say
 it belongs in Chapter 8 as a methodological result rather than as a run of luck. It has a plain
