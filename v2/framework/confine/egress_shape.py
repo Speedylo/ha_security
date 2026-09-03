@@ -91,6 +91,16 @@ CREDENTIALS: dict[str, object] = {
     "device_ip": "127.0.0.1",
 }
 
+# **Per-integration answers, and the reason they are not in `CREDENTIALS`.** The second run put
+# `region: "SE1"` in the global set to get `nordpool` past its form. It worked — and it took
+# `localtuya` from ten connections to zero, because Tuya's regions are `eu`/`us`/`cn` and a
+# global answer to a field name that means different things in different integrations is not an
+# answer, it is a collision. One integration's input must not be able to move another's result,
+# which is the same isolation property the artifact itself is about.
+OVERRIDES: dict[str, dict] = {
+    "nordpool": {"region": "SE1", "currency": "EUR"},
+}
+
 # The sample, and why each is in it. Selected from the 37-integration head corpus of §7.12 to
 # span the *mechanisms* a proxy would have to serve rather than to be representative by count —
 # §7.4.1's rule that a named set with its selection stated beats a rate that will not scale.
@@ -148,7 +158,7 @@ def run_one(domain: str, component: Path, python: Path, uv: str | None,
             "settle_seconds": settle,
             "full_events": full_events,
             "menu_choice": {},
-            "flow_input": CREDENTIALS}))
+            "flow_input": {**CREDENTIALS, **OVERRIDES.get(domain, {})}}))
 
         path = [str(deps)] + ([str(platform_deps)] if platform_deps else [])
         env = {**os.environ, "PYTHONPATH": ":".join(path)}
@@ -194,32 +204,51 @@ def run_one(domain: str, component: Path, python: Path, uv: str | None,
 def _summarise_strace(path: Path) -> dict:
     """Connect and sendto destinations as the kernel saw them.
 
-    Deliberately coarse. The point is not to reproduce `netshape` from syscalls but to answer
-    one question: did anything reach the network that the in-process recorder did not see?
+    **Counted per call and per address family, not per line.** The first version of this
+    summary counted every `AF_*` mention anywhere in the trace and reported 774-945 kernel
+    "connect+sendto" against the recorder's 45-67, which reads as a 94% blind spot and is not
+    one: most of that traffic is `AF_NETLINK` route and interface queries and `AF_UNIX` traffic
+    to dbus and the log socket, neither of which is egress. Comparing a total that includes them
+    against a recorder that only ever claimed to watch egress compares unlike things — the same
+    error in kind that §7.18.2 had to correct, arrived at from the other direction.
+
+    Only `AF_INET` and `AF_INET6` connects and sendtos are egress, and only those are what the
+    in-process recorder is answerable for.
     """
     if not path.exists():
         return {"available": False}
-    families: dict[str, int] = {}
+    inet: dict[str, int] = {}
+    other: dict[str, int] = {}
     ports: dict[str, int] = {}
-    calls: dict[str, int] = {}
     try:
         with open(path, errors="replace") as handle:
             for line in handle:
-                name = line.split("(", 1)[0].split()[-1] if "(" in line else ""
-                if name in ("connect", "sendto", "bind", "socket", "recvfrom"):
-                    calls[name] = calls.get(name, 0) + 1
-                if "sin_port=htons(" in line:
-                    port = line.split("sin_port=htons(", 1)[1].split(")", 1)[0]
-                    ports[port] = ports.get(port, 0) + 1
-                for family in ("AF_INET6", "AF_INET", "AF_UNIX", "AF_NETLINK", "AF_PACKET"):
-                    if family in line:
-                        families[family] = families.get(family, 0) + 1
-                        break
+                if "(" not in line:
+                    continue
+                name = line.split("(", 1)[0].split()[-1]
+                if name not in ("connect", "sendto", "bind", "recvfrom"):
+                    continue
+                if "sa_family=AF_INET" in line:      # matches AF_INET and AF_INET6
+                    inet[name] = inet.get(name, 0) + 1
+                    if "sin_port=htons(" in line:
+                        port = line.split("sin_port=htons(", 1)[1].split(")", 1)[0]
+                        ports[port] = ports.get(port, 0) + 1
+                    elif "sin6_port=htons(" in line:
+                        port = line.split("sin6_port=htons(", 1)[1].split(")", 1)[0]
+                        ports[port] = ports.get(port, 0) + 1
+                else:
+                    family = "other"
+                    for candidate in ("AF_NETLINK", "AF_UNIX", "AF_PACKET"):
+                        if candidate in line:
+                            family = candidate
+                            break
+                    other[f"{name}/{family}"] = other.get(f"{name}/{family}", 0) + 1
     except OSError:
         return {"available": False}
-    return {"available": True, "calls": calls,
-            "families": dict(sorted(families.items(), key=lambda kv: -kv[1])),
-            "ports": dict(sorted(ports.items(), key=lambda kv: -int(kv[1]))[:20])}
+    return {"available": True,
+            "inet": dict(sorted(inet.items(), key=lambda kv: -kv[1])),
+            "non_inet": dict(sorted(other.items(), key=lambda kv: -kv[1])),
+            "inet_ports": dict(sorted(ports.items(), key=lambda kv: -kv[1])[:20])}
 
 
 def main() -> int:

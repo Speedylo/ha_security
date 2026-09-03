@@ -32,6 +32,29 @@ from netshape import Recorder
 from sandbox_runtime import build_hass, drive_flow
 
 
+class FlowInput(dict):
+    """The credential answers, with address-shaped field names matched by suffix.
+
+    `fill_schema` decides whether it has an answer with `name in overrides` and then reads
+    `overrides[name]`. Supplying a mapping that answers those two questions more generously
+    adds suffix matching — `inverter_host`, `bridge_address`, `device_ip` — **without editing
+    `fill_schema`**, which §7.17's confined and unconfined arms both call. A shared function
+    changed for this experiment would silently move an already-published comparison.
+    """
+
+    suffixes = ("_host", "_ip", "_address", "_ip_address", "_hostname")
+
+    def __contains__(self, name: object) -> bool:
+        if super().__contains__(name):
+            return True
+        return isinstance(name, str) and name.endswith(self.suffixes)
+
+    def __missing__(self, name: str) -> object:
+        if isinstance(name, str) and name.endswith(self.suffixes):
+            return "127.0.0.1"
+        raise KeyError(name)
+
+
 async def run(spec: dict) -> dict:
     from homeassistant.config_entries import ConfigEntryState
     from homeassistant.setup import async_setup_component
@@ -69,7 +92,7 @@ async def run(spec: dict) -> dict:
         # From here on, anything recorded is the integration's — its flow handler, its vendor
         # library, or a coordinator it started.
         netshape.CURRENT_PHASE[0] = "integration"
-        result["flow"] = await drive_flow(hass, domain, spec.get("flow_input") or {},
+        result["flow"] = await drive_flow(hass, domain, FlowInput(spec.get("flow_input") or {}),
                                           spec.get("menu_choice") or {}, setup_log_into=result)
         await hass.async_block_till_done()
         try:
