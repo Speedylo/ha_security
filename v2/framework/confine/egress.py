@@ -100,12 +100,22 @@ class EgressBroker:
     #: until the stack ran out. Defaults to the real one when not supplied.
     resolver: Callable[..., list] | None = None
 
-    def open(self, identity: str, request: dict, decision: Decision) -> tuple[int, dict]:
+    def open(self, identity: str, request: dict, decision: Decision,
+             allow_private: bool = False) -> tuple[int, dict]:
         """Steps 2-5. Returns the connected descriptor and what to record about it.
 
         `decision` is step 1's answer and is not re-derived here — a component that both
         decides and acts can disagree with itself, and §5.11.3 puts the decision first for
         exactly that reason.
+
+        **`allow_private` is a parameter the caller decides, never a field the request can
+        set.** `network.egress` is the internet-host clause; §5.10.3's non-public destinations
+        go through `network.local` instead, which is a different clause with a different
+        target shape. The first version of this method read `request.get("allow_private")` —
+        a field the **sandbox** controls — which meant a hostile integration could grant
+        itself T10's reach by writing one key into its own request. Caught before it shipped:
+        `acting_policy` (`platform.py`) calls this with the default for `network.egress` and
+        never forwards anything the request said about privacy.
         """
         if not decision.allowed:
             raise EgressRefused(decision.reason, decision.clause)
@@ -124,7 +134,6 @@ class EgressBroker:
             raise EgressRefused(f"{host} does not resolve: {err.strerror or err}",
                                 decision.clause) from err
 
-        allow_private = bool(request.get("allow_private"))
         errors: list[str] = []
 
         for family, socktype, proto, _canonical, sockaddr in candidates:

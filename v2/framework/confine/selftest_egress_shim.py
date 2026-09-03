@@ -105,14 +105,16 @@ def wire(root: Path, domain: str, declared: list[str]) -> tuple[EgressShim, Egre
     decisions: list = []
 
     def connect_via(host: str, port: int) -> int:
-        request = {"op": "network.egress", "host": host, "port": port,
-                   # The destination in these cases is loopback, so T10 would refuse it. T10
-                   # itself is tested in `selftest_egress` case 4, against a resolved address.
-                   "allow_private": True}
+        request = {"op": "network.egress", "host": host, "port": port}
         decision = policy(domain, request)
         decisions.append(decision)
         try:
-            fd, _record = broker.open(domain, request, decision)
+            # `allow_private=True` here is a **harness** decision — this suite's declared
+            # destinations are loopback listeners for determinism, and T10 itself is exercised
+            # against a resolved address in `selftest_egress` case 4, not here. The request
+            # dict carries no such field, because a sandbox setting it on its own request was
+            # exactly the bug `egress.py` documents fixing.
+            fd, _record = broker.open(domain, request, decision, allow_private=True)
         except EgressRefused as err:
             raise EgressDenied(err.reason, err.clause) from err
         return fd

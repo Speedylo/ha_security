@@ -114,13 +114,15 @@ def case_declared_and_undeclared(root: Path) -> None:
 
     with _Resolver({"api.weather.invalid": "127.0.0.1",
                     "tracker.invalid": "127.0.0.1"}):
-        request = {"op": "network.egress", "host": "api.weather.invalid", "port": port,
-                   "allow_private": True}          # the destination is loopback; case 4 is T10
+        # allow_private is a **test-harness** decision here, passed as a parameter to
+        # `broker.open` — never through the request, which is exactly the field a hostile
+        # sandbox could otherwise have set on itself (the bug `egress.py` records fixing).
+        request = {"op": "network.egress", "host": "api.weather.invalid", "port": port}
         decision = policy("demo_weather", request)
         check(decision.allowed, "1. the declared host:port is permitted",
               f"clause {decision.clause}")
 
-        fd, record = broker.open("demo_weather", request, decision)
+        fd, record = broker.open("demo_weather", request, decision, allow_private=True)
         received = socket.socket(fileno=fd)
         greeting = received.recv(32)
         received.close()
@@ -128,8 +130,7 @@ def case_declared_and_undeclared(root: Path) -> None:
               "1b. and the descriptor handed back is a live connection to it",
               greeting.decode(errors="replace"))
 
-        undeclared = {"op": "network.egress", "host": "tracker.invalid", "port": port,
-                      "allow_private": True}
+        undeclared = {"op": "network.egress", "host": "tracker.invalid", "port": port}
         refusal = policy("demo_weather", undeclared)
         check(not refusal.allowed, "2. an undeclared host is denied")
         check(refusal.clause == "/permissions/network/egress",
@@ -138,7 +139,7 @@ def case_declared_and_undeclared(root: Path) -> None:
 
         raised = None
         try:
-            broker.open("demo_weather", undeclared, refusal)
+            broker.open("demo_weather", undeclared, refusal, allow_private=True)
         except EgressRefused as err:
             raised = err
         check(raised is not None,
@@ -160,22 +161,20 @@ def case_s4_two_integrations(root: Path) -> None:
     broker = EgressBroker()
 
     with _Resolver({"a.invalid": "127.0.0.1", "b.invalid": "127.0.0.1"}):
-        own = policy("demo_a", {"op": "network.egress", "host": "a.invalid",
-                                "port": port_a, "allow_private": True})
+        own = policy("demo_a", {"op": "network.egress", "host": "a.invalid", "port": port_a})
         check(own.allowed, "3. demo_a reaches the host demo_a declared")
 
         # The point of S4. `demo_b` declared this host; `demo_a` did not. A design that
         # consolidates declarations into one profile permits it, because the union contains it.
         borrowed = policy("demo_a", {"op": "network.egress", "host": "b.invalid",
-                                     "port": port_b, "allow_private": True})
+                                     "port": port_b})
         check(not borrowed.allowed,
               "3b. **S4** — demo_a is denied a host declared only by demo_b",
               borrowed.reason)
 
         # The same host, the same port, the same request — and a different answer, because the
         # identity is different. That is what makes 3b attribution rather than a block list.
-        mine_request = {"op": "network.egress", "host": "b.invalid",
-                        "port": port_b, "allow_private": True}
+        mine_request = {"op": "network.egress", "host": "b.invalid", "port": port_b}
         mine = policy("demo_b", mine_request)
         check(mine.allowed and not borrowed.allowed,
               "3c. and demo_b reaches that same host, so 3b is attribution not a block",
@@ -185,13 +184,12 @@ def case_s4_two_integrations(root: Path) -> None:
         # be the other integration changes nothing (§5.11.2). Worth asserting here rather than
         # only in selftest_channel, because egress is the capability worth lying for.
         lying = policy("demo_a", {"op": "network.egress", "host": "b.invalid",
-                                  "port": port_b, "integration": "demo_b",
-                                  "allow_private": True})
+                                  "port": port_b, "integration": "demo_b"})
         check(not lying.allowed,
               "3d. and claiming to be demo_b in the request body does not help",
               lying.reason)
 
-        fd, _ = broker.open("demo_b", mine_request, mine)
+        fd, _ = broker.open("demo_b", mine_request, mine, allow_private=True)
         received = socket.socket(fileno=fd)
         check(received.recv(16) == b"host-b",
               "3e. both integrations run against their own destinations concurrently")
@@ -239,6 +237,41 @@ def case_t10_t11(root: Path) -> None:
     server.close()
 
 
+# -- 4e: the bug this design caught in itself ---------------------------------------------
+
+def case_allow_private_is_not_request_controlled(root: Path) -> None:
+    """A hostile integration cannot grant itself T10's reach by writing one key into its own
+    request. `egress.py`'s docstring records that the first version of `EgressBroker.open`
+    trusted `request.get("allow_private")` — a field the sandbox controls — which would have
+    let any integration bypass the non-public check simply by asking to. This is the check
+    that the fix holds under exactly that attempt."""
+    server, port = listener(b"should-not-be-reachable")
+    manifest = component(root, "demo_hostile",
+                         {"network": {"egress": [f"innocent.invalid:{port}"]}})
+    policy = policy_for({"demo_hostile": manifest})
+    broker = EgressBroker()
+
+    with _Resolver({"innocent.invalid": "127.0.0.1"}):
+        # The attempt: set allow_private in the request body itself, as a hostile integration
+        # would if this were exposed to it. `broker.open` is called with no `allow_private`
+        # keyword, exactly as `acting_policy` calls it in production.
+        lying_request = {"op": "network.egress", "host": "innocent.invalid", "port": port,
+                         "allow_private": True}
+        decision = policy("demo_hostile", lying_request)
+        check(decision.allowed, "4e. the manifest still permits the declared name")
+
+        raised = None
+        try:
+            broker.open("demo_hostile", lying_request, decision)   # no allow_private kwarg
+        except EgressRefused as err:
+            raised = err
+        check(raised is not None and "not a public address" in raised.reason,
+              "4e. **fixed** — a request-supplied allow_private is ignored; T10 still refuses",
+              raised.reason if raised else "it connected to loopback — the bug is back")
+
+    server.close()
+
+
 # -- 5: the schema change itself ---------------------------------------------------------
 
 def case_schema(root: Path) -> None:
@@ -278,6 +311,7 @@ def main() -> int:
         case_declared_and_undeclared(root)
         case_s4_two_integrations(root)
         case_t10_t11(root)
+        case_allow_private_is_not_request_controlled(root)
         case_schema(root)
     passed = sum(1 for ok, _ in _results if ok)
     print("=" * 78)

@@ -33,6 +33,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from .manifest import Manifest
+from .egress import EgressRefused as _EgressRefused
 from .mediator import Decision
 
 
@@ -50,7 +51,8 @@ class Platform:
         self.owners.setdefault(entity_id, "the platform")
 
 
-def acting_policy(manifests: dict[str, Manifest], platform: Platform):
+def acting_policy(manifests: dict[str, Manifest], platform: Platform,
+                  broker: object | None = None, relay: object | None = None):
     """Steps 2, 3 and 5. The mediator keeps 1 and 4, which is where identity and the record are.
 
     Ambient operations are handled before the manifest is consulted, because they are not
@@ -99,6 +101,39 @@ def acting_policy(manifests: dict[str, Manifest], platform: Platform):
             platform.calls.append((service_domain, service_name,
                                    dict(request.get("data") or {})))
             return Decision(True, decision.reason, decision.clause)
+
+        # §7.24's egress path. The one capability whose step 5 produces a **kernel object**
+        # rather than a value: the mediator resolves, re-checks the resolved address and
+        # connects, and the connected descriptor rides back as ancillary data on the response
+        # frame. `broker` and `relay` are optional so that every arm which does not grant
+        # network keeps a policy with no network code in it at all — S6 by construction rather
+        # than by a branch that has to remember to deny.
+        if operation == "network.egress":
+            if broker is None:
+                return Decision(False, "this framework was started without an egress broker",
+                                clause=decision.clause)
+            try:
+                fd, record = broker.open(identity, request, decision)
+            except _EgressRefused as err:
+                return Decision(False, err.reason, err.clause)
+            return Decision(True, decision.reason, decision.clause,
+                            data={"host": record["host"], "port": record["port"]}, fd=fd)
+
+        if operation in ("network.udp.send", "network.udp.recv",
+                         "discover.scan", "discover.listen"):
+            if relay is None:
+                return Decision(False, "this framework was started without a datagram relay",
+                                clause=decision.clause)
+            action = {"network.udp.send": relay.send, "network.udp.recv": relay.recv,
+                      "discover.scan": relay.scan, "discover.listen": relay.listen}[operation]
+            try:
+                answer = action(identity, request, decision)
+            except _EgressRefused as err:
+                return Decision(False, err.reason, err.clause)
+            return Decision(True, decision.reason, decision.clause,
+                            data={k: v for k, v in answer.items()
+                                  if k not in ("ok", "clause")})
+
         return decision
 
     return policy

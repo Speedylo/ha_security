@@ -37,7 +37,7 @@ from __future__ import annotations
 import socket
 from dataclasses import dataclass, field
 
-from .egress import EgressRefused, is_public
+from .egress import EgressRefused
 from .mediator import Decision
 
 # **The real socket methods, captured at import.** The mediator is the trusted side of this
@@ -100,9 +100,13 @@ class UdpRelay:
             raise EgressRefused("a datagram must name an address and a port", decision.clause)
         payload = _decode(data, decision.clause)
 
-        if not request.get("allow_private") and not is_public(address):
-            raise EgressRefused(f"{address} is not a public address", decision.clause)
-
+        # **No `is_public` check here, and that is deliberate rather than an omission.**
+        # `network.egress` is the internet-host clause and T10 restricts it to public
+        # addresses. `network.local.udp` is a different clause with a different meaning: it
+        # exists *specifically* to reach a device on the home network, so a private address is
+        # what this operation is for, not an exception to it. Gating is done once, upstream,
+        # by whether the `local` clause matches at all (`manifest.py`'s `decide`) — there is no
+        # second, request-controlled gate to bypass here the way the egress path had.
         sock = self._peer(identity, address, port)
         _SEND(sock, payload)
         self.activity.append({"identity": identity, "op": "udp.send", "address": address,

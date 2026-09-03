@@ -100,7 +100,11 @@ def wire(root: Path, domain: str, permissions: dict) -> tuple[EgressShim, UdpRel
     decisions: list = []
 
     def decide(op: str, **fields):
-        request = {"op": op, "allow_private": True, **fields}
+        # No `allow_private` field: `udp_relay.py` does not read one. Reaching a local device
+        # is what `network.local`/`network.discover` clauses are *for*, gated by whether the
+        # clause matches at all rather than by a second, request-controlled flag — the flag
+        # `network.egress`'s harness had to stop trusting for exactly this reason.
+        request = {"op": op, **fields}
         decision = policy(domain, request)
         decisions.append((op, decision))
         return request, decision
@@ -221,7 +225,7 @@ def case_bounds(root: Path) -> None:
                                    {"network": {"local": {"udp": [port]}}})
     try:
         request = {"op": "network.udp.send", "address": "127.0.0.1", "port": port,
-                   "allow_private": True, "data": "ab" * (MAX_DATAGRAM + 10)}
+                   "data": "ab" * (MAX_DATAGRAM + 10)}
         from .manifest import Manifest as _M  # noqa: F401 — keeps the import local to the case
         policy = policy_for({"demo_bounds": Manifest.load(
             root / "custom_components" / "demo_bounds", root)})

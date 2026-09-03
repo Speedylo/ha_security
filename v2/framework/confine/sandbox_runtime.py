@@ -34,6 +34,7 @@ A bridge that trusted its copy of the manifest would be an in-process enforcemen
 from __future__ import annotations
 
 import asyncio
+import array
 import json
 import logging
 import os
@@ -57,11 +58,35 @@ class Channel:
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM, fileno=fd)
 
     def request(self, message: dict) -> dict:
+        """One request, one reply. Any descriptor the reply carried is on `self.last_fd`.
+
+        The header is read with `recvmsg` rather than `recv` because on a stream socket
+        ancillary data arrives with the first byte of the frame, which is in the header. A
+        plain `recv` here would make the kernel discard an arriving descriptor while the frame
+        itself came through intact — a failure that would present as "the connection did not
+        work" three layers away from its cause.
+        """
+        self.last_fd: int | None = None
         payload = json.dumps(message).encode()
         self.sock.sendall(struct.pack(">I", len(payload)) + payload)
         header = b""
         while len(header) < 4:
-            chunk = self.sock.recv(4 - len(header))
+            chunk, ancillary, _flags, _addr = self.sock.recvmsg(
+                4 - len(header), socket.CMSG_SPACE(array.array("i").itemsize),
+                socket.MSG_CMSG_CLOEXEC)
+            for level, kind, blob in ancillary:
+                if level == socket.SOL_SOCKET and kind == socket.SCM_RIGHTS:
+                    received = array.array("i")
+                    whole = len(blob) - (len(blob) % received.itemsize)
+                    received.frombytes(blob[:whole])
+                    for descriptor in received:
+                        # One is expected. Any beyond the first is closed rather than kept:
+                        # this end is small and trusting, but not so trusting that a mediator
+                        # bug fills the sandbox's descriptor table.
+                        if self.last_fd is None:
+                            self.last_fd = descriptor
+                        else:
+                            os.close(descriptor)
             if not chunk:
                 raise ConnectionError("the mediator closed the channel")
             header += chunk
@@ -294,6 +319,81 @@ def fill_schema(schema, overrides: dict) -> dict:
 CURRENT_PHASE = ["platform"]
 
 
+def install_egress(channel: Channel) -> dict:
+    """Wire §7.24's egress path to this sandbox's channel.
+
+    `egress_shim` is imported from the framework rather than reimplemented here, and that
+    breaks this file's own rule — the docstring above says the sandbox imports nothing from
+    `confine`, because the framing is thirty lines and the trusted code inside the sandbox
+    should be exactly this file.
+
+    **The rule is kept for the protocol and broken for the shim, deliberately.** The shim is
+    not thirty lines: it interposes on two resolution seams, maintains a placeholder map, and
+    emulates datagram sockets. Reimplementing that here would mean two copies of the most
+    intricate code in the project, diverging silently, with the copy inside the sandbox being
+    the one nobody tests. §6.5.1's argument was about a *small* protocol being worth restating;
+    it does not extend to this.
+
+    What the rule was protecting is unchanged: the shim decides nothing. Every call it makes
+    is a request the mediator checks against the manifest, exactly as the bridge's are.
+    """
+    from egress_shim import DatagramMediator, EgressDenied, EgressShim
+
+    def ask(op: str, **fields) -> dict:
+        answer = channel.request({"op": op, **fields})
+        if not answer.get("ok"):
+            raise EgressDenied(str(answer.get("reason") or "denied"), answer.get("clause"))
+        return answer
+
+    def connect_via(host: str, port: int) -> int:
+        ask("network.egress", host=host, port=port)
+        fd = channel.last_fd
+        if fd is None:
+            raise EgressDenied("the mediator permitted the connection but sent no descriptor")
+        return fd
+
+    def send(address: str, port: int, data: bytes) -> int:
+        return int(ask("network.udp.send", address=address, port=port,
+                       data=data.hex()).get("sent", 0))
+
+    def recv(address: str, port: int) -> list:
+        answer = ask("network.udp.recv", address=address, port=port, timeout=1.0)
+        return [bytes.fromhex(d["data"]) for d in answer.get("datagrams", [])]
+
+    def _responses(answer: dict) -> list:
+        return [(bytes.fromhex(r["data"]), (r["address"], r["port"]))
+                for r in answer.get("responses", [])]
+
+    def scan(port: int, data: bytes) -> list:
+        return _responses(ask("discover.scan", port=port, data=data.hex(), timeout=1.0))
+
+    def listen(port: int) -> list:
+        return _responses(ask("discover.listen", port=port, timeout=1.0))
+
+    shim = EgressShim(connect_via=connect_via,
+                      datagrams=DatagramMediator(send=send, recv=recv,
+                                                 scan=scan, listen=listen))
+    shim.install()
+    EGRESS_SHIM.append(shim)
+    return {"installed": True}
+
+
+#: Kept so that `run()` can report what the shim actually did, which is what §7.25's
+#: measurement reads. A list rather than a module global assignment, so that the reporting
+#: code can be written without caring whether a shim was installed at all.
+EGRESS_SHIM: list = []
+
+
+def egress_summary() -> dict:
+    """What the shim did, if one was installed. `{}` otherwise — the absence itself is
+    informative, and an empty dict is easier for a caller to fold into `result` than a
+    conditional key would be."""
+    if not EGRESS_SHIM:
+        return {}
+    shim = EGRESS_SHIM[0]
+    return {"resolved": list(shim.resolved), "connected": list(shim.connected)}
+
+
 def record_egress_attempts(into: list) -> None:
     """Record what the integration *tries* to reach, instead of only that it failed.
 
@@ -480,6 +580,13 @@ async def run() -> dict:
     if spec.get("record_egress"):
         record_egress_attempts(egress)
         result["egress_attempts"] = egress
+
+    # §7.24's egress path, installed **before any component or integration is imported** so
+    # that a module-level connection is served too. Only when the spec says so: a sandbox with
+    # no network grant gets no shim, and its namespace has no route, which is S6 arriving as
+    # an absence of code rather than as a branch that has to remember to deny.
+    if spec.get("egress"):
+        result["egress"] = install_egress(channel)
     hass = await build_hass(DATA, with_auth=bool(spec.get("auth")))
 
     # Optionally set up the components the integration says it depends on. §6.3.2 dropped the
@@ -551,6 +658,21 @@ async def run() -> dict:
         await hass.async_start()
         await hass.async_block_till_done()
 
+        # §7.25's window. A coordinator's first refresh is scheduled after `async_start`, not
+        # immediate — without a settle period the result would report only what the flow itself
+        # touched and miss the polling that F2 is actually about, which happens afterwards.
+        # Mirrors `netshape_runtime._settle`, polled rather than slept in one block so a run
+        # whose work finishes early does not pay the whole budget on every integration.
+        settle = float(spec.get("settle_seconds", 0))
+        if settle:
+            deadline = asyncio.get_running_loop().time() + settle
+            while asyncio.get_running_loop().time() < deadline:
+                await asyncio.sleep(1.0)
+                try:
+                    await asyncio.wait_for(hass.async_block_till_done(), timeout=5)
+                except (TimeoutError, asyncio.TimeoutError):
+                    pass
+
         entries = hass.config_entries.async_entries(spec["domain"])
         result["entries"] = [{"title": e.title, "state": str(e.state),
                               "loaded": e.state is ConfigEntryState.LOADED} for e in entries]
@@ -561,6 +683,7 @@ async def run() -> dict:
         # entity the integration created, forwarded to the mediator and accepted by it.
         result["published"] = bridge.published
         result["refused"] = bridge.refused
+        result["egress"] = {**(result.get("egress") or {}), **egress_summary()}
         await hass.async_stop()
         return result
 

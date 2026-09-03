@@ -18,6 +18,7 @@ arrives after the permit path is one that has already been forgotten once.
 
 from __future__ import annotations
 
+import os
 import selectors
 from dataclasses import dataclass, field
 from typing import Callable
@@ -34,6 +35,12 @@ class Decision:
     reason: str
     clause: str | None = None
     data: dict | None = None
+    #: A connected descriptor to hand across with the response, for the one capability whose
+    #: result is a kernel object rather than a value (§7.24's egress path). Deliberately kept
+    #: out of `data`: `data` is JSON that goes on the wire, and a descriptor travels as
+    #: ancillary data instead. The mediator closes its copy once the frame is sent — the
+    #: sandbox has its own by then, and holding both would leak one per connection.
+    fd: int | None = None
 
     def as_response(self, request_id: object) -> dict:
         response: dict = {"id": request_id, "ok": self.allowed, "reason": self.reason}
@@ -124,6 +131,14 @@ class Mediator:
             self.log.decision(self._runs.get(identity, ""), identity, request,
                               decision.allowed, decision.clause, decision.reason)
         try:
-            channel.send(decision.as_response(request.get("id")))
+            channel.send(decision.as_response(request.get("id")), fd=decision.fd)
         except OSError:
             self.unregister(fd)
+        finally:
+            # Closed whether the send succeeded or not. A sandbox that hung up mid-request must
+            # not leave the mediator holding an open connection to the internet on its behalf.
+            if decision.fd is not None:
+                try:
+                    os.close(decision.fd)
+                except OSError:
+                    pass
