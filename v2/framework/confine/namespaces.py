@@ -77,10 +77,11 @@ def write_identity_maps(outer_uid: int, outer_gid: int) -> None:
 SIOCGIFFLAGS = 0x8913
 SIOCSIFFLAGS = 0x8914
 IFF_UP = 0x1
+IFF_MULTICAST = 0x1000
 
 
 def bring_loopback_up() -> None:
-    """Raise `lo` inside the calling process's network namespace.
+    """Raise `lo` inside the calling process's network namespace, and mark it multicast-capable.
 
     A freshly created network namespace contains a loopback interface and it is **down**.
     §5.7.3 describes the namespace as giving "no route to anywhere", which is accurate and
@@ -89,9 +90,31 @@ def bring_loopback_up() -> None:
     bind fails — which presented as `async_setup_component(hass, "http", {})` returning False
     with nothing but a warning about source-address detection.
 
-    The grant is narrow by construction: the interface exists only inside this namespace, so
-    the sandbox gains the ability to talk to itself and nothing else. Nothing routes out; that
-    is still the mediator's job (§5.11.1).
+    **`IFF_MULTICAST` is set for the same reason, and the evidence for it arrived later.**
+    A fresh namespace's `lo` carries no multicast flag, so `IP_ADD_MEMBERSHIP` fails with
+    `ENODEV` — and Home Assistant constructs a resolver that joins the mDNS group *at client
+    session construction*:
+
+        aiohttp_client._async_make_resolver(hass)
+            -> HassAsyncDNSResolver(async_zeroconf=zeroconf.async_get_async_zeroconf(hass))
+
+    So `async_get_clientsession(hass)` — the platform's own documented way for an integration
+    to make an HTTP request, and the way a real one does it — could not be *constructed* inside
+    the sandbox at all, before any name was resolved or any connection attempted. §7.27 is the
+    measurement that found it, on `nordpool`, and it is why that section exists.
+
+    **The grant is vacuous by construction, which is what makes it the right answer rather than
+    a concession.** The namespace holds `lo` and nothing else, so a group joined on it can
+    carry only what this sandbox sends to itself: no datagram reaches another host, no device
+    is discovered, and nothing is learned about the home network. This is §5.6.2's structural
+    denial rather than a permission — the same shape as the loopback grant above, which lets
+    the sandbox talk to itself and to nobody else. Discovery that is *meant* to reach the real
+    network stays mediated, behind the `discover` clause of
+    `notes/decision_network_capability.md`.
+
+    The cost is stated rather than absorbed: an integration that genuinely depends on mDNS
+    discovery finds no devices here. That is a real limit and a far smaller one than being
+    unable to build an HTTP client.
 
     Requires `CAP_NET_ADMIN`, which the sandbox holds *over its own namespace* by virtue of
     having created it — the same property that makes the other six unshares unprivileged.
@@ -104,7 +127,70 @@ def bring_loopback_up() -> None:
         request = struct.pack("16sh14s", b"lo", 0, b"")
         current = struct.unpack("16sh14s", fcntl.ioctl(sock, SIOCGIFFLAGS, request))[1]
         fcntl.ioctl(sock, SIOCSIFFLAGS,
-                    struct.pack("16sh14s", b"lo", current | IFF_UP, b""))
+                    struct.pack("16sh14s", b"lo", current | IFF_UP | IFF_MULTICAST, b""))
+
+
+SIOCADDRT = 0x890B
+RTF_UP = 0x0001
+
+
+def route_multicast_to_loopback() -> None:
+    """Route 224.0.0.0/4 to `lo` inside the calling process's network namespace.
+
+    The `IFF_MULTICAST` flag alone is not enough, and the reason is worth recording because it
+    was found by measurement rather than by reading. A join through a **specific** interface
+    address succeeds once the flag is set; a join through `INADDR_ANY` — which is what
+    `zeroconf` issues — still fails with `ENODEV`, because the kernel resolves the interface
+    for an unbound join from the routing table, and a fresh namespace has no route for the
+    multicast range at all:
+
+        lo flags 0x1049 (UP|LOOPBACK|RUNNING|MULTICAST)
+            join via 127.0.0.1 : OK
+            join via 0.0.0.0   : [Errno 19] No such device      <- before this route
+            join via 0.0.0.0   : OK                             <- after it
+
+    **This grants no reach and the arithmetic is the argument.** The route's device is `lo`, so
+    every multicast datagram the sandbox sends is delivered to the sandbox. There is no other
+    interface in the namespace for the kernel to choose and none can be added without
+    `CAP_NET_ADMIN` over a namespace the sandbox does not own. §5.6.2's structural denial, in a
+    routing table: the capability is present and vacuous rather than absent and fatal.
+
+    `SIOCADDRT` rather than `ip route add`, on §6.4.6's rule that the supervisor should make the
+    syscall it means instead of shelling out to a tool it would then have to put in the
+    sandbox's mount namespace.
+    """
+    import ctypes
+    import fcntl
+    import socket as _socket
+    import struct
+
+    class _SockAddr(ctypes.Structure):
+        _fields_ = [("sa_family", ctypes.c_ushort), ("sa_data", ctypes.c_char * 14)]
+
+    class _RtEntry(ctypes.Structure):
+        _fields_ = [("rt_pad1", ctypes.c_ulong), ("rt_dst", _SockAddr),
+                    ("rt_gateway", _SockAddr), ("rt_genmask", _SockAddr),
+                    ("rt_flags", ctypes.c_ushort), ("rt_pad2", ctypes.c_short),
+                    ("rt_pad3", ctypes.c_ulong), ("rt_tos", ctypes.c_ubyte),
+                    ("rt_class", ctypes.c_ubyte), ("rt_pad4", ctypes.c_short * 3),
+                    ("rt_metric", ctypes.c_short), ("rt_dev", ctypes.c_char_p),
+                    ("rt_mtu", ctypes.c_ulong), ("rt_window", ctypes.c_ulong),
+                    ("rt_irtt", ctypes.c_ushort)]
+
+    def address(text: str) -> _SockAddr:
+        out = _SockAddr()
+        out.sa_family = _socket.AF_INET
+        out.sa_data = struct.pack("!H", 0) + _socket.inet_aton(text) + b"\x00" * 8
+        return out
+
+    route = _RtEntry()
+    route.rt_dst = address("224.0.0.0")
+    route.rt_genmask = address("240.0.0.0")
+    route.rt_gateway = address("0.0.0.0")
+    route.rt_flags = RTF_UP
+    route.rt_dev = b"lo"
+    with _socket.socket(_socket.AF_INET, _socket.SOCK_DGRAM) as sock:
+        fcntl.ioctl(sock, SIOCADDRT, route)
 
 
 def probe() -> tuple[bool, str]:

@@ -259,7 +259,7 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **C3** | The adversarial run includes an absent manifest, an over-broad manifest, and one deliberately mismatched to behaviour — and all three are handled per §5.9's precedence rules | Security |
 | **C4** | Every performance figure is produced on the Raspberry Pi 5, reporting per-integration memory *and* added latency | Performance |
 | **F1** | A confined integration's entities are present in Home Assistant and behave as native entities under the measures used in this chapter | Compatibility, level 2 |
-| **F2** | An integration polling a **declared** remote API completes successfully while confined | ✅ **Met — §7.25.** A confined integration polled `example.com` and published the result; two such integrations ran concurrently in real namespaces |
+| **F2** | An integration polling a **declared** remote API completes successfully while confined | ✅ **Met — §7.25, and by a *real* integration in §7.27.** Two purpose-built integrations polled declared hosts concurrently in real namespaces (§7.25); `nordpool` — unmodified community source — then polled its own Nord Pool API confined and published **the same price as the unconfined arm**, with the mediator's durable record naming `dataportal-api.nordpoolgroup.com:443` (§7.27) |
 | **F3** | Every enforcement decision in the evaluation names the manifest clause that produced it; a decision with no attributable clause is shown to be unconstructible | Security |
 | **F4** | The manifest of each evaluated integration renders in human-readable form, with denials shown at the same weight as grants | §6.7, re-run over the evaluated set |
 | **S1** | The published garbage-collector technique (§2.4.1) is attempted from inside the sandbox and reaches no platform object; the mediator and its credential are not locatable from within | Security |
@@ -1106,6 +1106,15 @@ unconfined and fails confined on discovery**, and this corpus has not produced o
 > egress proxy mediating outbound TCP would not answer multicast discovery. **The second clause
 > is still true as a statement about mechanisms; the first is not evidenced.** §9.5's decision
 > must not be taken on it.
+>
+> **Re-established on the evidence this paragraph specified — §7.27.4 (2026-09-03).** The bar set
+> below is *"an integration is needed which works unconfined and fails confined on discovery, and
+> this corpus has not produced one."* It has now: `nordpool` loads unconfined and failed confined
+> on the identical `IP_ADD_MEMBERSHIP` call in the identical library. The restored finding is
+> **sharper than the withdrawn one and points elsewhere** — the cost fell on an integration that
+> does no discovery at all, because the platform's own HTTP helper joins a multicast group as a
+> side effect of building a DNS resolver. This section's withdrawal was correct on the evidence it
+> had, and correct about what would restore it.
 
 **`powercalc` is confirmed as confinement's cost, and it is the only one.** It loads unconfined —
 `default_config` sets up `network`, which it needs and does not declare — and fails confined with
@@ -2123,6 +2132,14 @@ memory-limited cgroup, exactly as `selftest_bridge.py` spawns its own subject fo
 declares `example.com:80` and polls it with its own `aiohttp.ClientSession()`, unmodified from
 how a community integration would write it.
 
+> **The second half of that sentence is withdrawn — §7.27.2 (2026-09-03), and the text is left as
+> written.** A community integration calls `async_get_clientsession(hass)`, and the bare
+> `aiohttp.ClientSession()` constructor is the one call that skips the platform's own resolver —
+> which in 2026.8.3 instantiates Zeroconf and joins the mDNS group, an operation that **failed in
+> this sandbox** until §7.27.3 corrected the namespace. What this section measured is accurate;
+> what it could not have known is that the subject it wrote avoided the platform helper that
+> broke the sandbox. Only a real integration could show that, and §7.27 is the one that did.
+
 A second, identically-shaped integration runs **at the same time**, in its own sandbox, declaring
 `example.net:80`. Each coordinator does two things: fetches its own declared host, then attempts
 the *sibling's* declared host. That second request is what turns the run into an S4 test rather
@@ -2199,6 +2216,12 @@ is not edited — it gains this pointer. All twenty requirements in §7.5 now ca
   integration's actual API (rather than a synthetic coordinator polling a stable IANA host) is a
   different, larger measurement that §7.10's schedule did not include and this section does not
   substitute for.
+  > **Run the same day — §7.27, and it did not merely confirm this one.** `nordpool` against the
+  > real Nord Pool API, three arms, and the first run **failed**: the platform's own
+  > `async_get_clientsession(hass)` could not be constructed inside the sandbox at all. The
+  > paragraph above was right that this was a different measurement; it was not anticipated that
+  > it would find the design unusable for the 41% it was built for until a two-step namespace
+  > correction.
 - **The DNS-library coupling named in §7.24.6 is unchanged by this result.** A working run today
   says nothing about a future Home Assistant release that replaces `aiodns`.
 
@@ -2465,7 +2488,7 @@ than by reading either sentence again.
 
 | | On 2026-09-02 (§7.16.2) | On 2026-09-03 |
 |---|---|---|
-| Self-test suites passing on the C4 device | 8 | **18** |
+| Self-test suites passing on the C4 device | 8 | **18** — re-run 2026-09-03 after §7.27's namespace and audit changes, 18/18 |
 | Added by §7.22 | `selftest_resources` — 13 checks | |
 | Added by §7.25 | `selftest_fdpass` 12, `selftest_socket_pinning` 6, `selftest_egress` 23, `selftest_egress_shim` 9, `selftest_udp` 12, `selftest_egress_sandboxed` 17, `selftest_netshape` 13 | |
 
@@ -2498,6 +2521,252 @@ quoted from the recorded result files, and a transcription error common to a res
 chapter would survive it. §7.24.6's argument applies here too: two instruments catch what one
 misses, and for the prose there is currently one.
 
+
+## 7.27 F2 against a real integration's real API — and what only a real one could find
+
+**Run 2026-09-03**, `framework/confine/endtoend_egress.py`,
+`experiments/end_to_end/results/pi5_nordpool_egress.json`. §7.25 closed F2 with two
+purpose-built coordinators polling `example.com` and `example.net`, and stated its own limit in
+the same section:
+
+> Whether the egress path holds up against a real community integration's actual API (rather
+> than a synthetic coordinator polling a stable IANA host) is a different, larger measurement
+> that §7.10's schedule did not include and this section does not substitute for.
+
+This is that measurement. It was not scheduled, it is not a re-run of anything, and **it found a
+defect that made the design unusable for the population it was built for** — which is the
+argument for having run it.
+
+### 7.27.1 Why `nordpool`, and why the choice is forced rather than convenient
+
+§7.17.1 measured the ceiling on any end-to-end arm: **26 of 37 integrations need an API key,
+token, password, username, host or email** before their own config flow can complete, and an
+unconfined baseline meets the identical wall. The eleven that need none are overwhelmingly the
+ones that need no *network* either — three of §7.17's five declare `iot_class: calculated`, which
+is exactly why that section could not see egress at all (§7.18).
+
+`nordpool` is the intersection, and as far as this corpus goes it is the only member of it:
+**`cloud_polling`, configurable from a price region alone.** §7.24 recorded it completing its own
+flow unconfined, reaching `dataportal-api.nordpoolgroup.com:443` over TLS with `check_hostname`
+set, and creating a LOADED config entry — on `region` and `currency` and nothing else. It has
+exactly one endpoint, written once in its own `aio_price.py`, so the manifest clause
+`dataportal-api.nordpoolgroup.com:443` is a fact about the integration rather than a guess about
+it.
+
+**Three arms, because two would not settle the question.**
+
+| | Arm | What it answers |
+|---|---|---|
+| **A** | unconfined baseline | Does it work at all today, on this release and this host? |
+| **B** | confined, host declared | Does it work through the mediator's egress path? |
+| **C** | confined, **clause absent** | Does removing the grant remove the capability? |
+
+**Arm C is what makes arm B evidence.** §6.4.5's rule is that an absence is not proof
+confinement worked until the grant is shown to have arrived; the converse binds just as hard —
+*a success is not proof the mediator supplied the connection unless withdrawing the declaration
+withdraws it*. A sandbox whose network namespace had silently leaked would produce arm B's result
+exactly. With C, the difference between the two is the mediated path and nothing else: same
+integration, same flow input, same profile, same host, same minute.
+
+### 7.27.2 The first run failed, and the reason is the finding
+
+Arms B and C both reached `create_entry` and then failed setup, with an **empty egress audit** —
+the integration never got as far as asking the mediator for anything:
+
+```
+homeassistant.setup: Error during setup of component nordpool: [Errno 19] No such device
+  File "zeroconf/_utils/net.py", line 350, in add_multicast_member
+    listen_socket.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, _value)
+OSError: [Errno 19] No such device
+```
+
+`nordpool` neither declares nor imports `zeroconf`. It does one ordinary thing, on line 63 of its
+own `__init__.py`, which is what the platform's documentation tells an integration author to do:
+
+```python
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
+client = async_get_clientsession(hass)
+```
+
+And in 2026.8.3 that reaches, four calls down:
+
+```python
+def _async_make_resolver(hass) -> HassAsyncDNSResolver:
+    return HassAsyncDNSResolver(async_zeroconf=zeroconf.async_get_async_zeroconf(hass))
+```
+
+**Every Home Assistant client session builds a resolver that instantiates Zeroconf, and Zeroconf
+joins the mDNS multicast group when it is created.** A fresh network namespace's `lo` carries no
+`IFF_MULTICAST` flag, so the join fails with `ENODEV` and the session cannot be constructed.
+
+**So a real integration could not make an HTTP request at all, and the failure was nowhere near
+the egress path.** It happened before any name was resolved and before any connection was
+attempted — which is why the mediator's audit was empty rather than full of denials, and why no
+amount of testing the egress path would have found it.
+
+**This is the same seam §7.24.2 measured from the other side.** That section found that 96% of
+resolutions go through `aiodns` because `aiohttp_client.py` gives every session an
+`AsyncDualMDNSResolver`, and drew the conclusion that the *enforcement point* was in the wrong
+place. The same line has a second consequence it did not draw: the resolver is not merely a
+different code path, it is one with a **hard dependency on multicast being available**. §7.24
+corrected where to interpose. This corrects whether the sandbox can get that far.
+
+**And it explains why §7.25 did not see it.** §7.25.1 describes its subject as polling "with its
+own `aiohttp.ClientSession()`, unmodified from how a community integration would write it." The
+first half is accurate and the second is not: a community integration uses
+`async_get_clientsession(hass)`, and the bare constructor is precisely the one call that skips
+the platform's resolver. **A synthetic integration written by the author of the sandbox avoided
+the platform helper that breaks the sandbox** — not deliberately, which is the point. §7.25's
+result stands as written for what it measured; the sentence claiming it was written the way a
+community integration would is withdrawn here, and this section is the evidence for withdrawing
+it.
+
+### 7.27.3 The correction, in two steps, and why it grants nothing
+
+`namespaces.bring_loopback_up` already existed for a structurally identical reason recorded in
+its own docstring: §5.7.3 described the namespace as giving "no route to anywhere", which "is
+accurate and incomplete: it also gives no working loopback, and that is a different thing." The
+same sentence now covers multicast.
+
+**Step 1 — `IFF_MULTICAST` on `lo`.** Not sufficient, and the measurement says why:
+
+```
+lo flags 0x1049 (UP | LOOPBACK | RUNNING | MULTICAST)
+    join via 127.0.0.1 : OK
+    join via 0.0.0.0   : [Errno 19] No such device
+```
+
+**Step 2 — route `224.0.0.0/4` to `lo`.** `zeroconf` joins through `INADDR_ANY`, and for an
+unbound join the kernel picks the interface *from the routing table*. A fresh namespace has no
+route for the multicast range at all, so there is nothing to pick. With the route added by
+`SIOCADDRT` — the syscall rather than `ip route add`, on §6.4.6's rule that the supervisor should
+not need a tool inside the sandbox's mount namespace — the `0.0.0.0` join succeeds.
+
+**The grant is vacuous by construction, and the arithmetic is the whole argument.** The route's
+device is `lo`. Every multicast datagram the sandbox sends is delivered to the sandbox; there is
+no second interface in the namespace for the kernel to choose, and none can be added without
+`CAP_NET_ADMIN` over a namespace the sandbox does not own. **This is §5.6.2's structural denial
+in a routing table** — the capability is present and empty rather than absent and fatal — and it
+is the same shape as the loopback grant beside it, which lets the sandbox talk to itself and to
+nobody else. Discovery that is *meant* to reach the real network stays mediated behind the
+`discover` clause of `notes/decision_network_capability.md`.
+
+**The cost is stated rather than absorbed.** An integration that genuinely depends on mDNS to find
+a device finds none here. That is a real compatibility limit and it is a far smaller one than
+being unable to construct an HTTP client, which is what the alternative was.
+
+### 7.27.4 §7.17.5's withdrawn finding, re-established on better evidence
+
+§7.17.5 withdrew `scheduler` as evidence that confinement costs compatibility, because the
+baseline showed it broken on this release either way, and set the bar for re-establishing it:
+
+> To establish that, an integration is needed which **works unconfined and fails confined on
+> discovery**, and this corpus has not produced one.
+
+**`nordpool` is that integration.** It loads unconfined and — before the correction above — failed
+confined on `IP_ADD_MEMBERSHIP`, the identical call in the identical library. §7.17.5 was right to
+withdraw the claim on the evidence it had and right about what would restore it, and the arm that
+restores it is one it did not run.
+
+The restored finding is **sharper than the withdrawn one and points elsewhere**. The withdrawn
+version said network isolation costs compatibility because integrations use discovery. The
+measured version says something narrower and worse: **the cost fell on an integration that does
+no discovery at all**, because the platform's own HTTP helper joins a multicast group as a side
+effect of building a DNS resolver. It was not a discovery problem. It was every cloud-facing
+integration in the corpus, and the 41% §7.18.1 identified as the population the proxy exists to
+serve.
+
+### 7.27.5 The result
+
+| | A — unconfined | B — confined, declared | C — confined, no clause |
+|---|---|---|---|
+| Config entry | **LOADED** | **LOADED** | LOADED |
+| `sensor.nordpool_kwh_se1_eur_3_10_025` | **0.026** | **0.026** | **`unavailable`** |
+| `network.egress` decisions | — (no mediator) | **3 granted** | **3 denied** |
+| Destination in each record | — | `dataportal-api.nordpoolgroup.com:443` | `dataportal-api.nordpoolgroup.com:443` |
+| Clause | — | `/permissions/network/egress/0` | `/permissions/network/egress` |
+| Name resolved inside the sandbox | — | once | once |
+| Connections completed | — | **3** | **0** |
+| `oom_kill` | — | 0 | 0 |
+
+**The confined value is not merely present, it is the same number.** F2's criterion is *"an
+integration polling a declared remote API completes successfully while confined"*, and what
+satisfies it here is a real electricity price, fetched by unmodified community source from the
+real Nord Pool API, arriving through the mediated path with the identical value the unconfined
+arm produced in the same minute.
+
+**Arm C degrades rather than crashes**, which was not predicted and is worth recording: the entry
+still reaches LOADED and the sensor is still created, and its state is `unavailable` because the
+fetch behind it was refused. An integration denied its network does not fail to install; it
+installs and reports no data, which is the behaviour a user would be able to diagnose.
+
+**The evidence for both is the mediator's own durable audit record**, not either sandbox's report
+of itself, on §7.25.2's reasoning. Each record names the destination and the clause, and the log's
+**hash and MAC chains both verify** over the run, so S7's property is exercised by this
+measurement rather than only by `selftest_audit`.
+
+**One column needs its qualification stated, or the table misreads.** The unconfined arm shows ten
+entities against the confined arm's one. **Exactly one of the ten is `nordpool`'s**; the other
+nine are `sun`, `zone` and `conversation`, which belong to `default_config` — set up by the
+generous baseline of §7.12.1 and not by the sandbox, whose profile is `declared` + the core
+package set. It is a profile difference, not nine lost entities, and both arms produce the one
+entity that is the integration's.
+
+### 7.27.6 A defect in the audit record, and two harness faults
+
+**The audit log recorded a host where the clause now names a host and a port.** §7.24.3 measured
+that a hostname-only clause can neither grant nor withhold a port, and §7.25's schema added one —
+but `audit.py`'s `decision()` still extracted `request.get("host")` alone, so the durable record
+could not distinguish a grant of `:443` from a grant of `:6445` on the same host. F3 requires
+every decision be attributable to the clause that produced it, and the clause *pointer* does
+disambiguate by index; the human-readable target should not be the weaker of the two. Corrected
+here, and the table above is the first record to carry the port. **This is a defect introduced by
+§7.25's schema change and invisible to every test that existed**, because none of them logged an
+egress decision to a real log.
+
+Two harness faults are recorded per §6.3.3's rule, both caught before any number was reported:
+
+- **The audit log was created inside the directory the harness removes.** `records()` then found
+  an empty directory and the run reported *no decisions at all* — which presents exactly as "the
+  mediator logged nothing" and is §6.4.5's warning in its most literal form. The log now lives
+  outside that tree.
+- **The first version read `request` out of `mediator.audit`.** That structure carries `op`,
+  `allowed` and `clause` at the top level and does not carry the request, so every destination
+  read as `None`. The fix moved the destination evidence to the durable log, which is the record
+  §5.12 commits to and the stronger source.
+
+Neither was a finding about the design. Both would have produced a wrong report.
+
+### 7.27.7 What this does and does not establish
+
+**Established.** F2's criterion is met by a **real, unmodified community integration** rather than
+by a coordinator written for the test: it polls its own declared remote API, over the mediated
+path, and publishes the correct value. S4's shape is demonstrated a second time and by
+subtraction rather than by two identities — the same integration, with and without the clause,
+granted and refused the same destination. `notes/decision_network_capability.md`'s design survives
+contact with a real HTTP stack, a real TLS handshake and a real API.
+
+**Not established, and the first is the one most likely to be over-read.**
+
+- **One integration.** This is a named set of one, chosen because the corpus offers no second
+  member, and no rate is computed from it. §7.17.1's credential wall is the reason and it binds
+  any confinement scheme equally.
+- **The correction was found, not predicted, and there may be more of its kind.** The failure was
+  in a platform helper nothing had exercised because no real integration had been run confined
+  against a network. That is one seam; §7.24.5's finding that there are three network stacks
+  suggests others exist. **What this measurement licenses is that the egress path works for the
+  `aiohttp` + `async_get_clientsession` shape, which is the platform's own**, and not that it
+  works for `urllib3`/`requests` or a raw socket confined, neither of which has been spawned.
+- **mDNS discovery does not work in the sandbox and now fails silently rather than loudly.**
+  Before the correction an integration needing discovery crashed at setup; now it finds nothing.
+  The second is better behaviour and it is still a compatibility limit, and §7.24.4's measurement
+  that no integration in that sample established a listener does not bound it, because that
+  sample was recorded unconfined where discovery worked.
+- **Arm C's denial is a refusal to connect, not a refusal to resolve.** The name resolved inside
+  the sandbox in both arms — to a placeholder that only the mediator can map (§7.24.2) — so what
+  C demonstrates is the pin, not a DNS block. That is the design as specified and it is worth
+  stating, because "the name resolved" in a denial record looks wrong until the placeholder is
+  understood.
 
 ---
 

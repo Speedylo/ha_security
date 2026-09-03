@@ -102,6 +102,29 @@ So the precise claim is: **zero import-level cost across 77 integrations, and on
 five costed at the level that matters more, with the reason known and a named fix.** That is
 smaller than "confinement is free" and it is what the measurements support.
 
+**A sixth integration was added after those five, and it is the one that carries F2.** §7.27 ran
+`nordpool` — unmodified community source, `cloud_polling`, the only member of the corpus that both
+needs a network and can be configured without a credential — in three arms: unconfined, confined
+with its API host declared, and confined with the clause removed. Confined and declared, it
+published **the same electricity price as the unconfined arm produced in the same minute**, with
+the mediator's durable record naming `dataportal-api.nordpoolgroup.com:443` three times. With the
+clause removed, the same three requests were refused and the sensor read `unavailable`. F2's
+criterion is therefore met by a real integration polling its own real API and not only by a
+coordinator written for the test.
+
+**And it found a compatibility cost that no other measurement in this report could have found.**
+The first run failed: `nordpool` calls `async_get_clientsession(hass)`, which is what the platform
+tells an author to call, and in 2026.8.3 that builds a resolver by instantiating Zeroconf, which
+joins the mDNS multicast group — an operation a fresh network namespace refuses with `ENODEV`.
+**A real integration could not construct an HTTP client inside the sandbox at all**, before any
+name was resolved or any connection attempted. §7.25's subject had used a bare
+`aiohttp.ClientSession()` and skipped the very helper that broke the design, so every earlier
+egress result was measured around the defect rather than through it. Two lines in the namespace
+setup fixed it, and §7.27.3 argues that the grant is vacuous — the route's device is `lo`, so a
+joined group carries only what the sandbox sends to itself. The finding, not the fix, is the
+result: **until 2026-09-03 the egress design did not work for the 41% of the corpus it was built
+to serve, and only running a real integration revealed it.**
+
 ### 8.2.3 C — confinement is affordable
 
 **Falsifier (§7.7):** *per-sandbox cost puts the budget below §5.8.1's measured mean of 4.02
@@ -247,7 +270,8 @@ belongs here rather than in a footnote:
 > mechanism that catches their errors — a paired baseline, a second instrument, a self-test that
 > fails when the finding it encodes stops being true. The prose has only a read-through.
 
-Three specific mechanisms did the catching, and each is transferable to any project of this shape.
+Four specific mechanisms did the catching, a fifth is named below, and each is transferable to any
+project of this shape.
 **A paired baseline stopped three misattributions** — three attacks blocked in both arms and
 therefore not this framework's doing; a multicast finding withdrawn when the integration turned out
 broken either way; an opaque `ImportError` that looked exactly like a confinement failure and was
@@ -266,13 +290,28 @@ first disagreement between measurements in this report. Recomputed, both are rig
 different fields — declared components against declared-plus-transitive-closure — and only
 returning to the results file could establish that (§7.26.6, finding 5).
 
-**And one correction went the other way, which is the case that keeps this section honest.** Building
-the egress broker's adversary case found that `EgressBroker.open` read `allow_private` from the
+**Two corrections went the other way, and they are what keep this section honest.** Building the
+egress broker's adversary case found that `EgressBroker.open` read `allow_private` from the
 sandbox's own request — a field the confined process composes. A hostile integration could have
 granted itself the whole of T10's reach by writing one key into a message it already controlled,
 while its manifest declared nothing but a public hostname. That was a defect in the artifact, not a
 sentence about one; it was found by writing the attack rather than by reading the code, and it is
 now regression-tested under exactly that attempt (§7.26.2).
+
+The second is larger and it is the strongest single argument in this report for a fifth mechanism:
+**run the real thing, not a faithful model of it.** Every egress result before §7.27 was produced
+against integrations written by the author of the sandbox, and they all worked. The first real
+community integration run confined against a real API failed immediately, on a platform helper the
+synthetic subjects had no reason to call — and the design had been unusable for its target
+population for as long as it had existed. A self-test cannot find this, because a self-test is
+written by the same person and out of the same assumptions; a paired baseline cannot find it,
+because both arms would have to reach the code that fails. Only the real integration finds it.
+
+That is the honest ranking of the five mechanisms: a paired baseline stops misattribution, two
+instruments bound each other, a self-test freezes a surprising fact, recomputation checks a
+sentence against its source — **and running unmodified real code finds the things none of the four
+were looking for.** It is also the most expensive, which is why it happened last and why §8.7's
+future work is ordered the way it is.
 
 ## 8.5 The finding nobody was looking for
 
@@ -354,11 +393,12 @@ reach. That is smaller than "over-declaration is a residual risk" and it is more
 | 7 | **The MAC key does not outlive the mediator.** Records from an earlier run stay hash-verifiable and are no longer MAC-verifiable by anyone | §6.8.4 | Persisting the key hands it to exactly the adversary it exists to stop — anyone who can write the log can read the key beside it. A position on a trade-off, not a defect |
 | 8 | **The identity hash records what was *loaded*, not what *executed*.** An integration that fetches or generates code at runtime defeats it | §5.9.6, §5.12.1 | Inherited from the approach; it bounds T12's treatment, and T12 is also the one threat with no evidence (§7.26.5) |
 | 9 | **A quarter of datagram integrations are unserved.** The UDP relay serves synchronous senders; asyncio `DatagramProtocol` transports — 4 of 15 measured — are not | §7.25.5 | Named at build time rather than found later. The relay's own reach is measured, not assumed |
-| 10 | **The confined UDP round trip was never spawned.** `udp_relay.py` is evaluated against the mediator's decision path, not from inside real namespaces | §7.25.5 | F2's criterion names an API and every integration in the sandboxed suite polls over TCP. **Relayed UDP is procedural where handed-over TCP is structural**, and that asymmetry is not measured |
-| 11 | **The egress path is coupled to `aiodns`.** 96% of resolutions bypass `getaddrinfo`, so the shim patches the platform's resolver stack by name | §7.24.2, §7.24.6 | A working run today says nothing about a release that replaces `aiodns`. §4.12's review triggers already record that the platform moves underneath this model |
-| 12 | **The declaration is incomplete for packages *and* components.** 16% of the head corpus imports a package it never declared; **8% still does with the core set supplied**; `powercalc` needs a component (`network`) it does not declare | §6.13.3, §6.14.4, §7.17.4, §7.23.5 | The answer is §5.9.3's static analysis marked *derived*, not asking the author — priced in §8.7 |
+| 10 | **The confined UDP round trip was never spawned**, and only one of §7.24.5's three network stacks has run confined. `udp_relay.py` is evaluated against the mediator's decision path, not from inside real namespaces; §7.27 spawned `aiohttp` + `async_get_clientsession`, which is the platform's own, and neither `urllib3`/`requests` nor a raw socket | §7.25.5, §7.27.7 | **Relayed UDP is procedural where handed-over TCP is structural**, and that asymmetry is not measured. §7.27 is the reason to rank this higher than it was ranked: the one stack that was actually spawned turned out to break, and the other two have had no such test |
+| 11 | **The egress path is coupled to `aiodns`, and now to the shape of one platform helper.** 96% of resolutions bypass `getaddrinfo`, so the shim patches the platform's resolver stack by name — and §7.27.2 found a second dependency on the same line: `async_get_clientsession(hass)` instantiates Zeroconf to build that resolver, so the sandbox must offer a multicast join or no integration can construct an HTTP client | §7.24.2, §7.24.6, §7.27.2 | A working run today says nothing about a release that replaces `aiodns` or rearranges `aiohttp_client`. §4.12's review triggers already record that the platform moves underneath this model — **and §7.27 is the first measured instance of that risk being real rather than anticipated** |
+| 12 | **mDNS discovery does not work in the sandbox, and now fails silently rather than loudly.** The multicast route added in §7.27.3 points at `lo`, so a join succeeds and discovers nothing | §7.27.3, §7.27.7 | The alternative was `ENODEV` at client-session construction, which broke every cloud-facing integration. Silence is the better failure and it is still a failure. §7.24.4's finding that no integration in that sample established a listener does **not** bound this, because that sample was recorded unconfined, where discovery worked |
+| 13 | **The declaration is incomplete for packages *and* components.** 16% of the head corpus imports a package it never declared; **8% still does with the core set supplied**; `powercalc` needs a component (`network`) it does not declare | §6.13.3, §6.14.4, §7.17.4, §7.23.5 | The answer is §5.9.3's static analysis marked *derived*, not asking the author — priced in §8.7 |
 
-**On item 12, one detail is worth more than the rate.** `aiofiles` has now blocked integrations in
+**On item 13, one detail is worth more than the rate.** `aiofiles` has now blocked integrations in
 the compatibility run, the end-to-end run and the egress-shape run — three independent occasions —
 and `homeassistant/package_constraints.txt` pins it with the comment *"aiofiles keeps getting
 downgraded by custom components"* and an issue reference. **That is the platform's own maintainers
@@ -417,7 +457,9 @@ would, and §5.7.4 chose otherwise.
 ## 8.7 Future work, priced and ordered
 
 Ordered by what each would settle rather than by effort, with the effort stated so the ordering can
-be argued with. Every item is one change to one artifact; none is a wish.
+be argued with. Every item is one change to one artifact; none is a wish. **§7.27 reordered this
+list after it was first written** — running one real integration promoted the stack-coverage item
+from nowhere to fifth, which is the ordering evidence is supposed to do to a plan.
 
 | # | Work | What it settles | Cost |
 |---|---|---|---|
@@ -425,12 +467,13 @@ be argued with. Every item is one change to one artifact; none is a wish.
 | **2** | **Static analysis for the derived manifest**, extended one level up (§6.14.4, §7.17.4) | The undeclared-package *and* undeclared-component bound — item 12 above, and the only measured compatibility cost in the whole report. `import aiofiles` is a top-level import and trivially detectable; **a component dependency is a name in the platform's own source, so the transitive closure is computable exactly rather than approximated**, which `core_requirements()` already does for `default_config`. A strictly larger analysis and a strictly easier one | Days. `--derived` alongside the author's manifest, with every added clause marked as derived per §5.9.3 |
 | **3** | **T12's measurement** (§7.26.5) | The only threat in either register with no evidence. Set an integration up, change its manifest, spawn it again, show the second run is bounded by the second declaration and that the change is visible through `describe.py` before it takes effect | Hours. It was never scheduled, which is why the schedule's close-out did not catch it |
 | **4** | **Re-run the API-surface parser on the uniform corpus** (§8.3) | Contribution 1's other half — what most *integrations* ask for, against what most *installations* run. §7.23 answered that question for compatibility and not for the API surface | **One run.** The script exists and the corpus is already fetched: the cheapest outstanding item in the report |
-| **5** | **asyncio datagram transports, and a confined UDP round trip** (§7.25.5) | The unserved quarter, and whether relayed UDP behaves in real namespaces as it does against the decision path. It would also let the procedural/structural asymmetry between UDP and TCP be measured rather than conceded | Days |
-| **6** | **Filesystem quota for `/sandbox/data`** (§7.22.2) | Item 5 above. Needs privilege, so it also needs a decision about whether the unprivileged position of §5.7.4 admits a privileged installer step. `io.max` is *not* in this row — non-delegation is not a matter of effort | Small, plus a design decision that is not small |
-| **7** | **The end-to-end arm at scale** | N2's second number as something other than a named set of five. Blocked on credentials for 26 of 37, so it needs either a cooperating vendor set or recorded request fixtures — the second is the tractable route and would change the measurement's character, which should be stated if it is taken | Weeks, and the honest framing is that this is a different project's measurement |
-| **8** | **Off-box audit anchoring** (R4, §5.12.6) | The audit log's authority against whoever controls the machine, and item 7's key-lifetime trade-off. §5.12.6 declined to define a format because *"the moment this chapter specified a format for another machine to consume, the scope would have moved"* — **but the artifact already emits the record such a layer would consume**, which is a more useful piece of future work than an unevidenced suggestion | A different project. The contribution here is that its input already exists |
-| **9** | **Re-run `r2_footprint` on the corrected builder; PSS with more sandboxes per point** (§7.20.3, §7.20.4) | Two measurement debts, neither load-bearing on any claim | Small |
-| **10** | **L2 — enforcement inside the platform's own loader** (§5.15.2) | §5.15.2 states plainly that L2 is the better design on every axis but deployability, and that this project's most durable contribution to it may be the evidence it would need. A platform proposal must answer what confinement costs in compatibility, what the declaration should express, and what threats it closes. **Those answers do not depend on the L3 architecture that produced them, and §8.5's finding says the surface such a check must cover is far smaller than the platform's size suggests** | Not this project's to do, and the reason it is last rather than absent |
+| **5** | **The other two network stacks, confined** (§7.24.5, §7.27.7) | `urllib3`/`requests` synchronously and a raw socket, each spawned in real namespaces against a real destination. **Promoted above the datagram work by §7.27's result**: the one stack that was actually spawned failed on a platform helper nobody had exercised, and the argument that the other two are fine is now exactly the argument that was wrong once | Days. `localtuya` and `midea_ac_lan` are the corpus's members, and both need a device or a credential — so this may need recorded fixtures |
+| **6** | **asyncio datagram transports, and a confined UDP round trip** (§7.25.5) | The unserved quarter, and whether relayed UDP behaves in real namespaces as it does against the decision path. It would also let the procedural/structural asymmetry between UDP and TCP be measured rather than conceded | Days |
+| **7** | **Filesystem quota for `/sandbox/data`** (§7.22.2) | Item 5 above. Needs privilege, so it also needs a decision about whether the unprivileged position of §5.7.4 admits a privileged installer step. `io.max` is *not* in this row — non-delegation is not a matter of effort | Small, plus a design decision that is not small |
+| **8** | **The end-to-end arm at scale** | N2's second number as something other than a named set of five. Blocked on credentials for 26 of 37, so it needs either a cooperating vendor set or recorded request fixtures — the second is the tractable route and would change the measurement's character, which should be stated if it is taken | Weeks, and the honest framing is that this is a different project's measurement |
+| **9** | **Off-box audit anchoring** (R4, §5.12.6) | The audit log's authority against whoever controls the machine, and item 7's key-lifetime trade-off. §5.12.6 declined to define a format because *"the moment this chapter specified a format for another machine to consume, the scope would have moved"* — **but the artifact already emits the record such a layer would consume**, which is a more useful piece of future work than an unevidenced suggestion | A different project. The contribution here is that its input already exists |
+| **10** | **Re-run `r2_footprint` on the corrected builder; PSS with more sandboxes per point** (§7.20.3, §7.20.4) | Two measurement debts, neither load-bearing on any claim | Small |
+| **11** | **L2 — enforcement inside the platform's own loader** (§5.15.2) | §5.15.2 states plainly that L2 is the better design on every axis but deployability, and that this project's most durable contribution to it may be the evidence it would need. A platform proposal must answer what confinement costs in compatibility, what the declaration should express, and what threats it closes. **Those answers do not depend on the L3 architecture that produced them, and §8.5's finding says the surface such a check must cover is far smaller than the platform's size suggests** | Not this project's to do, and the reason it is last rather than absent |
 
 ## 8.8 The single ask of the platform
 
@@ -460,6 +503,14 @@ pattern that this ecosystem actually suffered succeeds unconfined and recovers n
 and the import-level compatibility cost across 77 integrations on two corpora, measured against an
 unconfined baseline both times, is zero. On the hardware the requirements name, the mediator is 63×
 clear of realistic demand with durability paid for on every decision.
+
+**The last measurement taken was the one that mattered most, and it failed first.** Running a
+single real community integration confined against its own real API found that the platform's own
+HTTP helper could not be constructed inside the sandbox at all — so the egress design had been
+unusable for the population it was built to serve, for as long as it had existed, behind a suite
+of tests that all passed. Two lines fixed it, and `nordpool` then published the same electricity
+price confined as unconfined. The fix is worth a paragraph; **the fact that nothing else in the
+project could have found it is worth the chapter.**
 
 **The claim is also smaller than it sounds, and the report says so in the same voice it says the
 rest.** Compatibility is measured at import for 77 integrations and end-to-end for five, because 26

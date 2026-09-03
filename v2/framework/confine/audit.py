@@ -177,10 +177,19 @@ class AuditLog:
     def decision(self, run_id: str, identity: str, request: dict, allowed: bool,
                  clause: str | None, reason: str) -> dict:
         """One record per decision. Consequences are not recorded — §5.12.3."""
+        # An egress target is `host:port`, not `host`. §7.24.3 measured that a hostname-only
+        # clause can neither grant nor withhold a port and §7.25's schema added one — but this
+        # record kept extracting the host alone, so the log could not distinguish a grant of
+        # 443 from a grant of 6445 on the same host. F3 requires every decision be attributable
+        # to the clause that produced it, and the clause pointer does name the index; the
+        # human-readable target should not be the weaker of the two. Found by §7.27.
+        target = (request.get("entity") or request.get("service")
+                  or request.get("host") or request.get("event"))
+        if request.get("host") and request.get("port") and target == request.get("host"):
+            target = f"{request['host']}:{request['port']}"
         return self._append({
             "kind": "decision", "run": run_id, "integration": identity,
-            "op": request.get("op"), "target": request.get("entity")
-            or request.get("service") or request.get("host") or request.get("event"),
+            "op": request.get("op"), "target": target,
             "claimed": request.get("integration"),
             "allowed": allowed, "clause": clause, "reason": reason,
         })

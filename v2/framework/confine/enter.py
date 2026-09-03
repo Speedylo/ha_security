@@ -79,6 +79,12 @@ def main() -> int:
         # The new namespace's loopback is down. Anything that binds a socket fails until it is
         # raised, and the interface reaches nothing outside this namespace (§6.12).
         namespaces.bring_loopback_up()
+        # And 224.0.0.0/4 is routed to that same loopback, so a multicast join through
+        # INADDR_ANY resolves to an interface instead of failing with ENODEV. Home Assistant's
+        # own client-session helper joins the mDNS group when it builds its resolver, so
+        # without this an integration cannot construct an HTTP client at all — §7.27. The
+        # route's device is `lo`, so it grants delivery to this sandbox and to nowhere else.
+        namespaces.route_multicast_to_loopback()
     except OSError as err:
         _report(f"fail unshare {err.strerror or err}")
         return 71

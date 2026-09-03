@@ -60,14 +60,36 @@ async def run(spec: dict) -> dict:
     await hass.async_start()
     await hass.async_block_till_done()
 
+    # The confined arm settles after `async_start` so a coordinator's first fetch — scheduled
+    # rather than immediate — actually happens (`sandbox_runtime`, §7.25's window). An arm
+    # compared against it must settle for the same period or the comparison varies in two
+    # things. Defaults to 0, so every existing caller is unaffected.
+    settle = float(spec.get("settle_seconds", 0))
+    if settle:
+        deadline = asyncio.get_running_loop().time() + settle
+        while asyncio.get_running_loop().time() < deadline:
+            await asyncio.sleep(1.0)
+            try:
+                await asyncio.wait_for(hass.async_block_till_done(), timeout=5)
+            except (TimeoutError, asyncio.TimeoutError):
+                pass
+
     entries = hass.config_entries.async_entries(domain)
     result["entries"] = [{"title": e.title, "state": str(e.state),
                           "loaded": e.state is ConfigEntryState.LOADED} for e in entries]
     result["loaded"] = any(e.state is ConfigEntryState.LOADED for e in entries)
     world = set(spec.get("world") or {})
-    result["own_entities"] = sorted(
-        s.entity_id for s in hass.states.async_all()
-        if s.entity_id not in world and s.entity_id.split(".")[0] != "persistent_notification")
+    own = [s for s in hass.states.async_all()
+           if s.entity_id not in world
+           and s.entity_id.split(".")[0] != "persistent_notification"]
+    result["own_entities"] = sorted(s.entity_id for s in own)
+    # The confined arm reports what crossed the boundary *with its value* (`bridge.published`),
+    # because F1 is about the value being right and not only about the entity existing. The
+    # unconfined arm has no boundary, so its counterpart is the state machine itself — named
+    # `published` so the two arms are comparable field for field.
+    result["published"] = sorted(
+        ({"entity": s.entity_id, "state": s.state} for s in own),
+        key=lambda item: item["entity"])
 
     try:
         await hass.async_stop()
