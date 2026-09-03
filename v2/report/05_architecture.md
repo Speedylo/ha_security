@@ -1087,6 +1087,13 @@ A weather integration polling one API, reading one sensor for local calibration:
 }
 ```
 
+> **The example is superseded by §7.24.3 and left as written.** The `egress` entry above names
+> a host and no port, which is the form this section fixed and which measurement found
+> insufficient: a host alone grants every one of the 65,535 ports on that machine. The
+> implemented clause is `"api.example-weather.invalid:443"`, and `manifest.py` rejects the
+> portless form at parse time. The design as built is
+> `notes/decision_network_capability.md`.
+
 What this integration **cannot** do, without any of it being written down: call any service,
 write any entity, subscribe to any event, read any file outside its own directory, enumerate
 anyone's config entries, register an HTTP route, or reach any host but the one named. Nine of

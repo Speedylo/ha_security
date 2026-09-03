@@ -27,7 +27,7 @@ from .manifest import Manifest, ManifestRejected, Provenance
 # sensor for local calibration.
 WORKED_EXAMPLE = {
     "schema_version": 1,
-    "network": {"egress": ["api.example-weather.invalid"]},
+    "network": {"egress": ["api.example-weather.invalid:443"]},
     "entities": {"read": ["sensor.outdoor_temperature"]},
     "resources": {"memory_mb": 192, "max_processes": 8},
 }
@@ -63,10 +63,14 @@ def main() -> int:
               str(manifest.provenance.value), failures)
 
         cases = [
-            ("network.egress to the declared host", True,
-             {"op": "network.egress", "host": "api.example-weather.invalid"}),
+            # host **and** port since §7.24.3 — a clause naming only a host granted every one
+            # of the 65,535 ports on that machine, which no manifest intends.
+            ("network.egress to the declared host and port", True,
+             {"op": "network.egress", "host": "api.example-weather.invalid", "port": 443}),
+            ("network.egress to the declared host on another port", False,
+             {"op": "network.egress", "host": "api.example-weather.invalid", "port": 8080}),
             ("network.egress to any other host", False,
-             {"op": "network.egress", "host": "evil.invalid"}),
+             {"op": "network.egress", "host": "evil.invalid", "port": 443}),
             ("entity.read of the declared sensor", True,
              {"op": "entity.read", "entity": "sensor.outdoor_temperature"}),
             ("entity.read of an undeclared sensor", False,

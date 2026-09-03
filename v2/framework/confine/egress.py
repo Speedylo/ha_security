@@ -1,0 +1,164 @@
+"""The mediator's side of outbound network: resolve, check, connect, hand over.
+
+§5.8.2's scope item 2, built against §7.24's measurements rather than §5.10.3's assumptions.
+`notes/decision_network_capability.md` is the design; this is the TCP half of it.
+
+## The order, and why it is this order
+
+    1. Decide   — the manifest, against host **and** port (§7.24.3)
+    2. Resolve  — the mediator does it, itself, now
+    3. Re-check — the resolved address against T10's non-public rule
+    4. Connect  — to the address just checked, with no gap in between
+    5. Hand over — the connected descriptor crosses the channel
+
+**Steps 2 and 4 are adjacent on purpose, and that adjacency is the whole of T11.** The classic
+attack against a name-based policy is to have a name resolve to something innocuous when it is
+checked and to something internal when it is used. Here there is no interval between the two:
+the same call site resolves the name and connects to the address it got back, and the sandbox
+never possesses a routable address at all — its resolver returns a placeholder only the mediator
+can map back (§7.24.2). So resolve-then-pin is not a rule this code follows carefully; it is a
+shape the code cannot easily be written any other way.
+
+§5.10.5 argues the same thing for the filesystem, and the two exist for one reason: **a name is
+not the thing it names, and checking the name is not checking the thing.**
+
+## Why only TCP travels as a descriptor
+
+A connected TCP socket cannot be re-pointed: `sendto` naming another address has its address
+ignored, and a second `connect` is refused with `EISCONN`. A connected **UDP** socket has no such
+property — `sendto` naming another address delivers there. That was asserted, tested, and found
+false, on both architectures; `selftest_socket_pinning.py` is the standing evidence. Handing a
+UDP socket over would have let an integration granted one lamp reach every host on the network,
+so UDP is relayed instead and this module does not serve it.
+"""
+
+from __future__ import annotations
+
+import ipaddress
+import socket
+from dataclasses import dataclass, field
+
+from .mediator import Decision
+
+# A connect that never completes must not become a sandbox's way of occupying the mediator.
+# §7.19 measured mediation at 0.009% utilisation with three to four orders of magnitude of
+# headroom, so this bound is about liveness under a hostile or broken destination, not about
+# throughput.
+CONNECT_TIMEOUT = 10.0
+
+
+class EgressRefused(Exception):
+    """The destination was refused. Carries the clause or rule that refused it (F3)."""
+
+    def __init__(self, reason: str, clause: str | None = None) -> None:
+        super().__init__(reason)
+        self.reason = reason
+        self.clause = clause
+
+
+def is_public(address: str) -> bool:
+    """Is this an address the internet routes to?
+
+    T10 is *"integration reaches other devices on the home LAN, or loopback services on the
+    gateway"*, and this is the predicate that decides it. Everything the `ipaddress` module
+    knows to be special is refused: private ranges, loopback, link-local, multicast, reserved,
+    and the unspecified address.
+
+    IPv4-mapped IPv6 is unwrapped first. `::ffff:192.168.1.1` is a private address wearing an
+    IPv6 costume, and a check that looked only at the outer form would pass it — the §7.24 run
+    recorded exactly that shape (`::ffff:192.168.11.109`) coming out of the platform's own
+    discovery, so it is not hypothetical.
+    """
+    try:
+        parsed = ipaddress.ip_address(address)
+    except ValueError:
+        return False
+    if isinstance(parsed, ipaddress.IPv6Address) and parsed.ipv4_mapped is not None:
+        parsed = parsed.ipv4_mapped
+    return not (parsed.is_private or parsed.is_loopback or parsed.is_link_local
+                or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified)
+
+
+@dataclass
+class EgressBroker:
+    """Opens outbound connections on behalf of sandboxes that are permitted them.
+
+    Holds no policy of its own: the decision comes from the manifest through the mediator, and
+    this class refuses to act without one. That separation is why the T10 re-check below is the
+    *only* judgement it makes, and why that judgement is about an address rather than a name.
+    """
+
+    connect_timeout: float = CONNECT_TIMEOUT
+    #: Every destination actually connected, for the audit record and for §7.24's evaluation.
+    opened: list[dict] = field(default_factory=list)
+
+    def open(self, identity: str, request: dict, decision: Decision) -> tuple[int, dict]:
+        """Steps 2-5. Returns the connected descriptor and what to record about it.
+
+        `decision` is step 1's answer and is not re-derived here — a component that both
+        decides and acts can disagree with itself, and §5.11.3 puts the decision first for
+        exactly that reason.
+        """
+        if not decision.allowed:
+            raise EgressRefused(decision.reason, decision.clause)
+
+        host = request.get("host")
+        port = request.get("port")
+        if not isinstance(host, str) or not isinstance(port, int):
+            raise EgressRefused("a request must name a host and a port", decision.clause)
+
+        # Step 2. The mediator resolves. The sandbox has no resolver that reaches anything and
+        # never sees a real address, so this is the only resolution that happens.
+        try:
+            candidates = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
+        except OSError as err:
+            raise EgressRefused(f"{host} does not resolve: {err.strerror or err}",
+                                decision.clause) from err
+
+        allow_private = bool(request.get("allow_private"))
+        errors: list[str] = []
+
+        for family, socktype, proto, _canonical, sockaddr in candidates:
+            address = sockaddr[0]
+
+            # Step 3. **Checked after resolution, against the address, every time.** A name that
+            # resolved to a public address a moment ago may resolve to 127.0.0.1 now, and it is
+            # this check rather than the manifest's that notices — the manifest granted a name.
+            if not allow_private and not is_public(address):
+                errors.append(f"{address} is not a public address")
+                continue
+
+            # Step 4. Connect to the address just checked. Nothing between the two lines.
+            sock = socket.socket(family, socktype, proto)
+            try:
+                sock.settimeout(self.connect_timeout)
+                sock.connect(sockaddr)
+                sock.settimeout(None)
+            except OSError as err:
+                sock.close()
+                errors.append(f"{address}: {err.strerror or err}")
+                continue
+
+            record = {"identity": identity, "host": host, "port": port,
+                      "address": address, "clause": decision.clause}
+            self.opened.append(record)
+            return sock.detach(), record
+
+        # Every candidate refused or unreachable. The reason names which, because "connection
+        # failed" is not a diagnosis and T10 refusals must be distinguishable from a device
+        # being switched off.
+        raise EgressRefused(
+            f"no permitted address for {host}:{port} — " + "; ".join(errors[:4]),
+            decision.clause)
+
+
+def egress_response(record: dict) -> dict:
+    """What the sandbox is told about a connection it was granted.
+
+    It learns the **name it asked for** and not the address the mediator connected to. Returning
+    the address would hand back the one thing the placeholder scheme exists to withhold, and an
+    integration has no legitimate use for it: it asked for a name, and it got a working socket
+    to that name.
+    """
+    return {"ok": True, "host": record["host"], "port": record["port"],
+            "clause": record["clause"]}

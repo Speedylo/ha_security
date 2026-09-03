@@ -69,7 +69,10 @@ KNOWN_MEMBERS = {
     "services": {"call"},
     "events": {"subscribe", "fire"},
     "files": {"read", "write"},
-    "network": {"egress", "allow_private"},
+    # `local` and `discover` are §7.24's additions; `allow_private` is superseded by `local`,
+    # which says which ports rather than granting the private address space as a boolean, and is
+    # kept accepted so that a manifest written against the older schema still parses.
+    "network": {"egress", "allow_private", "local", "discover"},
     "config_entries": {"read_all"},
     "http": {"register"},
     "resources": {"memory_mb", "cpu_percent", "max_processes", "disk_mb"},
@@ -139,6 +142,59 @@ def _validate_resources(resources: object) -> None:
         if not low <= value <= high:
             raise ManifestRejected(
                 f"/permissions/resources/{member}: {value} is outside {low}–{high}")
+
+
+def _validate_network(entries: list[str], where: str) -> None:
+    """§7.24.3 and `notes/decision_network_capability.md` §3.1 — a host without a port is not a
+    grant of "the web", it is a grant of every port on that machine.
+
+    §5.10.3 wrote this clause as a list of hostnames, and twelve running integrations showed
+    that wrong: they reached 443 but also 8123, 6445, 20086 and 5000. A clause with no port
+    field can express none of those **in either direction** — it can neither grant 6445 nor
+    withhold it — so an integration granted a host was silently granted all 65,535 ports on it.
+    That is exactly the over-breadth §5.10.4 refuses in `services.call`, one section later and
+    unnoticed.
+
+    Wildcards are refused for the same reason they are refused there: an author knows their own
+    API hosts because they are written into the source, so exactness is knowable and therefore
+    required. A suffix pattern would grant every subdomain, including ones that do not exist
+    yet and whose control the author cannot vouch for.
+    """
+    for entry in entries:
+        if "*" in entry:
+            raise ManifestRejected(
+                f"{where}: '{entry}' contains a wildcard. Every entry names one host and one "
+                f"port, because an author knows the hosts their own code contacts (§5.10.4's "
+                f"rule, applied to the network in §7.24.3)")
+        host, separator, port = entry.rpartition(":")
+        if not separator or not host:
+            raise ManifestRejected(
+                f"{where}: '{entry}' must be host:port. A host alone grants every one of the "
+                f"65,535 ports on that machine, which is wider than any manifest intends")
+        if not port.isdigit() or not 1 <= int(port) <= 65535:
+            raise ManifestRejected(
+                f"{where}: '{entry}' has no usable port; expected 1-65535")
+        if host.startswith("[") and host.endswith("]"):
+            continue                       # a bracketed IPv6 literal, whose colons are its own
+        if ":" in host:
+            raise ManifestRejected(
+                f"{where}: '{entry}' has more than one colon; bracket an IPv6 literal as "
+                f"[::1]:8123 so that host and port are unambiguous")
+
+
+def _validate_ports(ports: object, where: str) -> None:
+    """`local` and `discover` declare ports and never addresses.
+
+    The split is the design's spine: a protocol port is a constant in the integration's source
+    and the author knows it, while a device's address is a DHCP lease that does not exist when
+    the manifest is written. Asking an author for the address would be asking for something
+    nobody has (`decision_network_capability.md` §2).
+    """
+    if not isinstance(ports, list) or not all(isinstance(p, int) for p in ports):
+        raise ManifestRejected(f"{where} must be a list of port numbers")
+    for port in ports:
+        if not 1 <= port <= 65535:
+            raise ManifestRejected(f"{where}: {port} is not a port number")
 
 
 def _validate_events(events: list[str], where: str) -> None:
@@ -236,6 +292,19 @@ class Manifest:
                 _validate_events(_require_list(events[member], f"/permissions/events/{member}"),
                                  f"/permissions/events/{member}")
 
+        network = permissions.get("network", {})
+        if "egress" in network:
+            _validate_network(_require_list(network["egress"], "/permissions/network/egress"),
+                              "/permissions/network/egress")
+        for member in ("tcp", "udp"):
+            if member in network.get("local", {}):
+                _validate_ports(network["local"][member],
+                                f"/permissions/network/local/{member}")
+        for member in ("listen", "scan"):
+            if member in network.get("discover", {}):
+                _validate_ports(network["discover"][member],
+                                f"/permissions/network/discover/{member}")
+
         if "resources" in permissions:
             _validate_resources(permissions["resources"])
 
@@ -315,7 +384,15 @@ class Manifest:
         if operation.startswith("event."):
             return request.get("event")
         if operation == "network.egress":
-            return request.get("host")
+            # The target is host **and** port, because the clause grants a service on a machine
+            # rather than the machine (§7.24.3). A request naming no port cannot be matched
+            # against a clause that names one, and is denied by returning something no clause
+            # can equal rather than by defaulting to 443 — a default here would silently widen
+            # every grant to the port the framework guessed.
+            host, port = request.get("host"), request.get("port")
+            if host is None or port is None:
+                return None
+            return f"{host}:{port}"
         return ""  # config_entries.list takes no target
 
     @staticmethod

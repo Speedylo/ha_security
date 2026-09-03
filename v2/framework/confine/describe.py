@@ -46,6 +46,15 @@ CAPABILITIES: list[tuple[tuple[str, str], str, str]] = [
      "be told when anything in your home changes"),
     (("network", "egress"), "contact these addresses on the internet",
      "contact anything on the internet"),
+    # §7.24's three additions, and the ordering is the design (`decision_network_capability.md`
+    # §6). The four network sentences are deliberately of different loudness — watching is
+    # quieter than searching, and searching is the one that touches every machine in the house.
+    # A non-expert can rank them without knowing what a port is, which is what F4 asks for and
+    # what a single `network` permission could not deliver.
+    (("network", "local"), "contact the device you set up, and nothing else on your network",
+     "contact anything on your home network"),
+    (("network", "discover"), "look for its own devices on your home network",
+     "look for devices on your home network"),
     (("files", "read"), "read these files",
      "read any file outside its own folder"),
     (("files", "write"), "write to these files",

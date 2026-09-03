@@ -20,7 +20,7 @@ from .manifest import Manifest, ManifestRejected
 
 WORKED_EXAMPLE = {
     "schema_version": 1,
-    "network": {"egress": ["api.example-weather.invalid"]},
+    "network": {"egress": ["api.example-weather.invalid:443"]},
     "entities": {"read": ["sensor.outdoor_temperature"]},
     "resources": {"memory_mb": 192, "max_processes": 8},
 }
