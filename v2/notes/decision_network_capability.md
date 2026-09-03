@@ -100,26 +100,62 @@ no separate clause: the mediator joins, collects, relays.
 
 ## 4. The binding rule — how an address becomes permitted
 
-**No address enters an integration's permitted set except through a user action.**
+> **An address may be pinned only if the mediator has observed it responding on a port the
+> manifest declared.**
 
-There are exactly two such actions, and both already exist:
+One rule, covering all three ways an address can arrive. Measured over the 1,482 integrations
+Home Assistant ships: 21% declare automatic discovery, 22% carry a host or IP field, 12% do both,
+and **69% involve no address at all** — they are cloud accounts.
 
-1. The user types an address into the config flow.
-2. The user completes a config flow that offers devices found by `discover.scan` — which is what
-   these integrations already do: show a list, the user picks.
+| Source | How the rule is satisfied | Cost |
+|---|---|---|
+| **Platform discovery** — zeroconf (111), dhcp (110), bluetooth (53), ssdp (43)… | Home Assistant core observed the device and *tells* the integration the address; the integration does not invent it | none |
+| **Mediated discovery** — `discover.scan` or `discover.listen` | the mediator performed the scan or relayed the listen, so it saw which addresses answered | none — the data is already in hand |
+| **Manual entry** — 152 integrations with no discovery at all | pinned on first successful connection to a declared port | small |
 
-**A discovery result is information, not authority.** Finding a device does not make it
-reachable. This is the loop that has to be closed, and closing it is what bounds `scan`.
+The first draft of this section said instead that *"no address enters the permitted set except
+through a user action"*, and that was the wrong rule: the config flow is the integration's own
+code, so "the user acted" really means "the integration's own interface reports that the user
+acted." The observed-responder rule replaces an assertion about consent with an observation the
+mediator makes for itself.
 
-### 4.1 What that makes the ceiling of `scan`
+### 4.1 What that makes the ceiling of `scan` — corrected
 
-R1 says over-declaration is honoured and what matters is the ceiling it cannot raise (§7.16.1).
-So: an integration declaring `scan: [22]` maps which of your machines answer on SSH. It **cannot
-connect to any of them**, because reaching a discovered host needs a pinned address, and pinning
-needs a user action.
+**The first draft of this section claimed more than it could support**, and the sentence is
+withdrawn rather than softened:
 
-**No declaration of `scan`, however broad, can produce a connection.** Its ceiling is
-reconnaissance, structurally — and that is what makes it tolerable to grant at all.
+> ~~No declaration of `scan`, however broad, can produce a connection.~~
+
+That was false. An integration declaring `scan: [80]` can find a device that answers on 80 — the
+router's web interface, say — and then present it through its own config flow as the device the
+user is setting up. The address was genuinely observed responding on a genuinely declared port, so
+the binding rule is satisfied and the pin is legitimate by every check the mediator can make.
+
+What survives is narrower and true:
+
+- an address must have **answered on a declared port**, so a machine that does not speak the
+  integration's protocol cannot be pinned merely by naming it;
+- the reachable set is **one address at a time, on declared ports**, recorded in the audit log
+  together with the source of the pin.
+
+### 4.2 The residual is T13, which Chapter 4 already retains
+
+The remaining exposure — an integration misrepresenting, through its own interface, what the user
+is consenting to — is not a new threat. It is **T13**, *"the declaration accompanying an
+integration misrepresents its behaviour"*, which §4.10 rates 16 High and treats as **Retain
+(partially): declaration made visible; enforcement bounded to it** (F4, R1).
+
+Rated the way Chapter 4 rates everything, this instance lands around impact 3–4 (A8 — *"extends
+reach without itself being a loss"*) and likelihood 2–3: it needs a hostile integration, a
+completed setup, **and** something exploitable at the pinned address. Medium. It is not a design
+driver, and a confirmation surface was considered and **rejected as scope creep against a threat
+the register already prices**.
+
+**Reported against the baseline, as every security result in Chapter 7 is.** In unmodified Home
+Assistant an integration reaches any address on the home network with no declaration, no pinning,
+no observation and no record. Under this design the worst case is one address, on ports declared
+in advance, observed behaving like the declared protocol, and logged. The residual is real; it is
+not the comparison.
 
 ---
 
