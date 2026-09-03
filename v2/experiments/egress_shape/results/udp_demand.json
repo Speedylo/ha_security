@@ -1,0 +1,1393 @@
+{
+ "reports": [
+  {
+   "domain": "adaptive_lighting",
+   "py_files": 10,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "calculated",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "alarmo",
+   "py_files": 13,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "alexa_media",
+   "py_files": 19,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 4,
+    "installed": true,
+    "udp": [
+     "anyio:class DatagramProtocol(DatagramProtocol)@_asyncio.py:1350",
+     "anyio:DatagramProtocol@_asyncio.py:1350",
+     "anyio:SOCK_DGRAM@_trio.py:1297",
+     "anyio:recvfrom@_trio.py:624",
+     "anyio:SOCK_DGRAM@_sockets.py:588",
+     "anyio:SOCK_DGRAM@_sockets.py:619",
+     "anyio:SOCK_DGRAM@_sockets.py:305",
+     "anyio:SOCK_DGRAM@_sockets.py:337"
+    ],
+    "packages": [
+     "anyio"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "bambu_lab",
+   "py_files": 34,
+   "udp": [],
+   "tcp": [
+    "create_connection@bambu_client.py:135"
+   ],
+   "uses_udp": false,
+   "uses_tcp": true,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "battery_notes",
+   "py_files": 19,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "calculated",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "bermuda",
+   "py_files": 16,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "calculated",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "ble_monitor",
+   "py_files": 113,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 5,
+    "installed": true,
+    "udp": [
+     "pyric:SOCK_DGRAM@libio.py:48"
+    ],
+    "packages": [
+     "pyric"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "browser_mod",
+   "py_files": 18,
+   "udp": [],
+   "tcp": [
+    "open_connection@connection.py:66"
+   ],
+   "uses_udp": false,
+   "uses_tcp": true,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "dreame_vacuum",
+   "py_files": 21,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 8,
+    "installed": true,
+    "udp": [
+     "miio:SOCK_DGRAM@miioprotocol.py:112",
+     "miio:sendto@miioprotocol.py:116",
+     "miio:create_datagram_endpoint@server.py:202",
+     "miio:SOCK_DGRAM@server.py:184",
+     "miio:sendto@serverprotocol.py:52",
+     "miio:sendto@serverprotocol.py:71",
+     "zeroconf:sendto@_core.py:134",
+     "zeroconf:DatagramTransport@_engine.py:79"
+    ],
+    "packages": [
+     "miio",
+     "zeroconf"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "dwd_weather",
+   "py_files": 9,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 3,
+    "installed": true,
+    "udp": [
+     "anyio:class DatagramProtocol(DatagramProtocol)@_asyncio.py:1350",
+     "anyio:DatagramProtocol@_asyncio.py:1350",
+     "anyio:SOCK_DGRAM@_trio.py:1297",
+     "anyio:recvfrom@_trio.py:624",
+     "anyio:SOCK_DGRAM@_sockets.py:588",
+     "anyio:SOCK_DGRAM@_sockets.py:619",
+     "anyio:SOCK_DGRAM@_sockets.py:305",
+     "anyio:SOCK_DGRAM@_sockets.py:337"
+    ],
+    "packages": [
+     "anyio"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "eufy_security",
+   "py_files": 31,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_push",
+   "deps": {
+    "declared": 2,
+    "installed": true,
+    "udp": [
+     "aiortsp:class DatagramSink(DatagramProtocol)@udp.py:19",
+     "aiortsp:DatagramProtocol@udp.py:19"
+    ],
+    "packages": [
+     "aiortsp"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "frigate",
+   "py_files": 19,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 2,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "govee",
+   "py_files": 46,
+   "udp": [
+    "class _ScanProtocol(DatagramProtocol)@lan.py:341",
+    "class _RawProbeProtocol(DatagramProtocol)@lan.py:373",
+    "DatagramProtocol@lan.py:341",
+    "DatagramProtocol@lan.py:373",
+    "SOCK_DGRAM@lan.py:415",
+    "DatagramTransport@lan.py:467",
+    "sendto@lan.py:480",
+    "DatagramTransport@lan.py:484",
+    "sendto@lan.py:493",
+    "create_datagram_endpoint@lan.py:535",
+    "create_datagram_endpoint@lan.py:596",
+    "sendto@lan.py:602",
+    "class _RealtimeProtocol(DatagramProtocol)@lan_client.py:298",
+    "DatagramProtocol@lan_client.py:298",
+    "SOCK_DGRAM@lan_client.py:285",
+    "DatagramTransport@lan_client.py:414",
+    "DatagramTransport@lan_client.py:415",
+    "sendto@lan_client.py:610",
+    "create_datagram_endpoint@lan_client.py:478",
+    "create_datagram_endpoint@lan_client.py:481",
+    "SO_BROADCAST@lan.py:418",
+    "IP_MULTICAST_TTL@lan.py:425",
+    "IP_ADD_MEMBERSHIP@lan.py:448",
+    "IP_DROP_MEMBERSHIP@lan.py:460",
+    "IP_MULTICAST_IF@lan.py:477",
+    "SO_BROADCAST@lan_client.py:286",
+    "IP_MULTICAST_TTL@lan_client.py:287"
+   ],
+   "tcp": [],
+   "uses_udp": true,
+   "uses_tcp": false,
+   "iot_class": "cloud_push",
+   "deps": {
+    "declared": 4,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "hacs",
+   "py_files": 59,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "homematicip_local",
+   "py_files": 62,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 4,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "llmvision",
+   "py_files": 9,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 3,
+    "installed": true,
+    "udp": [
+     "botocore:sendto@monitoring.py:586",
+     "botocore:SOCK_DGRAM@session.py:286"
+    ],
+    "packages": [
+     "botocore"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "localtuya",
+   "py_files": 18,
+   "udp": [
+    "class TuyaDiscovery(DatagramProtocol)@discovery.py:33",
+    "DatagramProtocol@discovery.py:33",
+    "create_datagram_endpoint@discovery.py:45",
+    "create_datagram_endpoint@discovery.py:48"
+   ],
+   "tcp": [
+    "create_connection@__init__.py:1182"
+   ],
+   "uses_udp": true,
+   "uses_tcp": true,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "meross_lan",
+   "py_files": 55,
+   "udp": [],
+   "tcp": [
+    "SOCK_STREAM@config_flow.py:1197"
+   ],
+   "uses_udp": false,
+   "uses_tcp": true,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "midea_ac_lan",
+   "py_files": 19,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [
+     "midealan:recvfrom@discover.py:197",
+     "midealan:SOCK_DGRAM@discover.py:288"
+    ],
+    "packages": [
+     "midealan"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "nodered",
+   "py_files": 17,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "nordpool",
+   "py_files": 8,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "octopus_energy",
+   "py_files": 186,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "pirateweather",
+   "py_files": 7,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "powercalc",
+   "py_files": 82,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "calculated",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "scheduler",
+   "py_files": 8,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "smartthinq_sensors",
+   "py_files": 41,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 3,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "solarman",
+   "py_files": 8,
+   "udp": [
+    "sendto@scanner.py:20",
+    "SOCK_DGRAM@scanner.py:15",
+    "SO_BROADCAST@scanner.py:17"
+   ],
+   "tcp": [],
+   "uses_udp": true,
+   "uses_tcp": false,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 2,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "solcast_solar",
+   "py_files": 31,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 2,
+    "installed": true,
+    "udp": [
+     "anyio:class DatagramProtocol(DatagramProtocol)@_asyncio.py:1350",
+     "anyio:DatagramProtocol@_asyncio.py:1350",
+     "anyio:SOCK_DGRAM@_trio.py:1297",
+     "anyio:recvfrom@_trio.py:624",
+     "anyio:SOCK_DGRAM@_sockets.py:588",
+     "anyio:SOCK_DGRAM@_sockets.py:619",
+     "anyio:SOCK_DGRAM@_sockets.py:305",
+     "anyio:SOCK_DGRAM@_sockets.py:337"
+    ],
+    "packages": [
+     "anyio"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "sonoff",
+   "py_files": 26,
+   "udp": [
+    "sendto@camera.py:130",
+    "sendto@camera.py:168",
+    "sendto@camera.py:113",
+    "SOCK_DGRAM@camera.py:133",
+    "sendto@camera.py:156",
+    "sendto@camera.py:160",
+    "sendto@camera.py:164",
+    "recvfrom@camera.py:174",
+    "SO_BROADCAST@camera.py:135"
+   ],
+   "tcp": [],
+   "uses_udp": true,
+   "uses_tcp": false,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "spook",
+   "py_files": 219,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "tapo_control",
+   "py_files": 16,
+   "udp": [
+    "class _TapoUdpProtocol(DatagramProtocol)@binary_sensor.py:175",
+    "DatagramProtocol@binary_sensor.py:175",
+    "DatagramTransport@binary_sensor.py:82",
+    "create_datagram_endpoint@binary_sensor.py:143"
+   ],
+   "tcp": [
+    "SOCK_STREAM@utils.py:189"
+   ],
+   "uses_udp": true,
+   "uses_tcp": true,
+   "iot_class": "none",
+   "deps": {
+    "declared": 2,
+    "installed": true,
+    "udp": [
+     "kasa:class _DiscoverProtocol(DatagramProtocol)@discover.py:233",
+     "kasa:DatagramProtocol@discover.py:233"
+    ],
+    "packages": [
+     "kasa"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "thermal_comfort",
+   "py_files": 4,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "calculated",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "waste_collection_schedule",
+   "py_files": 1015,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 8,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "watchman",
+   "py_files": 18,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "webrtc",
+   "py_files": 4,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "calculated",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "xiaomi_home",
+   "py_files": 35,
+   "udp": [
+    "recvfrom_into@miot_lan.py:1215",
+    "sendto@miot_lan.py:1351",
+    "SOCK_DGRAM@miot_lan.py:1184",
+    "sendto@miot_lan.py:1344",
+    "SO_BROADCAST@miot_lan.py:1185"
+   ],
+   "tcp": [],
+   "uses_udp": true,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 5,
+    "installed": true,
+    "udp": [
+     "psutil:SOCK_DGRAM@_common.py:151",
+     "psutil:SOCK_DGRAM@_common.py:154",
+     "psutil:SOCK_DGRAM@_pslinux.py:718",
+     "psutil:SOCK_DGRAM@_pslinux.py:719",
+     "psutil:SOCK_DGRAM@_pssunos.py:618"
+    ],
+    "packages": [
+     "psutil"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "xiaomi_miot",
+   "py_files": 42,
+   "udp": [
+    "class AsyncSocket(DatagramProtocol)@mini_miio.py:207",
+    "DatagramProtocol@mini_miio.py:207",
+    "DatagramTransport@mini_miio.py:209",
+    "sendto@mini_miio.py:227",
+    "create_datagram_endpoint@mini_miio.py:238",
+    "sendto@mini_miio.py:100",
+    "DatagramTransport@mini_miio.py:215",
+    "sendto@mini_miio.py:260",
+    "sendto@mini_miio.py:132",
+    "sendto@mini_miio.py:299",
+    "SOCK_DGRAM@mini_miio.py:120"
+   ],
+   "tcp": [],
+   "uses_udp": true,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 3,
+    "installed": true,
+    "udp": [
+     "miio:SOCK_DGRAM@miioprotocol.py:112",
+     "miio:sendto@miioprotocol.py:116",
+     "miio:create_datagram_endpoint@server.py:202",
+     "miio:SOCK_DGRAM@server.py:184",
+     "miio:sendto@serverprotocol.py:52",
+     "miio:sendto@serverprotocol.py:71",
+     "zeroconf:sendto@_core.py:134",
+     "zeroconf:DatagramTransport@_engine.py:79"
+    ],
+    "packages": [
+     "miio",
+     "zeroconf"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "alarm_clocks",
+   "py_files": 13,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "calculated",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "als_sundance_marin",
+   "py_files": 11,
+   "udp": [],
+   "tcp": [
+    "open_connection@config_flow.py:33",
+    "open_connection@coordinator.py:51"
+   ],
+   "uses_udp": false,
+   "uses_tcp": true,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "apsystems_ecu_reader",
+   "py_files": 11,
+   "udp": [],
+   "tcp": [
+    "open_connection@ecu_api.py:75"
+   ],
+   "uses_udp": false,
+   "uses_tcp": true,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "circuitsetup_energy_analyzer",
+   "py_files": 143,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "ecobot",
+   "py_files": 7,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "enki",
+   "py_files": 61,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "enphase_ev",
+   "py_files": 88,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "ha_insights",
+   "py_files": 124,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "honor_x3",
+   "py_files": 11,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 2,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "irrigationprogram",
+   "py_files": 29,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "kamstrup_403",
+   "py_files": 9,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "kroki",
+   "py_files": 8,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "lifesmart",
+   "py_files": 20,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_push",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "lightwave2",
+   "py_files": 10,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_push",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "localtuya_rc",
+   "py_files": 8,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [
+     "tinytuya:SOCK_DGRAM@scanner.py:109",
+     "tinytuya:sendto@scanner.py:251"
+    ],
+    "packages": [
+     "tinytuya"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "nature_remo",
+   "py_files": 8,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "network_scanner",
+   "py_files": 4,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "next_rocket_launch",
+   "py_files": 2,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "none",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "nuki_otp",
+   "py_files": 8,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "ocado",
+   "py_files": 9,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 2,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "oekofen_pellematic_compact",
+   "py_files": 9,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "polleninformation",
+   "py_files": 8,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 2,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "pronote",
+   "py_files": 9,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 2,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "qolsys_panel",
+   "py_files": 21,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [
+     "qolsys_controller:SOCK_DGRAM@cli.py:49",
+     "zeroconf:sendto@_core.py:134",
+     "zeroconf:DatagramTransport@_engine.py:79",
+     "zeroconf:DatagramTransport@_engine.py:392",
+     "zeroconf:DatagramTransport@_listener.py:98",
+     "zeroconf:DatagramTransport@_transport.py:86",
+     "zeroconf:DatagramTransport@_transport.py:39",
+     "zeroconf:SOCK_DGRAM@net.py:251"
+    ],
+    "packages": [
+     "qolsys_controller",
+     "zeroconf"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "regensburg_transport",
+   "py_files": 5,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "saj_esolar_air",
+   "py_files": 6,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "sessy",
+   "py_files": 16,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "skybellgen",
+   "py_files": 17,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 2,
+    "installed": true,
+    "udp": [
+     "aioskybellgen:class SkyBellUDPProtocol(DatagramProtocol)@__init__.py:520",
+     "aioskybellgen:DatagramProtocol@__init__.py:520",
+     "botocore:sendto@monitoring.py:586",
+     "botocore:SOCK_DGRAM@session.py:286",
+     "pytest_asyncio:SOCK_DGRAM@plugin.py:1101",
+     "pytest_asyncio:SOCK_DGRAM@plugin.py:1130"
+    ],
+    "packages": [
+     "aioskybellgen",
+     "botocore",
+     "pytest_asyncio"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "smhi_brandrisk",
+   "py_files": 4,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "solis_modbus",
+   "py_files": 28,
+   "udp": [],
+   "tcp": [
+    "open_connection@config_flow.py:139"
+   ],
+   "uses_udp": false,
+   "uses_tcp": true,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [
+     "pymodbus:SOCK_DGRAM@udp.py:16",
+     "pymodbus:sendto@udp.py:218",
+     "pymodbus:class NullModem(DatagramTransport)@transport.py:482",
+     "pymodbus:DatagramTransport@transport.py:482"
+    ],
+    "packages": [
+     "pymodbus"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "sonyavr",
+   "py_files": 7,
+   "udp": [
+    "SOCK_DGRAM@sonyavr.py:799"
+   ],
+   "tcp": [
+    "open_connection@sonyavr.py:582",
+    "open_connection@sonyavr.py:1007",
+    "open_connection@sonyavr.py:1029"
+   ],
+   "uses_udp": true,
+   "uses_tcp": true,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [
+     "asyncping3:sendto@__init__.py:285",
+     "asyncping3:recvfrom@__init__.py:339"
+    ],
+    "packages": [
+     "asyncping3"
+    ],
+    "note": ""
+   }
+  },
+  {
+   "domain": "tasmota_mielhvac",
+   "py_files": 4,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "trakt_tv",
+   "py_files": 13,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "trmnl_webhook_push",
+   "py_files": 6,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_push",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "tvoverlay_ui",
+   "py_files": 12,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_push",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "vacation_mode",
+   "py_files": 12,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "cloud_polling",
+   "deps": {
+    "declared": 0,
+    "installed": false,
+    "udp": [],
+    "note": "no requirements declared"
+   }
+  },
+  {
+   "domain": "warema_wms",
+   "py_files": 14,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 1,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  },
+  {
+   "domain": "zendure_ha",
+   "py_files": 26,
+   "udp": [],
+   "tcp": [],
+   "uses_udp": false,
+   "uses_tcp": false,
+   "iot_class": "local_polling",
+   "deps": {
+    "declared": 2,
+    "installed": true,
+    "udp": [],
+    "packages": [],
+    "note": ""
+   }
+  }
+ ]
+}
