@@ -37,6 +37,7 @@ from __future__ import annotations
 import ipaddress
 import socket
 from dataclasses import dataclass, field
+from typing import Callable
 
 from .mediator import Decision
 
@@ -91,6 +92,13 @@ class EgressBroker:
     connect_timeout: float = CONNECT_TIMEOUT
     #: Every destination actually connected, for the audit record and for §7.24's evaluation.
     opened: list[dict] = field(default_factory=list)
+    #: **The mediator resolves with its own resolver, not with whatever is globally installed.**
+    #: In deployment the distinction is invisible — the sandbox's shim lives in another process
+    #: entirely — but stating it here removes a whole class of confusion, and it had to be
+    #: stated: co-locating the two in one test process made the broker call the sandbox's
+    #: patched `getaddrinfo`, which returned a placeholder, which resolved to a placeholder,
+    #: until the stack ran out. Defaults to the real one when not supplied.
+    resolver: Callable[..., list] | None = None
 
     def open(self, identity: str, request: dict, decision: Decision) -> tuple[int, dict]:
         """Steps 2-5. Returns the connected descriptor and what to record about it.
@@ -109,8 +117,9 @@ class EgressBroker:
 
         # Step 2. The mediator resolves. The sandbox has no resolver that reaches anything and
         # never sees a real address, so this is the only resolution that happens.
+        resolve = self.resolver or socket.getaddrinfo
         try:
-            candidates = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
+            candidates = resolve(host, port, type=socket.SOCK_STREAM)
         except OSError as err:
             raise EgressRefused(f"{host} does not resolve: {err.strerror or err}",
                                 decision.clause) from err
