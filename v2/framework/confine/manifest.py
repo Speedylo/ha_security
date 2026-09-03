@@ -60,6 +60,14 @@ OPERATIONS = {
     "event.fire": ("events", "fire"),
     "config_entries.list": ("config_entries", "read_all"),
     "network.egress": ("network", "egress"),
+    # §7.24's additions. Each names the port it wants, because a port is a constant in the
+    # integration's own source while a device's address is a DHCP lease the author cannot know
+    # (`notes/decision_network_capability.md` §2).
+    "network.udp.send": ("network", "local", "udp"),
+    "network.udp.recv": ("network", "local", "udp"),
+    "network.tcp.local": ("network", "local", "tcp"),
+    "discover.scan": ("network", "discover", "scan"),
+    "discover.listen": ("network", "discover", "listen"),
 }
 
 KNOWN_CAPABILITIES = {"entities", "services", "events", "network", "files",
@@ -342,14 +350,22 @@ class Manifest:
         if not isinstance(operation, str) or operation not in OPERATIONS:
             return Decision(False, f"unknown operation {operation!r}", clause="/permissions")
 
-        capability, member = OPERATIONS[operation]
-        pointer = f"/permissions/{capability}/{member}"
+        # A **path**, not a pair. §7.24's clauses are three deep — `network/local/udp`,
+        # `network/discover/scan` — because a single flat `network` permission could not say
+        # which of four different reaches an integration was asking for, and F4 needs those to
+        # be four different sentences. Walking a path costs nothing and the pointer still comes
+        # out as the JSON pointer §5.10.8 requires.
+        path = OPERATIONS[operation]
+        capability = path[0]
+        pointer = "/permissions/" + "/".join(path)
 
         if self.provenance is Provenance.NONE:
             return Decision(False, "no manifest is bound to this integration (S6)",
                             clause=pointer)
 
-        clauses = self.permissions.get(capability, {}).get(member)
+        clauses: object = self.permissions
+        for part in path:
+            clauses = clauses.get(part) if isinstance(clauses, dict) else None
         if clauses is None:
             # Denied by absence — §5.10.8's second row. The pointer names the capability that
             # held no matching clause, which is what makes "denied because nothing said yes"
@@ -383,6 +399,14 @@ class Manifest:
             return service
         if operation.startswith("event."):
             return request.get("event")
+        if operation in ("network.udp.send", "network.udp.recv", "network.tcp.local",
+                         "discover.scan", "discover.listen"):
+            # The port, and only the port. The address is not part of the grant — it is pinned
+            # separately, and only to something the mediator observed answering (§4 of the
+            # design note). A clause that named an address would be asking the author for a
+            # DHCP lease.
+            port = request.get("port")
+            return str(port) if isinstance(port, int) else None
         if operation == "network.egress":
             # The target is host **and** port, because the clause grants a service on a machine
             # rather than the machine (§7.24.3). A request naming no port cannot be matched
@@ -408,7 +432,10 @@ class Manifest:
                 return False
             return clause_object == "*" or clause_object == target_object
         if capability == "network":
-            return clause == target
+            # `egress` clauses are "host:port" strings; `local` and `discover` clauses are port
+            # numbers. Both are compared as text so one branch serves both, and both are exact
+            # — there is no pattern form for either.
+            return str(clause) == target
         return clause == target
 
 

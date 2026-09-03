@@ -53,12 +53,51 @@ import errno
 import ipaddress
 import os
 import socket
+from dataclasses import dataclass
 from typing import Callable
 
 # Reserved for future use by RFC 1112 and routed by nothing. A placeholder that escaped this
 # sandbox would be dropped by the first hop rather than delivered somewhere unintended, which
 # is the property wanted from a value that stands in for a real destination.
 PLACEHOLDER_NET = ipaddress.ip_network("240.0.0.0/4")
+
+
+#: Returned by a datagram handler that has decided this call is not its business, so the
+#: original socket method runs. A sentinel rather than `None`, because `None` is what several
+#: of these calls legitimately return.
+_FALL_THROUGH = object()
+
+
+def _is_broadcast(host: str) -> bool:
+    """A destination that reaches every host on the segment rather than one of them.
+
+    `255.255.255.255` and any address ending `.255` — the corpus uses both: `solarman` sends to
+    the literal `<broadcast>`, which resolves to the former, and `xiaomi_home` pings
+    `255.255.255.255` directly. Multicast counts too, since `govee`'s scan goes to
+    `239.255.255.250` and is the same capability wearing a different addressing mode.
+    """
+    if host in ("255.255.255.255", "<broadcast>"):
+        return True
+    try:
+        parsed = ipaddress.ip_address(host)
+    except ValueError:
+        return False
+    return bool(parsed.is_multicast) or str(parsed).endswith(".255")
+
+
+@dataclass
+class DatagramMediator:
+    """The relay, as four calls the shim can make.
+
+    Injected for the same reason `connect_via` is: it keeps the channel out of this module, so
+    the whole loop can be exercised against a real `UdpRelay` with no sandbox and no second
+    process, and what is under test stays the emulation rather than the plumbing.
+    """
+
+    send: Callable[[str, int, bytes], int]
+    recv: Callable[[str, int], list]
+    scan: Callable[[int, bytes], list]
+    listen: Callable[[int], list]
 
 
 class EgressDenied(OSError):
@@ -80,12 +119,20 @@ class EgressShim:
     tested against a real `EgressBroker` with no sandbox, no mediator process and no network.
     """
 
-    def __init__(self, connect_via: Callable[[str, int], int]) -> None:
+    def __init__(self, connect_via: Callable[[str, int], int],
+                 datagrams: DatagramMediator | None = None) -> None:
         self.connect_via = connect_via
+        #: The relay, if this sandbox is permitted datagrams at all. `None` means UDP falls
+        #: through to the ordinary socket calls, where it fails — the same fail-closed default
+        #: an unrecognised TCP destination gets.
+        self.datagrams = datagrams
         self._names: dict[str, str] = {}      # placeholder address -> the name it stands for
         self._placeholders: dict[str, str] = {}   # and back, so a repeat lookup is stable
         self._next = int(PLACEHOLDER_NET.network_address) + 1
         self._installed: list[tuple] = []
+        #: Per-socket datagram state, keyed by descriptor. A UDP socket in the sandbox is never
+        #: connected to anything — it is a handle the shim keeps notes against.
+        self._dgram: dict[int, dict] = {}
         #: Every name resolved and every connection made, for the evaluation and for tests.
         self.resolved: list[str] = []
         self.connected: list[tuple[str, int]] = []
@@ -114,7 +161,135 @@ class EgressShim:
     def install(self) -> None:
         self._patch_getaddrinfo()
         self._patch_connect()
+        self._patch_datagrams()
         self._patch_aiohttp_resolvers()
+
+    # -- datagrams ---------------------------------------------------------------------
+
+    def _patch_datagrams(self) -> None:
+        """Datagrams are emulated, not handed over, and this is where that shows.
+
+        TCP could be given a real connected descriptor because a connected TCP socket cannot be
+        re-pointed. UDP cannot (`selftest_socket_pinning.py`), so the sandbox's UDP socket is
+        never connected to anything and never carries traffic: it is a handle, and every
+        operation on it becomes a request to the mediator.
+
+        **The limit this imposes, stated where it is created.** Only the *synchronous* shape can
+        be intercepted this way — `sendto` and `recvfrom` on a socket object. An integration
+        driving `asyncio.DatagramProtocol` waits on a real descriptor becoming readable, and
+        under this design there is no descriptor for the event loop to watch. Four of the
+        fifteen datagram integrations in `results/udp_demand.md` take that route (`govee`,
+        `localtuya`, `tapo_control`, `xiaomi_miot`) and are **not served**. That is §6.11.1's
+        rule applied in advance: name which half is missing rather than publish a figure that
+        hides it.
+        """
+        cls = socket.socket
+        shim = self
+
+        def state(sock: socket.socket) -> dict | None:
+            """Notes for this socket, if it is a datagram socket the relay is serving."""
+            if shim.datagrams is None:
+                return None
+            try:
+                if sock.type != socket.SOCK_DGRAM:
+                    return None
+            except OSError:
+                return None
+            return shim._dgram.setdefault(sock.fileno(), {"port": None, "peer": None,
+                                                          "broadcast": False})
+
+        def wrap(name: str, handler) -> None:
+            real = getattr(cls, name)
+
+            def method(sock, *args, **kwargs):
+                notes = state(sock)
+                if notes is not None:
+                    outcome = handler(sock, notes, real, *args, **kwargs)
+                    if outcome is not _FALL_THROUGH:
+                        return outcome
+                return real(sock, *args, **kwargs)
+
+            setattr(cls, name, method)
+            self._installed.append((cls, name, real))
+
+        # `bind` on a datagram socket declares which port the integration wants to hear on. It
+        # is recorded rather than performed: the mediator holds the only socket that binds.
+        def on_bind(sock, notes, real, address, *rest):
+            if isinstance(address, tuple) and len(address) >= 2:
+                notes["port"] = int(address[1])
+                return None
+            return _FALL_THROUGH
+
+        def on_setsockopt(sock, notes, real, level, option, *rest):
+            if level == socket.SOL_SOCKET and option == socket.SO_BROADCAST:
+                # Recorded, never applied. The sandbox holds no socket that could broadcast;
+                # what this flag now means is "a later sendto to a broadcast address should be
+                # served as discovery", and discovery is a declared capability of its own.
+                notes["broadcast"] = bool(rest[0]) if rest else True
+                return None
+            return _FALL_THROUGH
+
+        def on_connect(sock, notes, real, address, *rest):
+            if isinstance(address, tuple) and len(address) >= 2:
+                notes["peer"] = (str(address[0]), int(address[1]))
+                return None
+            return _FALL_THROUGH
+
+        def on_sendto(sock, notes, real, data, *rest):
+            address = rest[-1] if rest else None
+            if not (isinstance(address, tuple) and len(address) >= 2):
+                return _FALL_THROUGH
+            host, port = str(address[0]), int(address[1])
+            if _is_broadcast(host):
+                # The integration is scanning. The mediator performs it — bounded, rate-limited
+                # and attributed — and the replies are collected for the next recvfrom.
+                notes["scanned"] = shim.datagrams.scan(port, bytes(data))
+                notes["port"] = port
+                return len(data)
+            notes["peer"] = (host, port)
+            return shim.datagrams.send(host, port, bytes(data))
+
+        def on_send(sock, notes, real, data, *rest):
+            peer = notes.get("peer")
+            if peer is None:
+                return _FALL_THROUGH
+            return shim.datagrams.send(peer[0], peer[1], bytes(data))
+
+        def on_recvfrom(sock, notes, real, bufsize=65535, *rest):
+            queued = notes.get("scanned")
+            if queued:
+                data, sender = queued.pop(0)
+                return data[:bufsize], sender
+            if notes.get("port") is not None and notes.get("peer") is None:
+                for data, sender in shim.datagrams.listen(int(notes["port"])):
+                    notes.setdefault("scanned", []).append((data, sender))
+                if notes.get("scanned"):
+                    data, sender = notes["scanned"].pop(0)
+                    return data[:bufsize], sender
+                raise BlockingIOError(errno.EAGAIN, "no datagram available")
+            peer = notes.get("peer")
+            if peer is None:
+                return _FALL_THROUGH
+            for data in shim.datagrams.recv(peer[0], peer[1]):
+                notes.setdefault("scanned", []).append((data, peer))
+            if notes.get("scanned"):
+                data, sender = notes["scanned"].pop(0)
+                return data[:bufsize], sender
+            raise BlockingIOError(errno.EAGAIN, "no datagram available")
+
+        def on_recv(sock, notes, real, bufsize=65535, *rest):
+            outcome = on_recvfrom(sock, notes, real, bufsize)
+            if outcome is _FALL_THROUGH:
+                return _FALL_THROUGH
+            return outcome[0]
+
+        wrap("bind", on_bind)
+        wrap("setsockopt", on_setsockopt)
+        wrap("connect", on_connect)
+        wrap("sendto", on_sendto)
+        wrap("send", on_send)
+        wrap("recvfrom", on_recvfrom)
+        wrap("recv", on_recv)
 
     def _patch_getaddrinfo(self) -> None:
         """The synchronous seam — `requests`, `urllib3`, and anything using raw sockets.
