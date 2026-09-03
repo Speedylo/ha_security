@@ -1,29 +1,41 @@
 # Where the rebuild stands
 
-**Last updated:** 2026-09-03 (**the egress proxy is built and evaluated — F2 and S4 both ✅ Met, §7.25**) · **Read this first when resuming.**
+**Last updated:** 2026-09-03, end of session (**all eight chapters written; what remains is front
+matter and one whole-report read-through**) · **Read this first when resuming.**
 
-**Where it stands in one line:** **Chapters 1–5 complete, Chapter 6 drafted §6.1–§6.14, Chapter 7
-written through §7.25 — all twenty requirements in §7.5 now carry a verdict.** The framework
-exists and runs on the Pi 5; the baseline arm remains the strongest result the project has: the
-confined and unconfined arms fail on the same six integrations, for the same reasons — the
-import-level compatibility cost of confinement is zero of 37. 84% was never a fact about
-confinement; it is the fraction of the corpus that loads on 2026.8.3 at all. Chapter 6 corrected
-Chapter 5 four times and itself twice; Chapter 7 corrected two of its own pre-registered
-predictions and then, for the first time, **caught a design error before any code existed**:
-§7.24 measured the egress proxy's requirements against twelve running integrations and found
-three of §5.10.3's assumptions wrong, all before a line of the proxy was written. **The proxy was
-then built to the corrected design** (`notes/decision_network_capability.md`) — fd-passing on the
-channel, the mediator-side broker with resolve-then-pin, the sandbox-side shim at both resolution
-seams, the UDP relay, and a real confined evaluation spawning two concurrent namespaced sandboxes
-against real internet hosts (§7.25). **Scope item 2 is no longer open.** One security bug was
-found and fixed along the way: `EgressBroker.open` trusted `allow_private` from the sandbox's own
-request, which would have let a hostile integration grant itself T10's non-public reach — caught
-before evaluation, not after.
+**Where it stands in one line:** **Chapters 1–8 are written.** All twenty requirements in §7.5
+carry a verdict, 18/18 self-test suites pass on the Pi, and the framework runs. The strongest
+result remains the paired baseline: confined and unconfined arms fail on the *same* integrations
+for the *same* reasons, so **the import-level compatibility cost of confinement is zero** — twice,
+on two corpora sharing 5% of their members. 84% was never a fact about confinement; it is the
+fraction of the corpus that loads on 2026.8.3 at all.
+
+**What the project has learned about itself, and the reason to trust the rest.** Chapter 6
+corrected Chapter 5 four times and itself twice; Chapter 7 corrected Chapter 6 five times and
+itself across two read-throughs; **six of eight pre-registered predictions were wrong and none was
+revised.** Across all of it, *every* correction has been to a sentence next to a measurement and
+none to a measurement — with **two exceptions, both defects in the artifact, and both found by
+building something adversarial or real rather than by reading code**:
+
+1. `EgressBroker.open` trusted `allow_private` from the sandbox's own request — a hostile
+   integration could have granted itself T10's non-public reach by writing one key into a message
+   it already composed. Found by writing the attack case; fixed and regression-tested (§7.26.2).
+2. **No real integration could construct an HTTP client inside the sandbox at all.**
+   `async_get_clientsession(hass)` — what the platform tells authors to call — builds its DNS
+   resolver by instantiating Zeroconf, which joins the mDNS group, and a fresh netns `lo` has no
+   `IFF_MULTICAST`. The egress design had therefore been unusable for the 41% of the corpus it
+   exists to serve, **behind eighteen passing suites**, because every earlier subject was written
+   by the author of the sandbox and used a bare `aiohttp.ClientSession()`. Found on 2026-09-03 by
+   running one real community integration; fixed in two measured steps (§7.27).
+
+**That second one is the single most important methodological result in the project** and §8.4.2
+states it: a paired baseline, two instruments, a self-test and recomputation each catch a class of
+error — and *running unmodified real code* finds what none of the four were looking for, because
+the other four are all written out of the same assumptions.
 
 Read alongside `00_METHOD.md` (ground rules — especially the evidence rule) and
 `01_PLAN.md` (stage plan and gates). Chapter working notes in `notes/` carry the reasoning
 that does not belong in the report, including anticipated viva questions.
-
 ---
 
 ## Done
@@ -53,7 +65,10 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/base_component/` | ✅ **Pi 5, 2026-08-25.** The measurement §5.6.5 deferred to Chapter 6. The base component **can** be dropped — 46.6 MB per sandbox, budget 17 → **26** (1.53×, **not** the 2× §5.6.5 predicted). Two controls: both arm orders, and a 0.1 MB replication of §5.6.3's marginal figure. It also found a defect in §5.6.3's own recipe — see below. Feeds §6.3 |
 | `experiments/cgroup_placement/` | ✅ **Pi 5, 2026-08-25.** Four placement mechanisms × two positions, unprivileged. **Corrects §5.7.4:** `clone3(CLONE_INTO_CGROUP)` fails with the same `EACCES` as migration, so what binds is *where the supervisor runs*, not when it places the sandbox. Feeds §6.4.1 |
 | **`framework/confine/`** | ✅ **The artifact, as far as it goes, 2026-08-25.** `cgroup.py`, `namespaces.py`, `preflight.py`, `sandbox.py`, `enter.py`, `spawn.py`, `selftest.py` — standard library plus `ctypes`, no dependencies, no override flag. **Preflight: 8/8 on the Pi. Self-test: passes** — uid 0 inside mapped to 1000 outside, one visible process, `lo` only, `secrets.yaml`/`.storage`/the other integration all **absent**. Plus `seccomp.py` — 29 calls denied, verified by behaviour on both architectures. **All three of §5.7.3's primitives are built and measured.** Plus `channel.py`, `mediator.py` and `selftest_channel.py` — **identity is the socket, demonstrated with two sandboxes both claiming to be the same integration**. Plus `manifest.py` and `selftest_policy.py` — validation, S5's asymmetry, resolve-then-pin, clause pointers. Plus `describe.py` (the F4 surface, discharging T13's unplaced half) and `audit.py` (three-part identity, hash chain **and** keyed MAC chain, failing independently). **Eight self-tests, all passing on the Pi** — including `selftest_adversary.py`: 37 attempts, 21 blocked, 9 **empty** (succeeded and found nothing), 6 denied, 1 permitted, neither canary reached. Described by §6.4.2, §6.4.4–§6.4.6 and §6.5–§6.8 |
-| `report/07_evaluation.md` | 🔵 **§7.1–§7.11 written 2026-09-02 *before* any result, and dated so; §7.12 is the first result.** Criteria for **all 20 requirements** fixed in advance (§7.5), five predictions recorded (§7.6), falsifiers stated (§7.7), inherited obligations consolidated (§7.8), validity threats named (§7.9). **Two rows are ⛔ blocked — F2 and S4 — because egress does not exist**, named in the criteria table rather than buried in a limitations section. §7.12 scores P1 and P2 as **wrong** rather than revising them |
+| `report/07_evaluation.md` | ✅ **Complete, §7.1–§7.27.** §7.1–§7.11 written 2026-09-02 *before* any result and dated so; §7.12–§7.25 written one result at a time; **§7.26 is the read-through** (it found that §7.2 promised a scoring against two threat registers that the results half never performed — both now done, 13/18 threats demonstrated and 8/11 of the external register mapped); **§7.27 is the real-integration arm**. All 20 §7.5 rows carry a verdict |
+| `report/08_conclusions.md` | ✅ **Written 2026-09-03.** *Conclusions, Limitations and Future Work*, ~42k chars. Answers the claim against §7.7's pre-fixed falsifiers (**the fourth falsifier — the one about the evaluation — fired**, §8.2.4); closes §2.8's three contributions; §8.4 the 6-of-8 scorecard and the five mechanisms; §8.5 the 52-vs-2 finding; §8.6 twelve artifact limits and six evaluation limits; §8.7 eleven future-work items priced; §8.8 the single upstream ask (R3). **Known gap: §8.7 has no row for building the real HA component** — fix next session |
+| `framework/confine/endtoend_egress.py` | ✅ **2026-09-03, §7.27.** Three arms on `nordpool` — unconfined / confined+declared / confined+clause-removed. The third is what makes the second evidence: a leaked namespace would produce arm B's result exactly. **11/11.** Destination evidence comes from the mediator's *durable* log, not `mediator.audit` |
+| `experiments/end_to_end/results/pi5_nordpool_egress.json` | ✅ **Pi 5, 2026-09-03.** `0.026` confined and unconfined **in the same minute**; 3 grants logged as `dataportal-api.nordpoolgroup.com:443`, both chains verifying; clause removed → 3 denials and `unavailable`. `nordpool_egress.md` beside it is the readable write-up |
 | `framework/confine/selftest_c3.py` | ✅ **2026-09-02, §7.16.1.** C3's two uncovered shapes, and the ceiling table that makes R1's "structural" claim checkable |
 | `experiments/gc_attack/` | ✅ **Pi 5, 2026-09-02, §7.15. S1's baseline half — and the realism fix.** §6.9's confined gc sweep was near-tautological (its process held no other secret). Here a **real victim integration** holds a live token: unconfined the adversary reaches it **7 ways** (`CloudClient.attr`, `hass.data`, module); confined it finds nothing while the same token is **confirmed live in the mediator's process** (7 refs). The confirmation is what makes "found nothing" a result rather than an absence |
 | `experiments/entity_visibility/` | ✅ **Pi 5, 2026-09-02, §7.14. S3 paired.** One 36-entity home, 20 disclosing presence. Unconfined **36/36** and **20/20** presence, plus every change to others' entities; confined **1/36**, every undeclared probe absent and denied with a clause. Subscription half verified at the **decision layer only** — no push loop exists (§6.11.2) |
@@ -66,49 +81,58 @@ that does not belong in the report, including anticipated viva questions.
 
 ## Next session — start here
 
-> **This whole section predates the 2026-09-03 session and is left as written.** The egress
-> decision below was made (build it), the proxy is built, and F2/S4 are both ✅ Met — see the
-> top of this file and the task-2 row in the table below. What is genuinely still open for the
-> *next* session is the writing tail: Ch. 7's read-through, Chapter 8, front matter, Stage 5.
+**The engineering is complete against every claim the report makes.** Nothing in Chapters 1–8 is
+unsupported: all twenty §7.5 rows carry a verdict, §8.6 states the gaps and §8.7 prices the work
+rather than leaving either implicit. **What remains is writing, plus optional measurements that
+would strengthen the report rather than rescue it.**
 
-**The one-line score.** §5.15.6 said the design's central claim is empirical and Chapter 6 is
-where it stops being an argument. The security half is **measured**. The compatibility half is now
-**demonstrated but not evidenced** — an unmodified integration runs, publishes and is confined,
-and the population it was drawn from is one. §6.11.1 scores it as half rather than reporting a
-percentage that would hide which half is missing.
+### The two remaining tasks
 
-**§5.8.5's cut-order conflict is moot (§6.11.4).** The actuator path is built and measured, so
-there is nothing left to cut that would save time. G3 is now a question about coverage alone.
+| | Task | What it needs |
+|---|---|---|
+| **6** | Front matter, abstract, bibliography | 18 references cited across **eight** chapters, never consolidated. The abstract can be written against **§8.9**, which already states the claim, its size and the method in three paragraphs. Title page, contents, figure list |
+| **7** | **Stage 5** — single-voice read-through of the *whole* report (Ch. 1–8), then defence prep | §7.26.8 is the argument for doing it: **two read-throughs of one chapter each found something real**, and the prose is the only part of this project with a single instrument checking it. Defence prep against `THREAT_MODEL.md` Part 10 and the viva questions in `notes/` |
 
-**Read this paragraph first if nothing else.** Chapters 1–5 are complete; Chapter 6 is drafted
-§6.1–§6.14 and its artifact runs; Gate G3 has an answer that is not close. **Two things are
-open, and only one of them is a decision.**
+### Optional measurements, ranked — none blocks submission
 
-- ~~**Not a decision — just do it.** The baseline arm.~~ ✅ **Done 2026-09-02, and the answer is
-  zero.** The design costs nothing in import-level compatibility on this corpus. What replaces it
-  as the cheap-and-load-bearing item is S8's paired baseline.
-- **A decision, and it is Younes's.** §5.8.2's scope item 2 — mediated egress, F2 and S4 — has no
-  implementation, and T11's control is therefore undemonstrated. Build it and Chapter 6's derived
-  scope is complete; defer it and Chapter 7 evaluates a design with a quarter of its declared
-  scope unbuilt. **Recommendation: build it**, because a requirements table that does not match
-  the artifact is exactly what an auditor-by-profession reads for, and there is roughly six weeks
-  of slack against `01_PLAN.md`. **The argument against** is the standing instruction to prefer
-  code that can be personally owned and defended over code volume — if the proxy would arrive
-  undefendable, deferring it and saying so plainly is the better thesis. The prior spike has an
-  egress broker (`RESULTS_2026-08-14_egress_broker.md`) to cite as feasibility; under
-  `00_METHOD.md` §5 it is **not** retyped.
+Taken from §8.7's list, which is ordered by what each would settle. **§7.27 reordered that list
+after it was written**, which is what evidence is supposed to do to a plan.
 
-**✅ The repository has a remote, as of 2026-09-02.** `git@github.com:Speedylo/ha_security.git`,
-**private**. `main` tracks `origin/main`; the branch was renamed from `master` when the remote was
-added. `.ha_token`, `spike/.ha_config/`, the HACS cache and the telemetry snapshot stay ignored,
-and no tracked file carries a credential. **If this is ever made public, remove `v2/refs/*.pdf`
-first** — four third-party papers, fine to store privately and not to redistribute.
+| | Work | Cost | Why |
+|---|---|---|---|
+| **T12's measurement** (§8.7 #3) | Set an integration up, change its manifest, spawn it again; show the second run is bounded by the second declaration and that `describe.py` shows the change before it takes effect | **Hours** | **The best value per hour on the list.** T12 is the only threat in *either* register with no evidence at all, and §7.26.5 says so in the report — so an examiner will find it because we told them where it is |
+| **Re-run `api_surface.py` on the uniform corpus** (§8.7 #4) | One run of an existing script over an already-fetched corpus | **One run** | Contribution 1 (§2.8) is half delivered: §7.23 answered the uniform question for *compatibility* and never for the API surface, so §7.8's obligation row was discharged for one of two |
+| **The other two network stacks, confined** (§8.7 #5) | `urllib3`/`requests` and a raw socket, spawned in real namespaces | Days; may need recorded fixtures | Promoted from nowhere to fifth by §7.27. The one stack actually spawned turned out to break, so "the other two are presumably fine" is exactly the reasoning that was wrong once |
+| **The push loop** (§8.7 #1) | Build it | Days | Largest missing piece, but it is *building* not testing. Unblocks S3's subscription half and the only latency path that could consume §7.20.1's 63× margin |
 
-Chapter 6 has now corrected Chapter 5 four times (§6.3.2, §6.4.1, §6.6.6, §6.11.4) and itself
-twice (§6.13 on §6.12.4, §6.14 on §6.13.4). Every correction came from running a measurement
-rather than re-reading the argument. **Two successive predictions bracketed the truth from
-opposite sides** — §6.12.4 over-predicted, §6.13.4 under-predicted — which is what
-`00_METHOD.md` §2's evidence rule looks like when it is working.
+**Not obtainable, and stated rather than owed:** the adversary is purpose-built and exercises the
+*pattern* of the 2021 disclosures rather than the eight disclosed integrations at their vulnerable
+versions — those versions are not in the corpus (§7.13.6).
+
+### One known defect in Chapter 8, found while answering a question and not yet fixed
+
+**§8.7 has no future-work row for building the real Home Assistant component**, even though
+§8.6.3 names "the mediator acts on a stand-in, not a live Home Assistant" as limit #2 and §8.2
+leans on it. **The largest limitation in the report has no entry in its own future-work list.**
+Fix this in the next session — it is a five-minute edit and exactly the kind of thing Stage 5's
+read-through exists to catch, so it is recorded here rather than repaired silently.
+
+### The standing risk, unchanged since 21 August
+
+**Programme deadlines for proposal / mid-report / final / defence are unknown**, and it is
+§9.7's top-ranked risk. Every schedule figure in `01_PLAN.md` §9.6 assumes end-of-November
+submission. The handbook route needs nobody's reply. This is the only input that makes the
+remaining plan mean anything.
+
+### Repository
+
+**✅ Remote:** `git@github.com:Speedylo/ha_security.git`, **private**. `main` tracks
+`origin/main`. `.ha_token`, `spike/.ha_config/`, the HACS cache and the telemetry snapshot stay
+ignored, and no tracked file carries a credential. **If this is ever made public, remove
+`v2/refs/*.pdf` first** — four third-party papers, fine to store privately and not to
+redistribute.
+
+### The task table
 
 | # | Task | Notes |
 |---|---|---|
@@ -298,7 +322,7 @@ theatre (`00_METHOD.md` §3); two divergences out of four is the evidence it was
 | 3 | Isolation primitive | namespaces + seccomp + cgroup v2 — **confirmed, and strongly**: reached via S4, S9 and a measured budget the first pass did not have | §5.7 |
 | 4 | Implemented scope | **DIVERGED** — sensors + mediated egress across two integrations + one `lock` service path, not the first pass's polling sensors only | §5.8 |
 
-## The three things most worth remembering
+## The four things most worth remembering
 
 1. **The declaration always already exists, and is never load-bearing.** Three independent
    findings, one shape — and this is the sharpest statement of the contribution available.
@@ -324,7 +348,21 @@ theatre (`00_METHOD.md` §3); two divergences out of four is the evidence it was
    future-directions section calls for "a proof-of-concept implementation for Home Assistant
    … evaluated based on the threat model introduced by Corno and Mannella". Chapter 7 adopts
    that framing, so the security evaluation is measured against a published model rather than
-   criteria invented here.
+   criteria invented here. **§7.2 promised that scoring on 2026-09-02 and §7.12–§7.25 never
+   performed it** — the results half is organised by §7.5's requirements, so closing out the
+   measurement schedule gave no signal that a *reporting* obligation was open. §7.26.4 performs
+   it: **eight of their eleven mapped, five scoring cleanly**, and §4.14 states one divergence
+   from their model where there are three. Do not repeat the earlier claim without §7.26.
+
+4. **Running real code finds what nothing else does, and this is the project's own evidence
+   for it.** Five mechanisms caught errors here — a paired baseline (three misattributions
+   stopped, all of which would have charged the design *more* than it deserved), two
+   instruments bounding each other, a self-test that passes when the surprising thing is true,
+   recomputing a figure from its source rather than re-reading the sentence, and **running one
+   unmodified real integration**. Only the last found a defect that made the egress design
+   unusable for its target population, and it had sat behind eighteen passing suites (§7.27).
+   The reason is structural and worth being able to say aloud: **the other four are all written
+   out of the same assumptions as the thing they test.** §8.4.2 is the written form.
 
 ## Chapter 5 — what it settled
 
