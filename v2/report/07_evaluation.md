@@ -67,6 +67,13 @@ model is broader in consequence (their T8, physical damage, is out of reach here
 immediately) while this one is broader in mechanism, so a clean sweep of Chapter 4's register is
 not a clean sweep of theirs.
 
+> **Discharged in §7.26 (2026-09-03), and not by §7.12–§7.25.** The results half is organised by
+> §7.5's requirements and never scored either register; §7.26.1 records that as a reporting failure
+> of the chapter's own, found by reading it as one document. Both scorings are now performed —
+> §7.26.3 for Chapter 4's eighteen, §7.26.4 for the eleven — and the prediction in the paragraph
+> above holds: the sweep is not clean in either register, and the divergence is wider than §4.14
+> states.
+
 ## 7.3 The spine: Chapter 3's verification column
 
 Chapter 3 §3.1 committed each requirement to a stated method of verification, written before any
@@ -102,11 +109,16 @@ because they are not interchangeable:
 | Corpus | Selection | Question it answers | State |
 |---|---|---|---|
 | **Head-weighted** | Top 37 by install count | What most *installations* run | Fetched, four arms run (§6.11.3, §6.12, §6.13, §6.14) |
-| **Uniform** | Random sample from the HACS index, same size | What most *integrations* do | **Run — §7.23.** Seed 20260902, 40 of 40 fetched, both arms |
+| **Uniform** | Random sample from the HACS index, same size | What most *integrations* do | Owed; `figures/fetch_hacs_corpus.py` takes it, only the selection changes |
 
 Reporting only the first would describe user-facing impact while implying ecosystem coverage.
 `notes/ch5_evidence_api_surface.md` §6 records the same limitation for the API-surface
 measurement, and the same correction is owed here.
+
+> **Run — §7.23.** Seed 20260902, 40 of 40 fetched, both arms: **92% confined, 92% unconfined,
+> identical failure sets**, sharing 2 of 40 members with the head corpus. The row above is left at
+> its frozen wording per §7.21.2; it had been edited in place and was reverted on 2026-09-03
+> (§7.26.6, finding 3).
 
 **The arms.** Four profiles have been measured against the confined instance (§6.14). The
 measurement this axis turns on is the one that does not yet exist:
@@ -262,6 +274,14 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **N1** | Added latency, per-integration memory and maximum concurrent integrations are all reported against an unconfined baseline on the target hardware. **No threshold** — §3.6 fixed this position in advance | Performance |
 | **N2** | This chapter reports "imports clean" and "executed end-to-end" as two separate numbers, never conflated, with the first labelled an upper bound wherever it appears | **This chapter** |
 | **N3** | Behaviour on mediator unavailability is specified in advance and tested; the framework refuses rather than degrades silently, including the wrong-cgroup-position case | Security |
+
+> **Both blocked rows are now closed — §7.25 (2026-09-03), and the paragraph below is left as
+> written.** The verdicts in the F2, S4 and S9 rows above are updated in place, which is this
+> table's one deliberate exception to §7.1's freeze: §7.5 is the register an auditor reconciles
+> against the artifact, and a criteria table carrying stale verdicts fails that reconciliation in
+> the way §7.5's own closing sentence says silence would. The *criteria* are untouched. The
+> paragraph that follows recorded the position on 2026-09-02 and is the evidence that the rows
+> were named in advance rather than discovered late, so it keeps its text.
 
 **Two blocked rows, named on 2026-09-02 rather than discovered in November.** F2 and S4 both
 depend on §5.8.2's scope item 2, which §6.11.1 scores as *"Half. Egress does not exist."* This is
@@ -423,7 +443,15 @@ Four things, named now rather than conceded later.
    tokens as the trigger that would change it.
 4. **It cannot claim generality beyond what it measured.** One platform, one release, one host,
    two corpora of 37. Chapter 8 states the boundary; this chapter's job is to make sure every
-   number inside it carries its own qualification.
+   number inside it carries its own qualification. *(The uniform draw came in at 40 of 40 rather
+   than 37 — §7.23.1. The sentence is left at its planning figure.)*
+
+**A fifth, added by §7.26 rather than foreseen here.** This list names what the chapter cannot
+demonstrate. It should also have named what it would not *attempt*, and it missed one: **T12, a
+malicious update through the authorised path, is the only threat in either register whose control
+this chapter neither demonstrates nor declares unevaluable** (§7.26.5). Naming it here in advance
+was the whole point of §7.1's third consequence, and the omission is recorded rather than repaired
+in place.
 
 ---
 
@@ -606,6 +634,11 @@ is blocked from a sandbox, so a green light there is what licenses the green lig
 | 2021 traversals that worked | **5** | 0 |
 | Outcome counts | BLOCKED 14 · EMPTY 4 · **LEAKED 11** · NOT RUN 2 · UNMEDIATED 1 | BLOCKED 21 · EMPTY 10 · DENY 6 · PERMIT 1 |
 | Verdict | **PASS** — the pattern reproduces | **PASS** — neither canary reached it |
+
+*(The unconfined column is thirty-two rows against the confined column's thirty-eight, and both are
+as measured. The confined arm's **seven mediated attacks have no unconfined counterpart** — §7.13.3
+below — and collapse into the single `UNMEDIATED` row: 31 non-mediated attacks plus 7 mediated is
+38, and 31 plus 1 is 32. Noted so the column can be added up; §7.26.6 records why it was not.)*
 
 `open("../../secrets.yaml")` returns the credential unconfined and raises **`FileNotFoundError`**
 confined. Not `PermissionError`: the file was never in the sandbox's mount namespace, so no
@@ -902,7 +935,8 @@ manifest was never trusted as a description of what the code would do. That is C
 
 ### 7.16.2 The suite, re-run against the evaluated artifact
 
-All eight self-tests, on the C4 device, 2026-09-02:
+All eight self-tests, on the C4 device, 2026-09-02 — a count this section carries at its date;
+**the 2026-09-03 run passes eighteen**, tabulated in §7.26.7:
 
 | Self-test | Criteria it carries | |
 |---|---|---|
@@ -1521,6 +1555,11 @@ Chapter 8 carries it. **Item 8 is conditional on a decision not yet taken.**
 > discharged rather than carried: 92% confined and 92% unconfined on a uniform draw sharing 2 of
 > 40 members with the head corpus. §7.21.5's scorecard below is superseded by §7.23.7, which
 > scores eight predictions rather than five.
+>
+> **And item 8 is no longer conditional — §7.24 and §7.25 (2026-09-03).** §9.5's decision was
+> taken, the proxy was measured for before it was built, and F2 and S4 are both ✅ Met. All eight
+> scheduled items are complete. The sentence above is left as written because it was true on
+> 2026-09-02 and the date is the evidence.
 
 ### 7.21.5 Predictions, scored in one place
 
@@ -1687,6 +1726,8 @@ will otherwise read `resources` as a hole in default-deny.
 
 - **§7.5's S9 row moves from ⚠ to ✅**, with the narrowed wording of §7.22.2 rather than
   §4.10.1's. Two rows still fail — **F2 and S4, both egress** — and they are the only two.
+  *(Both closed the next day: §7.25. All twenty rows now carry a verdict, and this sentence is
+  left at its date per §7.26.6, finding 4.)*
 - **§7.21.1's F4 half is closed.** `describe.py` renders a `cpu_percent` clause that is now
   true, and a `disk_mb` clause that is also true. The latent false sentence §7.21.7 recorded
   can no longer be produced.
@@ -1850,23 +1891,30 @@ restated. Both questions now have an answer measured the same way:
 
 ### 7.23.7 The prediction scorecard, now at eight
 
-| | Registered | Outcome |
+| | Registered, as written in §7.6 and `notes/ch7_uniform_prediction.md` | Outcome |
 |---|---|---|
-| P1 | Confinement costs compatibility on the corpus | ❌ **Wrong** (§7.12) |
-| P2 | The baseline will fail on fewer than the confined arm | ❌ **Wrong** (§7.12) |
-| P3 | Structural denial produces `EMPTY`, not `BLOCKED` | ✅ Right (§7.13) |
-| P4 | Latency degrades in the tail before the median | ❌ **Wrong** (§7.19) |
-| P5 | S9 bounds how much an integration can read | ❌ **Falsified** (§7.20.2) |
+| P1 | Baseline **34/37** | ❌ **Wrong** — 31/37 (§7.12.3) |
+| P2 | The baseline **passes** the three `aiofiles` integrations | ❌ **Wrong** — it fails all three (§7.12.3) |
+| **P3** | **Confinement's compatibility cost is 0–3 integrations of 37, 0–8 points** | ✅ **Right**, at the floor — **0** (§7.12.2) |
+| P4 | Median ≤2×, p99 ~10× worse at 26 sandboxes | ❌ **Wrong** — both 16–20×; saturation, not tail queueing (§7.19.2) |
+| P5 | S9 kills a legitimate large-file reader | ❌ **Falsified** — never killed; page cache is reclaimable (§7.20.2) |
 | P6 | The uniform sample is 10–30 points *below* 84% | ❌ **Wrong in sign** — 92% (§7.23.2) |
-| **P7** | **The design's cost stays zero on a uniform sample** | ✅ **Right** (§7.23.4) |
+| **P7** | **The design's cost stays zero, or within one, on a uniform sample** | ✅ **Right** — zero (§7.23.4) |
 | P8 | More corpus artefacts in the tail | ❌ **Wrong in both halves** (§7.23.3) |
 
 **Six of eight wrong, none revised.** The two that held are the two that were predictions *about
-the design* rather than about the world — P3 that structural denial would look different from
-procedural denial, and P7 that a zero measured once would hold on an independent sample. Every
-wrong one was a prediction about what the ecosystem or the kernel would do. Chapter 8 should make
-that distinction rather than reporting a bare 6-of-8, because it is the more defensible claim:
-**the design behaved as designed; the world did not behave as assumed.**
+the design* rather than about the world — and they are the same prediction measured twice: P3 that
+confinement's compatibility cost would be at or near zero, and P7 that a zero measured once would
+hold on a near-independent sample. Every wrong one was a prediction about what the ecosystem or
+the kernel would do. Chapter 8 should make that distinction rather than reporting a bare 6-of-8,
+because it is the more defensible claim: **the design behaved as designed; the world did not behave
+as assumed.**
+
+> **The rows above were corrected in place on 2026-09-03 — §7.26.6, finding 1.** The first version
+> of this table paraphrased P1 and P2 into claims §7.6 does not make, and replaced P3 with an
+> observation from §7.13 that was never registered as a prediction. The counts and the argument are
+> unchanged; the wording is now the register's own, and a scorecard that misquotes its register has
+> no reasoning the leave-it-and-point convention exists to protect.
 
 ## 7.24 What egress actually looks like, measured before the proxy is built
 
@@ -2151,6 +2199,276 @@ is not edited — it gains this pointer. All twenty requirements in §7.5 now ca
   substitute for.
 - **The DNS-library coupling named in §7.24.6 is unchanged by this result.** A working run today
   says nothing about a future Home Assistant release that replaces `aiodns`.
+
+## 7.26 The read-through — the two registers scored, and what one voice found
+
+**2026-09-03.** §7.21 read the methodology half against the results half and Chapter 6 against
+Chapter 7. Neither pass read this chapter *as one document*: §7.12–§7.25 were written one result
+at a time, over two days, each section correct where it stood. §7.7's fourth falsifier makes
+reading them together a requirement rather than tidiness — *an evaluation that reports a
+requirement as passed when it cannot demonstrate it has failed on its own terms* — and the same
+standard applies to a commitment made in the frozen half and then not kept.
+
+Two findings are substantive. Both are about **things the chapter promised or possessed and did
+not report**, which is the failure mode a section-at-a-time chapter has and a read-through is the
+only instrument for.
+
+### 7.26.1 §7.2 promised a scoring the chapter never performed
+
+§7.2 is not vague about it:
+
+> The security axis is therefore scored **twice** — once against Chapter 4's own register of
+> eighteen threats, and once against Corno and Mannella's eleven (their T1–T11), using the mapping
+> column §4.8 supplies. The second scoring is the one an external reader can check without
+> accepting any of this project's own threat-identification work.
+
+**Neither scoring exists in §7.12–§7.25.** The results half is organised by *requirement* — §7.5's
+twenty rows, which are what §7.3 calls the chapter's spine — and every security section discharges
+a requirement rather than a threat. Across seventeen hundred lines of results a T-number appears
+sixteen times, every one of them in passing, and no section enumerates either register.
+
+This is not a missing measurement. Every threat in both registers is either demonstrated by
+evidence already in this chapter or retained by a decision already recorded in §4.11; nothing new
+had to be run to produce what follows. It is a **reporting** failure of exactly the kind N2 was
+written to catch one level up, and it went unnoticed for the same reason N2 exists: the chapter was
+scored against the table it was organised by, and the table it was *also* answerable to was in a
+section nobody re-read after the results started landing. §7.10's schedule lists measurements, so
+closing the schedule out (§7.21.4) gave no signal that a reporting obligation was outstanding.
+
+The rest of this section is that scoring, performed rather than promised.
+
+### 7.26.2 T08, T10 and T11 — evidence the artifact holds and the chapter never reported
+
+§7.5's note on its two blocked rows made a prediction about what building the proxy would do, and
+it named threats rather than requirements:
+
+> If the egress proxy is built, both rows become verifiable and **T08, T10 and T11 acquire
+> demonstrated controls**.
+
+§7.25 closed F2 and S4 and **scored none of the three.** The proxy was built, the evidence was
+produced, and the sentence that anticipated it was never returned to. Recovering it needs no new
+run: `selftest_egress` is one of the eighteen suites the 2026-09-03 run passed on the C4 device,
+and its cases are the demonstrations §7.5 anticipated.
+
+**T11 — a declared name that resolves inward — is demonstrated exactly as §4.10 specifies the
+control.** `case_t10_t11` grants an integration the name `innocent.invalid:<port>`, arranges for
+that name to resolve to `127.0.0.1`, and then makes the two decisions separately:
+
+```
+    policy("demo_rebind", …)  →  allowed      the manifest permits the name, because a
+                                              manifest can only speak of names
+    broker.open(…)            →  refused      "not a public address"  — on the address the
+                                              resolution actually returned
+```
+
+That split is the whole of T11. §5.10.5's *"checking the name is not checking the thing"* is here as
+two lines of measured behaviour: the clause is satisfied and the connection is still refused, because
+what the broker judges is what resolution returned rather than what the manifest said. §7.24.2
+argued that resolve-then-pin is *more* structural than §5.10.5 claimed, since a sandbox holding only
+a placeholder address has nothing to race the check with; this is the same property observed from
+the enforcement side.
+
+**T10 — reach into the LAN and onto the gateway — is demonstrated on the classification and once
+adversarially.** `is_public` refuses loopback, RFC 1918, link-local, `0.0.0.0`, IPv6 loopback,
+link-local IPv6 **and IPv4-mapped IPv6** — the last because `::ffff:192.168.1.1` is a form the
+§7.24 run actually produced, so it is a case drawn from measurement rather than from the RFC index.
+The adversarial half is `case_allow_private_is_not_request_controlled`, and it is worth stating in
+the chapter rather than only in the code, because the bug it regression-tests was this design's own:
+
+> `EgressBroker.open`'s first version read `allow_private` from the **request** — a field the
+> sandbox composes. A hostile integration could have granted itself the whole of T10's reach by
+> writing one key into a message it already controlled, while its manifest declared nothing but a
+> public hostname.
+
+The fix makes it a parameter of the caller, and `acting_policy` never passes it. The case sets the
+key in the request anyway and asserts the refusal still comes. **This is the one place in the
+evaluation where a control failed against an attack the design itself invented, was fixed, and is
+now tested under the same attempt** — and §4.11 has no residual risk covering it, because it was
+never a residual risk. It was a defect, and the reason it is in the chapter is that a defect found
+by building the adversary case is evidence about the method (§7.4.2's rule that negative cases
+assert on the reason) rather than an embarrassment to be resolved in a commit message.
+
+**T08 — exfiltration to an undeclared host — is §7.25's own result** and was reported there as S4.
+The two are the same measurement scored against different registers, which is precisely what §7.2
+asked the chapter to do and what it stopped doing.
+
+### 7.26.3 Chapter 4's register, scored per threat
+
+All eighteen. **The verdict column is not aggregated**, on §7.4.2's rule that a single "threats
+controlled" figure is the security equivalent of an unlabelled compatibility percentage. *Paired*
+means the threat was also demonstrated against an unconfined arm on the same host and release —
+the standard §3.5 imposed on S8 and S3, and the only standard under which a block is evidence.
+
+| ID | Control (Ch. 3) | Evidence in this chapter | Verdict |
+|---|---|---|---|
+| T01 | S1 — execute outside the platform's process | §7.15.3: unconfined the victim's token is reached **7 ways**; confined 8,942 objects, all its own | ✅ **Paired** |
+| T02 | S1, S7 — identity per request | §7.16.1: *"claim to be another integration"* → `/permissions/entities/read`; `selftest_channel`, identity is the socket (§5.11.2) | ✅ Demonstrated |
+| T03 | S1 — mediator unreachable from the address space | §7.15.3, §7.13.3 | ✅ Demonstrated, **unpairable by construction** — unconfined there is no mediator to tamper with, and the suite reports `UNMEDIATED` rather than a comparison |
+| T04 | S2 — credential only in the mediator | §7.15.3: token **live in the mediator, 7 references**, at the moment the sandbox's sweep finds nothing | ✅ **Paired** |
+| T05 | F3, S5, S6 — manifest-checked calls | §7.16.1: unlock refused to a manifest declaring only `lock.lock`; `lock.*` rejected at parse | ✅ Demonstrated |
+| T06 | S3 — mediate reads *and* subscriptions | §7.14.2: **36/36 → 1/36**, and **20/20 → 0/20** presence entities | ⚠ **Partial.** Reads paired; the subscription half is a refusal without a delivered stream (§7.14.4) |
+| T07 | F3, S6 — writes to declared entities only | §7.16.1: `/permissions/entities/write` | ✅ Demonstrated |
+| T08 | S4 — per-integration egress allow-list | §7.25.2: two concurrent sandboxes, each denied the other's host, audit `[True, False]` | ✅ Demonstrated |
+| T09 | **Retain** (R5) | §7.24.5: every TLS wrap had `check_hostname`; the mediator supplies a descriptor and sees destination, never content | ⊘ **Retained — and now measured rather than asserted** |
+| T10 | S4 — deny non-public destinations | §7.26.2, and §7.24.5's measurement that a 29k-install integration needs the flag in ordinary operation | ✅ Demonstrated at the decision layer |
+| T11 | S4 — check the address, not the name | §7.26.2: clause satisfied, connection refused on the resolved address | ✅ Demonstrated at the decision layer |
+| T12 | F3, S6 — declaration re-checked per version | **none** | ✗ **Not evaluated** — §7.26.5 |
+| T13 | **Retain** partially (R1, R2) | §7.16.1: the over-broad grant **is honoured**; what is measured is the ceiling it cannot raise | ⊘ Retained, with the ceiling measured |
+| T14 | S8 — filesystem isolation | §7.13.2: canaries **2/2 → 0/2**, five 2021 traversals → zero, `FileNotFoundError` not `PermissionError` | ✅ **Paired** |
+| T15 | S8 — process-table isolation | §7.13: *"read another process's environ"* → `LEAKED` unconfined, `EMPTY` confined | ✅ **Paired** |
+| T16 | S9 — resource limits | §7.22.1: four bounds, each checked by a sandbox exceeding it | ⚠ **Partial against §4.10.1's wording** — space yes, I/O bandwidth not delegated (§7.22.2); `/sandbox/data` unbounded |
+| T17 | S1 — separate process removes the shared heap | §7.15.3 — this is the threat §2.4.1 demonstrated and the one that forced the architecture | ✅ **Paired** |
+| T18 | S7 — attributed, tamper-evident log | §7.16.2 `selftest_audit`, hash and MAC chains failing independently; §7.25.2's per-identity record | ✅ Demonstrated, bounded by **R4** — §7.11 and §7.13.2: an OOM kill leaves no record, and unconfined the attacker found a real audit log on the host |
+
+**Thirteen demonstrated, five of them against an unconfined arm; two partial; two retained by a
+decision Chapter 4 already recorded; one not evaluated.** The five paired ones are T01, T04, T14,
+T15 and T17 — and it is worth noticing which: they are the confidentiality threats, and they are
+the ones where §3.5 required a baseline. Where the evaluation is strongest it is strongest because
+Chapter 3 made pairing a requirement before anything existed to pair.
+
+**The four Critical inherent risks (§4.9) are T01, T03, T04 and T05.** All four are demonstrated,
+two of them paired, and none is among the partial or unevaluated rows. §4.9's observation that the
+Critical risks *"share a single cause: integration and platform occupy one process with no boundary
+between them"* is answered by a single control, and §7.15 is the measurement of it.
+
+### 7.26.4 The external register, scored — and §4.14 records one divergence where there are three
+
+This is the scoring §7.2 said an external reader could check without accepting any of this
+project's threat-identification work. Mapping from §4.8's `CM` column, unaltered.
+
+| CM | Their threat | Maps from | Verdict |
+|---|---|---|---|
+| **T1** | Confidentiality — use of data outside scope | T04, T06, T14, T15, T17 | ✅ Demonstrated, **four of five paired**; T06's subscription half partial |
+| **T2** | Spread of data outside scope | T08, T09 | ⚠ **Split, and the split is the design's honest boundary.** T08 demonstrated (§7.25); T09 retained (R5) — destination is controlled, content is not |
+| **T3** | Integrity — alter device state | T05, T10 | ✅ Demonstrated |
+| **T4** | Integrity — alter private data | T07, T17 | ✅ Demonstrated |
+| **T5** | Availability — delay | **nothing** | — **Unmapped** |
+| **T6** | Availability — partial loss | **nothing** | — **Unmapped** |
+| **T7** | Availability — complete loss, incl. *"resource saturation up to a frozen state"* | T16 | ⚠ Partial — space bounded, I/O bandwidth not (§7.22.2) |
+| **T8** | Availability — physical damage | **nothing**, and §4.14 says so | ⊘ Out of reach; retained immediately |
+| **T9** | Authentication — impersonation | T02, T11 | ✅ Demonstrated |
+| **T10** | Authorisation — escalation | T01, T03, T05, T13 | ✅ Demonstrated except T13, which is retained (R1, R2) |
+| **T11** | Non-repudiation — anonymous action | T18 | ✅ Demonstrated, bounded by R4 |
+
+**Eight of their eleven are mapped; five of the eight score cleanly and three carry a stated
+qualification. Three of the eleven are not mapped at all, and §4.14 accounts for only one of them.**
+§4.14 states the divergence as *"their model is broader in consequence; this one is broader in
+mechanism"* and gives physical damage (their T8) as the example. It is not the only case: **their
+T5 (delay) and T6 (partial loss) have no counterpart in §4.8's eighteen either.**
+
+The defensible reading is that this is an under-mapping rather than an omission. T16 is *"exhausts
+CPU, memory or disk, rendering the gateway unresponsive"*, and a gateway being exhausted delays
+and partially loses before it completely loses — so T16's control plausibly reaches their T5 and T6
+as well, and §4.8's column maps it only to their T7. Either way the statement in §4.14 is one
+example presented as the whole difference, and **§4.14 is not edited — it gains a pointer here**, on
+the convention §6.4.1 established for Chapter 5 and §7.21.6 applies to Chapter 6.
+
+**What the external scoring adds that the internal one cannot.** §7.2 predicted that *"a clean sweep
+of Chapter 4's register is not a clean sweep of theirs"*, and that is now measured rather than
+anticipated. The two registers disagree in both directions: theirs reaches consequences this design
+cannot touch (T8, and arguably T5 and T6), while §4.8's eighteen separate the supply path (TB4) and
+the host OS (TB5) into boundaries their gateway-level framing folds together — which is why T12 and
+T15 have thin or no CM counterparts. **Neither register is a superset, and reporting only the one
+this project wrote would have been the more flattering of the two.**
+
+### 7.26.5 T12 is the one threat with no evidence, and it was never declared unevaluable
+
+§7.11 names four things this chapter cannot do, and T12 is not among them. §4.10 treats it —
+*"confinement applies to whatever version runs; declaration re-checked per version"* — and the first
+clause is structural and true: a sandbox confines whatever code is inside it, so a malicious update
+inherits the previous version's boundary rather than escaping it. The **second** clause is the one
+with content, and nothing in this chapter exercises it. No section spawns the same integration
+twice across a version change, and no section spawns one whose manifest changed between runs.
+
+Stating it plainly: **T12's control is asserted, not demonstrated, and this is the only threat in
+either register of which that is true.** It is a small measurement — set an integration up, change
+its manifest, spawn it again, and show the second run is bounded by the second declaration and
+that the change is visible through `describe.py` before it takes effect — and it is a small
+measurement that was never scheduled, which is why §7.10's close-out in §7.21.4 did not catch it.
+Chapter 8 owes it as future work, and this section owes the admission that §7.11 should have
+carried it in advance if it was not going to be run.
+
+### 7.26.6 Four corrections the read-through made, and how each was handled
+
+The chapter's convention is that a section is left as written and gains a pointer when later
+evidence overturned its *reasoning*, and is corrected in place when there is no reasoning to
+protect — §7.21.7 drew that line for a miscount and a damaged sentence. Both cases arose again.
+
+**1. §7.23.7's scorecard misquotes the register it claims to score, and drops the prediction that
+was right.** §7.6 registered P1 as *"Predicted baseline: 34/37"* and P3 as *"the compatibility cost
+attributable to confinement is 0 to 3 integrations of 37"*; §7.21.5 scored P3 ✓. §7.23.7's table
+paraphrases P1 as *"confinement costs compatibility on the corpus"*, P2 as *"the baseline will fail
+on fewer than the confined arm"*, and replaces P3 entirely with *"structural denial produces
+`EMPTY`, not `BLOCKED`"* — which is a true observation from §7.13 and **was never registered as a
+prediction anywhere**. The arithmetic survives: two of eight held, six did not. The argument
+survives and improves — §7.23.7 says the two that held were *"predictions about the design rather
+than about the world"*, and P3-as-registered (the design's compatibility cost) and P7 (the same
+cost on an independent corpus) are the same prediction measured twice, which is a tighter statement
+than the one the section makes. **Corrected in place**, to the registered wording, because a
+scorecard that quotes its register wrongly has no reasoning to protect.
+
+**2. §7.13.2's unconfined column sums to 32 where the section states thirty-eight attacks.**
+`BLOCKED 14 · EMPTY 4 · LEAKED 11 · NOT RUN 2 · UNMEDIATED 1` is thirty-two rows; the confined
+column's `21 · 10 · 6 · 1` is thirty-eight. Both are as measured. The difference is that the
+confined arm's **seven mediated attacks have no unconfined counterpart** — §7.13.3 says so in prose
+(*"an unconfined integration is not denied `lock.unlock`; there is nobody to ask"*) — and collapse
+into the single `UNMEDIATED` row. 31 non-mediated rows plus 7 mediated is 38; 31 plus 1 is 32. **A
+clause is added** to §7.13.2 so the column can be added up, because a reader who checks the
+arithmetic and finds it short has been given a reason to distrust every other table in the chapter.
+
+**3. §7.4.1's corpus table was edited in place, against §7.21.2's own rule.** §7.21.2 holds that the
+methodology half is *"evidence of what was planned before the results, and editing it into agreement
+destroys the only thing that makes §7.1's claim checkable"*, and names two stale sentences left
+standing for that reason. The uniform corpus's row was nonetheless changed from *"Owed;
+`figures/fetch_hacs_corpus.py` takes it, only the selection changes"* to *"**Run — §7.23.** Seed
+20260902…"* when §7.23 landed. **Reverted to the frozen text, with the pointer moved below the
+table**, which is the form §7.9 already uses for the same result. The inconsistency is worth the
+paragraph: the convention is only load-bearing if it is applied where it is inconvenient, and this
+is the one place in two chapters where it was not.
+
+**4. Three sections state a chapter-wide count that a later section moved, and none carries a
+pointer.** §7.21.4 closes with *"Item 8 is conditional on a decision not yet taken"* — §7.24 opens by
+taking it. §7.22.4 states *"Two rows still fail — F2 and S4, both egress — and they are the only
+two"* — §7.25 closes both. §7.16.2 reports *"all eight self-tests"* where the 2026-09-03 run passes
+**eighteen**, a total this chapter states nowhere. **Each gains a pointer and keeps its text**, because
+each was true on the date it carries and the dates are the evidence; and §7.26.7 records the suite
+total, since a chapter that reports individual suite counts in four places and never the sum is
+inviting the reader to add them up wrongly.
+
+### 7.26.7 The suite, as it stands at the end of the chapter
+
+| | On 2026-09-02 (§7.16.2) | On 2026-09-03 |
+|---|---|---|
+| Self-test suites passing on the C4 device | 8 | **18** |
+| Added by §7.22 | `selftest_resources` — 13 checks | |
+| Added by §7.25 | `selftest_fdpass` 12, `selftest_socket_pinning` 6, `selftest_egress` 23, `selftest_egress_shim` 9, `selftest_udp` 12, `selftest_egress_sandboxed` 17, `selftest_netshape` 13 | |
+
+The two counts are not a compatibility figure and no rate is computed from them; they are recorded
+because §7.16.2's table is the chapter's only statement of what the artifact's own tests cover, and
+it stopped being current the moment §7.22 ran.
+
+### 7.26.8 What this pass did not find, which is the more useful half
+
+**No result in this chapter contradicts another.** Every figure quoted twice is quoted the same way:
+84% and the zero cost in §7.12 against §7.23's 92% and zero; 31.5 µs in §7.19 against §7.20.1's
+correction to 272 decisions per second, which §7.19.3 carries in place; 36-to-1 entities in §7.14;
+2-of-2 canaries in §7.13; 96% of resolutions via `aiodns` in §7.24. The four corrections in §7.26.6
+are **one misquotation of a register, one uncheckable sum, one convention lapse and three stale
+counts** — and, as in §7.21.7, every one of them is a sentence next to a measurement rather than a
+measurement.
+
+That asymmetry now holds across four chapters and two read-throughs, and §7.21.7 was right to say
+it belongs in Chapter 8 as a methodological result rather than as a run of luck. It has a plain
+explanation and the explanation is the argument for the discipline: **a number in this project is
+produced by a harness that is itself tested, and a sentence about a number is produced by an author
+writing at the end of a long day.** The measurements have a mechanism that catches their errors.
+The prose has only a read-through, which is why there have now been two.
+
+**What the pass could not check.** It read the chapter against itself, against Chapter 4's two
+registers and against §7.6's frozen predictions. It did not re-run anything — every figure above is
+quoted from the recorded result files, and a transcription error common to a results file and this
+chapter would survive it. §7.24.6's argument applies here too: two instruments catch what one
+misses, and for the prose there is currently one.
 
 
 ---

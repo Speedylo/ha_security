@@ -474,7 +474,16 @@ Two differences are worth stating.
 **Their model is broader in consequence; this one is broader in mechanism.** They include
 physical damage to devices (their T8) — repeated activation until a lamp burns out — which
 this model does not, because it is not reachable by any control available here and would be
-retained immediately. This model, in turn, separates the supply and update path (TB4) and
+retained immediately.
+
+> **Corrected by §7.26.4 (2026-09-03): the divergence is wider than this paragraph states, and
+> the text is left as written.** Scoring both registers found that **three** of their eleven have
+> no counterpart in §4.8's mapping column, not one — their T5 (delay) and T6 (partial loss) as
+> well as T8. The defensible reading is under-mapping rather than omission: T16 is *"exhausts CPU,
+> memory or disk, rendering the gateway unresponsive"*, and a gateway being exhausted delays and
+> partially loses before it completely loses, so T16's `CM` entry should read **T5, T6, T7** rather
+> than T7 alone. Either way this paragraph gives one example where there are three, and §7.26.4
+> reports the scoring against the mapping as it stands rather than against a corrected one. This model, in turn, separates the supply and update path (TB4) and
 the host operating system (TB5) as boundaries in their own right, which their gateway-level
 framing does not require.
 
