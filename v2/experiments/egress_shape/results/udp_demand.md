@@ -5,8 +5,9 @@ Corpora: corpus, corpus_uniform; 2 appear in both.
 | Where the datagram code is | Integrations | Share |
 |---|---|---|
 | the integration's own source | 8 | 11% |
-| a **declared dependency** | 16 | 21% |
-| **either** | **20** | **27%** |
+| a **device-protocol dependency** | 10 | 13% |
+| **own source or a protocol library** | **15** | **20%** |
+| any dependency, incl. general-purpose (ceiling) | 20 | 27% |
 
 Dependency scan: 42 installed, 33 declare no requirements, 0 failed to install.
 
@@ -38,22 +39,22 @@ Dependency scan: 42 installed, 33 declare no requirements, 0 failed to install.
 
 | Integration | `iot_class` | packages |
 |---|---|---|
-| `alexa_media` | cloud_polling | anyio |
-| `ble_monitor` | local_polling | pyric |
-| `dreame_vacuum` | cloud_polling | miio, zeroconf |
-| `dwd_weather` | cloud_polling | anyio |
-| `eufy_security` | cloud_push | aiortsp |
-| `llmvision` | cloud_polling | botocore |
-| `localtuya_rc` | local_polling | tinytuya |
-| `midea_ac_lan` | local_push | midealan |
-| `qolsys_panel` | local_push | qolsys_controller, zeroconf |
-| `skybellgen` | cloud_polling | aioskybellgen, botocore, pytest_asyncio |
-| `solcast_solar` | cloud_polling | anyio |
-| `solis_modbus` | local_polling | pymodbus |
-| `sonyavr` | local_push | asyncping3 |
-| `tapo_control` | none | kasa |
-| `xiaomi_home` | cloud_polling | psutil |
-| `xiaomi_miot` | cloud_polling | miio, zeroconf |
+| `alexa_media` | cloud_polling | anyio (general) |
+| `ble_monitor` | local_polling | pyric (general) |
+| `dreame_vacuum` | cloud_polling | **miio**, **zeroconf** |
+| `dwd_weather` | cloud_polling | anyio (general) |
+| `eufy_security` | cloud_push | **aiortsp** |
+| `llmvision` | cloud_polling | botocore (general) |
+| `localtuya_rc` | local_polling | **tinytuya** |
+| `midea_ac_lan` | local_push | **midealan** |
+| `qolsys_panel` | local_push | **qolsys_controller**, **zeroconf** |
+| `skybellgen` | cloud_polling | **aioskybellgen**, botocore (general), pytest_asyncio (general) |
+| `solcast_solar` | cloud_polling | anyio (general) |
+| `solis_modbus` | local_polling | **pymodbus** |
+| `sonyavr` | local_push | **asyncping3** |
+| `tapo_control` | none | **kasa** |
+| `xiaomi_home` | cloud_polling | psutil (general) |
+| `xiaomi_miot` | cloud_polling | **miio**, **zeroconf** |
 
 ## Calibration
 
