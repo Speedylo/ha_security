@@ -247,13 +247,13 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **C3** | The adversarial run includes an absent manifest, an over-broad manifest, and one deliberately mismatched to behaviour — and all three are handled per §5.9's precedence rules | Security |
 | **C4** | Every performance figure is produced on the Raspberry Pi 5, reporting per-integration memory *and* added latency | Performance |
 | **F1** | A confined integration's entities are present in Home Assistant and behave as native entities under the measures used in this chapter | Compatibility, level 2 |
-| **F2** | An integration polling a **declared** remote API completes successfully while confined | ⛔ **Blocked — the egress proxy does not exist** (§6.11.1 scope item 2). Reported as unverified, not omitted |
+| **F2** | An integration polling a **declared** remote API completes successfully while confined | ✅ **Met — §7.25.** A confined integration polled `example.com` and published the result; two such integrations ran concurrently in real namespaces |
 | **F3** | Every enforcement decision in the evaluation names the manifest clause that produced it; a decision with no attributable clause is shown to be unconstructible | Security |
 | **F4** | The manifest of each evaluated integration renders in human-readable form, with denials shown at the same weight as grants | §6.7, re-run over the evaluated set |
 | **S1** | The published garbage-collector technique (§2.4.1) is attempted from inside the sandbox and reaches no platform object; the mediator and its credential are not locatable from within | Security |
 | **S2** | No platform credential is recoverable from the sandbox's environment, filesystem, process table or memory | Security |
 | **S3** | A confined integration is denied both a **read** and a **subscription** to undeclared entities, each refusal naming its clause, **against a paired unconfined baseline** quantifying what is readable without the framework | Security |
-| **S4** | An integration is denied a host declared only by a *different* integration | ⛔ **Blocked — no egress path exists.** Attribution alone is measured (§6.5.2); attribution without enforcement does not satisfy S4 |
+| **S4** | An integration is denied a host declared only by a *different* integration | ✅ **Met — §7.25.** Two confined integrations, running at once, each denied the host declared only by the other — evidenced by the mediator's own audit record |
 | **S5** | A manifest permitting `lock.lock` is shown not to permit `lock.unlock`, and the refusal is structural rather than a check | §6.10.1 — re-verified in the evaluation run |
 | **S6** | An integration with **no** manifest and one with an **unparseable** manifest are each denied all mediated capability, each refusal naming its rule | Security |
 | **S7** | Decisions appear in the log bearing the integration's three-part identity, and modification, deletion **and reordering** are each independently detectable by both the hash chain and the keyed MAC chain | §6.8 — re-verified |
@@ -922,6 +922,10 @@ records why that case matters — `mkdir` succeeds from the wrong position, so e
 right and only placement fails.
 
 ### 7.16.3 Where §7.5 now stands
+
+> **Superseded by §7.25 (2026-09-03) for F2 and S4.** This section is a snapshot of 2026-09-02
+> and is left as written; the egress proxy was built between then and now, and both rows are
+> now ✅ Met. What follows in this section is otherwise unchanged.
 
 Fifteen of twenty requirements are discharged with evidence in this chapter or in Chapter 6.
 The five that are not divide into three kinds, and the distinction matters more than the count:
@@ -2045,6 +2049,108 @@ reach for a heuristic precisely because it lacked the property the artifact is b
 
 None of this was reachable by reading Chapter 5 again. Four of the six rows change the artifact
 about to be written, and the two that do not are now tested rather than assumed.
+
+## 7.25 F2 and S4, closed — the egress proxy, evaluated rather than merely built
+
+**Run 2026-09-03**, `framework/confine/selftest_egress_sandboxed.py`. §7.24 measured what the
+proxy had to be; §5.10.3's schema and §7.24.9's corrections gave it a design
+(`notes/decision_network_capability.md`); this section is the artifact built to that design and
+evaluated against the two rows §7.5 named as blocked on 2026-09-02.
+
+Everything else built for the egress path is tested piece by piece against a substitute for the
+rest of it — `channel.py`'s descriptor passing (`selftest_fdpass`), the mediator's decision path
+called as a plain function (`selftest_egress`), real HTTP clients against that same function call
+(`selftest_egress_shim`), real datagrams through the relay (`selftest_udp`). That is the right way
+to build a mechanism and it is not the claim F2 makes. F2's criterion, fixed in §7.5 before any of
+this existed, is *"an integration polling a declared remote API completes successfully while
+confined"* — and confined is a namespace with no route to anywhere, not a function call.
+
+### 7.25.1 What ran
+
+One integration, shaped the way §5.6.1 measured the corpus actually looks — a config entry, a
+`DataUpdateCoordinator`, a `SensorEntity` — spawned into real namespaces, seccomp and a
+memory-limited cgroup, exactly as `selftest_bridge.py` spawns its own subject for F1 and C1. It
+declares `example.com:80` and polls it with its own `aiohttp.ClientSession()`, unmodified from
+how a community integration would write it.
+
+A second, identically-shaped integration runs **at the same time**, in its own sandbox, declaring
+`example.net:80`. Each coordinator does two things: fetches its own declared host, then attempts
+the *sibling's* declared host. That second request is what turns the run into an S4 test rather
+than two unrelated successes — a host that is a valid grant for one identity is attempted, from
+inside a genuinely separate confined process, by the identity it was never granted to.
+
+Both sandboxes are registered with the mediator before either is served, and `mediator.serve()`
+answers both over one selector loop — which is what makes "concurrent" a fact about two processes
+running at once rather than a claim about the order two function calls happened to execute in.
+
+### 7.25.2 Result
+
+| | |
+|---|---|
+| A's own poll | HTTP 200, published as the entity's state, `found_marker` true |
+| B's own poll | HTTP 200, published the same way |
+| A's probe of B's host | denied |
+| B's probe of A's host | denied |
+| Memory | `oom_kill=0` for both, 384 MB cap |
+
+The evidence for the denial is the mediator's own audit record rather than a status code the
+sandbox reported about itself, because a confined process is exactly the party whose self-report
+should not be trusted for this. Each identity made exactly two `network.egress` decisions, in the
+order it made them: `[True, False]`. The second names `/permissions/network/egress` — denied by
+absence, S6 — because the sibling's host matches no clause this identity holds.
+
+**Stable across three consecutive runs**, real internet each time. 17 checks, 17 passing, and the
+suite fails informatively rather than silently if the target hosts are unreachable at all — a
+result it cannot produce is distinguished from one it disproves.
+
+### 7.25.3 Two structural bugs the driver itself caught
+
+Neither is a finding about the egress design; both are about writing a test that spawns two
+concurrent confined processes correctly, and both are recorded because getting them wrong would
+have produced a false pass.
+
+**`Mediator.policy` is one function shared by every registered channel.** A first draft set it
+separately for each sandbox as it was spawned, which silently replaced the first sandbox's
+manifest in the policy closure with the second's — sandbox A would have been evaluated against
+only B's manifest by the time it made its first request. Both manifests now exist and are combined
+into one `acting_policy` before either sandbox is spawned (`prepare()`'s docstring in the file
+carries the explanation).
+
+**A cgroup opened with `with` inside a function that returns before the sandbox exits tears the
+cgroup down while the sandbox is still running.** `SandboxCgroup.create()` is a plain object —
+`__enter__` returns `self`, `__exit__` calls `.remove()` — so nothing requires the `with` form.
+The cgroup's lifetime now spans `spawn()` (which starts it) to `finish()` (which reads its stats
+and removes it), matching the sandbox's own lifetime rather than the function call that launched
+it.
+
+### 7.25.4 Where §7.5 now stands
+
+> **F2 — ✅ Met (§7.25).** An unmodified-shaped integration, confined in real namespaces with no
+> route to anywhere, polled a declared remote API and published the result.
+>
+> **S4 — ✅ Met (§7.25).** Two such integrations, confined and running concurrently, each denied
+> precisely the host declared only by the other — evidenced by the mediator's own audit record,
+> not by either sandbox's self-report.
+
+§7.16.3's reconciliation, written 2026-09-02, correctly recorded both as blocked at that date and
+is not edited — it gains this pointer. All twenty requirements in §7.5 now carry a verdict.
+
+### 7.25.5 What this does not establish
+
+- **UDP is not exercised here.** F2's criterion names an API, and every integration in this
+  suite polls over TCP — the transport the corpus's cloud-facing half overwhelmingly uses
+  (§7.24.3). §7.24.4's UDP finding and `udp_relay.py`'s build are evaluated by `selftest_udp`
+  against the same decision path, not inside a spawned sandbox; a confined UDP round trip
+  through real namespaces is not built and is owed to Chapter 8 alongside the unserved
+  asyncio-datagram quarter.
+- **Two sandboxes, not the corpus.** This is a targeted demonstration of F2 and S4's own stated
+  criteria, with a selection defended the way §7.4.1 requires — not a coverage claim across the
+  37- or 40-integration corpora. Whether the egress path holds up against a real community
+  integration's actual API (rather than a synthetic coordinator polling a stable IANA host) is a
+  different, larger measurement that §7.10's schedule did not include and this section does not
+  substitute for.
+- **The DNS-library coupling named in §7.24.6 is unchanged by this result.** A working run today
+  says nothing about a future Home Assistant release that replaces `aiodns`.
 
 
 ---

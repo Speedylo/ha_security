@@ -1,17 +1,24 @@
 # Where the rebuild stands
 
-**Last updated:** 2026-09-03 (egress decision taken — **build it**; §7.24 measured what to build) · **Read this first when resuming.**
+**Last updated:** 2026-09-03 (**the egress proxy is built and evaluated — F2 and S4 both ✅ Met, §7.25**) · **Read this first when resuming.**
 
 **Where it stands in one line:** **Chapters 1–5 complete, Chapter 6 drafted §6.1–§6.14, Chapter 7
-opened with its methodology pre-registered and its first result in.** The framework exists and
-runs on the Pi 5; ten measurements were run rather than argued. **The baseline arm has landed and
-it is the strongest result the project has: the confined and unconfined arms fail on the same six
-integrations, for the same reasons — the import-level compatibility cost of confinement is zero
-of 37.** 84% was never a fact about confinement; it is the fraction of the corpus that loads on
-2026.8.3 at all. Chapter 6 corrected Chapter 5 four times and itself twice; Chapter 7 has now
-corrected two of its own pre-registered predictions. **The one decision is taken: build the egress proxy**, and
-§7.24 then measured what it has to be — three of §5.10.3's assumptions failed before a line was
-written. **Still unbuilt**: scope item 2 itself — see "Next session".
+written through §7.25 — all twenty requirements in §7.5 now carry a verdict.** The framework
+exists and runs on the Pi 5; the baseline arm remains the strongest result the project has: the
+confined and unconfined arms fail on the same six integrations, for the same reasons — the
+import-level compatibility cost of confinement is zero of 37. 84% was never a fact about
+confinement; it is the fraction of the corpus that loads on 2026.8.3 at all. Chapter 6 corrected
+Chapter 5 four times and itself twice; Chapter 7 corrected two of its own pre-registered
+predictions and then, for the first time, **caught a design error before any code existed**:
+§7.24 measured the egress proxy's requirements against twelve running integrations and found
+three of §5.10.3's assumptions wrong, all before a line of the proxy was written. **The proxy was
+then built to the corrected design** (`notes/decision_network_capability.md`) — fd-passing on the
+channel, the mediator-side broker with resolve-then-pin, the sandbox-side shim at both resolution
+seams, the UDP relay, and a real confined evaluation spawning two concurrent namespaced sandboxes
+against real internet hosts (§7.25). **Scope item 2 is no longer open.** One security bug was
+found and fixed along the way: `EgressBroker.open` trusted `allow_private` from the sandbox's own
+request, which would have let a hostile integration grant itself T10's non-public reach — caught
+before evaluation, not after.
 
 Read alongside `00_METHOD.md` (ground rules — especially the evidence rule) and
 `01_PLAN.md` (stage plan and gates). Chapter working notes in `notes/` carry the reasoning
@@ -58,6 +65,11 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24; re-run 2026-08-25.** Namespaces (unprivileged), seccomp and cgroup v2 all present. `memory` was absent on the stock install; after the boot change it is present **and the cap is verified to bite, unprivileged**. Feeds §5.7.4 |
 
 ## Next session — start here
+
+> **This whole section predates the 2026-09-03 session and is left as written.** The egress
+> decision below was made (build it), the proxy is built, and F2/S4 are both ✅ Met — see the
+> top of this file and the task-2 row in the table below. What is genuinely still open for the
+> *next* session is the writing tail: Ch. 7's read-through, Chapter 8, front matter, Stage 5.
 
 **The one-line score.** §5.15.6 said the design's central claim is empirical and Chapter 6 is
 where it stops being an argument. The security half is **measured**. The compatibility half is now
@@ -108,7 +120,7 @@ opposite sides** — §6.12.4 over-predicted, §6.13.4 under-predicted — which
 | ~~**1**~~ | ~~**Phase B — executed end-to-end**~~ | ✅ **Done 2026-09-02, §7.17.** **3 of 5 loaded and published**; §6.11.1's population of one becomes three. `thermal_comfort` is the round trip: two declared entities mirrored in, **15 derived sensors published out**, dew point physically correct. **The ceiling is 11 not 37** — 26 of 37 need a credential before any flow completes, and an unconfined baseline meets the same wall. **The baseline arm ran the same day and overturned half of it (§7.17.5): unconfined 4/5, so confinement's cost is exactly one — `powercalc`, on an undeclared component.** `scheduler` fails in **both** arms (unconfined: a frame-helper `RuntimeError`, broken on 2026.8.3 like `eufy_security`), so **the multicast finding is withdrawn as evidence that confinement costs compatibility** — and with it the inference that §9.5's egress decision should turn on discovery. Second time in Ch. 7 a baseline has corrected an attribution made without one |
 | ~~**1**~~ | ~~**Phase C — performance at scale**~~ | ✅ **Done 2026-09-02, §7.19–§7.20.** Latency to 26 sandboxes (**P4 wrong** — saturation at ~4 clients, not tail queueing; N1 unaffected at 0.009% utilisation), `fsync` at **3.67 ms** with 63× headroom, and **P5 falsified** — page cache is reclaimable, so S9 bounds *retention*, not reading. PSS-by-declaration attempted and **did not resolve** (§7.20.3): non-monotonic at three sandboxes per point, no curve drawn |
 | ~~**1**~~ | ~~**Wire `resources` to enforcement**~~ | ✅ **Done 2026-09-02, §7.22.** `ResourceLimits` is now the one type the manifest and the cgroup share, and `create` has no signature that accepts a limit and drops it. `cpu.max` wired; `disk_mb` added and applied as the private `/tmp`'s tmpfs `size=`; values validated at parse time; `compat.py`/`endtoend.py` take the bound from the integration's own clause. `selftest_resources.py` — **13/13**, each bound checked by a sandbox exceeding it (25% CPU cap holds at 25.1%, `ENOSPC` at `disk_mb`). All twelve pre-existing suites still pass. **S9 is ✅ against narrowed wording**: the `io` controller is *not delegated to a user manager*, so disk means space and not I/O bandwidth — §6.4.1's present-but-not-permitted distinction found a second time. F2 and S4 are now the only failing rows |
-| **2** | **The egress proxy — decided, specified, not yet built** | §5.8.2 scope item 2. Closes F2, S4 and T11 — the only ⛔ rows left in §7.5. **Decision taken 2026-09-03: build it.** **§7.24 then measured what to build, and it is not what §5.10.3 says.** Four things changed before a line was written: (a) the enforcement point is **both resolution seams**, `getaddrinfo` *and* `aiodns` — 96% of resolutions go through aiodns, and the name does not survive to `connect`, which sees only an address; (b) the clause needs a **port** — the sample reached 8123, 6445 and 20086 as well as 443, and a host grant is otherwise a grant of every port on it; (c) **UDP** must be served or refused with a clause pointer — `midea_ac_lan` sent 18 datagrams from its config flow; (d) `allow_private` is needed by `alexa_media` (29k installs) in ordinary operation, reaching the gateway's own HA at :8123. **Inbound is *not* needed** — no integration in the sample listened, now tested rather than assumed. T09 stays structurally retained and that is now measured: every TLS wrap verified, content never visible to the mediator |
+| ~~**2**~~ | ~~**The egress proxy**~~ | ✅ **Built and evaluated, 2026-09-03.** §5.8.2 scope item 2. Closes F2, S4 and T11 — the last ⛔ rows in §7.5, now both ✅ Met (§7.25). Design in `notes/decision_network_capability.md`, corrected against §7.24's measurement before any code existed: **both resolution seams** (`getaddrinfo` and `aiodns`), the `network.egress` clause now carries a **port**, a **UDP relay** for the 20% of the corpus that needs it (`udp_demand.md`), inbound **not built** (tested as unneeded). `channel.py` carries fd-passing (`selftest_fdpass`, 12/12); `egress.py` is the mediator-side broker with resolve-then-pin structural by construction; `egress_shim.py` is the sandbox side, at both seams; `udp_relay.py` serves synchronous datagram integrations and names the asyncio-`DatagramProtocol` quarter it does not (4 of 15, owed to Ch. 8). `selftest_egress_sandboxed.py` spawns **two real confined sandboxes concurrently** against real internet hosts — F2 and S4 evaluated in genuine namespaces, not as function calls, 17/17 stable across three runs. **One security bug found and fixed en route**: `EgressBroker.open` trusted `allow_private` from the sandbox's own request — a hostile integration could have granted itself T10's reach by writing one key into its request. Caught, fixed, regression-tested before evaluation ran. **18/18 self-tests pass on the Pi.** All twenty §7.5 requirements now carry a verdict |
 | ~~**3**~~ | ~~**The uniform-sample corpus**~~ | ✅ **Done 2026-09-02, §7.23.** Seed 20260902, 40/40 fetched, both arms. **92% confined and 92% unconfined, identical failure sets — `failures(design) = 0` a second time**, on a corpus sharing only 2 of 40 members with the head. Predictions were committed *before* the draw (`notes/ch7_uniform_prediction.md`, commit ddff314): **P7 right, P6 wrong in sign** (the tail is *better* and cheaper — it declares median 0 components against the head's 1), **P8 wrong in both halves**. §7.9's external-validity threat is discharged, and all eight of §7.10's scheduled items are now complete or conditional |
 | **4** | **Chapter 7's read-through** | §7.12–§7.21 were written one result at a time over a single day and have never been read as one voice. §7.21 reconciled the *claims*; the prose pass is separate |
 | **5** | **Chapter 8** | Limitations and future work. Already owed to it: **`/sandbox/data` is unbounded and I/O bandwidth is unbounded (§7.22.2)**, `resources` being the one capability where absence is not denial (§7.22.3), `aiofiles` and the undeclared-package bound (§6.13.3, §6.14.4), the cgroup kill that destroys its own evidence (§6.9.4), the MAC key not outliving the mediator (§6.8.4), the 52-vs-2 component finding (§7.12), the push loop / real HA component / dependency install (§6.11.2), the **4-of-5 prediction scorecard** (§7.21.5), and §7.21.7's methodological result — every cross-chapter correction has been to a *sentence next to a measurement*, never to a measurement |
