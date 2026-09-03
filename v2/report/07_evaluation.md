@@ -1192,6 +1192,14 @@ now supports:
   ranks first — a requirements register that does not match the artifact — not a measured
   compatibility loss.
 
+> **Extended, not corrected, by §7.24 (2026-09-03).** This section closes by saying no
+> observational method can answer questions about egress, because demand appears at setup and 26
+> of 37 need a credential first. That holds for **how much** egress is wanted and it does not
+> bind **what shape** it has: a config flow validates a credential *by making the call*, so the
+> resolution, the connection and the handshake all complete before the 401. §7.24 measures the
+> repertoire on that basis and finds three of §5.10.3's assumptions wrong. The claim above about
+> *demand* is unchanged.
+
 ## 7.19 Mediation latency at the budget, and why the number that matters is the other one
 
 **Run 2026-09-02**, `experiments/mediation_latency/scale.py`. §6.5.3 measured two clients and
@@ -1855,6 +1863,188 @@ procedural denial, and P7 that a zero measured once would hold on an independent
 wrong one was a prediction about what the ecosystem or the kernel would do. Chapter 8 should make
 that distinction rather than reporting a bare 6-of-8, because it is the more defensible claim:
 **the design behaved as designed; the world did not behave as assumed.**
+
+## 7.24 What egress actually looks like, measured before the proxy is built
+
+**Run 2026-09-03**, `experiments/egress_shape/`. §9.5's decision is taken: build mediated egress.
+This section is the measurement that decides *what to build*, and it is placed before the artifact
+rather than after it because the alternative is discovering a wrong assumption inside working code.
+
+§5.10.3 fixed the `network.egress` clause in Chapter 5, and it carries three assumptions that no
+measurement had touched:
+
+| # | Assumption | Where it lives |
+|---|---|---|
+| 1 | Egress is **hostnames**; the clause has no port field | §5.10.3's schema |
+| 2 | A name becomes an address through `socket.getaddrinfo`, which is where a mediator interposes for T11's resolve-then-pin | §5.10.3, and §5.10.5's "checking the name is not checking the thing" |
+| 3 | Egress means **outbound TCP**; the clause cannot express UDP, multicast or an inbound listener | §5.10.3's schema |
+
+Twelve integrations from §7.12's head corpus were set up in a **full unconfined Home Assistant
+with real network access** — the §7.17.5 arm, same release, host, interpreter and the same
+`drive_flow` — and driven through their own config flows with a recorder watching every
+resolution, connection, datagram, TLS wrap, bind and multicast join.
+
+### 7.24.1 Why this is measurable at all, when §7.18 said it was not
+
+§7.18 closed with a strong claim, and it needs answering rather than quietly stepping around:
+*no observational method can answer this*, because egress demand appears at setup and setup needs
+a credential for 26 of 37 (§7.17.1).
+
+That is right about **how much** and it does not bind **what shape**, for one reason: *a config
+flow validates a credential by making the call.* A wrong API key still produces the name
+resolution, the TCP connection, the TLS handshake and the request, and only the last of those is
+refused. Every mechanism a mediator would have to implement has already run by the time the 401
+comes back. The credential wall stands where §7.18 put it and it is not in front of this question.
+
+What this therefore does **not** claim, and Chapter 8 should not be allowed to borrow it as
+though it did: polling frequency, sustained connection counts, or how many integrations would
+use egress in service. It claims the **repertoire**.
+
+### 7.24.2 Assumption 2 fails, and it fails uniformly
+
+| | `getaddrinfo` | `aiodns` | share via `aiodns` |
+|---|---|---|---|
+| Across twelve integrations | **120** | **3,073** | **96%** |
+
+Per integration the share is 93–97%, with no outlier. That uniformity is the finding: this is not
+a property of any integration's taste in libraries but of the platform. `aiohttp_client.py:479`
+gives **every** Home Assistant client session an `AsyncDualMDNSResolver` built on `aiodns`, which
+resolves through `pycares` in C and never calls `getaddrinfo`.
+
+**A mediator interposing at `getaddrinfo` would see one name in twenty-five.** The design's
+enforcement point, as §5.10.3 describes it, is in the wrong place.
+
+The correction is not to the principle but to its location, and the principle survives intact.
+T11 requires that the address connected to be the address that was checked. What the measurement
+adds is *where the only opportunity to do that is*: **the name exists at the resolver and nowhere
+after it.** By the time `connect` is called the destination is an address — `pirateweather`'s
+connect is to `108.157.98.116:443` via `aiohappyeyeballs/impl.py:210`, with no hostname anywhere
+in the call. Resolution and connection happen in **different libraries**, so an enforcement point
+at either one alone has either a name it cannot connect or an address it cannot judge.
+
+This makes resolve-then-pin *more* structural than §5.10.5 argued, not less. If the sandbox's
+resolver returns a placeholder that only the mediator can map back to a real destination, then
+the sandbox never possesses a routable address at all, and the check cannot be raced because
+there is no window between it and the use — there is no address in the sandbox to race with.
+§5.10.3 is not edited; it gains a pointer here, as §6.3.2 and §6.4.1 did to Chapter 5.
+
+### 7.24.3 Assumption 1 fails — the clause needs a port
+
+Ports the integrations themselves reached: **443** (five integrations), **8123**, **6445**,
+**20086**. `frigate` additionally attempted `ccab4aaf-frigate:5000` over plain HTTP and got no
+further than a failed resolution.
+
+A clause that declares `["api.example.invalid"]` cannot express any of the last three. Worse for
+S6, it cannot express them *in either direction*: it can neither grant port 6445 nor withhold it,
+so an integration granted a host is granted every port on that host. That is a grant wider than
+anything the manifest says, which is the property §5.10.4 exists to prevent in `services.call`
+and which nothing was enforcing here.
+
+### 7.24.4 Assumption 3 fails in one half and holds in the other
+
+**UDP is real.** `midea_ac_lan` sent **18 datagrams** from `config_flow.py:406`, nine to port
+6445 and nine to 20086, on `SOCK_DGRAM`. An egress path that serves only TCP does not serve it.
+
+**Inbound is not.** No integration in the sample established a listener. Every bind observed was
+either `AF_NETLINK` — 79 of them from `scapy`'s route queries, which are not network operations
+at all — or an ephemeral local port of the kind every UDP client binds before sending. The
+absence of an inbound clause in §5.10.3 is **adequate for this sample**, which is worth recording
+as a positive result about the schema rather than leaving as an untested silence.
+
+### 7.24.5 Two findings that were not being looked for
+
+**There are three network stacks, not one.** `aiohttp` with `aiohappyeyeballs` (`pirateweather`,
+`nordpool`, `sonoff`), `urllib3`/`requests` synchronously (`localtuya`, ten connections to
+`openapi.tuyaeu.com`), and a raw socket (`midea_ac_lan`). TLS follows the stack: `wrap_bio` over
+a memory BIO for the async path, `wrap_socket` for the synchronous one, both appearing in the
+same sample. A shim covering only aiohttp covers neither of the others — and a recorder watching
+only `wrap_socket` would have reported a corpus with no TLS in it at all, which is why
+`selftest_netshape` tests both paths.
+
+Every wrap in the sample had `check_hostname` set. **The mediator therefore sees destination and
+never content**, by construction rather than by policy: TLS is established end to end between the
+integration and the remote host, over a descriptor the mediator supplies. §4.10 rates **T09 —
+exfiltration through a declared host — as Retained, structural**, and that position is now
+measured rather than assumed.
+
+**A popular integration's ordinary operation is the T10 shape.** `alexa_media` — 29,308 installs,
+the fourth largest in the corpus — connects from `config_flow.py:329` to `192.168.11.109:8123`,
+which is the gateway's **own** Home Assistant. It is not an attack; it is how its login proxy
+works. §5.10.3 puts non-public destinations behind a separate explicit flag for T10, and this is
+the first measured evidence about what that flag costs and who needs it: not a rare case, and not
+one whose declaration a user could evaluate without knowing what the address means.
+
+### 7.24.6 The recorder's blind spot, bounded rather than caveated
+
+The in-process recorder is paired with `strace -f -e trace=network`, which attributes nothing and
+misses nothing. Counting **egress only** — `AF_INET`/`AF_INET6` connect and sendto — the recorder
+saw 74–87% of what the kernel saw, and 42% for `localtuya`.
+
+The first version of this comparison reported the recorder catching about 6%, and that figure was
+an artifact of the comparison rather than of the recorder: it counted every `AF_*` mention in the
+trace, including roughly 2,000 `AF_NETLINK` and `AF_UNIX` operations per run — route lookups,
+interface enumeration, dbus, the log socket — none of which is egress and none of which the
+recorder ever claimed to watch. **That is §7.18.2's error committed a second time and caught by
+the pairing that exists to catch it**, which is the argument for running both instruments rather
+than trusting either.
+
+The residual gap is real and is what a C-level library does below Python's `socket` module. It
+bounds the *recorder*, not the design: the artifact enforces at a namespace the kernel owns, not
+at a patched module.
+
+### 7.24.7 What the sample could and could not drive
+
+Six of twelve reached the network under their own attribution. The other six did not, and the
+reasons divide into three kinds that should not be reported as one number:
+
+| Kind | Integrations | Reading |
+|---|---|---|
+| Reached the network | `pirateweather`, `nordpool`, `alexa_media`, `localtuya`, `midea_ac_lan`, `sonoff` | the evidence above |
+| The flow stopped before its call | `dwd_weather`, `solcast_solar` (`DependencyError: recorder`), `waste_collection_schedule` (corpus layout artifact), `frigate` (its default host does not resolve) | a limit of the driver and the corpus, not of the ecosystem |
+| Broken on 2026.8.3 | `bambu_lab` — `No module named 'aiofiles'` | §6.13.3's finding, met a third time |
+
+`aiofiles` has now blocked integrations in the compatibility run, the end-to-end run and this one.
+Chapter 8 already owes it a paragraph; this is the third independent occasion.
+
+### 7.24.8 Two corrections the experiment made to itself
+
+Both are recorded in the code rather than tidied out of it, because each is a mistake the
+artifact's own design is meant to prevent and is therefore evidence for it.
+
+**A global answer collided.** To get `nordpool` past its form, `region: "SE1"` was added to the
+shared credential set. It worked, and it took `localtuya` from ten connections to **zero** —
+Tuya's regions are `eu`/`us`/`cn`. One integration's input had silently changed another's result.
+Answers are now per-integration. The parallel is not decorative: it is the same failure §2.4.2
+identifies in the closest prior work, where consolidating every plug-in's declarations into one
+profile makes the effective policy the union of all of them.
+
+**A heuristic overturned direct evidence.** The platform fetches `alerts.home-assistant.io` during
+the integration's phase from `aiohttp/connector.py` — the identical frame a genuine integration
+request comes from — so it can only be excluded by destination, and a connect carries an address
+rather than a name. Walking back from each TLS wrap to the preceding connect fixed that, and in
+doing so removed `alexa_media`'s connection to the gateway, which had been attributed directly to
+`alexa_media/config_flow.py:329`. The walk-back no longer applies to connects the integration's
+own code made.
+
+That second one is the more instructive. **Attribution by stack walk fails under an event loop**,
+because the frame that makes the call identifies the library and never the requester. The
+framework proper does not attribute this way and cannot acquire this bug: identity is the socket
+the request arrived on (§5.11.2), established before the request exists. The measurement had to
+reach for a heuristic precisely because it lacked the property the artifact is built around.
+
+### 7.24.9 What this changes
+
+| | Before | After |
+|---|---|---|
+| Enforcement point | `socket.getaddrinfo` | **both** resolution seams — `getaddrinfo` and `aiodns` — because the name exists only there |
+| `network.egress` clause | hostnames | hostnames **with ports**; a host grant is otherwise a grant of every port on it |
+| Transport | outbound TCP | TCP **and** UDP, or UDP refused with a clause pointer rather than by silence |
+| Inbound | not expressible | not needed by this sample — recorded as tested, not as overlooked |
+| T09 | asserted structural | **measured** structural: every wrap verified, content never visible to the mediator |
+| `network.allow_private` | provided for | needed by a 29k-install integration in its ordinary operation |
+
+None of this was reachable by reading Chapter 5 again. Four of the six rows change the artifact
+about to be written, and the two that do not are now tested rather than assumed.
 
 
 ---

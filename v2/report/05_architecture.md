@@ -986,6 +986,17 @@ Eight, each with the measured cost of denying it by default.
 | `services.call` | Calling a service belonging to something else | 22.2% | **`domain.service`, exact, no wildcards** — see §5.10.4 |
 | `events.subscribe` / `events.fire` | Event bus access | 48.6% touch the bus | Explicit event types. `*` is not accepted; the bus carries every state change in the home |
 | `network.egress` | Outbound network | — | Hostnames, resolved and pinned by the mediator (T11). Non-public destinations require a separate explicit flag (T10) |
+
+> **Corrected in §7.24, 2026-09-03 — the principle stands, the schema and the enforcement
+> point do not.** Measured against twelve running integrations, this clause is wrong in two
+> ways. **It has no port**, so a grant of a host is a grant of every port on it — the same
+> over-breadth §5.10.4 refuses in `services.call` — and the sample reached 8123, 6445 and
+> 20086 as well as 443. And **"resolved by the mediator" names the wrong seam**: 96% of
+> resolutions in the sample go through `aiodns`, not `getaddrinfo`, because the platform gives
+> every client session an `AsyncDualMDNSResolver`. Resolution and connection happen in
+> different libraries, so the name exists at the resolver and nowhere after it. §7.24.2 argues
+> this makes resolve-then-pin *more* structural than the paragraph below claims, not less.
+> The sample also sends **UDP**, which this clause cannot express in either direction.
 | `files` | Paths outside its own directory | 33.3% | Individual paths with `read`/`write`. See §5.10.5 for what cannot be granted |
 | `config_entries.read_all` | Enumerating *everyone's* config entries | 41.0% | Separate clause from the ambient own-entry lifecycle, because A3 hangs on the difference |
 | `http.register` | Registering routes on the running server | 19.4% | Explicit path prefixes |
@@ -1030,6 +1041,9 @@ manifest is parsed, not when it is first used.
 grant, so `..` traversal and symbolic links cannot escape a grant. This is T11's resolve-then-
 pin principle applied to the filesystem instead of the network, and both exist for the same
 reason: **a name is not the thing it names, and checking the name is not checking the thing.**
+
+*(§7.24.2 measures where the network half of this can actually be done: at the resolver, because
+the name does not survive to the connection.)*
 
 ### 5.10.6 Resource limits
 
