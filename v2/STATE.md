@@ -114,16 +114,16 @@ after it was written**, which is what evidence is supposed to do to a plan.
 
 | | Work | Cost | Why |
 |---|---|---|---|
-| **T12's measurement** (§8.7 #4) | Set an integration up, change its manifest, spawn it again; show the second run is bounded by the second declaration and that `describe.py` shows the change before it takes effect | **Hours** | **The best value per hour on the list.** T12 is the only threat in *either* register with no evidence at all, and §7.26.5 says so in the report — so an examiner will find it because we told them where it is |
-| **Re-run `api_surface.py` on the uniform corpus** (§8.7 #5) | One run of an existing script over an already-fetched corpus | **One run** | Contribution 1 (§2.8) is half delivered: §7.23 answered the uniform question for *compatibility* and never for the API surface, so §7.8's obligation row was discharged for one of two |
-| **The other two network stacks, confined** (§8.7 #6) | `urllib3`/`requests` and a raw socket, spawned in real namespaces | Days; may need recorded fixtures | Promoted from nowhere to sixth by §7.27. The one stack actually spawned turned out to break, so "the other two are presumably fine" is exactly the reasoning that was wrong once |
+| **T12's measurement** (§8.7 #5) | Set an integration up, change its manifest, spawn it again; show the second run is bounded by the second declaration and that `describe.py` shows the change before it takes effect | **Hours** | **The best value per hour on the list.** T12 is the only threat in *either* register with no evidence at all, and §7.26.5 says so in the report — so an examiner will find it because we told them where it is |
+| **Re-run `api_surface.py` on the uniform corpus** (§8.7 #6) | One run of an existing script over an already-fetched corpus | **One run** | Contribution 1 (§2.8) is half delivered: §7.23 answered the uniform question for *compatibility* and never for the API surface, so §7.8's obligation row was discharged for one of two |
+| **The other two network stacks, confined** (§8.7 #7) | `urllib3`/`requests` and a raw socket, spawned in real namespaces | Days; may need recorded fixtures | Promoted from nowhere to sixth by §7.27. The one stack actually spawned turned out to break, so "the other two are presumably fine" is exactly the reasoning that was wrong once |
 | **The push loop** (§8.7 #1) | Build it | Days | Largest missing piece, but it is *building* not testing. Unblocks S3's subscription half and the only latency path that could consume §7.20.1's 63× margin |
 | **The real Home Assistant component** (§8.7 #2) | Build it — the spike has ~250 lines that load nothing from any integration, reusable under `00_METHOD.md` §5 | Days | §8.6.3's limit #2, and the one the 2026-09-04 fix added to §8.7. What it settles is entity **identity**: the states API publishes without a registry row, and §5.6.1 measured **83%** of the corpus publishing by the path that creates one. The *finding* is private knowledge under §2 and would have to be re-measured, not cited |
 
 ### ⚠ The realistic-scenario validation — agreed 2026-09-04, and it is one measurement, not four
 
 **Younes's instruction: the solution needs testing again in a realistic scenario.** The report's
-future-work list prices the pieces separately (§8.7 #2, #8, and the compatibility corpus work) and
+future-work list prices the pieces separately (§8.7 #2, #10, and the compatibility corpus work) and
 that framing understates them, because **what has never happened is all of them at once**. The
 value is in the composition: each part alone is already priced; together they are the first run in
 which nothing on the critical path is a stand-in.
@@ -410,7 +410,7 @@ discharged by a section that promises to discharge it. Read §7.21.3, not this t
 
 **One is half-owed and the report says so**: the uniform-corpus re-run was performed for
 *compatibility* and never for the *API surface*, so §2.8's contribution 1 is half-delivered. That
-is §8.3's own admission and §8.7 #5's one-run item — the cheapest outstanding thing in the report.
+is §8.3's own admission and §8.7 #6's one-run item — the cheapest outstanding thing in the report.
 
 **⚠ One conflict is open and deliberately unresolved.** `01_PLAN.md` §6 says the actuator PoC
 is cut first if G3 fires. §5.8.2 derived scope from Chapter 3's verification column and found
@@ -419,7 +419,7 @@ risk — with no demonstrated control. The plan's cut list predates the scope de
 Recommendation in `notes/ch5_working_notes.md`: cut coverage-widening first instead. **This is
 Younes's call at G3**, and `01_PLAN.md` has deliberately not been edited.
 
-**Still owed, and the cheapest thing in the report (§8.7 #5):** the API-surface measurement was
+**Still owed, and the cheapest thing in the report (§8.7 #6):** the API-surface measurement was
 run on the top 144 community integrations *by install count*. That describes what most
 installations run, not what most integrations do. §7.23 ran the uniform corpus for
 **compatibility** and answered that question; **the API-surface parser was never re-run on it**, so

@@ -162,6 +162,29 @@ a single unlabelled percentage would not be.
 integration's tree against the fetched original after the run. A claim that source was untouched
 is worth nothing if the framework could have rewritten it.
 
+> **This paragraph is wrong, it is the sharpest thing Stage 5's second pass found, and it is left
+> as written (2026-09-04).** **No such diff exists.** Nothing in `framework/`, `figures/` or
+> `experiments/` hashes or compares an integration's tree against a fetched original; no result
+> file carries such a field; no results section reports the count. The sentence describes a check
+> that was designed and never built, in a *methodology* section — which is the exact failure
+> §7.21.3 corrected for five other obligations and did not catch here, because this one names no
+> section to be discharged in.
+>
+> **Two things are true instead, and the second is why this matters.** The confined arm is safe by
+> construction and more strongly than a diff would show: `compat.py` copies each integration with
+> `shutil.copytree` and `sandbox.py:218` bind-mounts that copy **read-only**, so the confined
+> process cannot write its own source at all. **The baseline arm has neither protection** — it
+> passes the fetched path straight into a full, unconfined, in-process Home Assistant. So the one
+> arm in which an integration *could* rewrite itself is the one with no copy, no read-only mount
+> and no diff, and it is the arm the compatibility claim is measured against.
+>
+> **The check as described would also not have tested what it claims.** The confined run operates
+> on a copy, so diffing the *original* after it proves nothing about what ran; the meaningful
+> comparison is copy-against-original, taken before the run. §7.28 states the position, and §8.7
+> prices the fix, which is small: hash each tree at fetch, re-hash after each arm, report
+> mismatches. **C1 is not withdrawn — no modification has ever been observed — but it is downgraded
+> from *counted* to *argued*, and §7.5's row says so.**
+
 ### 7.4.2 Security — C3, S1–S9
 
 **The question.** For each threat in Chapter 4's register, is the control claimed in §4.10
@@ -259,7 +282,7 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 
 | Req | Criterion — the requirement passes if… | Verdict source (fixed 2026-09-02) | **Verdict** |
 |---|---|---|---|
-| **C1** | Every integration in the compatibility runs shows a **zero-line** diff against its fetched original, counted mechanically after the run | Compatibility | ✅ **Met** — §7.12.1 — zero source lines changed, diffed mechanically against each fetched original after every run; re-verified on the uniform corpus (§7.23) |
+| **C1** | Every integration in the compatibility runs shows a **zero-line** diff against its fetched original, counted mechanically after the run | Compatibility | ◐ **Met in substance, not by the stated criterion — §7.4.1, and see §7.28** | The criterion says a **zero-line diff, counted mechanically**. **That count is not performed anywhere in this project**, and Stage 5 found it (2026-09-04). What is true instead is structural and, for the confined arm, stronger: `compat.py` copies each integration with `shutil.copytree` and `sandbox.py:218` bind-mounts that copy **read-only**, so a confined integration cannot alter its own source. The **baseline arm has neither** — it passes the fetched path directly into a full in-process Home Assistant. No modification has been observed; none has been *counted*. |
 | **C2** | Every arm runs against an unmodified official Home Assistant release, version recorded in the result file | All arms | ✅ **Met** — §7.12 — every arm ran against unmodified Home Assistant 2026.8.3 (`759e465`), the release recorded in each result file |
 | **C3** | The adversarial run includes an absent manifest, an over-broad manifest, and one deliberately mismatched to behaviour — and all three are handled per §5.9's precedence rules | Security | ✅ **Met** — §7.16.1 — `selftest_c3`: absent, over-broad and mismatched manifests. Over-broad **is honoured** (R1) and the section says so; the ceiling it cannot raise holds what §4.9 rated Critical |
 | **C4** | Every performance figure is produced on the Raspberry Pi 5, reporting per-integration memory *and* added latency | Performance | ✅ **Met** — §7.19–§7.22 — every performance figure produced on the Pi 5, per-integration memory *and* added latency both reported |
@@ -379,6 +402,19 @@ forgotten. The right-hand column is where each is answered.
 | §5.14, `notes/ch5_evidence_api_surface.md` §6 | Re-run on a uniform corpus before reporting coverage | §7.4.1 |
 | §3.6 (N2) | Report imports-clean and executed-end-to-end separately, always | §7.4.1, §7.5 |
 | §6.6.6 | *Withdrawn.* The obligation never to repeat §4.10's "filesystem isolation to declared resources" rested on a §5.14.4 claim that contradicts §5.10.3; the phrase is accurate | — |
+
+> **The right-hand column is wrong for five rows, and §7.21.3 is the correction — this table keeps
+> its text.** §7.4.1 and §7.4.3 are *methodology* sections: an obligation is not discharged by a
+> section that promises to discharge it. §7.21.3 names the results section that actually discharged
+> each, and the uniform-corpus row was still owed when it was written (closed the next day by
+> §7.23). **The pointer is added 2026-09-04 by Stage 5**, because a reader consulting this table
+> without it is sent to the wrong place five times.
+>
+> **What this table does not contain is the more useful observation.** C1's verification was never
+> entered here as an obligation, because §7.4.1 stated it as an accomplished fact rather than as
+> something owed — and §7.28 records that the fact was not true. **A promise can be swept for; a
+> false statement of completion cannot**, which is why the sweep that corrected these five rows
+> could not see C1.
 
 ## 7.9 Threats to the validity of this evaluation
 
@@ -2787,6 +2823,69 @@ contact with a real HTTP stack, a real TLS handshake and a real API.
   C demonstrates is the pin, not a DNS block. That is the design as specified and it is worth
   stating, because "the name resolved" in a denial record looks wrong until the placeholder is
   understood.
+
+## 7.28 The whole-report read-through, and the requirement it found unverified
+
+§7.26 read this chapter as one document and found two reporting obligations it had not met.
+Stage 5 then read **all eight chapters** as one document, in two passes on 2026-09-04, and this
+section records the one finding that belongs to Chapter 7 rather than to the prose. The rest —
+citations still on a superseded numbering, a correction spliced through the paragraph it corrected,
+a schema table broken in half by a blockquote, eight references to a chapter that does not exist —
+were repairs to sentences and are not reported here, on §7.4.2's rule that what is worth a section
+is what changes a verdict.
+
+**One did.** §7.4.1 states that *"C1 is verified mechanically, not asserted"* and §8.3 repeats it.
+**The mechanism does not exist.** Nothing in the artifact hashes or diffs an integration's tree
+against its fetched original; no result file carries the field; no results section reports the
+count. The claim was designed in a methodology section and never built, and it survived §7.21.3's
+sweep of five mis-discharged obligations because, unlike those five, it named no section in which
+it would be discharged.
+
+### 7.28.1 What is actually true, and why it is not simply weaker
+
+| | Confined arm | Baseline arm |
+|---|---|---|
+| Source that runs | A copy — `shutil.copytree` (`compat.py`) | **The fetched tree itself**, passed by path |
+| Can the integration write it? | **No.** `sandbox.py:218` bind-mounts the copy read-only | **Yes.** Full authority, in-process, no mount |
+| Is a diff taken? | No | No |
+
+For the confined arm the real guarantee is **structural and stronger than the criterion asked
+for**: the integration cannot modify its source, rather than being observed not to have. That is
+§5.6.2's principle — deny by absence, not by check — arriving in a place no section claimed it.
+
+**For the baseline arm there is no guarantee at all**, and that is the half that matters. The
+unconfined arm exists to establish what the corpus does *without* this framework, and it runs each
+integration's real fetched source in a full Home Assistant with nothing preventing a write. The one
+arm where an integration could rewrite itself is the one with no copy, no read-only mount and no
+count — and it is the arm every compatibility figure in this chapter is measured against.
+
+### 7.28.2 The stated check would not have tested what it claims
+
+Worth separating from the fact that it is missing, because implementing it as written would not
+repair it. The confined run operates on a *copy*; diffing the **original** after that run compares
+a tree nothing touched and passes trivially. The comparison that carries the claim is
+**copy-against-original, taken before the run** — plus a re-hash of the baseline tree after it,
+which is the only place a modification could occur.
+
+### 7.28.3 The verdict, downgraded rather than withdrawn
+
+C1 moves from **counted** to **argued**, and §7.5's row states it. No modification has ever been
+observed, `copytree` performs no transformation, and every compatibility figure in this report
+would be unaffected if the check were run and passed — which is the expected outcome. But §7.7's
+fourth falsifier is *"if the evaluation cannot demonstrate a requirement and reports it as passed
+anyway… the evaluation has failed on its own terms"*, and §8.2.4 answered it with *"nothing was
+reported as passed that was not demonstrated."* **That answer was wrong about C1**, and §8.2.4 now
+carries the correction rather than this section carrying it alone.
+
+The fix is small and §8.7 prices it: hash each integration tree at fetch, re-hash the copy before
+the confined run and the tree after the baseline run, and report mismatches. It is an hour, and
+until it is run C1 rests on reading two lines of the harness rather than on a count.
+
+**The general lesson is §7.21.3's, one level up.** That section found five obligations discharged
+"in" a methodology section and corrected them by naming the results section that actually
+discharged each. This one had no such pointer to check, because it was phrased as a statement of
+fact rather than as an obligation — so the sweep that caught the other five could not see it. **A
+claim that something *is* verified is harder to audit than a promise that it *will be*.**
 
 ---
 

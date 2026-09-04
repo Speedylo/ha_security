@@ -399,7 +399,7 @@ visibility is additive.
 > `ENOENT` — so the unprivileged supervisor §5.7.4 chose cannot enforce it at any effort. A sandbox
 > can therefore saturate the device while staying inside every limit it declared.
 > *Retained because:* **inherited, not structural.** The fix is a privileged installer step or an
-> upstream delegation change, and §8.7 #7 prices it alongside the filesystem quota. **Residual:
+> upstream delegation change, and §8.7 #9 prices it alongside the filesystem quota. **Residual:
 > Medium.**
 >
 > This risk could not have been written here. §4.11 was drafted against the design; the

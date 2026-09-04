@@ -177,6 +177,17 @@ verdict, S9's is explicitly against narrowed wording (§7.22.2), S3's and N2's a
 partial, and the two rows that were blocked were named in the criteria table on the day the
 criteria were frozen rather than conceded in a limitations section later.
 
+> **That sentence was wrong about one requirement, and Stage 5 found it on 2026-09-04 (§7.28).**
+> **C1 was reported as verified mechanically and is not.** The zero-line diff §7.4.1 describes does
+> not exist anywhere in the artifact; what exists is a read-only bind mount that makes the confined
+> arm structurally incapable of modifying its source, and **nothing at all in the baseline arm**,
+> which runs the fetched tree directly. C1's verdict is downgraded from *counted* to *argued*
+> rather than withdrawn — no modification has ever been observed and none is expected — but this
+> is precisely the falsifier above firing a second time, on the requirement underwriting the word
+> *unmodified*. **It is left here as a correction rather than absorbed**, because a section
+> answering "did the evaluation report anything as passed that it had not demonstrated" is the
+> worst possible place to quietly fix the answer.
+
 **But the chapter did fail a commitment of its own, and a reader is owed the finding rather than
 the reassurance.** §7.2 committed the security axis to being scored twice — against Chapter 4's
 eighteen threats and against the eleven of the closest published model — *"so that the result is
@@ -217,10 +228,13 @@ the cheapest outstanding item in the whole report — one existing script over a
 corpus — and §8.7 prices it as such.
 
 **Contribution 2 — a confinement architecture for an extension model that cannot be changed.**
-Delivered and evaluated. Eighteen self-test suites pass on the target hardware; C1 is verified
-mechanically by diffing every integration's tree against its fetched original after the run, so
-*unmodified* is counted rather than asserted; C2 holds because every arm runs against an unmodified
-official release. §2.8 was careful that the novelty is *"not the manifest, which is established
+Delivered and evaluated. Eighteen self-test suites pass on the target hardware; C2 holds because
+every arm runs against an unmodified official release. **C1 — the word the report's title rests
+on — is the one place this chapter has to correct itself**: §8.3 said until 2026-09-04 that
+*unmodified* was "counted rather than asserted" by a mechanical diff. **That diff does not exist**
+(§7.28). What does is a read-only bind mount that makes modification impossible in the confined arm
+and absent in the baseline arm, so C1 is **argued from the harness rather than counted**, no
+modification has ever been observed, and the check is priced in §8.7. §2.8 was careful that the novelty is *"not the manifest, which is established
 practice, but the retrofit"*, and the retrofit is what the zero of §8.2.2 measures.
 
 **Contribution 3 — a quantified security/compatibility trade-off.** This is the one §2.8 called
@@ -472,22 +486,23 @@ would, and §5.7.4 chose otherwise.
 Ordered by what each would settle rather than by effort, with the effort stated so the ordering can
 be argued with. Every item is one change to one artifact; none is a wish. **§7.27 reordered this
 list after it was first written** — running one real integration promoted the stack-coverage item
-from nowhere to sixth, which is the ordering evidence is supposed to do to a plan.
+from nowhere to seventh, which is the ordering evidence is supposed to do to a plan.
 
 | # | Work | What it settles | Cost |
 |---|---|---|---|
 | **1** | **The push loop** (§6.11.2) | S3's subscription half moves from a refusal to a demonstrated filter, and the one latency path that could consume §7.20.1's 63× margin becomes measurable. Both are currently stated gaps in the artifact rather than in the measurement | Days. It is the largest missing piece and the highest-value one |
 | **2** | **The real Home Assistant component** (§6.10.2, §6.11.2) | **Limitation 2 of §8.6.3, and the largest of them that this list did not price until now.** Step 5 of the mediated call acts on an in-memory stand-in, so what a *live* instance does with a mediated write is untested — §7.14.4 and §7.17.6 each state this beside their own figure. What it would settle is **identity, not realism**: the spike's `registry_gap` finding — cited as prior work in §6.10.2 and deliberately not relied on — is that publishing over the states API produces states with no entity-registry row, no `unique_id`, no config entry and nothing surviving a restart, and §5.6.1 measured that **83% of community integrations publish through `async_add_entities`**, which is the path that produces the registry row and the state machine does not. Until it exists, the end-to-end arm speaks for the mediator's decision and not for what the platform then does with it | Days. The spike's `sandbox_bridge` is ~250 lines that load and execute nothing from any integration, and `00_METHOD.md` §5 permits reusing that code — but its *finding* is private knowledge under §2, so the registry claim has to be re-measured here rather than cited |
 | **3** | **Static analysis for the derived manifest**, extended one level up (§6.14.4, §7.17.4) | The undeclared-package *and* undeclared-component bound — item 13 above, and the only measured compatibility cost in the whole report. `import aiofiles` is a top-level import and trivially detectable; **a component dependency is a name in the platform's own source, so the transitive closure is computable exactly rather than approximated**, which `core_requirements()` already does for `default_config`. A strictly larger analysis and a strictly easier one | Days. `--derived` alongside the author's manifest, with every added clause marked as derived per §5.9.3 |
-| **4** | **T12's measurement** (§7.26.5) | The only threat in either register with no evidence. Set an integration up, change its manifest, spawn it again, show the second run is bounded by the second declaration and that the change is visible through `describe.py` before it takes effect | Hours. It was never scheduled, which is why the schedule's close-out did not catch it |
-| **5** | **Re-run the API-surface parser on the uniform corpus** (§8.3) | Contribution 1's other half — what most *integrations* ask for, against what most *installations* run. §7.23 answered that question for compatibility and not for the API surface | **One run.** The script exists and the corpus is already fetched: the cheapest outstanding item in the report |
-| **6** | **The other two network stacks, confined** (§7.24.5, §7.27.7) | `urllib3`/`requests` synchronously and a raw socket, each spawned in real namespaces against a real destination. **Promoted above the datagram work by §7.27's result**: the one stack that was actually spawned failed on a platform helper nobody had exercised, and the argument that the other two are fine is now exactly the argument that was wrong once | Days. `localtuya` and `midea_ac_lan` are the corpus's members, and both need a device or a credential — so this may need recorded fixtures |
-| **7** | **asyncio datagram transports, and a confined UDP round trip** (§7.25.5) | The unserved quarter, and whether relayed UDP behaves in real namespaces as it does against the decision path. It would also let the procedural/structural asymmetry between UDP and TCP be measured rather than conceded | Days |
-| **8** | **Filesystem quota for `/sandbox/data`** (§7.22.2) | Item 5 above. Needs privilege, so it also needs a decision about whether the unprivileged position of §5.7.4 admits a privileged installer step. `io.max` is *not* in this row — non-delegation is not a matter of effort | Small, plus a design decision that is not small |
-| **9** | **The end-to-end arm at scale** | N2's second number as something other than a named set of five. Blocked on credentials for 26 of 37, so it needs either a cooperating vendor set or recorded request fixtures — the second is the tractable route and would change the measurement's character, which should be stated if it is taken | Weeks, and the honest framing is that this is a different project's measurement |
-| **10** | **Off-box audit anchoring** (R4, §5.12.6) | The audit log's authority against whoever controls the machine, and item 7's key-lifetime trade-off. §5.12.6 declined to define a format because *"the moment this chapter specified a format for another machine to consume, the scope would have moved"* — **but the artifact already emits the record such a layer would consume**, which is a more useful piece of future work than an unevidenced suggestion | A different project. The contribution here is that its input already exists |
-| **11** | **Re-run `r2_footprint` on the corrected builder; PSS with more sandboxes per point** (§7.20.3, §7.20.4) | Two measurement debts, neither load-bearing on any claim | Small |
-| **12** | **L2 — enforcement inside the platform's own loader** (§5.15.2) | §5.15.2 states plainly that L2 is the better design on every axis but deployability, and that this project's most durable contribution to it may be the evidence it would need. A platform proposal must answer what confinement costs in compatibility, what the declaration should express, and what threats it closes. **Those answers do not depend on the L3 architecture that produced them, and §8.5's finding says the surface such a check must cover is far smaller than the platform's size suggests** | Not this project's to do, and the reason it is last rather than absent |
+| **4** | **Count C1 instead of arguing it** (§7.28) | The requirement underwriting the word *unmodified*. Hash each integration tree at fetch, re-hash the copy before the confined run and the tree after the baseline run, report mismatches. **The baseline arm is the one that needs it** — it passes the fetched path into a full in-process Home Assistant with no copy and no read-only mount | **An hour**, and it converts the report's most load-bearing word from argued to counted |
+| **5** | **T12's measurement** (§7.26.5) | The only threat in either register with no evidence. Set an integration up, change its manifest, spawn it again, show the second run is bounded by the second declaration and that the change is visible through `describe.py` before it takes effect | Hours. It was never scheduled, which is why the schedule's close-out did not catch it |
+| **6** | **Re-run the API-surface parser on the uniform corpus** (§8.3) | Contribution 1's other half — what most *integrations* ask for, against what most *installations* run. §7.23 answered that question for compatibility and not for the API surface | **One run.** The script exists and the corpus is already fetched: the cheapest outstanding item in the report |
+| **7** | **The other two network stacks, confined** (§7.24.5, §7.27.7) | `urllib3`/`requests` synchronously and a raw socket, each spawned in real namespaces against a real destination. **Promoted above the datagram work by §7.27's result**: the one stack that was actually spawned failed on a platform helper nobody had exercised, and the argument that the other two are fine is now exactly the argument that was wrong once | Days. `localtuya` and `midea_ac_lan` are the corpus's members, and both need a device or a credential — so this may need recorded fixtures |
+| **8** | **asyncio datagram transports, and a confined UDP round trip** (§7.25.5) | The unserved quarter, and whether relayed UDP behaves in real namespaces as it does against the decision path. It would also let the procedural/structural asymmetry between UDP and TCP be measured rather than conceded | Days |
+| **9** | **Filesystem quota for `/sandbox/data`** (§7.22.2) | Item 5 above. Needs privilege, so it also needs a decision about whether the unprivileged position of §5.7.4 admits a privileged installer step. `io.max` is *not* in this row — non-delegation is not a matter of effort | Small, plus a design decision that is not small |
+| **10** | **The end-to-end arm at scale** | N2's second number as something other than a named set of five. Blocked on credentials for 26 of 37, so it needs either a cooperating vendor set or recorded request fixtures — the second is the tractable route and would change the measurement's character, which should be stated if it is taken | Weeks, and the honest framing is that this is a different project's measurement |
+| **11** | **Off-box audit anchoring** (R4, §5.12.6) | The audit log's authority against whoever controls the machine, and item 7's key-lifetime trade-off. §5.12.6 declined to define a format because *"the moment this chapter specified a format for another machine to consume, the scope would have moved"* — **but the artifact already emits the record such a layer would consume**, which is a more useful piece of future work than an unevidenced suggestion | A different project. The contribution here is that its input already exists |
+| **12** | **Re-run `r2_footprint` on the corrected builder; PSS with more sandboxes per point** (§7.20.3, §7.20.4) | Two measurement debts, neither load-bearing on any claim | Small |
+| **13** | **L2 — enforcement inside the platform's own loader** (§5.15.2) | §5.15.2 states plainly that L2 is the better design on every axis but deployability, and that this project's most durable contribution to it may be the evidence it would need. A platform proposal must answer what confinement costs in compatibility, what the declaration should express, and what threats it closes. **Those answers do not depend on the L3 architecture that produced them, and §8.5's finding says the surface such a check must cover is far smaller than the platform's size suggests** | Not this project's to do, and the reason it is last rather than absent |
 
 ## 8.8 The single ask of the platform
 
