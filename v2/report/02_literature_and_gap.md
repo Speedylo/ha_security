@@ -32,7 +32,7 @@ the claim made about the work was restricted to what could be confirmed.
 The problem described in §1.2 is not new, and it is not specific to home automation. It
 was encountered in web browsers and resolved there more than fifteen years ago.
 
-Barth, Felt, Saxena and Boodman [1] analysed the Firefox extension system and described
+Barth, Felt, Saxena and Boodman [12] analysed the Firefox extension system and described
 exactly the situation Home Assistant is in today: extensions "run with the user's full
 privileges and can read and write arbitrary files and launch new processes", so a bug in
 well-intentioned extension code is exploitable by a hostile web page. Their empirical
@@ -64,7 +64,7 @@ saying almost nothing about how to reach it from where Home Assistant stands.
 The security of smart-home *applications* has been studied intensively since 2016, almost
 entirely on Samsung SmartThings.
 
-Fernandes, Jung and Prakash [2] performed the foundational analysis, examining 499
+Fernandes, Jung and Prakash [13] performed the foundational analysis, examining 499
 SmartApps and 132 device handlers. They identified two intrinsic design flaws producing
 significant **overprivilege**, and demonstrated concrete attacks including one that
 programmed a backdoor PIN into a door lock. Their finding is the smart-home analogue of
@@ -72,16 +72,16 @@ Barth et al.: an extension model granted applications far more authority than th
 
 The subsequent literature proposed mechanisms to address it:
 
-- **FlowFence** (Fernandes, Paupore, Rahmati, Simionato, Conti, Prakash) [3] requires
+- **FlowFence** (Fernandes, Paupore, Rahmati, Simionato, Conti, Prakash) [14] requires
   applications to declare intended data flows and enforces them by running sensitive
   computation in sandboxed "Quarantined Modules" with opaque handles.
-- **ContexIoT** (Jia, Chen, Wang, Rahmati, Fernandes, Mao, Prakash) [4] provides
+- **ContexIoT** (Jia, Chen, Wang, Rahmati, Fernandes, Mao, Prakash) [15] provides
   contextual integrity, identifying the context of a sensitive action at fine granularity
   and prompting the user at runtime.
-- **SmartAuth** (Tian, Zhang, Lin, Wang, Ur, Guo, Tague) [5] extracts security-relevant
+- **SmartAuth** (Tian, Zhang, Lin, Wang, Ur, Guo, Tague) [16] extracts security-relevant
   information from an application's description, code and annotations, and generates an
   authorization interface that reconciles what an app *says* it does with what it does.
-- **Tyche** (Rahmati, Fernandes, Eykholt, Prakash) [16] proposes a risk-based permission
+- **Tyche** (Rahmati, Fernandes, Eykholt, Prakash) [17] proposes a risk-based permission
   model that groups device operations "into units of similar risk" rather than by function,
   motivated by the observation that physical operations are **risk-asymmetric**: unlocking a
   door is not the inverse of locking it in risk terms, though a function-oriented permission
@@ -98,7 +98,7 @@ distinct problem rather than a new instance of a solved one.
 
 **Table 2.1 — Platform assumptions in prior work versus Home Assistant**
 
-| | SmartThings (as studied in [2]–[5]) | Home Assistant |
+| | SmartThings (as studied in [13]–[16]) | Home Assistant |
 |---|---|---|
 | Who operates the platform | A vendor, centrally | The end user, self-hosted |
 | Where applications execute | Vendor cloud, in a Groovy sandbox | In the platform's own Python process, on the user's hardware |
@@ -109,7 +109,7 @@ distinct problem rather than a new instance of a solved one.
 
 The consequence is specific. Prior mechanisms improve a permission model that already
 exists, on a platform whose operator can mandate migration, for applications that run in a
-sandbox the operator built. Tyche [16] is the clearest illustration: it does not require
+sandbox the operator built. Tyche [17] is the clearest illustration: it does not require
 apps to be rewritten, but it does require the *platform operator* to implement a new
 permission framework — an option available to Samsung and unavailable here. Home Assistant has no permission model to improve, no operator
 who can mandate anything, and no sandbox: the untrusted code is `import`ed into the
@@ -127,7 +127,7 @@ characterising it accurately.
 
 ### 2.4.1 Corno and Mannella: the threat model, and what it demonstrates
 
-**Corno and Mannella [6]**, presented at SpliTech 2022, propose a threat model for smart
+**Corno and Mannella [9]**, presented at SpliTech 2022, propose a threat model for smart
 home gateways extensible through plug-ins. The paper states its purpose as "twofold": to
 help developers understand attacks arising "from a malicious or defective implementation of
 a plug-in", and to serve as "a set of guidelines", since "plug-in developers should not
@@ -176,8 +176,8 @@ smart home systems". The programme is diagnostic and developer-facing throughout
 
 ### 2.4.2 The MUD architecture: enforcement at the network layer
 
-The same authors' subsequent work [8] adapts the Manufacturer Usage Description standard
-[9] to extensible gateways. MUD applies the declare-and-enforce principle at the network
+The same authors' subsequent work [18] adapts the Manufacturer Usage Description standard
+[19] to extensible gateways. MUD applies the declare-and-enforce principle at the network
 layer: because most IoT devices have narrow, predictable communication patterns, the
 manufacturer publishes a machine-readable profile of intended communications; the device
 advertises a URL for it on joining the network; a *MUD manager* retrieves the profile; and
@@ -225,7 +225,7 @@ authority exercised through the platform's own API.
 
 ### 2.4.3 The consolidated statement: the 2024 doctoral thesis
 
-Mannella's doctoral thesis [17] is the fullest statement of this line of work, and it
+Mannella's doctoral thesis [20] is the fullest statement of this line of work, and it
 settles the question of what was ultimately built. Its three contributions are the threat
 model of §2.4.1, extended with a survey of experts and users to establish "whether developers
 could potentially introduce undesired behaviors by mistake"; the extended MUD architecture of
@@ -252,7 +252,7 @@ confinement. The corpus is shared; the question is not.
 
 ### 2.4.4 Independent confirmation from a systematic review
 
-**Thingnes and Meland [7]**, a 2025 systematic review in *Future Internet*, screened 713
+**Thingnes and Meland [21]**, a 2025 systematic review in *Future Internet*, screened 713
 papers published between January 2019 and November 2024, selected 16, and synthesised eight
 prevalent security challenges for users of extensible smart home hubs. **Two of the eight
 are this project's subject**: "Insecure Extension Runtime" and "Insufficient Access
@@ -269,7 +269,7 @@ extensions should be limited to the access they require.
 
 Critically, the solutions they are able to point to are *suggestions* and *other platforms*.
 Sandboxing extension runtimes is cited as existing in Apple HomeKit and as "an approach also
-suggested by Corno and Mannella"; the remaining proposals are MUD labelling [8],
+suggested by Corno and Mannella"; the remaining proposals are MUD labelling [18],
 expectation-based analysis, behaviour-based approaches, and app-store-style third-party
 verification. For access control, the concrete prototype they identify — context-based
 access control by Yang and Sun — targets **SmartThings**, not Home Assistant.
@@ -282,7 +282,7 @@ the work reported here:
 > principles from network security to develop fine-grained access control could be
 > beneficial. **A proof-of-concept implementation for Home Assistant, for instance, could be
 > evaluated based on the threat model introduced by Corno and Mannella**, providing insight
-> into its applicability and effectiveness." [7]
+> into its applicability and effectiveness." [21]
 
 An independent systematic review, having surveyed the field, names a fine-grained access
 control proof of concept for Home Assistant — evaluated against Corno and Mannella's threat
@@ -292,7 +292,7 @@ Chapter 7 adopts.
 
 ### 2.4.5 Industry security work points the same way
 
-GitHub Security Lab's professional code review of Home Assistant [12] found six
+GitHub Security Lab's professional code review of Home Assistant [22] found six
 vulnerabilities in the core platform and assessed its layered architecture favourably, but
 **explicitly declined to examine community integrations**, noting: "Due to time constraints
 during the audit, we did not examine these community integrations. However, it's important
@@ -305,10 +305,10 @@ of §1.2 and left the area unexamined.
 Chapter 1 established that integrations arrive through a channel that verifies structure
 but not behaviour (§1.4), and continue arriving through an authorised update path (§1.6).
 This is the setting studied as open-source software supply-chain security. Ladisa, Plate,
-Martínez and Barais [10] provide a taxonomy of attacks on open-source supply chains,
+Martínez and Barais [23] provide a taxonomy of attacks on open-source supply chains,
 systematising the routes by which malicious code enters a package ecosystem — including
 maintainer account compromise and the injection of malicious code into an otherwise
-legitimate project, the route realised in XZ Utils [14].
+legitimate project, the route realised in XZ Utils [8].
 
 This literature is important to position correctly. It addresses **how hostile code gets
 in** — and its countermeasures, such as signing, provenance attestation, reproducible
@@ -320,7 +320,7 @@ confinement are complements, and the argument of §1.6 applies unchanged.
 ## 2.6 Measurement as a method for justifying a privilege model
 
 One methodological precedent deserves note because it validates this project's approach
-rather than its subject. Li, Li, Ma, Xu, Zhang and Cheng [11] measured API usage across
+rather than its subject. Li, Li, Ma, Xu, Zhang and Cheng [24] measured API usage across
 2,562 real-world Model Context Protocol servers in order to argue for privilege management
 in that ecosystem, observing that such servers run locally with high privileges, lack
 runtime permission checks and isolation, and assume implicit trust.
@@ -335,25 +335,25 @@ Home Assistant, or for smart-home hub extensions generally.
 Synthesising the five strands:
 
 - **Least-privilege extension architectures are well understood and proven** in browsers
-  and mobile platforms [1], but were introduced on *new* platforms whose operators could
+  and mobile platforms [12], but were introduced on *new* platforms whose operators could
   require developers to migrate.
-- **Smart-home application security is a mature field** [2]–[5], but its mechanisms assume
+- **Smart-home application security is a mature field** [13]–[16], but its mechanisms assume
   a vendor-operated platform, an existing permission model, a sandboxed execution
   environment, and applications that can be required to change. Home Assistant has none of
   these (Table 2.1).
-- **The problem is recognised on Home Assistant specifically** [6], [7], [12], and
-  sandboxing of extension runtimes has been *suggested* [6], [7]. It has not been built for
-  this platform. The mechanism pursued instead [8] enforces at the network layer, so it
+- **The problem is recognised on Home Assistant specifically** [9], [21], [22], and
+  sandboxing of extension runtimes has been *suggested* [9], [21]. It has not been built for
+  this platform. The mechanism pursued instead [18] enforces at the network layer, so it
   cannot reach the platform-API authority Table 1.2 shows to be most consequential, and its
   consolidated gateway-level profile grants every plug-in the union of all declarations.
   Corno and Mannella's own recommendation — that "the gateway itself (and its APIs) should
-  enforce more controls" and that "plug-ins should authenticate themselves" [6] — remains
-  unimplemented, and Thingnes and Meland [7] name a fine-grained access-control proof of
+  enforce more controls" and that "plug-ins should authenticate themselves" [9] — remains
+  unimplemented, and Thingnes and Meland [21] name a fine-grained access-control proof of
   concept for Home Assistant as an open research direction.
-- **Supply-chain research** [10], [14] addresses how hostile code arrives, not what it may
+- **Supply-chain research** [23], [8] addresses how hostile code arrives, not what it may
   do on arrival.
 - **Empirical API-usage measurement to justify a privilege model** has been done for
-  another plugin ecosystem [11] but not for this one.
+  another plugin ecosystem [24] but not for this one.
 
 Stated as one sentence:
 
@@ -374,28 +374,28 @@ be checked:
 1. **An empirical account of the API surface that community integrations actually depend
    on**, measured over the HACS catalogue. This makes the retrofit problem of §2.2
    quantitative rather than rhetorical, and it is the evidence base any confinement design
-   for this platform requires. Methodologically it follows [11], applied to a platform
+   for this platform requires. Methodologically it follows [24], applied to a platform
    where no such measurement exists.
 
 2. **A confinement architecture for an extension model that cannot be changed** — where
    the platform is self-hosted, the extensions are pre-existing and unmodifiable, and
    authority is exercised through the platform's own API. The novelty is not the manifest,
-   which is established practice [1], but the retrofit: enforcing a declared authority
+   which is established practice [12], but the retrofit: enforcing a declared authority
    boundary on code written to assume it has none, and doing so without the cooperation of
    either the platform's maintainers or the extension's author.
 
 3. **A quantified security/compatibility trade-off.** Prior work asserts that confinement
-   is desirable [6], [7] or that overprivilege is prevalent [2]; none reports what fraction
+   is desirable [9], [21] or that overprivilege is prevalent [13]; none reports what fraction
    of real, unmodified extensions still function once confinement is applied. The closest
-   evaluation [8] covers three integrations, two of them purpose-built for the experiment.
+   evaluation [18] covers three integrations, two of them purpose-built for the experiment.
    Reporting both the security effect and its compatibility cost is the contribution most
    likely to survive scrutiny, because it is the one nobody else has data for.
 
-The framing is endorsed independently. Thingnes and Meland's systematic review [7] proposes
+The framing is endorsed independently. Thingnes and Meland's systematic review [21] proposes
 as future work "a proof-of-concept implementation for Home Assistant … evaluated based on
 the threat model introduced by Corno and Mannella", which describes contributions 2 and 3 in
 the words of authors with no connection to this project. Chapter 7 therefore adopts that
-evaluation framing directly: the security axis is assessed against the threat model of [6],
+evaluation framing directly: the security axis is assessed against the threat model of [9],
 so that the result is comparable against an existing published model rather than against
 criteria invented here.
 
@@ -403,7 +403,7 @@ Contribution 2 is where the engineering lies; contributions 1 and 3 are where th
 *research* lies, and the report's weight should be distributed accordingly.
 
 This project is complementary to, not competing with, the Home Assistant community's
-*Remote Integration Execution* proposal [13]: that work would supply process separation for
+*Remote Integration Execution* proposal [11]: that work would supply process separation for
 reliability and scale, and §1.9 argued that relocation without scoping does not constrain
 authority. If it is adopted, it becomes a natural substrate for the enforcement described
 here rather than a substitute for it.
@@ -415,9 +415,9 @@ hardest thing to establish.
 
 - **The review is narrative, not systematic** (§2.1). A pre-registered systematic search
   could surface work this review missed.
-- ~~**The closest sources could not be retrieved in full.**~~ **Resolved.** [6], [7], [8]
-  and the consolidating doctoral thesis [17] have now been read in full, and §2.4 is written from the papers themselves rather than
-  from abstracts. The specific risk flagged in the earlier draft — that [8] might enforce at
+- ~~**The closest sources could not be retrieved in full.**~~ **Resolved.** [9], [21], [18]
+  and the consolidating doctoral thesis [20] have now been read in full, and §2.4 is written from the papers themselves rather than
+  from abstracts. The specific risk flagged in the earlier draft — that [18] might enforce at
   the gateway application layer, reducing the argument to one of granularity — **did not
   materialise**: enforcement is by `osMUD` on an OpenWrt router via `iptables`, so the
   layer distinction holds as stated.
@@ -433,60 +433,7 @@ hardest thing to establish.
 
 ## References
 
-[1] A. Barth, A. P. Felt, P. Saxena and A. Boodman, "Protecting Browsers from Extension
-Vulnerabilities", *NDSS*, 2010.
-https://www.adambarth.com/papers/2010/barth-felt-saxena-boodman.pdf
-
-[2] E. Fernandes, J. Jung and A. Prakash, "Security Analysis of Emerging Smart Home
-Applications", *37th IEEE Symposium on Security and Privacy*, 2016.
-
-[3] E. Fernandes, J. Paupore, A. Rahmati, D. Simionato, M. Conti and A. Prakash,
-"FlowFence: Practical Data Protection for Emerging IoT Application Frameworks",
-*USENIX Security*, 2016.
-
-[4] Y. Jia, Q. A. Chen, S. Wang, A. Rahmati, E. Fernandes, Z. M. Mao and A. Prakash,
-"ContexIoT: Towards Providing Contextual Integrity to Appified IoT Platforms", *NDSS*, 2017.
-
-[5] Y. Tian, N. Zhang, Y.-H. Lin, X. Wang, B. Ur, X. Guo and P. Tague, "SmartAuth:
-User-Centered Authorization for the Internet of Things", *USENIX Security*, 2017.
-
-[6] F. Corno and L. Mannella, "A Threat Model for Extensible Smart Home Gateways",
-*7th International Conference on Smart and Sustainable Technologies (SpliTech)*, 2022.
-https://iris.polito.it/handle/11583/2963822
-
-[7] T. R. Thingnes and P. H. Meland, "Security Challenges for Users of Extensible Smart
-Home Hubs: A Systematic Literature Review", *Future Internet*, 17(6):238, 2025.
-https://doi.org/10.3390/fi17060238
-
-[8] F. Corno and L. Mannella, "A Gateway-based MUD Architecture to Enhance Smart Home
-Security", 2023.
-
-[9] E. Lear, R. Droms and D. Romascanu, "Manufacturer Usage Description Specification",
-RFC 8520, IETF, 2019.
-
-[10] P. Ladisa, H. Plate, M. Martínez and O. Barais, "SoK: Taxonomy of Attacks on
-Open-Source Software Supply Chains", *IEEE Symposium on Security and Privacy*, 2023.
-
-[11] Z. Li, K. Li, B. Ma, M. Xu, Y. Zhang and X. Cheng, "We Urgently Need Privilege
-Management in MCP: A Measurement of API Usage in MCP Ecosystems", arXiv:2507.06250, 2025.
-
-[12] GitHub Security Lab, "Securing our home labs: Home Assistant code review".
-https://github.blog/security/vulnerability-research/securing-our-home-labs-home-assistant-code-review/
-
-[13] T. Cohen (titilambert), "Remote Integration Execution", Home Assistant Community RFC,
-12 May 2026. https://community.home-assistant.io/t/remote-integration-execution/1010130
-
-[14] *XZ Utils backdoor* (CVE-2024-3094), March 2024.
-https://en.wikipedia.org/wiki/XZ_Utils_backdoor
-
-[15] L. Mannella, "Supporting Developers in the Cybersecurity of IoT Systems", PhD research
-summary (supervisors F. Corno and A. Lioy), PhD Day, Department of Control and Computer
-Engineering, Politecnico di Torino, 2022.
-http://www.phd-dauin.polito.it/events/phdday2022/Mannella.pdf
-
-[16] A. Rahmati, E. Fernandes, K. Eykholt and A. Prakash, "Tyche: A Risk-Based Permission
-Model for Smart Homes", *IEEE Secure Development Conference (SecDev)*, 2018.
-DOI 10.1109/SECDEV.2018.00012. Preprint: arXiv:1801.04609.
-
-[17] L. Mannella, *Securing IoT Gateways in Smart Home Environments*, PhD thesis,
-Politecnico di Torino, 2024.
+Consolidated. Every `[n]` in this chapter indexes the single bibliography in
+`report/09_references.md`, which is numbered in order of first appearance across the whole
+report. Chapters 1 and 2 each carried an independent list until 2026-09-04, and the two schemes
+collided — `[3]` was the 2021 disclosure here and FlowFence there.

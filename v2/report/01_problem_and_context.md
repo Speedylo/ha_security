@@ -53,7 +53,7 @@ platform's maintainers have never seen.
 Home Assistant is extensible in two distinct ways, and conflating them would misstate the
 problem. **Add-ons** (recently renamed *apps*) are, in the platform's own words, "container
 images published to a container registry like GitHub container registry and Docker Hub"
-[9]. They run as separate containers, managed by the Supervisor, and are therefore isolated
+[3]. They run as separate containers, managed by the Supervisor, and are therefore isolated
 from the platform's process by the operating system. **Integrations** are the Python modules
 of §1.2, imported into the platform's own process.
 
@@ -111,7 +111,7 @@ installs, and 3,095 of 4,220 have fewer than 100. These are overwhelmingly singl
 projects serving small audiences — precisely the population least likely to attract
 independent code review, and the one the platform's own disclosure identifies when it
 notes that such authors "often work alone on this and that's why it's more likely for a
-bug to go undetected" [3].
+bug to go undetected" [4].
 
 **The head of the distribution concentrates risk.** 257 integrations exceed 1,000 installs
 and 27 exceed 10,000. A single compromised or malicious release in that group reaches
@@ -127,7 +127,7 @@ exposure is *widespread*, a claim the direction of the bias does not threaten.
 ## 1.4 What HACS verifies before listing an integration
 
 HACS publishes the criteria a repository must satisfy for inclusion in its default store
-[4]. In full, they require that the repository be public and hosted on GitHub; that it
+[5]. In full, they require that the repository be public and hosted on GitHub; that it
 pass the HACS Action and, for integrations, Hassfest; that it have at least one release, a
 valid integration manifest and brands entry, a valid `hacs.json` containing a name, a
 repository description, issues enabled and topics defined; that it not be archived; that
@@ -148,16 +148,16 @@ perceive as curation — inclusion in a default store — carries no security me
 ## 1.5 The exposure is documented, not hypothetical
 
 In January 2021 Home Assistant published two security disclosures concerning custom
-integrations [3][5]. A researcher had reported a directory-traversal vulnerability in HACS
+integrations [4][6]. A researcher had reported a directory-traversal vulnerability in HACS
 itself; investigating, the project found the same vulnerability class in a set of other
 widely-installed custom integrations, including Dwains Lovelace Dashboard, Font Awesome,
 BWAlarm, Simple Icons, Custom Updater, Custom Icons and Hass-album.
 
 The impact is stated by the platform in its own words: an attacker could "access any file
 that is accessible by the Home Assistant process. This access includes any credential that
-you might have stored to allow Home Assistant to access other services" [3]. In most of
+you might have stored to allow Home Assistant to access other services" [4]. In most of
 the affected integrations **no authentication was required** — the attacker did not need
-an account on the victim's system [5]. The HACS instance of the flaw was assigned
+an account on the victim's system [6]. The HACS instance of the flaw was assigned
 CVE-2021-3152.
 
 **Home Assistant's response must be stated, because it bears on whether the problem
@@ -167,7 +167,7 @@ vulnerable code"; the Supervisor was changed to "notify the user when a possible
 installation is found that uses custom integrations"; the Android and iOS companion apps
 were updated to warn users of a potentially insecure instance; and Nabu Casa "activated
 their feature to limit remote access via Home Assistant Cloud and block instances that run
-an insecure version of Home Assistant" [3]. Users were advised to upgrade, to update or
+an insecure version of Home Assistant" [4]. Users were advised to upgrade, to update or
 remove affected integrations, and to rotate any credentials that may have been exposed.
 
 This was a fast, competent and multi-layered response, and any account that omitted it would
@@ -200,7 +200,7 @@ hostile by intent or by exploitation changes the attacker's route, not the blast
 That the blast radius is real is corroborated by the platform's own history: CVE-2023-27482,
 an authentication bypass in Home Assistant leading to remote code execution, was assessed
 as giving "full access to control all smart home devices, stored data and credentials, and
-also internal access to the home network" [6]. That vulnerability was in first-party code
+also internal access to the home network" [7]. That vulnerability was in first-party code
 and is not itself an argument about integrations, but it establishes what code execution
 inside Home Assistant is worth to an attacker.
 
@@ -235,11 +235,11 @@ artifact that is running, and it is not realistic to expect users to diff each r
 evidence about this ecosystem: the same directory-traversal class was present
 simultaneously in eight custom integrations named across the two advisories, all of them
 public, all installed widely enough to be worth disclosing — and it was found by a security
-researcher, not by the community reading the code [3][5]. The general case is stronger
+researcher, not by the community reading the code [4][6]. The general case is stronger
 still. The backdoor introduced into XZ Utils (CVE-2024-3094) was placed in a library
 present in effectively every Linux distribution, by a contributor who had spent roughly two
 years earning maintainer trust, and was discovered by an engineer investigating a 500 ms
-SSH latency regression rather than by review [10].
+SSH latency regression rather than by review [8].
 
 The conclusion is not that community review is ineffective. It is that review and
 confinement occupy **different roles in risk treatment**, and neither substitutes for the
@@ -268,11 +268,11 @@ is a list of ordinary capabilities that follow from running in-process.
 |---|---|---|---|
 | Entity states | All entities in the installation | Occupancy, presence, sleep patterns, absence from home | Deduced from §1.2 [2] |
 | Service calls | Any service, including `lock.unlock`, alarm disarm | Physical access to the dwelling | Deduced from §1.2; **no scoping check is documented** [2] |
-| Stored credentials | Any file readable by the process, incl. stored secrets | Lateral compromise of every linked cloud account | Stated by the platform [3] |
+| Stored credentials | Any file readable by the process, incl. stored secrets | Lateral compromise of every linked cloud account | Stated by the platform [4] |
 | Camera and media entities | Same as any other entity | Surveillance | Deduced from §1.2 [2] |
-| Filesystem | Whatever the process user can read | Configuration, database, tokens | Stated by the platform [3] |
-| Network | Unrestricted outbound; internal network reachable | Exfiltration; pivot into the home LAN | Reported in the RCE assessment [6] |
-| **Other integrations' live objects** | Any object on the Python heap, reachable via the garbage collector | Theft or alteration of another integration's secrets and state | **Demonstrated experimentally** [11] |
+| Filesystem | Whatever the process user can read | Configuration, database, tokens | Stated by the platform [4] |
+| Network | Unrestricted outbound; internal network reachable | Exfiltration; pivot into the home LAN | Reported in the RCE assessment [7] |
+| **Other integrations' live objects** | Any object on the Python heap, reachable via the garbage collector | Theft or alteration of another integration's secrets and state | **Demonstrated experimentally** [9] |
 
 The final column distinguishes what is *deduced* from the architecture of §1.2 from what has
 been independently *demonstrated* or *stated*, because the two carry different evidential
@@ -287,7 +287,7 @@ right to call `lock.unlock`, but that nothing in the platform's design or docume
 withholds it.
 
 The last row is the least obvious and has been demonstrated experimentally rather than
-merely inferred. Corno and Mannella [11] show that a Home Assistant integration can obtain a
+merely inferred. Corno and Mannella [9] show that a Home Assistant integration can obtain a
 reference to *another* integration's live object by iterating the Python garbage collector
 and matching on class and name, then read and modify that object's private state. Because
 every integration shares one interpreter, the absence of a boundary is not only between an
@@ -305,11 +305,11 @@ user's own action.
 Home Assistant's security page defines what its security programme covers. Attacks "that
 require the user to install a malicious other software, like a third-party integration,
 app (formerly known as add-ons), or plugin" are listed among **non-qualifying**
-vulnerabilities [7]. The same page states the platform's user model: "Home Assistant
+vulnerabilities [10]. The same page states the platform's user model: "Home Assistant
 assumes every user is trusted and does not enforce user privileges. It assumes every
-logged in user has the same access as an owner account" [7]. The 2021 disclosure states
+logged in user has the same access as an owner account" [10]. The 2021 disclosure states
 the position on third-party code directly: "Custom integrations are not created and/or
-maintained by Home Assistant. Users install them at their own risk" [3].
+maintained by Home Assistant. Users install them at their own risk" [4].
 
 These positions are defensible. A volunteer project cannot underwrite code it does not
 write, and being explicit about the limits of a security programme is better practice than
@@ -337,7 +337,7 @@ the one party with neither the information nor the tools to act on it.
 
 In May 2026 a request for comment titled *Remote Integration Execution* proposed allowing
 integrations to run on separate machines while Home Assistant Core retains control of
-configuration, scheduling and state [8]. Its stated motivations are principally
+configuration, scheduling and state [11]. Its stated motivations are principally
 operational: that "one crashing integration can bring down the entire system", that
 resource-intensive workloads demand a powerful single machine, that specialised hardware
 cannot be exploited, and that capacity upgrades are costly. Isolation appears in the
@@ -386,42 +386,7 @@ undone.
 
 ## References
 
-[1] Home Assistant, *Analytics*. https://analytics.home-assistant.io/ — 669,743 active
-installations; retrieved 21 August 2026. Per-domain custom-integration install counts from
-https://analytics.home-assistant.io/custom_integrations.json, same date.
-
-[2] Home Assistant, Developer Documentation: *Creating your first integration*
-(https://developers.home-assistant.io/docs/creating_component_index/) and *Service actions*
-(https://developers.home-assistant.io/docs/dev_101_services/). The latter documents
-registration and invocation of service actions and specifies no permission model, scoping
-rule or caller check.
-
-[3] Home Assistant, *Disclosure: security vulnerabilities in custom integrations HACS,
-Dwains Dashboard, Font Awesome and others*, 22 January 2021.
-https://www.home-assistant.io/blog/2021/01/22/security-disclosure/
-
-[4] HACS, *Include default repositories*. https://hacs.xyz/docs/publish/include/
-
-[5] Home Assistant, *Security Disclosure 2: vulnerabilities in custom integrations HACS,
-Font Awesome and others*, 23 January 2021.
-https://www.home-assistant.io/blog/2021/01/23/security-disclosure2/
-
-[6] elttam, *PwnAssistant — Controlling /home's via a Home Assistant RCE* (CVE-2023-27482).
-https://www.elttam.com/blog/pwnassistant
-
-[7] Home Assistant, *Security*. https://www.home-assistant.io/security/
-
-[8] T. Cohen (titilambert), *Remote Integration Execution*, Home Assistant Community RFC,
-12 May 2026. https://community.home-assistant.io/t/remote-integration-execution/1010130
-
-[9] Home Assistant, *Add-ons* (apps), Developer Documentation.
-https://developers.home-assistant.io/docs/add-ons
-
-[10] *XZ Utils backdoor* (CVE-2024-3094), March 2024. Backdoor introduced by a contributor
-who had acquired maintainer trust over approximately two years; discovered by A. Freund
-while investigating an SSH latency regression rather than through code review.
-https://en.wikipedia.org/wiki/XZ_Utils_backdoor — see also
-https://www.rapid7.com/blog/post/2024/04/01/etr-backdoored-xz-utils-cve-2024-3094/
-
-[11] F. Corno and L. Mannella, "A Threat Model for Extensible Smart Home Gateways",
-*7th International Conference on Smart and Sustainable Technologies (SpliTech)*, 2022.
+Consolidated. Every `[n]` in this chapter indexes the single bibliography in
+`report/09_references.md`, which is numbered in order of first appearance across the whole
+report. Chapters 1 and 2 each carried an independent list until 2026-09-04, and the two schemes
+collided — `[3]` was the 2021 disclosure here and FlowFence there.

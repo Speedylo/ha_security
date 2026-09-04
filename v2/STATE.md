@@ -3,10 +3,11 @@
 **Last updated:** 2026-09-04 (**all eight chapters written; what remains is front matter and one
 whole-report read-through**) · **Read this first when resuming.**
 
-**Changed 2026-09-04, bookkeeping only — no measurement and no claim moved.** The Chapter 8 defect
-recorded below was fixed (§8.7 gains a row for building the real Home Assistant component, now #2
-of twelve), and this file's own stale tables were repointed at where Chapter 7 actually discharged
-them. Details in *What the 2026-09-04 pass changed*, below.
+**Changed 2026-09-04.** Two things: the Chapter 8 defect recorded below was fixed (§8.7 gains a row
+for building the real Home Assistant component, now #2 of twelve), and **task 6 is done** — front
+matter, abstract and a single consolidated bibliography now exist. **Only Stage 5 remains.** Details
+in *What the 2026-09-04 pass changed*, below; the bibliography was not the clerical job it looked
+like and found four uncited sources, one of them Chapter 4's entire method.
 
 **Where it stands in one line:** **Chapters 1–8 are written.** All twenty requirements in §7.5
 carry a verdict, 18/18 self-test suites pass on the Pi, and the framework runs. The strongest
@@ -70,6 +71,9 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/base_component/` | ✅ **Pi 5, 2026-08-25.** The measurement §5.6.5 deferred to Chapter 6. The base component **can** be dropped — 46.6 MB per sandbox, budget 17 → **26** (1.53×, **not** the 2× §5.6.5 predicted). Two controls: both arm orders, and a 0.1 MB replication of §5.6.3's marginal figure. It also found a defect in §5.6.3's own recipe — see below. Feeds §6.3 |
 | `experiments/cgroup_placement/` | ✅ **Pi 5, 2026-08-25.** Four placement mechanisms × two positions, unprivileged. **Corrects §5.7.4:** `clone3(CLONE_INTO_CGROUP)` fails with the same `EACCES` as migration, so what binds is *where the supervisor runs*, not when it places the sandbox. Feeds §6.4.1 |
 | **`framework/confine/`** | ✅ **The artifact, as far as it goes, 2026-08-25.** `cgroup.py`, `namespaces.py`, `preflight.py`, `sandbox.py`, `enter.py`, `spawn.py`, `selftest.py` — standard library plus `ctypes`, no dependencies, no override flag. **Preflight: 8/8 on the Pi. Self-test: passes** — uid 0 inside mapped to 1000 outside, one visible process, `lo` only, `secrets.yaml`/`.storage`/the other integration all **absent**. Plus `seccomp.py` — 29 calls denied, verified by behaviour on both architectures. **All three of §5.7.3's primitives are built and measured.** Plus `channel.py`, `mediator.py` and `selftest_channel.py` — **identity is the socket, demonstrated with two sandboxes both claiming to be the same integration**. Plus `manifest.py` and `selftest_policy.py` — validation, S5's asymmetry, resolve-then-pin, clause pointers. Plus `describe.py` (the F4 surface, discharging T13's unplaced half) and `audit.py` (three-part identity, hash chain **and** keyed MAC chain, failing independently). **Eight self-tests, all passing on the Pi** — including `selftest_adversary.py`: 37 attempts, 21 blocked, 9 **empty** (succeeded and found nothing), 6 denied, 1 permitted, neither canary reached. Described by §6.4.2, §6.4.4–§6.4.6 and §6.5–§6.8 |
+| `report/00_front_matter.md` | ✅ **2026-09-04.** Title page, abstract, declaration/AI-use content, contents, figures, abbreviations, artifact index, *Outstanding*. Title: *Confining Unmodified Third-Party Integrations in Home Assistant — A Declared-Authority Architecture and Its Measured Cost*. **Four title-page fields stay placeholders**, blocked on the same unresolved input as every date in `01_PLAN.md` §9.6 |
+| `report/09_references.md` | ✅ **2026-09-04.** One bibliography, **28 sources**, numbered by first appearance across the whole report. Ch. 1, 2 and 5 remapped onto it; per-chapter lists replaced by a pointer. Three bibliographic details flagged unverified at the foot of the file |
+| `report/toc.py` | ✅ **2026-09-04.** Generates the contents page and figure list into the front matter between markers, and **asserts the two counts its prose states** (236 third-level headings, 152 tables) so they cannot drift. `--check` exits non-zero when stale — verified by making it stale |
 | `report/07_evaluation.md` | ✅ **Complete, §7.1–§7.27.** §7.1–§7.11 written 2026-09-02 *before* any result and dated so; §7.12–§7.25 written one result at a time; **§7.26 is the read-through** (it found that §7.2 promised a scoring against two threat registers that the results half never performed — both now done, 13/18 threats demonstrated and 8/11 of the external register mapped); **§7.27 is the real-integration arm**. All 20 §7.5 rows carry a verdict |
 | `report/08_conclusions.md` | ✅ **Written 2026-09-03.** *Conclusions, Limitations and Future Work*, ~42k chars. Answers the claim against §7.7's pre-fixed falsifiers (**the fourth falsifier — the one about the evaluation — fired**, §8.2.4); closes §2.8's three contributions; §8.4 the 6-of-8 scorecard and the five mechanisms; §8.5 the 52-vs-2 finding; §8.6 twelve artifact limits and six evaluation limits; §8.7 eleven future-work items priced; §8.8 the single upstream ask (R3). **Known gap: §8.7 has no row for building the real HA component** — fix next session |
 | `framework/confine/endtoend_egress.py` | ✅ **2026-09-03, §7.27.** Three arms on `nordpool` — unconfined / confined+declared / confined+clause-removed. The third is what makes the second evidence: a leaked namespace would produce arm B's result exactly. **11/11.** Destination evidence comes from the mediator's *durable* log, not `mediator.audit` |
@@ -91,12 +95,12 @@ unsupported: all twenty §7.5 rows carry a verdict, §8.6 states the gaps and §
 rather than leaving either implicit. **What remains is writing, plus optional measurements that
 would strengthen the report rather than rescue it.**
 
-### The two remaining tasks
+### The one remaining task
 
 | | Task | What it needs |
 |---|---|---|
-| **6** | Front matter, abstract, bibliography | 18 references cited across **eight** chapters, never consolidated. The abstract can be written against **§8.9**, which already states the claim, its size and the method in three paragraphs. Title page, contents, figure list |
-| **7** | **Stage 5** — single-voice read-through of the *whole* report (Ch. 1–8), then defence prep | §7.26.8 is the argument for doing it: **two read-throughs of one chapter each found something real**, and the prose is the only part of this project with a single instrument checking it. Defence prep against `THREAT_MODEL.md` Part 10 and the viva questions in `notes/` |
+| ~~**6**~~ | ~~Front matter, abstract, bibliography~~ | ✅ **Done 2026-09-04.** `report/00_front_matter.md` and `report/09_references.md`. **28 references, not the 18 this file and `01_PLAN.md` §9.6 both assumed** |
+| **7** | **Stage 5** — single-voice read-through of the *whole* report (Ch. 1–8), then defence prep | §7.26.8 is the argument for doing it: **two read-throughs of one chapter each found something real**, and the prose is the only part of this project with a single instrument checking it. Defence prep against `THREAT_MODEL.md` Part 10 and the viva questions in `notes/`. **The front-matter pass found four more things of the same kind (below), so that is now four for four** |
 
 ### Optional measurements, ranked — none blocks submission
 
@@ -136,10 +140,29 @@ were repaired and one further defect was found while repairing them.
    one row and "eight" in another; §8.7 was described as ten items. All corrected against the
    report rather than against memory.
 
+4. ✅ **Task 6 is done, and the bibliography was not the clerical job it looked like.** It found
+   four things, and the third is the one to be able to say aloud:
+   - **Chapters 1 and 2 carried independent `[n]` schemes that collided.** `[3]` was the 2021
+     disclosure in Ch. 1 and FlowFence in Ch. 2. Unified by first appearance, 28 sources.
+   - **Chapter 5 was citing Chapter 1's private numbering** — §5.13's D0 row carried `[3][5][10]`,
+     which resolved only against a list in another chapter. The collision had already reached a
+     third chapter and nothing had noticed.
+   - **Chapter 4's own method was uncited.** The chapter follows **ISO 31000** clause by clause and
+     names the clause it discharges in every section heading, identifies risk with **STRIDE**, and
+     draws Figure 4.1 with **OWASP Threat Dragon** — and none of the three had a bibliography entry
+     anywhere in the report. **RFC 1918** is normative for what `is_public` refuses and was also
+     unlisted. All four now carry an inline marker at first use, as [25]–[28].
+   - **One listed source was never cited** (Ch. 2's old `[15]`, Mannella's PhD Day summary). Removed
+     rather than carried, with the removal recorded in `09_references.md` rather than done silently.
+   - **The count was wrong.** This file and `01_PLAN.md` §9.6 both said 18 references. It is 28.
+
 **The pattern is worth noticing before Stage 5 starts.** Every one of these is a *pointer* that
 stopped matching what it points at, and none is a claim that was wrong. That is exactly the failure
-mode a single-voice read-through exists to catch, and it is the third time a read-through of this
-project has found something real (§7.26 twice, this once).
+mode a single-voice read-through exists to catch — and it is now **four** passes over this project's
+prose that have each found something real (§7.26 twice, the §8.7 fix, the bibliography). The
+bibliography is the sharpest of the four, because the uncited standards are not a formatting defect:
+an examiner reading §4.1 is told the chapter's whole method comes from two frameworks the report
+never cites.
 
 ### The standing risk, unchanged since 21 August
 
@@ -173,7 +196,7 @@ redistribute.
 | ~~**4**~~ | ~~**Chapter 7's read-through**~~ | ✅ **Done 2026-09-03, §7.26.** The chapter was read as one document for the first time and it found two substantive gaps, both of the same kind — things the chapter promised or possessed and did not report. **(1) §7.2 committed the security axis to being scored twice**, against Ch. 4's eighteen threats and against the closest published model's eleven, *"so that the result is comparable against an existing published model"* — and **neither scoring existed**. The results half is organised by §7.5's requirements, so closing out §7.10's schedule gave no signal that a *reporting* obligation was open. Both are now performed from evidence the chapter already held: **13 demonstrated (5 paired), 2 partial, 2 retained, 1 never evaluated**; **8 of the published model's 11 mapped, 5 clean**. **(2) §7.5 predicted that building the proxy would give T08, T10 and T11 demonstrated controls; §7.25 closed F2/S4 and scored none of them** — `selftest_egress` holds a real DNS-rebinding demonstration (the manifest permits the *name*, the broker refuses the *resolved address*) that no section reported. Also found: **T12 is the only threat in either register neither demonstrated nor declared unevaluable**, and **§4.14 states one divergence from the published model where there are three** (their T5 and T6 are unmapped too — §4.14 gains a pointer). Five smaller corrections (§7.26.6), the sharpest being **the one that looked like the report's first disagreement between measurements and is not**: twelve-of-37 against eighteen-of-37 declaring no components — recomputed from the results files, both correct, counting *set up* against *declared*. **No measured figure in the chapter was wrong.** |
 | ~~**5**~~ | ~~**Chapter 8**~~ | ✅ **Written 2026-09-03**, `report/08_conclusions.md` — *Conclusions, Limitations and Future Work*, ~40k chars. Refuses to re-list §3.7/§4.11/§5.15/§7.9/§7.11 and answers the three questions no earlier chapter can. **§8.2 answers the claim against §7.7's falsifiers fixed in advance** — A, B and C all hold; **the fourth falsifier, on the evaluation rather than the artifact, fired**, and §8.2.4 reports it. **§8.3 closes §2.8's three contributions**, including the honest gap: the API-surface measurement was never re-run on the uniform corpus, so contribution 1 is half-delivered. **§8.4** — 6-of-8 predictions wrong, and the two that held were the two *about the design*; plus the methodological result now stated with its **explanation and four transferable mechanisms**. **§8.5** the 52-vs-2 / 53-vs-0 finding. **§8.6** twelve artifact limits, six evaluation limits, structural and inherited kept separate. **§8.7 future work priced and ordered** — ten items as written, **twelve after the 2026-09-04 fix**; cheapest first-value is still *one run of an existing script*. **§8.8** the single upstream ask (R3), now measured rather than reasoned about |
 | ~~**4b**~~ | ~~**Real integration, confined, against a real API**~~ | ✅ **Done 2026-09-03, §7.27.** Not scheduled — run because §7.25.5 said in its own words that a real integration against a real API was a different measurement it did not substitute for. `nordpool` is the corpus's only member that both needs a network and configures without a credential (26 of 37 cannot). Three arms: unconfined / confined+declared / confined+clause removed, the third being what makes the second evidence. **The first run failed, and that is the result**: `async_get_clientsession(hass)` — what the platform tells an author to call — builds its resolver by instantiating Zeroconf, which joins the mDNS group, and a fresh netns `lo` has no `IFF_MULTICAST`. **A real integration could not construct an HTTP client inside the sandbox at all**, so the egress design had been unusable for the 41% it was built to serve, behind a suite that all passed. §7.25's subject used a bare `aiohttp.ClientSession()` and skipped the very helper that breaks it. Fixed in two measured steps (`IFF_MULTICAST`, then a `224.0.0.0/4` route to `lo` — zeroconf joins via `INADDR_ANY` and the kernel picks the interface from the routing table); the grant is **vacuous**, the route's device is `lo`. Result: **0.026, the same price confined as unconfined, in the same minute**, 3 grants logged as `dataportal-api.nordpoolgroup.com:443` with both chains verifying; clause removed → 3 denials and `unavailable`. **11/11.** Also re-establishes §7.17.5's withdrawn finding on exactly the evidence it specified, and fixes `audit.py` recording an egress target as host without port. **18/18 suites re-run after both changes.** |
-| **6** | **Front matter, abstract, bibliography** | 18 references cited across **eight** chapters and never consolidated. The abstract can now be written against §8.9, which states the claim, its size and the method in three paragraphs |
+| ~~**6**~~ | ~~**Front matter, abstract, bibliography**~~ | ✅ **Done 2026-09-04.** Title page, abstract (three paragraphs against §8.9), declaration and AI-use content, generated contents page, figure list, abbreviations, artifact index and an *Outstanding* section. **The bibliography was not clerical**: Ch. 1 and Ch. 2 carried independent `[n]` schemes that collided, Ch. 5 was citing Ch. 1's private numbering, ISO 31000 / STRIDE / OWASP Threat Dragon / RFC 1918 were cited by name and listed nowhere, and one listed source was never cited. **28 references, unified by first appearance; 28/28 resolve in both directions** |
 | **7** | **Stage 5** | Single-voice read-through of the **whole** report, then defence prep. §7.26.8 is the argument for doing it: two read-throughs of one chapter each found something, and the prose is the only part of this project with a single instrument checking it |
 
 **✅ Gate G3 has a recommendation, and it is no longer close (§6.14, 2026-08-25).**

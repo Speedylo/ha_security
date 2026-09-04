@@ -2294,7 +2294,7 @@ a placeholder address has nothing to race the check with; this is the same prope
 the enforcement side.
 
 **T10 — reach into the LAN and onto the gateway — is demonstrated on the classification and once
-adversarially.** `is_public` refuses loopback, RFC 1918, link-local, `0.0.0.0`, IPv6 loopback,
+adversarially.** `is_public` refuses loopback, RFC 1918 [28], link-local, `0.0.0.0`, IPv6 loopback,
 link-local IPv6 **and IPv4-mapped IPv6** — the last because `::ffff:192.168.1.1` is a form the
 §7.24 run actually produced, so it is a case drawn from measurement rather than from the RFC index.
 The adversarial half is `case_allow_private_is_not_request_controlled`, and it is worth stating in

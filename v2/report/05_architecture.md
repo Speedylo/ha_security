@@ -1428,7 +1428,7 @@ collapse into one.
 
 | # | Layer | Acts on | Fails when | What is behind it |
 |---|---|---|---|---|
-| **D0** | Community review of published source (§1.6) | Likelihood | The integration is in the long tail, the review predates the running release, or the malice is not blatant [3][5][10] | Everything below. **This project builds none of D0** |
+| **D0** | Community review of published source (§1.6) | Likelihood | The integration is in the long tail, the review predates the running release, or the malice is not blatant [4][6][8] | Everything below. **This project builds none of D0** |
 | **D1** | The declaration, visible before install (§5.9, §5.10; F4) | Likelihood | The author over-declares (R1), or the user does not read it (R6) | Enforcement, which does not depend on the manifest being read |
 | **D2** | Structural absence — the sandbox cannot express the request (§5.6.2, §5.10.2, §5.11.1) | Impact | The sandbox is constructed with the wrong mounts, namespaces or mirrored state | The mediator, for anything that does reach it |
 | **D3** | The mediator's per-request decision (§5.10, §5.11.3; S6) | Impact | A manifest clause is evaluated wrongly, or the grant is broader than the author needed | The kernel boundary, which holds everything not routed through the mediator |

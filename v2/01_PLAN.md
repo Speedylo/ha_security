@@ -297,7 +297,7 @@ not retyped.
 | Egress | — | 4–6 d |
 | Ch. 7 write-up (~8 obligations, §7.8) | 3–4 d | 3–4 d |
 | Ch. 8 — limitations, `aiofiles`, the 52-vs-2 finding, future work | 2 d | 2 d |
-| Front matter, abstract, bibliography (18 refs), figures | 1 d | 1 d |
+| ~~Front matter, abstract, bibliography (18 refs), figures~~ | ~~1 d~~ | ✅ **Done 2026-09-04.** **28 refs, not 18** — the count was never checked against the chapters |
 | Stage 5 — single-voice read-through, defence prep | 3–5 d | 3–5 d |
 | **Total** | **~19–23 d** | **~23–29 d** |
 
