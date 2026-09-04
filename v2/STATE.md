@@ -208,6 +208,32 @@ bibliography is the sharpest of the four, because the uncited standards are not 
 an examiner reading §4.1 is told the chapter's whole method comes from two frameworks the report
 never cites.
 
+### ⚠ Stage 5, pass 1 (2026-09-04) — six findings still open, each needing a judgement call
+
+Chapters 1–6 and 8 were read in full; Chapter 7's headline figures were re-verified against the raw
+result files; every cross-reference was swept mechanically. **Eleven findings. Five were unambiguous
+and are fixed** (commit `3636b16`: three prose-form citations in Ch. 4 still on the old numbering,
+§4.14's correction spliced through the paragraph it corrects, §5.10.3's schema table broken in half
+by a blockquote, Ch. 7's eight references to a non-existent Chapter 9, and the front matter's false
+claim that no table is numbered). **Six remain, and each is a decision rather than a repair.**
+
+| # | Finding | Why it needs a decision |
+|---|---|---|
+| **1** | **§7.4 says "Every one appears in §7.5 with a verdict" and §7.5's third column is headed *Verdict source*.** Seventeen of twenty rows carry a section pointer — `Security`, `Performance`, `All arms` — not a verdict. Only F2, S4 and S9 were updated in place, and §7.5's own note calls those "this table's **one deliberate exception**". §8.2.4 repeats the claim while answering the falsifier about the evaluation's honesty | **The most consequential finding of the pass.** The requirements scorecard is the first table an examiner reconciles, and it does not show twenty verdicts. Either §7.5 gains a verdict column, or the claim in §7.4/§8.2.4/§7.21 is softened to "every requirement is answered, and here is where". The first is better and is an hour's work |
+| **2** | **§7.18.1 says "the second is the one Chapter 8 owes" and Chapter 8 does not carry it.** The owed finding is that the corpus's network need splits **41% cloud-facing / 41% local-facing**, that these are different capabilities, and that building the proxy therefore makes 41% workable and puts the other 41% behind `allow_private` — a flag the user must read differently (T10). §7.18.1 says in its own words that nothing in Chapters 1–7 had stated this | Ch. 8's only uses of 41% are about §7.27's defect. **This is the §7.26 pattern again**: a promise made in the results half and not kept in the chapter it was made to. Needs a paragraph in §8.2.2 or §8.6 |
+| **3** | **§7.22.2 contains an unfilled placeholder**: *"I/O bandwidth is a live T16 vector… **R‑numbered residual risk**, and Chapter 8 owes it a row."* Chapter 8 §8.6.3 #4 then says **§4.11** owes the row, and §4.11 never gains one | The obligation circulates Ch7 → Ch8 → Ch4 and lands nowhere. Either give it an R number in §4.11 or state plainly that it is a new residual the evaluation generated |
+| **4** | **The report states two sizes for the same population.** §5.6.1 and §5.9.1 say *n = 1,482* shipped integrations; §8.3 says *1,458*. Both are correct — 1,482 directories, 1,458 containing Python — **but the reconciliation exists only in `notes/ch5_evidence_api_surface.md`, which is not submitted** | An examiner who notices reads it as an error. One clause at §8.3 or a footnote at §5.6.1 fixes it |
+| **5** | **§5.10.7's worked example: "Nine of the ten capabilities are denied by their absence."** The example grants two of the ten leaf clauses (`entities.read`, `network.egress`), so eight are denied. Reads as off by one | Depends what "ten capabilities" counts — the chapter uses *capability* at two granularities within four sections (§5.10.3's "Eight" = the eight top-level capabilities, which matches `KNOWN_CAPABILITIES` in `manifest.py`). Fix the arithmetic **or** the term |
+| **6** | **§3.8 says "Every requirement, and where it comes from" and lists nineteen.** S9 is added by §4.10.1 and §7.5 tests twenty. §4.10.1 explains itself well, but §3.8 has no forward pointer — the only superseded claim in the report without one | Minor, and it is the project's own convention (§5.6.5 → §6.3.2, §5.7.4 → §6.4.1). One sentence |
+
+**What the pass did *not* find is worth as much as what it did.** No measured figure disagreed with
+the raw result files. `failures(design) = 0` recomputes from all four arms; §6.14's four G3 profiles
+recompute to 17/21/26/31 exactly; §8.5's 52-vs-2 and 53-vs-0 recompute, including the 18-and-26
+`dependencies == []` counts that §7.26.6 had already reconciled against the 12 that count
+`setup_components`. **Eleven findings, none of them a number** — the fifth consecutive pass over
+this project's prose where that has been true, and §8.4.2's claim now has one more instance behind
+it than the chapter states.
+
 ### The standing risk, unchanged since 21 August
 
 **Programme deadlines for proposal / mid-report / final / defence are unknown**, and it is
