@@ -3,11 +3,16 @@
 **Last updated:** 2026-09-04 (**all eight chapters written; what remains is front matter and one
 whole-report read-through**) · **Read this first when resuming.**
 
-**Changed 2026-09-04.** Two things: the Chapter 8 defect recorded below was fixed (§8.7 gains a row
+**Changed 2026-09-04.** Three things: the Chapter 8 defect recorded below was fixed (§8.7 gains a row
 for building the real Home Assistant component, now #2 of twelve), and **task 6 is done** — front
 matter, abstract and a single consolidated bibliography now exist. **Only Stage 5 remains.** Details
 in *What the 2026-09-04 pass changed*, below; the bibliography was not the clerical job it looked
-like and found four uncited sources, one of them Chapter 4's entire method.
+like and found four uncited sources, one of them Chapter 4's entire method. **Third: a realistic-
+scenario validation is now recorded as the next engineering work** — real HA, real integrations at
+volume, executed rather than imported, with the durable audit log actually engaged. See *The
+realistic-scenario validation*, below. It is not on the critical path to submission; it is what
+would make the strongest claim in the report a claim about a running system rather than about a
+mediator's decisions.
 
 **Where it stands in one line:** **Chapters 1–8 are written.** All twenty requirements in §7.5
 carry a verdict, 18/18 self-test suites pass on the Pi, and the framework runs. The strongest
@@ -114,6 +119,45 @@ after it was written**, which is what evidence is supposed to do to a plan.
 | **The other two network stacks, confined** (§8.7 #6) | `urllib3`/`requests` and a raw socket, spawned in real namespaces | Days; may need recorded fixtures | Promoted from nowhere to sixth by §7.27. The one stack actually spawned turned out to break, so "the other two are presumably fine" is exactly the reasoning that was wrong once |
 | **The push loop** (§8.7 #1) | Build it | Days | Largest missing piece, but it is *building* not testing. Unblocks S3's subscription half and the only latency path that could consume §7.20.1's 63× margin |
 | **The real Home Assistant component** (§8.7 #2) | Build it — the spike has ~250 lines that load nothing from any integration, reusable under `00_METHOD.md` §5 | Days | §8.6.3's limit #2, and the one the 2026-09-04 fix added to §8.7. What it settles is entity **identity**: the states API publishes without a registry row, and §5.6.1 measured **83%** of the corpus publishing by the path that creates one. The *finding* is private knowledge under §2 and would have to be re-measured, not cited |
+
+### ⚠ The realistic-scenario validation — agreed 2026-09-04, and it is one measurement, not four
+
+**Younes's instruction: the solution needs testing again in a realistic scenario.** The report's
+future-work list prices the pieces separately (§8.7 #2, #8, and the compatibility corpus work) and
+that framing understates them, because **what has never happened is all of them at once**. The
+value is in the composition: each part alone is already priced; together they are the first run in
+which nothing on the critical path is a stand-in.
+
+| Part | Where it stands today |
+|---|---|
+| **A real Home Assistant** | ⛔ **Never.** The mediator's step 5 acts on `platform.py`'s in-memory stand-in — §8.6.3's limit #2, §8.7 #2. The integration inside the sandbox runs *genuine* HA 2026.8.3; the platform on the far side of the mediator does not exist |
+| **Real integrations** | ✅ Partly. 77 unmodified community integrations at **import**; **5** executed end to end (3 published confined, 4/5 unconfined); **1** — `nordpool` — against a real API over the mediated path |
+| **A large sample, executed** | ⛔ **n=5.** The ceiling is 11 of 37, because 26 need a credential before any config flow completes (§7.17.1), so this needs recorded fixtures or a cooperating vendor set — §8.7 #8 calls that "a different project's measurement" and it is the honest framing |
+| **The logging mechanism, engaged** | ⚠ **One run of about eight.** `AuditLog` is instantiated in exactly two places in the codebase: its own self-test and `endtoend_egress.py` (§7.27). Every other experiment records to `mediator.audit`, an **in-memory list** — it carries op/allowed/clause so F3 holds and the measurements are sound, but it has no hash chain, no MAC, no `fsync`, and it dies with the process |
+
+**The logging half is the one with no home in the report, and it is the sharpest of the four.**
+The mechanism is built and its properties are demonstrated — `selftest_audit` is 15/15, both chains
+fail independently, tamper/delete/reorder all detected, and durability is measured at **3,670.7 µs
+median with `fsync` against 61.8 µs without**. What is *not* demonstrated is the mechanism running
+under the evaluation. **And the one time it did run for real, it produced three defects in a single
+session** (§7.27.6): the log was created inside a directory the harness deletes, so the run reported
+*no decisions at all*; the destination evidence was read from `mediator.audit`, which does not carry
+the request, so every destination read `None`; and `audit.py` itself recorded an egress target as
+host **without port**, so the log could not tell a grant of 443 from one of 6445 on the same host.
+
+**This is §7.27's lesson arriving a second time, on a different component.** A thing exercised only
+by tests its own author wrote passes; it breaks the first time real work goes through it. Two
+instances is a pattern, and it is the argument for this validation being *the* next engineering
+work rather than one of eleven ranked items.
+
+**Cheapest first move, and it is not the big run:** wire `AuditLog` into the other experiment
+harnesses. It is a small change to code that already exists, no new measurement, and on the
+evidence above it is likelier to find something than to confirm something.
+
+**Two things the report does not currently say**, and a decision is owed on whether it should:
+§8.6.4's evaluation limits do **not** state that the durable log was engaged in one run of eight,
+and §8.7 has no row for it. Left unrecorded, the report reads as though the audit mechanism was
+exercised throughout the evaluation.
 
 **Not obtainable, and stated rather than owed:** the adversary is purpose-built and exercises the
 *pattern* of the 2021 disclosures rather than the eight disclosed integrations at their vulnerable
