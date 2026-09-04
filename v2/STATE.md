@@ -235,6 +235,50 @@ recompute to 17/21/26/31 exactly; §8.5's 52-vs-2 and 53-vs-0 recompute, includi
 this project's prose where that has been true, and §8.4.2's claim now has one more instance behind
 it than the chapter states.
 
+### ⚠ Stage 5, pass 2 (2026-09-04) — one finding, and it is the most serious in the report
+
+Pass 2 read **Chapter 7's prose**, which pass 1 had only verified numerically. One finding, and it
+is worth more than pass 1's eleven put together.
+
+**C1's verification does not exist.** §7.4.1 says *"C1 is verified mechanically, not asserted. Zero
+source lines changed, counted by diffing each integration's tree against the fetched original after
+the run"*, and §8.3 repeated it. **Nothing in `framework/`, `figures/` or `experiments/` hashes or
+diffs an integration's tree against an original.** No result file carries the field; no results
+section reports the count. C1 underwrites the word the report's title rests on.
+
+**What is true instead is two lines of the harness, and it is asymmetric:**
+
+| | Confined arm | Baseline arm |
+|---|---|---|
+| Source that runs | a copy — `shutil.copytree` (`compat.py:264`) | **the fetched tree itself**, by path (`compat.py:393`) |
+| Can it be modified? | **No** — `sandbox.py:218` mounts the copy read-only | **Yes** — full authority, in-process, no mount |
+| Diffed? | no | no |
+
+So the confined arm is *stronger* than the criterion asked for — structurally incapable rather than
+observed innocent — and **the baseline arm has nothing at all**, which is the arm every
+compatibility figure is measured against. **And the check as described would not have tested what
+it claims**: the confined run operates on a copy, so diffing the *original* afterwards compares a
+tree nothing touched.
+
+**C1 is downgraded from *counted* to *argued*, not withdrawn.** No modification has ever been
+observed and `copytree` performs no transformation. §7.28 is the new section, §7.5's row states it,
+**§8.2.4's answer to the fourth falsifier is corrected rather than quietly fixed** — it had said
+"nothing was reported as passed that was not demonstrated" — and **§8.7 #4 prices the repair at an
+hour**: hash each tree at fetch, re-hash the copy before the confined run and the tree after the
+baseline run, report mismatches. Until that runs, C1 rests on reading two lines of the harness.
+
+**Why four earlier sweeps missed it, and this is the transferable part.** §7.21.3 caught five
+obligations "discharged" in a methodology section by checking each against the results section it
+named. **C1 was never entered in §7.8's obligations table at all**, because §7.4.1 stated it as an
+accomplished fact rather than as something owed. *A promise can be swept for; a false statement of
+completion cannot.* §7.8 now carries that observation and the pointer to §7.21.3 it lacked.
+
+**Two recounts I ran against the raw data during this pass were wrong and the report was right** —
+§8.5's declared-component counts (I counted `setup_components`, the field §7.26.6 had already
+distinguished) and §7.13's adversary outcomes (I counted the run's own summary line as an extra
+row). **Across two passes: twelve findings, not one of them a measured figure, and two occasions
+where the checker was wrong and the measurement was not.**
+
 ### The standing risk, unchanged since 21 August
 
 **Programme deadlines for proposal / mid-report / final / defence are unknown**, and it is
