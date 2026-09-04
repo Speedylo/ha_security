@@ -1,7 +1,14 @@
 # Where the rebuild stands
 
-**Last updated:** 2026-09-04 (**all eight chapters written; what remains is front matter and one
-whole-report read-through**) · **Read this first when resuming.**
+**Last updated:** 2026-09-04, end of session (**all eight chapters written, front matter and
+bibliography done, Stage 5 read through twice**) · **Read this first when resuming.**
+
+**What the 2026-09-04 session did, in one line:** fixed Chapter 8's known defect, wrote the front
+matter and a single 28-source bibliography where two colliding schemes had been, and ran **two
+Stage 5 read-through passes that found twelve things — none of them a measured figure, and one of
+them serious**: §7.4.1 and §8.3 both claimed C1 was *"verified mechanically"* and **that
+verification does not exist** (§7.28). C1 is downgraded from *counted* to *argued*, and running the
+check is an hour and the first thing on the list above.
 
 **Changed 2026-09-04.** Three things: the Chapter 8 defect recorded below was fixed (§8.7 gains a row
 for building the real Home Assistant component, now #2 of twelve), and **task 6 is done** — front
@@ -95,18 +102,41 @@ that does not belong in the report, including anticipated viva questions.
 
 ## Next session — start here
 
-**The engineering is complete against every claim the report makes.** Nothing in Chapters 1–8 is
-unsupported: all twenty §7.5 rows carry a verdict, §8.6 states the gaps and §8.7 prices the work
-rather than leaving either implicit. **What remains is writing, plus optional measurements that
-would strengthen the report rather than rescue it.**
+**End of 2026-09-04. Chapters 1–8 are written, the front matter and one consolidated bibliography
+exist, and Stage 5 has had two read-through passes.** All twenty §7.5 rows now carry a verdict *in
+the table*, not just in the chapter. **Nothing is blocked on engineering; one thing is worth an hour
+before submission, and one input is still missing from outside the project.**
 
-### The one remaining task
+### Do these, in this order
 
-| | Task | What it needs |
-|---|---|---|
-| ~~**6**~~ | ~~Front matter, abstract, bibliography~~ | ✅ **Done 2026-09-04.** `report/00_front_matter.md` and `report/09_references.md`. **28 references, not the 18 this file and `01_PLAN.md` §9.6 both assumed** |
-| **7** | **Stage 5** — single-voice read-through of the *whole* report (Ch. 1–8), then defence prep | §7.26.8 is the argument for doing it: **two read-throughs of one chapter each found something real**, and the prose is the only part of this project with a single instrument checking it. Defence prep against `THREAT_MODEL.md` Part 10 and the viva questions in `notes/`. **The front-matter pass found four more things of the same kind (below), so that is now four for four** |
+| | Do this | Cost | Why it is first |
+|---|---|---|---|
+| **1** | **Run the C1 check** (§8.7 #4, §7.28) | **~1 hour** | **The highest-value hour left in the project.** §7.4.1 and §8.3 both claimed C1 was "verified mechanically"; pass 2 found the diff **does not exist**, and C1 is downgraded to *argued* until it runs. Hash each integration tree at fetch, re-hash the copy before the confined run and the tree **after the baseline run** — the baseline is the arm with no copy and no read-only mount, so it is the one that needs it. Expected outcome: it passes, and *unmodified* becomes counted. **Leaving it unrun is the wrong trade precisely because it will pass** |
+| **2** | **Get the programme deadlines and handbook** | a lookup | Four title-page fields and two prescribed statements (declaration, AI-use) are placeholders; the handbook route needs nobody's reply. Also decides whether a list of *all* tables is required (`report/00_front_matter.md` states the current decision and `report/toc.py` enforces its counts) |
+| **3** | **Stage 5, pass 3** | a day | Two passes found twelve things and **pass 2's single finding was the most serious in the report**, so the curve has not flattened. Pass 3 should target what neither covered: **Chapter 7's §7.19–§7.25 prose** (pass 1 verified their numbers, pass 2 read §7.1–§7.18 and §7.26–§7.28), and every claim of the form *"X is verified/measured/counted"* — which is the exact shape that hid C1 |
+| **4** | **Defence prep** | days | Against `THREAT_MODEL.md` Part 10 and the viva questions in `notes/`. §8.4's six-of-eight scorecard and §7.28 are the two things to be able to say aloud without notes |
 
+### How to run pass 3, since two passes have now taught the method
+
+1. **Grep for completion claims before reading.** `verified|counted|measured|demonstrated|confirmed`
+   next to a requirement ID. C1 hid because §7.4.1 stated it as fact, and **§7.8's obligations table
+   can only be swept for promises** — a promise can be checked against the section it names, a false
+   statement of completion names nothing.
+2. **Check every load-bearing claim against the artifact, not against another section.** Both of
+   pass 2's real findings came from `grep`ping `framework/` for a mechanism the prose described.
+3. **Recompute from the result files, and expect to be wrong.** Twice in pass 2 the recount was
+   wrong and the report was right — §8.5's counts and §7.13's outcomes. **A disagreement is a
+   question, not a finding, until the field being counted is confirmed.**
+4. **The mechanical sweeps are cheap and already written**: `python3 report/toc.py --check`, plus
+   the reference and section-reference checks in the pass-1 commit message (`3636b16`).
+
+### Optional measurements, ranked — none blocks submission
+
+Taken from §8.7's list, which is ordered by what each would settle. **§7.27 reordered that list
+after it was written**, which is what evidence is supposed to do to a plan.
+
+| | Work | Cost | Why |
+|---|---|---|---|
 ### Optional measurements, ranked — none blocks submission
 
 Taken from §8.7's list, which is ordered by what each would settle. **§7.27 reordered that list
@@ -312,7 +342,7 @@ redistribute.
 | ~~**5**~~ | ~~**Chapter 8**~~ | ✅ **Written 2026-09-03**, `report/08_conclusions.md` — *Conclusions, Limitations and Future Work*, ~40k chars. Refuses to re-list §3.7/§4.11/§5.15/§7.9/§7.11 and answers the three questions no earlier chapter can. **§8.2 answers the claim against §7.7's falsifiers fixed in advance** — A, B and C all hold; **the fourth falsifier, on the evaluation rather than the artifact, fired**, and §8.2.4 reports it. **§8.3 closes §2.8's three contributions**, including the honest gap: the API-surface measurement was never re-run on the uniform corpus, so contribution 1 is half-delivered. **§8.4** — 6-of-8 predictions wrong, and the two that held were the two *about the design*; plus the methodological result now stated with its **explanation and four transferable mechanisms**. **§8.5** the 52-vs-2 / 53-vs-0 finding. **§8.6** twelve artifact limits, six evaluation limits, structural and inherited kept separate. **§8.7 future work priced and ordered** — ten items as written, **twelve after the 2026-09-04 fix**; cheapest first-value is still *one run of an existing script*. **§8.8** the single upstream ask (R3), now measured rather than reasoned about |
 | ~~**4b**~~ | ~~**Real integration, confined, against a real API**~~ | ✅ **Done 2026-09-03, §7.27.** Not scheduled — run because §7.25.5 said in its own words that a real integration against a real API was a different measurement it did not substitute for. `nordpool` is the corpus's only member that both needs a network and configures without a credential (26 of 37 cannot). Three arms: unconfined / confined+declared / confined+clause removed, the third being what makes the second evidence. **The first run failed, and that is the result**: `async_get_clientsession(hass)` — what the platform tells an author to call — builds its resolver by instantiating Zeroconf, which joins the mDNS group, and a fresh netns `lo` has no `IFF_MULTICAST`. **A real integration could not construct an HTTP client inside the sandbox at all**, so the egress design had been unusable for the 41% it was built to serve, behind a suite that all passed. §7.25's subject used a bare `aiohttp.ClientSession()` and skipped the very helper that breaks it. Fixed in two measured steps (`IFF_MULTICAST`, then a `224.0.0.0/4` route to `lo` — zeroconf joins via `INADDR_ANY` and the kernel picks the interface from the routing table); the grant is **vacuous**, the route's device is `lo`. Result: **0.026, the same price confined as unconfined, in the same minute**, 3 grants logged as `dataportal-api.nordpoolgroup.com:443` with both chains verifying; clause removed → 3 denials and `unavailable`. **11/11.** Also re-establishes §7.17.5's withdrawn finding on exactly the evidence it specified, and fixes `audit.py` recording an egress target as host without port. **18/18 suites re-run after both changes.** |
 | ~~**6**~~ | ~~**Front matter, abstract, bibliography**~~ | ✅ **Done 2026-09-04.** Title page, abstract (three paragraphs against §8.9), declaration and AI-use content, generated contents page, figure list, abbreviations, artifact index and an *Outstanding* section. **The bibliography was not clerical**: Ch. 1 and Ch. 2 carried independent `[n]` schemes that collided, Ch. 5 was citing Ch. 1's private numbering, ISO 31000 / STRIDE / OWASP Threat Dragon / RFC 1918 were cited by name and listed nowhere, and one listed source was never cited. **28 references, unified by first appearance; 28/28 resolve in both directions** |
-| **7** | **Stage 5** | Single-voice read-through of the **whole** report, then defence prep. §7.26.8 is the argument for doing it: two read-throughs of one chapter each found something, and the prose is the only part of this project with a single instrument checking it |
+| ~~**7**~~ | ~~**Stage 5**~~ | ◐ **Two passes done 2026-09-04**, recorded above. **Twelve findings, none a measured figure.** Pass 1: Ch. 1–6 and 8 read in full, Ch. 7 verified numerically — eleven findings, all fixed. Pass 2: Ch. 7's prose — **one finding, and it is the most serious in the report** (§7.28, C1). **Pass 3 and defence prep remain**, and the method the two passes taught is written up under *Next session* |
 
 **✅ Gate G3 has a recommendation, and it is no longer close (§6.14, 2026-08-25).**
 
