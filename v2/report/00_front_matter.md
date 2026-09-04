@@ -239,11 +239,23 @@ separately from the thing it describes is wrong within a session and nothing say
 
 <!-- figures:end -->
 
-**There is no list of tables, and that is a decision rather than an omission.** The report contains
-152 tables and they are unnumbered; the great majority are two- to six-row registers embedded in an
-argument — a requirement and its derivation, a threat and its rating, a prediction and its outcome
-— rather than exhibits a reader would navigate to. Numbering them would create 152 cross-reference
-targets that no section uses. **If the handbook requires a list of tables, this is the decision to
+## Tables
+
+Three tables are numbered, and they are the three the report navigates *to*. They are listed here;
+the other 149 are not.
+
+| Table | Subject | In | Referred to from |
+|---|---|---|---|
+| **1.1** | Scale of the custom-integration ecosystem | `01_problem_and_context.md` | §1.3, §1.6 |
+| **1.2** | Authority held by any custom integration | `01_problem_and_context.md` | §1.7, §2.4.1, §2.4.2, §2.7, §3.4, §3.5, §4.2, §4.4, §4.6, §5.2 |
+| **2.1** | Platform assumptions in prior work versus Home Assistant | `02_literature_and_gap.md` | §2.3, §2.7, §3.3, §3.8 |
+
+**The other 149 tables are deliberately unnumbered**, and the split is the point rather than an
+inconsistency. Table 1.2 is an exhibit: five later chapters derive requirements, assets and
+boundaries from it by name. The rest are two- to six-row registers embedded in the argument they
+belong to — a requirement and its derivation, a threat and its rating, a prediction and its outcome
+— which no section refers to from elsewhere. Numbering those would create 149 cross-reference
+targets nothing uses. **If the handbook requires every table numbered, this is the decision to
 revisit**, and the work is mechanical.
 
 ---

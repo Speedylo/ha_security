@@ -84,7 +84,14 @@ def check_counts(text: str) -> list[str]:
                 tables += 1
     problems = []
     stated_l3 = re.search(r"headings — (\d+) of them — are omitted", text)
-    stated_tb = re.search(r"report contains\s*\n?(\d+) tables", text)
+    # Three tables are numbered (see the Tables section); the prose states the rest.
+    tables_section = text.split("## Tables", 1)[-1]
+    numbered = len(re.findall(r"^\| \*\*\d+\.\d+\*\* \|", tables_section, re.M))
+    m = re.search(r"other (\d+) tables are deliberately unnumbered", text)
+    stated_tb = None
+    if m and numbered:
+        total = int(m.group(1)) + numbered
+        stated_tb = re.match(r"(\d+)", str(total))
     if not stated_l3 or int(stated_l3.group(1)) != l3:
         problems.append(f"third-level headings: prose says "
                         f"{stated_l3.group(1) if stated_l3 else '?'}, chapters have {l3}")

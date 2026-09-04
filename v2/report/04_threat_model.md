@@ -38,7 +38,7 @@ by the requirements of Chapter 3.
 | Excluded | Reason |
 |---|---|
 | Add-ons | Isolated as containers (§1.2.1); a different architecture with a different model |
-| Home Assistant core vulnerabilities | First-party code; addressed by the project's own security programme [7 of Ch. 1] |
+| Home Assistant core vulnerabilities | First-party code; addressed by the project's own security programme [10] |
 | Network-layer attacks on the home LAN | Adjacent problem, addressed by MUD-style work (§2.4.2) |
 | Physical attacks on the gateway device | Assumed physically secure; a home with an attacker inside it has different problems |
 | Multi-user authorisation | Platform assumes all users are trusted (§1.8); changing this requires core changes (C2) |
@@ -283,7 +283,7 @@ Chapter 3's requirements implemented. Likelihood reflects §4.7's anchors.
 | T15 | 4 | 4 | 16 High | **No attacker skill required**: `/proc/<pid>/environ` is an ordinary file read for a same-uid process |
 | T16 | 4 | 3 | 12 High | Total loss of an unattended platform (A5); no resource limits exist |
 | T17 | 4 | 4 | 16 High | **Demonstrated** (§2.4.1) |
-| T18 | 3 | 5 | 15 High | Loss of attribution (A7); no attribution exists, confirmed by [7 of Ch. 2] |
+| T18 | 3 | 5 | 15 High | Loss of attribution (A7); no attribution exists, confirmed by [21] |
 
 **Evaluation.** Four Critical and twelve High inherent risks, and the Critical ones share a
 single cause: integration and platform occupy one process with no boundary between them.
@@ -458,7 +458,7 @@ strengthens a requirement (S9) rather than excusing its absence.
 
 ## 4.14 Relationship to the closest published model
 
-Corno and Mannella [Ch. 2, ref 6] propose the only published threat model for extensible
+Corno and Mannella [9] propose the only published threat model for extensible
 smart-home gateways, validated on Home Assistant. Chapter 7 evaluates against it, so the
 relationship is stated here.
 
@@ -474,7 +474,9 @@ Two differences are worth stating.
 **Their model is broader in consequence; this one is broader in mechanism.** They include
 physical damage to devices (their T8) — repeated activation until a lamp burns out — which
 this model does not, because it is not reachable by any control available here and would be
-retained immediately.
+retained immediately. This model, in turn, separates the supply and update path (TB4) and
+the host operating system (TB5) as boundaries in their own right, which their gateway-level
+framing does not require.
 
 > **Corrected by §7.26.4 (2026-09-03): the divergence is wider than this paragraph states, and
 > the text is left as written.** Scoring both registers found that **three** of their eleven have
@@ -483,9 +485,7 @@ retained immediately.
 > memory or disk, rendering the gateway unresponsive"*, and a gateway being exhausted delays and
 > partially loses before it completely loses, so T16's `CM` entry should read **T5, T6, T7** rather
 > than T7 alone. Either way this paragraph gives one example where there are three, and §7.26.4
-> reports the scoring against the mapping as it stands rather than against a corrected one. This model, in turn, separates the supply and update path (TB4) and
-the host operating system (TB5) as boundaries in their own right, which their gateway-level
-framing does not require.
+> reports the scoring against the mapping as it stands rather than against a corrected one.
 
 **Their notion of *scope* is defined by documentation; this project makes it enforceable.**
 Their model states that a plug-in's scope is "the set of variables, files, or resources that

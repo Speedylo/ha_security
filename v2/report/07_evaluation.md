@@ -1045,7 +1045,7 @@ zeroconf/_utils/net.py: add_multicast_member
 The sandbox's network namespace holds loopback only, so joining a multicast group fails. It
 declares `http` and `websocket_api`, and zeroconf arrives through that chain. **This is
 confinement costing compatibility**, and §7.12 could not have found it: at import level the
-integration is fine, and only setting it up reaches the socket. It bears directly on §9.5's open
+integration is fine, and only setting it up reaches the socket. It bears directly on `01_PLAN.md` §9.5's open
 decision — network isolation costs more than "cannot reach the internet", and an egress proxy
 that mediates outbound TCP does not by itself answer multicast discovery.
 
@@ -1104,7 +1104,7 @@ unconfined and fails confined on discovery**, and this corpus has not produced o
 > **A conclusion that was drawn from it and is now withdrawn.** The first version of this
 > section argued that network isolation costs more than "cannot reach the internet", and that an
 > egress proxy mediating outbound TCP would not answer multicast discovery. **The second clause
-> is still true as a statement about mechanisms; the first is not evidenced.** §9.5's decision
+> is still true as a statement about mechanisms; the first is not evidenced.** `01_PLAN.md` §9.5's decision
 > must not be taken on it.
 >
 > **Re-established on the evidence this paragraph specified — §7.27.4 (2026-09-03).** The bar set
@@ -1138,7 +1138,7 @@ paired discipline rather than for trusting a traceback.
 
 ## 7.18 How much egress is actually needed, and of what kind
 
-**Run 2026-09-02**, `experiments/egress_demand/`. §9.5 leaves one decision open — whether to
+**Run 2026-09-02**, `experiments/egress_demand/`. `01_PLAN.md` §9.5 leaves one decision open — whether to
 build §5.8.2's scope item 2 — and until now nothing in this evaluation measured the thing the
 decision turns on: **how many integrations need outbound network, and where they need to go.**
 
@@ -1202,7 +1202,7 @@ unambiguous:
 **Not one integration of the 37 attempts egress at import.** All seventy-one attempts belong to
 components the platform set up on their behalf. §6.6.5's rule — assert on *why*, not on *that* —
 has now caught a fourth case, and this one would have overstated observed demand by a factor of
-twenty-three and pointed §9.5 at a number the integrations had no part in producing.
+twenty-three and pointed `01_PLAN.md` §9.5 at a number the integrations had no part in producing.
 
 **The corrected figure is itself the finding: import-level observation cannot measure egress
 demand at all.** Integrations open connections when they are *set up*, not when they are
@@ -1225,7 +1225,7 @@ adversary, and §7.13 covers the adversary. And `iot_class` is the author's clai
 like every other declaration, though over-declaring one's own network reach is not an attack that
 buys anything.
 
-### 7.18.3 What this means for §9.5
+### 7.18.3 What this means for the egress decision (`01_PLAN.md` §9.5)
 
 The decision is better informed than it was and it has not been taken here. What the evidence
 now supports:
@@ -1236,7 +1236,7 @@ now supports:
   local-facing, served only through the non-public flag, which is a further design decision
   §5.10.3 provides for but which §5.8.2's scope item does not mention.
 - **No measured evidence yet that confinement's *current* network position costs compatibility.**
-  §7.17.5 withdrew the one candidate. The argument for building the proxy remains the one §9.3
+  §7.17.5 withdrew the one candidate. The argument for building the proxy remains the one `01_PLAN.md` §9.3
   ranks first — a requirements register that does not match the artifact — not a measured
   compatibility loss.
 
@@ -1567,7 +1567,7 @@ Chapter 8 carries it. **Item 8 is conditional on a decision not yet taken.**
 > 40 members with the head corpus. §7.21.5's scorecard below is superseded by §7.23.7, which
 > scores eight predictions rather than five.
 >
-> **And item 8 is no longer conditional — §7.24 and §7.25 (2026-09-03).** §9.5's decision was
+> **And item 8 is no longer conditional — §7.24 and §7.25 (2026-09-03).** `01_PLAN.md` §9.5's decision was
 > taken, the proxy was measured for before it was built, and F2 and S4 are both ✅ Met. All eight
 > scheduled items are complete. The sentence above is left as written because it was true on
 > 2026-09-02 and the date is the evidence.
@@ -1929,7 +1929,7 @@ as assumed.**
 
 ## 7.24 What egress actually looks like, measured before the proxy is built
 
-**Run 2026-09-03**, `experiments/egress_shape/`. §9.5's decision is taken: build mediated egress.
+**Run 2026-09-03**, `experiments/egress_shape/`. `01_PLAN.md` §9.5's decision is taken: build mediated egress.
 This section is the measurement that decides *what to build*, and it is placed before the artifact
 rather than after it because the alternative is discovering a wrong assumption inside working code.
 
