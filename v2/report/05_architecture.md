@@ -247,7 +247,7 @@ it. To establish this rather than assert it, every integration shipped with Home
 | `hass.data` — the shared dictionary directly | 279 | 18% |
 | `hass.states.async_set` — setting state directly on `hass` | **2** | **0.1%** |
 
-*n = 1,482 integrations; method and command in `notes/ch5_working_notes.md`.*
+*n = 1,482 integrations; method and command in `notes/ch5_working_notes.md`.* **On this denominator, because the report carries two.** `homeassistant/components/` holds 1,482 directories, which is what this measurement and §5.9.1 count, because both work over files. §8.3 quotes **1,458** for the same release: the `ast` parser behind `notes/ch5_evidence_api_surface.md` skips the 24 shipped integrations that contain no `.py` file at all — brand and translation metadata with no code. Both totals are correct for what they count and the denominators differ because the questions do.
 
 Integrations are, overwhelmingly, not written against `hass`. They are written against Home
 Assistant's **helper layer** — its entity base classes, its polling coordinator, its platform
@@ -1096,8 +1096,18 @@ A weather integration polling one API, reading one sensor for local calibration:
 
 What this integration **cannot** do, without any of it being written down: call any service,
 write any entity, subscribe to any event, read any file outside its own directory, enumerate
-anyone's config entries, register an HTTP route, or reach any host but the one named. Nine of
-the ten capabilities are denied by their absence, which is S6.
+anyone's config entries, register an HTTP route, or reach any host but the one named. **Eight of
+the ten** declarable clauses above are denied by their absence, which is S6 — the manifest grants
+two of them, `entities.read` and `network.egress`.
+
+> **Corrected 2026-09-04 by Stage 5's read-through: this read "nine of the ten".** The example
+> grants two clauses, so eight are denied, and the arithmetic was simply wrong. Recorded rather
+> than repaired silently because the count is checkable from the JSON four lines above it — which
+> is exactly why it is the kind of error a read-through catches and a self-test cannot. Note also
+> that this chapter uses *capability* at two granularities: §5.10.3's **eight** are the top-level
+> capabilities (`entities`, `services`, `events`, `network`, `files`, `config_entries`, `http`,
+> `resources` — the set `manifest.py` enforces), and the **ten** here are the declarable clauses
+> beneath them, excluding `resources`, which grants nothing (§8.6.3).
 
 Note also what the declaration *reveals*. This manifest is legible to a user who cannot read
 Python — one host, one sensor — and a weather integration requesting `lock.unlock` would be

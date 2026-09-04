@@ -125,6 +125,19 @@ joined group carries only what the sandbox sends to itself. The finding, not the
 result: **until 2026-09-03 the egress design did not work for the 41% of the corpus it was built
 to serve, and only running a real integration revealed it.**
 
+**One thing B does not say at all, and §7.18.1 said Chapter 8 owed it.** The corpus's need for
+a network is the majority position — **30 of 37, 81%, declare that they reach something** — but it
+splits almost exactly in half, and the two halves are not the same capability. Fifteen (**41%**) are
+`cloud_polling` or `cloud_push` and reach the internet: those are what §5.8.2's scope item 2 serves
+directly, and what §7.25 and §7.27 evaluated. The other fifteen (**41%**) are `local_push` or
+`local_polling` and reach devices on the home LAN — which §5.10.3 provides for only behind a
+**separate explicit flag**, because reaching the LAN is reaching the router's admin page and every
+other device in the house (T10), and because §7.26.2 found that flag being read from the sandbox's
+own request. **So building the proxy did not make 81% of the corpus workable. It made 41% workable
+and put the other 41% behind a declaration the user is meant to read differently.** That is the
+sharpest single statement of what this design's network position costs, it is not a limitation of
+the artifact but a property of the design, and no chapter before this one states it.
+
 ### 8.2.3 C — confinement is affordable
 
 **Falsifier (§7.7):** *per-sandbox cost puts the budget below §5.8.1's measured mean of 4.02
@@ -190,7 +203,7 @@ one document. That took two passes (§7.21, §7.26) and both found something.
 
 **Contribution 1 — an empirical account of the API surface community integrations depend on.**
 Delivered (`notes/ch5_evidence_api_surface.md`): 1,458 core integrations and 144 community ones
-parsed with `ast` rather than grepped, zero parse failures, every figure a stated lower bound. It
+parsed with `ast` rather than grepped, zero parse failures, every figure a stated lower bound. *(1,458 and not §5.6.1's 1,482 because the parser skips the 24 shipped integrations holding no `.py` file; §5.6.1 states the reconciliation.)* It
 did the work §2.8 claimed for it — it made the retrofit problem quantitative, and §5.10's schema
 takes six specific decisions from it, including that blanket state denial is not available at 41%
 and that filesystem permission must be path-scoped because absolute denial breaks 33.3%. It also
@@ -352,7 +365,7 @@ design has an unbounded number of holes. That sorting is kept and extended by on
 evaluation generated: **limits of the measurement**, which are neither the design's nor anyone
 else's to fix, but the next measurement's.
 
-Only limits that no earlier section states appear below. §4.11's six residual risks, §3.7's
+Only limits that no earlier section states appear below. §4.11's residual risks — six as drafted, **seven since R7** — §3.7's
 non-goals, §5.15's three inherited limits and §7.9's validity threats stand as written.
 
 ### 8.6.2 Structural — and the correct response is to state them, not to add mechanism
@@ -387,7 +400,7 @@ reach. That is smaller than "over-declaration is a residual risk" and it is more
 | 1 | **The push loop does not exist.** Declared entities are mirrored once at sandbox construction, so an integration sees the value that existed when it was built | §6.11.2, §7.14.4 | It is the largest missing piece and it blocks two things: S3's subscription half is a refusal without a delivered stream, and the only latency path that could consume §7.20.1's 63× margin is unmeasurable without it |
 | 2 | **The mediator acts on a stand-in, not a live Home Assistant** | §6.10.2, §6.11.2 | What crossed the boundary in §7.17 is real and carries its clause; what a live instance would do with those fifteen entities is untested. **What it costs is entity *identity*, not realism** — §6.10.2's prior-work finding is that the states API publishes without a registry row, and §5.6.1 measured 83% of the corpus publishing by the path that creates one. Priced in §8.7 #2 |
 | 3 | **Dependency installation is unresolved**, so the third component of the three-part identity stays vestigial | §6.8.1, §6.11.2 | The identity is well-formed and attributed without it; resolved versions are what it is waiting on |
-| 4 | **Disk means space, not I/O bandwidth.** A sandbox cannot exhaust space outside its scratch but it can saturate the device | §7.22.2 | The `io` controller is **present on the host and not delegated to a user manager** — `+io` to the delegated subtree fails with `ENOENT` — so an unprivileged supervisor cannot implement it at any effort. §5.7.4 chose unprivileged. **This is a live T16 vector and §4.11 owes it a row** |
+| 4 | **Disk means space, not I/O bandwidth.** A sandbox cannot exhaust space outside its scratch but it can saturate the device | §7.22.2 | The `io` controller is **present on the host and not delegated to a user manager** — `+io` to the delegated subtree fails with `ENOENT` — so an unprivileged supervisor cannot implement it at any effort. §5.7.4 chose unprivileged. **This is a live T16 vector, and §4.11 now carries it as R7** (entered 2026-09-04; §7.22.2 is where it was found) |
 | 5 | **`/sandbox/data` is unbounded.** An integration can fill the user's disk through its own writable directory | §7.22.2 | The cap applies to the private `/tmp`'s tmpfs; bounding a bind-mounted host directory needs filesystem quotas, a privileged operation |
 | 6 | **The cgroup kill destroys its own evidence.** The adversary dies before reporting what it attempted | §6.9.4, §7.11 | §6.4.6 chose `EPERM` over `KILL_PROCESS` for seccomp precisely so a refusal stays legible; the cgroup has no `EPERM` to offer. **The audit trail is weakest exactly where the control is strongest**, which is the sharpest form of R4 in this report |
 | 7 | **The MAC key does not outlive the mediator.** Records from an earlier run stay hash-verifiable and are no longer MAC-verifiable by anyone | §6.8.4 | Persisting the key hands it to exactly the adversary it exists to stop — anyone who can write the log can read the key beside it. A position on a trade-off, not a defect |

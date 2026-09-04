@@ -88,6 +88,11 @@ requirements exist: C1–C4, F1–F4, S1–S8, S9 (added by §4.10.1), and N1–
 §7.5 with a verdict, including the ones that cannot be verified. A requirement absent from that
 table would be a requirement quietly dropped.
 
+> **This sentence was not true until 2026-09-04, and the repair is recorded at §7.5 rather than
+> here.** The table carried a *verdict source* for seventeen of the twenty and a verdict for three.
+> The verdicts existed in the chapter throughout; what was missing was the column that collects
+> them.
+
 Two requirements are met by *reporting* rather than by the artifact — N2 and, in part, F4 — and
 they are scored on whether this chapter does what they require, which is an unusual but honest
 construction: N2 is a requirement on the evaluation (§3.6 says so explicitly), so the evaluation
@@ -252,28 +257,39 @@ three specific obligations:
 Frozen 2026-09-02. Each row states the criterion, not the expected outcome. "Blocked" means the
 requirement cannot be verified with the artifact as it stands, and the reason is given.
 
-| Req | Criterion — the requirement passes if… | Verdict source |
-|---|---|---|
-| **C1** | Every integration in the compatibility runs shows a **zero-line** diff against its fetched original, counted mechanically after the run | Compatibility |
-| **C2** | Every arm runs against an unmodified official Home Assistant release, version recorded in the result file | All arms |
-| **C3** | The adversarial run includes an absent manifest, an over-broad manifest, and one deliberately mismatched to behaviour — and all three are handled per §5.9's precedence rules | Security |
-| **C4** | Every performance figure is produced on the Raspberry Pi 5, reporting per-integration memory *and* added latency | Performance |
-| **F1** | A confined integration's entities are present in Home Assistant and behave as native entities under the measures used in this chapter | Compatibility, level 2 |
-| **F2** | An integration polling a **declared** remote API completes successfully while confined | ✅ **Met — §7.25, and by a *real* integration in §7.27.** Two purpose-built integrations polled declared hosts concurrently in real namespaces (§7.25); `nordpool` — unmodified community source — then polled its own Nord Pool API confined and published **the same price as the unconfined arm**, with the mediator's durable record naming `dataportal-api.nordpoolgroup.com:443` (§7.27) |
-| **F3** | Every enforcement decision in the evaluation names the manifest clause that produced it; a decision with no attributable clause is shown to be unconstructible | Security |
-| **F4** | The manifest of each evaluated integration renders in human-readable form, with denials shown at the same weight as grants | §6.7, re-run over the evaluated set |
-| **S1** | The published garbage-collector technique (§2.4.1) is attempted from inside the sandbox and reaches no platform object; the mediator and its credential are not locatable from within | Security |
-| **S2** | No platform credential is recoverable from the sandbox's environment, filesystem, process table or memory | Security |
-| **S3** | A confined integration is denied both a **read** and a **subscription** to undeclared entities, each refusal naming its clause, **against a paired unconfined baseline** quantifying what is readable without the framework | Security |
-| **S4** | An integration is denied a host declared only by a *different* integration | ✅ **Met — §7.25.** Two confined integrations, running at once, each denied the host declared only by the other — evidenced by the mediator's own audit record |
-| **S5** | A manifest permitting `lock.lock` is shown not to permit `lock.unlock`, and the refusal is structural rather than a check | §6.10.1 — re-verified in the evaluation run |
-| **S6** | An integration with **no** manifest and one with an **unparseable** manifest are each denied all mediated capability, each refusal naming its rule | Security |
-| **S7** | Decisions appear in the log bearing the integration's three-part identity, and modification, deletion **and reordering** are each independently detectable by both the hash chain and the keyed MAC chain | §6.8 — re-verified |
-| **S8** | The 2021 file-theft pattern **succeeds against an unconfined baseline installation** and is blocked under the framework, on the same host and release | Security — **requires the baseline arm** |
-| **S9** | An integration deliberately exhausting CPU, memory and disk in turn does not render the gateway unresponsive, demonstrated unprivileged, with the boot-time precondition stated | ✅ **Met, against narrowed wording — §7.22.** All four bounds now come from the manifest and each is verified by a sandbox exceeding it: memory OOM-killed, forks refused at the cap, a 25% CPU cap holding at 25.1%, `ENOSPC` at `disk_mb`. **Disk means space, not I/O bandwidth** — the `io` controller is not delegated to a user manager (§7.22.2), so S9's text is narrowed on evidence and the residual is stated |
-| **N1** | Added latency, per-integration memory and maximum concurrent integrations are all reported against an unconfined baseline on the target hardware. **No threshold** — §3.6 fixed this position in advance | Performance |
-| **N2** | This chapter reports "imports clean" and "executed end-to-end" as two separate numbers, never conflated, with the first labelled an upper bound wherever it appears | **This chapter** |
-| **N3** | Behaviour on mediator unavailability is specified in advance and tested; the framework refuses rather than degrades silently, including the wrong-cgroup-position case | Security |
+| Req | Criterion — the requirement passes if… | Verdict source (fixed 2026-09-02) | **Verdict** |
+|---|---|---|---|
+| **C1** | Every integration in the compatibility runs shows a **zero-line** diff against its fetched original, counted mechanically after the run | Compatibility | ✅ **Met** — §7.12.1 — zero source lines changed, diffed mechanically against each fetched original after every run; re-verified on the uniform corpus (§7.23) |
+| **C2** | Every arm runs against an unmodified official Home Assistant release, version recorded in the result file | All arms | ✅ **Met** — §7.12 — every arm ran against unmodified Home Assistant 2026.8.3 (`759e465`), the release recorded in each result file |
+| **C3** | The adversarial run includes an absent manifest, an over-broad manifest, and one deliberately mismatched to behaviour — and all three are handled per §5.9's precedence rules | Security | ✅ **Met** — §7.16.1 — `selftest_c3`: absent, over-broad and mismatched manifests. Over-broad **is honoured** (R1) and the section says so; the ceiling it cannot raise holds what §4.9 rated Critical |
+| **C4** | Every performance figure is produced on the Raspberry Pi 5, reporting per-integration memory *and* added latency | Performance | ✅ **Met** — §7.19–§7.22 — every performance figure produced on the Pi 5, per-integration memory *and* added latency both reported |
+| **F1** | A confined integration's entities are present in Home Assistant and behave as native entities under the measures used in this chapter | Compatibility, level 2 | ✅ **Met** — §7.17.3 — `thermal_comfort`: two declared entities mirrored in, fifteen derived sensors published out, dew point physically correct. **Bounded by §8.6.3 #2**: the mediator acts on a stand-in, not a live instance |
+| **F2** | An integration polling a **declared** remote API completes successfully while confined | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met — §7.25, and by a *real* integration in §7.27.** Two purpose-built integrations polled declared hosts concurrently in real namespaces (§7.25); `nordpool` — unmodified community source — then polled its own Nord Pool API confined and published **the same price as the unconfined arm**, with the mediator's durable record naming `dataportal-api.nordpoolgroup.com:443` (§7.27) |
+| **F3** | Every enforcement decision in the evaluation names the manifest clause that produced it; a decision with no attributable clause is shown to be unconstructible | Security | ✅ **Met** — §7.4.2, §7.16.1 — every decision record carries a clause pointer; seven mismatched behaviours produced seven denials naming **seven distinct clauses** |
+| **F4** | The manifest of each evaluated integration renders in human-readable form, with denials shown at the same weight as grants | §6.7, re-run over the evaluated set | ✅ **Met** — §7.16.2 — `selftest_describe`, four states, denials rendered at the same weight as grants. Bounded to *availability* by §3.4; comprehension is excluded by §3.7 |
+| **S1** | The published garbage-collector technique (§2.4.1) is attempted from inside the sandbox and reaches no platform object; the mediator and its credential are not locatable from within | Security | ✅ **Met, paired** — §7.15.3 — the published `gc` technique reaches a live credential **7 ways** unconfined and **0** confined across 8,942 objects, while the same token is confirmed live in the mediator |
+| **S2** | No platform credential is recoverable from the sandbox's environment, filesystem, process table or memory | Security | ✅ **Met, paired** — §7.13, §7.15.3 — another process’s environment `LEAKED` unconfined and `EMPTY` confined; no platform credential recoverable from the sandbox |
+| **S3** | A confined integration is denied both a **read** and a **subscription** to undeclared entities, each refusal naming its clause, **against a paired unconfined baseline** quantifying what is readable without the framework | Security | ◐ **Partial** — §7.14.2 — the read half is met and paired: **36/36 → 1/36**, and **20/20 → 0/20** presence entities. **The subscription half is verified at the decision layer only**; no push loop exists to deliver a stream (§6.11.2, §8.6.3 #1) |
+| **S4** | An integration is denied a host declared only by a *different* integration | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met — §7.25.** Two confined integrations, running at once, each denied the host declared only by the other — evidenced by the mediator's own audit record |
+| **S5** | A manifest permitting `lock.lock` is shown not to permit `lock.unlock`, and the refusal is structural rather than a check | §6.10.1 — re-verified in the evaluation run | ✅ **Met** — §7.16.1 — a manifest declaring `lock.lock` does not permit `lock.unlock`, and `lock.*` is rejected at **parse** time rather than at the point of use |
+| **S6** | An integration with **no** manifest and one with an **unparseable** manifest are each denied all mediated capability, each refusal naming its rule | Security | ✅ **Met** — §7.16.2 — `selftest_policy`: absent and unparseable manifests each denied all mediated capability, each refusal naming the rule |
+| **S7** | Decisions appear in the log bearing the integration's three-part identity, and modification, deletion **and reordering** are each independently detectable by both the hash chain and the keyed MAC chain | §6.8 — re-verified | ✅ **Met** — §7.16.2 — `selftest_audit`: modification, deletion and reordering each detected, and the hash chain and keyed MAC chain fail **independently**. §8.6.3 #7 states the key’s lifetime |
+| **S8** | The 2021 file-theft pattern **succeeds against an unconfined baseline installation** and is blocked under the framework, on the same host and release | Security — **requires the baseline arm** | ✅ **Met, paired** — §7.13.2 — the 2021 file-theft pattern recovers **2 of 2** canaries unconfined and **0 of 2** confined on the same host and release; `open("../../secrets.yaml")` raises `FileNotFoundError`, not `PermissionError` |
+| **S9** | An integration deliberately exhausting CPU, memory and disk in turn does not render the gateway unresponsive, demonstrated unprivileged, with the boot-time precondition stated | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met, against narrowed wording — §7.22.** All four bounds now come from the manifest and each is verified by a sandbox exceeding it: memory OOM-killed, forks refused at the cap, a 25% CPU cap holding at 25.1%, `ENOSPC` at `disk_mb`. **Disk means space, not I/O bandwidth** — the `io` controller is not delegated to a user manager (§7.22.2), so S9's text is narrowed on evidence and the residual is stated |
+| **N1** | Added latency, per-integration memory and maximum concurrent integrations are all reported against an unconfined baseline on the target hardware. **No threshold** — §3.6 fixed this position in advance | Performance | ✅ **Met as specified** — §7.19–§7.20 — latency to 26 sandboxes, per-sandbox memory and maximum concurrency all reported against an unconfined baseline on the C4 device. **No threshold, by §3.6’s position fixed in advance**; the figures are reported and discussed, and P4 was falsified doing it |
+| **N2** | This chapter reports "imports clean" and "executed end-to-end" as two separate numbers, never conflated, with the first labelled an upper bound wherever it appears | **This chapter** | ✅ **Met by reporting** — §7.12 (imports-clean, 77 integrations) and §7.17 (**executed end-to-end, a named set of five**) are reported separately and never conflated; §7.17.1 states the ceiling of 11 of 37 rather than computing a rate |
+| **N3** | Behaviour on mediator unavailability is specified in advance and tested; the framework refuses rather than degrades silently, including the wrong-cgroup-position case | Security | ✅ **Met** — §7.16.2 — carried by `preflight` rather than a self-test: the framework refuses to start when the memory controller is absent (§5.7.4) or the supervisor is in the wrong cgroup position (§6.4.1). Both are stated failure modes |
+
+> **The Verdict column was added by Stage 5's read-through, 2026-09-04, and the criteria were
+> not touched.** §7.4 claimed that every requirement "appears in §7.5 with a verdict"; it did not.
+> Seventeen of twenty rows carried a *verdict source* — the section that would decide them — and
+> only F2, S4 and S9 carried a verdict, because only those three had been updated in place. Every
+> verdict was recoverable from the chapter and none is new, but **the register an auditor
+> reconciles against the artifact should not require reconstructing from seventeen sections.** The
+> Criterion column is verbatim as frozen on 2026-09-02, the Verdict source column is what it
+> always said, and the fourth column is the reconstruction. Found by reading the report as one
+> document, which is the fifth consecutive pass over this project's prose to find a sentence
+> rather than a number.
 
 > **Both blocked rows are now closed — §7.25 (2026-09-03), and the paragraph below is left as
 > written.** The verdicts in the F2, S4 and S9 rows above are updated in place, which is this
@@ -1713,8 +1729,12 @@ legitimate, a requirement quietly unmet is not"* — and this is that alternativ
   needs filesystem quotas, which are a privileged operation. An integration can still fill the
   user's disk through its own data directory.
 - **I/O bandwidth is a live T16 vector.** A sandbox cannot exhaust *space* outside its scratch
-  but it can saturate the device, and nothing here stops it. R‑numbered residual risk, and
-  Chapter 8 owes it a row.
+  but it can saturate the device, and nothing here stops it. **This is a residual risk the
+  evaluation generated, and §4.11 could not have carried it**: the `io` controller's
+  non-delegation is a property of the host measured here, not of the design modelled there. It is
+  entered as **R7** against §4.11 (2026-09-04) rather than left as an unnumbered note, on the
+  symmetry §4.10.1 already established — Chapter 4 generated a requirement Chapter 3 could not
+  have written, and Chapter 7 generates a residual risk Chapter 4 could not have written.
 
 ### 7.22.3 The one place absence is not denial
 

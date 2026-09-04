@@ -234,6 +234,13 @@ requirement was cut.
 | N2 | §2.8 contribution 3 | Research contribution |
 | N3 | §1.6 | Invisibility is the current failure |
 
+> **Nineteen rows, and the report tests twenty.** §4.10.1 derives a twentieth requirement — **S9**,
+> resource limits — from a threat this chapter had no basis to anticipate, and §3.1's traceability
+> discipline is the reason it is not here: nothing in Chapters 1 or 2 justified it, so inventing it
+> would have been the failure §3.1 exists to prevent. The pointer is added 2026-09-04 because this
+> matrix says *every* requirement, and after Chapter 4 that is one short. S9 carries its own
+> derivation and verification in §4.10.1, in this section's format.
+
 Two observations from the matrix itself. First, **four requirements (C3, S1, S4, S5) derive
 from limitations or findings in prior work rather than from the problem statement** — which
 is the practical return on Chapter 2 having read the closest work carefully rather than

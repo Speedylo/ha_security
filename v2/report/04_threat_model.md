@@ -392,6 +392,23 @@ authority visible; §3.7 excludes user comprehension as a human-factors question
 mechanism does not depend on the user reading the manifest — enforcement is automatic, and
 visibility is additive.
 
+> **R7 — I/O bandwidth is unbounded. Added by §7.22.2 (2026-09-04); this section is otherwise
+> left as written.** *From T16.* The framework bounds a sandbox's memory, CPU, process count and
+> disk **space**, and cannot bound its **I/O bandwidth**: cgroup v2's `io` controller is present on
+> the host and **not delegated to a user manager** — `+io` to the delegated subtree fails with
+> `ENOENT` — so the unprivileged supervisor §5.7.4 chose cannot enforce it at any effort. A sandbox
+> can therefore saturate the device while staying inside every limit it declared.
+> *Retained because:* **inherited, not structural.** The fix is a privileged installer step or an
+> upstream delegation change, and §8.7 #7 prices it alongside the filesystem quota. **Residual:
+> Medium.**
+>
+> This risk could not have been written here. §4.11 was drafted against the design; the
+> non-delegation is a property of the host, measured in §7.22.2. **§4.10.1 records Chapter 4
+> generating a requirement Chapter 3 could not have written; this is the same event one chapter
+> later, and it is why §4.12 lists "new threats surface from the evaluation itself" as a review
+> trigger.** The counts in the paragraph below are as of 2026-08-22 and are not restated: with R7
+> there are **seven** residual risks, four of them High and three Medium.
+
 **Summary against appetite.** No residual Critical risk remains. Four residual High risks
 remain (R1, R2, R3, R5), each structural and each stated. This satisfies §4.7's appetite
 only under its second clause, and that should be said plainly rather than presented as a
