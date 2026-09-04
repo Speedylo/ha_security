@@ -1,7 +1,12 @@
 # Where the rebuild stands
 
-**Last updated:** 2026-09-03, end of session (**all eight chapters written; what remains is front
-matter and one whole-report read-through**) · **Read this first when resuming.**
+**Last updated:** 2026-09-04 (**all eight chapters written; what remains is front matter and one
+whole-report read-through**) · **Read this first when resuming.**
+
+**Changed 2026-09-04, bookkeeping only — no measurement and no claim moved.** The Chapter 8 defect
+recorded below was fixed (§8.7 gains a row for building the real Home Assistant component, now #2
+of twelve), and this file's own stale tables were repointed at where Chapter 7 actually discharged
+them. Details in *What the 2026-09-04 pass changed*, below.
 
 **Where it stands in one line:** **Chapters 1–8 are written.** All twenty requirements in §7.5
 carry a verdict, 18/18 self-test suites pass on the Pi, and the framework runs. The strongest
@@ -75,7 +80,7 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/adversary_baseline/` | ✅ **Pi 5, 2026-09-02. S8's pairing, §7.13.** The same hostile payload with and without the sandbox — `ATTACKS` imported, not copied. **Three corrections to §6.9**: the `/dev/zero` misattribution (stands), the counts 21/9 → **20/10** (stands), and one *withdrawn* — S9's evidence was never invalid; the hardened harness had briefly stopped telling a kernel kill from its own timeout. S9 gained a second, better demonstration anyway: **allocate** memory rather than read files. Harness finding: `PTRACE_TRACEME` succeeds unconfined and wedges the process on the next signal, which is why the suite was only ever fragile in the arm nobody had run |
 | `experiments/compat/results/compat_baseline.json` | ✅ **Pi 5, 2026-09-02. The baseline arm.** 37 against a full, unconfined HA — same release, host, interpreter, corpus, and the *same* `inspect()` function, shared not copied. **31/37 — 84%, identical to confined, same six failures, same reasons.** `failures(design) = 0`. Baseline loads a median of **52** components; the sandbox sets up **2** |
 | `framework/confine/baseline_runtime.py` | ✅ The unconfined arm. `--profile baseline` in `compat.py`. Bias deliberately resolved toward the baseline throughout |
-| `report/06_implementation.md` | 🔵 **§6.1–§6.14 drafted 2026-08-25; one scope item still unbuilt.** The bridge is built, the corpus has been run four ways, and **Gate G3 has its recommendation**: `declared` + core package set, **31/37 — 84% — at +19.1 MB**, strictly dominating every other profile measured. What is *not* built is §5.8.2's scope item 2 — mediated egress, F2 and S4 — recorded in §6.11.1 as "◐ Half. Egress does not exist." Section plan, the §6.13–§6.14 reasoning and the viva answers in `notes/ch6_working_notes.md` |
+| `report/06_implementation.md` | ✅ **Complete as written, §6.1–§6.14, 2026-08-25.** Its one unbuilt scope item was built and reported in Chapter 7 (§7.25, §7.27); **the chapter is deliberately not edited to be right** — §6.11.1 still reads "Egress does not exist" because that was true when it was written, which is the same rule applied to §5.6.5 and §5.7.4. Original note follows. **§6.1–§6.14 drafted 2026-08-25; one scope item still unbuilt.** The bridge is built, the corpus has been run four ways, and **Gate G3 has its recommendation**: `declared` + core package set, **31/37 — 84% — at +19.1 MB**, strictly dominating every other profile measured. What is *not* built is §5.8.2's scope item 2 — mediated egress, F2 and S4 — recorded in §6.11.1 as "◐ Half. Egress does not exist." Section plan, the §6.13–§6.14 reasoning and the viva answers in `notes/ch6_working_notes.md` |
 | `experiments/egress_shape/` | ✅ **Pi 5, 2026-09-03, §7.24. What the proxy must do, measured before it is built.** Twelve head-corpus integrations, unconfined with real network, driven through their own config flows. **Three of §5.10.3's assumptions fail**: resolution is 96% `aiodns` not `getaddrinfo` (3,073 vs 120, uniform 93–97%); ports 8123/6445/20086 as well as 443; UDP is real. Inbound is not needed. Three network stacks (aiohttp, urllib3, raw), TLS via both `wrap_bio` and `wrap_socket`, all verified. **It also answers §7.18's "no observational method can answer this"** — that binds *how much*, not *what shape*, because a flow validates a credential by making the call. Instrument is `framework/confine/netshape.py`, 13/13 self-test on both architectures, paired with `strace`, which bounds its blind spot at 74–87% of kernel egress |
 | `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24; re-run 2026-08-25.** Namespaces (unprivileged), seccomp and cgroup v2 all present. `memory` was absent on the stock install; after the boot change it is present **and the cap is verified to bite, unprivileged**. Feeds §5.7.4 |
 
@@ -100,22 +105,41 @@ after it was written**, which is what evidence is supposed to do to a plan.
 
 | | Work | Cost | Why |
 |---|---|---|---|
-| **T12's measurement** (§8.7 #3) | Set an integration up, change its manifest, spawn it again; show the second run is bounded by the second declaration and that `describe.py` shows the change before it takes effect | **Hours** | **The best value per hour on the list.** T12 is the only threat in *either* register with no evidence at all, and §7.26.5 says so in the report — so an examiner will find it because we told them where it is |
-| **Re-run `api_surface.py` on the uniform corpus** (§8.7 #4) | One run of an existing script over an already-fetched corpus | **One run** | Contribution 1 (§2.8) is half delivered: §7.23 answered the uniform question for *compatibility* and never for the API surface, so §7.8's obligation row was discharged for one of two |
-| **The other two network stacks, confined** (§8.7 #5) | `urllib3`/`requests` and a raw socket, spawned in real namespaces | Days; may need recorded fixtures | Promoted from nowhere to fifth by §7.27. The one stack actually spawned turned out to break, so "the other two are presumably fine" is exactly the reasoning that was wrong once |
+| **T12's measurement** (§8.7 #4) | Set an integration up, change its manifest, spawn it again; show the second run is bounded by the second declaration and that `describe.py` shows the change before it takes effect | **Hours** | **The best value per hour on the list.** T12 is the only threat in *either* register with no evidence at all, and §7.26.5 says so in the report — so an examiner will find it because we told them where it is |
+| **Re-run `api_surface.py` on the uniform corpus** (§8.7 #5) | One run of an existing script over an already-fetched corpus | **One run** | Contribution 1 (§2.8) is half delivered: §7.23 answered the uniform question for *compatibility* and never for the API surface, so §7.8's obligation row was discharged for one of two |
+| **The other two network stacks, confined** (§8.7 #6) | `urllib3`/`requests` and a raw socket, spawned in real namespaces | Days; may need recorded fixtures | Promoted from nowhere to sixth by §7.27. The one stack actually spawned turned out to break, so "the other two are presumably fine" is exactly the reasoning that was wrong once |
 | **The push loop** (§8.7 #1) | Build it | Days | Largest missing piece, but it is *building* not testing. Unblocks S3's subscription half and the only latency path that could consume §7.20.1's 63× margin |
+| **The real Home Assistant component** (§8.7 #2) | Build it — the spike has ~250 lines that load nothing from any integration, reusable under `00_METHOD.md` §5 | Days | §8.6.3's limit #2, and the one the 2026-09-04 fix added to §8.7. What it settles is entity **identity**: the states API publishes without a registry row, and §5.6.1 measured **83%** of the corpus publishing by the path that creates one. The *finding* is private knowledge under §2 and would have to be re-measured, not cited |
 
 **Not obtainable, and stated rather than owed:** the adversary is purpose-built and exercises the
 *pattern* of the 2021 disclosures rather than the eight disclosed integrations at their vulnerable
 versions — those versions are not in the corpus (§7.13.6).
 
-### One known defect in Chapter 8, found while answering a question and not yet fixed
+### What the 2026-09-04 pass changed
 
-**§8.7 has no future-work row for building the real Home Assistant component**, even though
-§8.6.3 names "the mediator acts on a stand-in, not a live Home Assistant" as limit #2 and §8.2
-leans on it. **The largest limitation in the report has no entry in its own future-work list.**
-Fix this in the next session — it is a five-minute edit and exactly the kind of thing Stage 5's
-read-through exists to catch, so it is recorded here rather than repaired silently.
+**Bookkeeping only. No measurement was re-run, no figure moved, and no claim changed.** Two things
+were repaired and one further defect was found while repairing them.
+
+1. ✅ **Chapter 8's known defect is fixed.** §8.7 had no future-work row for building the real Home
+   Assistant component, even though §8.6.3 names "the mediator acts on a stand-in, not a live Home
+   Assistant" as limit #2 — *the largest limitation in the report had no entry in its own
+   future-work list*. §8.7 now carries it as **#2 of twelve**, priced in days, and the row states
+   what it settles: **identity, not realism**. §8.6.3's limit #2 gains the reciprocal pointer, so
+   the limitation and its price now name each other in both directions.
+2. ⚠ **Found while fixing it: §8.7's cross-references into §8.6.3 were off by one.** The
+   derived-manifest row settles §8.6.3's *item 13*, and said "item 12". Almost certainly because
+   §7.27 inserted the mDNS limit at 12 after §8.7 was drafted. **Fixed — and it is a Stage 5 result
+   arriving early**: the two rows that point at §8.6.3 by number and happened to still be right
+   (items 5 and 7) were checked, so all three now resolve.
+3. ✅ **This file's own tables were stale, and are repointed.** The obligations table below still
+   listed as outstanding several things Chapter 7 discharged; the header said "seven chapters" in
+   one row and "eight" in another; §8.7 was described as ten items. All corrected against the
+   report rather than against memory.
+
+**The pattern is worth noticing before Stage 5 starts.** Every one of these is a *pointer* that
+stopped matching what it points at, and none is a claim that was wrong. That is exactly the failure
+mode a single-voice read-through exists to catch, and it is the third time a read-through of this
+project has found something real (§7.26 twice, this once).
 
 ### The standing risk, unchanged since 21 August
 
@@ -147,9 +171,9 @@ redistribute.
 | ~~**2**~~ | ~~**The egress proxy**~~ | ✅ **Built and evaluated, 2026-09-03.** §5.8.2 scope item 2. Closes F2, S4 and T11 — the last ⛔ rows in §7.5, now both ✅ Met (§7.25). Design in `notes/decision_network_capability.md`, corrected against §7.24's measurement before any code existed: **both resolution seams** (`getaddrinfo` and `aiodns`), the `network.egress` clause now carries a **port**, a **UDP relay** for the 20% of the corpus that needs it (`udp_demand.md`), inbound **not built** (tested as unneeded). `channel.py` carries fd-passing (`selftest_fdpass`, 12/12); `egress.py` is the mediator-side broker with resolve-then-pin structural by construction; `egress_shim.py` is the sandbox side, at both seams; `udp_relay.py` serves synchronous datagram integrations and names the asyncio-`DatagramProtocol` quarter it does not (4 of 15, owed to Ch. 8). `selftest_egress_sandboxed.py` spawns **two real confined sandboxes concurrently** against real internet hosts — F2 and S4 evaluated in genuine namespaces, not as function calls, 17/17 stable across three runs. **One security bug found and fixed en route**: `EgressBroker.open` trusted `allow_private` from the sandbox's own request — a hostile integration could have granted itself T10's reach by writing one key into its request. Caught, fixed, regression-tested before evaluation ran. **18/18 self-tests pass on the Pi.** All twenty §7.5 requirements now carry a verdict |
 | ~~**3**~~ | ~~**The uniform-sample corpus**~~ | ✅ **Done 2026-09-02, §7.23.** Seed 20260902, 40/40 fetched, both arms. **92% confined and 92% unconfined, identical failure sets — `failures(design) = 0` a second time**, on a corpus sharing only 2 of 40 members with the head. Predictions were committed *before* the draw (`notes/ch7_uniform_prediction.md`, commit ddff314): **P7 right, P6 wrong in sign** (the tail is *better* and cheaper — it declares median 0 components against the head's 1), **P8 wrong in both halves**. §7.9's external-validity threat is discharged, and all eight of §7.10's scheduled items are now complete or conditional |
 | ~~**4**~~ | ~~**Chapter 7's read-through**~~ | ✅ **Done 2026-09-03, §7.26.** The chapter was read as one document for the first time and it found two substantive gaps, both of the same kind — things the chapter promised or possessed and did not report. **(1) §7.2 committed the security axis to being scored twice**, against Ch. 4's eighteen threats and against the closest published model's eleven, *"so that the result is comparable against an existing published model"* — and **neither scoring existed**. The results half is organised by §7.5's requirements, so closing out §7.10's schedule gave no signal that a *reporting* obligation was open. Both are now performed from evidence the chapter already held: **13 demonstrated (5 paired), 2 partial, 2 retained, 1 never evaluated**; **8 of the published model's 11 mapped, 5 clean**. **(2) §7.5 predicted that building the proxy would give T08, T10 and T11 demonstrated controls; §7.25 closed F2/S4 and scored none of them** — `selftest_egress` holds a real DNS-rebinding demonstration (the manifest permits the *name*, the broker refuses the *resolved address*) that no section reported. Also found: **T12 is the only threat in either register neither demonstrated nor declared unevaluable**, and **§4.14 states one divergence from the published model where there are three** (their T5 and T6 are unmapped too — §4.14 gains a pointer). Five smaller corrections (§7.26.6), the sharpest being **the one that looked like the report's first disagreement between measurements and is not**: twelve-of-37 against eighteen-of-37 declaring no components — recomputed from the results files, both correct, counting *set up* against *declared*. **No measured figure in the chapter was wrong.** |
-| ~~**5**~~ | ~~**Chapter 8**~~ | ✅ **Written 2026-09-03**, `report/08_conclusions.md` — *Conclusions, Limitations and Future Work*, ~40k chars. Refuses to re-list §3.7/§4.11/§5.15/§7.9/§7.11 and answers the three questions no earlier chapter can. **§8.2 answers the claim against §7.7's falsifiers fixed in advance** — A, B and C all hold; **the fourth falsifier, on the evaluation rather than the artifact, fired**, and §8.2.4 reports it. **§8.3 closes §2.8's three contributions**, including the honest gap: the API-surface measurement was never re-run on the uniform corpus, so contribution 1 is half-delivered. **§8.4** — 6-of-8 predictions wrong, and the two that held were the two *about the design*; plus the methodological result now stated with its **explanation and four transferable mechanisms**. **§8.5** the 52-vs-2 / 53-vs-0 finding. **§8.6** twelve artifact limits, six evaluation limits, structural and inherited kept separate. **§8.7 future work priced and ordered**, ten items, cheapest first-value being *one run of an existing script*. **§8.8** the single upstream ask (R3), now measured rather than reasoned about |
+| ~~**5**~~ | ~~**Chapter 8**~~ | ✅ **Written 2026-09-03**, `report/08_conclusions.md` — *Conclusions, Limitations and Future Work*, ~40k chars. Refuses to re-list §3.7/§4.11/§5.15/§7.9/§7.11 and answers the three questions no earlier chapter can. **§8.2 answers the claim against §7.7's falsifiers fixed in advance** — A, B and C all hold; **the fourth falsifier, on the evaluation rather than the artifact, fired**, and §8.2.4 reports it. **§8.3 closes §2.8's three contributions**, including the honest gap: the API-surface measurement was never re-run on the uniform corpus, so contribution 1 is half-delivered. **§8.4** — 6-of-8 predictions wrong, and the two that held were the two *about the design*; plus the methodological result now stated with its **explanation and four transferable mechanisms**. **§8.5** the 52-vs-2 / 53-vs-0 finding. **§8.6** twelve artifact limits, six evaluation limits, structural and inherited kept separate. **§8.7 future work priced and ordered** — ten items as written, **twelve after the 2026-09-04 fix**; cheapest first-value is still *one run of an existing script*. **§8.8** the single upstream ask (R3), now measured rather than reasoned about |
 | ~~**4b**~~ | ~~**Real integration, confined, against a real API**~~ | ✅ **Done 2026-09-03, §7.27.** Not scheduled — run because §7.25.5 said in its own words that a real integration against a real API was a different measurement it did not substitute for. `nordpool` is the corpus's only member that both needs a network and configures without a credential (26 of 37 cannot). Three arms: unconfined / confined+declared / confined+clause removed, the third being what makes the second evidence. **The first run failed, and that is the result**: `async_get_clientsession(hass)` — what the platform tells an author to call — builds its resolver by instantiating Zeroconf, which joins the mDNS group, and a fresh netns `lo` has no `IFF_MULTICAST`. **A real integration could not construct an HTTP client inside the sandbox at all**, so the egress design had been unusable for the 41% it was built to serve, behind a suite that all passed. §7.25's subject used a bare `aiohttp.ClientSession()` and skipped the very helper that breaks it. Fixed in two measured steps (`IFF_MULTICAST`, then a `224.0.0.0/4` route to `lo` — zeroconf joins via `INADDR_ANY` and the kernel picks the interface from the routing table); the grant is **vacuous**, the route's device is `lo`. Result: **0.026, the same price confined as unconfined, in the same minute**, 3 grants logged as `dataportal-api.nordpoolgroup.com:443` with both chains verifying; clause removed → 3 denials and `unavailable`. **11/11.** Also re-establishes §7.17.5's withdrawn finding on exactly the evidence it specified, and fixes `audit.py` recording an egress target as host without port. **18/18 suites re-run after both changes.** |
-| **6** | **Front matter, abstract, bibliography** | 18 references cited across **seven** chapters and never consolidated. The abstract can now be written against §8.9, which states the claim, its size and the method in three paragraphs |
+| **6** | **Front matter, abstract, bibliography** | 18 references cited across **eight** chapters and never consolidated. The abstract can now be written against §8.9, which states the claim, its size and the method in three paragraphs |
 | **7** | **Stage 5** | Single-voice read-through of the **whole** report, then defence prep. §7.26.8 is the argument for doing it: two read-throughs of one chapter each found something, and the prose is the only part of this project with a single instrument checking it |
 
 **✅ Gate G3 has a recommendation, and it is no longer close (§6.14, 2026-08-25).**
@@ -265,23 +289,34 @@ identical position, because the kernel checks the common ancestor either way.
 - Chapter 5 was **not** edited to be right; §5.7.4 carries a pointer to §6.4.1, and
   `experiments/host_isolation_probe/README.md` is marked superseded on that one paragraph.
 
-**⚠ Four obligations are outstanding — three from §5.14's traceability check, one added by
-§6.3.3. They are cheap now and expensive in November.**
+**✅ All obligations from §5.14's traceability check and from Chapters 5–6 are now discharged.**
+This table said otherwise until 2026-09-04; Chapter 7 had closed them and this file was not
+repointed. **Chapter 7 carries the authoritative register** — §7.8 lists eleven inherited
+obligations, and **§7.21.3 is the correction that matters**: five of them had been marked
+discharged "in §7.4.1" or "§7.4.3", which are *methodology* sections, and an obligation is not
+discharged by a section that promises to discharge it. Read §7.21.3, not this table.
 
-| Owed by | What | Why |
+| Owed by | What | Where it was actually discharged |
 |---|---|---|
-| ~~Ch. 6~~ | ~~A surface where the user encounters the declaration~~ | ✅ **Discharged 2026-08-25 in §6.7** — `confine/describe.py`, four states, denials shown at the same weight as grants |
-| ~~Ch. 7~~ | ~~Never repeat §4.10's "filesystem isolation *to declared resources*"~~ | ❌ **Withdrawn 2026-08-25 (§6.6.6).** The obligation rested on §5.14.4's claim that "nothing about the filesystem is declared", which contradicts §5.10.3 and §5.10.5. §4.10's phrase is accurate |
-| **Ch. 7** | State S9's boot-time precondition when evaluating it | The Pi's `memory` cgroup controller is disabled by Pi OS (§5.7.4). Testing on a machine where that was quietly fixed, without saying so, is the dishonest version |
-| **Ch. 7** | Measure what `resources.memory_mb` costs a *legitimate* integration | §6.9.4. cgroup v2 charges page cache to the cgroup, so the memory limit bounds file reading too. An integration processing a large local dataset is indistinguishable, to this control, from one searching for secrets |
-| **Ch. 8 / code** | ⚠ **Wire `resources` to enforcement, and settle disk** | §7.21.1, and it is the most serious gap the reread found. **No `resources` clause reaches an enforcement path**: `memory_max`/`pids_max` are hard-coded per harness, `cpu_percent` is validated, **rendered to the user by `describe.py`**, and never enforced, and disk is absent from the schema entirely. A visible limit that is not enforced is worse than an invisible one — it is an F4 defect as well as an S9 one. Fix: read the clause into `SandboxCgroup.create`, add `cpu.max`, and either implement `io.max` or **narrow S9's text and say why** |
-| **Ch. 8** | **Extend the derived-manifest analysis from packages to components** | §7.17.4. `powercalc` fails on `homeassistant.components.network`, which it neither declares nor imports directly. §5.9.3's M3 static analysis was proposed for undeclared *packages* (§6.14.4); the same treatment is needed for the **component closure**, and it is the easier case — a component dependency is a name in the platform's own source, so the closure is exact rather than approximate. `core_requirements()` already computes one for `default_config` |
-| **Ch. 8** | The `aiofiles` finding, and the objection it answers | §6.14.4. 8% of the corpus imports a package its manifest never names, and `homeassistant/package_constraints.txt` says upstream knows: *"# aiofiles keeps getting downgraded by custom components"*. **This is corroboration of the contribution claim, not a defect** — it is why "ask the author to declare it" is an assumption the evidence contradicts, and why 84% is worth what it is worth *because nothing was asked of anyone*. Long form and the viva answer in `notes/ch6_working_notes.md` |
-| **Ch. 8** | Record that the strongest control produces no audit trail | §6.9.4. An OOM kill leaves a corpse and no record of what was attempted — the audit trail is weakest exactly where the control is strongest, and the cgroup has no `EPERM` to offer |
-| **Ch. 7** | Decide whether `fsync` per decision is affordable | §6.8.3. The ordering §5.11.3 requires is only real if the record is durable before the action, and that costs far more than the 2.4 µs decision. §6.5.3's figures do **not** include it. The alternative is a bounded window of loss |
-| **Ch. 7** | Negative cases must assert on **why** something was refused, not that it was | §6.6.5. A default-deny system produces the safe answer for almost any mistake, so a passing negative test is weak evidence by construction — three path-rejection cases were passing through the wrong rule entirely |
-| **Ch. 7** | Measure mediation latency at realistic sandbox counts | §6.5.3. Two sandboxes moved the median 19% and p99 **85%** — queueing, not work. The budget is 26 sandboxes (§6.3.2), and two clients say nothing about twenty-six |
-| **Ch. 7** | Check every compatibility failure against the minimal instance **before** charging it to the design | §6.3.3. The `async_at_start` defect broke state restoration silently — no exception, no log line. Left in, it would have been measured as the cost of confinement |
+| ~~Ch. 6~~ | ~~A surface where the user encounters the declaration~~ | ✅ **§6.7**, 2026-08-25 — `confine/describe.py`, four states, denials shown at the same weight as grants |
+| ~~Ch. 7~~ | ~~Never repeat §4.10's "filesystem isolation *to declared resources*"~~ | ❌ **Withdrawn 2026-08-25 (§6.6.6).** The obligation rested on a §5.14.4 claim that contradicts §5.10.3; §4.10's phrase is accurate |
+| ~~Ch. 7~~ | ~~State S9's boot-time precondition when evaluating it~~ | ✅ **§7.4.3, and honoured at §7.5's S9 row** — the Pi 5's firmware *prepends* `cgroup_disable=memory`, stated wherever S9 is evaluated |
+| ~~Ch. 7~~ | ~~Measure what `resources.memory_mb` costs a *legitimate* integration~~ | ✅ **§7.20.2 — and the concern is withdrawn.** P5 falsified: page cache is reclaimable, so S9 bounds *retention*, not reading |
+| ~~Ch. 8 / code~~ | ~~Wire `resources` to enforcement, and settle disk~~ | ✅ **§7.22.** `ResourceLimits` is the one type manifest and cgroup share; `cpu.max` wired, `disk_mb` applied as the private `/tmp`'s tmpfs `size=`; 13/13. **S9 narrowed on evidence**: `io` is not delegated to a user manager, so disk means space, not bandwidth (§8.6.3 #4) |
+| ~~Ch. 8~~ | ~~Extend the derived-manifest analysis from packages to components~~ | ✅ **§8.7 #3**, priced. The component closure is the *easier* case — a name in the platform's own source, so exact rather than approximate |
+| ~~Ch. 8~~ | ~~The `aiofiles` finding, and the objection it answers~~ | ✅ **§8.6.3 #13 and the paragraph beneath it** — three independent occasions, and `package_constraints.txt`'s own comment as corroboration rather than inference |
+| ~~Ch. 8~~ | ~~Record that the strongest control produces no audit trail~~ | ✅ **§8.6.3 #6** — "the audit trail is weakest exactly where the control is strongest", named the sharpest form of R4 in the report |
+| ~~Ch. 7~~ | ~~Decide whether `fsync` per decision is affordable~~ | ✅ **§7.20.1 — yes.** 3.67 ms, 63× headroom; `audit.py` already called it, so the question was never whether to pay |
+| ~~Ch. 7~~ | ~~Negative cases must assert on **why**, not that~~ | ✅ **§7.4.2**, and exercised at §7.16 — mismatched cases give 7 behaviours, 7 denials, **7 distinct clauses** |
+| ~~Ch. 7~~ | ~~Measure mediation latency at realistic sandbox counts~~ | ✅ **§7.19** to 26 sandboxes — and **P4 was wrong**: saturation at ~4 clients, not tail queueing |
+| ~~Ch. 7~~ | ~~Check every compatibility failure against the minimal instance first~~ | ✅ **§7.17.4**, where **three of five were harness faults** — the obligation paid for itself |
+| ~~Ch. 7~~ | ~~An absence is not evidence until the grant is shown to have arrived~~ | ✅ **§7.4.2** (§6.4.5's obligation, which this table had omitted entirely) |
+| ~~Ch. 7~~ | ~~Re-run on a uniform corpus before reporting coverage~~ | ✅ **§7.23** — 40/40, both arms, 92%/92%. **Half-owed still**: for the API surface it was never re-run (§8.3, §8.7 #5) |
+| ~~Ch. 7~~ | ~~N2: report imports-clean and executed-end-to-end separately, always~~ | ✅ **§7.12 and §7.17** |
+
+**One is half-owed and the report says so**: the uniform-corpus re-run was performed for
+*compatibility* and never for the *API surface*, so §2.8's contribution 1 is half-delivered. That
+is §8.3's own admission and §8.7 #5's one-run item — the cheapest outstanding thing in the report.
 
 **⚠ One conflict is open and deliberately unresolved.** `01_PLAN.md` §6 says the actuator PoC
 is cut first if G3 fires. §5.8.2 derived scope from Chapter 3's verification column and found
@@ -290,10 +325,12 @@ risk — with no demonstrated control. The plan's cut list predates the scope de
 Recommendation in `notes/ch5_working_notes.md`: cut coverage-widening first instead. **This is
 Younes's call at G3**, and `01_PLAN.md` has deliberately not been edited.
 
-**Owed before Chapter 7 reports coverage:** the API-surface measurement was run on the top 144
-community integrations *by install count*. That describes what most installations run, not
-what most integrations do. A uniform sample answers the second question and
-`figures/fetch_hacs_corpus.py` already takes the corpus — only the selection changes.
+**Still owed, and the cheapest thing in the report (§8.7 #5):** the API-surface measurement was
+run on the top 144 community integrations *by install count*. That describes what most
+installations run, not what most integrations do. §7.23 ran the uniform corpus for
+**compatibility** and answered that question; **the API-surface parser was never re-run on it**, so
+§2.8's contribution 1 stays half-delivered and §8.3 says so. The corpus is already fetched and
+`figures/api_surface.py` already exists — only the selection changes. **One run.**
 
 ---
 
