@@ -201,6 +201,14 @@ decomposition is the result*. An attempt that "succeeded and found nothing" is a
 than one that was denied — it means the capability was not merely refused but structurally absent
 (§5.6.2) — and an aggregate would erase the distinction.
 
+> **The 21/9 split quoted above is §6.9's as it stood on 2026-09-02 and is superseded; the
+> sentence is left as written and gains this pointer (2026-09-06).** §7.13.4 recounts the same
+> thirty-seven as **20 blocked / 10 empty** — the filesystem sweep completed rather than being
+> stopped — and adds a thirty-eighth attack, so the current suite is 21/6/10/1 over 38 (§7.22.1).
+> **The argument this paragraph makes is unaffected**, because it is about why a decomposition
+> beats an aggregate, and the recount is itself an instance of that: the attack that moved moved
+> *to the stronger column*, which is exactly the information an "attacks blocked" figure destroys.
+
 **Two demonstrations require a paired baseline, and the pairing is the evidence:**
 
 - **S8, the 2021 file-theft pattern.** §3.5 requires it be "reproduced against a baseline
@@ -407,8 +415,10 @@ forgotten. The right-hand column is where each is answered.
 | §3.6 (N2) | Report imports-clean and executed-end-to-end separately, always | §7.4.1, §7.5 |
 | §6.6.6 | *Withdrawn.* The obligation never to repeat §4.10's "filesystem isolation to declared resources" rested on a §5.14.4 claim that contradicts §5.10.3; the phrase is accurate | — |
 
-> **The right-hand column is wrong for five rows, and §7.21.3 is the correction — this table keeps
-> its text.** §7.4.1 and §7.4.3 are *methodology* sections: an obligation is not discharged by a
+> **The right-hand column points at a methodology section for ten of these eleven rows, and
+> §7.21.3 is the correction — this table keeps its text.** (This note said *five* until
+> 2026-09-06; §7.21.3 corrects the count and separates the seven that were genuinely
+> mis-pointed from the three for which §7.4 is the discharge.) §7.4.1 and §7.4.3 are *methodology* sections: an obligation is not discharged by a
 > section that promises to discharge it. §7.21.3 names the results section that actually discharged
 > each, and the uniform-corpus row was still owed when it was written (closed the next day by
 > §7.23). **The pointer is added 2026-09-04 by Stage 5**, because a reader consulting this table
@@ -1596,9 +1606,10 @@ number in the seventies.
 
 ### 7.21.3 Obligations: five pointed at a plan rather than a result
 
-§7.8 listed eleven inherited obligations, and five were discharged "in §7.4.1" or "in §7.4.3" —
-which are *methodology* sections. An obligation is not discharged by a section that promises to
-discharge it. Corrected:
+§7.8 listed eleven inherited obligations, and **ten point at a §7.4.x section** — which are
+*methodology* sections. An obligation is not discharged by a section that promises to discharge
+it. Seven of the ten are corrected below; the other three are a different kind, and the
+note beneath the table says why.
 
 | Owed from | Obligation | Now discharged in |
 |---|---|---|
@@ -1609,6 +1620,33 @@ discharge it. Corrected:
 | §3.6 (N2) | Report both numbers separately | **§7.12 and §7.17** |
 | §6.3.3 | Check failures against the harness before charging them to the design | **§7.17.4**, where three of five were harness faults |
 | §5.14 | Uniform-corpus re-run | **Still owed** — §7.10's item 7, not run |
+
+**The three that stay where they are, and the distinction that decides it.**
+
+> **Added by Stage 5's third pass (2026-09-06), which found the count above wrong.** This section
+> and §7.8's note both said *five* rows were mis-pointed. Ten of §7.8's eleven rows point at a
+> §7.4.x section, and the table above corrects seven. The number is corrected in place — a
+> miscount has no reasoning to protect (§7.21.7) — but the more useful repair is the rule the
+> exception list was standing in for.
+
+**An obligation owed a *measurement* is not discharged by a section that plans the measurement.
+An obligation owed a *practice* is discharged by the section that adopts the practice.** Every
+row in the table above is the first kind: run the baseline arm, measure the latency, decide
+whether `fsync` is affordable. The three not in it are the second:
+
+| Owed from | Obligation | Discharged by adoption in | And exercised at |
+|---|---|---|---|
+| §5.7.4, §6.4.1 | State S9's boot-time precondition whenever S9 is evaluated | §7.4.3 | §7.5's S9 row, §7.22.2 |
+| §6.6.5 | Negative cases assert on **why** something was refused, never that it was | §7.4.2 | §7.16.1 — seven behaviours, seven denials, **seven distinct clauses** |
+| §6.4.5 | An absence is not evidence of confinement working until the grant is shown to have arrived | §7.4.2 | §7.17.4, where three of five failures were harness faults |
+
+For these, §7.4 **is** the discharge: the obligation asks that the chapter behave a certain way
+throughout, and the methodology section is where that behaviour is committed to. The right-hand
+column is the check that it was honoured, not a second discharge. With the two kinds separated,
+all ten rows resolve and no exception list is needed — which is what the miscount was concealing.
+The distinction is worth stating because **it is the same one §7.28 turns on**: C1 was written as
+a completed *measurement*, so it needed a result and had none, and no sweep of promises could
+see it.
 
 ### 7.21.4 The schedule, closed out
 
@@ -1730,6 +1768,17 @@ clause that must be *accepted* and arrive intact, so the suite is not passing by
 everything. **13 of 13.** All twelve pre-existing suites still pass, including the adversary
 suite at 21 blocked / 6 denied / 10 empty / 1 permitted with neither canary reached.
 
+> **That split is over thirty-eight attacks, not §6.9's thirty-seven, and Stage 5's third pass
+> found that the report never says so (2026-09-06).** §7.13.4 does two things to the adversary
+> suite and states only the first as a number: it moves one attack from `BLOCKED` to `EMPTY`
+> over §6.9's original thirty-seven — *21 blocked / 9 empty* becoming **20 / 10** — and it
+> **adds** a thirty-eighth, the direct memory allocation that demonstrates S9 independently of
+> what the sandbox happens to contain. The new attack is OOM-killed, so it is `BLOCKED`, and
+> **20 + 1 = 21**. Every figure in §6.9, §7.13.4 and this paragraph is correct at its own date;
+> what was missing is the one line that reconciles them, and a reader meeting *20 blocked* in
+> §7.13.4 and *21 blocked* here had no way to recover it. Confirmed against the artifact: the
+> suite prints `BLOCKED 21  DENY 6  EMPTY 10  PERMIT 1`.
+
 ### 7.22.2 Disk is narrower than §4.10.1 wrote it, and the reason is measured
 
 §4.10.1 wrote S9 as bounding *"CPU, memory and disk"*. Disk turns out to be two resources and
@@ -1826,10 +1875,12 @@ repeated. Everything else is held constant: same release, host, interpreter, pro
 
 | | Head-weighted (§6.14) | **Uniform (seed 20260902)** |
 |---|---|---|
-| Fetched | 39 of 40 | **40 of 40** |
-| Install count, median | **14,793** | **48** |
+| Requested | 40 repositories | 40 repositories |
+| Fetched | 39 | **40** |
+| **Distinct integrations measured** | **37** | **40** |
+| Install count, median | **16,294** | **48** |
 | Install count, range | 7,816 – 379,326 | 0 – 26,109 |
-| Installs represented, total | **1,018,398** | 46,979 |
+| Installs represented, total | **998,478** | 46,979 |
 | Python files, median | 19 (max 1,015) | **11 (max 143)** |
 | Declares no components at all | 18 of 37 | **26 of 40** |
 | Declared components, median | 1 | **0** |
@@ -1839,9 +1890,37 @@ repeated. Everything else is held constant: same release, host, interpreter, pro
 **Two of forty is the number that justifies having run this at all.** The corpora share 5% of
 their members, so this is close to an independent sample of the same ecosystem rather than a
 re-slicing of the same integrations. The install columns show why: the head corpus represents
-**twenty-two times** the deployed reach of the uniform one, from the same number of repositories.
-Neither figure is wrong; they are answers to different questions, which is what §7.4.1 said when
-it scheduled this.
+**twenty-one times** the deployed reach of the uniform one, from the same number of repositories
+requested. Neither figure is wrong; they are answers to different questions, which is what §7.4.1
+said when it scheduled this.
+
+> **The three rows above that separate *repositories* from *integrations* were added by Stage 5's
+> third pass (2026-09-06), and the install figures are restated over the smaller population.**
+> The head corpus requests forty repositories and measures **thirty-seven integrations**, and the
+> gap is not the one fetch failure alone. **Three domains are claimed by two different repositories
+> each** — `scheduler` (`nielsfaber/scheduler-component` and `Smiley73/ha-scheduler`), `govee`
+> (`LaggAt/hacs-govee` and `lasswellt/govee-homeassistant`) and `solarman` (`davidrapan/ha-solarman`
+> and `StephanJoubert/home_assistant_solarman`). An integration is stored as
+> `custom_components/<domain>/`, so a domain is a single slot and the later fetch takes it.
+>
+> The figures previously given — 39 fetched, median 14,793, total 1,018,398 — were computed over
+> the thirty-nine fetched **repository entries**, while the component and package rows beneath them,
+> and every compatibility figure in this report, are over the thirty-seven **integrations**. One
+> column was therefore describing two populations. Restated over the thirty-seven measured, the
+> median rises to 16,294 and the total falls to 998,478; the range, the Python-file figures and the
+> overlap are unchanged, and **the reach ratio moves from 21.7 to 21.3, which is why the sentence
+> above now reads twenty-one rather than twenty-two.** No result in this chapter depends on it.
+>
+> **The reproducibility consequence is the part worth carrying forward.** Which repository won each
+> collision is not recoverable from the manifest: for `govee` and `solarman` both candidates are
+> recorded `ok`. It is recoverable only by inspecting the corpus on disk, where the winners are
+> `lasswellt/govee-homeassistant` (46 Python files, against the loser's 5) and
+> `StephanJoubert/home_assistant_solarman` (8, against 36). **Those are materially different
+> integrations, so "`govee` imports clean" names a different artifact depending on which was
+> fetched.** This is the same weakness §7.29.2 records from the other side — the corpus manifest
+> pins `HEAD` and stores no content hash, so it is a weaker record of what was measured than the
+> chapter has been treating it as. The uniform corpus has no collisions, so its forty entries and
+> forty integrations coincide and its column needs no such distinction.
 
 ### 7.23.2 P6 is wrong, and wrong in the direction the prediction named
 
@@ -1888,6 +1967,15 @@ two artefacts are both consequences of *popularity* rather than obscurity: `hacs
 frontend at release-build time because it ships releases, and `spook` uses a non-standard layout
 because it is large enough to have opinions. **A small integration has nothing to package
 unusually.**
+
+> **A third class of corpus artefact was found by Stage 5's third pass and it points the same way
+> (2026-09-06).** The row above counts artefacts *among failures*, which is the right thing for
+> P8's purposes and misses one that causes no failure: **the head corpus contains three domain
+> collisions and the uniform corpus none** (§7.23.1). Two repositories claiming `govee` is a
+> consequence of popularity in exactly the sense this paragraph describes — a domain worth
+> reimplementing is a domain someone already implemented. It makes P8 wrong in a third way rather
+> than a second, and it is recorded here because a reader who finds the collisions in §7.23.1 will
+> otherwise reasonably ask why the artefact row does not mention them.
 
 ### 7.23.4 P7 holds — the design's compatibility cost is zero on a second corpus
 
@@ -2123,11 +2211,25 @@ reasons divide into three kinds that should not be reported as one number:
 | Kind | Integrations | Reading |
 |---|---|---|
 | Reached the network | `pirateweather`, `nordpool`, `alexa_media`, `localtuya`, `midea_ac_lan`, `sonoff` | the evidence above |
-| The flow stopped before its call | `dwd_weather`, `solcast_solar` (`DependencyError: recorder`), `waste_collection_schedule` (corpus layout artifact), `frigate` (its default host does not resolve) | a limit of the driver and the corpus, not of the ecosystem |
+| The flow stopped before its call | `dwd_weather`, `solcast_solar` (`DependencyError: recorder`), `waste_collection_schedule` (corpus layout artifact), `frigate` (its default host does not resolve), `solarman` (`InvalidData: Schema validation failed @ data['inverter_serial']` — the shared credential set cannot invent a serial number) | a limit of the driver and the corpus, not of the ecosystem |
 | Broken on 2026.8.3 | `bambu_lab` — `No module named 'aiofiles'` | §6.13.3's finding, met a third time |
 
 `aiofiles` has now blocked integrations in the compatibility run, the end-to-end run and this one.
 Chapter 8 already owes it a paragraph; this is the third independent occasion.
+
+> **`solarman` was added to this table by Stage 5's third pass (2026-09-06).** The table listed
+> eleven of the twelve and the row was simply absent; both counts in the sentence above it were
+> already right. Corrected in place rather than pointed at, on §7.21.7's rule for §6.11.2's
+> identical miscount — the leave-it-and-point convention protects reasoning that evidence
+> overturned, and an omitted row has no reasoning to protect.
+>
+> **What is worth more than the omission is what `solarman` was for.** It was selected as
+> *"local_polling, Modbus TCP on a non-standard port — tests assumption 1"*: it is the one member
+> of the sample chosen specifically to exercise the port question. Its flow never completed, so
+> **the sample's designated probe for assumption 1 returned no evidence.** §7.24.3 falsifies that
+> assumption regardless, on ports 6445 and 20086 from `midea_ac_lan` and 8123 from `alexa_media`,
+> so no conclusion rests on the gap — but a selection defended integration by integration (§7.4.1)
+> owes the reader the cases where the defence did not pay off, and this one did not.
 
 ### 7.24.8 Two corrections the experiment made to itself
 
@@ -2355,8 +2457,9 @@ the enforcement side.
 
 **T10 — reach into the LAN and onto the gateway — is demonstrated on the classification and once
 adversarially.** `is_public` refuses loopback, RFC 1918 [28], link-local, `0.0.0.0`, IPv6 loopback,
-link-local IPv6 **and IPv4-mapped IPv6** — the last because `::ffff:192.168.1.1` is a form the
-§7.24 run actually produced, so it is a case drawn from measurement rather than from the RFC index.
+link-local IPv6 **and IPv4-mapped IPv6** — the last because `::ffff:192.168.11.109` is a form the
+§7.24 run actually produced, twenty-four times, so it is a case drawn from measurement rather than
+from the RFC index.
 The adversarial half is `case_allow_private_is_not_request_controlled`, and it is worth stating in
 the chapter rather than only in the code, because the bug it regression-tests was this design's own:
 

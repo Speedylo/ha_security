@@ -252,7 +252,7 @@ the other 149 are not.
 | **1.2** | Authority held by any custom integration | `01_problem_and_context.md` | §1.7, §2.4.1, §2.4.2, §2.7, §3.4, §3.5, §4.2, §4.4, §4.6, §5.2 |
 | **2.1** | Platform assumptions in prior work versus Home Assistant | `02_literature_and_gap.md` | §2.3, §2.7, §3.3, §3.8 |
 
-**The other 151 tables are deliberately unnumbered**, and the split is the point rather than an
+**The other 152 tables are deliberately unnumbered**, and the split is the point rather than an
 inconsistency. Table 1.2 is an exhibit: five later chapters derive requirements, assets and
 boundaries from it by name. The rest are two- to six-row registers embedded in the argument they
 belong to — a requirement and its derivation, a threat and its rating, a prediction and its outcome

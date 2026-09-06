@@ -1,7 +1,32 @@
 # Where the rebuild stands
 
-**Last updated:** 2026-09-06 (**C1 is counted; all eight chapters written, front matter and
-bibliography done, Stage 5 read through twice**) · **Read this first when resuming.**
+**Last updated:** 2026-09-06 (**C1 is counted and Stage 5 pass 3 is done; all eight chapters
+written, front matter and bibliography done**) · **Read this first when resuming.**
+
+**Stage 5 pass 3 — five findings, all five fixed, and none of them a measured figure.** The sixth
+consecutive pass where that has held. Targets were §7.19–§7.25's prose (which neither earlier pass
+read) and every claim of the form *X is verified/counted/measured*. **F3 is the one worth being
+able to say aloud**: the head corpus requests 40 repositories and measures **37 integrations**,
+because three domains — `scheduler`, `govee`, `solarman` — are each claimed by *two different
+repositories*, and a domain is one slot on disk. §7.23.1's install figures were computed over the
+39 fetched *repositories* while the rows beneath them were over the 37 *integrations*, so one
+column described two populations; restated, the median rises to 16,294 and the total falls to
+998,478 and the reach ratio goes 22× → 21×. **No conclusion moved.** The reproducibility half is
+sharper: which repo won each collision is not recoverable from the manifest, and `govee`'s two
+candidates differ 5 vs 46 Python files — the same weakness §7.29.2 records from the other side.
+Also: §7.24.7's table listed 11 of 12 (`solarman` absent, and it was the member selected to test
+assumption 1); §7.21.3 said *five* mis-pointed obligations where ten of eleven point at a
+methodology section; §7.26.4 cited an IPv4-mapped address the run never produced; and the
+adversary suite's 37→38 transition was never stated. **Once again a recount of mine was wrong and
+the report was right** (the 21-vs-20 blocked count) — third occasion across passes 2 and 3.
+
+**A consolidation backlog now exists: `notes/rewrite_consolidation_backlog.md`.** Younes's
+instruction, 2026-09-06: the report will later be rewritten to consolidate sections and simplify
+the prose. Five structural items are recorded there rather than patched — the correction stacks
+are several layers deep, one number has five statements, the obligations register lives in three
+places, §7.5's snapshots are redundant now that it has a verdict column, and Chapter 7 at 198 KB
+is read as one document only by its own read-through sections. **These are not defects and should
+not be fixed piecemeal.**
 
 **What the 2026-09-06 session did, in one line:** built and ran **the C1 count** — task 1 below,
 §8.7 #4, the highest-value hour left — and it passes: **75 tree comparisons across both arms, zero
@@ -121,11 +146,10 @@ verdict *in the table*, and the one row that was ◐ on a technicality is now �
 on engineering. Two things remain before submission — a read-through pass and a lookup — and one
 input is still missing from outside the project.**
 
-**The next task is pass 3**, and its target is unchanged by this session: §7.19–§7.25's prose,
-which neither earlier pass read, plus every claim of the form *X is verified/measured/counted*.
-**This session is the argument for that sweep, not a reason to relax it** — C1 was exactly that
-shape, and the sweep is now cheap: the mechanical grep returns **eight hits** across the report
-(six in Ch. 7, two in Ch. 5), and §7.19–§7.25 is 981 lines.
+**Pass 3 is done (2026-09-06) and Stage 5 is complete.** What remains before submission is the
+programme handbook — an outside input, blocking four title-page fields — and defence prep. **The
+consolidation rewrite is separate work and is backlogged, not scheduled**:
+`notes/rewrite_consolidation_backlog.md`.
 
 ### Do these, in this order
 
@@ -133,7 +157,7 @@ shape, and the sweep is now cheap: the mechanical grep returns **eight hits** ac
 |---|---|---|---|
 | ~~**1**~~ | ~~**Run the C1 check**~~ (§8.7 #4, §7.28) | ~~~1 hour~~ | ✅ **Done 2026-09-06 — §7.29.** It passed, as predicted: **baseline 37 trees, confined 38, zero source changes, zero diff lines**, on a corpus directory confirmed writable by the run user first. `confine/integrity.py` is wired **into `compat.py` itself**, not kept as a separate script, so every future compatibility run counts C1 by running at all. Two departures from the price, both recorded in the report: *at fetch* was not achievable (§7.29.2), and the instrument's first version returned a false clean zero (§7.29.3) |
 | **2** | **Get the programme deadlines and handbook** | a lookup | Four title-page fields and two prescribed statements (declaration, AI-use) are placeholders; the handbook route needs nobody's reply. Also decides whether a list of *all* tables is required (`report/00_front_matter.md` states the current decision and `report/toc.py` enforces its counts) |
-| **3** | **Stage 5, pass 3** | a day | Two passes found twelve things and **pass 2's single finding was the most serious in the report**, so the curve has not flattened. Pass 3 should target what neither covered: **Chapter 7's §7.19–§7.25 prose** (pass 1 verified their numbers, pass 2 read §7.1–§7.18 and §7.26–§7.28), and every claim of the form *"X is verified/measured/counted"* — which is the exact shape that hid C1 |
+| ~~**3**~~ | ~~**Stage 5, pass 3**~~ | ~~a day~~ | ✅ **Done 2026-09-06. Five findings, all fixed, none a measured figure.** §7.19–§7.25's prose read in full and every headline recomputed from the raw result files; the completion-claim sweep returned eight hits and all were checked against the artifact. **F3 — three domain collisions mean the head corpus is 37 integrations from 40 repositories, and §7.23.1 was mixing the two populations** — is the one to be able to say aloud. Details in the summary at the top of this file |
 | **4** | **Defence prep** | days | Against `THREAT_MODEL.md` Part 10 and the viva questions in `notes/`. §8.4's six-of-eight scorecard and §7.28 are the two things to be able to say aloud without notes |
 
 ### How to run pass 3, since two passes have now taught the method
@@ -362,7 +386,7 @@ redistribute.
 | ~~**5**~~ | ~~**Chapter 8**~~ | ✅ **Written 2026-09-03**, `report/08_conclusions.md` — *Conclusions, Limitations and Future Work*, ~40k chars. Refuses to re-list §3.7/§4.11/§5.15/§7.9/§7.11 and answers the three questions no earlier chapter can. **§8.2 answers the claim against §7.7's falsifiers fixed in advance** — A, B and C all hold; **the fourth falsifier, on the evaluation rather than the artifact, fired**, and §8.2.4 reports it. **§8.3 closes §2.8's three contributions**, including the honest gap: the API-surface measurement was never re-run on the uniform corpus, so contribution 1 is half-delivered. **§8.4** — 6-of-8 predictions wrong, and the two that held were the two *about the design*; plus the methodological result now stated with its **explanation and four transferable mechanisms**. **§8.5** the 52-vs-2 / 53-vs-0 finding. **§8.6** twelve artifact limits, six evaluation limits, structural and inherited kept separate. **§8.7 future work priced and ordered** — ten items as written, **twelve after the 2026-09-04 fix**; cheapest first-value is still *one run of an existing script*. **§8.8** the single upstream ask (R3), now measured rather than reasoned about |
 | ~~**4b**~~ | ~~**Real integration, confined, against a real API**~~ | ✅ **Done 2026-09-03, §7.27.** Not scheduled — run because §7.25.5 said in its own words that a real integration against a real API was a different measurement it did not substitute for. `nordpool` is the corpus's only member that both needs a network and configures without a credential (26 of 37 cannot). Three arms: unconfined / confined+declared / confined+clause removed, the third being what makes the second evidence. **The first run failed, and that is the result**: `async_get_clientsession(hass)` — what the platform tells an author to call — builds its resolver by instantiating Zeroconf, which joins the mDNS group, and a fresh netns `lo` has no `IFF_MULTICAST`. **A real integration could not construct an HTTP client inside the sandbox at all**, so the egress design had been unusable for the 41% it was built to serve, behind a suite that all passed. §7.25's subject used a bare `aiohttp.ClientSession()` and skipped the very helper that breaks it. Fixed in two measured steps (`IFF_MULTICAST`, then a `224.0.0.0/4` route to `lo` — zeroconf joins via `INADDR_ANY` and the kernel picks the interface from the routing table); the grant is **vacuous**, the route's device is `lo`. Result: **0.026, the same price confined as unconfined, in the same minute**, 3 grants logged as `dataportal-api.nordpoolgroup.com:443` with both chains verifying; clause removed → 3 denials and `unavailable`. **11/11.** Also re-establishes §7.17.5's withdrawn finding on exactly the evidence it specified, and fixes `audit.py` recording an egress target as host without port. **18/18 suites re-run after both changes.** |
 | ~~**6**~~ | ~~**Front matter, abstract, bibliography**~~ | ✅ **Done 2026-09-04.** Title page, abstract (three paragraphs against §8.9), declaration and AI-use content, generated contents page, figure list, abbreviations, artifact index and an *Outstanding* section. **The bibliography was not clerical**: Ch. 1 and Ch. 2 carried independent `[n]` schemes that collided, Ch. 5 was citing Ch. 1's private numbering, ISO 31000 / STRIDE / OWASP Threat Dragon / RFC 1918 were cited by name and listed nowhere, and one listed source was never cited. **28 references, unified by first appearance; 28/28 resolve in both directions** |
-| ~~**7**~~ | ~~**Stage 5**~~ | ◐ **Two passes done 2026-09-04**, recorded above. **Twelve findings, none a measured figure.** Pass 1: Ch. 1–6 and 8 read in full, Ch. 7 verified numerically — eleven findings, all fixed. Pass 2: Ch. 7's prose — **one finding, and it is the most serious in the report** (§7.28, C1). **Pass 3 and defence prep remain**, and the method the two passes taught is written up under *Next session* |
+| ~~**7**~~ | ~~**Stage 5**~~ | ✅ **Complete 2026-09-06. Three passes, eighteen findings, not one of them a measured figure.** Pass 1: Ch. 1–6 and 8 in full, Ch. 7 verified numerically — eleven findings. Pass 2: Ch. 7's prose — **one finding, the most serious in the report** (§7.28, C1). Pass 3: §7.19–§7.25's prose, the completion-claim sweep, and every headline recomputed from raw result files — **five findings, all fixed**, the sharpest being §7.23.1's two populations (F3). **Three times across passes 2 and 3 a recount of mine was wrong and the report was right**, which is the reason the method says a disagreement is a question until the field being counted is confirmed |
 
 **✅ Gate G3 has a recommendation, and it is no longer close (§6.14, 2026-08-25).**
 
