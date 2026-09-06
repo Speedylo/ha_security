@@ -45,7 +45,7 @@ from pathlib import Path
 GENESIS = "0" * 64
 
 
-def _sha256_file(path: Path) -> str:
+def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
         for block in iter(lambda: handle.read(65536), b""):
@@ -88,7 +88,7 @@ class Identity:
         for path in entries:
             source_digest.update(str(path.relative_to(component_dir)).encode())
             source_digest.update(b"\0")
-            source_digest.update(_sha256_file(path).encode())
+            source_digest.update(sha256_file(path).encode())
         source = source_digest.hexdigest()
 
         manifest = hashlib.sha256(manifest_bytes).hexdigest()

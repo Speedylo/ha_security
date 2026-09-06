@@ -46,6 +46,8 @@ from .mediator import Mediator
 from .platform import Platform, acting_policy
 from .preflight import require_ready
 from .sandbox import SandboxSpec
+from .integrity import TreeState, compare
+from .integrity import summarise as integrity_summary
 from .selftest_bridge import interpreter_trees
 from .spawn import Sandbox, SandboxFailed, become_subreaper, start
 
@@ -258,10 +260,16 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
     """One integration, one sandbox. Nothing is shared between them but the corpus on disk."""
     root = Path(tempfile.mkdtemp(prefix=f"compat-{domain}-"))
     mediator = Mediator()
+    integrity = None
     try:
         own = root / "custom_components" / domain
         own.parent.mkdir(parents=True)
         shutil.copytree(component, own)
+        # §7.28 / C1. What runs here is the copy, and `sandbox.py` mounts it read-only, so the
+        # tree to re-hash afterwards is the **copy** and not the fetched original — diffing the
+        # original would compare a tree nothing opened. Retention is unnecessary because the
+        # two are distinct directories and both still exist at comparison time.
+        original = TreeState.capture(component)
         data = root / ".confine" / domain
         data.mkdir(parents=True)
 
@@ -333,6 +341,9 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
         diagnostic = Path(err.name).read_text().strip()
         Path(out.name).unlink(missing_ok=True)
         Path(err.name).unlink(missing_ok=True)
+        # Before the `finally` removes the copy. A source change here would not be a C1
+        # finding but a containment one: it would mean the read-only mount held nothing.
+        integrity = compare(original, TreeState.capture(own)).as_dict()
     except (SandboxFailed, OSError, TimeoutError) as err:
         return {"domain": domain, "level": "sandbox_failed", "error": str(err)[:200]}
     finally:
@@ -340,12 +351,14 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
 
     if not text:
         return {"domain": domain, "level": "no_report", "oom": oom, "status": status,
-                "install": install,
+                "install": install, "integrity": integrity,
                 "error": diagnostic.splitlines()[-1][:200] if diagnostic else ""}
     report = json.loads(text.splitlines()[-1])
     if "fatal" in report:
         return {"domain": domain, "level": "fatal", "install": install,
+                "integrity": integrity,
                 "error": report["fatal"].splitlines()[-1][:200]}
+    report["integrity"] = integrity
     report["oom"] = oom
     report["peak_mb"] = round(peak / 2**20, 1)
     report["install"] = install
@@ -412,13 +425,23 @@ def run_one_baseline(domain: str, component: Path, sandbox_python: Path,
         if platform_deps:
             path.append(str(platform_deps))
         env = {**os.environ, "PYTHONPATH": ":".join(path)}
+        # §7.28 / C1, and **this is the arm the check exists for.** The integration is about to
+        # be imported by a full, unconfined Home Assistant from the fetched tree itself — no
+        # copy, no read-only mount, full authority over its own source. `retain` keeps the
+        # pre-run bytes because the comparison is of this directory against itself afterwards,
+        # by which time the original content would otherwise be unrecoverable.
+        original = TreeState.capture(component, retain=True)
         try:
             proc = subprocess.run(
                 [str(sandbox_python), str(root / "baseline_runtime.py"), str(spec_file)],
                 capture_output=True, text=True, timeout=timeout, env=env, cwd=str(root))
         except subprocess.TimeoutExpired:
+            # Checked on the timeout path too: an integration that hung is not one that can be
+            # assumed to have left its source alone.
             return {"domain": domain, "level": "timeout", "install": install,
+                    "integrity": compare(original, TreeState.capture(component)).as_dict(),
                     "error": f"exceeded {timeout}s"}
+        integrity = compare(original, TreeState.capture(component)).as_dict()
         text = (proc.stdout or "").strip()
     finally:
         shutil.rmtree(root, ignore_errors=True)
@@ -426,16 +449,18 @@ def run_one_baseline(domain: str, component: Path, sandbox_python: Path,
     if not text:
         tail = (proc.stderr or "").strip().splitlines()
         return {"domain": domain, "level": "no_report", "install": install,
-                "error": tail[-1][:200] if tail else ""}
+                "integrity": integrity, "error": tail[-1][:200] if tail else ""}
     try:
         report = json.loads(text.splitlines()[-1])
     except ValueError:
         return {"domain": domain, "level": "no_report", "install": install,
-                "error": text.splitlines()[-1][:200]}
+                "integrity": integrity, "error": text.splitlines()[-1][:200]}
     if "fatal" in report:
         return {"domain": domain, "level": "fatal", "install": install,
+                "integrity": integrity,
                 "error": report["fatal"].strip().splitlines()[-1][:200]}
     report["install"] = install
+    report["integrity"] = integrity
     report["profile"] = "baseline"
     return report
 
@@ -583,8 +608,30 @@ def main() -> int:
         print(f"    -> the trigger {'FIRES' if fixed else 'does not fire'}: a fuller instance "
               f"{'does' if fixed else 'does not'} fix them")
 
+    # ---- C1 ------------------------------------------------------------------------
+    # §7.28 / §8.7 #4. Until this ran, C1 rested on reading two lines of the harness: that the
+    # confined arm copies and mounts read-only, and that no modification had ever been
+    # observed. Neither is a count, and §7.4.1 had claimed one for months.
+    c1 = integrity_summary(results + arm_b)
+    print(f"\n  C1 — integrations run unmodified ({'baseline' if baseline else 'confined'} arm)")
+    if not c1["integrations_checked"]:
+        print("    no tree was hashed — the check did not run")
+    else:
+        print(f"    trees hashed before and after     {c1['integrations_checked']}")
+        print(f"    with changed source               {c1['source_changed']}")
+        print(f"    total diff lines                  {c1['total_diff_lines']}")
+        print(f"    trees that gained bytecode only   {c1['trees_gaining_bytecode']}")
+        if c1["lines_unknown"]:
+            print(f"    ** files whose lines could not be counted: {c1['lines_unknown']}")
+        if c1["domains_with_changes"]:
+            print(f"    ** CHANGED: {', '.join(c1['domains_with_changes'])}")
+            if not baseline:
+                print("    ** in the confined arm this is a containment failure, not a "
+                      "compatibility one: the copy is mounted read-only")
+
     if args.json:
-        args.json.write_text(json.dumps({"arm_a": results, "arm_b": arm_b}, indent=2) + "\n")
+        args.json.write_text(json.dumps(
+            {"arm_a": results, "arm_b": arm_b, "c1": c1}, indent=2) + "\n")
         print(f"\nwrote {args.json}")
     return 0
 
