@@ -235,7 +235,8 @@ the cheapest outstanding item in the whole report — one existing script over a
 corpus — and §8.7 prices it as such.
 
 **Contribution 2 — a confinement architecture for an extension model that cannot be changed.**
-Delivered and evaluated. Eighteen self-test suites pass on the target hardware; C2 holds because
+Delivered and evaluated. Eighteen self-test suites pass on the target hardware — nineteen from
+2026-09-06, when §7.29 added `selftest_integrity`; C2 holds because
 every arm runs against an unmodified official release. **C1 — the word the report's title rests
 on — is the one place this chapter has to correct itself**: §8.3 said until 2026-09-04 that
 *unmodified* was "counted rather than asserted" by a mechanical diff. **That diff does not exist**
