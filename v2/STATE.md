@@ -1,7 +1,18 @@
 # Where the rebuild stands
 
-**Last updated:** 2026-09-04, end of session (**all eight chapters written, front matter and
+**Last updated:** 2026-09-06 (**C1 is counted; all eight chapters written, front matter and
 bibliography done, Stage 5 read through twice**) · **Read this first when resuming.**
+
+**What the 2026-09-06 session did, in one line:** built and ran **the C1 count** — task 1 below,
+§8.7 #4, the highest-value hour left — and it passes: **75 tree comparisons across both arms, zero
+source changes, zero diff lines** (§7.29). C1 goes from *argued* back to *counted* and §7.5's row
+is ✅. **Two things came out of it that were not on the list.** The check could not be built as
+§8.7 priced it — hashing *at fetch* is impossible for a corpus whose manifest pins `HEAD` and
+records no content hash, so the count covers a run and not the project's history (§7.29.2); and the
+first version of the instrument **reported a clean zero because it compared the baseline tree
+against itself**, which is §6.4.5's failure mode for the fourth time, caught by a self-test written
+for it (§7.29.3). Suite count is now **19**. Nothing else changed; no measurement was re-run except
+the two compatibility arms, which returned **31/37 — 84% and the same six failures**, unchanged.
 
 **What the 2026-09-04 session did, in one line:** fixed Chapter 8's known defect, wrote the front
 matter and a single 28-source bibliography where two colliding schemes had been, and ran **two
@@ -95,6 +106,8 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/entity_visibility/` | ✅ **Pi 5, 2026-09-02, §7.14. S3 paired.** One 36-entity home, 20 disclosing presence. Unconfined **36/36** and **20/20** presence, plus every change to others' entities; confined **1/36**, every undeclared probe absent and denied with a clause. Subscription half verified at the **decision layer only** — no push loop exists (§6.11.2) |
 | `experiments/adversary_baseline/` | ✅ **Pi 5, 2026-09-02. S8's pairing, §7.13.** The same hostile payload with and without the sandbox — `ATTACKS` imported, not copied. **Three corrections to §6.9**: the `/dev/zero` misattribution (stands), the counts 21/9 → **20/10** (stands), and one *withdrawn* — S9's evidence was never invalid; the hardened harness had briefly stopped telling a kernel kill from its own timeout. S9 gained a second, better demonstration anyway: **allocate** memory rather than read files. Harness finding: `PTRACE_TRACEME` succeeds unconfined and wedges the process on the next signal, which is why the suite was only ever fragile in the arm nobody had run |
 | `experiments/compat/results/compat_baseline.json` | ✅ **Pi 5, 2026-09-02. The baseline arm.** 37 against a full, unconfined HA — same release, host, interpreter, corpus, and the *same* `inspect()` function, shared not copied. **31/37 — 84%, identical to confined, same six failures, same reasons.** `failures(design) = 0`. Baseline loads a median of **52** components; the sandbox sets up **2** |
+| **`framework/confine/integrity.py`** | ✅ **2026-09-06, §7.29. The C1 count.** Hashes an integration's tree before and after a run and classifies what moved. **Reuses `audit.Identity`** — §5.12.1's three-part tuple, already built to answer *did this code change* for T12 — rather than defining a second hash, so the report has one mechanism in two places. Wired into **both arms** of `compat.py`, so C1 is counted as a side effect of any future compatibility run. `selftest_integrity` **15/15**. `sha256_file` promoted from private in `audit.py`; `selftest_audit` unaffected |
+| `experiments/compat/results/c1_*.json` | ✅ **Pi 5, 2026-09-06.** Both arms re-run with the check wired in. **Baseline 37 trees, confined 38, `source_changed: 0`, `total_diff_lines: 0`, `lines_unknown: 0`.** Each row carries its own `integrity` record, not just the totals. Compatibility unchanged at **31/37 — 84%** in both arms, same six failures |
 | `framework/confine/baseline_runtime.py` | ✅ The unconfined arm. `--profile baseline` in `compat.py`. Bias deliberately resolved toward the baseline throughout |
 | `report/06_implementation.md` | ✅ **Complete as written, §6.1–§6.14, 2026-08-25.** Its one unbuilt scope item was built and reported in Chapter 7 (§7.25, §7.27); **the chapter is deliberately not edited to be right** — §6.11.1 still reads "Egress does not exist" because that was true when it was written, which is the same rule applied to §5.6.5 and §5.7.4. Original note follows. **§6.1–§6.14 drafted 2026-08-25; one scope item still unbuilt.** The bridge is built, the corpus has been run four ways, and **Gate G3 has its recommendation**: `declared` + core package set, **31/37 — 84% — at +19.1 MB**, strictly dominating every other profile measured. What is *not* built is §5.8.2's scope item 2 — mediated egress, F2 and S4 — recorded in §6.11.1 as "◐ Half. Egress does not exist." Section plan, the §6.13–§6.14 reasoning and the viva answers in `notes/ch6_working_notes.md` |
 | `experiments/egress_shape/` | ✅ **Pi 5, 2026-09-03, §7.24. What the proxy must do, measured before it is built.** Twelve head-corpus integrations, unconfined with real network, driven through their own config flows. **Three of §5.10.3's assumptions fail**: resolution is 96% `aiodns` not `getaddrinfo` (3,073 vs 120, uniform 93–97%); ports 8123/6445/20086 as well as 443; UDP is real. Inbound is not needed. Three network stacks (aiohttp, urllib3, raw), TLS via both `wrap_bio` and `wrap_socket`, all verified. **It also answers §7.18's "no observational method can answer this"** — that binds *how much*, not *what shape*, because a flow validates a credential by making the call. Instrument is `framework/confine/netshape.py`, 13/13 self-test on both architectures, paired with `strace`, which bounds its blind spot at 74–87% of kernel egress |
@@ -102,16 +115,23 @@ that does not belong in the report, including anticipated viva questions.
 
 ## Next session — start here
 
-**End of 2026-09-04. Chapters 1–8 are written, the front matter and one consolidated bibliography
-exist, and Stage 5 has had two read-through passes.** All twenty §7.5 rows now carry a verdict *in
-the table*, not just in the chapter. **Nothing is blocked on engineering; one thing is worth an hour
-before submission, and one input is still missing from outside the project.**
+**End of 2026-09-06. Chapters 1–8 are written, the front matter and one consolidated bibliography
+exist, Stage 5 has had two read-through passes, and C1 is counted.** All twenty §7.5 rows carry a
+verdict *in the table*, and the one row that was ◐ on a technicality is now ✅. **Nothing is blocked
+on engineering. Two things remain before submission — a read-through pass and a lookup — and one
+input is still missing from outside the project.**
+
+**The next task is pass 3**, and its target is unchanged by this session: §7.19–§7.25's prose,
+which neither earlier pass read, plus every claim of the form *X is verified/measured/counted*.
+**This session is the argument for that sweep, not a reason to relax it** — C1 was exactly that
+shape, and the sweep is now cheap: the mechanical grep returns **eight hits** across the report
+(six in Ch. 7, two in Ch. 5), and §7.19–§7.25 is 981 lines.
 
 ### Do these, in this order
 
 | | Do this | Cost | Why it is first |
 |---|---|---|---|
-| **1** | **Run the C1 check** (§8.7 #4, §7.28) | **~1 hour** | **The highest-value hour left in the project.** §7.4.1 and §8.3 both claimed C1 was "verified mechanically"; pass 2 found the diff **does not exist**, and C1 is downgraded to *argued* until it runs. Hash each integration tree at fetch, re-hash the copy before the confined run and the tree **after the baseline run** — the baseline is the arm with no copy and no read-only mount, so it is the one that needs it. Expected outcome: it passes, and *unmodified* becomes counted. **Leaving it unrun is the wrong trade precisely because it will pass** |
+| ~~**1**~~ | ~~**Run the C1 check**~~ (§8.7 #4, §7.28) | ~~~1 hour~~ | ✅ **Done 2026-09-06 — §7.29.** It passed, as predicted: **baseline 37 trees, confined 38, zero source changes, zero diff lines**, on a corpus directory confirmed writable by the run user first. `confine/integrity.py` is wired **into `compat.py` itself**, not kept as a separate script, so every future compatibility run counts C1 by running at all. Two departures from the price, both recorded in the report: *at fetch* was not achievable (§7.29.2), and the instrument's first version returned a false clean zero (§7.29.3) |
 | **2** | **Get the programme deadlines and handbook** | a lookup | Four title-page fields and two prescribed statements (declaration, AI-use) are placeholders; the handbook route needs nobody's reply. Also decides whether a list of *all* tables is required (`report/00_front_matter.md` states the current decision and `report/toc.py` enforces its counts) |
 | **3** | **Stage 5, pass 3** | a day | Two passes found twelve things and **pass 2's single finding was the most serious in the report**, so the curve has not flattened. Pass 3 should target what neither covered: **Chapter 7's §7.19–§7.25 prose** (pass 1 verified their numbers, pass 2 read §7.1–§7.18 and §7.26–§7.28), and every claim of the form *"X is verified/measured/counted"* — which is the exact shape that hid C1 |
 | **4** | **Defence prep** | days | Against `THREAT_MODEL.md` Part 10 and the viva questions in `notes/`. §8.4's six-of-eight scorecard and §7.28 are the two things to be able to say aloud without notes |

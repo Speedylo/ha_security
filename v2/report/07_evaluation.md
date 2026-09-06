@@ -184,6 +184,10 @@ is worth nothing if the framework could have rewritten it.
 > prices the fix, which is small: hash each tree at fetch, re-hash after each arm, report
 > mismatches. **C1 is not withdrawn — no modification has ever been observed — but it is downgraded
 > from *counted* to *argued*, and §7.5's row says so.**
+>
+> **Counted 2026-09-06 (§7.29): 75 tree comparisons across both arms, zero source changes, zero
+> diff lines. The paragraph this note corrects is now true — and it was not true for the two months
+> it stood, which is the part worth keeping visible.**
 
 ### 7.4.2 Security — C3, S1–S9
 
@@ -282,7 +286,7 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 
 | Req | Criterion — the requirement passes if… | Verdict source (fixed 2026-09-02) | **Verdict** |
 |---|---|---|---|
-| **C1** | Every integration in the compatibility runs shows a **zero-line** diff against its fetched original, counted mechanically after the run | Compatibility | ◐ **Met in substance, not by the stated criterion — §7.4.1, and see §7.28** | The criterion says a **zero-line diff, counted mechanically**. **That count is not performed anywhere in this project**, and Stage 5 found it (2026-09-04). What is true instead is structural and, for the confined arm, stronger: `compat.py` copies each integration with `shutil.copytree` and `sandbox.py:218` bind-mounts that copy **read-only**, so a confined integration cannot alter its own source. The **baseline arm has neither** — it passes the fetched path directly into a full in-process Home Assistant. No modification has been observed; none has been *counted*. |
+| **C1** | Every integration in the compatibility runs shows a **zero-line** diff against its fetched original, counted mechanically after the run | Compatibility | ✅ **Met, and counted — §7.29** (was ◐ from 2026-09-04 to 2026-09-06; §7.28) | **Counted 2026-09-06**: 37 trees in the baseline arm and 38 in the confined arm hashed before and after, **zero source changes and zero diff lines**, on a corpus directory confirmed writable by the run user. The baseline arm is the one that carries it — the fetched tree goes by path into a full unconfined in-process Home Assistant, with no copy and no read-only mount. The confined arm is additionally safe by construction: `compat.py` copies each integration and `sandbox.py:218` bind-mounts the copy **read-only**, so a change there would be a containment failure rather than a compatibility one. **Bound on the claim (§7.29.2): the corpus manifest pins `HEAD` and stores no content hash, so this counts a run and not the project's history.** Between 2026-09-04 and this run the row read *met in substance, not by the stated criterion*, and §7.28 records why. |
 | **C2** | Every arm runs against an unmodified official Home Assistant release, version recorded in the result file | All arms | ✅ **Met** — §7.12 — every arm ran against unmodified Home Assistant 2026.8.3 (`759e465`), the release recorded in each result file |
 | **C3** | The adversarial run includes an absent manifest, an over-broad manifest, and one deliberately mismatched to behaviour — and all three are handled per §5.9's precedence rules | Security | ✅ **Met** — §7.16.1 — `selftest_c3`: absent, over-broad and mismatched manifests. Over-broad **is honoured** (R1) and the section says so; the ceiling it cannot raise holds what §4.9 rated Critical |
 | **C4** | Every performance figure is produced on the Raspberry Pi 5, reporting per-integration memory *and* added latency | Performance | ✅ **Met** — §7.19–§7.22 — every performance figure produced on the Pi 5, per-integration memory *and* added latency both reported |
@@ -2547,6 +2551,7 @@ than by reading either sentence again.
 | Self-test suites passing on the C4 device | 8 | **18** — re-run 2026-09-03 after §7.27's namespace and audit changes, 18/18 |
 | Added by §7.22 | `selftest_resources` — 13 checks | |
 | Added by §7.25 | `selftest_fdpass` 12, `selftest_socket_pinning` 6, `selftest_egress` 23, `selftest_egress_shim` 9, `selftest_udp` 12, `selftest_egress_sandboxed` 17, `selftest_netshape` 13 | |
+| Added by §7.29 (2026-09-06) | `selftest_integrity` — 15 checks, carrying **C1**. The suite count is **19** from that date | |
 
 The two counts are not a compatibility figure and no rate is computed from them; they are recorded
 because §7.16.2's table is the chapter's only statement of what the artifact's own tests cover, and
@@ -2881,11 +2886,105 @@ The fix is small and §8.7 prices it: hash each integration tree at fetch, re-ha
 the confined run and the tree after the baseline run, and report mismatches. It is an hour, and
 until it is run C1 rests on reading two lines of the harness rather than on a count.
 
+> **Run 2026-09-06, and this section is left as written. §7.29 reports it: 75 tree comparisons
+> across both arms, zero source changes, zero diff lines. C1 is counted.** One thing in the
+> paragraph above did not survive contact — *"hash each integration tree at fetch"* is not
+> achievable for a corpus whose manifest pins `HEAD` and records no content hash, so the count
+> covers a run rather than the project's history. §7.29.2 states the bound.
+
 **The general lesson is §7.21.3's, one level up.** That section found five obligations discharged
 "in" a methodology section and corrected them by naming the results section that actually
 discharged each. This one had no such pointer to check, because it was phrased as a statement of
 fact rather than as an obligation — so the sweep that caught the other five could not see it. **A
 claim that something *is* verified is harder to audit than a promise that it *will be*.**
+
+## 7.29 C1, counted — the check §7.28 said did not exist
+
+**Run 2026-09-06.** §7.28 downgraded C1 from *counted* to *argued* and §8.7 #4 priced the repair
+at an hour. This section reports it. `confine/integrity.py` hashes an integration's tree before
+and after a run, classifies what moved, and both arms of the compatibility measurement were
+re-run with it wired in.
+
+### 7.29.1 The result
+
+| | Baseline arm | Confined arm |
+|---|---|---|
+| Trees hashed before and after | **37** | **38** (37 + one arm-B retry) |
+| With changed source | **0** | **0** |
+| Total diff lines | **0** | **0** |
+| Files whose lines could not be counted | 0 | 0 |
+
+**Seventy-five tree comparisons, zero source changes, zero diff lines.** §7.5's C1 criterion — *a
+zero-line diff against the fetched original, counted mechanically after the run* — is met and
+counted rather than argued. Evidence is `experiments/compat/results/c1_baseline.json` and
+`c1_declared_core.json`, both carrying a per-integration `integrity` record as well as the totals.
+
+**The baseline arm is the one that carries the claim**, for §7.28.1's reason: it passes the fetched
+tree by path into a full, unconfined, in-process Home Assistant, with no copy and no read-only
+mount. **The corpus directory was confirmed writable by the user running that arm before the run**,
+so the zero is a result about what the integrations did and not about what the filesystem refused
+them.
+
+**The compatibility figures were unchanged by the re-run**, which is worth stating because a
+re-measurement that moved them would have raised a question this section is not equipped to answer.
+Both arms returned **31/37 — 84%** with the same six failures §6.14 names: `aiofiles` in
+`bambu_lab`, `bermuda` and `tapo_control`; `eufy_security`, broken on 2026.8.3 itself; `hacs` and
+`spook`, corpus artifacts. Requirements were installed fresh and drift changed nothing.
+
+### 7.29.2 What was implemented differently from what §8.7 priced, and why
+
+§8.7 #4 describes hashing *"each integration tree at fetch"*. **That is not achievable for this
+corpus and the difference bounds the claim**, so it is stated here rather than left for a reader to
+infer from the file dates.
+
+`figures/hacs_corpus_manifest.json` pins each repository at `"ref": "HEAD"` and records no commit
+identifier and no content hash. The fetched state is therefore unreconstructible after the fact:
+re-fetching today yields whatever upstream now holds, which is not what was fetched on 2026-08-25.
+Corroboration that the trees have been written to since fetch is direct — **91 `__pycache__`
+directories** were already present in the corpus from earlier baseline runs.
+
+So the count establishes:
+
+- **What it does establish.** Across a complete run of both arms, no integration modified its own
+  source, counted mechanically per file and per line, on trees an integration could have written.
+- **What it does not.** That no run between 2026-08-25 and 2026-09-06 modified a tree. The
+  fetch-time hashes to compare against were never recorded, and no later measurement can create
+  them.
+- **What changes from here.** The check is wired into `compat.py` itself rather than kept as a
+  separate script, so every future compatibility run counts C1 as a side effect of running at all.
+
+This is a smaller claim than §8.7 #4 implied, and the gap is of exactly the kind §7.28 was written
+about: a sentence promising more verification than the artifact performs. It is recorded on the
+same rule.
+
+### 7.29.3 Two decisions inside the instrument that the number depends on
+
+**Bytecode is counted separately, not ignored.** The baseline arm imports each integration from a
+tree it can write to, so CPython drops `.pyc` files beside the source; a check that treated those as
+modifications would report C1 as failing everywhere for a reason having nothing to do with an
+integration's source. `audit.Identity` already excluded `__pycache__` from the source hash — a
+§5.12.1 decision taken for T12, not one taken here to obtain a convenient answer — and
+`integrity.py` reuses that identity rather than defining a second one, so the report has one
+mechanism answering *did this code change* in both places. Bytecode additions are still counted and
+reported, because a tree that gained forty `.pyc` files is unmodified in C1's sense and is not
+untouched, and a run should be able to say both. In these two runs the count was zero in both arms:
+the corpus already held current bytecode from earlier runs, and the confined arm sets
+`PYTHONDONTWRITEBYTECODE` (`enter.py`).
+
+**A line count that cannot be established is reported as unknown, never as zero.** The first version
+of `compare()` read the pre-run bytes off disk. For the confined arm that is correct — copy and
+original are distinct directories, both still present. For the baseline arm, where the tree is
+compared against *itself* after being written to, it is not: both reads return the post-run file and
+the count comes back **0**, which is indistinguishable from a clean result. **That is §6.4.5's
+failure mode**, which this project has now recorded four times — an absence produced by a defect
+reading exactly like the mechanism working. It was caught by a self-test case written for it, and
+the instrument now retains pre-run bytes where it needs them and reports `lines_unknown` where it
+cannot. `selftest_integrity` is 15/15 and includes that case.
+
+**The confined arm's zero means something different from the baseline arm's**, and §7.28.1 said so
+before the check existed: a source change there would not be a compatibility finding but a
+containment failure, because the copy is bind-mounted read-only. Both are reported, and the
+summary distinguishes them in those words.
 
 ---
 

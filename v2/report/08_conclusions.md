@@ -187,6 +187,13 @@ criteria were frozen rather than conceded in a limitations section later.
 > *unmodified*. **It is left here as a correction rather than absorbed**, because a section
 > answering "did the evaluation report anything as passed that it had not demonstrated" is the
 > worst possible place to quietly fix the answer.
+>
+> **Counted 2026-09-06 (§7.29), and the correction stays.** 75 tree comparisons across both arms,
+> zero source changes, zero diff lines; C1's row is ✅ and the diff now exists. What does not change
+> is the finding above: for two months this section answered a falsifier about the evaluation's
+> honesty with a sentence that was false, and the answer is only correct now because Stage 5 read
+> the chapter rather than because the evaluation caught itself. **The falsifier fired; running the
+> check afterwards does not unfire it.**
 
 **But the chapter did fail a commitment of its own, and a reader is owed the finding rather than
 the reassurance.** §7.2 committed the security axis to being scored twice — against Chapter 4's
@@ -233,8 +240,11 @@ every arm runs against an unmodified official release. **C1 — the word the rep
 on — is the one place this chapter has to correct itself**: §8.3 said until 2026-09-04 that
 *unmodified* was "counted rather than asserted" by a mechanical diff. **That diff does not exist**
 (§7.28). What does is a read-only bind mount that makes modification impossible in the confined arm
-and absent in the baseline arm, so C1 is **argued from the harness rather than counted**, no
-modification has ever been observed, and the check is priced in §8.7. §2.8 was careful that the novelty is *"not the manifest, which is established
+and absent in the baseline arm, so C1 was **argued from the harness rather than counted**, and the
+check was priced in §8.7. **It was then run (2026-09-06, §7.29): 75 tree comparisons, zero source
+changes, zero diff lines, and C1 is counted** — bounded, per §7.29.2, to the run rather than the
+project's history, because the corpus manifest pins `HEAD` and stored no content hash to compare
+against. §2.8 was careful that the novelty is *"not the manifest, which is established
 practice, but the retrofit"*, and the retrofit is what the zero of §8.2.2 measures.
 
 **Contribution 3 — a quantified security/compatibility trade-off.** This is the one §2.8 called
@@ -493,7 +503,7 @@ from nowhere to seventh, which is the ordering evidence is supposed to do to a p
 | **1** | **The push loop** (§6.11.2) | S3's subscription half moves from a refusal to a demonstrated filter, and the one latency path that could consume §7.20.1's 63× margin becomes measurable. Both are currently stated gaps in the artifact rather than in the measurement | Days. It is the largest missing piece and the highest-value one |
 | **2** | **The real Home Assistant component** (§6.10.2, §6.11.2) | **Limitation 2 of §8.6.3, and the largest of them that this list did not price until now.** Step 5 of the mediated call acts on an in-memory stand-in, so what a *live* instance does with a mediated write is untested — §7.14.4 and §7.17.6 each state this beside their own figure. What it would settle is **identity, not realism**: the spike's `registry_gap` finding — cited as prior work in §6.10.2 and deliberately not relied on — is that publishing over the states API produces states with no entity-registry row, no `unique_id`, no config entry and nothing surviving a restart, and §5.6.1 measured that **83% of community integrations publish through `async_add_entities`**, which is the path that produces the registry row and the state machine does not. Until it exists, the end-to-end arm speaks for the mediator's decision and not for what the platform then does with it | Days. The spike's `sandbox_bridge` is ~250 lines that load and execute nothing from any integration, and `00_METHOD.md` §5 permits reusing that code — but its *finding* is private knowledge under §2, so the registry claim has to be re-measured here rather than cited |
 | **3** | **Static analysis for the derived manifest**, extended one level up (§6.14.4, §7.17.4) | The undeclared-package *and* undeclared-component bound — item 13 above, and the only measured compatibility cost in the whole report. `import aiofiles` is a top-level import and trivially detectable; **a component dependency is a name in the platform's own source, so the transitive closure is computable exactly rather than approximated**, which `core_requirements()` already does for `default_config`. A strictly larger analysis and a strictly easier one | Days. `--derived` alongside the author's manifest, with every added clause marked as derived per §5.9.3 |
-| **4** | **Count C1 instead of arguing it** (§7.28) | The requirement underwriting the word *unmodified*. Hash each integration tree at fetch, re-hash the copy before the confined run and the tree after the baseline run, report mismatches. **The baseline arm is the one that needs it** — it passes the fetched path into a full in-process Home Assistant with no copy and no read-only mount | **An hour**, and it converts the report's most load-bearing word from argued to counted |
+| ~~**4**~~ | ~~**Count C1 instead of arguing it**~~ (§7.28) | ✅ **Done 2026-09-06 — §7.29.** `confine/integrity.py`, wired into both arms of `compat.py` rather than kept as a separate script, so every future compatibility run counts C1 by running at all. **37 trees baseline, 38 confined, zero source changes, zero diff lines.** Two departures from this row as priced: hashing *at fetch* proved impossible — the corpus manifest pins `HEAD` and stores no content hash, so the count covers a run and not the project's history (§7.29.2) — and the instrument reports an uncountable line delta as *unknown* rather than zero, after the first version returned a reassuring 0 by comparing the baseline tree against itself (§7.29.3, §6.4.5's failure mode for the fourth time) | **It was an hour**, and the hour was right |
 | **5** | **T12's measurement** (§7.26.5) | The only threat in either register with no evidence. Set an integration up, change its manifest, spawn it again, show the second run is bounded by the second declaration and that the change is visible through `describe.py` before it takes effect | Hours. It was never scheduled, which is why the schedule's close-out did not catch it |
 | **6** | **Re-run the API-surface parser on the uniform corpus** (§8.3) | Contribution 1's other half — what most *integrations* ask for, against what most *installations* run. §7.23 answered that question for compatibility and not for the API surface | **One run.** The script exists and the corpus is already fetched: the cheapest outstanding item in the report |
 | **7** | **The other two network stacks, confined** (§7.24.5, §7.27.7) | `urllib3`/`requests` synchronously and a raw socket, each spawned in real namespaces against a real destination. **Promoted above the datagram work by §7.27's result**: the one stack that was actually spawned failed on a platform helper nobody had exercised, and the argument that the other two are fine is now exactly the argument that was wrong once | Days. `localtuya` and `midea_ac_lan` are the corpus's members, and both need a device or a credential — so this may need recorded fixtures |
