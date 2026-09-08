@@ -45,6 +45,10 @@ load-bearing, and this draft preserves them in condensed form rather than droppi
 
     python3 build_docx.py            # -> capstone_report_draft.docx
 
+Typography is set in one place at the top of `build_docx.py`: body **Times New Roman
+12 pt**, headings **14 pt bold**, tables 10 pt, block quotes 11 pt, code in Courier New.
+The title-page title is 18 pt — the only size not derived from the two the brief names.
+
 **Generated, not hand-maintained.** Edit the markdown and re-run; a `.docx` edited
 directly will be overwritten and its changes lost. On opening in Word, right-click the
 contents page and choose *Update Field* to populate it — the heading structure is already

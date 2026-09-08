@@ -46,11 +46,37 @@ FILES = [
     "17_appendices.md",
 ]
 
-MONO = "Consolas"
-BODY = "Calibri"
+# Typography. Set in one place because every size below is stated relative to
+# the 12 pt body: tables and quotes step down from it, headings step up.
+BODY = "Times New Roman"
+MONO = "Courier New"
+PT_BODY = 12
+PT_HEADING = 14
+PT_TITLE = 18
+PT_TABLE = 10
+PT_QUOTE = 11
+PT_CODE_INLINE = 11
+PT_CODE_BLOCK = 10
 
 # **bold** | *italic* | `code` — non-greedy, and bold is tried before italic.
 INLINE = re.compile(r"(\*\*.+?\*\*|(?<!\*)\*[^*\n]+?\*(?!\*)|`[^`\n]+?`)")
+
+
+def set_font(font, name: str) -> None:
+    """Set a font by name on every script slot.
+
+    `font.name` alone writes only the ascii and hAnsi slots, so Word falls back
+    to the theme font for anything it classifies otherwise — which is why a
+    document that looks correct in one viewer can render half in another face.
+    """
+    font.name = name
+    rpr = font.element.get_or_add_rPr()
+    rfonts = rpr.find(qn("w:rFonts"))
+    if rfonts is None:
+        rfonts = OxmlElement("w:rFonts")
+        rpr.append(rfonts)
+    for slot in ("w:ascii", "w:hAnsi", "w:cs", "w:eastAsia"):
+        rfonts.set(qn(slot), name)
 
 
 def shade(element, fill: str) -> None:
@@ -77,8 +103,8 @@ def add_runs(paragraph, text: str, *, bold: bool = False,
             add_runs(paragraph, piece[2:-2], bold=True, italic=italic)
         elif piece.startswith("`") and piece.endswith("`") and len(piece) > 2:
             run = paragraph.add_run(piece[1:-1])
-            run.font.name = MONO
-            run.font.size = Pt(9)
+            set_font(run.font, MONO)
+            run.font.size = Pt(PT_CODE_INLINE)
             run.font.color.rgb = RGBColor(0x8A, 0x1C, 0x1C)
             run.bold, run.italic = bold, italic
         elif piece.startswith("*") and piece.endswith("*") and len(piece) > 2:
@@ -128,7 +154,7 @@ def add_table(doc, rows: list[list[str]]) -> None:
             text = row[c] if c < len(row) else ""
             add_runs(para, text)
             for run in para.runs:
-                run.font.size = Pt(9)
+                run.font.size = Pt(PT_TABLE)
                 if r == 0 and has_header:
                     run.bold = True
             if r == 0 and has_header:
@@ -143,8 +169,8 @@ def add_code(doc, lines: list[str]) -> None:
     para.paragraph_format.space_after = Pt(6)
     shade(para._p.get_or_add_pPr(), "F4F5F7")
     run = para.add_run("\n".join(lines))
-    run.font.name = MONO
-    run.font.size = Pt(8.5)
+    set_font(run.font, MONO)
+    run.font.size = Pt(PT_CODE_BLOCK)
 
 
 def add_quote(doc, lines: list[str]) -> None:
@@ -161,7 +187,8 @@ def add_quote(doc, lines: list[str]) -> None:
         shade(para._p.get_or_add_pPr(), "F7F7F4")
         add_runs(para, " ".join(block))
         for run in para.runs:
-            run.font.size = Pt(10)
+            if run.font.name != MONO:
+                run.font.size = Pt(PT_QUOTE)
         block.clear()
 
     for line in lines:
@@ -307,10 +334,36 @@ def build(out: pathlib.Path) -> tuple[int, int]:
     doc = Document()
 
     normal = doc.styles["Normal"]
-    normal.font.name = BODY
-    normal.font.size = Pt(10.5)
+    set_font(normal.font, BODY)
+    normal.font.size = Pt(PT_BODY)
     normal.paragraph_format.space_after = Pt(7)
     normal.paragraph_format.line_spacing = 1.15
+
+    # Word's built-in heading styles are Calibri Light in an accent colour and
+    # inherit nothing useful here, so each is restated: one face, one size,
+    # bold, black.
+    for level in range(1, 5):
+        style = doc.styles[f"Heading {level}"]
+        set_font(style.font, BODY)
+        style.font.size = Pt(PT_HEADING)
+        style.font.bold = True
+        style.font.italic = False
+        style.font.color.rgb = RGBColor(0, 0, 0)
+        style.paragraph_format.space_before = Pt(14 if level <= 2 else 10)
+        style.paragraph_format.space_after = Pt(6)
+        style.paragraph_format.keep_with_next = True
+
+    title = doc.styles["Title"]
+    set_font(title.font, BODY)
+    title.font.size = Pt(PT_TITLE)
+    title.font.bold = True
+    title.font.color.rgb = RGBColor(0, 0, 0)
+
+    for name in ("List Bullet", "List Number", "Quote"):
+        if name in [s.name for s in doc.styles]:
+            style = doc.styles[name]
+            set_font(style.font, BODY)
+            style.font.size = Pt(PT_BODY)
 
     for section in doc.sections:
         section.page_width, section.page_height = Cm(21.0), Cm(29.7)
@@ -343,7 +396,8 @@ def _add_page_numbers(doc) -> None:
         end.set(qn("w:fldCharType"), "end")
         for node in (begin, instr, end):
             run._r.append(node)
-        run.font.size = Pt(9)
+        set_font(run.font, BODY)
+        run.font.size = Pt(10)
 
 
 if __name__ == "__main__":
