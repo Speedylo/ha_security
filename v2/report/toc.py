@@ -92,6 +92,13 @@ def check_counts(text: str) -> list[str]:
     if m and numbered:
         total = int(m.group(1)) + numbered
         stated_tb = re.match(r"(\d+)", str(total))
+    # The same figure is stated twice in the Tables section and only the sentence above was
+    # checked, so the other one drifted: it read 149 against 152 until 2026-09-08. A number
+    # stated twice needs both statements checked, which is the whole reason this file exists.
+    listed_here = re.search(r"They are listed here;\s*\n?\s*the other (\d+) are not", text)
+    if m and (not listed_here or listed_here.group(1) != m.group(1)):
+        problems.append(f"tables: the Tables section states the unnumbered count twice — "
+                        f"{listed_here.group(1) if listed_here else '?'} and {m.group(1)}")
     if not stated_l3 or int(stated_l3.group(1)) != l3:
         problems.append(f"third-level headings: prose says "
                         f"{stated_l3.group(1) if stated_l3 else '?'}, chapters have {l3}")

@@ -15,7 +15,7 @@
 | Supervisor | *[to be supplied]* |
 | Submitted | *[to be supplied]* |
 
-Report prepared 21 August – 4 September 2026. Artifact, measurements and chapter sources:
+Report prepared 21 August – 8 September 2026. Artifact, measurements and chapter sources:
 `git@github.com:Speedylo/ha_security.git` (private), directory `v2/`.
 
 ---
@@ -44,7 +44,7 @@ attributable to the design number none, twice. Five integrations were executed e
 ceiling being that 26 of 37 need a credential before any configuration flow completes; one of them,
 `nordpool`, published the same electricity price confined as unconfined, in the same minute,
 through a mediated connection logged to a named host and port. On the Raspberry Pi 5 the
-requirements name, mediation costs 30 µs and the audit record is durable before the action it
+requirements name, mediation costs 31.5 µs and the audit record is durable before the action it
 records at 3.67 ms, 63× clear of realistic demand. Nineteen self-test suites pass; against the
 project's own eighteen-threat register thirteen threats are demonstrated, five of them paired
 against an unconfined arm, and against the closest published model eight of eleven are mapped.
@@ -55,13 +55,14 @@ be constructed inside the sandbox at all — `async_get_clientsession` builds it
 instantiating Zeroconf, which joins the multicast group, and a fresh network namespace's loopback
 carries no multicast flag. The egress design had therefore been unusable for the 41% of the corpus
 it exists to serve, for as long as it had existed, **behind eighteen suites that all passed**, because
-every earlier subject had been written by the author of the sandbox. Two lines fixed it. Four other
-mechanisms in this project each caught a class of error — a paired baseline stopped three
+every earlier subject had been written by the author of the sandbox. Two measured steps fixed it.
+Four other mechanisms in this project each caught a class of error — a paired baseline stopped three
 misattributions, two instruments bounded each other, a self-test passed when the surprising thing
 was true, a figure was recomputed from its source — and none of the four could have found this one,
 because all four are written out of the same assumptions as the thing they test. Six of eight
 predictions registered before measurement were wrong and none was revised. Every correction across
-eight chapters has been to a sentence next to a measurement, and none to a measurement.
+eight chapters has been to a sentence next to a measurement and none to a measurement; the two
+exceptions were defects in the artifact rather than in the report, and both were found this way.
 
 **Keywords:** Home Assistant; smart-home gateway; extension security; permission manifest;
 sandboxing; Linux namespaces; seccomp; cgroup v2; least privilege; threat modelling; STRIDE;
@@ -244,7 +245,7 @@ separately from the thing it describes is wrong within a session and nothing say
 ## Tables
 
 Three tables are numbered, and they are the three the report navigates *to*. They are listed here;
-the other 149 are not.
+the other 152 are not.
 
 | Table | Subject | In | Referred to from |
 |---|---|---|---|
@@ -273,7 +274,7 @@ revisit**, and the work is mechanical.
 | **Manifest** | An integration's declaration. Its `manifest.json` already exists; this work adds a permissions clause and makes it load-bearing |
 | **Sandbox** | One confined integration: its own user, mount, PID, network and IPC namespaces, a seccomp filter and a cgroup |
 | **F*n* / S*n* / C*n* / N*n*** | Functional, security, constraint and non-functional requirements (Chapter 3). Twenty in the §7.5 verdict table |
-| **T*nn*** | Threats in Chapter 4's register (eighteen). **R*n*** are its residual risks (six) |
+| **T*nn*** | Threats in Chapter 4's register (eighteen). **R*n*** are its residual risks (seven) |
 | **P*n*** | Predictions registered in Chapter 7 *before* the corresponding measurement (eight; six were wrong) |
 | **G1–G4** | Gates at which the plan was allowed to change (`01_PLAN.md` §6) |
 | **netns** | Linux network namespace |
@@ -308,6 +309,7 @@ revisit**, and the work is mechanical.
 | Experiments | `v2/experiments/` — each with its script, its raw result file and a readable write-up |
 | Figures | `v2/figures/` — each figure and its threat model generated from one source |
 | Method and plan | `v2/00_METHOD.md` (ground rules and the evidence rule), `v2/01_PLAN.md` (stages and gates) |
+| Working notes | `v2/notes/` — the decision records, evidence write-ups and pre-registered predictions the chapters cite by name. Reasoning that supports the report without belonging in it |
 | Test hardware | Raspberry Pi 5, 4 GB, Pi OS. Every measurement in Chapters 6 and 7 was taken on it |
 
 ---
@@ -322,5 +324,15 @@ Recorded here rather than left for a reader to discover.
   else in this report is blocked on it.
 - **Three bibliographic details in `09_references.md` are unverified against the source itself**
   and are listed at the foot of that file.
-- **This front matter has not been through the Stage 5 read-through** that Chapters 1–8 are about to
-  receive, and the abstract in particular is the newest prose in the report.
+- ~~**This front matter has not been through the Stage 5 read-through**~~ — **done 2026-09-08, and
+  it found five things.** Three were in the abstract, the newest prose in the report: mediation
+  latency was given as §5.11.4's **30 µs** floor in a sentence whose other two figures are
+  §7.20.1's, where the corrected figure §8.2.3 quotes is **31.5 µs**; *"two lines fixed it"* described
+  a fix that is a flag bit and a route added by `SIOCADDRT`, which §7.27.3 calls two measured
+  *steps*; and the closing sentence claimed every correction was to a sentence next to a measurement
+  in the paragraph immediately after describing a correction to the artifact — the two exceptions now
+  travel with the claim. The other two: the Tables section stated **149** unnumbered in one sentence
+  and **152** in the next (155 tables, 3 numbered — `report/toc.py` checked the second sentence and
+  not the first, and now checks both), and the abbreviations table still said **six** residual risks
+  where §4.11 gained **R7** on 2026-09-04. **No measured figure was wrong**, which is the seventh
+  consecutive pass over this project's prose where that has held.

@@ -1,7 +1,25 @@
 # Where the rebuild stands
 
-**Last updated:** 2026-09-06 (**C1 is counted and Stage 5 pass 3 is done; all eight chapters
-written, front matter and bibliography done**) · **Read this first when resuming.**
+**Last updated:** 2026-09-08 (**the front matter is read through; C1 is counted and Stage 5 pass 3
+is done; all eight chapters written, front matter and bibliography done**) · **Read this first when
+resuming.**
+
+**The front matter has now been read through too — 2026-09-08, five findings, all fixed, and again
+none of them a measured figure.** It was the one piece of prose no Stage 5 pass had covered, and its
+own *Outstanding* section said so. Three findings were in the **abstract**, which is the newest prose
+in the report: mediation latency was quoted as §5.11.4's **30 µs floor** in a sentence whose other two
+figures are §7.20.1's, where the corrected figure is **31.5 µs** — §7.23.1's two-populations mistake
+in miniature, one sentence mixing a Chapter 5 floor with Chapter 7's corrected measurements;
+*"two lines fixed it"* described a fix that is a flag bit plus a route added by `SIOCADDRT`, which
+§7.27.3 itself calls two *steps*; and the closing sentence said every correction had been to a
+sentence next to a measurement **in the paragraph immediately after describing a correction to the
+artifact**, so the two exceptions now travel with the claim. Outside the abstract: the Tables section
+stated **149** unnumbered in one sentence and **152** in the next — `toc.py` checked the second and
+not the first, so the unchecked statement is the one that drifted, and **the check now covers both,
+verified by making it stale** — and the abbreviations table still said **six** residual risks where
+§4.11 gained R7 on 2026-09-04. Also fixed: the title-page date range stopped at 4 September, and
+**`v2/notes/` had no row in the artifact index** although the chapters point into it 24 times, which
+is the general case of the one instance pass 1 caught (§5.6.1's reconciliation living only in a note).
 
 **Stage 5 pass 3 — five findings, all five fixed, and none of them a measured figure.** The sixth
 consecutive pass where that has held. Targets were §7.19–§7.25's prose (which neither earlier pass
@@ -101,7 +119,7 @@ that does not belong in the report, including anticipated viva questions.
 | `report/01_problem_and_context.md` | ✅ Drafted, reviewed, revised |
 | `report/02_literature_and_gap.md` | ✅ Drafted, reviewed, revised; all four key sources read in full |
 | `report/03_requirements.md` | ✅ Drafted — 19 requirements + S9 added by Ch. 4 |
-| `report/04_threat_model.md` | ✅ **Complete.** 18 threats, 6 residual risks; impact scale rebuilt 2026-08-22 (`notes/decision_impact_scale_and_standards.md`); §4.6 figure drawn and inserted 2026-08-24 |
+| `report/04_threat_model.md` | ✅ **Complete.** 18 threats, **7** residual risks (R7 added against §4.11 by Stage 5 pass 1); impact scale rebuilt 2026-08-22 (`notes/decision_impact_scale_and_standards.md`); §4.6 figure drawn and inserted 2026-08-24 |
 | `figures/fig_4_1_current_state.py` | ✅ Generates the Threat Dragon model **and** the rendered figure from one source, so they cannot drift. Spec and as-built departures in `notes/ch4_figure_4_1_spec.md` |
 | `figures/fig_5_1_confined.py` | ✅ **2026-08-25.** Figure 5.1 — a *copy* of the Ch. 4 script with every surviving element at its Figure 4.1 coordinates, so the two read as one before-and-after. Asserts on each run that the figure still says what §5.14 claims: six boundaries none absent, TB2/TB4 unchanged, the five removed flows still absent, and nothing crossing TB5 or TB6 |
 | `figures/ecosystem_scale.py` | ✅ Regenerates every number in Ch. 1 |
@@ -119,9 +137,9 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/base_component/` | ✅ **Pi 5, 2026-08-25.** The measurement §5.6.5 deferred to Chapter 6. The base component **can** be dropped — 46.6 MB per sandbox, budget 17 → **26** (1.53×, **not** the 2× §5.6.5 predicted). Two controls: both arm orders, and a 0.1 MB replication of §5.6.3's marginal figure. It also found a defect in §5.6.3's own recipe — see below. Feeds §6.3 |
 | `experiments/cgroup_placement/` | ✅ **Pi 5, 2026-08-25.** Four placement mechanisms × two positions, unprivileged. **Corrects §5.7.4:** `clone3(CLONE_INTO_CGROUP)` fails with the same `EACCES` as migration, so what binds is *where the supervisor runs*, not when it places the sandbox. Feeds §6.4.1 |
 | **`framework/confine/`** | ✅ **The artifact, as far as it goes, 2026-08-25.** `cgroup.py`, `namespaces.py`, `preflight.py`, `sandbox.py`, `enter.py`, `spawn.py`, `selftest.py` — standard library plus `ctypes`, no dependencies, no override flag. **Preflight: 8/8 on the Pi. Self-test: passes** — uid 0 inside mapped to 1000 outside, one visible process, `lo` only, `secrets.yaml`/`.storage`/the other integration all **absent**. Plus `seccomp.py` — 29 calls denied, verified by behaviour on both architectures. **All three of §5.7.3's primitives are built and measured.** Plus `channel.py`, `mediator.py` and `selftest_channel.py` — **identity is the socket, demonstrated with two sandboxes both claiming to be the same integration**. Plus `manifest.py` and `selftest_policy.py` — validation, S5's asymmetry, resolve-then-pin, clause pointers. Plus `describe.py` (the F4 surface, discharging T13's unplaced half) and `audit.py` (three-part identity, hash chain **and** keyed MAC chain, failing independently). **Eight self-tests, all passing on the Pi** — including `selftest_adversary.py`: 37 attempts, 21 blocked, 9 **empty** (succeeded and found nothing), 6 denied, 1 permitted, neither canary reached. Described by §6.4.2, §6.4.4–§6.4.6 and §6.5–§6.8 |
-| `report/00_front_matter.md` | ✅ **2026-09-04.** Title page, abstract, declaration/AI-use content, contents, figures, abbreviations, artifact index, *Outstanding*. Title: *Confining Unmodified Third-Party Integrations in Home Assistant — A Declared-Authority Architecture and Its Measured Cost*. **Four title-page fields stay placeholders**, blocked on the same unresolved input as every date in `01_PLAN.md` §9.6 |
+| `report/00_front_matter.md` | ✅ **2026-09-04; read through 2026-09-08 (five findings, all fixed — see below).** Title page, abstract, declaration/AI-use content, contents, figures, abbreviations, artifact index, *Outstanding*. Title: *Confining Unmodified Third-Party Integrations in Home Assistant — A Declared-Authority Architecture and Its Measured Cost*. **Four title-page fields stay placeholders**, blocked on the same unresolved input as every date in `01_PLAN.md` §9.6 |
 | `report/09_references.md` | ✅ **2026-09-04.** One bibliography, **28 sources**, numbered by first appearance across the whole report. Ch. 1, 2 and 5 remapped onto it; per-chapter lists replaced by a pointer. Three bibliographic details flagged unverified at the foot of the file |
-| `report/toc.py` | ✅ **2026-09-04.** Generates the contents page and figure list into the front matter between markers, and **asserts the two counts its prose states** (236 third-level headings, 152 tables) so they cannot drift. `--check` exits non-zero when stale — verified by making it stale |
+| `report/toc.py` | ✅ **2026-09-04.** Generates the contents page and figure list into the front matter between markers, and **asserts the counts its prose states** (now 242 third-level headings; 155 tables, 3 numbered and 152 not) so they cannot drift. `--check` exits non-zero when stale — verified by making it stale. **2026-09-08: it checked the unnumbered count in one of the two sentences that state it, and the unchecked one had drifted to 149. Both are checked now** |
 | `report/07_evaluation.md` | ✅ **Complete, §7.1–§7.27.** §7.1–§7.11 written 2026-09-02 *before* any result and dated so; §7.12–§7.25 written one result at a time; **§7.26 is the read-through** (it found that §7.2 promised a scoring against two threat registers that the results half never performed — both now done, 13/18 threats demonstrated and 8/11 of the external register mapped); **§7.27 is the real-integration arm**. All 20 §7.5 rows carry a verdict |
 | `report/08_conclusions.md` | ✅ **Written 2026-09-03.** *Conclusions, Limitations and Future Work*, ~42k chars. Answers the claim against §7.7's pre-fixed falsifiers (**the fourth falsifier — the one about the evaluation — fired**, §8.2.4); closes §2.8's three contributions; §8.4 the 6-of-8 scorecard and the five mechanisms; §8.5 the 52-vs-2 finding; §8.6 twelve artifact limits and six evaluation limits; §8.7 eleven future-work items priced; §8.8 the single upstream ask (R3). **Known gap: §8.7 has no row for building the real HA component** — fix next session |
 | `framework/confine/endtoend_egress.py` | ✅ **2026-09-03, §7.27.** Three arms on `nordpool` — unconfined / confined+declared / confined+clause-removed. The third is what makes the second evidence: a leaked namespace would produce arm B's result exactly. **11/11.** Destination evidence comes from the mediator's *durable* log, not `mediator.audit` |
@@ -152,6 +170,10 @@ consolidation rewrite is separate work and is backlogged, not scheduled**:
 `notes/rewrite_consolidation_backlog.md`.
 
 ### Do these, in this order
+
+**The front-matter read-through is done (2026-09-08)** — it was never a numbered task because the
+front matter was written after the task list, and it was the last unread prose in the submission.
+`report/00_front_matter.md`'s *Outstanding* now carries the findings.
 
 | | Do this | Cost | Why it is first |
 |---|---|---|---|
