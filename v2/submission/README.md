@@ -40,3 +40,12 @@ load-bearing, and this draft preserves them in condensed form rather than droppi
    the ISO/IEC 27001 clause identifiers. Both are currently argued from principle.
 4. **Every number here traces to the working report**, but this draft has had **no read-through
    pass** of its own. The working report needed three, and each found something.
+
+## Building the Word document
+
+    python3 build_docx.py            # -> capstone_report_draft.docx
+
+**Generated, not hand-maintained.** Edit the markdown and re-run; a `.docx` edited
+directly will be overwritten and its changes lost. On opening in Word, right-click the
+contents page and choose *Update Field* to populate it — the heading structure is already
+there, so it builds itself.

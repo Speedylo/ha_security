@@ -77,8 +77,6 @@ ISO 31000; empirical evaluation.
 
 ## Contents
 
-*[Generated at typeset time.]*
-
 ## List of Figures
 
 *[Generated at typeset time — see the figure register in §9 and §12.]*
