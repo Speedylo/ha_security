@@ -9,7 +9,7 @@ in the order agreed:
 
 | | Do this | Cost | Why |
 |---|---|---|---|
-| **T1** | **T12's measurement** — `selftest_t12.py` + a short §7.30 | hours | The only threat in either register with no evidence, and §7.26.5 tells the examiner exactly where it is. Every mechanism exists: `Identity` already hashes the manifest separately from the source *for this purpose*. Six assertions — set up under v1, change the manifest, re-spawn, and show (a) `Identity.manifest` moved while `Identity.source` did not, (b) the request v1 permitted is denied with a clause pointer into v2, (c) `describe.py` shows the v2 surface *before* it takes effect, (d) the durable log carries both identities |
+| ~~**T1**~~ | ~~**T12's measurement**~~ | ~~hours~~ | ✅ **Done 2026-10-01 — §7.30. `selftest_t12.py`, 22 checks, all passing; suite count 19 → 20.** Every mechanism already existed and three said T12 in their own comments, so the gap was one of *reporting*, like §7.26.1. **Two things came out of it that were not on the list.** `Identity.manifest` says *the manifest changed*, not *the grant changed* — a version bump alone moves it, found by mutating the suite (§7.30.3) — and the design has **no re-check trigger of its own**, because no mediator outlives a respawn; the re-check happens because a spawn builds a fresh policy (§7.30.2, §7.30.4), and §8.7 owes that a row. **The 19-vs-20 suite question below is resolved and the report was right**: the count is the exact glob `selftest_*.py`, which excludes `selftest.py`. Fourth time a recount of mine was wrong. Original entry: The only threat in either register with no evidence, and §7.26.5 tells the examiner exactly where it is. Every mechanism exists: `Identity` already hashes the manifest separately from the source *for this purpose*. Six assertions — set up under v1, change the manifest, re-spawn, and show (a) `Identity.manifest` moved while `Identity.source` did not, (b) the request v1 permitted is denied with a clause pointer into v2, (c) `describe.py` shows the v2 surface *before* it takes effect, (d) the durable log carries both identities |
 | **T2** | **Two or three more real integrations end-to-end**, three arms, via `endtoend_egress.py` | a session | **The real-integration path is n=1.** §7.27 is one integration and it found the most important defect in the project, behind 18 passing suites. §8.4.2's lesson — real unmodified code finds what the paired baseline, two instruments, self-tests and recomputation cannot — **has been applied exactly once**. 11 credential-free candidates exist; the harness is already parameterised by corpus |
 | **T3** | **One credentialed integration, end-to-end, with a real account** | half a day | **26 of 37 ask for an API key, token, password, username, host or email, and none has ever completed setup with a valid credential in either arm.** The 11-of-37 ceiling is sound and an unconfined baseline hits it identically — but *no account exists* is a choice, not a wall. Untested as a result: a **successful authenticated** round trip from inside a sandbox (nordpool's API is public, so the one real success carries no auth header), the config entry persisting a secret in the stripped instance, **re-auth/token refresh — which happens at a different phase than setup**, so egress demand appears where nothing has looked, and the audit log telling a 401 from a denial. **Note for the viva: S2/T04/R3's credential is the *platform* token the mediator holds, not an integration's own remote API key — and S2 is already tested by `gc_attack`. No account is needed to defend S2** |
 | **T4** | **Wire `AuditLog` into the other harnesses** | small | Instantiated in three places only; everything else records to `mediator.audit` — in-memory, no chain, no MAC, no `fsync`, dies with the process. **The one time the durable log ran for real it produced three defects in a session** (§7.27.6). §8.7 still has no row for it |
@@ -22,10 +22,13 @@ the prose claims), appendices B–F (all *lift verbatim* — and until they exis
 zero-compatibility-cost claim), the submission draft's **first** read-through, the three `[To verify]`
 citations, and the four handbook-blocked title-page fields.
 
-**Open question, ten minutes:** 20 `selftest*.py` files on disk against the report's **19** suites.
-`selftest_adversary_baseline.py` is separately runnable with its own inverted verdict, so this may be
-a deliberate count — and three times in Stage 5 a recount was wrong and the report right. A question
-until the counted field is confirmed.
+~~**Open question, ten minutes:**~~ ✅ **Resolved 2026-10-01, and the report was right.** The count
+is the exact glob **`selftest_*.py`** — the pattern the front matter's artifact index states — which
+excludes `selftest.py`, the framework's own base self-test, recorded separately in `01_PLAN.md`. 19
+was correct on 2026-09-06 and the count is **20** from today. **Fourth occasion on which a recount of
+mine was wrong and the report right**, after §8.5's declared-component counts, §7.13's adversary
+outcomes and pass 3's blocked count. The rule holds: a disagreeing recount is a question until the
+counted field is confirmed.
 
 **Last updated:** 2026-09-08 (**the front matter is read through; C1 is counted and Stage 5 pass 3
 is done; all eight chapters written, front matter and bibliography done**) · **Read this first when

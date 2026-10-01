@@ -2576,6 +2576,12 @@ measurement that was never scheduled, which is why §7.10's close-out in §7.21.
 Chapter 8 owes it as future work, and this section owes the admission that §7.11 should have
 carried it in advance if it was not going to be run.
 
+> **Run 2026-10-01 — §7.30.** The measurement this paragraph priced is built and passes, 22 checks,
+> at the decision and identity layers. It found nothing wrong with the mechanism and one thing
+> worth stating about it: `Identity.manifest` says *the manifest changed*, not *the grant changed*
+> (§7.30.3), and the design has no re-check trigger of its own because no mediator outlives a
+> respawn (§7.30.4). **T12 is no longer the exception this section names**, and it was the last one.
+
 ### 7.26.6 Four corrections the read-through made, and how each was handled
 
 The chapter's convention is that a section is left as written and gains a pointer when later
@@ -3088,6 +3094,133 @@ cannot. `selftest_integrity` is 15/15 and includes that case.
 before the check existed: a source change there would not be a compatibility finding but a
 containment failure, because the copy is bind-mounted read-only. Both are reported, and the
 summary distinguishes them in those words.
+
+## 7.30 T12, measured — the declaration re-checked per version
+
+**2026-10-01.** §7.26.5 recorded that **T12 is the only threat in either register whose control is
+asserted rather than demonstrated**, and that §7.11 should have declared it unevaluable in advance
+if it was not going to be run. It is now run. `framework/confine/selftest_t12.py` — **22 checks,
+all passing** — and the measurement is at the decision and identity layers, which §7.30.4 states
+rather than leaving a reader to infer from the imports. **The suite count goes 19 → 20**, and the
+pattern §7.26.7 counts by is the exact glob `selftest_*.py`, which is why `selftest.py` — the
+framework's own base self-test — has never been one of them.
+
+§4.10 treats T12 with two clauses. The first — *confinement applies to whatever version runs* — is
+structural: a sandbox confines whatever code is inside it, so an update inherits the previous
+version's boundary rather than escaping it, and nothing needs measuring. The second — **the
+declaration is re-checked per version** — is the one with content, and the one nothing exercised.
+
+### 7.30.1 What the suite asserts
+
+Nothing was built for this. Every part already existed and three of them say T12 in their own
+comments, which is the strongest evidence that the gap was one of *reporting* rather than of
+mechanism — the same shape as §7.26.1:
+
+| | |
+|---|---|
+| `audit.Identity` | hashes the manifest **separately from the source**, *"precisely so that a permission change is distinguishable from a code change… bounds T12's treatment"* |
+| `Identity.changes_from` | returns which of the three components moved — the whole purchase of three hashes over one |
+| `describe(..., code_changed=True)` | commented in `describe.py` as *"the user-facing half of T12"* |
+| `AuditLog.run` | one record per sandbox construction carrying the full identity, so which declaration bound which run is recoverable afterwards |
+
+An integration is set up under manifest **v1** declaring egress to one host; the manifest is
+rewritten as **v2**, dropping that host and adding another, with the source left byte-identical.
+What holds:
+
+- **The manifest moved and the source did not.** `changes_from` returns exactly `["manifest"]`,
+  and the composite moves with it, so the second run is a different run. This is the property a
+  single composite hash cannot provide and is the reason §5.12.1 specified three.
+- **The request v1 permitted is denied under v2**, with the clause pointer
+  `/permissions/network/egress` — denied by absence, §5.10.8's second row, naming the capability
+  that held no matching clause rather than failing silently.
+- **The host v2 adds is granted**, at `/permissions/network/egress/0`. The bound moved in **both**
+  directions, which matters: a suite that only ever tightened would pass against a framework that
+  had simply stopped granting anything.
+- **`describe()` renders the v2 surface before the sandbox runs** — v2's host present, v1's absent
+  — so what changed is visible *prior* to taking effect rather than only in the log afterwards.
+  That is F4's direction, and the log's is the other one.
+- **The other half of T12 does not overclaim.** A source edit under an unchanged manifest moves
+  `source` alone, and `describe(code_changed=True)` says the code has changed **and that the
+  permissions have not**. A warning that implied the grant had moved would be worse than none.
+- **Both runs are recoverable from the durable log.** Two `run` records with different
+  `identity.manifest` and identical `identity.source`; each decision names the run that made it,
+  so a decision maps to a declaration; the revoked host appears as a **denial, not an absence**;
+  and both the hash and MAC chains verify across the version change.
+
+The log is the durable `AuditLog`, not `mediator.audit` — §7.27.6's lesson applied without having
+to relearn it.
+
+### 7.30.2 The control, which is the case worth reading
+
+A test of this shape has an obvious way of proving nothing: edit the file, ask the
+already-loaded `Manifest`, and report whichever answer comes back as the mechanism working. **That
+is §6.4.5's failure mode, which this project has now recorded four times**, so both halves are
+asserted rather than one.
+
+**A policy already built keeps deciding v1's way after the file changes** — it still grants v1's
+host and still denies v2's. That is correct and is not a weakness: a manifest edit must not
+silently re-authorise a sandbox that is already running. **The re-check happens because a spawn
+builds a fresh policy from a fresh load**, which is what the harnesses do — `Manifest.load` sits
+inside the per-run setup of `compat.py`, `endtoend.py` and `endtoend_egress.py`, so no manifest
+survives a run.
+
+Stating it as a property of *when the policy is built* rather than of *the file* is the honest
+form, and §7.30.4 records what it costs.
+
+**The suite was mutated to confirm it can fail**, because 22 of 22 on a first run is exactly when
+§7.29.3 says to check the instrument. Two mutants: v2 declaring v1's host (the update as a no-op)
+drops it to 13/22, and a respawn reusing the stale policy drops it to 16/22. Each failure lands on
+the assertions it should.
+
+### 7.30.3 What `manifest` does not say, found by mutating this suite
+
+The first mutant is the useful one. With v2 declaring **the same host** as v1, the check *"the
+manifest hashes differ"* **still passed** — because the hash is over the manifest's bytes and the
+version string is one of them.
+
+**So `Identity.manifest` says the manifest changed, not that the grant changed.** A cosmetic edit
+— a version bump, a reordered key, a corrected `name` — is indistinguishable from a
+re-authorisation at the identity layer. The three-part identity separates a permission change from
+a code change, which is what §5.12.1 claims and what T12 needs; it does not separate a permission
+change from a *clerical* change to the same file, which §5.12.1 never claimed and which is worth
+saying out loud because the component is named `manifest` and invites the stronger reading.
+
+The suite now asserts this rather than leaving it in prose: a version-only bump moves `manifest`
+while the rendered grant is byte-identical. A future change narrowing the hash to the
+`permissions` block would fail that check and be noticed, which is the point of putting a known
+limitation inside the instrument.
+
+### 7.30.4 What this does not establish
+
+- **No sandbox is spawned.** T12's second clause is a property of what *binds* a run, and the
+  measurement is at the decision and identity layers — the same scope §7.14.4 states for S3's
+  subscription half. A real respawn would add namespace setup and a privileged step without
+  touching the claim, and §7.30.2's control is what makes the layer sufficient rather than
+  convenient.
+- **No long-lived mediator exists, so nothing tests re-checking inside one.** Every harness
+  constructs a mediator per run, which is why no manifest survives a run — but it also means the
+  design has **no re-check trigger of its own**. If a future version keeps a mediator alive across
+  a respawn, the re-load must become explicit, and this suite would pass unchanged while the
+  property it certifies had quietly become false. That is a limitation of the design, not of the
+  measurement, and §8.7 owes it a row.
+- **The update path itself is not exercised.** Nothing here installs an update through HACS. What
+  is measured is what happens to the grant when the manifest changes, which is §4.10's clause;
+  whether the store would deliver such a change is §4.2's out-of-scope boundary and §1.6's.
+- **`requirements` is hashed as declared, not as resolved.** `Identity.compute` says so already.
+  Supply-chain change that lands in a pinned dependency's *content* rather than in its declared
+  version is outside what this identity can see.
+
+### 7.30.5 T12's row, restated
+
+§7.26.4's scoring table reads `| T12 | … | **none** | ✗ Not evaluated — §7.26.5 |` and is left as
+written, per the chapter's convention — it was true on 2026-09-03 and the date is the evidence.
+**On 2026-10-01 the register reads fourteen demonstrated, two partial, two retained, none
+unevaluated**, and T12's row becomes *✅ Demonstrated at the decision layer*, bounded by §7.30.4's
+second bullet. It joins T10 and T11 in that qualified form rather than claiming the paired status
+of T01, T04, T14, T15 and T17.
+
+**Every threat in both registers now has either evidence or a recorded decision to retain.** That
+sentence could not be written before today, and §7.26.5 is the section that made it owed.
 
 ---
 
