@@ -31,6 +31,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+from .audit import DEFAULT_LOG, AuditLog, Identity, last_identity
 from .manifest import Manifest, ManifestRejected, Provenance
 
 # One row per declarable capability of §5.10.3. `granted` is completed with the declared
@@ -84,16 +85,27 @@ def _values(manifest: Manifest, capability: str, member: str) -> list[str] | boo
 
 
 def describe(manifest: Manifest, *, name: str | None = None, version: str | None = None,
-             code_changed: bool = False) -> str:
+             code_changed: bool = False, permissions_changed: bool = False) -> str:
     """Render one manifest as plain text. Never raises: every state has a rendering."""
     title = name or manifest.domain
     lines = [title + (f"  {version}" if version else ""), "=" * max(len(title), 20), ""]
 
-    if code_changed:
-        # §5.12.5: the identity is machine-facing, its delta is user-facing. This is the
-        # user-facing half of T12.
+    # §5.12.5: the identity is machine-facing, its delta is user-facing. This is the
+    # user-facing half of T12, and the three cases are kept apart because the original single
+    # message asserted "what it is allowed to do has not changed" — which is a statement about
+    # the manifest, made by a flag that only ever meant the source had moved. With both
+    # components able to move independently (§7.30.3), one message could not be true of all
+    # three states, and the one that was wrong would be wrong in the reassuring direction.
+    if code_changed and permissions_changed:
+        lines += ["!! This integration's code has changed since you approved these",
+                  "   permissions, AND what it is allowed to do has changed. Read the",
+                  "   list below before accepting it.", ""]
+    elif code_changed:
         lines += ["!! This integration's code has changed since you approved these",
                   "   permissions. What it is allowed to do has not changed.", ""]
+    elif permissions_changed:
+        lines += ["!! What this integration is allowed to do has changed since you",
+                  "   approved it. Its code has not changed. Read the list below.", ""]
 
     if manifest.provenance is Provenance.NONE:
         lines += [
@@ -171,8 +183,14 @@ def main() -> int:
     ap.add_argument("--config-root", type=Path,
                     help="the Home Assistant configuration directory "
                          "(default: two levels above the integration)")
+    ap.add_argument("--audit", type=Path,
+                    help=f"the mediator's log, for the identity last approved "
+                         f"(default: <config-root>/{DEFAULT_LOG})")
+    ap.add_argument("--approve", action="store_true",
+                    help="record that this exact identity was shown and accepted (§5.9.6)")
     ap.add_argument("--changed", action="store_true",
-                    help="render as though the code has changed since approval (§5.12.5)")
+                    help="force the changed-since-approval banner, whatever the log says. "
+                         "A rendering override for inspecting the output, not a measurement")
     args = ap.parse_args()
 
     component = args.component.resolve()
@@ -191,8 +209,35 @@ def main() -> int:
             metadata = json.loads(own.read_text())
         except ValueError:
             metadata = {}
+    # The identity of what is on disk now, against the identity the user last accepted.
+    #
+    # **This lookup is the fix §7.30.6 records.** `code_changed` was a parameter nobody
+    # computed: it was set by two self-tests and by `--changed`, a flag a human toggles, so the
+    # user-facing half of T12 could not fire in a real installation however correct the
+    # rendering was. Both halves of the comparison have to exist, and only one of them can be
+    # computed from the directory — the other has to have been written down.
+    audit_path = args.audit or (config_root / DEFAULT_LOG)
+    current = Identity.compute(component)
+    approved = last_identity(audit_path, component.name)
+    moved = current.changes_from(approved) if approved is not None else []
+
     print(describe(manifest, name=metadata.get("name"), version=metadata.get("version"),
-                   code_changed=args.changed))
+                   code_changed=args.changed or "source" in moved,
+                   permissions_changed="manifest" in moved or "requirements" in moved))
+
+    if approved is None and not args.approve:
+        # Said out loud rather than rendered as "nothing has changed". A first install and an
+        # update whose baseline was never recorded look identical to this code, and reporting
+        # the second as the first is the §6.4.5 shape: an absence that reads like a clean result.
+        print()
+        print("(No approval is on record for this integration, so nothing above is a "
+              "comparison.\n Run again with --approve once you have read it.)")
+
+    if args.approve:
+        log = AuditLog(path=audit_path)
+        log.approval(current, manifest.provenance.value)
+        print()
+        print(f"Recorded. {component.name} is approved at {current.composite[:12]}…")
     return 0
 
 

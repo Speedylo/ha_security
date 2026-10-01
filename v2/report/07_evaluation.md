@@ -2576,7 +2576,7 @@ measurement that was never scheduled, which is why §7.10's close-out in §7.21.
 Chapter 8 owes it as future work, and this section owes the admission that §7.11 should have
 carried it in advance if it was not going to be run.
 
-> **Run 2026-10-01 — §7.30.** The measurement this paragraph priced is built and passes, 22 checks,
+> **Run 2026-10-01 — §7.30.** The measurement this paragraph priced is built and passes, 29 checks,
 > at the decision and identity layers. It found nothing wrong with the mechanism and one thing
 > worth stating about it: `Identity.manifest` says *the manifest changed*, not *the grant changed*
 > (§7.30.3), and the design has no re-check trigger of its own because no mediator outlives a
@@ -3099,8 +3099,8 @@ summary distinguishes them in those words.
 
 **2026-10-01.** §7.26.5 recorded that **T12 is the only threat in either register whose control is
 asserted rather than demonstrated**, and that §7.11 should have declared it unevaluable in advance
-if it was not going to be run. It is now run. `framework/confine/selftest_t12.py` — **22 checks,
-all passing** — and the measurement is at the decision and identity layers, which §7.30.4 states
+if it was not going to be run. It is now run. `framework/confine/selftest_t12.py` — **29 checks,
+all passing** (22 on the day it was written; §7.30.6 added seven and says why) — and the measurement is at the decision and identity layers, which §7.30.4 states
 rather than leaving a reader to infer from the imports. **The suite count goes 19 → 20**, and the
 pattern §7.26.7 counts by is the exact glob `selftest_*.py`, which is why `selftest.py` — the
 framework's own base self-test — has never been one of them.
@@ -3221,6 +3221,93 @@ of T01, T04, T14, T15 and T17.
 
 **Every threat in both registers now has either evidence or a recorded decision to retain.** That
 sentence could not be written before today, and §7.26.5 is the section that made it owed.
+
+### 7.30.6 The half that could not fire, and the fix
+
+**2026-10-01, after §7.30 was written and committed.** Younes asked how a manifest change in a
+GitHub repository reaches an installation at home, and whether an update triggers a re-read. The
+first two answers were already in the design. The third exposed something §7.30 had demonstrated
+without noticing it was unreachable.
+
+**What T12's protection looks like from a user's side.** The machine-facing half keeps a new
+version from inheriting the old one's authority, and §7.30 measured it. The user-facing half tells
+a user that the code they are running is no longer the code they looked at when they accepted its
+permissions. §5.9.6 claims both: a version whose hash differs *"does not inherit the previous
+version's grants; its declaration is re-checked, and a derived manifest is re-confirmed."*
+**Re-checked is implemented. Re-confirmed was not.**
+
+**Why it could not work.** Answering *has this changed since you approved it* requires two
+identities. One is computable from the directory on disk at any time. The other has to have been
+written down, and nothing wrote it down — there was no stored approval anywhere in the artifact.
+So `describe()`'s banner, *"This integration's code has changed since you approved these
+permissions"*, rendered correctly and had no caller in a position to ask for it. `code_changed`
+was set in three places: `selftest_describe`, `selftest_t12`, and a `--changed` command-line flag
+whose own help text read *"render as though the code has changed"*. **A parameter nobody computes
+is not a feature**, and §7.30 did not catch it because the suite supplied both sides of the
+comparison from local variables, which is precisely what no installation does.
+
+**That is §8.4.2's finding happening to this chapter's own instrument.** A test written out of the
+same assumptions as the code tests the assumptions. The question that found it came from outside
+those assumptions — not from reading the code again, which is the fourth instance of the pattern
+§7.27 established and the first where the outside input was a question rather than a run.
+
+#### What was built
+
+| | |
+|---|---|
+| `audit.DEFAULT_LOG` | the log's location relative to the configuration directory, named once, so the mediator that writes it and the surface that reads it cannot disagree |
+| `AuditLog.approval()` | a record kind of its own. A `run` record says *this code executed*; an approval says *a human saw what it was allowed to do*, and the banner's wording is about the second |
+| `audit.last_identity()` | reads the most recent approval for a domain back out of the log as an `Identity`. The log was already recording every identity; nothing had ever read one back |
+| `describe()`'s CLI | computes `code_changed` and `permissions_changed` by comparing the directory against that baseline. `--changed` survives as a rendering override, documented as one. `--approve` records an approval |
+
+**An absent baseline is reported, not rendered as "nothing changed".** A first install and an
+update whose approval was never recorded are indistinguishable to this code, and presenting the
+second as the first would be §6.4.5's failure mode again — an absence that reads like a clean
+result. The surface says so in words instead.
+
+#### One message could not describe three states
+
+Wiring the flag honestly required splitting the banner, and this is a defect the wiring exposed
+rather than introduced. The original text asserts *"What it is allowed to do has not changed"* —
+a claim about the **manifest**, made by a flag that only ever meant the **source** had moved. Since
+§7.30.3 establishes that the two components move independently, that message is simply wrong when
+both move, **and it is wrong in the reassuring direction**: it tells a user their permissions held
+still at the moment a hostile update widened them. There are now three renderings — source only,
+manifest only, both — and the suite asserts that the both-moved case does not contain the phrase
+that would have lied.
+
+#### Evidence
+
+`selftest_t12` is **29 checks** from this section, up from 22. Eight cover the baseline: that no
+approval yields no baseline and none is invented, that an approval is recoverable as an `Identity`,
+that it is the approval record and not the run records beside it that is read, that a code change
+made after approval is computable **from the log alone**, that the banner then fires without anyone
+setting a flag, and that each of the three messages says what is true of its own state.
+
+**The lookup was mutated to confirm the cases bite.** With `last_identity` returning `None` — the
+state the artifact was in this morning — four of the twenty-nine fail and name the regression:
+*"no baseline was recoverable"*. The dependent assertions are deliberately None-safe so that the
+suite reports a named failure rather than raising, because a traceback is a worse signal than a
+check.
+
+The command-line path was exercised end to end on all four states: first install with no record,
+approval, an unchanged re-run showing no banner, and then a code change, a permissions change, and
+both at once, each producing its own message.
+
+#### What this still does not establish
+
+- **Nothing shows the user this surface automatically.** `describe` is a command a person runs.
+  There is no Home Assistant front-end integration, so the banner fires when someone looks, which
+  is §8.6.3's stand-in limitation in a new place rather than a new limitation.
+- **The baseline is hash-verifiable and not MAC-verifiable.** §5.12.4's key lives only in the
+  mediator's memory and does not outlive it, so an approval read back from an earlier run carries
+  the weaker of the log's two guarantees. `last_identity`'s docstring says so. This is R4's
+  existing bound: whoever can rewrite the whole file can rewrite the baseline, and nothing in this
+  log defends against whoever owns the machine.
+- **Approval is an act, not a policy.** Recording that a user accepted an identity does not stop a
+  changed version from running — it reports. Blocking a sandbox whose identity has no matching
+  approval is a different design decision, and §5.9.7's concession stands: *declared is arranged
+  for, not guaranteed.*
 
 ---
 

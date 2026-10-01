@@ -44,6 +44,11 @@ from pathlib import Path
 
 GENESIS = "0" * 64
 
+#: Where the log lives relative to the Home Assistant configuration directory. Named here so
+#: that the mediator which writes it and the `describe` surface which reads it back cannot
+#: disagree about the path — §7.30.6 exists because a reader of this log did not exist at all.
+DEFAULT_LOG = Path("confine/audit/decisions.jsonl")
+
 
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
@@ -167,6 +172,19 @@ class AuditLog:
         self._seq += 1
         return record
 
+    def approval(self, identity: Identity, provenance: str) -> dict:
+        """§5.9.6's *re-confirmed*: the user was shown this exact identity and accepted it.
+
+        Written as its own record kind rather than inferred from the run records, because the
+        two answer different questions. A run says *this code executed*; an approval says *a
+        human saw what it was allowed to do*. §7.30.6 is the section that found the difference
+        mattered: the warning in `describe()` is phrased "since you approved", and with only run
+        records to compare against, the baseline moved every time the integration started — so
+        the warning would have shown once, to nobody, and then been gone for good.
+        """
+        return self._append({"kind": "approval", "identity": identity.as_record(),
+                             "provenance": provenance})
+
     def run(self, identity: Identity, provenance: str) -> str:
         """§5.12.2: one run record per sandbox construction, carrying the full identity."""
         run_id = secrets.token_hex(8)
@@ -248,3 +266,44 @@ class AuditLog:
         if not self.path.exists():
             return []
         return [json.loads(line) for line in self.path.read_text().splitlines() if line.strip()]
+
+
+def last_identity(path: Path, domain: str, kind: str = "approval") -> Identity | None:
+    """The identity of the most recent `kind` record for `domain`, or None if there is none.
+
+    **This is the half of T12 that §7.30 demonstrated and §7.30.6 found nothing was calling.**
+    Deciding whether an integration's code has changed *since the user approved it* needs two
+    identities, and only one of them — the current one — can be computed from the directory on
+    disk. The other has to be remembered, and the log is already the thing that remembers it.
+
+    Reads without the key, and therefore verifies nothing. The MAC chain cannot be checked
+    across runs at all, because §5.12.4's key is held only in the mediator's memory and does not
+    outlive it, so a baseline read back from an earlier run is hash-verifiable and no more. That
+    is R4's bound, not a new one: a reader who can rewrite the whole file can rewrite this
+    baseline too, and nothing in this log defends against whoever owns the machine. Callers that
+    want the weaker guarantee stated plainly get it here rather than by assuming otherwise.
+    """
+    if not path.exists():
+        return None
+    found = None
+    for line in path.read_text().splitlines():
+        if not line.strip():
+            continue
+        try:
+            record = json.loads(line)
+        except ValueError:
+            continue
+        if record.get("kind") != kind:
+            continue
+        identity = record.get("identity")
+        if isinstance(identity, dict) and identity.get("domain") == domain:
+            found = identity
+    if found is None:
+        return None
+    try:
+        return Identity(**found)
+    except TypeError:
+        # A record written by a different version of this module. Reported as "no baseline"
+        # rather than guessed at: a wrong baseline would produce a warning about a change that
+        # did not happen, which is worse than no warning.
+        return None

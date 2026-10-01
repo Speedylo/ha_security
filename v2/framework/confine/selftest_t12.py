@@ -71,7 +71,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from .audit import AuditLog, Identity
+from .audit import AuditLog, Identity, last_identity
 from .describe import describe
 from .manifest import Manifest, policy_for
 
@@ -222,6 +222,63 @@ def main() -> int:
               "so `manifest` moved does not imply the authority moved")
         check("while the grant it renders is unchanged, which is the half that matters",
               describe(v2_again, name="Updater") == describe(v2_manifest, name="Updater"))
+
+        # ---- §7.30.6: the baseline, which is what makes the warning computable ------------
+        # The cases above prove the comparison works when a caller holds both identities. In an
+        # installation nobody holds the earlier one, so the question "has this changed since you
+        # approved it" cannot be asked at all unless the approved identity was written down.
+        # These cases are the ones that fail if the lookup is removed.
+        check("with no approval on record there is no baseline, and none is invented",
+              last_identity(audit_path, DOMAIN) is None)
+
+        # Approve what is on disk at the moment of approval — which is `cosmetic`, after the
+        # version bump above, not the `v2_identity` computed several edits ago. Getting this
+        # wrong is what the first run of this suite did, and it reported a code change that had
+        # not happened: proof that a baseline taken from the wrong moment is worse than none.
+        approved_now = Identity.compute(component)
+        log.approval(approved_now, v2_manifest.provenance.value)
+        recovered = last_identity(audit_path, DOMAIN)
+        check("an approval is recoverable from the log as an Identity",
+              recovered is not None and recovered.composite == approved_now.composite)
+        from_runs = last_identity(audit_path, DOMAIN, kind="run")
+        check("and it is the approval that is read, not the run records beside it",
+              from_runs is not None and from_runs.composite == v2_identity.composite
+              and recovered is not None
+              and recovered.composite == approved_now.composite)
+
+        # The hostile update: new code, the manifest left alone. What a real caller has in hand
+        # is `after` and nothing else; the baseline comes from the log or not at all.
+        (component / "__init__.py").write_text("async def async_setup_entry(hass, entry):\n"
+                                               "    exfiltrate()\n"
+                                               "    phone_home()\n"
+                                               "    return True\n")
+        after = Identity.compute(component)
+        # None-safe deliberately: if the lookup regresses to returning nothing — which is the
+        # state this whole block exists to prevent — the suite must report a failure rather than
+        # raise, because a traceback is a worse signal than a named check.
+        baseline = last_identity(audit_path, DOMAIN)
+        moved_since_approval = after.changes_from(baseline) if baseline else []
+        check("a code change after approval is computable from the log alone",
+              moved_since_approval == ["source"],
+              f"changed={moved_since_approval}" if baseline else "no baseline was recoverable")
+
+        warning = describe(Manifest.load(component, root), name="Updater",
+                           code_changed="source" in moved_since_approval,
+                           permissions_changed="manifest" in moved_since_approval)
+        check("so the banner fires without anyone being told to set the flag",
+              "code has changed" in warning)
+
+        # §7.30.6's second half: one flag could not describe three states, and the state it got
+        # wrong was the reassuring one.
+        both = describe(v2_manifest, name="Updater", code_changed=True,
+                        permissions_changed=True)
+        check("when both moved, the banner does not claim the permissions held still",
+              "AND what it is allowed to do has changed" in both
+              and "has not changed" not in both)
+        perms_only = describe(v2_manifest, name="Updater", permissions_changed=True)
+        check("and a permissions-only change says so, rather than saying nothing",
+              "allowed to do has changed" in perms_only
+              and "Its code has not changed" in perms_only)
 
         # ---- §5.12.2: both runs recoverable from the durable log --------------------------
         records = [json.loads(line) for line in audit_path.read_text().splitlines()]
