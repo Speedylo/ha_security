@@ -1,5 +1,32 @@
 # Where the rebuild stands
 
+**Proposal track, 2026-09-17.** The programme's EGR 4402 *Capstone Project Proposal* template arrived (`CSC_Capstone_Project_Proposal_Template-1.docx`) and must be filled and submitted. Content lives in `proposal/proposal.md`; `python3 proposal/build_proposal.py` fills the template into `proposal/capstone_proposal.docx`. **It is written prospectively, as if the work began 31 Aug 2026** (Younes's instruction) — the timeline is an estimate on that assumption, and success-criteria targets are set as pre-registered thresholds, not as the measured results. Still owed from Younes: student ID, supervisor, submission date.
+
+**Technical work before report polish — Younes's decision, 2026-10-01.** Everything engineering
+finishes first; the submission rewrite (figures, appendices, read-through) comes last. This reverses
+the earlier ordering, where figures were first *because* they were on the submission path. The list,
+in the order agreed:
+
+| | Do this | Cost | Why |
+|---|---|---|---|
+| **T1** | **T12's measurement** — `selftest_t12.py` + a short §7.30 | hours | The only threat in either register with no evidence, and §7.26.5 tells the examiner exactly where it is. Every mechanism exists: `Identity` already hashes the manifest separately from the source *for this purpose*. Six assertions — set up under v1, change the manifest, re-spawn, and show (a) `Identity.manifest` moved while `Identity.source` did not, (b) the request v1 permitted is denied with a clause pointer into v2, (c) `describe.py` shows the v2 surface *before* it takes effect, (d) the durable log carries both identities |
+| **T2** | **Two or three more real integrations end-to-end**, three arms, via `endtoend_egress.py` | a session | **The real-integration path is n=1.** §7.27 is one integration and it found the most important defect in the project, behind 18 passing suites. §8.4.2's lesson — real unmodified code finds what the paired baseline, two instruments, self-tests and recomputation cannot — **has been applied exactly once**. 11 credential-free candidates exist; the harness is already parameterised by corpus |
+| **T3** | **One credentialed integration, end-to-end, with a real account** | half a day | **26 of 37 ask for an API key, token, password, username, host or email, and none has ever completed setup with a valid credential in either arm.** The 11-of-37 ceiling is sound and an unconfined baseline hits it identically — but *no account exists* is a choice, not a wall. Untested as a result: a **successful authenticated** round trip from inside a sandbox (nordpool's API is public, so the one real success carries no auth header), the config entry persisting a secret in the stripped instance, **re-auth/token refresh — which happens at a different phase than setup**, so egress demand appears where nothing has looked, and the audit log telling a 401 from a denial. **Note for the viva: S2/T04/R3's credential is the *platform* token the mediator holds, not an integration's own remote API key — and S2 is already tested by `gc_attack`. No account is needed to defend S2** |
+| **T4** | **Wire `AuditLog` into the other harnesses** | small | Instantiated in three places only; everything else records to `mediator.audit` — in-memory, no chain, no MAC, no `fsync`, dies with the process. **The one time the durable log ran for real it produced three defects in a session** (§7.27.6). §8.7 still has no row for it |
+| **T5** | **Re-run `figures/api_surface.py` on the uniform corpus** (§8.7 #6) | one run | Closes the half of contribution 1 (§2.8) that §7.23 left undelivered |
+| **T6** | **Re-run the 19 suites on the Pi** | a session | Untouched since 2026-09-06; the report asserts they pass |
+
+**Then** the report: figures (~8, each generated from source with an assertion that it still says what
+the prose claims), appendices B–F (all *lift verbatim* — and until they exist the compression has
+**deleted** evidence rather than relocated it; Appendix D is what lets an examiner check the
+zero-compatibility-cost claim), the submission draft's **first** read-through, the three `[To verify]`
+citations, and the four handbook-blocked title-page fields.
+
+**Open question, ten minutes:** 20 `selftest*.py` files on disk against the report's **19** suites.
+`selftest_adversary_baseline.py` is separately runnable with its own inverted verdict, so this may be
+a deliberate count — and three times in Stage 5 a recount was wrong and the report right. A question
+until the counted field is confirmed.
+
 **Last updated:** 2026-09-08 (**the front matter is read through; C1 is counted and Stage 5 pass 3
 is done; all eight chapters written, front matter and bibliography done**) · **Read this first when
 resuming.**

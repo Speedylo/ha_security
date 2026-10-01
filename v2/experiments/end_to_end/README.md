@@ -36,6 +36,11 @@ because §7.12 established it fails at import on this release in **both** arms.
 
 **3 of 5 set up and published. Reported as a named set, never as a rate.**
 
+This table is the **confined** arm. The unconfined baseline was run the same day and is
+`results/pi5_e2e_baseline.json` (§7.17.5): `loaded(unconfined) 4/5` against `loaded(confined) 3/5`,
+so **the cost of confinement across this named set is one integration** — `powercalc`. See the two
+failures below, one of which the baseline withdrew.
+
 ## The round trip, in one integration
 
 `thermal_comfort` is the case worth reading. It is configured from two entities it does not own,
@@ -63,7 +68,7 @@ Unmodified source, its own config flow, its own maths, its own entities, across 
 
 Diagnosed rather than counted, per §6.3.3:
 
-**`scheduler` — the genuine cost of network isolation.**
+**`scheduler` — ~~the genuine cost of network isolation~~.**
 ```
 zeroconf/_utils/net.py: add_multicast_member
   listen_socket.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, _value)
@@ -72,6 +77,19 @@ The sandbox's network namespace has loopback only, so joining a multicast group 
 declares `http` and `websocket_api`; zeroconf arrives through that chain. **This is confinement
 costing compatibility**, and it is the first such case found end-to-end. It bears directly on the
 egress decision: network isolation costs more than "cannot reach the internet".
+
+> **Withdrawn as a finding about confinement — §7.17.5, the same day.** Unconfined, `scheduler`
+> fails too, with a `RuntimeError` out of `homeassistant/helpers/frame.py: report_usage` — the
+> platform's own frame helper refusing a deprecated API pattern on 2026.8.3. It never reaches the
+> socket that stopped it in the sandbox, so it is broken on this release either way.
+>
+> **The multicast observation itself stands as an observation**; what does not stand is the
+> inference that confinement was thereby shown to cost compatibility. §7.17.5 set the bar for
+> restoring it — *an integration that works unconfined and fails confined on discovery* — and
+> **§7.27 cleared it on 2026-09-03 with `nordpool`**, which fails confined on the identical
+> `IP_ADD_MEMBERSHIP` call. The restored finding points elsewhere and is sharper: the cost fell on
+> an integration that does no discovery at all, because the platform's own HTTP helper joins a
+> multicast group as a side effect of building a DNS resolver.
 
 **`powercalc` — an undeclared component.** Its flow completed all four steps and created the
 entry; setup then failed with `KeyError: 'network'` from
@@ -98,15 +116,30 @@ the design, and three of these would have been:
 ## Limits
 
 - **Five is a named set, not a sample.** No rate is computed and none should be.
-- **No unconfined baseline for this arm.** §7.12 established import-level parity; whether these
+- ~~**No unconfined baseline for this arm.**~~ §7.12 established import-level parity; whether these
   five load unconfined on 2026.8.3 is not measured here, so `scheduler` and `powercalc` are
   attributed by their tracebacks rather than by comparison.
+  > **Superseded the same day — §7.17.5, `results/pi5_e2e_baseline.json`.** The baseline arm this
+  > bullet calls owed was run on 2026-09-02, and it was right to distrust the attribution:
+  > **`scheduler` is withdrawn** (it fails unconfined too, on the platform's own frame helper) and
+  > **`powercalc` is confirmed as confinement's only cost here**. `loaded(unconfined) 4/5` against
+  > `loaded(confined) 3/5`. The bullet is kept rather than deleted because the attribution it warns
+  > about is exactly the one the baseline overturned.
 - **The mediator acts on §6.10.2's stand-in.** What crossed the boundary is real; what a live
   Home Assistant would do with it is not tested.
 
 ## Reproducing
 
 ```bash
+# confined arm -> results/pi5_e2e.json
 systemd-run --user --scope -q python3 -m confine.endtoend \
     --corpus ~/r2exp/corpus --python ~/r2exp/ha314/bin/python --json results/pi5_e2e.json
+
+# unconfined baseline, §7.17.5 -> results/pi5_e2e_baseline.json
+systemd-run --user --scope -q python3 -m confine.endtoend --baseline \
+    --corpus ~/r2exp/corpus --python ~/r2exp/ha314/bin/python \
+    --json results/pi5_e2e_baseline.json
 ```
+
+`endtoend_unconfined.py` is the in-arm helper `endtoend.py` copies in and drives with a JSON
+spec; it is not invoked directly.
