@@ -70,12 +70,25 @@ def main() -> int:
     ap.add_argument("--count", type=int, default=6)
     ap.add_argument("--python", required=True)
     ap.add_argument("--profile", choices=["minimal", "unstripped"], default="unstripped")
-    ap.add_argument("--components", default="",
+    ap.add_argument("--components", default=None,
                     help="an explicit component list, for measuring what one integration's own "
-                         "declaration costs rather than the blanket profile")
+                         "declaration costs rather than the blanket profile. For an integration "
+                         "that declares none, use --profile minimal")
     ap.add_argument("--platform-deps", type=Path)
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
+    # §7.20.3's first point was labelled *none* and measured 136.3 MB, which is where the
+    # ten-component profile sits and nowhere near `minimal`: an empty list fell through to
+    # the default profile, `unstripped`. An empty list is now an error rather than a profile.
+    explicit = None
+    if args.components is not None:
+        explicit = [c.strip() for c in args.components.split(",") if c.strip()]
+        if not explicit:
+            ap.error("--components needs at least one component; for none, use "
+                     "--profile minimal")
+    setup_components = (explicit if explicit is not None
+                        else (UNSTRIPPED if args.profile == "unstripped" else []))
+    with_platform = explicit is not None or args.profile == "unstripped"
 
     require_ready(deep=False)
     become_subreaper()
@@ -106,10 +119,7 @@ def main() -> int:
             spec_file = root / "spec.json"
             spec_file.write_text(json.dumps({
                 "domain": "scale_probe", "mode": "idle", "entities": [], "services": [],
-                "auth": args.profile == "unstripped" or bool(args.components),
-                "setup_components": ([c.strip() for c in args.components.split(",") if c.strip()]
-                                     if args.components
-                                     else (UNSTRIPPED if args.profile == "unstripped" else []))}))
+                "auth": with_platform, "setup_components": setup_components}))
 
             spec = SandboxSpec(
                 domain="scale_probe", own_dir=str(own), data_dir=str(data),
@@ -117,7 +127,7 @@ def main() -> int:
                 runtime_files={str(RUNTIME): "/sandbox/runtime.py",
                                str(spec_file): "/sandbox/spec.json", str(deps): "/sandbox/deps"},
                 env={"PYTHONPATH": "/sandbox/deps"})
-            if (args.profile == "unstripped" or args.components) and args.platform_deps:
+            if with_platform and args.platform_deps:
                 spec.runtime_files[str(args.platform_deps)] = PLATFORM_DEPS
                 spec.env["PYTHONPATH"] = f"/sandbox/deps:{PLATFORM_DEPS}"
             for extra in (*interpreter_trees(sandbox_python), sys.base_prefix):
@@ -166,7 +176,9 @@ def main() -> int:
               f"about {capacity} sandboxes fit")
         if args.json:
             args.json.write_text(json.dumps({
-                "profile": args.profile, "count": args.count,
+                "profile": args.profile if explicit is None else None,
+                "setup_components": setup_components, "count": args.count,
+                "per_sandbox_pss_mb": [round(m["pss_kb"] / 1024, 1) for m in settled],
                 "sum_rss_mb": round(rss_total, 1), "sum_pss_mb": round(pss_total, 1),
                 "pss_per_sandbox_mb": round(per_sandbox, 1), "capacity": capacity,
                 "mem_total_mb": round(total_kb / 1024)}, indent=2) + "\n")

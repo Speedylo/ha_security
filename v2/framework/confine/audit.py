@@ -179,6 +179,15 @@ def target_of(operation: str | None, request: dict) -> str | None:
     return ""  # config_entries.list takes no target
 
 
+def _fsync_directory(directory: Path) -> None:
+    """Make a directory's entries durable: open it read-only and fsync the descriptor."""
+    fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
 @dataclass
 class AuditLog:
     """Append-only JSON Lines, with a hash chain and a keyed MAC chain over it."""
@@ -190,7 +199,13 @@ class AuditLog:
     _seq: int = 0
 
     def __post_init__(self) -> None:
+        # Every directory this creates is a new entry in its parent, and an entry is durable only
+        # once the parent is fsynced. Without that, a crash can keep the records the file's own
+        # fsync promised and lose the name that reaches them.
+        missing = [d for d in (self.path.parent, *self.path.parent.parents) if not d.exists()]
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        for directory in reversed(missing):
+            _fsync_directory(directory.parent)
 
     # -- writing ------------------------------------------------------------------------
 
@@ -202,6 +217,7 @@ class AuditLog:
         record["hash"] = hashlib.sha256(self._last_hash.encode() + canonical).hexdigest()
         record["mac"] = hmac.new(self.key, self._last_mac.encode() + canonical,
                                  hashlib.sha256).hexdigest()
+        created = not self.path.exists()
         with self.path.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(record, sort_keys=True) + "\n")
             handle.flush()
@@ -209,6 +225,11 @@ class AuditLog:
             # the action so that an action which succeeds and then crashes the mediator is
             # still attributable, and that ordering is worth nothing if the write is lazy.
             os.fsync(handle.fileno())
+        if created:
+            # The file's fsync makes its contents durable, not its name. Until the directory is
+            # fsynced too, a crash can leave the first record written to a file nothing points
+            # at (fsync(2), NOTES). Once per log, since appends do not change the directory.
+            _fsync_directory(self.path.parent)
         self._last_hash, self._last_mac = record["hash"], record["mac"]
         self._seq += 1
         return record

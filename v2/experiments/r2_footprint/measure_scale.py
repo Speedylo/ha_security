@@ -56,11 +56,12 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--count", type=int, default=5, help="sandboxes to start")
     ap.add_argument("--json", type=Path)
+    ap.add_argument("--builder", choices=["original", "corrected"], default="original")
     args = ap.parse_args()
 
     python = sys.executable
     print(f"R2 scale — {platform.machine()}, Python {platform.python_version()}, "
-          f"{args.count} sandboxes")
+          f"{args.count} sandboxes, {args.builder} builder")
 
     total_kb = meminfo_kb("MemTotal")
     avail_before = meminfo_kb("MemAvailable")
@@ -70,7 +71,7 @@ def main() -> int:
     try:
         for i in range(args.count):
             p = subprocess.Popen(
-                [python, str(HERE / "measure.py"), "--serve"],
+                [python, str(HERE / "measure.py"), "--serve", "--builder", args.builder],
                 stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
             )
             procs.append(p)
@@ -125,6 +126,7 @@ def main() -> int:
                      "node": platform.node(),
                      "mem_total_mb": round(total_kb / 1024)},
             "count": args.count,
+            "builder": args.builder,
             "per_sandbox": per_sandbox,
             "settled": {"sum_rss_mb": round(rss_total, 1),
                         "sum_pss_mb": round(pss_total, 1),

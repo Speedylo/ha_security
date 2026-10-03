@@ -13,7 +13,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
+import stat
 import sys
 import tempfile
 from pathlib import Path
@@ -256,6 +258,40 @@ def main() -> int:
             found = reconcile(mediator.audit, mutated)
             check(f"reconcile catches {label}", bool(found),
                   found[0] if found else "it reported nothing", failures)
+
+        # -- the directory entries are durable too ------------------------------------------
+        # A crash cannot be staged here, so the check is on what the code asks the kernel to
+        # make durable: every fsync is recorded with whether its descriptor was a directory, and
+        # which one. The file's own fsync covers its contents; only its directory's covers its name.
+        from . import audit as audit_module
+        synced: list[tuple[str, int]] = []
+        real_fsync = audit_module.os.fsync
+
+        def recording_fsync(fd: int) -> None:
+            info = os.fstat(fd)
+            synced.append(("dir" if stat.S_ISDIR(info.st_mode) else "file", info.st_ino))
+            real_fsync(fd)
+
+        audit_module.os.fsync = recording_fsync
+        try:
+            nested = root / "fresh" / "deeper" / "audit.jsonl"
+            log5 = AuditLog(nested)
+            at_creation = list(synced)
+            log5.approval(base, "author-declared")
+            first = synced[len(at_creation):]
+            log5.approval(base, "author-declared")
+            second = synced[len(at_creation) + len(first):]
+        finally:
+            audit_module.os.fsync = real_fsync
+        inode = lambda d: os.stat(d).st_ino  # noqa: E731
+        check("creating the log's directories fsyncs the parent of each one it made",
+              at_creation == [("dir", inode(root)), ("dir", inode(root / "fresh"))],
+              str(at_creation), failures)
+        check("the first record fsyncs the file and then its directory",
+              first == [("file", inode(nested)), ("dir", inode(nested.parent))],
+              str(first), failures)
+        check("...and a later record fsyncs only the file",
+              second == [("file", inode(nested))], str(second), failures)
     finally:
         shutil.rmtree(root, ignore_errors=True)
 

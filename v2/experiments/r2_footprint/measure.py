@@ -63,7 +63,7 @@ def mark(label: str) -> None:
     print(f"  {label:<44} {STAGES[-1][1] / 1024:8.1f} MB   {STAGES[-1][2]:6.2f}s")
 
 
-async def build_minimal_hass(config_dir: str):
+async def build_minimal_hass(config_dir: str, builder: str = "original"):
     """Construct and start a Home Assistant object without going through bootstrap.
 
     bootstrap.py imports the frontend unconditionally at module level — its own comment in
@@ -113,6 +113,11 @@ async def build_minimal_hass(config_dir: str):
     # — the frontend and the recorder's sensor support among them — which is precisely the
     # weight a sandbox exists to avoid. Doing it by hand is what keeps the instance small.
     entity.async_setup(hass)
+    if builder == "corrected":
+        # §7.31's two helpers, which bootstrap sets up beside `entity` and this recipe did not.
+        from homeassistant.helpers import frame, template
+        frame.async_setup(hass)
+        template.async_setup(hass)
     loader.async_setup(hass)
     await condition.async_setup(hass)
     await trigger.async_setup(hass)
@@ -131,12 +136,29 @@ async def build_minimal_hass(config_dir: str):
     # from bootstrap, for the reason above.
     hass.data[HassKey("bootstrap_registries_loaded")] = None
 
+    if builder == "corrected":
+        # §7.31: the `network` singleton is stage 0 in a real instance. And §6.3.3: the
+        # instance is *not* marked running here. The caller starts it with `async_start()`
+        # once the integration is set up, which fires EVENT_HOMEASSISTANT_START and the
+        # deferred callbacks that `set_state` skips — the defect §7.20.4 left unmeasured.
+        from homeassistant.components.network.network import async_get_network
+        await async_get_network(hass)
+        return hass
+
     hass.set_state(CoreState.running)
     return hass
 
 
-async def run() -> dict:
+async def start_if_corrected(hass, builder: str) -> None:
+    """The corrected recipe's last step: start the instance the way the platform does."""
+    if builder == "corrected":
+        await hass.async_start()
+        await hass.async_block_till_done()
+
+
+async def run(builder: str = "original") -> dict:
     result: dict = {
+        "builder": builder,
         "host": {
             "machine": platform.machine(),
             "python": platform.python_version(),
@@ -166,10 +188,16 @@ async def run() -> dict:
                     Path(config_dir) / "custom_components", dirs_exist_ok=True)
 
     try:
-        hass = await build_minimal_hass(config_dir)
+        hass = await build_minimal_hass(config_dir, builder)
     except Exception as err:  # noqa: BLE001 — the point of Q1 is to report the failure
         result["questions"]["Q1_minimal_instance"] = {"ok": False, "error": repr(err)}
         return result
+    # The defect §7.20.4 names is that `set_state` never fires the start event, so the
+    # deferred callbacks waiting on it never run. Listen for it, and the report says
+    # whether it fired rather than inferring it from the recipe.
+    from homeassistant.const import EVENT_HOMEASSISTANT_START
+    fired: list = []
+    hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, fired.append)
     mark("+ minimal hass constructed and running")
     result["questions"]["Q1_minimal_instance"] = {"ok": True}
 
@@ -193,7 +221,13 @@ async def run() -> dict:
     entry.add_to_hass(hass) if hasattr(entry, "add_to_hass") else None
     await hass.config_entries.async_add(entry)
     await hass.async_block_till_done()
+    await start_if_corrected(hass, builder)
     mark("+ probe integration set up")
+
+    result["core_state"] = str(hass.state)
+    result["start_event_fired"] = bool(fired)
+    result["start_event_pending_listeners"] = hass.bus.async_listeners().get(
+        EVENT_HOMEASSISTANT_START, 0)
 
     states = hass.states.async_all()
     entity_ids = sorted(s.entity_id for s in states)
@@ -230,7 +264,7 @@ async def run() -> dict:
     return result
 
 
-async def serve() -> None:
+async def serve(builder: str = "original") -> None:
     """Build one sandbox, load the probe, announce readiness, then idle until killed.
 
     Used by measure_scale.py, which needs several live sandboxes at once to find the
@@ -241,7 +275,7 @@ async def serve() -> None:
     config_dir = tempfile.mkdtemp(prefix="r2-sandbox-")
     shutil.copytree(HERE / "custom_components",
                     Path(config_dir) / "custom_components", dirs_exist_ok=True)
-    hass = await build_minimal_hass(config_dir)
+    hass = await build_minimal_hass(config_dir, builder)
 
     from homeassistant.config_entries import SOURCE_USER, ConfigEntry
     from homeassistant.setup import async_setup_component
@@ -254,6 +288,7 @@ async def serve() -> None:
     )
     await hass.config_entries.async_add(entry)
     await hass.async_block_till_done()
+    await start_if_corrected(hass, builder)
 
     print(f"READY {os.getpid()} {rss_kb()}", flush=True)
     while True:
@@ -265,13 +300,17 @@ def main() -> int:
     ap.add_argument("--json", type=Path, help="write the full result here")
     ap.add_argument("--serve", action="store_true",
                     help="build one sandbox and idle (used by measure_scale.py)")
+    ap.add_argument("--builder", choices=["original", "corrected"], default="original",
+                    help="original: §5.6.3's recipe, kept so its figures stay reproducible; "
+                         "corrected: §6.3.3's start order and §7.31's helpers, base component "
+                         "kept, so the two differ only in what §7.20.4 asked about")
     args = ap.parse_args()
 
     if args.serve:
         import logging
         logging.disable(logging.CRITICAL)
         try:
-            asyncio.run(serve())
+            asyncio.run(serve(args.builder))
         except KeyboardInterrupt:
             pass
         return 0
@@ -281,9 +320,10 @@ def main() -> int:
               f"{platform.python_version()}", file=sys.stderr)
         return 2
 
-    print(f"R2 feasibility — {platform.machine()}, Python {platform.python_version()}")
+    print(f"R2 feasibility — {platform.machine()}, Python {platform.python_version()}, "
+          f"{args.builder} builder")
     print(f"{'stage':<46} {'RSS':>11}   {'elapsed':>7}")
-    result = asyncio.run(run())
+    result = asyncio.run(run(args.builder))
 
     q = result["questions"]
     print()
@@ -295,6 +335,9 @@ def main() -> int:
     print(f"Q2  integration runs        : {'YES' if q2['ok'] else 'NO'}"
           f"  (entry {q2['entry_state']}, entities {q2['entities_published']})")
     q3 = q["Q3_footprint"]
+    print(f"    core state {result['core_state']}; start event fired: "
+          f"{result['start_event_fired']}; listeners still waiting for it: "
+          f"{result['start_event_pending_listeners']}")
     print(f"Q3  RSS with integration up : {q3['rss_at_running_mb']} MB"
           f"   (peak {q3['peak_rss_mb']} MB, ready in {q3['time_to_running_s']}s)")
 
