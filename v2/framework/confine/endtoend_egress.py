@@ -37,11 +37,25 @@ The evidence for C's denial is the **mediator's own audit record**, not the sand
 itself, on §7.25.2's reasoning that a confined process is the party whose self-report should not
 be trusted for this.
 
+**§7.31 generalised it from one subject to a table** (`SUBJECTS`), because §8.4.2's lesson —
+real unmodified code finds what instruments written from the design's assumptions cannot — had
+been applied exactly once. The three added subjects were chosen by **network stack**: `requests`
+and `httpx` had never been spawned confined. Predictions in `notes/ch7_31_endtoend_prediction.md`,
+committed before the first run. `nordpool` stays the default, so the command below is unchanged.
+
+A subject with more than one host gets **arm D**: only some of its hosts declared. It is the
+first arm that can show the grant is per destination rather than per integration.
+
 Run, on the C4 device, inside a systemd user scope:
 
     systemd-run --user --scope -q python3 -m confine.endtoend_egress \\
         --corpus ~/r2exp/corpus --python ~/r2exp/ha314/bin/python \\
         --json ~/capstone/v2/experiments/end_to_end/results/pi5_nordpool_egress.json
+
+    # §7.31 — one subject per run; --corpus is wherever that subject lives
+    systemd-run --user --scope -q python3 -m confine.endtoend_egress --subject dwd_weather \\
+        --corpus ~/r2exp/corpus --python ~/r2exp/ha314/bin/python \\
+        --json ~/capstone/v2/experiments/end_to_end/results/pi5_dwd_weather_egress.json
 """
 
 from __future__ import annotations
@@ -76,31 +90,70 @@ from .udp_relay import UdpRelay
 
 HERE = Path(__file__).resolve().parent
 
-DOMAIN = "nordpool"
-HOST = "dataportal-api.nordpoolgroup.com"
-PORT = 443
-
-# The integration's own flow input, not the harness's. `region` is `vol.Required` and chosen
-# from the integration's own list; everything else in its schema carries a default. Fed to
-# `async_configure` exactly as the UI would.
-FLOW_INPUT = {"region": "SE1", "currency": "EUR"}
-
-# A coordinator's first fetch is scheduled after `async_start`, not during the flow, so a run
-# with no settle window reports only what configuration touched and misses the polling F2 is
-# about. §7.25 used 8 s against a static host; a real API over TLS from a Pi wants more.
-SETTLE = 25.0
-
-ARMS: dict[str, dict] = {
-    "confined_declared": {
-        "label": "B  confined, host declared",
-        "permissions": {"schema_version": 1,
-                        "network": {"egress": [f"{HOST}:{PORT}"]}},
+# Each subject's flow input is the integration's own, fed to `async_configure` as the UI would;
+# every field not named here takes the integration's default. `egress` is read from the
+# integration's source, never from a run — a clause inferred from what arm A happened to reach
+# would make arm B's success circular. `numeric` says what counts as a *fetched* value: a number
+# for a price, a forecast or an index; any real state for a departure board.
+#
+# A coordinator's first fetch is scheduled after `async_start`, not during the flow, so a run with
+# no settle window reports only what configuration touched and misses the polling F2 is about.
+# §7.25 used 8 s against a static host; §7.27 used 25 s for one small JSON document. `dwd_weather`
+# downloads and unzips a station's MOSMIX file in an executor, so it gets longer.
+SUBJECTS: dict[str, dict] = {
+    "nordpool": {
+        # §7.27. `region` is `vol.Required` and chosen from the integration's own list.
+        "egress": ["dataportal-api.nordpoolgroup.com:443"],
+        "flow_input": {"region": "SE1", "currency": "EUR"},
+        "numeric": True, "settle": 25.0,
     },
-    "confined_undeclared": {
-        "label": "C  confined, clause absent",
-        "permissions": {"schema_version": 1},
+    "smhi_brandrisk": {
+        # §7.31. aiohttp via `async_get_clientsession` — nordpool's shape, on two hosts. The
+        # warnings host is non-critical in its own code (`except Exception`, debug log).
+        "egress": ["opendata-download-metfcst.smhi.se:443",
+                   "opendata-download-warnings.smhi.se:443"],
+        "partial": ["opendata-download-metfcst.smhi.se:443"],
+        # Its own validation rejects anything outside Sweden, and the default is HA's.
+        "flow_input": {"latitude": 59.33, "longitude": 18.07},
+        "numeric": True, "settle": 40.0,
+    },
+    "regensburg_transport": {
+        # §7.31. `requests` in an executor *during the flow* (the stop search), then a bare
+        # `aiohttp.ClientSession()` in the sensor. Two stacks, one host.
+        "egress": ["efa.rvv.de:443"],
+        "flow_input": {"search": "Arnulfsplatz"},
+        "select_first": ["selected_stop"],
+        "numeric": False, "settle": 40.0,
+    },
+    "dwd_weather": {
+        # §7.31. `httpx`, synchronous, in an executor, after setup — the flow itself is offline.
+        # Station 10865 is München-Stadt, which carries reports as well as forecasts.
+        "egress": ["opendata.dwd.de:443"],
+        "flow_input": {"station_id": "10865"},
+        "numeric": True, "settle": 60.0,
     },
 }
+
+
+def arms_for(subject: dict) -> dict[str, dict]:
+    """B and C for every subject; D where the subject has hosts to withhold."""
+    arms = {
+        "confined_declared": {
+            "label": "B  confined, every host declared",
+            "permissions": {"schema_version": 1, "network": {"egress": subject["egress"]}},
+        },
+        "confined_undeclared": {
+            "label": "C  confined, clause absent",
+            "permissions": {"schema_version": 1},
+        },
+    }
+    if subject.get("partial"):
+        arms["confined_partial"] = {
+            "label": "D  confined, some hosts declared",
+            "permissions": {"schema_version": 1,
+                            "network": {"egress": subject["partial"]}},
+        }
+    return arms
 
 
 def check(results: list, condition: bool, name: str, detail: str = "") -> None:
@@ -124,8 +177,9 @@ def _requirements(component: Path, python: Path) -> tuple[list[str], list[str]]:
     return wanted, list(dict.fromkeys(packages))
 
 
-def run_confined(component: Path, arm: str, python: Path, delegation: Delegation,
-                 uv: str | None, platform_deps: Path | None) -> dict:
+def run_confined(component: Path, domain: str, subject: dict, arm: str, permissions: dict,
+                 python: Path, delegation: Delegation, uv: str | None,
+                 platform_deps: Path | None) -> dict:
     root = Path(tempfile.mkdtemp(prefix=f"e2e-egress-{arm}-"))
     # The audit log lives **outside** `root`, because `root` is removed in the `finally` below
     # and the records are read after it. Keeping it inside meant `records()` found an empty
@@ -134,14 +188,14 @@ def run_confined(component: Path, arm: str, python: Path, delegation: Delegation
     audit_dir = Path(tempfile.mkdtemp(prefix=f"e2e-egress-audit-{arm}-"))
     mediator = Mediator()
     try:
-        own = root / "custom_components" / DOMAIN
+        own = root / "custom_components" / domain
         own.parent.mkdir(parents=True)
         shutil.copytree(component, own)
         # Beside the integration, never inside its own manifest.json — §5.9.4's provenance
         # rule, and rewriting the integration's file would breach C1.
-        (root / "custom_components" / f"{DOMAIN}.permissions.json").write_text(
-            json.dumps(ARMS[arm]["permissions"]))
-        data = root / ".confine" / DOMAIN
+        (root / "custom_components" / f"{domain}.permissions.json").write_text(
+            json.dumps(permissions))
+        data = root / ".confine" / domain
         data.mkdir(parents=True)
 
         deps = root / "deps"
@@ -165,24 +219,25 @@ def run_confined(component: Path, arm: str, python: Path, delegation: Delegation
         broker = EgressBroker(connect_timeout=20.0)
         relay = UdpRelay()
         manifest = Manifest.load(own, root)
-        mediator.policy = acting_policy({DOMAIN: manifest}, platform,
+        mediator.policy = acting_policy({domain: manifest}, platform,
                                         broker=broker, relay=relay)
         mediator_end, sandbox_end = Channel.pair()
-        mediator.register(DOMAIN, Channel(mediator_end))
+        mediator.register(domain, Channel(mediator_end))
 
         spec_file = root / "spec.json"
         spec_file.write_text(json.dumps({
-            "domain": DOMAIN, "mode": "flow", "auth": True,
+            "domain": domain, "mode": "flow", "auth": True,
             "entities": [], "services": [], "setup_components": wanted,
-            "egress": True, "settle_seconds": SETTLE,
-            "menu_choice": {}, "flow_input": FLOW_INPUT}))
+            "egress": True, "settle_seconds": subject["settle"],
+            "menu_choice": {}, "flow_input": subject["flow_input"],
+            "select_first": subject.get("select_first", [])}))
 
         runtime_files = {str(HERE / "sandbox_runtime.py"): "/sandbox/runtime.py",
                          str(HERE / "egress_shim.py"): "/sandbox/egress_shim.py",
                          str(spec_file): "/sandbox/spec.json",
                          str(deps): DEPS}
         spec = SandboxSpec(
-            domain=DOMAIN, own_dir=str(own), data_dir=str(data),
+            domain=domain, own_dir=str(own), data_dir=str(data),
             argv=[str(python), "/sandbox/runtime.py"],
             runtime_files=runtime_files, env={"PYTHONPATH": DEPS})
         if platform_deps:
@@ -247,14 +302,14 @@ def run_confined(component: Path, arm: str, python: Path, delegation: Delegation
     return report
 
 
-def run_unconfined(component: Path, python: Path, uv: str | None,
+def run_unconfined(component: Path, domain: str, subject: dict, python: Path, uv: str | None,
                    platform_deps: Path | None) -> dict:
     """Arm A. Same integration, same flow input, same profile, no sandbox and no mediator."""
     root = Path(tempfile.mkdtemp(prefix="e2e-egress-base-"))
     try:
         config = root / "config"
         (config / "custom_components").mkdir(parents=True)
-        shutil.copytree(component, config / "custom_components" / DOMAIN)
+        shutil.copytree(component, config / "custom_components" / domain)
         for name in ("sandbox_runtime.py", "endtoend_unconfined.py"):
             shutil.copy2(HERE / name, root / name)
 
@@ -269,9 +324,10 @@ def run_unconfined(component: Path, python: Path, uv: str | None,
 
         spec_file = root / "spec.json"
         spec_file.write_text(json.dumps({
-            "domain": DOMAIN, "config_dir": str(config), "setup_components": wanted,
-            "world": {}, "record_egress": True, "settle_seconds": SETTLE,
-            "menu_choice": {}, "flow_input": FLOW_INPUT}))
+            "domain": domain, "config_dir": str(config), "setup_components": wanted,
+            "world": {}, "record_egress": True, "settle_seconds": subject["settle"],
+            "menu_choice": {}, "flow_input": subject["flow_input"],
+            "select_first": subject.get("select_first", [])}))
 
         path = [str(deps)] + ([str(platform_deps)] if platform_deps else [])
         env = {**os.environ, "PYTHONPATH": ":".join(path)}
@@ -297,41 +353,76 @@ def run_unconfined(component: Path, python: Path, uv: str | None,
     return report
 
 
-def _priced(report: dict) -> list[dict]:
-    """Published sensors carrying a numeric state — the integration's actual output."""
+#: States an entity holds when nothing was fetched. A departure board's state is a string, so
+#: for a non-numeric subject *fetched* means "holds a state other than these".
+NO_VALUE = {None, "", "unknown", "unavailable", "None"}
+
+
+def _fetched(report: dict, numeric: bool = True) -> list[dict]:
+    """Published entities carrying a value the integration could only have got from its API.
+
+    `numeric` is §7.27's original test — a number, as a price is. For a subject whose output is
+    text it falls back to *any real state*, which is weaker, and arm C is what tells whether it
+    is too weak: if C publishes a "fetched" value with no network, the predicate is wrong and
+    the run says so rather than passing.
+    """
     out = []
     for entry in report.get("published") or []:
         state = entry.get("state")
-        try:
-            float(str(state))
-        except (TypeError, ValueError):
+        if numeric:
+            try:
+                float(str(state))
+            except (TypeError, ValueError):
+                continue
+        elif state in NO_VALUE:
             continue
         out.append(entry)
     return out
 
 
+def _egress(report: dict, allowed: bool) -> list[dict]:
+    return [d for d in (report.get("logged") or [])
+            if d.get("op") == "network.egress" and bool(d.get("allowed")) is allowed]
+
+
+def _reachable(target: str) -> str | None:
+    """None if `target` answers at all from this host, else why not. An HTTP error is an answer."""
+    host, _, port = target.rpartition(":")
+    try:
+        urllib.request.urlopen(f"https://{host}:{port}/", timeout=15)
+    except urllib.error.HTTPError:
+        return None
+    except OSError as err:
+        return str(err)
+    return None
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--subject", default="nordpool", choices=sorted(SUBJECTS))
     ap.add_argument("--corpus", type=Path, required=True)
     ap.add_argument("--python", required=True, type=Path)
     ap.add_argument("--uv", default=str(Path.home() / ".local/bin/uv"))
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
 
-    component = args.corpus / DOMAIN
+    domain = args.subject
+    subject = SUBJECTS[domain]
+    declared_set = set(subject["egress"])
+    component = args.corpus / domain
     if not component.is_dir():
-        print(f"{DOMAIN} is not in {args.corpus}")
+        print(f"{domain} is not in {args.corpus}")
         return 2
 
     # Fail informatively rather than silently. This measurement proves nothing about
     # confinement if the API is down or the host has no route to it, and that must not be
-    # reported as a compatibility failure of the design.
-    try:
-        urllib.request.urlopen(f"https://{HOST}/", timeout=15)
-    except urllib.error.HTTPError:
-        pass                                             # a real HTTP response, e.g. 404
-    except OSError as err:
-        print(f"cannot reach {HOST} from this host at all: {err}\n"
+    # reported as a compatibility failure of the design. Only the first host is required:
+    # a subject's later hosts may be non-critical to it, and an outage there is a fact about
+    # the run (recorded below), not a reason to refuse it.
+    unreachable = {t: why for t in subject["egress"] if (why := _reachable(t))}
+    if subject["egress"][0] in unreachable:
+        print(f"cannot reach {subject['egress'][0]} from this host at all: "
+              f"{unreachable[subject['egress'][0]]}\n"
               "this measurement requires real internet access and cannot proceed.")
         return 2
 
@@ -341,28 +432,45 @@ def main() -> int:
     uv = args.uv if Path(args.uv).exists() else None
     platform_deps = Path.home() / "r2exp/platform-deps"
     platform_deps = platform_deps if platform_deps.is_dir() else None
+    arms = arms_for(subject)
+    numeric = subject["numeric"]
 
-    print(f"F2 against a real integration's real API — {DOMAIN} → {HOST}:{PORT}\n")
+    print(f"F2 against a real integration's real API — {domain} → {', '.join(subject['egress'])}\n")
 
     reports: dict[str, dict] = {}
     print("  A  unconfined baseline ...", flush=True)
-    reports["unconfined"] = run_unconfined(component, args.python, uv, platform_deps)
-    for arm in ARMS:
-        print(f"  {ARMS[arm]['label']} ...", flush=True)
-        reports[arm] = run_confined(component, arm, args.python, delegation, uv, platform_deps)
+    reports["unconfined"] = run_unconfined(component, domain, subject, args.python, uv,
+                                           platform_deps)
+    for arm, spec in arms.items():
+        print(f"  {spec['label']} ...", flush=True)
+        reports[arm] = run_confined(component, domain, subject, arm, spec["permissions"],
+                                    args.python, delegation, uv, platform_deps)
 
     base, declared, undeclared = (reports["unconfined"], reports["confined_declared"],
                                   reports["confined_undeclared"])
 
-    print("\n  arm                          entry            published  priced  egress decisions")
+    print("\n  arm                          entry            published  fetched  egress decisions")
     for key, report in reports.items():
         entry = (report.get("entries") or [{}])
         state = entry[0].get("state", report.get("level", "—")) if entry else "—"
         decisions = [d for d in (report.get("logged") or [])
                      if d.get("op") == "network.egress"]
         print(f"  {key:<28} {str(state).split('.')[-1]:<16} "
-              f"{len(report.get('published') or []):>9}  {len(_priced(report)):>6}  "
+              f"{len(report.get('published') or []):>9}  {len(_fetched(report, numeric)):>7}  "
               f"{''.join('T' if d['allowed'] else 'F' for d in decisions) or '—'}")
+    for key, report in reports.items():
+        flow = report.get("flow") or {}
+        if flow.get("error") or flow.get("errors") or report.get("setup_errors"):
+            print(f"  {key}: flow={flow.get('type')} errors={flow.get('errors')} "
+                  f"error={flow.get('error')} setup={report.get('setup_errors')}")
+
+    # Where arm A went, by name where the recorder can see one (§7.18's blind spot: names
+    # resolved through `aiodns` appear only as the address they connect to).
+    seen = sorted({str(a.get("host")) for a in (base.get("egress_attempts") or [])
+                   if a.get("phase") == "integration" and a.get("kind") == "resolve"})
+    print(f"\n  A resolved, attributed to the integration: {seen or '—'}")
+    if unreachable:
+        print(f"  unreachable from this host before the run: {unreachable}")
 
     results: list = []
     print()
@@ -370,53 +478,78 @@ def main() -> int:
     # Arm A first: without it, a confined failure cannot be told from an integration that is
     # broken on this release — the misattribution a baseline has stopped three times already.
     check(results, base.get("loaded"),
-          "A — nordpool loads unconfined on this release, so there is something to confine",
-          f"{base.get('level', '')} {str(base.get('error', ''))[:200]}")
+          f"A — {domain} loads unconfined on this release, so there is something to confine",
+          f"{base.get('level', '')} {str(base.get('error', ''))[:200]} flow={base.get('flow')}")
+    check(results, bool(_fetched(base, numeric)),
+          "A — and publishes a fetched value unconfined",
+          f"published={(base.get('published') or [])[:8]}")
 
     check(results, declared.get("oom_kill", 1) == 0,
           "B — the confined arm stayed inside its memory limit",
           f"oom_kill={declared.get('oom_kill')}")
     check(results, declared.get("loaded"),
           "**F2** — a real community integration's config entry reached LOADED while confined",
-          f"{declared.get('level', '')} {str(declared.get('error', ''))[:300]}")
+          f"{declared.get('level', '')} {str(declared.get('error', ''))[:300]} "
+          f"flow={declared.get('flow')}")
 
-    priced = _priced(declared)
-    check(results, bool(priced),
-          "**F2** — it published a numeric price through the mediator, computed from its own "
-          "fetch of its own API",
-          f"published={[p.get('entity') for p in (declared.get('published') or [])][:6]}")
-    if priced:
-        print(f"       {priced[0]['entity']} = {priced[0]['state']}  "
-              f"(+{len(priced) - 1} more priced sensors)")
+    fetched = _fetched(declared, numeric)
+    check(results, bool(fetched),
+          "**F2** — it published a fetched value through the mediator, from its own call to "
+          "its own API",
+          f"published={(declared.get('published') or [])[:8]}")
+    base_values = {e["entity"]: e["state"] for e in _fetched(base, numeric)}
+    for entry in fetched[:3]:
+        print(f"       {entry['entity']} = {entry['state']}  "
+              f"(A: {base_values.get(entry['entity'], '—')})")
 
-    allowed = [d for d in (declared.get("logged") or [])
-               if d.get("op") == "network.egress" and d.get("allowed")]
+    allowed = _egress(declared, True)
     check(results, bool(allowed),
-          "B — the mediator's own durable record shows it granted the declared destination",
+          "B — the mediator's own durable record shows it granted a declared destination",
           f"logged={declared.get('logged')}")
     if allowed:
-        check(results, all(d.get("target") == f"{HOST}:{PORT}" for d in allowed),
-              "B — every granted destination is the one the manifest names, host **and port**",
+        check(results, all(d.get("target") in declared_set for d in allowed),
+              "B — every granted destination is one the manifest names, host **and port**",
               str([d.get("target") for d in allowed]))
+    check(results, not _egress(declared, False),
+          "B — and nothing the integration asked for was refused (the declared set is complete)",
+          str([(d.get("target"), d.get("clause")) for d in _egress(declared, False)]))
     check(results, not declared.get("audit_breaks"),
-          "B — and that record's hash and MAC chains both verify (S7)",
+          "B — that record's hash and MAC chains both verify (S7)",
           str(declared.get("audit_breaks")))
 
     # Arm C — the control that makes B evidence rather than a coincidence.
-    denied = [d for d in (undeclared.get("logged") or [])
-              if d.get("op") == "network.egress" and not d.get("allowed")]
-    check(results, not _priced(undeclared),
-          "**C** — with the clause removed, nothing priced crosses the boundary",
-          f"priced={[p.get('entity') for p in _priced(undeclared)]}")
-    check(results, bool(denied) and all(d.get("target") == f"{HOST}:{PORT}" for d in denied),
-          "**C** — and the mediator refused the same destination it granted in B",
+    denied = _egress(undeclared, False)
+    granted_b = {d.get("target") for d in allowed}
+    check(results, not _fetched(undeclared, numeric),
+          "**C** — with the clause removed, no fetched value crosses the boundary",
+          f"fetched={_fetched(undeclared, numeric)[:6]}")
+    check(results, bool(denied) and {d.get("target") for d in denied} <= declared_set
+          and bool(granted_b & {d.get("target") for d in denied}),
+          "**C** — and the mediator refused the destinations it granted in B",
           f"logged={undeclared.get('logged')}")
     if denied:
         check(results, all(d.get("clause") == "/permissions/network/egress" for d in denied),
               "**C** — each refusal names the clause, S6's denial by absence",
               str([d.get("clause") for d in denied]))
 
-    check(results, bool(priced) and not _priced(undeclared),
+    # Arm D — only where some hosts can be withheld while the integration still works.
+    partial = reports.get("confined_partial")
+    if partial is not None:
+        kept = set(subject["partial"])
+        p_allowed, p_denied = _egress(partial, True), _egress(partial, False)
+        check(results, bool(_fetched(partial, numeric)),
+              "**D** — with only some hosts declared, the integration still publishes",
+              f"published={(partial.get('published') or [])[:8]}")
+        check(results, bool(p_allowed) and all(d.get("target") in kept for d in p_allowed),
+              "**D** — every grant is to a host D declares",
+              str([d.get("target") for d in p_allowed]))
+        check(results, bool(p_denied)
+              and all(d.get("target") in declared_set - kept for d in p_denied)
+              and all(d.get("clause") == "/permissions/network/egress" for d in p_denied),
+              "**D** — and the withheld host is refused by itself, by absence, in the same run",
+              str([(d.get("target"), d.get("clause")) for d in p_denied]))
+
+    check(results, bool(fetched) and not _fetched(undeclared, numeric),
           "**the difference between B and C is the mediated path and nothing else** — same "
           "integration, flow, profile, host and minute")
 
@@ -426,8 +559,10 @@ def main() -> int:
     if args.json:
         args.json.parent.mkdir(parents=True, exist_ok=True)
         args.json.write_text(json.dumps(
-            {"integration": DOMAIN, "host": HOST, "port": PORT, "flow_input": FLOW_INPUT,
-             "settle_seconds": SETTLE, "reports": reports,
+            {"integration": domain, "egress": subject["egress"],
+             "partial": subject.get("partial"), "flow_input": subject["flow_input"],
+             "select_first": subject.get("select_first"), "settle_seconds": subject["settle"],
+             "unreachable_before_run": unreachable, "reports": reports,
              "checks": {"passed": passed, "total": len(results)}}, indent=2) + "\n")
         print(f"  wrote {args.json}")
     return 0 if passed == len(results) else 1

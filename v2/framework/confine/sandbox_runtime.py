@@ -277,12 +277,35 @@ PLATFORM_NAMES = (
 )
 
 
-def fill_schema(schema, overrides: dict) -> dict:
+def _first_offered(validator) -> object:
+    """The first option a selector offers, as its `value` — what a user picking the top of a
+    list sends. `vol.UNDEFINED` when the validator offers no list."""
+    import voluptuous as vol
+
+    config = getattr(validator, "config", None)
+    options = config.get("options") if isinstance(config, dict) else None
+    if options:
+        first = options[0]
+        return first.get("value") if isinstance(first, dict) else first
+    container = getattr(validator, "container", None)
+    if isinstance(container, dict) and container:
+        return next(iter(container))
+    if isinstance(container, (list, tuple)) and container:
+        return container[0]
+    return vol.UNDEFINED
+
+
+def fill_schema(schema, overrides: dict, select_first: tuple | list = ()) -> dict:
     """Answer a config flow's form from the schema it returned, as the frontend would.
 
     Precedence: an override the caller supplied by key name, then the field's own default,
     then the first value of an enumerated choice. A field with none of the three is left out
     and the integration decides whether it was required — which is the right party to decide.
+
+    **`select_first` names fields answered by the first option offered, ahead of the default.**
+    Added for §7.31: `regensburg_transport`'s stop field is a selector over the *live search
+    results* with `default=False`, so the default is not one of its own options and no fixed
+    override can name an option nobody has seen yet. A user picks the top match; this does.
     """
     import voluptuous as vol
 
@@ -296,6 +319,11 @@ def fill_schema(schema, overrides: dict) -> dict:
         if name in overrides:
             filled[name] = overrides[name]
             continue
+        if name in select_first:
+            offered = _first_offered(validator)
+            if offered is not vol.UNDEFINED:
+                filled[name] = offered
+                continue
         default = getattr(marker, "default", None)
         if callable(default):
             try:
@@ -444,7 +472,8 @@ def record_egress_attempts(into: list) -> None:
 
 
 async def drive_flow(hass, domain: str, overrides: dict, menu_choice: dict,
-                     setup_log_into: dict | None = None) -> dict:
+                     setup_log_into: dict | None = None,
+                     select_first: tuple | list = ()) -> dict:
     """Drive an integration's own config flow the way the frontend does, and record each step.
 
     Shared by the confined and unconfined arms of §7.17 for the same reason `inspect()` is
@@ -496,7 +525,7 @@ async def drive_flow(hass, domain: str, overrides: dict, menu_choice: dict,
                 continue
             if outcome.get("type") != FlowResultType.FORM:
                 break
-            user_input = fill_schema(outcome.get("data_schema"), overrides)
+            user_input = fill_schema(outcome.get("data_schema"), overrides, select_first)
             flow["steps"].append({"step": step, "sent": sorted(user_input)})
             outcome = await hass.config_entries.flow.async_configure(
                 outcome["flow_id"], user_input)
@@ -652,7 +681,8 @@ async def run() -> dict:
         from homeassistant.data_entry_flow import FlowResultType
 
         flow = await drive_flow(hass, spec["domain"], spec.get("flow_input") or {},
-                                spec.get("menu_choice") or {}, setup_log_into=result)
+                                spec.get("menu_choice") or {}, setup_log_into=result,
+                                select_first=spec.get("select_first") or ())
         result["flow"] = flow
         await hass.async_block_till_done()
         await hass.async_start()

@@ -25,7 +25,7 @@ import sys
 import traceback
 from pathlib import Path
 
-from sandbox_runtime import build_hass, drive_flow
+from sandbox_runtime import CURRENT_PHASE, build_hass, drive_flow, record_egress_attempts
 
 
 async def run(spec: dict) -> dict:
@@ -35,6 +35,17 @@ async def run(spec: dict) -> dict:
     domain = spec["domain"]
     config_dir = spec["config_dir"]
     result: dict = {"domain": domain, "arm": "unconfined"}
+
+    # `endtoend_egress` has always sent `record_egress: True` and nothing read it, so §7.27's
+    # arm A never recorded where it went. Honoured from §7.31, where a subject with several
+    # possible hosts makes *where the unconfined arm went* the check on the declared set.
+    # It is §7.18's in-process recorder and inherits its blind spot: names resolved through
+    # `aiodns` are not seen, only the address they connect to. `requests` and `httpx` resolve
+    # through `getaddrinfo` and are seen by name.
+    attempts: list = []
+    if spec.get("record_egress"):
+        record_egress_attempts(attempts)
+        result["egress_attempts"] = attempts
 
     hass = await build_hass(config_dir, with_auth=True)
 
@@ -54,8 +65,12 @@ async def run(spec: dict) -> dict:
         hass.states.async_set(entity_id, state, attributes)
     await hass.async_block_till_done()
 
+    # Attribution, per §7.18.2: everything recorded before this line is the platform's own
+    # (`network` probing 8.8.8.8, zeroconf joining mDNS), not the integration's.
+    CURRENT_PHASE[0] = "integration"
     result["flow"] = await drive_flow(hass, domain, spec.get("flow_input") or {},
-                                      spec.get("menu_choice") or {}, setup_log_into=result)
+                                      spec.get("menu_choice") or {}, setup_log_into=result,
+                                      select_first=spec.get("select_first") or ())
     await hass.async_block_till_done()
     await hass.async_start()
     await hass.async_block_till_done()
