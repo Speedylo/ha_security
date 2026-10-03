@@ -129,6 +129,19 @@ SUBJECTS: dict[str, dict] = {
         "evidence": "next_departure",
         "numeric": False, "settle": 150.0,
     },
+    "pirateweather": {
+        # T3. The one subject here that needs a credential, and the first in the project to run
+        # with a valid one. §7.24 reached this host with a deliberately invalid key; what no run
+        # has shown is a *successful authenticated* round trip from inside a sandbox. The key is
+        # never in this file, the repository or any result: `credential` names a file read at
+        # run time, and every report is scrubbed of the key's value before anything is printed
+        # or written — the integration puts it in the request path, so error text carries it.
+        "egress": ["api.pirateweather.net:443"],
+        "flow_input": {"pw_platform": ["Sensor", "Weather"],
+                       "monitored_conditions": ["temperature"]},
+        "credential": {"field": "api_key", "file": "~/.config/capstone/pirateweather.key"},
+        "numeric": True, "settle": 40.0,
+    },
     "dwd_weather": {
         # §7.31. `httpx`, synchronous, in an executor, after setup — the flow itself is offline.
         # Station 10865 is München-Stadt, which carries reports as well as forecasts.
@@ -295,6 +308,7 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
                   for r in (mediator.log.records() if mediator.log is not None else [])
                   if r.get("kind") == "decision"]
         breaks = [str(b) for b in mediator.log.verify(mediator.log.key)] if mediator.log else []
+        durable_raw = mediator.log.records() if mediator.log else []
         # T4: the durable record against the in-memory one, entry by entry, and every decision
         # against a run record — which this harness never wrote until T4 made `register` do it.
         reconciled = reconcile(mediator.audit, mediator.log.records()) if mediator.log else []
@@ -314,6 +328,7 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
     report["logged"] = logged
     report["audit_breaks"] = breaks
     report["reconcile"] = reconciled
+    report["durable_raw"] = durable_raw
     report["oom_kill"] = oom
     return report
 
@@ -473,15 +488,66 @@ def main() -> int:
 
     print(f"F2 against a real integration's real API — {domain} → {', '.join(subject['egress'])}\n")
 
+    # T3: a credential, if the subject needs one, joins a per-run copy of the flow input and
+    # nothing else. `subject` itself — which is what gets written to the result — never holds it.
+    secret = None
+    running = subject
+    if subject.get("credential"):
+        secret = read_credential(subject["credential"]["file"])
+        if secret is None:
+            return 2
+        running = dict(subject, flow_input={**subject["flow_input"],
+                                            subject["credential"]["field"]: secret})
+
     reports: dict[str, dict] = {}
     print("  A  unconfined baseline ...", flush=True)
-    reports["unconfined"] = run_unconfined(component, domain, subject, args.python, uv,
+    reports["unconfined"] = run_unconfined(component, domain, running, args.python, uv,
                                            platform_deps)
     for arm, spec in arms.items():
         print(f"  {spec['label']} ...", flush=True)
-        reports[arm] = run_confined(component, domain, subject, arm, spec["permissions"],
+        reports[arm] = run_confined(component, domain, running, arm, spec["permissions"],
                                     args.python, delegation, uv, platform_deps)
+    if secret:
+        # Measured before scrubbing, because scrubbing would make it vacuous: did the key reach
+        # the mediator at all? It should not. The mediator hands the sandbox a connected socket
+        # and TLS runs inside the sandbox, so the request path that carries the key is
+        # encrypted before it leaves — the mediator's records name a host and a port, and the
+        # integration's own credential stays the integration's (§5.10.3, and the reason S2 is
+        # about the *platform's* credential, not this one).
+        for report in reports.values():
+            if "logged" in report or "audit" in report:
+                seen = json.dumps({"logged": report.get("logged"), "audit": report.get("audit"),
+                                   "durable": report.get("durable_raw")})
+                report["credential_in_mediator_records"] = secret in seen
+        reports = scrub(reports, secret)
     return evaluate(domain, subject, declared_set, fetched_in, reports, unreachable, args.json)
+
+
+def read_credential(path: str) -> str | None:
+    """The key, from a file only its owner can read — or None, having said what to do."""
+    file = Path(path).expanduser()
+    if not file.is_file():
+        print(f"no credential at {file}. Create it on this machine, readable only by you:\n"
+              f"    install -m 600 /dev/null {file} && $EDITOR {file}")
+        return None
+    if file.stat().st_mode & 0o077:
+        print(f"{file} is readable by other users; run: chmod 600 {file}")
+        return None
+    value = file.read_text().strip()
+    return value or None
+
+
+def scrub(reports: dict, secret: str) -> dict:
+    """Every report with the credential's value replaced, wherever it appears.
+
+    Done on the serialised form so that no field is missed — a traceback, a URL in an error,
+    a flow step echoing its input. Applied before `evaluate` prints anything and before the
+    result is written, so neither the console nor the repository ever holds the key.
+    """
+    text = json.dumps(reports)
+    if secret not in text:
+        return reports
+    return json.loads(text.replace(secret, "<credential>"))
 
 
 def evaluate(domain: str, subject: dict, declared_set: set, fetched_in, reports: dict,
@@ -525,6 +591,10 @@ def evaluate(domain: str, subject: dict, declared_set: set, fetched_in, reports:
           "A — and publishes a fetched value unconfined",
           f"published={(base.get('published') or [])[:8]}")
 
+    if "credential_in_mediator_records" in declared:
+        check(results, declared["credential_in_mediator_records"] is False,
+              "T3 — the integration's own credential never reached the mediator's records",
+              "the key's value appears in the mediator's in-memory or durable record")
     check(results, declared.get("oom_kill", 1) == 0,
           "B — the confined arm stayed inside its memory limit",
           f"oom_kill={declared.get('oom_kill')}")
