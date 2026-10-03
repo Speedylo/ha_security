@@ -146,7 +146,9 @@ saving is 46.6 MB, and the budget improves by half rather than doubling. The cor
 recorded here rather than applied silently to Chapter 5, because it is the clearest available
 demonstration that the measurement discipline is doing work: the warning was written, published,
 and then not applied by its own author, and what caught it was running the measurement instead
-of quoting its consequence.
+of quoting its consequence. *§7.35.2 (2026-10-03) adds a second reason the 60 MB was too large:
+it was a cold-start figure. Warm, as this table was measured, the base component's share of one
+sandbox is 52.5 MB, consistent with the 51.9 MB above.*
 
 Two controls support the figures rather than being asserted alongside them:
 
@@ -1558,7 +1560,9 @@ there, a peak-based reading would have overstated a *saving*; here it understate
 > section's own dependency set, the figures are **56.5 MB and 135.7 MB**, capacity **42 and 17**,
 > a premium of **+79.2 MB**. The compatibility figures behind it reproduce member for member. The
 > conclusion — the budget more than halves — is unchanged; the movement is within what §7.20.3
-> found PSS varies by at this scale.
+> found PSS varies by at this scale. *Withdrawn the same day (§7.35.3): PSS is reproducible to
+> 0.1 MB, so the movement is real. The builder accounts for 1.3 MB of it in `minimal` and none in
+> `unstripped`.*
 
 > **Translating to §6.3.2's published figure.** That harness used a probe with a sensor platform
 > and a coordinator and measured 90.0 MB; this one uses a trivial probe. Applying the same
@@ -1571,6 +1575,9 @@ there, a peak-based reading would have overstated a *saving*; here it understate
 > components appear to cost less. At that sample size PSS is dominated by how much of the
 > interpreter happens to be shared at the moment of measurement, so no curve is drawn and none
 > should be read. §6.3.2's budget of 26 stands as measured there; this estimate stays an estimate.
+> *Resolved on 2026-10-03 (§7.35.3): at six sandboxes and three rounds the series is monotonic and
+> exact, 56.5, 92.3, 111.6 and 135.6 MB, and the first row above was the ten-component profile
+> mislabelled as none.*
 
 Against §5.8.1's mean of **4.02** community integrations per HACS-using installation, fourteen is
 still three and a half times what a typical installation needs. The 449 MB of packages these

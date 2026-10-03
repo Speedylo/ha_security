@@ -419,6 +419,15 @@ future work is ordered the way it is.
 > not. It was found only because the experiment was run again on a different network, which is a
 > sixth mechanism this section did not list: **repeat a measurement where the environment differs,
 > and see whether the number was about the subject.**
+>
+> **Paying §8.7's item 12 the same day moved two more, both small, and both by a route the earlier
+> two did not take.** §7.20.3's series was printed with a row labelled *none* that was the
+> ten-component profile. An empty argument had fallen through to a default, and the command line
+> that would have shown it was never kept. That row, and an explanation built on it, had been used
+> twice since to absorb movements that were real (§7.35.3). Separately, §5.6.3's 176 MB for one sandbox
+> was a cold start, so the base component's share is 52.5 MB rather than 60 (§7.35.2). Neither
+> touches a conclusion. What they add to this section is narrow: a measurement is only as good as its
+> record of what was measured. `scale.py` now writes the components it set up into its own output.
 
 
 ## 8.5 The finding nobody was looking for
@@ -536,12 +545,16 @@ These belong to the next measurement rather than to the artifact.
 - **PSS against declaration depth did not resolve.** Three points, three sandboxes each, and the
   series is non-monotonic — 136.3, 95.7, 115.8 MB — which is PSS's sensitivity to what happens to
   be shared at that moment rather than a curve. §6.3.2's budget of 26 stands as measured there; no
-  trend is claimed (§7.20.3).
+  trend is claimed (§7.20.3). *Resolved on 2026-10-03 (§7.35.3): the series is monotonic and
+  reproducible to 0.1 MB, and the first row was the ten-component profile mislabelled as none. The
+  explanation given here is withdrawn.*
 - **One figure in Chapter 5 was produced by a known-defective builder.**
   `experiments/r2_footprint/measure.py` still carries the pre-§6.3.3 recipe, which never fires
   `EVENT_HOMEASSISTANT_START`, and §5.6.3's 176/136 MB figures came from it. It is preserved so
   those published figures stay reproducible; the defect affects deferred callbacks rather than
   process size, so the figures are unlikely to move — **and unlikely is not measured** (§7.20.4).
+  *Measured on 2026-10-03 (§7.35.2): the builder changes nothing, and the 176 MB turned out to be a
+  cold start.*
 - **The API-surface measurement was never re-run on a uniform corpus** (§8.3). *Run on 2026-10-03
   (§7.33): every granularity decision holds over the uniform corpus.*
 - **T12 was never evaluated and was never declared unevaluable** (§7.26.5). §7.11 should have
@@ -587,7 +600,7 @@ incidental to the design, which item 1 would break.
 | **9** | **Filesystem quota for `/sandbox/data`** (§7.22.2) | Item 5 above. Needs privilege, so it also needs a decision about whether the unprivileged position of §5.7.4 admits a privileged installer step. `io.max` is *not* in this row — non-delegation is not a matter of effort | Small, plus a design decision that is not small |
 | **10** | **The end-to-end arm at scale** | N2's second number as something other than a named set of five. *(2026-10-03: one credentialed integration has now run with a valid key, §7.34 — the path holds in that instance; scale is unchanged.)* Blocked on credentials for 26 of 37, so it needs either a cooperating vendor set or recorded request fixtures — the second is the tractable route and would change the measurement's character, which should be stated if it is taken | Weeks, and the honest framing is that this is a different project's measurement |
 | **11** | **Off-box audit anchoring** (R4, §5.12.6) | The audit log's authority against whoever controls the machine, and item 7's key-lifetime trade-off. §5.12.6 declined to define a format because *"the moment this chapter specified a format for another machine to consume, the scope would have moved"* — **but the artifact already emits the record such a layer would consume**, which is a more useful piece of future work than an unevidenced suggestion | A different project. The contribution here is that its input already exists |
-| **12** | **Re-run `r2_footprint` on the corrected builder; PSS with more sandboxes per point** (§7.20.3, §7.20.4) | Two measurement debts, neither load-bearing on any claim | Small |
+| ~~**12**~~ | ~~**Re-run `r2_footprint` on the corrected builder; PSS with more sandboxes per point**~~ (§7.20.3, §7.20.4) — ✅ **done 2026-10-03, §7.35**: the builder changes nothing; the depth series is monotonic and exact, and §7.20.3's first row was mislabelled | Two measurement debts, neither load-bearing on any claim | Small |
 | **13** | **L2 — enforcement inside the platform's own loader** (§5.15.2) | §5.15.2 states plainly that L2 is the better design on every axis but deployability, and that this project's most durable contribution to it may be the evidence it would need. A platform proposal must answer what confinement costs in compatibility, what the declaration should express, and what threats it closes. **Those answers do not depend on the L3 architecture that produced them, and §8.5's finding says the surface such a check must cover is far smaller than the platform's size suggests** | Not this project's to do, and the reason it is last rather than absent |
 | **14** | **An explicit re-check trigger for a mediator that outlives a respawn** (§7.30.2, §7.30.4) | **Added 2026-10-01 by the measurement of item 5, which is the only item on this list a *measurement* put here rather than an unbuilt scope item.** T12's second clause holds today for a reason that is incidental to the design: `Manifest.load` sits inside the per-run setup of every harness, so a fresh policy is built because a fresh process is, and no manifest survives a run. **Nothing re-checks a declaration; something re-reads it by construction.** Item 1 is what would break that — a push loop implies a mediator that lives across a sandbox's lifetime — and at that point `selftest_t12` would keep passing while the property it certifies had quietly become false, which is §6.4.5's failure mode relocated from an instrument to a design. What is owed is a re-load at spawn that is written down as a re-load, and a case in that suite which fails if it is removed | Small, and it must land **with** item 1 rather than after it. The reason it is cheap now and expensive later is that today there is no long-lived state to migrate |
 

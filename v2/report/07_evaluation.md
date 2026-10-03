@@ -449,6 +449,7 @@ deferred callbacks — losing state restoration with no exception and no log lin
 carries the original recipe**, so §5.6.3's 176/136 MB figures were produced by the unfixed
 builder. Whether that matters for a proportional-set-size measurement is plausible but unverified,
 and this chapter must either re-run that measurement or state the caveat where the figure is used.
+*Re-run on 2026-10-03 (§7.35.2): the builder makes no measurable difference.*
 
 **Internal validity — the comparison arms must differ in one thing.** The baseline arm must hold
 release, host, Python version and corpus fixed and vary only confinement. Any additional
@@ -1531,6 +1532,13 @@ and repeated runs, and is left to future work rather than reported as a curve dr
 noise. Recording the attempt and its failure to resolve is the alternative to quietly omitting a
 scheduled measurement.
 
+> **Resolved on 2026-10-03 (§7.35.3), and the explanation above is withdrawn.** At six sandboxes the
+> series is monotonic, 56.5, 92.3, 111.6 and 135.6 MB for none, two, four and ten components, and
+> three rounds agree to 0.1 MB, so PSS here is not noisy. All three rows above reproduce to within
+> 0.3 MB at three sandboxes, with the first row reproduced by the ten-component profile on the
+> dependency set rebuilt that afternoon. The row labelled *none* was not none: an empty component
+> list fell through to the default profile.
+
 ### 7.20.4 §7.9's outstanding defect
 
 `experiments/r2_footprint/measure.py` still carries the pre-§6.3.3 recipe — the instance reaches
@@ -1541,6 +1549,11 @@ deliberately preserved so §5.6.3's published figures stay reproducible, and the
 to move. **Unlikely is not measured**, and this chapter does not have the measurement. §5.6.3's
 figures are therefore quoted in this evaluation only with that caveat attached, and re-running
 the footprint experiment on the corrected builder is added to future work.
+
+> **Measured on 2026-10-03 (§7.35.2): the builder changes nothing.** Six sandboxes sum to 817.5 MB
+> of PSS on the original builder and 817.6 MB on the corrected one, against §5.6.3's 818.1. The
+> caveat is lifted. The re-run did find that §5.6.3's 176 MB single-sandbox figure was a cold start;
+> warm, it is 161 MB.
 
 ## 7.21 A reconciliation pass, and what reading the chapter against Chapter 6 found
 
@@ -3810,7 +3823,9 @@ The security results and every compatibility figure reproduce exactly. The memor
 stands as written: un-stripping more than halves the budget. Some of the rise is plausibly the frame
 and template helpers and the `network` singleton the corrected instance now builds at startup, but a
 single six-sandbox run per arm cannot attribute it, because §7.20.3 found PSS at this scale varying
-by tens of megabytes between runs. The prediction of ±4 MB for `unstripped` was missed by 1.3 MB,
+by tens of megabytes between runs. *Withdrawn the same day (§7.35.3): PSS reproduces to 0.1 MB, and
+§7.20.3's variation was a mislabelled row. The builder accounts for 1.3 MB of `minimal`'s 2.0 and
+none of `unstripped`'s 5.3.* The prediction of ±4 MB for `unstripped` was missed by 1.3 MB,
 which says more about the band than about the instance.
 
 The compatibility runs also record each sandbox's peak memory, from which §6.13 and §6.14 computed
@@ -3941,7 +3956,8 @@ carrying the integration's identity, and named by what it was decided on.
 **Not established.** The latency and memory harnesses still record in memory, by design. The log's
 directory is not fsynced when the file is first created, so on some filesystems the first record of a
 new log could be lost with its directory entry in a crash; no measurement here exercises that. And the
-key still dies with the mediator, as §8.6.3 item 7 states.
+key still dies with the mediator, as §8.6.3 item 7 states. *Fixed on 2026-10-03 (§7.35.1): the log now
+fsyncs its directory after the first record, and the parent of every directory it creates.*
 
 ## 7.33 The API surface of the uniform corpus
 
@@ -4082,6 +4098,141 @@ same property that keeps the key out of the mediator's records, seen from the ot
   exercised; what a long-lived sandbox should do with it is not.
 
 Predictions: five of six held. P2, the equality, failed for the reason above.
+
+## 7.35 Two small debts: the audit log's directory, and the footprint figures
+
+**2026-10-03.** Two items were left open after T1–T6. The first was a durability gap §7.32 recorded and
+did not close. The second was §8.7's item 12, two footprint measurements described there as load-bearing
+on no claim. Both were done the same day, and predictions for the second were committed before it ran
+(`notes/item12_footprint_rerun_prediction.md`). The second turned out to bear on more than item 12
+expected: one of its parts withdraws an explanation that §6.12 and §7.31.12 both leaned on.
+
+### 7.35.1 The audit log's directory entries
+
+`AuditLog` fsynced each record, which makes a record's bytes durable. It did not fsync the directory
+that holds the file, and on Linux a newly created file's *name* is a separate directory entry that
+becomes durable only when the directory itself is synced (`fsync(2)`). A crash shortly after a log was
+created could therefore keep the first record's data and lose the only path to it. The log now fsyncs
+the parent of every directory it creates, and the log's own directory once, after its first record.
+Later appends change the file and not the directory, so they pay nothing extra.
+
+A crash cannot be staged inside a self-test, so `selftest_audit` checks what the code asks the kernel
+to make durable instead. Every `fsync` is recorded together with whether its descriptor was a directory,
+and which one. Three checks follow from that record: creating a nested log syncs each new directory's
+parent, the first record syncs the file and then its directory, and a later record syncs only the file.
+With the fix removed, the first two fail; with it, all three pass, both on the development machine and
+on the Pi's ext4.
+
+### 7.35.2 The footprint figures on the corrected builder
+
+§5.6.3's figures, 176 MB for one sandbox and 136 MB for each additional one, came from
+`experiments/r2_footprint/measure.py`, which marks the instance running with `set_state` and so never
+fires `EVENT_HOMEASSISTANT_START`. §7.20.4 judged the defect unlikely to affect process size and said
+that unlikely is not measured. The script now takes `--builder corrected`, which adds §6.3.3's start
+order and §7.31's two helpers and network singleton. It keeps the base component, so that the two
+builders differ only in the respect §7.20.4 asked about. The original stays the default, and a listener
+now records whether the start event fired. It fires under the corrected builder and not under the
+original, so the defect is now observed rather than read off the recipe.
+
+| | 2026-08-24 | Original builder, today | Corrected builder, today |
+|---|---|---|---|
+| One sandbox, RSS with the integration up | 176.1 MB, 6.1 s | 161.1 MB, 1.8 s | 161.3 MB, 1.5 s |
+| The same, with an empty bytecode cache | — | 177.6 MB, 6.4 s | 177.7 MB, 6.2 s |
+| Six sandboxes, sum of PSS | 818.1 MB | 817.5 MB | 817.6 MB |
+| PSS per sandbox, first to sixth | 154.7 → 136.4 | 154.1 → 136.2 | 154.1 → 136.3 |
+
+**The builder changes nothing measurable.** The deferred work the start event releases has no memory
+cost that six sandboxes can detect, so §5.6.3's figures no longer need §7.20.4's caveat.
+
+The first row did move, though, and not because of the builder: today's original measures 161 MB, not
+176. Both the time and the memory pointed at the same cause. August's run took 6.1 seconds and today's
+took 1.8, and almost all of the 15 MB difference falls in the two stages that import the most modules:
+7.4 MB in importing the helper layer and 7.6 MB in setting up the base component. Pointing Python's bytecode cache
+at an empty directory reproduced August to within 1.5 MB and 0.3 seconds. **§5.6.3's 176 MB is
+therefore a cold-start figure**, taken on the run that compiled Home Assistant's bytecode for the first
+time, with the compiler's allocations still resident. A warm sandbox is 161 MB. Two things follow. The
+base component's share, which §5.6.5 and §6.3.2 quote as 60 MB, is 52.5 MB warm. §6.3.2's own table
+had already measured a warm sandbox without saying so: 161.3 MB with the base component, and 51.9 MB
+less without it. And the 136 MB
+marginal figure stands, because August's six-sandbox run was already warm: its sandboxes each held
+161.8 MB of RSS, which is today's warm figure.
+
+The marginal cost derived from `MemAvailable` did not reproduce: it was 132.8 MB under one builder and
+124.4 MB under the other. The second run's "first sandbox" read 40.4 MB, because memory the previous run
+had freed was still being returned to the pool while it measured. PSS is the figure to quote, as
+§5.6.3 already argued.
+
+### 7.35.3 PSS against declaration depth, resolved, and what the old series actually was
+
+§7.20.3 measured three declaration depths at three sandboxes each. Its series ran 136.3 MB for none,
+95.7 for two components and 115.8 for four. It declined to draw a curve, and attributed the
+non-monotonicity to PSS being sensitive to how much happens to be shared at the moment of measurement.
+§6.12 and §7.31.12 then used that sensitivity to absorb movements of their own.
+
+Before re-running, one row looked wrong for a specific reason. A sandbox with no components measures
+about 55 MB, and the ten-component profile about 130–136 MB, so 136.3 MB for "none" was where the
+ten-component profile sits. `experiments/unstrip/scale.py` took its component list as a string that
+defaulted to empty, and an empty string fell through to the default profile, which is the ten-component
+one. The original command and output were never committed and survive nowhere, so this was a
+hypothesis that only a measurement could test. `scale.py` now refuses an empty list.
+
+The re-run took four points (none, the two-component and four-component sets §7.20.3 used, and all ten),
+six sandboxes each, in three interleaved rounds:
+
+| Components set up | PSS per sandbox, three rounds | Capacity in 60% of 4 GB |
+|---|---|---|
+| none | 56.5, 56.5, 56.5 MB | 43 |
+| `http`, `websocket_api` | 92.3, 92.3, 92.3 MB | 26 |
+| `frontend`, `http`, `websocket_api`, `lovelace` | 111.6, 111.6, 111.6 MB | 21 |
+| all ten (`unstripped`) | 135.6, 135.6, 135.6 MB | 17 |
+
+**The series is monotonic, and the three rounds agree to the tenth of a megabyte.** PSS at a fixed
+number of sandboxes is not noisy at all on this device, so the noise §7.20.3 invoked does not exist.
+
+That left the old series to explain, so the four points were run again at §7.20.3's own three
+sandboxes. Two components gave 95.6 MB against its 95.7, and four gave 115.8 MB against its 115.8. Ten
+gave 143.0 MB, which did not match its "none" row. The remaining difference was the dependency set. The
+shared `platform-deps` directory was rebuilt at 13:36 on 2 September without `paho-mqtt`, and §7.20.3
+was committed at 17:31 that day. Of the four points, only the ten-component profile includes `mqtt`.
+Re-run on that rebuilt set, ten components at three sandboxes gave **136.6 MB against §7.20.3's
+136.3**. All three of §7.20.3's rows are therefore reproduced to within 0.3 MB. Its "none" row was the
+ten-component profile on the dependency set of that afternoon, and its non-monotonic series was a
+mislabelled row rather than a property of PSS. The lost command means this cannot be proven from the
+record, but no other configuration measured here at three sandboxes comes within 6 MB of it.
+
+The same reproducibility makes it possible to attribute what §7.31.12 could not. That section found
+`minimal` 2.0 MB heavier and `unstripped` 5.3 MB heavier after §7.31's corrections, and declined to
+attribute either because §7.20.3 had found run-to-run variation of tens of megabytes. Running both with
+the runtime as it stood before §7.31, which differs from today's only in that 21-line change, gave 55.2 MB and 135.6
+MB. The builder's helpers and network singleton therefore cost 1.3 MB in a sandbox with no components,
+and nothing in the ten-component one, where `http` already loaded the singleton. The other 0.7 MB of
+`minimal`'s rise, and the whole of `unstripped`'s, are not the builder. The likeliest cause of the
+latter is that August's dependency set was rebuilt from its list rather than restored, but the original
+no longer exists to compare against, so it is left unattributed. §6.12's conclusion is unaffected,
+since the premium is +79.1 MB on today's runtime and +80.4 MB on the earlier one, and the budget
+more than halves on either.
+
+### 7.35.4 The predictions, and what this establishes
+
+Ten of eleven predictions held. The one that failed is A6's single-sandbox half: today's original
+measured 161 MB against August's 176, outside the ±5% band, for the bytecode reason above. Its
+six-sandbox half held to 0.1 MB. B2 held by a much larger margin than predicted: the band was 6 MB,
+and the spread was zero. That margin is what withdraws §7.20.3's explanation, and the prediction did
+not anticipate it.
+
+**Established.** The corrected start order has no memory cost. §5.6.3's marginal figure stands, and its
+first-sandbox figure is a cold start. PSS rises monotonically with the components a sandbox sets up,
+from 56.5 MB with none to 135.6 MB with all ten, and is reproducible to 0.1 MB. The audit log's names
+are now as durable as its contents.
+
+**Not established.** These are a trivial probe's figures, so they show what the components cost and not
+what a realistic integration costs on top. The "two" and "four" points are specific sets, and the
+corpus's median of two set-up components is not necessarily those two. And one consequence is
+measured only outside the sandbox. The sandbox binds the interpreter read-only, so if bytecode is not
+compiled when the platform is installed, every sandbox starts cold and cannot write a cache. On the
+figures above that would cost about 16 MB of RSS and four to five seconds per start. The Pi's environment has
+always had a warm cache, so no confined figure in this report is affected, but an installer should
+compile bytecode, and no measurement here confirms the cost inside a sandbox.
 
 ---
 

@@ -1,0 +1,29 @@
+{
+  "profile": "unstripped",
+  "setup_components": [
+    "http",
+    "websocket_api",
+    "frontend",
+    "lovelace",
+    "panel_custom",
+    "repairs",
+    "media_source",
+    "notify",
+    "mqtt",
+    "stream"
+  ],
+  "count": 6,
+  "per_sandbox_pss_mb": [
+    135.6,
+    135.6,
+    135.6,
+    135.6,
+    135.6,
+    135.6
+  ],
+  "sum_rss_mb": 1052.1,
+  "sum_pss_mb": 813.6,
+  "pss_per_sandbox_mb": 135.6,
+  "capacity": 17,
+  "mem_total_mb": 4050
+}

@@ -16,6 +16,36 @@ unknown. This settles both **before** the design chapter commits to either.
 
 R2 is feasible on the target hardware. It is not free.
 
+## Re-run on the corrected builder, 2026-10-03 (§7.35.2)
+
+`measure.py` and `measure_scale.py` take `--builder corrected`: start with `async_start()` after
+the integration is up (§6.3.3), plus the `frame`/`template` helpers and the `network` singleton
+(§7.31). The base component is kept, so the two builders differ only in what §7.20.4 asked about.
+`original` stays the default so the figures above remain reproducible. A listener now records
+whether `EVENT_HOMEASSISTANT_START` fired: it does under `corrected` and not under `original`.
+
+| | 2026-08-24 | original, today | corrected, today |
+|---|---|---|---|
+| One sandbox, RSS with the integration up — warm bytecode cache | — | 161.1 MB, 1.8 s | 161.3 MB, 1.5 s |
+| One sandbox, RSS — **cold** cache (`-X pycache_prefix=<empty>`) | **176.1 MB, 6.1 s** | 177.6 MB, 6.4 s | 177.7 MB, 6.2 s |
+| Six sandboxes, sum of PSS | 818.1 MB | 817.5 MB | 817.6 MB |
+| PSS per sandbox, first → sixth | 154.7 → 136.4 | 154.1 → 136.2 | 154.1 → 136.3 |
+
+**The builder moves nothing.** The start event's deferred work has no measurable memory cost.
+
+**The 176 MB first-sandbox figure is a cold-start figure.** It was taken on the run that compiled
+Home Assistant's bytecode for the first time; the compiler's allocations stay resident. A warm
+start is 161 MB, and the 15 MB difference splits evenly between importing the helper layer and
+setting up the base component, so the base component's share is 52.5 MB warm, not 60. The
+six-sandbox run in August was already warm (per-sandbox RSS 161.8 MB), so the 136 MB marginal
+figure was always the warm one and stands.
+
+The `MemAvailable`-derived marginal is not reproducible run to run: 132.8 MB and 124.4 MB today,
+and the corrected run's "first sandbox" read 40.4 MB because memory freed by the previous run was
+still being returned. Quote PSS.
+
+Results: `results/item12_20261003/`.
+
 ## What was measured, and why the marginal figure is the one to quote
 
 A single sandbox's RSS counts the Python interpreter and the Home Assistant library, which

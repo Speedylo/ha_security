@@ -156,7 +156,18 @@ failure that started this.
 ## Re-run 2026-10-03 — §7.31.12, `results/rerun_20261003/`
 
 `scale.py` on the instance §7.31 corrected: **56.5 MB and 135.7 MB PSS per sandbox, capacity 42 and
-17, premium +79.2 MB** (was 54.5 / 130.4 / 44 / 18 / +75.9), within §7.20.3's run-to-run variance.
+17, premium +79.2 MB** (was 54.5 / 130.4 / 44 / 18 / +75.9), ~~within §7.20.3's run-to-run variance~~.
+**Withdrawn 2026-10-03 (§7.35.3):** PSS reproduces to 0.1 MB; §7.20.3's variance was a mislabelled
+row. The builder accounts for 1.3 MB of `minimal`'s rise and none of `unstripped`'s.
+
+## Declaration depth, 2026-10-03 — §7.35.3, `results/item12_20261003/`
+
+`depth.sh` (six sandboxes, three interleaved rounds) and `depth3.sh` (three sandboxes, one round).
+Per sandbox at six: none 56.5, `http,websocket_api` 92.3, `+frontend,lovelace` 111.6, all ten
+135.6 MB, identical in every round. At three: 59.5, 95.6, 115.8, 143.0, and 136.6 for ten on
+`~/r2exp/platform-deps` (the 2026-09-02 rebuild without `paho-mqtt`), which reproduces §7.20.3's
+*none* row. `pre731_*.json` are `minimal` and `unstripped` on the runtime before §7.31's builder
+fix (55.2, 135.6). `--components` now refuses an empty list; for none, use `--profile minimal`.
 `unstrip.py` keeps its own frozen `build_hass` and was not re-run.
 
 **The `unstripped` arms need this README's own dependency list**, not `~/r2exp/platform-deps`, which

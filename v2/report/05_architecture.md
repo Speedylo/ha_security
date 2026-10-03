@@ -328,6 +328,11 @@ resident memory was 970.8 MB while the machine actually consumed 844.6 MB, and p
 proportional memory fell from 154.7 MB at one sandbox to 136.4 MB at six as the sharing became
 visible. Reporting 176 MB per sandbox would have overstated the cost of six by 126 MB.
 
+> **2026-10-03 (§7.35.2).** The 176 MB is a cold start, taken on the run that first compiled Home
+> Assistant's bytecode. With a warm cache one sandbox is 161 MB, and the base component's share is
+> 52.5 MB rather than 60. The 136 MB marginal figure came from a warm run and stands, and the
+> corrected start order (§6.3.3) changes none of these figures.
+
 **One design consequence came out of the experiment rather than out of the reasoning.** The
 sandbox cannot use `bootstrap`: `homeassistant/bootstrap.py` imports `.components` at module
 level — the frontend and the recorder's sensor support among them — which is exactly the
