@@ -1,0 +1,5 @@
+c1_baseline exit=0
+c1_declared_core exit=0
+uniform_baseline exit=0
+uniform_confined exit=0
+ALLDONE
