@@ -411,7 +411,7 @@ forgotten. The right-hand column is where each is answered.
 | §6.8.3 | Decide whether `fsync` per decision is affordable | §7.4.3 |
 | §6.9.4 | Measure what `resources.memory_mb` costs a *legitimate* integration | §7.4.3, P5 |
 | §5.7.4, §6.4.1 | State S9's boot-time precondition whenever S9 is evaluated | §7.4.3 |
-| §5.14, `notes/ch5_evidence_api_surface.md` §6 | Re-run on a uniform corpus before reporting coverage | §7.4.1 |
+| §5.14, `notes/ch5_evidence_api_surface.md` §6 | Re-run on a uniform corpus before reporting coverage | §7.4.1 — *compatibility half §7.23; API-surface half §7.33 (2026-10-03)* |
 | §3.6 (N2) | Report imports-clean and executed-end-to-end separately, always | §7.4.1, §7.5 |
 | §6.6.6 | *Withdrawn.* The obligation never to repeat §4.10's "filesystem isolation to declared resources" rested on a §5.14.4 claim that contradicts §5.10.3; the phrase is accurate | — |
 
@@ -3942,6 +3942,61 @@ carrying the integration's identity, and named by what it was decided on.
 directory is not fsynced when the file is first created, so on some filesystems the first record of a
 new log could be lost with its directory entry in a crash; no measurement here exercises that. And the
 key still dies with the mediator, as §8.6.3 item 7 states.
+
+## 7.33 The API surface of the uniform corpus
+
+**2026-10-03.** Contribution 1 is an account of what community integrations ask the platform for,
+and its community half was measured on 144 integrations chosen by install count. Its own evidence
+note said a uniform sample was worth running before coverage was reported, and §7.8 carried that as
+an obligation, which §7.23 discharged for compatibility and not for this. `figures/api_surface.py` was
+run unchanged, under Python 3.14 as before, over §7.23's uniform corpus of 40, with predictions
+committed first (`notes/t5_api_surface_uniform_prediction.md`). The result is
+`figures/api_surface_uniform.json`.
+
+At n = 40 one integration is 2.5 points, so a difference under about ten points is not read as a
+finding. Zero files failed to parse.
+
+| Handle or behaviour | Head, by install count (144) | Uniform (40) |
+|---|---|---|
+| `config_entries` | 94.4% | 92.5% |
+| `data` | 86.1% | 80.0% |
+| `loop` | 78.5% | 72.5% |
+| `services` | 64.6% | **37.5%** |
+| `config` | 61.8% | **37.5%** |
+| `bus` | 48.6% | **17.5%** |
+| `states` | 41.0% | 35.0% |
+| `http` | 19.4% | 17.5% |
+| `auth` | 5.6% | 7.5% |
+| registers its own services | 56.2% | 35.0% |
+| calls another integration's services | 22.2% | 12.5% |
+| imports another component | 71.5% | 50.0% |
+
+The handles every integration needs to exist at all — its config entry, its own storage, the event
+loop — are used about as often in the tail as in the head. The ones that extend an integration's
+reach are not: the event bus falls by 31 points, services and configuration by about 25 each. The
+head-weighted sample therefore **overstated** how much of the platform a typical community
+integration touches, which is the direction one would expect of the most-installed, most-featured
+integrations, and is now measured rather than expected.
+
+**None of the four granularity decisions §5.10 took from this measurement moves.**
+
+- *The unit must be the operation, not the handle.* Managing the integration's own entry is 90%;
+  enumerating everyone's entries is 22.5%, against 41.0% in the head. The two authorities behind one
+  attribute are further apart in the tail, not closer.
+- *Default-denying outbound service calls is cheap.* It costs one integration in eight here,
+  against one in five in the head, at the point where T05 — the joint-highest-rated threat — lives.
+- *File access must be path-scoped.* 20.0% call `hass.config.path`, against 33.3%. An absolute
+  denial still breaks one integration in five, so the qualifier stays load-bearing.
+- *Cross-component reach is mostly platform services.* The most-imported components are `http`,
+  `diagnostics`, `persistent_notification`, `lovelace` and `frontend`, as in the head.
+
+Blanket denial of others' state remains unavailable too: 35.0% use `states`, and 27.5% read with
+`states.get`.
+
+All eight predictions held, including the four bands. That is the expected outcome for a
+measurement whose method was already settled; what it adds is that contribution 1's conclusions
+hold across the population of *integrations* and not only the population of *installations*, which
+is the half §8.3 recorded as missing.
 
 ---
 

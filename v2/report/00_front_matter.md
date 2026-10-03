@@ -228,6 +228,7 @@ separately from the thing it describes is wrong within a session and nothing say
 | 7.30 | T12, measured — the declaration re-checked per version | |
 | 7.31 | Three more real integrations, and three defects only they could find | |
 | 7.32 | The durable audit log, engaged where decisions are made | |
+| 7.33 | The API surface of the uniform corpus | |
 | | **Chapter 8 — Conclusions, Limitations and Future Work** | `08_conclusions.md` |
 | 8.1 | What this chapter is for, and what it will not repeat | |
 | 8.2 | The central claim, answered against the falsifiers fixed in advance | |
@@ -258,7 +259,7 @@ separately from the thing it describes is wrong within a session and nothing say
 ## Tables
 
 Three tables are numbered, and they are the three the report navigates *to*. They are listed here;
-the other 162 are not.
+the other 163 are not.
 
 | Table | Subject | In | Referred to from |
 |---|---|---|---|
@@ -266,7 +267,7 @@ the other 162 are not.
 | **1.2** | Authority held by any custom integration | `01_problem_and_context.md` | §1.7, §2.4.1, §2.4.2, §2.7, §3.4, §3.5, §4.2, §4.4, §4.6, §5.2 |
 | **2.1** | Platform assumptions in prior work versus Home Assistant | `02_literature_and_gap.md` | §2.3, §2.7, §3.3, §3.8 |
 
-**The other 162 tables are deliberately unnumbered**, and the split is the point rather than an
+**The other 163 tables are deliberately unnumbered**, and the split is the point rather than an
 inconsistency. Table 1.2 is an exhibit: five later chapters derive requirements, assets and
 boundaries from it by name. The rest are two- to six-row registers embedded in the argument they
 belong to — a requirement and its derivation, a threat and its rating, a prediction and its outcome

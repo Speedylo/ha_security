@@ -221,3 +221,15 @@ argument that survives contact with the actual code is worth more than one that 
    storage, and blanket denial is not available.
 5. `hass.auth` is **denied by default** at near-zero cost — 5.6% (§4.2).
 6. The manifest must distinguish **one's own config entry from everyone's** (§4.1).
+
+## 7. The uniform corpus, run 2026-10-03 (report §7.33)
+
+`figures/api_surface_uniform.json` — the parser unchanged, Python 3.14, §7.23's uniform corpus of
+40, zero parse failures. Every conclusion in §4 holds: own-entry lifecycle 90% against everyone's
+entries 22.5%; calling others' services 12.5%; `config.path` 20.0%; cross-component reach 50.0%,
+mostly platform services; `states` 35.0%. The tail uses `bus` (17.5% against 48.6%), `services`
+(37.5% against 64.6%) and `config` (37.5% against 61.8%) far less than the head.
+
+*A small inconsistency in §4.3, noticed while re-reading it: it says denying filesystem access
+"would break a quarter of the population" two sentences after measuring a third (33.3%). The
+figure is right and the paraphrase is not; on the uniform corpus it would be a fifth.*
