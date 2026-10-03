@@ -299,7 +299,7 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **C3** | The adversarial run includes an absent manifest, an over-broad manifest, and one deliberately mismatched to behaviour — and all three are handled per §5.9's precedence rules | Security | ✅ **Met** — §7.16.1 — `selftest_c3`: absent, over-broad and mismatched manifests. Over-broad **is honoured** (R1) and the section says so; the ceiling it cannot raise holds what §4.9 rated Critical |
 | **C4** | Every performance figure is produced on the Raspberry Pi 5, reporting per-integration memory *and* added latency | Performance | ✅ **Met** — §7.19–§7.22 — every performance figure produced on the Pi 5, per-integration memory *and* added latency both reported |
 | **F1** | A confined integration's entities are present in Home Assistant and behave as native entities under the measures used in this chapter | Compatibility, level 2 | ✅ **Met** — §7.17.3 — `thermal_comfort`: two declared entities mirrored in, fifteen derived sensors published out, dew point physically correct. **Bounded by §8.6.3 #2**: the mediator acts on a stand-in, not a live instance |
-| **F2** | An integration polling a **declared** remote API completes successfully while confined | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met — §7.25, and by a *real* integration in §7.27.** Two purpose-built integrations polled declared hosts concurrently in real namespaces (§7.25); `nordpool` — unmodified community source — then polled its own Nord Pool API confined and published **the same price as the unconfined arm**, with the mediator's durable record naming `dataportal-api.nordpoolgroup.com:443` (§7.27). **§7.31 (2026-10-03) adds three more real integrations across `requests`, `httpx` and `aiohttp`, each matching its unconfined output** |
+| **F2** | An integration polling a **declared** remote API completes successfully while confined | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met — §7.25, and by a *real* integration in §7.27.** Two purpose-built integrations polled declared hosts concurrently in real namespaces (§7.25); `nordpool` — unmodified community source — then polled its own Nord Pool API confined and published **the same price as the unconfined arm**, with the mediator's durable record naming `dataportal-api.nordpoolgroup.com:443` (§7.27). **§7.31 (2026-10-03) adds three more real integrations across `requests`, `httpx` and `aiohttp`, each matching its unconfined output, and §7.34 one with a valid credential — an authenticated round trip whose key never reached the mediator** |
 | **F3** | Every enforcement decision in the evaluation names the manifest clause that produced it; a decision with no attributable clause is shown to be unconstructible | Security | ✅ **Met** — §7.4.2, §7.16.1 — every decision record carries a clause pointer; seven mismatched behaviours produced seven denials naming **seven distinct clauses** |
 | **F4** | The manifest of each evaluated integration renders in human-readable form, with denials shown at the same weight as grants | §6.7, re-run over the evaluated set | ✅ **Met** — §7.16.2 — `selftest_describe`, four states, denials rendered at the same weight as grants. Bounded to *availability* by §3.4; comprehension is excluded by §3.7 |
 | **S1** | The published garbage-collector technique (§2.4.1) is attempted from inside the sandbox and reaches no platform object; the mediator and its credential are not locatable from within | Security | ✅ **Met, paired** — §7.15.3 — the published `gc` technique reaches a live credential **7 ways** unconfined and **0** confined across 8,942 objects, while the same token is confirmed live in the mediator |
@@ -312,7 +312,7 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **S8** | The 2021 file-theft pattern **succeeds against an unconfined baseline installation** and is blocked under the framework, on the same host and release | Security — **requires the baseline arm** | ✅ **Met, paired** — §7.13.2 — the 2021 file-theft pattern recovers **2 of 2** canaries unconfined and **0 of 2** confined on the same host and release; `open("../../secrets.yaml")` raises `FileNotFoundError`, not `PermissionError` |
 | **S9** | An integration deliberately exhausting CPU, memory and disk in turn does not render the gateway unresponsive, demonstrated unprivileged, with the boot-time precondition stated | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met, against narrowed wording — §7.22.** All four bounds now come from the manifest and each is verified by a sandbox exceeding it: memory OOM-killed, forks refused at the cap, a 25% CPU cap holding at 25.1%, `ENOSPC` at `disk_mb`. **Disk means space, not I/O bandwidth** — the `io` controller is not delegated to a user manager (§7.22.2), so S9's text is narrowed on evidence and the residual is stated |
 | **N1** | Added latency, per-integration memory and maximum concurrent integrations are all reported against an unconfined baseline on the target hardware. **No threshold** — §3.6 fixed this position in advance | Performance | ✅ **Met as specified** — §7.19–§7.20 — latency to 26 sandboxes, per-sandbox memory and maximum concurrency all reported against an unconfined baseline on the C4 device. **No threshold, by §3.6’s position fixed in advance**; the figures are reported and discussed, and P4 was falsified doing it |
-| **N2** | This chapter reports "imports clean" and "executed end-to-end" as two separate numbers, never conflated, with the first labelled an upper bound wherever it appears | **This chapter** | ✅ **Met by reporting** — §7.12 (imports-clean, 77 integrations) and §7.17 (**executed end-to-end, a named set of five**) are reported separately and never conflated; §7.17.1 states the ceiling of 11 of 37 rather than computing a rate. §7.27 and §7.31 add four more by name, and §7.31.6 re-runs the five on a corrected instance |
+| **N2** | This chapter reports "imports clean" and "executed end-to-end" as two separate numbers, never conflated, with the first labelled an upper bound wherever it appears | **This chapter** | ✅ **Met by reporting** — §7.12 (imports-clean, 77 integrations) and §7.17 (**executed end-to-end, a named set of five**) are reported separately and never conflated; §7.17.1 states the ceiling of 11 of 37 rather than computing a rate. §7.27, §7.31 and §7.34 add five more by name, and §7.31.6 re-runs the five on a corrected instance |
 | **N3** | Behaviour on mediator unavailability is specified in advance and tested; the framework refuses rather than degrades silently, including the wrong-cgroup-position case | Security | ✅ **Met** — §7.16.2 — carried by `preflight` rather than a self-test: the framework refuses to start when the memory controller is absent (§5.7.4) or the supervisor is in the wrong cgroup position (§6.4.1). Both are stated failure modes |
 
 > **The Verdict column was added by Stage 5's read-through, 2026-09-04, and the criteria were
@@ -3998,6 +3998,90 @@ All eight predictions held, including the four bands. That is the expected outco
 measurement whose method was already settled; what it adds is that contribution 1's conclusions
 hold across the population of *integrations* and not only the population of *installations*, which
 is the half §8.3 recorded as missing.
+
+## 7.34 One integration with a valid credential
+
+**2026-10-03.** Twenty-six of the head corpus's thirty-seven integrations need a credential before
+their own config flow can complete (§7.17.1), and until this section none had completed setup with a
+valid one in either arm. §7.24 reached `pirateweather`'s host with a deliberately invalid key, which
+showed what shape credentialed egress takes and not whether an **authenticated** round trip works
+from inside a sandbox. This section runs one. Predictions were committed before the account existed
+(`notes/t3_credentialed_prediction.md`).
+
+`pirateweather` was chosen because it is a head-corpus member, `cloud_polling`, needs nothing but an
+API key from a free tier, validates that key inside its own flow, and polls through the platform's
+client session, which is §7.27's path with an authenticated request on it. The key lives in a file on
+the Pi readable only by its owner, outside the repository. The harness reads it at run time, places
+it in a per-run copy of the flow input and nowhere else, and replaces its value in every report
+before anything is printed or written, because this integration puts the key in the request path and
+error text would carry it.
+
+### 7.34.1 The result
+
+| | A — unconfined | B — confined, declared | C — confined, no clause |
+|---|---|---|---|
+| Config flow, with the valid key | completes | **completes** | fails |
+| Config entry | LOADED | **LOADED** | none |
+| `sensor.pirateweather_temperature` | 17.6166666666667 °C | 17.6 °C | — |
+| `network.egress` decisions | — | 1 granted, `api.pirateweather.net:443` | 1 refused, by absence |
+| The key in the mediator's records | — | **absent** | — |
+
+An integration completed its own credential validation and setup inside a sandbox, for the first time
+in this project, and published a temperature fetched over an authenticated request through the
+mediated path. The mediator granted one destination, the durable record verifies and reconciles with
+the in-memory one, and with the clause removed the same request was refused.
+
+**The key never reached the mediator, and that was measured rather than assumed.** Before the reports
+were scrubbed, the harness searched the mediator's in-memory record and its full durable record for
+the key's value, and found none. That follows from the design: the mediator hands the sandbox a
+connected socket and TLS runs inside the sandbox, so the request path carrying the key is encrypted
+before it leaves, and the mediator records a host and a port. An integration's own credential stays
+the integration's, which is why S2 is stated about the *platform's* credential and not about this
+kind. After the run the key's value was searched for in the result and the console output and
+appeared in neither. The scrubber, for its part, found nothing to replace, so this run did not
+exercise it against a real leak.
+
+### 7.34.2 The two things that did not go as predicted
+
+**The temperatures differ, and the difference is the data's.** The equality check fails: 17.6 against
+17.6166666666667. Pirate Weather's default unit system is `us`, so the integration receives degrees
+Fahrenheit and Home Assistant converts them; 17.6166… is 63.71 °F and 17.6 is exactly 63.68 °F. Its
+`currently` value is minute-resolution: queried directly from the Pi one minute apart, it read 63.59
+and then 63.56 °F. Arms A and B fetched about a minute apart, so they read different minutes. This is
+§7.31.5's `regensburg_transport` case again — a live value moving between arms — and the check is
+left failing with its reason rather than loosened. §7.31.10 already records that an equality check
+is the wrong test for live data.
+
+**Arm C fails in the integration's own error handling.** The prediction was that the refused
+validation call would surface as the flow's own error. It surfaced as `UnboundLocalError: cannot
+access local variable 'api_status'`: the flow's `except ClientError` branch logs a variable that was
+never assigned, because the call raised before assigning it. Any network failure during setup would
+reach the same line with no sandbox involved, so this is a defect in the integration and not a cost
+of confinement. It is also a reminder of §7.31.5's point that what a withdrawn grant looks like to a
+user depends on the integration's error handling.
+
+### 7.34.3 One connection, several requests
+
+Arm B made a single connection, and the mediator recorded a single grant, although the flow's
+validation request and the coordinator's fetch are separate requests. The platform's client session
+keeps connections alive, so both travelled over the one socket the mediator had handed over. **The
+mediator authorises connections, not requests.** That does not widen what the sandbox can reach — the
+connection goes only to the declared host and port — but it bounds what the audit record can say: it
+attributes a connection to a clause and cannot distinguish the requests made over it. That is the
+same property that keeps the key out of the mediator's records, seen from the other side.
+
+### 7.34.4 What this does not establish
+
+- **Re-authentication and token refresh are still untested.** Pirate Weather's key is static, so the
+  phase where egress demand appears at refresh rather than at setup has still not been looked at.
+- **One integration, one service.** The ceiling of §7.17.1 is unchanged and remains a property of the
+  ecosystem. What changes is that "the credentialed path is untested" becomes "untested at scale, and
+  here is one worked instance in which it holds".
+- **The secret persisted in the stripped instance's own storage** for the length of the run, inside
+  the sandbox's data directory, which is removed afterwards. That it was stored there and used is
+  exercised; what a long-lived sandbox should do with it is not.
+
+Predictions: five of six held. P2, the equality, failed for the reason above.
 
 ---
 
