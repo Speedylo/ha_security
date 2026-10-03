@@ -1,8 +1,37 @@
 # Where the rebuild stands
 
-**Last updated 2026-10-03. Resume from the T-table directly below — it is the only live plan in this
-file.** Everything after it is history, newest first: earlier resume points are kept as record and
-are superseded, not live. Deadlines are deliberately out of scope for now (Younes, 2026-10-03).
+**Last updated 2026-10-03 (evening). The live plan is `notes/remaining_work_20261003.md` — read it
+first.** It holds the order of the remaining work and the explanations behind it: the two Home
+Assistants, the push loop, and why the push loop drags §8.7 #14 in with it. The T-table below is
+**finished** (T1–T6 and §7.35 all done) and is now history, kept for the record. Everything after it
+is older history, newest first.
+
+**In one screen — where we are, 2026-10-03:**
+
+| | Status |
+|---|---|
+| Engineering T1–T6, §7.35 small debts | ✅ done; all 20 suites + base `selftest` pass on the Pi |
+| `report/` | current to §7.35; `toc.py --check` passes |
+| `submission/` draft | **stale** (nineteen suites, one-in-five, §12.8 depth series) — rewrite in phase R |
+| Diary 1 (`Diary1.docx`) | filled; **Younes to add** the supervisor name and meeting summary; diary vs proposal timeline mismatch to raise with the supervisor |
+| Time left | **at least 1.5–2 months** before the final report (Younes, 2026-10-03) |
+
+**The plan from 5 Oct** (detail in the note):
+
+| Weeks | Phase | Work |
+|---|---|---|
+| 1–2 | **W1** | Real Home Assistant component (bridge + `RealPlatform`) **+ push loop + §8.7 #14 re-check trigger**: one coupled job |
+| 3 | **W2** | (c) bytecode cache in a sandbox (minutes, first) · (a) a plain-`socket` integration confined · (b) UDP in a real sandbox, plus asyncio datagram endpoints · (d) token refresh, if a free OAuth integration exists |
+| — | **cut-off** | **No new engineering after week 3** |
+| 4–6 | **R** | Submission rewrite (checklist item 5), ~8 figures from source, appendices B–F, first read-through, `[To verify]` citations, title-page fields |
+| 7 | **D** | Presentation + live or recorded demo; viva rehearsal |
+| ongoing | — | `notes/learning_curriculum.md` |
+
+Future work that stays future work: §8.7 #3, #9, #10, #11, #13 (#14 moves into W1).
+
+---
+
+*History from here down.*
 
 **Proposal track, 2026-09-17.** The programme's EGR 4402 *Capstone Project Proposal* template arrived (`CSC_Capstone_Project_Proposal_Template-1.docx`) and must be filled and submitted. Content lives in `proposal/proposal.md`; `python3 proposal/build_proposal.py` fills the template into `proposal/capstone_proposal.docx`. **It is written prospectively, as if the work began 31 Aug 2026** (Younes's instruction) — the timeline is an estimate on that assumption, and success-criteria targets are set as pre-registered thresholds, not as the measured results. Still owed from Younes: student ID, supervisor, submission date.
 
@@ -193,7 +222,7 @@ that does not belong in the report, including anticipated viva questions.
 | `experiments/egress_shape/` | ✅ **Pi 5, 2026-09-03, §7.24. What the proxy must do, measured before it is built.** Twelve head-corpus integrations, unconfined with real network, driven through their own config flows. **Three of §5.10.3's assumptions fail**: resolution is 96% `aiodns` not `getaddrinfo` (3,073 vs 120, uniform 93–97%); ports 8123/6445/20086 as well as 443; UDP is real. Inbound is not needed. Three network stacks (aiohttp, urllib3, raw), TLS via both `wrap_bio` and `wrap_socket`, all verified. **It also answers §7.18's "no observational method can answer this"** — that binds *how much*, not *what shape*, because a flow validates a credential by making the call. Instrument is `framework/confine/netshape.py`, 13/13 self-test on both architectures, paired with `strace`, which bounds its blind spot at 74–87% of kernel egress |
 | `experiments/host_isolation_probe/` | ✅ **Pi 5, 2026-08-24; re-run 2026-08-25.** Namespaces (unprivileged), seccomp and cgroup v2 all present. `memory` was absent on the stock install; after the boot change it is present **and the cap is verified to bite, unprivileged**. Feeds §5.7.4 |
 
-## Next session — start here
+## Next session — start here *(superseded — history; the live plan is at the top of this file)*
 
 **Superseded 2026-10-03: the live plan is the T-table at the top of this file.** What this section
 held on 2026-09-06 — C1, pass 3, the handbook lookup, defence prep — is either done or recorded there.

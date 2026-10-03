@@ -327,3 +327,28 @@ They are not convertible to a calendar while §9.7's first row stands.
 Not superseded: `00_METHOD.md` in its entirety, §2's argument for why the rebuild was not extra
 work, §3's fixed points, and §4's three tracks. Track A is complete, Track B is where the work now
 is, and Track C never started.
+
+
+# 10. Re-fit of 2026-10-03
+
+**This supersedes §9's phases for everything that remains.** The live plan, with its reasoning, is
+`notes/remaining_work_20261003.md`, summarised at the top of `STATE.md`.
+
+Since §9: the evaluation chapter ran to §7.35, and T1–T6 (T12's measurement; three more real
+integrations end to end, with the defects they found; a credentialed integration; the durable audit
+log wired everywhere; the API surface on the uniform corpus; every suite re-run) are done. Younes
+reports **at least 1.5–2 months** before the final report. That leaves room for one coupled
+engineering job before writing:
+
+1. **W1 (weeks 1–2):** the real Home Assistant component, the push loop, and §8.7 #14's explicit
+   re-check trigger. The push loop needs a long-lived mediator, which removes the accidental per-spawn
+   manifest re-read that T12 currently relies on.
+2. **W2 (week 3):** the bytecode cache in a sandbox, a plain-`socket` integration confined, UDP across
+   real namespaces plus asyncio datagram endpoints, and token refresh if feasible.
+3. **Cut-off:** no new engineering after week 3.
+4. **R (weeks 4–6):** submission rewrite, figures, appendices B–F, read-through.
+5. **D (week 7):** presentation, demo, viva rehearsal.
+
+The rules of §3 and §6 stand unchanged: predictions before measurement, corrections by dated pointer,
+and every figure reproducible from a committed result file.
+
