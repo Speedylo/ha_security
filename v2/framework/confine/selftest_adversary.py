@@ -38,6 +38,8 @@ import tempfile
 from pathlib import Path
 
 from .channel import Channel
+from .audit import attach
+from .audit import summarise as durable_summary
 from .cgroup import Delegation, ResourceLimits, SandboxCgroup
 from .manifest import Manifest, policy_for
 from .mediator import Mediator
@@ -420,6 +422,10 @@ MEDIATED = [
     ("enumerate everyone's config entries", {"op": "config_entries.list"}),
     ("reach a host it did not declare", {"op": "network.egress", "host": "evil.invalid"}),
     ("an operation that does not exist", {"op": "platform.eval", "code": "1"}),
+    # T4. Decided on `service` and, until T4, *recorded* against `entity` — a field the
+    # sandbox chose. The decision was never wrong; the audit trail of it could be made to lie.
+    ("misdirect the audit log", {"op": "service.call", "service": "lock.unlock",
+                                 "entity": "sensor.outdoor_temperature"}),
 ]
 if sock is None:
     emit({"family": "mediated", "attack": "ask the mediator for anything at all",
@@ -431,6 +437,17 @@ else:
         emit({"family": "mediated", "attack": label,
               "outcome": "PERMIT" if answer.get("ok") else "DENY",
               "detail": answer.get("clause") or ""})
+    # T4, and last because it costs the channel: a frame that is not JSON. The mediator must drop
+    # this sandbox and nothing else — and, from T4, record that it did, durably.
+    junk = b"{not json"
+    sock.sendall(struct.pack(">I", len(junk)) + junk)
+    try:
+        closed = sock.recv(4) == b""
+    except OSError:
+        closed = True
+    emit({"family": "mediated", "attack": "send the mediator a malformed frame",
+          "outcome": "DENY" if closed else "PERMIT",
+          "detail": "channel closed by the mediator" if closed else "the mediator answered"})
     sock.close()
 
 
@@ -468,12 +485,14 @@ def main() -> int:
 
     root = Path(tempfile.mkdtemp(prefix="confine-adversary-"))
     mediator = Mediator()
+    audit_dir = attach(mediator, "confine-adversary-audit-")
+    durable: dict = {}
     try:
         layout = build_config(root)
         manifest = Manifest.load(layout["own"], root)
         mediator.policy = policy_for({"demo_adversary": manifest})
         mediator_end, sandbox_end = Channel.pair()
-        mediator.register("demo_adversary", Channel(mediator_end))
+        mediator.register("demo_adversary", Channel(mediator_end), component=layout["own"])
 
         script = (f"CONFIG_ROOT = {json.dumps(str(root))}\n"
                   "def _raise():\n"
@@ -509,6 +528,7 @@ def main() -> int:
         Path(err.name).unlink(missing_ok=True)
     finally:
         shutil.rmtree(root, ignore_errors=True)
+        durable = durable_summary(mediator, audit_dir, keep_records=True)
 
     report = [json.loads(line) for line in text.splitlines() if line.startswith("{")]
     if os.WIFSIGNALED(status):
@@ -525,7 +545,33 @@ def main() -> int:
         if diagnostic:
             print("  said: " + "\n        ".join(diagnostic.splitlines()[-20:]))
         return 1
-    return render(report)
+    verdict = render(report)
+    return verdict or durable_verdict(durable)
+
+
+def durable_verdict(durable: dict) -> int:
+    """T4: what the durable record says about the attacks, beside what the attacks said."""
+    log = durable.get("log") or []
+    decoy = [r for r in log if r.get("kind") == "decision" and r.get("op") == "service.call"
+             and (r.get("requested") or {}).get("entity")]
+    checks = [
+        (durable.get("ok"), "the durable record verifies and reconciles with the in-memory one",
+         "; ".join((durable.get("breaks") or []) + (durable.get("reconcile") or []))[:300]),
+        (durable.get("runs") == 1, "one run record, written by register()",
+         f"{durable.get('runs')} run records"),
+        (bool(decoy) and all(r.get("target") == "lock.unlock" for r in decoy),
+         "the decoy entity is recorded as requested, and the target is the service decided on",
+         str([(r.get("target"), r.get("requested")) for r in decoy])),
+        (any(r.get("kind") == "protocol_error" for r in log),
+         "the malformed frame is in the durable record", "no protocol_error record"),
+    ]
+    print("\n  the durable record (T4)")
+    for ok, label, detail in checks:
+        print(f"    {'ok  ' if ok else 'FAIL'}  {label}" + ("" if ok else f"\n          {detail}"))
+    if all(ok for ok, _, _ in checks):
+        return 0
+    print("FAILED — the durable record disagrees with what happened.")
+    return 1
 
 
 def render(report: list[dict]) -> int:

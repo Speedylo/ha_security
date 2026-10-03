@@ -25,6 +25,8 @@ import tempfile
 from pathlib import Path
 
 from .channel import Channel
+from .audit import attach, report_durable
+from .audit import summarise as durable_summary
 from .cgroup import Delegation, ResourceLimits, SandboxCgroup
 from .manifest import Manifest, policy_for
 from .mediator import Mediator
@@ -110,6 +112,7 @@ def main() -> int:
 
     root = Path(tempfile.mkdtemp(prefix="confine-channel-"))
     mediator = Mediator()
+    audit_dir = attach(mediator, "confine-channel-audit-")
     sandboxes = []
     outputs = {}
     cgroups = []
@@ -128,7 +131,7 @@ def main() -> int:
             # §5.11.2: the pair exists before the sandbox does. The supervisor is the only
             # party that can create this mapping, which is what makes it trustworthy.
             mediator_end, sandbox_end = Channel.pair()
-            mediator.register(domain, Channel(mediator_end))
+            mediator.register(domain, Channel(mediator_end), component=component)
 
             script = (f"CLAIM = 'demo_a'\nROUND_TRIPS = {ROUND_TRIPS}\n" + INSIDE)
             spec = SandboxSpec(domain=domain, own_dir=str(component), data_dir=str(data),
@@ -154,8 +157,9 @@ def main() -> int:
         for f in outputs.values():
             Path(f.name).unlink(missing_ok=True)
         shutil.rmtree(root, ignore_errors=True)
+        durable = durable_summary(mediator, audit_dir)
 
-    return render(mediator, reports)
+    return render(mediator, reports) or report_durable(durable)
 
 
 def render(mediator: Mediator, reports: dict[str, dict]) -> int:

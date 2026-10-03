@@ -308,7 +308,7 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **S4** | An integration is denied a host declared only by a *different* integration | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met — §7.25.** Two confined integrations, running at once, each denied the host declared only by the other — evidenced by the mediator's own audit record |
 | **S5** | A manifest permitting `lock.lock` is shown not to permit `lock.unlock`, and the refusal is structural rather than a check | §6.10.1 — re-verified in the evaluation run | ✅ **Met** — §7.16.1 — a manifest declaring `lock.lock` does not permit `lock.unlock`, and `lock.*` is rejected at **parse** time rather than at the point of use |
 | **S6** | An integration with **no** manifest and one with an **unparseable** manifest are each denied all mediated capability, each refusal naming its rule | Security | ✅ **Met** — §7.16.2 — `selftest_policy`: absent and unparseable manifests each denied all mediated capability, each refusal naming the rule |
-| **S7** | Decisions appear in the log bearing the integration's three-part identity, and modification, deletion **and reordering** are each independently detectable by both the hash chain and the keyed MAC chain | §6.8 — re-verified | ✅ **Met** — §7.16.2 — `selftest_audit`: modification, deletion and reordering each detected, and the hash chain and keyed MAC chain fail **independently**. §8.6.3 #7 states the key’s lifetime |
+| **S7** | Decisions appear in the log bearing the integration's three-part identity, and modification, deletion **and reordering** are each independently detectable by both the hash chain and the keyed MAC chain | §6.8 — re-verified | ✅ **Met** — §7.16.2 — `selftest_audit`: modification, deletion and reordering each detected, and the hash chain and keyed MAC chain fail **independently**. §8.6.3 #7 states the key’s lifetime. **Updated 2026-10-03 (§7.32):** until then the first clause held only in the suite — outside it no run record was written, so durable decisions bore no identity. Now met in every harness that decides, reconciled against the in-memory record |
 | **S8** | The 2021 file-theft pattern **succeeds against an unconfined baseline installation** and is blocked under the framework, on the same host and release | Security — **requires the baseline arm** | ✅ **Met, paired** — §7.13.2 — the 2021 file-theft pattern recovers **2 of 2** canaries unconfined and **0 of 2** confined on the same host and release; `open("../../secrets.yaml")` raises `FileNotFoundError`, not `PermissionError` |
 | **S9** | An integration deliberately exhausting CPU, memory and disk in turn does not render the gateway unresponsive, demonstrated unprivileged, with the boot-time precondition stated | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met, against narrowed wording — §7.22.** All four bounds now come from the manifest and each is verified by a sandbox exceeding it: memory OOM-killed, forks refused at the cap, a 25% CPU cap holding at 25.1%, `ENOSPC` at `disk_mb`. **Disk means space, not I/O bandwidth** — the `io` controller is not delegated to a user manager (§7.22.2), so S9's text is narrowed on evidence and the residual is stated |
 | **N1** | Added latency, per-integration memory and maximum concurrent integrations are all reported against an unconfined baseline on the target hardware. **No threshold** — §3.6 fixed this position in advance | Performance | ✅ **Met as specified** — §7.19–§7.20 — latency to 26 sandboxes, per-sandbox memory and maximum concurrency all reported against an unconfined baseline on the C4 device. **No threshold, by §3.6’s position fixed in advance**; the figures are reported and discussed, and P4 was falsified doing it |
@@ -3216,7 +3216,9 @@ What holds:
   `source` alone, and `describe(code_changed=True)` says the code has changed **and that the
   permissions have not**. A warning that implied the grant had moved would be worse than none.
 - **Both runs are recoverable from the durable log.** Two `run` records with different
-  `identity.manifest` and identical `identity.source`; each decision names the run that made it,
+  `identity.manifest` and identical `identity.source`; each decision names the run that made it
+  *(true here because this suite calls `run()` itself; no harness did until §7.32 made
+  `register()` write it)*,
   so a decision maps to a declaration; the revoked host appears as a **denial, not an absence**;
   and both the hash and MAC chains verify across the version change.
 
@@ -3837,6 +3839,109 @@ That completes the re-measurement. Every experiment in this report that runs on 
 `build_hass` has now been run on the corrected instance, and the only figures that moved are §7.17's
 end-to-end cost (§7.31.6), §7.24's resolution share (§7.31.11), and §6.12's memory figures, by
 amounts inside their own measured variability.
+
+## 7.32 The durable audit log, engaged where decisions are made
+
+**2026-10-03.** S7 is claimed of `AuditLog`: append-only, fsynced before the action it records,
+with a hash chain and a keyed MAC chain over it. Until this section, every experiment in this
+chapter except §7.27 and §7.31 recorded the mediator's decisions in `mediator.audit` instead, an
+in-memory list with none of those properties, and the one run that did engage the durable log
+(§7.27.6) produced three defects in a session. This section engages it everywhere a mediator decides
+something real, and after each run reconciles the durable record against the in-memory one, decision
+by decision. The two harnesses that measure latency and memory are left out deliberately, because an
+fsync per decision would change the quantity they measure, and §7.20.1 measured durability on its
+own. Predictions are in `notes/t4_auditlog_wiring_prediction.md`.
+
+### 7.32.1 Three defects, found by reading the code in order to wire it
+
+None of the three needed a run to find. Each came from reading what the wiring would have to touch.
+
+**No run record was ever written outside two self-tests.** §5.12.2 requires one per sandbox
+construction, carrying the integration's three-part identity, and every decision record names its
+run so that a decision maps to the code that asked for it. `AuditLog.run()` exists and is correct.
+But `Mediator.register()` took `run_id=""` by default and no harness passed one, so in §7.27 and
+§7.31 every durable decision named a run that no record carried. Only `selftest_audit` and
+`selftest_t12` called `run()`, and they called it directly. This is §7.30.6's shape a second time:
+a suite holding the right values in local variables proves the function works and never asks whether
+anything at runtime calls it.
+
+**Protocol errors never reached the durable log.** When a sandbox sends a frame the mediator cannot
+parse, the mediator drops that sandbox's channel and records the event, but only in memory. A
+malformed frame is exactly what a hostile sandbox produces, so the one event S7 most needs
+attributable was the one the durable record never saw.
+
+**The sandbox chose what the log said a decision was about.** `decision()` picked its target by
+precedence from whatever fields the request carried, taking `entity` before `service`. A
+`service.call` for `lock.unlock` that also carried `"entity": "sensor.harmless"` was decided on the
+service, correctly, and recorded against the sensor. Run against the unfixed code, that request
+produced a durable record whose target was `sensor.harmless`. The decision was never wrong. The
+audit trail of it could be made to say something else, by the party being audited.
+
+### 7.32.2 What changed
+
+The target is now computed by one function, `audit.target_of`, which the manifest's policy also
+calls, so the target a decision is made on and the target its record names cannot diverge. The
+first version of that fix introduced a regression of its own: an egress request naming no port is
+decided on `None`, so the record no longer said which host was attempted. The record now carries
+`requested` beside `target`, holding the sandbox's own fields and labelled as its claim, in the way
+`claimed` already held its claimed identity.
+
+`register()` now writes the run record itself when the mediator has a durable log, and refuses to
+register a sandbox without the directory its identity is computed from. That is the same move
+`ResourceLimits` made for cgroups: there is no longer a way to reach the call with the record
+quietly skipped. The run record also names the identity the mediator bound the socket to, since two
+sandboxes of one component can be bound under different names, and a reader should not have to
+infer which run a decision belonged to from a directory name. Protocol errors are written durably.
+
+`audit.reconcile` compares the two records entry by entry: the same count, the same operation,
+verdict and clause for each decision, protocol errors in the same places, and every decision naming
+a run record for the same integration. A reconciliation that always reported nothing would make every
+harness pass, so `selftest_audit` shows each of its findings firing on a mutated record before any
+harness relies on its silence. The suite gained eight checks for this and for the three defects.
+
+### 7.32.3 The result
+
+| Harness | Run records | Durable decisions | Reconciled |
+|---|---|---|---|
+| adversary suite (§7.13) | 1 | 8, and the malformed frame | ✅ — the decoy is recorded with target `lock.unlock`, and the malformed frame is in the record |
+| channel suite (§6.5) | 2 | 4,004 | ✅ |
+| reads suite (§7.14) | 1 | 15 | ✅ |
+| bridge suite (§6.10) | 1 | 3 | ✅ |
+| gc suite (§7.15) | 1 | 0 | ✅ |
+| egress, two sandboxes (§7.25) | 2 | — | ✅ — one run each, every decision naming its own |
+| §7.17's five, end to end | 5 | 44 | ✅ |
+| `smhi_brandrisk`, four arms (§7.31) | 1 per arm | — | ✅ — 20 of 20 checks |
+| compatibility, head corpus (§7.12) | 38 | **0** | ✅ |
+
+Every chain verifies, every record reconciles, and the fsync cost pushed nothing past a timeout; the
+channel suite's 4,004 durable decisions are the largest number any harness makes. All twenty suites
+and the base self-test pass.
+
+The last row is the one to read. **The compatibility measurement never asks the mediator anything.**
+Thirty-eight sandboxes ran and not one decision was made, because `inspect()` imports an integration
+and its platforms and sets nothing up that would need the platform. Engaging the log there therefore
+costs nothing. It also means §7.12's and §7.23's figures say nothing about the mediator at all: they
+measure whether integrations load in the sandbox, which is what they were designed for, and they
+should not be read as having exercised the decision path.
+
+### 7.32.4 The predictions, and what this establishes
+
+Five of the six predictions held: with the three defects fixed every harness reconciles, every chain
+verifies, the decoy is recorded as requested, the malformed frame is recorded, and no timeout was
+reached. The sixth, that something not listed would be found, held only in a qualified way. The run
+found nothing. Everything was found before it, by reading the code in order to wire it, including the
+regression in the first fix. That is still the argument for the item: wiring the durable log was
+likelier to find something than to confirm something, and it did find something, though in reading
+rather than in running.
+
+**Established.** S7's property now holds where the framework runs, not only in its own suite: every
+decision a mediator makes in this artifact is recorded durably, chained, attributable to a run record
+carrying the integration's identity, and named by what it was decided on.
+
+**Not established.** The latency and memory harnesses still record in memory, by design. The log's
+directory is not fsynced when the file is first created, so on some filesystems the first record of a
+new log could be lost with its directory entry in a crash; no measurement here exercises that. And the
+key still dies with the mediator, as §8.6.3 item 7 states.
 
 ---
 

@@ -39,6 +39,8 @@ from collections import Counter
 from dataclasses import replace
 from pathlib import Path
 
+from .audit import attach
+from .audit import summarise as durable_summary
 from .cgroup import Delegation, SandboxCgroup
 from .channel import Channel
 from .manifest import Manifest
@@ -260,6 +262,10 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
     """One integration, one sandbox. Nothing is shared between them but the corpus on disk."""
     root = Path(tempfile.mkdtemp(prefix=f"compat-{domain}-"))
     mediator = Mediator()
+    # T4: the durable log, engaged and reconciled. Every compatibility figure in this report was
+    # produced with decisions recorded only in memory; this is the first run where they are not.
+    audit_dir = attach(mediator, f"compat-audit-{domain}-")
+    durable: dict = {}
     integrity = None
     try:
         own = root / "custom_components" / domain
@@ -287,7 +293,7 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
         manifest = Manifest.load(own, root)
         mediator.policy = acting_policy({domain: manifest}, Platform())
         mediator_end, sandbox_end = Channel.pair()
-        mediator.register(domain, Channel(mediator_end))
+        mediator.register(domain, Channel(mediator_end), component=own)
 
         spec_file = root / "sandbox-spec.json"
         components = list(setup_components or [])
@@ -348,17 +354,19 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
         return {"domain": domain, "level": "sandbox_failed", "error": str(err)[:200]}
     finally:
         shutil.rmtree(root, ignore_errors=True)
+        durable = durable_summary(mediator, audit_dir)
 
     if not text:
         return {"domain": domain, "level": "no_report", "oom": oom, "status": status,
-                "install": install, "integrity": integrity,
+                "install": install, "integrity": integrity, "durable": durable,
                 "error": diagnostic.splitlines()[-1][:200] if diagnostic else ""}
     report = json.loads(text.splitlines()[-1])
     if "fatal" in report:
         return {"domain": domain, "level": "fatal", "install": install,
-                "integrity": integrity,
+                "integrity": integrity, "durable": durable,
                 "error": report["fatal"].splitlines()[-1][:200]}
     report["integrity"] = integrity
+    report["durable"] = durable
     report["oom"] = oom
     report["peak_mb"] = round(peak / 2**20, 1)
     report["install"] = install
@@ -612,6 +620,15 @@ def main() -> int:
     # §7.28 / §8.7 #4. Until this ran, C1 rested on reading two lines of the harness: that the
     # confined arm copies and mounts read-only, and that no modification had ever been
     # observed. Neither is a count, and §7.4.1 had claimed one for months.
+    # T4 — the durable record beside the in-memory one, for every sandbox that ran.
+    logged = [r.get("durable") for r in results + arm_b if r.get("durable")]
+    if logged:
+        bad = [r["domain"] for r in results + arm_b if r.get("durable") and not r["durable"]["ok"]]
+        print(f"\n  S7 — the durable audit log, engaged ({len(logged)} sandboxes)")
+        print(f"    run records                       {sum(d['runs'] for d in logged)}")
+        print(f"    decisions recorded durably        {sum(d['decisions'] for d in logged)}")
+        print(f"    chains or reconciliation failing  {len(bad)} {bad[:6] if bad else ''}")
+
     c1 = integrity_summary(results + arm_b)
     print(f"\n  C1 — integrations run unmodified ({'baseline' if baseline else 'confined'} arm)")
     if not c1["integrations_checked"]:

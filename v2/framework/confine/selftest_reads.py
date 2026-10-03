@@ -35,6 +35,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from .audit import attach, report_durable
+from .audit import summarise as durable_summary
 from .cgroup import Delegation, ResourceLimits, SandboxCgroup
 from .channel import Channel
 from .home import DECLARED, HOME, entity_ids, probe_set, sensitive_ids
@@ -77,6 +79,7 @@ def arm_unconfined(python: Path) -> dict:
 def arm_confined(python: Path) -> dict:
     root = Path(tempfile.mkdtemp(prefix="reads-confined-"))
     mediator = Mediator()
+    audit_dir = attach(mediator, "confine-reads-audit-")
     try:
         own = root / "custom_components" / "demo_weather"
         own.mkdir(parents=True)
@@ -95,7 +98,7 @@ def arm_confined(python: Path) -> dict:
         manifest = Manifest.load(own, root)
         mediator.policy = acting_policy({"demo_weather": manifest}, platform)
         mediator_end, sandbox_end = Channel.pair()
-        mediator.register("demo_weather", Channel(mediator_end))
+        mediator.register("demo_weather", Channel(mediator_end), component=own)
 
         spec_file = root / "spec.json"
         spec_file.write_text(json.dumps({
@@ -131,12 +134,14 @@ def arm_confined(python: Path) -> dict:
         return {"arm": "confined", "fatal": str(err)[:300]}
     finally:
         shutil.rmtree(root, ignore_errors=True)
+        durable = durable_summary(mediator, audit_dir)
 
     if not text:
         tail = diagnostic.splitlines()
         return {"arm": "confined", "fatal": tail[-1][:300] if tail else "no output"}
     report = json.loads(text.splitlines()[-1])
     report["arm"] = "confined"
+    report["durable"] = durable
     report["decisions"] = list(mediator.audit)
     return report
 
@@ -256,7 +261,7 @@ def main() -> int:
     if args.json:
         args.json.write_text(json.dumps({"unconfined": unconfined, "confined": confined},
                                         indent=2) + "\n")
-    return render(unconfined, confined)
+    return render(unconfined, confined) or report_durable(confined.get("durable"))
 
 
 if __name__ == "__main__":

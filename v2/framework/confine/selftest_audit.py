@@ -18,7 +18,9 @@ import sys
 import tempfile
 from pathlib import Path
 
-from .audit import GENESIS, AuditLog, Identity, _canonical
+from .audit import GENESIS, AuditLog, Identity, _canonical, reconcile
+from .channel import Channel
+from .mediator import Decision, Mediator
 
 PERMISSIONS = {"schema_version": 1, "entities": {"read": ["sensor.outdoor_temperature"]}}
 
@@ -191,6 +193,69 @@ def main() -> int:
         check("...and the record says what was permitted",
               durable[-1]["allowed"] and durable[-1]["target"] == "lock.lock",
               f"{durable[-1]['op']} {durable[-1]['target']}", failures)
+
+        # -- T4: the record names what was decided, and the instrument that compares records --
+        print("\n  T4 — what the record names, and the check that compares it with memory")
+        log3 = AuditLog(path=root / "t4.jsonl")
+        decoy = log3.decision("r", "demo", {"op": "service.call", "service": "lock.unlock",
+                                            "entity": "sensor.harmless"}, False, None, "no")
+        check("a decoy entity does not become the recorded target of a service call",
+              decoy["target"] == "lock.unlock"
+              and decoy["requested"].get("entity") == "sensor.harmless",
+              f"target={decoy['target']!r} requested={decoy['requested']}", failures)
+        portless = log3.decision("r", "demo", {"op": "network.egress", "host": "evil.invalid"},
+                                 False, "/permissions/network/egress", "no")
+        check("...and a refused request still records what it asked for",
+              portless["requested"] == {"host": "evil.invalid"},
+              str(portless["requested"]), failures)
+
+        # A mediator with a log, driven over a real socket pair, then mutated three ways. A
+        # reconciliation that reported nothing would pass every harness T4 wired, so each of its
+        # findings is shown firing here before any harness relies on its silence.
+        mediator = Mediator(policy=lambda identity, request: Decision(
+            request.get("op") == "entity.read", "test", clause="/permissions/entities/read/0"))
+        mediator.log = AuditLog(path=root / "t4-mediated.jsonl")
+        try:
+            mediator.register("demo", Channel(Channel.pair()[0]))
+            refused = False
+        except ValueError:
+            refused = True
+        check("a mediator with a log refuses to register a sandbox it cannot name the code of",
+              refused, "ValueError raised" if refused else "register() accepted no component",
+              failures)
+
+        mine, theirs = Channel.pair()
+        mediator.register("demo", Channel(mine), component=component)
+        peer = Channel(theirs)
+        peer.send({"id": 1, "op": "entity.read", "entity": "sensor.a"})
+        mediator._handle_ready(mine.fileno())
+        peer.recv()
+        peer.send({"id": 2, "op": "service.call", "service": "lock.unlock"})
+        mediator._handle_ready(mine.fileno())
+        peer.recv()
+        theirs.sendall((9).to_bytes(4, "big") + b"{not json")
+        mediator._handle_ready(mine.fileno())
+        records = mediator.log.records()
+        check("register() writes the run record, and every decision names it",
+              reconcile(mediator.audit, records) == [],
+              "; ".join(reconcile(mediator.audit, records))
+              or f"{len(records)} records, 0 disagreements", failures)
+        check("...and a malformed frame reaches the durable record",
+              any(r.get("kind") == "protocol_error" for r in records),
+              str([r.get("kind") for r in records]), failures)
+
+        decisions = [r for r in records if r.get("kind") == "decision"]
+        mutations = {
+            "a durable decision missing": [r for r in records if r is not decisions[0]],
+            "a verdict that differs": [dict(r, allowed=not r["allowed"]) if r is decisions[1]
+                                       else r for r in records],
+            "a decision naming a run nobody recorded": [dict(r, run="ffff") if r is decisions[0]
+                                                        else r for r in records],
+        }
+        for label, mutated in mutations.items():
+            found = reconcile(mediator.audit, mutated)
+            check(f"reconcile catches {label}", bool(found),
+                  found[0] if found else "it reported nothing", failures)
     finally:
         shutil.rmtree(root, ignore_errors=True)
 

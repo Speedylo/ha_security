@@ -46,6 +46,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from .audit import attach
+from .audit import summarise as durable_summary
 from .cgroup import Delegation, ResourceLimits, SandboxCgroup
 from .channel import Channel
 from .egress import EgressBroker
@@ -261,7 +263,7 @@ def spawn(python: Path, platform_deps: Path | None, root: Path, layout: dict,
     """
     try:
         mediator_end, sandbox_end = Channel.pair()
-        mediator.register(identity, Channel(mediator_end))
+        mediator.register(identity, Channel(mediator_end), component=layout["component"])
 
         spec_file = root / "sandbox-spec.json"
         spec_file.write_text(json.dumps({
@@ -373,6 +375,7 @@ def main() -> int:
     broker = EgressBroker(connect_timeout=15.0)
     relay = UdpRelay()
     mediator = Mediator()
+    audit_dir = attach(mediator, "confine-egress-sandboxed-audit-")
     mediator.policy = acting_policy(
         {"demo_egress-a": manifest_a, "demo_egress-b": manifest_b},
         platform, broker=broker, relay=relay)
@@ -388,6 +391,7 @@ def main() -> int:
 
     report_a = finish(handle_a)
     report_b = finish(handle_b)
+    durable = durable_summary(mediator, audit_dir)
 
     print("egress, sandboxed — F2 and S4 with real namespaces and a real host\n")
 
@@ -457,6 +461,14 @@ def main() -> int:
           str(sorted({e["identity"] for e in mediator.audit})))
 
     print()
+    # T4: two sandboxes on one mediator, so two run records, and every decision must name the
+    # run of the sandbox that asked — the attribution S4 is about, now checked in the record S7
+    # is claimed of rather than only in memory.
+    check(results, durable["ok"] and durable["runs"] == 2,
+          "S7 — the durable record holds two runs, verifies, and matches the in-memory record "
+          "decision by decision (T4)",
+          "; ".join(durable["breaks"] + durable["reconcile"])[:300] or f"runs={durable['runs']}")
+
     passed = sum(1 for ok, _ in results if ok)
     print(f"{passed}/{len(results)} checks passed")
     if passed < len(results):

@@ -21,9 +21,10 @@ from __future__ import annotations
 import os
 import selectors
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Callable
 
-from .audit import AuditLog
+from .audit import AuditLog, Identity
 from .channel import Channel, ProtocolError
 
 
@@ -68,8 +69,23 @@ class Mediator:
     _by_fd: dict[int, tuple[str, Channel]] = field(default_factory=dict)
     _selector: selectors.BaseSelector = field(default_factory=selectors.DefaultSelector)
 
-    def register(self, identity: str, channel: Channel, run_id: str = "") -> None:
-        """Bind one socket to one integration. The only place identity is ever established."""
+    def register(self, identity: str, channel: Channel, run_id: str = "", *,
+                 component: Path | None = None, provenance: str = "author-declared") -> None:
+        """Bind one socket to one integration. The only place identity is ever established.
+
+        **With a durable log attached, this is also where the run record is written** (T4).
+        §5.12.2 requires one per sandbox construction, carrying the full identity, so that every
+        decision names the code that asked for it. Until T4 nothing outside two self-tests ever
+        wrote one: `run_id` defaulted to `""`, no harness passed one, and every durable decision
+        named a run no record carried. A mediator with a log now refuses to register a sandbox
+        without the directory its identity is computed from — the same move `ResourceLimits`
+        made for `SandboxCgroup.create`: no way to reach this with the record quietly skipped.
+        """
+        if self.log is not None and not run_id:
+            if component is None:
+                raise ValueError(f"{identity}: a mediator with a durable log must be told which "
+                                 f"component it is running, so the run can be recorded")
+            run_id = self.log.run(Identity.compute(Path(component)), provenance, identity)
         self._by_fd[channel.fileno()] = (identity, channel)
         self._runs[identity] = run_id
         self._selector.register(channel.sock, selectors.EVENT_READ)
@@ -106,6 +122,8 @@ class Mediator:
             # not let one sandbox's malformed frame reach any other sandbox.
             self.audit.append({"identity": identity, "event": "protocol_error",
                                "detail": str(err)})
+            if self.log is not None:
+                self.log.protocol_error(self._runs.get(identity, ""), identity, str(err))
             self.unregister(fd)
             return
         if request is None:

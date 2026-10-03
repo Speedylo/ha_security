@@ -31,6 +31,7 @@ from enum import Enum
 from pathlib import Path
 
 from .cgroup import ResourceLimits
+from .audit import target_of
 from .mediator import Decision
 from .sandbox import GrantRefused, reject_forbidden
 
@@ -390,34 +391,9 @@ class Manifest:
 
     @staticmethod
     def _target_of(operation: str, request: dict) -> str | None:
-        if operation.startswith("entity."):
-            return request.get("entity")
-        if operation == "service.call":
-            service = request.get("service")
-            if service is None and "domain" in request:
-                service = f"{request['domain']}.{request.get('service_name')}"
-            return service
-        if operation.startswith("event."):
-            return request.get("event")
-        if operation in ("network.udp.send", "network.udp.recv", "network.tcp.local",
-                         "discover.scan", "discover.listen"):
-            # The port, and only the port. The address is not part of the grant — it is pinned
-            # separately, and only to something the mediator observed answering (§4 of the
-            # design note). A clause that named an address would be asking the author for a
-            # DHCP lease.
-            port = request.get("port")
-            return str(port) if isinstance(port, int) else None
-        if operation == "network.egress":
-            # The target is host **and** port, because the clause grants a service on a machine
-            # rather than the machine (§7.24.3). A request naming no port cannot be matched
-            # against a clause that names one, and is denied by returning something no clause
-            # can equal rather than by defaulting to 443 — a default here would silently widen
-            # every grant to the port the framework guessed.
-            host, port = request.get("host"), request.get("port")
-            if host is None or port is None:
-                return None
-            return f"{host}:{port}"
-        return ""  # config_entries.list takes no target
+        # One definition, in `audit`, so that the target a decision is made on and the target
+        # its durable record names cannot diverge. T4 found that they had (`audit.target_of`).
+        return target_of(operation, request)
 
     @staticmethod
     def _matches(capability: str, clause: str, target: str) -> bool:

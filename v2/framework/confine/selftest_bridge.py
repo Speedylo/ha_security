@@ -27,6 +27,8 @@ from pathlib import Path
 
 import os
 
+from .audit import attach, report_durable
+from .audit import summarise as durable_summary
 from .cgroup import Delegation, ResourceLimits, SandboxCgroup
 from .channel import Channel
 from .manifest import Manifest
@@ -201,6 +203,7 @@ def main() -> int:
     sandbox_python = Path(args.python)
     root = Path(tempfile.mkdtemp(prefix="confine-bridge-"))
     mediator = Mediator()
+    audit_dir = attach(mediator, "confine-bridge-audit-")
     platform = Platform()
     # A device the user owns, which the integration declared and may read.
     platform.seed("sensor.outdoor_temperature", "11.5", unit_of_measurement="°C")
@@ -212,7 +215,7 @@ def main() -> int:
         manifest = Manifest.load(layout["component"], root)
         mediator.policy = acting_policy({"demo_weather": manifest}, platform)
         mediator_end, sandbox_end = Channel.pair()
-        mediator.register("demo_weather", Channel(mediator_end))
+        mediator.register("demo_weather", Channel(mediator_end), component=layout["component"])
 
         spec_file = root / "sandbox-spec.json"
         spec_file.write_text(json.dumps({
@@ -258,6 +261,7 @@ def main() -> int:
         Path(err.name).unlink(missing_ok=True)
     finally:
         shutil.rmtree(root, ignore_errors=True)
+        durable = durable_summary(mediator, audit_dir)
 
     if not text:
         import os as _os
@@ -272,7 +276,7 @@ def main() -> int:
         print("the sandbox failed before it could report:\n")
         print(report["fatal"])
         return 1
-    return render(report, platform, mediator)
+    return render(report, platform, mediator) or report_durable(durable)
 
 
 def render(report: dict, platform: Platform, mediator: Mediator) -> int:

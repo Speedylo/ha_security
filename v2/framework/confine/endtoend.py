@@ -40,6 +40,8 @@ from pathlib import Path
 
 import os
 
+from .audit import attach
+from .audit import summarise as durable_summary
 from .cgroup import Delegation, SandboxCgroup
 from .channel import Channel
 from .compat import (DEPS, PLATFORM_DEPS, component_requirements, declared_components_of,
@@ -115,6 +117,10 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
             delegation: Delegation, uv: str | None, platform_deps: Path | None) -> dict:
     root = Path(tempfile.mkdtemp(prefix=f"e2e-{domain}-"))
     mediator = Mediator()
+    # T4: §7.17's decisions, durably and reconciled — `report["decisions"]` below is read from
+    # memory, and until T4 nothing checked it against a record S7 could be claimed of.
+    audit_dir = attach(mediator, f"e2e-audit-{domain}-")
+    durable: dict = {}
     try:
         own = root / "custom_components" / domain
         own.parent.mkdir(parents=True)
@@ -146,7 +152,7 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
         manifest = Manifest.load(own, root)
         mediator.policy = acting_policy({domain: manifest}, platform)
         mediator_end, sandbox_end = Channel.pair()
-        mediator.register(domain, Channel(mediator_end))
+        mediator.register(domain, Channel(mediator_end), component=own)
 
         declared_entities = list(
             (subject["permissions"].get("entities") or {}).get("read") or [])
@@ -193,10 +199,11 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
         return {"domain": domain, "level": "sandbox_failed", "error": str(err)[:200]}
     finally:
         shutil.rmtree(root, ignore_errors=True)
+        durable = durable_summary(mediator, audit_dir)
 
     if not text:
         tail = diagnostic.splitlines()
-        return {"domain": domain, "level": "no_report", "install": install,
+        return {"domain": domain, "level": "no_report", "install": install, "durable": durable,
                 "error": tail[-1][:200] if tail else ""}
     report = json.loads(text.splitlines()[-1])
     if "fatal" in report:
@@ -204,6 +211,7 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
                 "error": report["fatal"].strip().splitlines()[-1][:200]}
     report["install"] = install
     report["decisions"] = [d for d in mediator.audit]
+    report["durable"] = durable
     report["platform_states"] = {k: v[0] for k, v in platform.states.items()
                                  if k not in WORLD}
     return report
@@ -315,6 +323,14 @@ def main() -> int:
     publishing = [r for r in results if (r.get("published") or [])]
     print(f"\n  config entry LOADED           {len(loaded)}/{len(results)}")
     print(f"  published through the mediator {len(publishing)}/{len(results)}")
+    logged = [r["durable"] for r in results if r.get("durable")]
+    if logged:
+        bad = [r["domain"] for r in results if r.get("durable") and not r["durable"]["ok"]]
+        print(f"  durable log (T4)               {sum(d['decisions'] for d in logged)} decisions, "
+              f"{sum(d['runs'] for d in logged)} runs; failing: {bad or 'none'}")
+        for r in results:
+            for problem in ((r.get("durable") or {}).get("reconcile") or [])[:4]:
+                print(f"      {r['domain']}: {problem}")
     print("\n  Reported as a named set, never as a rate (§3.6 N2). The denominator for any")
     print("  end-to-end measurement of this corpus is 11, not 37: 26 of the 37 need a")
     print("  credential or a device before any config flow can complete.")

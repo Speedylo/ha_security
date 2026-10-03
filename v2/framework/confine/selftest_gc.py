@@ -31,6 +31,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from .audit import attach, report_durable
+from .audit import summarise as durable_summary
 from .cgroup import Delegation, ResourceLimits, SandboxCgroup
 from .channel import Channel
 from .gc_probe import CANARY_CREDENTIAL, GC_SWEEP
@@ -89,6 +91,7 @@ def arm_confined(python: Path) -> dict:
 
     root = Path(tempfile.mkdtemp(prefix="gc-confined-"))
     mediator = Mediator()
+    audit_dir = attach(mediator, "confine-gc-audit-")
     try:
         own = root / "custom_components" / "adversary"
         own.mkdir(parents=True)
@@ -98,7 +101,7 @@ def arm_confined(python: Path) -> dict:
         data = root / ".confine" / "adversary"
         data.mkdir(parents=True)
         mediator_end, sandbox_end = Channel.pair()
-        mediator.register("adversary", Channel(mediator_end))
+        mediator.register("adversary", Channel(mediator_end), component=own)
 
         spec = SandboxSpec(domain="adversary", own_dir=str(own), data_dir=str(data),
                            argv=[str(python), "-c", ADVERSARY])
@@ -131,12 +134,14 @@ def arm_confined(python: Path) -> dict:
         return {"arm": "confined", "fatal": str(err)[:300]}
     finally:
         shutil.rmtree(root, ignore_errors=True)
+        durable = durable_summary(mediator, audit_dir)
 
     if not text:
         tail = diagnostic.splitlines()
         return {"arm": "confined", "fatal": tail[-1][:300] if tail else "no output"}
     report = json.loads(text.splitlines()[-1])
     report["arm"] = "confined"
+    report["durable"] = durable
     report["mediator_holds_credential"] = len(mediator_hits) > 0
     report["mediator_hit_count"] = len(mediator_hits)
     return report
@@ -204,7 +209,7 @@ def main() -> int:
     if args.json:
         args.json.write_text(json.dumps({"unconfined": unconfined, "confined": confined},
                                         indent=2) + "\n")
-    return render(unconfined, confined)
+    return render(unconfined, confined) or report_durable(confined.get("durable"))
 
 
 if __name__ == "__main__":

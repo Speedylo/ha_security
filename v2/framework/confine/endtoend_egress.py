@@ -72,7 +72,7 @@ import urllib.request
 from dataclasses import replace
 from pathlib import Path
 
-from .audit import AuditLog
+from .audit import AuditLog, reconcile
 from .cgroup import Delegation, SandboxCgroup
 from .channel import Channel
 from .compat import (DEPS, PLATFORM_DEPS, component_requirements, core_requirements,
@@ -234,7 +234,7 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
         mediator.policy = acting_policy({domain: manifest}, platform,
                                         broker=broker, relay=relay)
         mediator_end, sandbox_end = Channel.pair()
-        mediator.register(domain, Channel(mediator_end))
+        mediator.register(domain, Channel(mediator_end), component=own)
 
         spec_file = root / "spec.json"
         spec_file.write_text(json.dumps({
@@ -295,6 +295,9 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
                   for r in (mediator.log.records() if mediator.log is not None else [])
                   if r.get("kind") == "decision"]
         breaks = [str(b) for b in mediator.log.verify(mediator.log.key)] if mediator.log else []
+        # T4: the durable record against the in-memory one, entry by entry, and every decision
+        # against a run record — which this harness never wrote until T4 made `register` do it.
+        reconciled = reconcile(mediator.audit, mediator.log.records()) if mediator.log else []
     finally:
         shutil.rmtree(audit_dir, ignore_errors=True)
     if not text:
@@ -310,6 +313,7 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
     report["audit"] = audit
     report["logged"] = logged
     report["audit_breaks"] = breaks
+    report["reconcile"] = reconciled
     report["oom_kill"] = oom
     return report
 
@@ -559,6 +563,14 @@ def evaluate(domain: str, subject: dict, declared_set: set, fetched_in, reports:
     check(results, not declared.get("audit_breaks"),
           "B — that record's hash and MAC chains both verify (S7)",
           str(declared.get("audit_breaks")))
+    # T4. Only where the run recorded it, so `--recheck` over a pre-T4 result is not failed for
+    # lacking a field nobody computed then.
+    for key in ("confined_declared", "confined_undeclared", "confined_partial"):
+        if key in reports and "reconcile" in reports[key]:
+            check(results, not reports[key]["reconcile"],
+                  f"{key.split('_', 1)[1]} — the durable record matches the in-memory one, "
+                  "decision by decision, and every decision names its run (T4)",
+                  "; ".join(reports[key]["reconcile"][:4]))
 
     # Arm C — the control that makes B evidence rather than a coincidence.
     denied = _egress(undeclared, False)

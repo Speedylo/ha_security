@@ -138,6 +138,47 @@ class Break:
     detail: str
 
 
+def target_of(operation: str | None, request: dict) -> str | None:
+    """What a request is *about*, read from the field its operation is decided on.
+
+    Lives here rather than in `manifest` so that the policy and the durable record share one
+    definition. They did not, and T4 found what that cost: `decision()` took `entity` before
+    `service` for every operation, so a `service.call` for `lock.unlock` that also carried
+    `"entity": "sensor.harmless"` was decided on the service and **recorded against the sensor** —
+    the field chosen by the party being audited. The manifest is the authority on what an
+    operation targets; the log now records what the manifest decided on.
+    """
+    operation = operation or ""
+    if operation.startswith("entity."):
+        return request.get("entity")
+    if operation == "service.call":
+        service = request.get("service")
+        if service is None and "domain" in request:
+            service = f"{request['domain']}.{request.get('service_name')}"
+        return service
+    if operation.startswith("event."):
+        return request.get("event")
+    if operation in ("network.udp.send", "network.udp.recv", "network.tcp.local",
+                     "discover.scan", "discover.listen"):
+        # The port, and only the port. The address is not part of the grant — it is pinned
+        # separately, and only to something the mediator observed answering (§4 of the
+        # design note). A clause that named an address would be asking the author for a
+        # DHCP lease.
+        port = request.get("port")
+        return str(port) if isinstance(port, int) else None
+    if operation == "network.egress":
+        # The target is host **and** port, because the clause grants a service on a machine
+        # rather than the machine (§7.24.3). A request naming no port cannot be matched
+        # against a clause that names one, and is denied by returning something no clause
+        # can equal rather than by defaulting to 443 — a default here would silently widen
+        # every grant to the port the framework guessed.
+        host, port = request.get("host"), request.get("port")
+        if host is None or port is None:
+            return None
+        return f"{host}:{port}"
+    return ""  # config_entries.list takes no target
+
+
 @dataclass
 class AuditLog:
     """Append-only JSON Lines, with a hash chain and a keyed MAC chain over it."""
@@ -185,10 +226,17 @@ class AuditLog:
         return self._append({"kind": "approval", "identity": identity.as_record(),
                              "provenance": provenance})
 
-    def run(self, identity: Identity, provenance: str) -> str:
-        """§5.12.2: one run record per sandbox construction, carrying the full identity."""
+    def run(self, identity: Identity, provenance: str, integration: str | None = None) -> str:
+        """§5.12.2: one run record per sandbox construction, carrying the full identity.
+
+        `integration` is the name the mediator bound the socket to, which is what every
+        decision record carries. It defaults to the identity's domain and differs only where a
+        supervisor names two sandboxes of one component apart; T4 records it rather than
+        leaving a reader to infer which run a decision belonged to from a directory name.
+        """
         run_id = secrets.token_hex(8)
         self._append({"kind": "run", "run": run_id, "identity": identity.as_record(),
+                      "integration": integration or identity.domain,
                       "provenance": provenance})
         return run_id
 
@@ -201,16 +249,32 @@ class AuditLog:
         # 443 from a grant of 6445 on the same host. F3 requires every decision be attributable
         # to the clause that produced it, and the clause pointer does name the index; the
         # human-readable target should not be the weaker of the two. Found by §7.27.
-        target = (request.get("entity") or request.get("service")
-                  or request.get("host") or request.get("event"))
-        if request.get("host") and request.get("port") and target == request.get("host"):
-            target = f"{request['host']}:{request['port']}"
+        #
+        # And the target is the one the decision was made on — `target_of`, shared with the
+        # manifest — never a field picked by precedence from whatever the sandbox sent (T4).
+        target = target_of(request.get("op"), request)
+        # What the sandbox *asked about*, kept apart from what was decided on. Without it, a
+        # refused egress request that named no port records target `None` and the log no longer
+        # says which host was attempted — a denial should still say what it denied. These are
+        # the sandbox's own claims, labelled as such, exactly as `claimed` is for identity.
+        requested = {k: request[k] for k in ("entity", "service", "domain", "service_name",
+                                             "host", "port", "event") if k in request}
         return self._append({
             "kind": "decision", "run": run_id, "integration": identity,
-            "op": request.get("op"), "target": target,
+            "op": request.get("op"), "target": target, "requested": requested,
             "claimed": request.get("integration"),
             "allowed": allowed, "clause": clause, "reason": reason,
         })
+
+    def protocol_error(self, run_id: str, identity: str, detail: str) -> dict:
+        """A sandbox sent a frame the mediator could not parse, and lost its channel for it.
+
+        Recorded durably from T4 on. Before, it went to the in-memory list alone — and a
+        malformed frame is precisely what a hostile sandbox produces, so the one event S7 most
+        needs attributable was the one event the durable record never saw.
+        """
+        return self._append({"kind": "protocol_error", "run": run_id, "integration": identity,
+                             "detail": detail})
 
     # -- verifying ----------------------------------------------------------------------
 
@@ -266,6 +330,92 @@ class AuditLog:
         if not self.path.exists():
             return []
         return [json.loads(line) for line in self.path.read_text().splitlines() if line.strip()]
+
+
+def reconcile(memory: list[dict], records: list[dict]) -> list[str]:
+    """Every way the durable record disagrees with the mediator's in-memory one, in order.
+
+    T4's instrument. The in-memory list is what every harness reported from; the durable log is
+    what S7 is claimed of. If they disagree, one of them is wrong, and until T4 only the first
+    was ever read. Compared entry by entry rather than by count, because §7.31.12 is the record
+    of what a matching total can hide.
+    """
+    problems: list[str] = []
+    runs = {r.get("run"): r for r in records if r.get("kind") == "run"}
+    durable = [r for r in records if r.get("kind") in ("decision", "protocol_error")]
+    if len(memory) != len(durable):
+        problems.append(f"{len(memory)} in memory against {len(durable)} durable")
+    for index, (mem, rec) in enumerate(zip(memory, durable)):
+        if mem.get("event") == "protocol_error":
+            if rec.get("kind") != "protocol_error" or rec.get("integration") != mem.get("identity"):
+                problems.append(f"#{index}: a protocol error in memory is {rec.get('kind')} durably")
+            continue
+        for field_mem, field_rec in (("identity", "integration"), ("op", "op"),
+                                     ("allowed", "allowed"), ("clause", "clause")):
+            if mem.get(field_mem) != rec.get(field_rec):
+                problems.append(f"#{index} {mem.get('op')}: {field_mem} "
+                                f"{mem.get(field_mem)!r} in memory, {rec.get(field_rec)!r} durably")
+        run = runs.get(rec.get("run"))
+        if run is None:
+            problems.append(f"#{index} {rec.get('op')}: names run {rec.get('run')!r}, "
+                            f"which no run record carries")
+        elif run.get("integration", (run.get("identity") or {}).get("domain")) \
+                != rec.get("integration"):
+            problems.append(f"#{index} {rec.get('op')}: decided for {rec.get('integration')!r}, "
+                            f"but its run record is for {run.get('integration')!r}")
+    return problems
+
+
+def attach(mediator, prefix: str) -> Path:
+    """Give `mediator` a durable log in a fresh directory, and return the directory.
+
+    The directory is created **outside** whatever tree a harness removes, which is §7.27.6's
+    first defect: a log inside the sandbox's root was deleted before it was read, and the run
+    reported no decisions at all.
+    """
+    import tempfile
+
+    directory = Path(tempfile.mkdtemp(prefix=prefix))
+    mediator.log = AuditLog(path=directory / "decisions.jsonl")
+    return directory
+
+
+def summarise(mediator, directory: Path, keep_records: bool = False) -> dict:
+    """Verify the chains, reconcile against `mediator.audit`, then remove the directory.
+
+    What every T4-wired harness reports beside its own result, so that a run whose durable
+    record disagrees with what the harness counted says so in the same JSON.
+    """
+    import shutil
+
+    try:
+        log = mediator.log
+        records = log.records() if log is not None else []
+        breaks = [str(b) for b in log.verify()] if log is not None else ["no log attached"]
+        problems = reconcile(mediator.audit, records)
+        summary = {"records": len(records),
+                "runs": sum(1 for r in records if r.get("kind") == "run"),
+                "decisions": sum(1 for r in records if r.get("kind") == "decision"),
+                "breaks": breaks, "reconcile": problems,
+                "ok": not breaks and not problems}
+        if keep_records:
+            summary["log"] = records
+        return summary
+    finally:
+        shutil.rmtree(directory, ignore_errors=True)
+
+
+def report_durable(durable: dict | None) -> int:
+    """Print T4's verdict on one confined run's durable record; 0 if it holds, 1 if not."""
+    if not durable:
+        print("  FAIL  the durable record (T4): no summary — the log was not engaged")
+        return 1
+    problems = list(durable.get("breaks") or []) + list(durable.get("reconcile") or [])
+    print(f"  {'ok  ' if durable.get('ok') else 'FAIL'}  the durable record (T4): "
+          f"{durable.get('runs')} run, {durable.get('decisions')} decisions, chains verify and "
+          f"match the in-memory record" if durable.get("ok") else
+          f"  FAIL  the durable record (T4): " + "; ".join(problems[:4]))
+    return 0 if durable.get("ok") else 1
 
 
 def last_identity(path: Path, domain: str, kind: str = "approval") -> Identity | None:
