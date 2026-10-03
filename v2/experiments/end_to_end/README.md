@@ -160,7 +160,7 @@ hosts declared — over a table of subjects. Predictions: `notes/ch7_31_endtoend
 systemd-run --user --scope -q python3 -m confine.endtoend_egress --subject smhi_brandrisk \
     --corpus ~/r2exp/corpus_uniform --python ~/r2exp/ha314/bin/python \
     --json results/pi5_smhi_brandrisk_egress.json
-#   nordpool, dwd_weather            -> ~/r2exp/corpus
+#   nordpool, dwd_weather, pirateweather -> ~/r2exp/corpus
 #   smhi_brandrisk, regensburg_transport -> ~/r2exp/corpus_uniform
 
 # re-evaluate the checks over a recorded run, running nothing
@@ -174,5 +174,23 @@ python3 -m confine.endtoend_egress --recheck results/pi5_smhi_brandrisk_egress.j
 | `t2_before_ca_fix/` | the second runs, before the sandbox had a CA store |
 | `t2_logs/` | the final runs' console output |
 | `rerun_20261003/` | §7.17's five, both arms, on the corrected instance — 5/5 and 5/5 |
+| `t3_20261003/` | §7.34, `pirateweather` with a valid key — 16/17; the key scrubbed and verified absent |
 
 `pi5_nordpool_egress.json` is §7.27's original and is not overwritten by these.
+
+### `pirateweather` needs a credential (§7.34)
+
+A free-tier key from `https://pirate-weather.apiable.io/`, in a file only its owner can read, on the
+machine that runs the harness — never in this repository:
+
+```bash
+mkdir -p ~/.config/capstone
+install -m 600 /dev/null ~/.config/capstone/pirateweather.key   # then put the key in it
+systemd-run --user --scope -q python3 -m confine.endtoend_egress --subject pirateweather \
+    --corpus ~/r2exp/corpus --python ~/r2exp/ha314/bin/python \
+    --json results/t3_20261003/pi5_pirateweather_egress.json
+```
+
+The harness refuses a key file other users can read, and replaces the key's value with
+`<credential>` in every report before printing or writing. After a run, check it independently:
+`grep -cF -f ~/.config/capstone/pirateweather.key <result files>` should print 0.

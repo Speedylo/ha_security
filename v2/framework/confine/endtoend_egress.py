@@ -43,6 +43,11 @@ been applied exactly once. The three added subjects were chosen by **network sta
 and `httpx` had never been spawned confined. Predictions in `notes/ch7_31_endtoend_prediction.md`,
 committed before the first run. `nordpool` stays the default, so the command below is unchanged.
 
+**§7.34 added `pirateweather`, the one subject that needs a credential** (T3). Its key is read at
+run time from the file its `credential` entry names, must be readable only by its owner, joins a
+per-run copy of the flow input and nothing else, and is replaced in every report before anything is
+printed or written. Without the file the run stops and says how to create it.
+
 A subject with more than one host gets **arm D**: only some of its hosts declared. It is the
 first arm that can show the grant is per destination rather than per integration.
 
