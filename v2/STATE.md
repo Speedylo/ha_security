@@ -222,7 +222,7 @@ The pass-3 method below is kept because it is the recipe for the submission draf
    ```
 
    It catches both cases. On 2026-10-03 it gave 64 hits in `report/` (excluding lines already
-   carrying a dated note) and 19 in `submission/`; most are true statements of a limit and stay.
+   carrying a dated note) and 11 in `submission/`; most are true statements of a limit and stay.
    **For each hit, ask whether anything since has closed it** — the T-table above, §7.30–§7.33,
    and §8.7's struck items are where closures are recorded. A closed one gets a dated note in the
    report (the chapters' convention) and is rewritten outright in the submission draft, which
