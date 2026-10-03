@@ -10,7 +10,7 @@ asked for it to be recorded as the plan.
 
 - **All engineering in the T-table (T1–T6) is done**, and so are the two small debts in §7.35 (the
   audit log's directory fsync and §8.7 item 12). Every framework experiment has been re-measured on the
-  corrected instance. All 20 `selftest_*` suites plus the base `selftest` pass on the Pi.
+  corrected instance. All 20 `selftest_*` suites plus the base `selftest` pass on the Pi (re-run against current code, logs in `experiments/selftests/results/final_20261003/`).
 - **The report (`report/`) is current** up to §7.35, and `report/toc.py --check` passes.
 - **The submission draft (`submission/`) is stale.** It still has the old figures: nineteen suites,
   one-in-five end-to-end cost, and §12.8's "unresolved" depth series. Checklist item 5's sweep found 11
