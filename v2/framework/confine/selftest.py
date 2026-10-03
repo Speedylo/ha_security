@@ -34,7 +34,7 @@ SECRET = "api_key: THIS-STRING-MUST-NOT-BE-READABLE"
 # rather than verdicts: the assertions belong out here, where they can be read next to the
 # claims they check.
 INSIDE = r"""
-import ctypes, ctypes.util, json, os, socket
+import ctypes, ctypes.util, json, os, socket, ssl
 from pathlib import Path
 
 libc = ctypes.CDLL(ctypes.util.find_library("c") or "libc.so.6", use_errno=True)
@@ -87,6 +87,18 @@ report = {
     },
     "config_root_listing": (sorted(os.listdir(CONFIG_ROOT))
                             if Path(CONFIG_ROOT).is_dir() else None),
+    # §7.31.4. What the interpreter's default TLS context will trust. `capath` certificates are
+    # loaded lazily, so the count that matters is the readable files there, not
+    # `cert_store_stats()`, which reads 0 for a populated capath until something verifies.
+    "tls": (lambda capath: {
+        "capath": capath,
+        "readable": sum(1 for f in Path(capath).iterdir() if f.is_file())
+                    if capath and Path(capath).is_dir() else 0,
+        "capath_probe": probe(capath) if capath else {"present": False},
+        "etc": sorted(os.listdir("/etc")) if Path("/etc").is_dir() else None,
+        "etc_ssl": sorted(os.listdir("/etc/ssl")) if Path("/etc/ssl").is_dir() else None,
+        "private_present": Path("/etc/ssl/private").exists(),
+    })(ssl.get_default_verify_paths().capath),
 }
 print(json.dumps(report))
 """
@@ -216,6 +228,28 @@ def render(report: dict, watched: dict[str, str]) -> int:
         print(f"  {'ok  ' if denied else 'FAIL'}  {call + '(2)':<{width}}  {outcome}")
         if not denied:
             failures.append(f"{call} was {outcome} inside the sandbox")
+
+    # §7.31.4: the sandbox once held **zero** trust anchors, so any TLS client not built on
+    # `certifi` failed verification *after* the mediator had granted and connected it. The
+    # fix exposes one public directory read-only, and this asserts both halves — that it is
+    # there, and that nothing beside it is.
+    tls = report["tls"]
+    tls_checks = [
+        (tls["readable"] > 0, "the default TLS context has CA certificates to trust",
+         f"{tls['readable']} readable in {tls['capath']}"),
+        (tls["capath_probe"].get("writable") is False, "…and cannot add one",
+         "absent" if not tls["capath_probe"].get("present")
+         else "read-only" if tls["capath_probe"].get("writable") is False else "WRITABLE"),
+        (tls["etc"] == ["ssl"] and tls["etc_ssl"] == ["certs"],
+         "/etc holds ssl/certs and nothing else", f"/etc={tls['etc']} /etc/ssl={tls['etc_ssl']}"),
+        (not tls["private_present"], "/etc/ssl/private is absent", "absent"
+         if not tls["private_present"] else "PRESENT"),
+    ]
+    print()
+    for ok, label, detail in tls_checks:
+        print(f"  {'ok  ' if ok else 'FAIL'}  {label:<{width}}  {detail}")
+        if not ok:
+            failures.append(label)
 
     if len(report["processes"]) != 1:
         failures.append("the PID namespace shows more than the sandbox itself")

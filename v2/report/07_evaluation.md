@@ -3383,7 +3383,8 @@ committed before the harness was changed or anything was run
 The short version is that the method was confirmed and the artifact was not. All three new subjects
 now work confined, through three different network stacks. Getting them there required three
 corrections to the framework, each a defect that every one of the twenty self-test suites had
-passed over, and one of them invalidates a conclusion this chapter withdrew on 2 September.
+passed over. Two of them undo conclusions this chapter drew on 2 September, and one of those was a
+measured figure: the only end-to-end cost of confinement this report had recorded.
 
 ### 7.31.1 Choosing three subjects, and a sentence of §7.27.1 that was wrong
 
@@ -3496,7 +3497,10 @@ The cause is TLS verification. `requests`, `httpx` and the platform's own helper
 against the `certifi` bundle, which ships with the sandbox's dependencies. A bare
 `aiohttp.ClientSession()`, like `urllib` and anything else on Python's default context, uses the
 system store under `/etc/ssl/certs`. The sandbox mounted no `/etc` at all. A probe spawned inside a
-real sandbox confirmed it: `ssl.create_default_context()` held **zero** CA certificates.
+real sandbox confirmed it: `ssl.create_default_context()` held **zero** CA certificates. That probe
+is now four checks in the base self-test (`selftest.py`), which assert that the default context has
+certificates to trust, that it cannot add one, that `/etc` holds `ssl/certs` and nothing else, and
+that `/etc/ssl/private` is absent. With the fix removed, three of the four fail.
 
 So the egress path had been granting and connecting requests that could then never complete,
 with nothing in the mediator's record to show it. The design's own logic is not what failed: the
@@ -3633,8 +3637,9 @@ inside a sandbox and `/etc/shadow` must still not.
 | — | the compatibility arms do not move (§7.31.7) | ✅ |
 | — | §7.17's five: `scheduler` loads in both arms, `powercalc` loads confined, the rest unchanged, cost goes to zero (§7.31.6) | ✅ all five |
 
-Six of eight held outright, and with §7.31.6's five that is eleven of thirteen, which is roughly the
-reverse of §8.4.1's six of eight wrong. It should not be read as improved foresight. Every prediction was about the *subjects*, and the subjects behaved as their code
+Of the eight registered for the subjects, six held outright. Counting the two rows below them,
+each scored as the single prediction it was registered as, that is eight of ten, roughly the reverse
+of §8.4.1's six of eight wrong. It should not be read as improved foresight. Every prediction was about the *subjects*, and the subjects behaved as their code
 said they would. What none of the eight anticipated was that the instance, the harness and the
 sandbox would each be wrong, and P8, which predicted only that *something* would be found, is the
 one that carried the section.
@@ -3672,12 +3677,27 @@ two of which had already produced wrong attributions in this chapter. With those
 named set shows no end-to-end cost of confinement at all, and the paired zero-cost result at import
 level holds on the corrected instance.
 
+**A measured figure moved, and that is new.** §7.17.5's `loaded(confined) 3/5` is now 5/5, because
+the instance both arms ran on was wrong. Every earlier correction in this report was to a sentence
+or to the artifact, never to a printed measurement, and §8.4.2 made that record part of its
+argument. It now carries this exception.
+
 **Not established.**
 
 - **Four is still a named set, not a rate.** The credential wall of §7.17.1 still holds for the head
-  corpus and binds any confinement scheme equally, and one of the four is in the head corpus.
-- **Raw sockets have still not been spawned confined.** Two of §7.24.5's three stacks have; the
-  third has no credential-free member in either corpus.
+  corpus and binds any confinement scheme equally; two of the four, `nordpool` and `dwd_weather`,
+  are head-corpus members.
+- **Raw sockets have still not been spawned confined.** Two of §7.24.5's three stacks have. §8.7
+  item 7 names the corpus's raw-socket members, `localtuya` and `midea_ac_lan`, and both need a
+  device or a credential.
+- **Not every experiment built on the corrected instance was re-measured.** `build_hass` also
+  underlies the reads experiment of §7.14, the gc experiment of §7.15, the egress-shape run of §7.24
+  and Chapter 6's `unstrip`. Only the compatibility arms (§7.31.7) and §7.17's end-to-end arms
+  (§7.31.6) were re-measured. `selftest_reads` and `selftest_gc`, which run the unconfined halves of
+  §7.14 and §7.15, pass on the corrected instance, but a passing suite is not a re-recorded figure.
+  The defects live in setup and fetching, so figures taken at import or on the mediator's decision
+  path are unlikely to move; that is an expectation, not a measurement. §7.24 is the one most likely
+  to move, since `dwd_weather` reached no network there and would now.
 - **The equality check is wrong for live data**, as `regensburg_transport` shows, and a better check
   for a real-time feed would compare structure rather than value.
 - **The static bound on the TLS defect is an upper bound.** No integration other than

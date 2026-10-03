@@ -376,9 +376,21 @@ future work is ordered the way it is.
 > reporting raised where a real instance ignores it; it loaded the `network` singleton only as a side
 > effect of `http`, so the platform's HTTP helper failed for any integration not declaring `http`;
 > and the sandbox had no CA store, so any TLS client not built on `certifi` failed verification
-> after the mediator had granted and connected it. None changed a measured figure, and the four
-> compatibility arms were re-run to show it (§7.31.7). Two of them had already produced wrong
+> after the mediator had granted and connected it. Two of them had already produced wrong
 > attributions in Chapter 7.
+>
+> **And one of them moved a measured figure, which is the first time this report has had to say
+> so.** §7.17.5 printed `loaded(confined) 3/5` and a cost of confinement of one integration. On the
+> corrected instance both arms load all five, and the cost is none (§7.31.6). The heading of this
+> section was true until 3 October and is not true without qualification after it. Its explanation
+> above — that a number comes from a tested harness and a sentence from a tired author — holds only
+> as far as the harness is right, and this time the harness was the thing that was wrong: not a
+> miscount or a misreading, but an instance missing a piece a real startup provides, so that both
+> arms measured something other than Home Assistant. What did not move is still worth stating. The
+> four compatibility arms were re-measured on the corrected instance and are unchanged to the member
+> (§7.31.7), and every other figure listed at the top of this section was produced by a harness
+> §7.31 did not touch or by one it re-ran. The experiments built on the same instance and *not*
+> re-run are named in §7.31.10, so the reach of this correction is stated rather than assumed.
 >
 > They also qualify the first mechanism. **A paired baseline controls for everything its two arms
 > do not share, and nothing they do.** Both of §7.17's arms ran on the same deficient instance, so

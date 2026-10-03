@@ -36,6 +36,11 @@ because §7.12 established it fails at import on this release in **both** arms.
 
 **3 of 5 set up and published. Reported as a named set, never as a rate.**
 
+> **Re-run 2026-10-03 on a corrected instance — §7.31.6, `results/rerun_20261003/`: 5 of 5 load in
+> both arms.** The harness's `build_hass` had skipped the frame helper and loaded `network` only as a
+> side effect of `http`. The first is why `scheduler` failed in both arms below; the second is why
+> `powercalc` failed confined. Neither was confinement. The text below is kept as written.
+
 This table is the **confined** arm. The unconfined baseline was run the same day and is
 `results/pi5_e2e_baseline.json` (§7.17.5): `loaded(unconfined) 4/5` against `loaded(confined) 3/5`,
 so **the cost of confinement across this named set is one integration** — `powercalc`. See the two
@@ -143,3 +148,31 @@ systemd-run --user --scope -q python3 -m confine.endtoend --baseline \
 
 `endtoend_unconfined.py` is the in-arm helper `endtoend.py` copies in and drives with a JSON
 spec; it is not invoked directly.
+
+## §7.31 — real integrations against real APIs, four subjects (2026-10-03)
+
+`endtoend_egress.py` runs the three or four arms of §7.27 — unconfined, confined and declared,
+confined with the clause removed, and (for subjects with hosts to withhold) confined with only some
+hosts declared — over a table of subjects. Predictions: `notes/ch7_31_endtoend_prediction.md`.
+
+```bash
+# one subject per run; --corpus is wherever that subject lives
+systemd-run --user --scope -q python3 -m confine.endtoend_egress --subject smhi_brandrisk \
+    --corpus ~/r2exp/corpus_uniform --python ~/r2exp/ha314/bin/python \
+    --json results/pi5_smhi_brandrisk_egress.json
+#   nordpool, dwd_weather            -> ~/r2exp/corpus
+#   smhi_brandrisk, regensburg_transport -> ~/r2exp/corpus_uniform
+
+# re-evaluate the checks over a recorded run, running nothing
+python3 -m confine.endtoend_egress --recheck results/pi5_smhi_brandrisk_egress.json
+```
+
+| Result | What it is |
+|---|---|
+| `pi5_{nordpool_egress_t2,smhi_brandrisk,regensburg_transport,dwd_weather}_egress.json` | the final runs, one code version — 14/14, 17/17, 13/14, 13/14 |
+| `t2_before_frame_fix/` | the first runs, which stopped on the frame helper and `network` |
+| `t2_before_ca_fix/` | the second runs, before the sandbox had a CA store |
+| `t2_logs/` | the final runs' console output |
+| `rerun_20261003/` | §7.17's five, both arms, on the corrected instance — 5/5 and 5/5 |
+
+`pi5_nordpool_egress.json` is §7.27's original and is not overwritten by these.

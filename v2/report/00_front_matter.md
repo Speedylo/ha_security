@@ -42,7 +42,7 @@ members — 37 by install count and 40 drawn uniformly — the confined and unco
 *same* integrations for the *same* reasons: 84% and 92% clean in both arms, so the failures
 attributable to the design number none, twice. Nine integrations were executed end to end, a named
 set rather than a sample, the ceiling being that 26 of 37 need a credential before any configuration
-flow completes. All nine load confined, and the four that poll a remote API reproduced their
+flow completes. All nine load confined, and the four that poll a remote API matched their
 unconfined output through mediated connections logged to a named host and port, over three different
 network stacks; the first, `nordpool`, published the same electricity price in the same minute. On the Raspberry Pi 5 the
 requirements name, mediation costs 31.5 µs and the audit record is durable before the action it
@@ -65,10 +65,13 @@ Four other mechanisms in this project each caught a class of error — a paired 
 misattributions, two instruments bounded each other, a self-test passed when the surprising thing
 was true, a figure was recomputed from its source — and none of the four could have found this one,
 because all four are written out of the same assumptions as the thing they test. Six of eight
-predictions registered before measurement were wrong and none was revised. Every correction across
-eight chapters has been to a sentence next to a measurement and none to a measurement; the five
-exceptions were defects in the artifact rather than in the report, one found by writing an attack
-and four by running real integrations.
+predictions registered before measurement were wrong and none was revised. Until the last of those
+real integrations, every correction across eight chapters had been to a sentence next to a
+measurement rather than to a measurement, apart from defects found in the artifact itself — one by
+writing an attack, four by running real integrations. Two of those four ended that record: an
+instance missing what a real startup provides had made one integration in five look like
+confinement's cost, and on a corrected instance the end-to-end cost is none. The import-level figures were
+re-measured on the corrected instance and did not move.
 
 **Keywords:** Home Assistant; smart-home gateway; extension security; permission manifest;
 sandboxing; Linux namespaces; seccomp; cgroup v2; least privilege; threat modelling; STRIDE;
