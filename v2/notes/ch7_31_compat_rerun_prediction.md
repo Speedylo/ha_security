@@ -35,3 +35,20 @@ APIs the 2026.8 release removed (`SOURCE_TYPE_GPS`, `COLOR_MODE_BRIGHTNESS`, and
 **What would falsify P1 in an interesting way:** an integration whose *import* path touches
 `frame.report_usage` at module level, or a platform that builds a coordinator at import. If any
 row moves, it is reported per member with its traceback, in both arms, before any rate is restated.
+
+---
+
+## Addendum, 2026-10-03 — §7.17's five, re-run end to end on the corrected instance
+
+**Written after the run was launched and before any of its output was read.** §7.17.5 withdrew
+`scheduler` on a `Frame helper not set up` error that §7.31 shows was the harness, and §7.17
+charged `powercalc`'s `KeyError: 'network'` to its declaration where §7.31 shows the platform's own
+HTTP helper. Both attributions need evidence, not a pointer saying "unknown".
+
+| | Prediction | Confidence |
+|---|---|---|
+| **P3** | `scheduler` now **loads unconfined** — the only recorded reason it did not was the frame fault | high |
+| **P4** | `scheduler` **loads confined** too — its other recorded failure, the mDNS join, was fixed by §7.27.3 | medium — nothing has run it since |
+| **P5** | `powercalc` **loads confined** — the `network` singleton is now present | medium-high; it may then meet a further undeclared component |
+| **P6** | `thermal_comfort`, `watchman`, `adaptive_lighting` unchanged in both arms | high |
+| **P7** | so **the measured cost of confinement across §7.17's named set goes from one integration to zero** | medium — it is P4 and P5 together |
