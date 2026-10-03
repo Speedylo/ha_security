@@ -23,3 +23,6 @@ spike/.ha_token
 
 # v2: cached telemetry snapshot (regenerable via figures/ecosystem_scale.py)
 v2/figures/custom_integrations.json
+
+# Windows download markers (WSL)
+*:Zone.Identifier
