@@ -1,5 +1,9 @@
 # Where the rebuild stands
 
+**Last updated 2026-10-03. Resume from the T-table directly below — it is the only live plan in this
+file.** Everything after it is history, newest first: earlier resume points are kept as record and
+are superseded, not live. Deadlines are deliberately out of scope for now (Younes, 2026-10-03).
+
 **Proposal track, 2026-09-17.** The programme's EGR 4402 *Capstone Project Proposal* template arrived (`CSC_Capstone_Project_Proposal_Template-1.docx`) and must be filled and submitted. Content lives in `proposal/proposal.md`; `python3 proposal/build_proposal.py` fills the template into `proposal/capstone_proposal.docx`. **It is written prospectively, as if the work began 31 Aug 2026** (Younes's instruction) — the timeline is an estimate on that assumption, and success-criteria targets are set as pre-registered thresholds, not as the measured results. Still owed from Younes: student ID, supervisor, submission date.
 
 **Technical work before report polish — Younes's decision, 2026-10-01.** Everything engineering
@@ -30,9 +34,10 @@ mine was wrong and the report right**, after §8.5's declared-component counts, 
 outcomes and pass 3's blocked count. The rule holds: a disagreeing recount is a question until the
 counted field is confirmed.
 
-**Last updated:** 2026-09-08 (**the front matter is read through; C1 is counted and Stage 5 pass 3
-is done; all eight chapters written, front matter and bibliography done**) · **Read this first when
-resuming.**
+---
+
+*History from here down. The block below was the resume point on 2026-09-08 and is superseded by the
+T-table above.*
 
 **The front matter has now been read through too — 2026-09-08, five findings, all fixed, and again
 none of them a measured figure.** It was the one piece of prose no Stage 5 pass had covered, and its
@@ -188,29 +193,9 @@ that does not belong in the report, including anticipated viva questions.
 
 ## Next session — start here
 
-**End of 2026-09-06. Chapters 1–8 are written, the front matter and one consolidated bibliography
-exist, Stage 5 has had two read-through passes, and C1 is counted.** All twenty §7.5 rows carry a
-verdict *in the table*, and the one row that was ◐ on a technicality is now ✅. **Nothing is blocked
-on engineering. Two things remain before submission — a read-through pass and a lookup — and one
-input is still missing from outside the project.**
-
-**Pass 3 is done (2026-09-06) and Stage 5 is complete.** What remains before submission is the
-programme handbook — an outside input, blocking four title-page fields — and defence prep. **The
-consolidation rewrite is separate work and is backlogged, not scheduled**:
-`notes/rewrite_consolidation_backlog.md`.
-
-### Do these, in this order
-
-**The front-matter read-through is done (2026-09-08)** — it was never a numbered task because the
-front matter was written after the task list, and it was the last unread prose in the submission.
-`report/00_front_matter.md`'s *Outstanding* now carries the findings.
-
-| | Do this | Cost | Why it is first |
-|---|---|---|---|
-| ~~**1**~~ | ~~**Run the C1 check**~~ (§8.7 #4, §7.28) | ~~~1 hour~~ | ✅ **Done 2026-09-06 — §7.29.** It passed, as predicted: **baseline 37 trees, confined 38, zero source changes, zero diff lines**, on a corpus directory confirmed writable by the run user first. `confine/integrity.py` is wired **into `compat.py` itself**, not kept as a separate script, so every future compatibility run counts C1 by running at all. Two departures from the price, both recorded in the report: *at fetch* was not achievable (§7.29.2), and the instrument's first version returned a false clean zero (§7.29.3) |
-| **2** | **Get the programme deadlines and handbook** | a lookup | Four title-page fields and two prescribed statements (declaration, AI-use) are placeholders; the handbook route needs nobody's reply. Also decides whether a list of *all* tables is required (`report/00_front_matter.md` states the current decision and `report/toc.py` enforces its counts) |
-| ~~**3**~~ | ~~**Stage 5, pass 3**~~ | ~~a day~~ | ✅ **Done 2026-09-06. Five findings, all fixed, none a measured figure.** §7.19–§7.25's prose read in full and every headline recomputed from the raw result files; the completion-claim sweep returned eight hits and all were checked against the artifact. **F3 — three domain collisions mean the head corpus is 37 integrations from 40 repositories, and §7.23.1 was mixing the two populations** — is the one to be able to say aloud. Details in the summary at the top of this file |
-| **4** | **Defence prep** | days | Against `THREAT_MODEL.md` Part 10 and the viva questions in `notes/`. §8.4's six-of-eight scorecard and §7.28 are the two things to be able to say aloud without notes |
+**Superseded 2026-10-03: the live plan is the T-table at the top of this file.** What this section
+held on 2026-09-06 — C1, pass 3, the handbook lookup, defence prep — is either done or recorded there.
+The pass-3 method below is kept because it is the recipe for the submission draft's first read-through.
 
 ### How to run pass 3, since two passes have now taught the method
 
@@ -233,14 +218,7 @@ after it was written**, which is what evidence is supposed to do to a plan.
 
 | | Work | Cost | Why |
 |---|---|---|---|
-### Optional measurements, ranked — none blocks submission
-
-Taken from §8.7's list, which is ordered by what each would settle. **§7.27 reordered that list
-after it was written**, which is what evidence is supposed to do to a plan.
-
-| | Work | Cost | Why |
-|---|---|---|---|
-| **T12's measurement** (§8.7 #5) | Set an integration up, change its manifest, spawn it again; show the second run is bounded by the second declaration and that `describe.py` shows the change before it takes effect | **Hours** | **The best value per hour on the list.** T12 is the only threat in *either* register with no evidence at all, and §7.26.5 says so in the report — so an examiner will find it because we told them where it is |
+| ~~**T12's measurement**~~ (§8.7 #5) — ✅ **done 2026-10-01, §7.30; now T1** | Set an integration up, change its manifest, spawn it again; show the second run is bounded by the second declaration and that `describe.py` shows the change before it takes effect | **Hours** | **The best value per hour on the list.** T12 is the only threat in *either* register with no evidence at all, and §7.26.5 says so in the report — so an examiner will find it because we told them where it is |
 | **Re-run `api_surface.py` on the uniform corpus** (§8.7 #6) | One run of an existing script over an already-fetched corpus | **One run** | Contribution 1 (§2.8) is half delivered: §7.23 answered the uniform question for *compatibility* and never for the API surface, so §7.8's obligation row was discharged for one of two |
 | **The other two network stacks, confined** (§8.7 #7) | `urllib3`/`requests` and a raw socket, spawned in real namespaces | Days; may need recorded fixtures | Promoted from nowhere to sixth by §7.27. The one stack actually spawned turned out to break, so "the other two are presumably fine" is exactly the reasoning that was wrong once |
 | **The push loop** (§8.7 #1) | Build it | Days | Largest missing piece, but it is *building* not testing. Unblocks S3's subscription half and the only latency path that could consume §7.20.1's 63× margin |
