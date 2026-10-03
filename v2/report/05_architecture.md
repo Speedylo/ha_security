@@ -387,7 +387,7 @@ run before the choice rather than after it.
 Two considerations bound the risk. The measured margin is wide — 136 MB against a 809 MB
 threshold — so the footprint trigger has room before it fires. And **60 MB of the 176 MB is
 the platform's own base component**, which Chapter 6 tests first for removability; if it can
-go, capacity roughly doubles.
+go, capacity roughly doubles. *(2026-10-03, §7.35.2: the 176 MB is a cold start; warm, the base component is 52.5 MB of 161.)*
 
 > **Measured, 2026-08-25 — and this paragraph's last clause is wrong (§6.3.2).** The base
 > component can indeed be dropped: an ordinary integration loads without it, and all that is
@@ -627,7 +627,7 @@ Three qualifications, because the margin is comfortable rather than unlimited:
 - **60 MB of the 176 is the platform's base component.** If Chapter 6 finds it removable, the
   budget roughly doubles and this qualification largely dissolves. *(Measured in §6.3.2: it is
   removable, but the budget goes to **26**, not to 34. This qualification shrinks; it does not
-  dissolve. The other two stand unchanged.)*
+  dissolve. The other two stand unchanged.)* *(2026-10-03, §7.35.2: the 176 MB is a cold start; warm, the base component is 52.5 MB of 161.)*
 
 If an installation does exceed the budget, the design degrades in a way N3 already governs:
 the framework states the limit and refuses to confine beyond it, rather than silently

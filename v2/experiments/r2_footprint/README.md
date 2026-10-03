@@ -35,8 +35,8 @@ whether `EVENT_HOMEASSISTANT_START` fired: it does under `corrected` and not und
 
 **The 176 MB first-sandbox figure is a cold-start figure.** It was taken on the run that compiled
 Home Assistant's bytecode for the first time; the compiler's allocations stay resident. A warm
-start is 161 MB, and the 15 MB difference splits evenly between importing the helper layer and
-setting up the base component, so the base component's share is 52.5 MB warm, not 60. The
+start is 161 MB. The 15 MB difference falls entirely in the stages that import modules (core
+2.3, helper layer 5.3, base component 7.6 MB), so the base component's share is 52.5 MB warm, not 60. The
 six-sandbox run in August was already warm (per-sandbox RSS 161.8 MB), so the 136 MB marginal
 figure was always the warm one and stands.
 

@@ -4146,8 +4146,9 @@ cost that six sandboxes can detect, so §5.6.3's figures no longer need §7.20.4
 
 The first row did move, though, and not because of the builder: today's original measures 161 MB, not
 176. Both the time and the memory pointed at the same cause. August's run took 6.1 seconds and today's
-took 1.8, and almost all of the 15 MB difference falls in the two stages that import the most modules:
-7.4 MB in importing the helper layer and 7.6 MB in setting up the base component. Pointing Python's bytecode cache
+took 1.8, and the 15 MB difference falls entirely in the three stages that import modules: 2.3 MB in
+importing the core, 5.3 MB in importing the helper layer and 7.6 MB in setting up the base
+component. The stages that only construct objects did not move. Pointing Python's bytecode cache
 at an empty directory reproduced August to within 1.5 MB and 0.3 seconds. **§5.6.3's 176 MB is
 therefore a cold-start figure**, taken on the run that compiled Home Assistant's bytecode for the first
 time, with the compiler's allocations still resident. A warm sandbox is 161 MB. Two things follow. The
@@ -4230,9 +4231,11 @@ what a realistic integration costs on top. The "two" and "four" points are speci
 corpus's median of two set-up components is not necessarily those two. And one consequence is
 measured only outside the sandbox. The sandbox binds the interpreter read-only, so if bytecode is not
 compiled when the platform is installed, every sandbox starts cold and cannot write a cache. On the
-figures above that would cost about 16 MB of RSS and four to five seconds per start. The Pi's environment has
-always had a warm cache, so no confined figure in this report is affected, but an installer should
-compile bytecode, and no measurement here confirms the cost inside a sandbox.
+figures above that would cost about 16 MB of RSS and four to five seconds per start. The
+interpreter tree the sandboxes import from had its cache populated by August's first run, and
+§6.3.2's warm 161.3 MB is consistent with sandboxes using it, but whether a confined sandbox actually
+reads that cache was not checked. An installer should compile bytecode, and no measurement here
+confirms the cost inside a sandbox.
 
 ---
 
