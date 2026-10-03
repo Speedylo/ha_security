@@ -315,8 +315,9 @@ Chapter 6 corrected Chapter 5; Chapter 7 corrected Chapter 6 five times and itse
 two read-throughs. **Not one of those corrections has been to a measured figure.** 46/57/70/84%,
 the 9.0/32.2/19.1 MB premiums, 31 of 37, the 0.7 MB noise floor, §6.3.2's 136.6-against-136.5 MB
 replication, 96% of resolutions via `aiodns`, 2-of-2 canaries, 36-to-1 entities — all hold as first
-printed. *(Two exceptions found on 2026-10-03 are set out in the note at the end of this section;
-the 96% is one of them.)* What was corrected was, every time, a *sentence standing next to* a measurement: a count
+printed. *(Exceptions found on 2026-10-03 are set out in the note at the end of this section: the
+96% and §7.17's end-to-end cost moved materially, and the memory premiums moved by a few megabytes
+on re-measurement — §7.31.12.)* What was corrected was, every time, a *sentence standing next to* a measurement: a count
 recited wrongly, an inference presented as an observation, a prediction paraphrased, a column that
 could not be added up, a claim about a string the code had never produced.
 

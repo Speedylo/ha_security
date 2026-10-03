@@ -152,3 +152,14 @@ systemd-run --user --scope -q python3 scale.py --count 6 \
 
 `unstrip.py --requirements` prints the package list. Omitting `--auth` reproduces the 0/11
 failure that started this.
+
+## Re-run 2026-10-03 — §7.31.12, `results/rerun_20261003/`
+
+`scale.py` on the instance §7.31 corrected: **56.5 MB and 135.7 MB PSS per sandbox, capacity 42 and
+17, premium +79.2 MB** (was 54.5 / 130.4 / 44 / 18 / +75.9), within §7.20.3's run-to-run variance.
+`unstrip.py` keeps its own frozen `build_hass` and was not re-run.
+
+**The `unstripped` arms need this README's own dependency list**, not `~/r2exp/platform-deps`, which
+was rebuilt on 2026-09-02 from the core requirements and no longer holds `paho-mqtt`. Run against it,
+compatibility kept 26/37 with eight members swapped (`*_currentdeps.*`, kept as a record of the
+mistake); against this list (`*_augdeps.*`) it is identical to August's member for member.

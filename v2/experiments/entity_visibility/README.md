@@ -85,3 +85,7 @@ withholds the rest. The push loop is on §6.11.2's list of what is still missing
 systemd-run --user --scope -q python3 -m confine.selftest_reads \
     --python ~/r2exp/ha314/bin/python --json results/pi5_s3.json
 ```
+
+## Re-run 2026-10-03 — §7.31.12, `results/rerun_20261003/`
+
+On the instance §7.31 corrected: identical counts and identical visible sets in both arms.

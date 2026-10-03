@@ -1554,6 +1554,12 @@ a median of 100 MB to 133 MB, which would have suggested a third; PSS at scale s
 the same distinction §6.3.2 was built around and it matters again in the opposite direction —
 there, a peak-based reading would have overstated a *saving*; here it understates a *cost*.
 
+> **Re-measured on 2026-10-03 (§7.31.12).** On the instance §7.31 corrected, and with this
+> section's own dependency set, the figures are **56.5 MB and 135.7 MB**, capacity **42 and 17**,
+> a premium of **+79.2 MB**. The compatibility figures behind it reproduce member for member. The
+> conclusion — the budget more than halves — is unchanged; the movement is within what §7.20.3
+> found PSS varies by at this scale.
+
 > **Translating to §6.3.2's published figure.** That harness used a probe with a sensor platform
 > and a coordinator and measured 90.0 MB; this one uses a trivial probe. Applying the same
 > +75.9 MB delta puts a realistic integration in an un-stripped sandbox at roughly **166 MB PSS,
@@ -1890,7 +1896,7 @@ is the price of asking nothing of anybody.
 The sandbox now contains 641 MB of library code no integration asked for. Three things are true
 about that at once and the section is dishonest if it reports only the first:
 
-- **It costs almost nothing per sandbox.** +19.1 MB median, against +32.2 for the blanket profile.
+- **It costs almost nothing per sandbox.** +19.1 MB median, against +32.2 for the blanket profile. *(Re-measured 2026-10-03 on the corrected instance, §7.31.12: +15.9 against +33.2 — the same ordering, a smaller premium.)*
   The packages are bound read-only and shared; the disk they occupy is the platform's own, in the
   same sense that `homeassistant` is.
 - **It widens what an integration can import**, and §5.6.2 spent a section arguing against exactly

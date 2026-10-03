@@ -3705,9 +3705,12 @@ argument. It now carries this exception.
   item 7 names the corpus's raw-socket members, `localtuya` and `midea_ac_lan`, and both need a
   device or a credential.
 - **Not every experiment built on the corrected instance was re-measured.** `build_hass` also
-  underlies the reads experiment of §7.14, the gc experiment of §7.15, the egress-shape run of §7.24
-  and Chapter 6's `unstrip`. The compatibility arms (§7.31.7), §7.17's end-to-end arms (§7.31.6)
-  and §7.24 (§7.31.11) were re-measured; §7.14, §7.15 and `unstrip` were not. `selftest_reads` and `selftest_gc`, which run the unconfined halves of
+  underlies the reads experiment of §7.14, the gc experiment of §7.15, the egress-shape run of §7.24,
+  and the `minimal` and `unstripped` profiles and `scale.py` behind §6.11 and §6.12.
+  (`experiments/unstrip/unstrip.py` itself keeps a frozen copy of `build_hass`, as
+  `r2_footprint` does, so §6.12's per-component costs are untouched.) The compatibility arms
+  (§7.31.7), §7.17's end-to-end arms (§7.31.6) and §7.24 (§7.31.11) were re-measured first; the
+  rest were re-measured afterwards (§7.31.12). `selftest_reads` and `selftest_gc`, which run the unconfined halves of
   §7.14 and §7.15, pass on the corrected instance, but a passing suite is not a re-recorded figure.
   The defects live in setup and fetching, so figures taken at import or on the mediator's decision
   path are unlikely to move; that is an expectation, not a measurement. §7.24 was the one most
@@ -3780,6 +3783,60 @@ not "one name in twenty-five", but four of six integrations' API names.
 
 P4's miss is the useful one. It was written assuming §7.24.2's figure described integrations, and
 the prediction could only be as right as that assumption.
+
+### 7.31.12 The rest of the instance's reach, re-run
+
+That left the experiments built on the same instance and not yet re-measured. Reading them before
+predicting refined the list. `experiments/unstrip/unstrip.py` carries its own frozen copy of
+`build_hass`, as `r2_footprint` does, so §6.12's per-component costs were never on the corrected
+instance and need no re-run. What does go through the framework is the reads and gc experiments of
+§7.14 and §7.15, the `minimal` and `unstripped` compatibility profiles behind §6.11's 46% and
+§6.12's 70%, and `scale.py`, which measures §6.12's memory cost across six live sandboxes.
+Predictions were committed first (`notes/ch7_31_remaining_rerun_prediction.md`).
+
+| Run | Recorded | Re-run on the corrected instance |
+|---|---|---|
+| §7.14, S3 | 36 visible unconfined, 1 confined; 7 reads, 15 decisions | **identical**, down to the visible sets |
+| §7.15, S1 | 7 `gc` hits unconfined, 0 confined, 7 in the mediator | **identical**, heap size included |
+| §6.11, `minimal` | 17/37 | **17/37, same members** |
+| §6.12, `unstripped` | 26/37 | **26/37, same members** |
+| §6.12, PSS per sandbox, `minimal` | 54.5 MB, 44 sandboxes | **56.5 MB, 42** |
+| §6.12, PSS per sandbox, `unstripped` | 130.4 MB, 18 sandboxes | **135.7 MB, 17** |
+
+The security results and every compatibility figure reproduce exactly. The memory figures move by
+2.0 and 5.3 MB, so §6.12's premium goes from +75.9 to **+79.2 MB per sandbox**, and its conclusion
+stands as written: un-stripping more than halves the budget. Some of the rise is plausibly the frame
+and template helpers and the `network` singleton the corrected instance now builds at startup, but a
+single six-sandbox run per arm cannot attribute it, because §7.20.3 found PSS at this scale varying
+by tens of megabytes between runs. The prediction of ±4 MB for `unstripped` was missed by 1.3 MB,
+which says more about the band than about the instance.
+
+The compatibility runs also record each sandbox's peak memory, from which §6.13 and §6.14 computed
+their premiums over the minimal instance. On the re-run the medians move by 1.8–2.4 MB in both
+directions (`minimal` 99.9 → 102.0 MB, `unstripped` 132.8 → 135.2, declared-plus-core 119.7 → 117.9),
+so the premiums become **+33.2 MB** for the blanket profile against +32.2 printed, and **+15.9 MB**
+for declared-plus-core against +19.1. The `declared` profile's +9.0 was not re-run. No ordering
+between the profiles changes, and §6.14's conclusion that the recommended profile is the cheapest
+per point of compatibility holds with a smaller premium than it claimed.
+
+**Two of these runs first produced the wrong comparison, and both were the harness operator's.**
+`scale.py` failed on the Pi because only `framework/` had been synchronised that day, and the Pi's
+copy of the script predated the `ResourceLimits` refactor that the repository's copy already
+follows. And the first `unstripped` compatibility run matched August's 26/37 with **eight members
+swapped underneath the same total**: `~/r2exp/platform-deps` had been rebuilt on 2 September from
+the core requirement list for §6.14's `declared_core` arm, so it now holds `async_timeout` and
+`hassil`, which four integrations had lacked, and no longer holds `paho-mqtt`, which four had
+needed. The comparison was against a different dependency set, not a different instance. Rebuilt in
+a separate directory with §6.12's own list, the run is identical to August's member for member.
+Both first attempts are kept in `rerun_20261003/` under names that say what they were.
+
+The second is worth keeping as a method point. A matching total is not a reproduced result: the
+member-level comparison is what showed that 26 had become a different 26.
+
+That completes the re-measurement. Every experiment in this report that runs on the framework's
+`build_hass` has now been run on the corrected instance, and the only figures that moved are §7.17's
+end-to-end cost (§7.31.6), §7.24's resolution share (§7.31.11), and §6.12's memory figures, by
+amounts inside their own measured variability.
 
 ---
 

@@ -73,3 +73,7 @@ sandbox boundary is what stops the adversary reaching it. That is S1 and S2 doin
 systemd-run --user --scope -q python3 -m confine.selftest_gc \
     --python ~/r2exp/ha314/bin/python --json results/pi5_s1.json
 ```
+
+## Re-run 2026-10-03 — §7.31.12, `results/rerun_20261003/`
+
+On the instance §7.31 corrected: 7 hits unconfined, 0 confined, 7 in the mediator, heap 8,942 — identical.

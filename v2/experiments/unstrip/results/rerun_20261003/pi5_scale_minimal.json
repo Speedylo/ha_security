@@ -1,0 +1,9 @@
+{
+  "profile": "minimal",
+  "count": 6,
+  "sum_rss_mb": 447.8,
+  "sum_pss_mb": 339.3,
+  "pss_per_sandbox_mb": 56.5,
+  "capacity": 42,
+  "mem_total_mb": 4050
+}
