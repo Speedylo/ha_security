@@ -210,6 +210,25 @@ The pass-3 method below is kept because it is the recipe for the submission draf
    question, not a finding, until the field being counted is confirmed.**
 4. **The mechanical sweeps are cheap and already written**: `python3 report/toc.py --check`, plus
    the reference and section-reference checks in the pass-1 commit message (`3636b16`).
+5. **Sweep for stale statements of absence — the mirror image of item 1.** Item 1 catches a false
+   claim that something *is* done; this catches a claim that something is *not* done which a later
+   measurement made false, and nothing checks those when the measurement lands. **Found twice on
+   2026-10-03:** §8.6.4 still listed the uniform API-surface run as missing after §7.33 ran it, and
+   still said *"T12 was never evaluated"* two days after §7.30 evaluated it. The sweep:
+
+   ```bash
+   P='never (re-)?run|never (been )?evaluated|was never|has not been|have not been|not yet|is owed|are owed|remains? (open|unevaluated|untested)|no evidence|not measured|never spawned|has never'
+   grep -nEi "$P" report/0*.md submission/*.md
+   ```
+
+   It catches both cases. On 2026-10-03 it gave 64 hits in `report/` (excluding lines already
+   carrying a dated note) and 19 in `submission/`; most are true statements of a limit and stay.
+   **For each hit, ask whether anything since has closed it** — the T-table above, §7.30–§7.33,
+   and §8.7's struck items are where closures are recorded. A closed one gets a dated note in the
+   report (the chapters' convention) and is rewritten outright in the submission draft, which
+   carries no correction history. **The submission draft needs this most**: it was compressed from
+   the report on 2026-09-08 and every closure since — T12, T2, T4, T5, the §7.17 re-run, the 96% —
+   postdates it.
 
 ### Optional measurements, ranked — none blocks submission
 
