@@ -225,7 +225,13 @@ argument that survives contact with the actual code is worth more than one that 
 ## 7. The uniform corpus, run 2026-10-03 (report §7.33)
 
 `figures/api_surface_uniform.json` — the parser unchanged, Python 3.14, §7.23's uniform corpus of
-40, zero parse failures. Every conclusion in §4 holds: own-entry lifecycle 90% against everyone's
+40, zero parse failures.
+
+```bash
+# the corpus is §7.23's: experiments/compat/results/hacs_corpus_manifest_uniform.json, seed 20260902
+<python3.14> figures/api_surface.py --root ~/r2exp/corpus_uniform --label hacs-uniform40 \
+    --json figures/api_surface_uniform.json
+``` Every conclusion in §4 holds: own-entry lifecycle 90% against everyone's
 entries 22.5%; calling others' services 12.5%; `config.path` 20.0%; cross-component reach 50.0%,
 mostly platform services; `states` 35.0%. The tail uses `bus` (17.5% against 48.6%), `services`
 (37.5% against 64.6%) and `config` (37.5% against 61.8%) far less than the head.

@@ -106,6 +106,8 @@ far enough to run `http` for a quarter of the corpus would move it further.
 - **Head-weighted corpus.** The top 40 by install count, which describes what most installations
   run and not what most integrations do — the same limitation
   `notes/ch5_evidence_api_surface.md` §6 records, and the same uniform-sample re-run is owed.
+  *Both since run: compatibility in §7.23 (`results/uniform_*.json`), the API surface in §7.33
+  (`figures/api_surface_uniform.json`).*
 - **One release, one host.** Home Assistant 2026.8.3, Python 3.14.7, aarch64.
 
 ## Reproducing

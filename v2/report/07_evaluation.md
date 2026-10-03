@@ -3971,8 +3971,9 @@ finding. Zero files failed to parse.
 | calls another integration's services | 22.2% | 12.5% |
 | imports another component | 71.5% | 50.0% |
 
-The handles every integration needs to exist at all — its config entry, its own storage, the event
-loop — are used about as often in the tail as in the head. The ones that extend an integration's
+The handles almost every integration uses to exist at all — its config entry, the shared `hass.data`
+dictionary it keeps its state in by convention rather than by any enforcement, and the event loop —
+are used about as often in the tail as in the head. The ones that extend an integration's
 reach are not: the event bus falls by 31 points, services and configuration by about 25 each. The
 head-weighted sample therefore **overstated** how much of the platform a typical community
 integration touches, which is the direction one would expect of the most-installed, most-featured

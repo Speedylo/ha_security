@@ -542,9 +542,11 @@ These belong to the next measurement rather than to the artifact.
   `EVENT_HOMEASSISTANT_START`, and §5.6.3's 176/136 MB figures came from it. It is preserved so
   those published figures stay reproducible; the defect affects deferred callbacks rather than
   process size, so the figures are unlikely to move — **and unlikely is not measured** (§7.20.4).
-- **The API-surface measurement was never re-run on a uniform corpus** (§8.3).
+- **The API-surface measurement was never re-run on a uniform corpus** (§8.3). *Run on 2026-10-03
+  (§7.33): every granularity decision holds over the uniform corpus.*
 - **T12 was never evaluated and was never declared unevaluable** (§7.26.5). §7.11 should have
-  carried it in advance if it was not going to be run.
+  carried it in advance if it was not going to be run. *Evaluated on 2026-10-01 (§7.30); this
+  bullet was not updated then, and is annotated on 2026-10-03.*
 - **One release, one host, one architecture, HACS only.** 2026.8.3, Python 3.14.7, aarch64,
   Raspberry Pi 5, 4 GB. `eufy_security` failing on a constant removed *in this very release*, and
   `lightwave2` failing on another in the uniform corpus, are live demonstrations that a
