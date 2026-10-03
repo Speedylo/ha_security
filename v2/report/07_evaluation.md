@@ -299,7 +299,7 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **C3** | The adversarial run includes an absent manifest, an over-broad manifest, and one deliberately mismatched to behaviour — and all three are handled per §5.9's precedence rules | Security | ✅ **Met** — §7.16.1 — `selftest_c3`: absent, over-broad and mismatched manifests. Over-broad **is honoured** (R1) and the section says so; the ceiling it cannot raise holds what §4.9 rated Critical |
 | **C4** | Every performance figure is produced on the Raspberry Pi 5, reporting per-integration memory *and* added latency | Performance | ✅ **Met** — §7.19–§7.22 — every performance figure produced on the Pi 5, per-integration memory *and* added latency both reported |
 | **F1** | A confined integration's entities are present in Home Assistant and behave as native entities under the measures used in this chapter | Compatibility, level 2 | ✅ **Met** — §7.17.3 — `thermal_comfort`: two declared entities mirrored in, fifteen derived sensors published out, dew point physically correct. **Bounded by §8.6.3 #2**: the mediator acts on a stand-in, not a live instance |
-| **F2** | An integration polling a **declared** remote API completes successfully while confined | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met — §7.25, and by a *real* integration in §7.27.** Two purpose-built integrations polled declared hosts concurrently in real namespaces (§7.25); `nordpool` — unmodified community source — then polled its own Nord Pool API confined and published **the same price as the unconfined arm**, with the mediator's durable record naming `dataportal-api.nordpoolgroup.com:443` (§7.27) |
+| **F2** | An integration polling a **declared** remote API completes successfully while confined | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met — §7.25, and by a *real* integration in §7.27.** Two purpose-built integrations polled declared hosts concurrently in real namespaces (§7.25); `nordpool` — unmodified community source — then polled its own Nord Pool API confined and published **the same price as the unconfined arm**, with the mediator's durable record naming `dataportal-api.nordpoolgroup.com:443` (§7.27). **§7.31 (2026-10-03) adds three more real integrations across `requests`, `httpx` and `aiohttp`, each matching its unconfined output** |
 | **F3** | Every enforcement decision in the evaluation names the manifest clause that produced it; a decision with no attributable clause is shown to be unconstructible | Security | ✅ **Met** — §7.4.2, §7.16.1 — every decision record carries a clause pointer; seven mismatched behaviours produced seven denials naming **seven distinct clauses** |
 | **F4** | The manifest of each evaluated integration renders in human-readable form, with denials shown at the same weight as grants | §6.7, re-run over the evaluated set | ✅ **Met** — §7.16.2 — `selftest_describe`, four states, denials rendered at the same weight as grants. Bounded to *availability* by §3.4; comprehension is excluded by §3.7 |
 | **S1** | The published garbage-collector technique (§2.4.1) is attempted from inside the sandbox and reaches no platform object; the mediator and its credential are not locatable from within | Security | ✅ **Met, paired** — §7.15.3 — the published `gc` technique reaches a live credential **7 ways** unconfined and **0** confined across 8,942 objects, while the same token is confirmed live in the mediator |
@@ -312,7 +312,7 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **S8** | The 2021 file-theft pattern **succeeds against an unconfined baseline installation** and is blocked under the framework, on the same host and release | Security — **requires the baseline arm** | ✅ **Met, paired** — §7.13.2 — the 2021 file-theft pattern recovers **2 of 2** canaries unconfined and **0 of 2** confined on the same host and release; `open("../../secrets.yaml")` raises `FileNotFoundError`, not `PermissionError` |
 | **S9** | An integration deliberately exhausting CPU, memory and disk in turn does not render the gateway unresponsive, demonstrated unprivileged, with the boot-time precondition stated | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met, against narrowed wording — §7.22.** All four bounds now come from the manifest and each is verified by a sandbox exceeding it: memory OOM-killed, forks refused at the cap, a 25% CPU cap holding at 25.1%, `ENOSPC` at `disk_mb`. **Disk means space, not I/O bandwidth** — the `io` controller is not delegated to a user manager (§7.22.2), so S9's text is narrowed on evidence and the residual is stated |
 | **N1** | Added latency, per-integration memory and maximum concurrent integrations are all reported against an unconfined baseline on the target hardware. **No threshold** — §3.6 fixed this position in advance | Performance | ✅ **Met as specified** — §7.19–§7.20 — latency to 26 sandboxes, per-sandbox memory and maximum concurrency all reported against an unconfined baseline on the C4 device. **No threshold, by §3.6’s position fixed in advance**; the figures are reported and discussed, and P4 was falsified doing it |
-| **N2** | This chapter reports "imports clean" and "executed end-to-end" as two separate numbers, never conflated, with the first labelled an upper bound wherever it appears | **This chapter** | ✅ **Met by reporting** — §7.12 (imports-clean, 77 integrations) and §7.17 (**executed end-to-end, a named set of five**) are reported separately and never conflated; §7.17.1 states the ceiling of 11 of 37 rather than computing a rate |
+| **N2** | This chapter reports "imports clean" and "executed end-to-end" as two separate numbers, never conflated, with the first labelled an upper bound wherever it appears | **This chapter** | ✅ **Met by reporting** — §7.12 (imports-clean, 77 integrations) and §7.17 (**executed end-to-end, a named set of five**) are reported separately and never conflated; §7.17.1 states the ceiling of 11 of 37 rather than computing a rate. §7.27 and §7.31 add four more by name, and §7.31.6 re-runs the five on a corrected instance |
 | **N3** | Behaviour on mediator unavailability is specified in advance and tested; the framework refuses rather than degrades silently, including the wrong-cgroup-position case | Security | ✅ **Met** — §7.16.2 — carried by `preflight` rather than a self-test: the framework refuses to start when the memory controller is absent (§5.7.4) or the supervisor is in the wrong cgroup position (§6.4.1). Both are stated failure modes |
 
 > **The Verdict column was added by Stage 5's read-through, 2026-09-04, and the criteria were
@@ -1124,6 +1124,14 @@ component form, and it extends that finding rather than repeating it: **the decl
 incomplete for components as well as for packages.** §6.14.4's argument stands unchanged — the
 answer is §5.9.3's static analysis marked *derived*, not asking the author.
 
+> **Corrected by §7.31.3 and §7.31.6 (2026-10-03).** `powercalc`'s missing component was not its
+> author's omission. `KeyError: 'network'` came from the platform's own HTTP helper, which
+> `powercalc` calls, reaching a `network` singleton that the harness's instance loaded only as a side
+> effect of setting up `http`. A real instance loads it in stage 0. On the corrected instance
+> `powercalc` loads confined. The argument that a derived manifest should resolve component
+> imports stands as an argument; `powercalc` is no longer evidence for it.
+
+
 > **A design refinement this measurement justifies, and Chapter 8 owes it.** §5.9.3 accepts M3,
 > static analysis, as a contributor to a *derived* manifest, and §6.14.4 proposed it for the
 > undeclared-package case: `import aiofiles` is a top-level import and trivially detectable.
@@ -1161,6 +1169,14 @@ Same five integrations, same corpus, release, host, interpreter and world of ent
 frame-helper refusing a deprecated API pattern on 2026.8.3. It is broken on this release the way
 `eufy_security` is (§6.14.3), and it never reaches the socket that stopped it in the sandbox.
 
+> **Corrected by §7.31.3 and §7.31.6 (2026-10-03).** The platform does not refuse this pattern.
+> The call that raised passes `custom_integration_behavior=IGNORE`, so a real instance ignores it in
+> a custom integration; it raised here because the harness's `build_hass` never set up the frame
+> helper, which every real bootstrap does. Both arms ran on that instance, so the baseline
+> reproduced the fault rather than controlling for it. On the corrected instance `scheduler` loads in
+> both arms. The withdrawal was reasoned correctly from evidence that was wrong.
+
+
 The multicast observation itself stands as an **observation**: the sandbox's network namespace
 holds loopback only, and `zeroconf`'s `IP_ADD_MEMBERSHIP` fails there. What does **not** stand is
 the inference drawn from it in the first version of this section — that confinement was thereby
@@ -1186,6 +1202,12 @@ unconfined and fails confined on discovery**, and this corpus has not produced o
 `default_config` sets up `network`, which it needs and does not declare — and fails confined with
 `KeyError: 'network'`. So the undeclared-component finding of §7.17.4 stands and is now measured
 by comparison rather than inferred, which is what makes it worth the paragraph it gets.
+
+> **Overturned by §7.31.6 (2026-10-03).** On the corrected instance `powercalc` loads confined and
+> publishes five entities through the mediator. Across this named set the measured cost of
+> confinement is now **none**: five of five load in both arms. The comparison was sound and the
+> instance both arms shared was not, which is the one thing a paired baseline cannot control for.
+
 
 **This is the second time in this chapter that a baseline arm has corrected a conclusion drawn
 without one** — §7.12.3 scored two predictions wrong, and this scores one attribution wrong. Both
@@ -1274,7 +1296,11 @@ twenty-three and pointed `01_PLAN.md` §9.5 at a number the integrations had no 
 demand at all.** Integrations open connections when they are *set up*, not when they are
 imported, which is exactly what the zero says. Across §7.17's five, run through their own config
 flows, only `scheduler` reached for anything — the same mDNS triple, and it is the one that fails
-on this release regardless (§7.17.5). The other four attempted nothing, corroborating their
+on this release regardless (§7.17.5).
+
+> **Corrected by §7.31.6 (2026-10-03):** `scheduler` does not fail on this release; it failed on the
+> harness's instance, and it loads in both arms once that instance sets up the frame helper.
+ The other four attempted nothing, corroborating their
 declarations: three are `calculated`, and `watchman` inspects local configuration files rather
 than the network despite declaring `local_push`.
 
@@ -1693,6 +1719,10 @@ keeps its original text, per the convention §6.4.1 established for Chapter 5:
 | §6.8.3's open question | §7.20.1 | **Answered.** 3.6 ms, 59×, and affordable at 63× headroom |
 | §6.5.3's two-client figure | §7.19 | Extended to 26; the shape is saturation, not tail queueing |
 | §6.13.2's undeclared packages | §7.17.4 | Extended to undeclared **components** (`powercalc`, `network`) |
+
+> **The `powercalc` row above is withdrawn by §7.31.6 (2026-10-03).** Its missing `network` was
+> the platform helper's dependency, absent from the harness's instance, and on a corrected instance
+> it loads confined. §6.13.2's package finding is unaffected.
 
 Two further pointers were placed in the second pass below: §6.5.3 now carries §7.19's refinement
 in the text rather than only in this table, and §6.12.3's un-measured PSS estimate now carries
@@ -2214,6 +2244,12 @@ reasons divide into three kinds that should not be reported as one number:
 | The flow stopped before its call | `dwd_weather`, `solcast_solar` (`DependencyError: recorder`), `waste_collection_schedule` (corpus layout artifact), `frigate` (its default host does not resolve), `solarman` (`InvalidData: Schema validation failed @ data['inverter_serial']` — the shared credential set cannot invent a serial number) | a limit of the driver and the corpus, not of the ecosystem |
 | Broken on 2026.8.3 | `bambu_lab` — `No module named 'aiofiles'` | §6.13.3's finding, met a third time |
 
+> **`dwd_weather`'s placement in this table is corrected by §7.31.1 and §7.31.3 (2026-10-03).** Its
+> flow did not stop before its call; it has no call, because it configures itself from a bundled
+> station list and fetches only at its first coordinator update. That update could not happen here,
+> because setup failed on the harness's missing frame helper. On a corrected instance it fetches
+> from `opendata.dwd.de` and `www.dwd.de` over `httpx`.
+
 `aiofiles` has now blocked integrations in the compatibility run, the end-to-end run and this one.
 Chapter 8 already owes it a paragraph; this is the third independent occasion.
 
@@ -2723,6 +2759,13 @@ exactly one endpoint, written once in its own `aio_price.py`, so the manifest cl
 `dataportal-api.nordpoolgroup.com:443` is a fact about the integration rather than a guess about
 it.
 
+> **Corrected by §7.31.1 (2026-10-03).** `nordpool` was the only such member §7.24 *observed*, not
+> the only one in the corpus. `dwd_weather` is `cloud_polling` and needs no credential; §7.24 saw no
+> egress from it because it fetches after its flow and its setup was failing on a harness fault, and
+> this sentence read that absence as a property of the integration. The uniform corpus holds
+> others. §7.31 runs three.
+
+
 **Three arms, because two would not settle the question.**
 
 | | Arm | What it answers |
@@ -2846,6 +2889,12 @@ effect of building a DNS resolver. It was not a discovery problem. It was every 
 integration in the corpus, and the 41% §7.18.1 identified as the population the proxy exists to
 serve.
 
+> **Qualified by §7.31.3 (2026-10-03).** The restored finding stands, but its starting point does
+> not: §7.17.5's withdrawal rested on a harness fault, and `scheduler` loads in both arms on a
+> corrected instance. And §7.27.3's correction, which this section's restored finding motivated, was
+> incomplete in a way `nordpool` could not show — it held for integrations that declare `http`, and
+> `nordpool` happens to.
+
 ### 7.27.5 The result
 
 | | A — unconfined | B — confined, declared | C — confined, no clause |
@@ -2869,6 +2918,12 @@ arm produced in the same minute.
 still reaches LOADED and the sensor is still created, and its state is `unavailable` because the
 fetch behind it was refused. An integration denied its network does not fail to install; it
 installs and reports no data, which is the behaviour a user would be able to diagnose.
+
+> **Qualified by §7.31.5 (2026-10-03).** This describes how `nordpool` responds to a withdrawn grant,
+> not how integrations do. Of §7.31's three, two raise on their critical fetch and are retried by the
+> platform, and one fails its config flow outright. The response is the integration's own error
+> handling, and the design cannot make it uniform.
+
 
 **The evidence for both is the mediator's own durable audit record**, not either sandbox's report
 of itself, on §7.25.2's reasoning. Each record names the destination and the clause, and the log's
@@ -2920,13 +2975,17 @@ contact with a real HTTP stack, a real TLS handshake and a real API.
 
 - **One integration.** This is a named set of one, chosen because the corpus offers no second
   member, and no rate is computed from it. §7.17.1's credential wall is the reason and it binds
-  any confinement scheme equally.
+  any confinement scheme equally. *§7.31 (2026-10-03) adds three more, chosen by network stack; the
+  corpus did offer a second member, and §7.31.1 records why this sentence said otherwise.*
 - **The correction was found, not predicted, and there may be more of its kind.** The failure was
   in a platform helper nothing had exercised because no real integration had been run confined
   against a network. That is one seam; §7.24.5's finding that there are three network stacks
   suggests others exist. **What this measurement licenses is that the egress path works for the
   `aiohttp` + `async_get_clientsession` shape, which is the platform's own**, and not that it
   works for `urllib3`/`requests` or a raw socket confined, neither of which has been spawned.
+  *§7.31 (2026-10-03) spawned `requests` and `httpx` against real APIs, and found three more seams of
+  exactly this kind — a frame helper, the `network` singleton, and an empty CA store. A raw socket
+  remains unspawned.*
 - **mDNS discovery does not work in the sandbox and now fails silently rather than loudly.**
   Before the correction an integration needing discovery crashed at setup; now it finds nothing.
   The second is better behaviour and it is still a compatibility limit, and §7.24.4's measurement
@@ -3308,6 +3367,325 @@ both at once, each producing its own message.
   changed version from running — it reports. Blocking a sandbox whose identity has no matching
   approval is a different design decision, and §5.9.7's concession stands: *declared is arranged
   for, not guaranteed.*
+
+## 7.31 Three more real integrations, and three defects only they could find
+
+**2026-10-03.** §7.27 ran one real community integration confined against its real API, and that
+single run found the most serious defect in the project: the platform's own HTTP helper could not
+be constructed inside a sandbox at all. §8.4.2 draws the lesson that running unmodified real code
+finds what a paired baseline, two instruments, a self-test and recomputation cannot, because those
+four are all written out of the same assumptions as the thing they check. Until this section, that
+lesson rested on one run. This section applies it three more times, chooses the three subjects so
+that each exercises something `nordpool` did not, and reports what they found. Predictions were
+committed before the harness was changed or anything was run
+(`notes/ch7_31_endtoend_prediction.md`), and they are scored in §7.31.8.
+
+The short version is that the method was confirmed and the artifact was not. All three new subjects
+now work confined, through three different network stacks. Getting them there required three
+corrections to the framework, each a defect that every one of the twenty self-test suites had
+passed over, and one of them invalidates a conclusion this chapter withdrew on 2 September.
+
+### 7.31.1 Choosing three subjects, and a sentence of §7.27.1 that was wrong
+
+§7.27.1 said `nordpool` was, as far as the corpus went, the only integration that both needs a
+network and can be configured without a credential. Surveying both corpora by `iot_class` and by
+what each `config_flow.py` asks for shows that this was true of what §7.24 had *observed* and not of
+the corpus. §7.24 drove `dwd_weather` through its own flow, the flow created an entry, and no egress
+was attributed to it, so §7.24.7 filed it under "the flow stopped before its call". The reason was
+narrower than that. `dwd_weather` configures itself from a station list bundled with its library,
+so its flow never touches the network; it fetches only at its first coordinator update, after the
+flow has finished. §7.27.1 then read *no egress observed* as *no egress needed*. §7.31.3 shows that
+§7.24 would not have seen the fetch even with a longer window, because the setup that precedes it
+was failing for a reason inside the harness.
+
+With that corrected, the candidates came from both corpora, and the three chosen were picked by
+network stack rather than by convenience. §8.7 item 7 records that only one of the three stacks
+§7.24.5 found had ever been spawned confined, and §7.27 is the reason "the other two are presumably
+fine" is not an answer.
+
+| Subject | Corpus | Network path | Hosts declared, read from source before any run |
+|---|---|---|---|
+| `smhi_brandrisk` | uniform | `aiohttp` through `async_get_clientsession`, `nordpool`'s shape | the SMHI forecast host and the SMHI warnings host |
+| `regensburg_transport` | uniform | `requests` in an executor during the flow, then a bare `aiohttp.ClientSession()` in its sensor | `efa.rvv.de:443` |
+| `dwd_weather` | head | `httpx`, synchronously, in an executor, after setup | `opendata.dwd.de:443` |
+
+All three import cleanly in both arms on 2026.8.3, and every endpoint answered from the Pi on the
+morning of the run. `smhi_brandrisk` has two hosts, which makes it the first subject that can show a
+grant is per destination rather than per integration, so it gets a fourth arm: **D**, which declares
+the forecast host and withholds the warnings host. Its own code treats the warnings call as
+non-critical, so D can be refused one host while still working.
+
+### 7.31.2 What the harness needed before it could run them
+
+`endtoend_egress.py` was generalised from one hard-coded subject to a table, with `nordpool` kept as
+the default so §7.27's command still reproduces §7.27. Two faults were found and fixed before any new
+subject ran, and both would have produced a wrong report rather than a crash.
+
+The first was in the flow driver both arms share. `regensburg_transport` asks the user to pick a stop
+from the live search results, and the field's default is `False`, which is not one of its own
+options. `fill_schema` answers a field from its default, so it would have sent `False`. No fixed
+override could do better, since nobody can name an option before the search has run. The driver now
+accepts a list of fields to answer with the first option offered, which is what a user picking the
+top match does, and it lives in the shared driver so that the two arms still differ only in
+confinement.
+
+The second fault was older. §7.27's harness always sent the unconfined arm `record_egress: True`, and
+nothing in `endtoend_unconfined.py` read it, so arm A never recorded where it went. That did not
+matter for `nordpool`, which has one host. For a subject with several possible hosts it is the only
+check on the declared list, so it is now honoured, with platform traffic separated from the
+integration's own. It inherits §7.18's blind spot: names resolved through `aiodns` appear only as the
+address they connect to. `requests` and `httpx` resolve through `getaddrinfo` and are seen by name,
+which turned out to matter in §7.31.5.
+
+Before any new subject ran, `nordpool` was re-run through the generalised harness and reproduced
+§7.27: 13 of 13 checks, the same price in arms A and B, and three refusals by absence in C.
+
+### 7.31.3 The first run, and two defects in how the instance was built
+
+The first run of the three new subjects passed 5 of 14 checks for `smhi_brandrisk` and 5 of 11 for
+`dwd_weather`, and neither had reached a network call. Two different errors stopped them.
+
+Arm A of both failed with `RuntimeError: Frame helper not set up`, raised from
+`helpers/frame.py: report_usage`. That function is how Home Assistant reports a deprecated pattern,
+and the call site that raised it, in `DataUpdateCoordinator`, passes
+`custom_integration_behavior=ReportBehavior.IGNORE`. A real instance therefore ignores this pattern
+in a custom integration. It raised here because `report_usage` needs the frame helper, which
+`bootstrap.async_load_base_functionality` sets up unconditionally and `sandbox_runtime.build_hass`
+never did. Every integration that builds a coordinator without passing its config entry, which is a
+common and still-supported pattern, therefore failed setup in every arm of every harness built on
+`build_hass`. **That is the error §7.17.5 withdrew `scheduler` on.** §7.17.5 read it as "the
+platform's own frame helper refusing a deprecated API pattern on 2026.8.3", and the platform does no
+such thing. The fault was in the instance the baseline arm stood up, which means a paired baseline
+was wrong in the same direction as the arm it was checking. §7.31.6 re-runs §7.17's five to settle
+what that withdrawal should have said.
+
+Arms B, C and D of `smhi_brandrisk` failed differently, with `KeyError: 'network'`. The path runs
+from `async_get_clientsession`, through zeroconf's resolver, to `network.async_get_loaded_adapters`,
+which is a bare dictionary lookup that assumes the `network` integration has loaded. A real instance
+loads it in stage 0 of bootstrap. In `build_hass` it was loaded only as a side effect of setting up
+`http`, whose setup asks `network` for a source address. `nordpool` declares `http` in
+`after_dependencies`, so it got `network` without asking, and that is the only reason §7.27 worked.
+**An integration that does not happen to declare `http` could not construct the platform's HTTP
+client in a sandbox at all.** This is also `powercalc`'s failure in §7.17.4, which that section
+charged to an incomplete declaration. `powercalc` calls `async_get_clientsession` in its analytics
+module, and no author could be expected to declare an internal dependency of the helper the
+platform tells them to use.
+
+So §7.27's correction, which made the HTTP helper work in a sandbox, was incomplete in a way only a
+second real integration could show: it held for integrations that declare `http`, and the one
+integration it was tested on happened to.
+
+`build_hass` now sets up the frame and template helpers and loads the `network` singleton, as a real
+bootstrap does. In a sandbox the singleton enumerates the namespace's adapters, which is `lo` and
+nothing else, so it is present and empty in the same way as the multicast route of §7.27.3, and
+grants nothing.
+
+### 7.31.4 The second run, and a sandbox with no trust anchors
+
+With the instance corrected, `smhi_brandrisk` passed every check, and `regensburg_transport`
+exposed a third defect, this time in the sandbox rather than the harness.
+
+In arm B the mediator granted `efa.rvv.de:443` three times and the shim connected all three: once
+for the flow's `requests` call and twice for the sensor's polls. Yet the departure sensor read
+`unavailable`, while arm A, run minutes earlier, showed *2 Graß via Geibelplatz at 15:52*. The
+bridge forwards every state change, so the sensor had never changed state. Its poll was failing
+after the connection was made and being caught, because the sensor turns any `aiohttp.ClientError`
+into `unavailable`.
+
+The cause is TLS verification. `requests`, `httpx` and the platform's own helper session all verify
+against the `certifi` bundle, which ships with the sandbox's dependencies. A bare
+`aiohttp.ClientSession()`, like `urllib` and anything else on Python's default context, uses the
+system store under `/etc/ssl/certs`. The sandbox mounted no `/etc` at all. A probe spawned inside a
+real sandbox confirmed it: `ssl.create_default_context()` held **zero** CA certificates.
+
+So the egress path had been granting and connecting requests that could then never complete,
+with nothing in the mediator's record to show it. The design's own logic is not what failed: the
+mediator's job ends at handing over a connected socket, and it did. What failed is that a sandbox
+built to be empty was empty of something that is public and needed. `/etc/ssl/certs` is now one of
+the sandbox's read-only runtime paths. It is that directory and not `/etc/ssl`, because Debian keeps
+private keys in `/etc/ssl/private` beside it. Re-probed, all 151 certificate links resolve inside the
+sandbox and the system bundle loads 150 roots. Read-only means the sandbox can use the host's trust
+anchors and cannot add one.
+
+How far this reached is bounded statically rather than measured: 10 of the 37 head-corpus
+integrations and 6 of the 40 uniform ones contain a bare `aiohttp.ClientSession(`, a `urlopen`, or a
+`create_default_context(` call. That is an upper bound on exposure, not a count of failures, since
+some of those paths reach local devices over plain HTTP or switch verification off.
+
+### 7.31.5 The result
+
+All four subjects were then re-run on one version of the code, so that no result below mixes a
+corrected harness with an uncorrected one.
+
+| | `nordpool` | `smhi_brandrisk` | `regensburg_transport` | `dwd_weather` |
+|---|---|---|---|---|
+| A — unconfined | LOADED | LOADED | LOADED | LOADED |
+| B — confined, declared | LOADED | LOADED | LOADED | LOADED |
+| C — confined, no clause | LOADED, `unavailable` | `SETUP_RETRY` | flow fails | `SETUP_RETRY` |
+| D — confined, one host withheld | — | LOADED | — | — |
+| Value in B, against A | 0.033 = 0.033 | 11.2, 84.5, 27.2 = A | 16:05 against 16:04 | 09:00 and 13:00 = A |
+| Checks | 14/14 | 17/17 | 13/14 | 13/14 |
+
+In every subject, arm B produced the same output as arm A from the same API, and in every subject the
+mediator's durable record shows each grant naming its host, port and clause. Arm C refused the same
+destinations, by absence, and every chain verified. No arm was killed for memory. The two stacks
+§8.7 item 7 said had never been spawned confined have now both run against a real destination:
+`requests` in `regensburg_transport`'s flow, which could only have offered the stop it found by
+completing the search, and `httpx` in `dwd_weather`'s coordinator, whose two timestamps are the
+forecast's issue time and the last measurement's and exist only if the download succeeded.
+
+Arm D is the new evidence. `smhi_brandrisk` was granted the forecast host at `/egress/0`, was
+refused the warnings host three times at `/permissions/network/egress`, and published the same fire
+risk index as A. A grant is therefore per destination, the refusal of one host does not disturb the
+others, and both appear side by side in a single run's record.
+
+Arm C behaved differently in each subject, which matters because §7.27.5 recorded `nordpool`'s
+behaviour, degrading to `unavailable`, as though it described how an integration responds to having
+its network withdrawn. It describes how `nordpool` does. `smhi_brandrisk` and `dwd_weather` raise
+on their critical fetch and Home Assistant retries them, and `regensburg_transport` fails its config
+flow, because `get_stop_id` catches `HTTPError` and `Timeout` and not `ConnectionError`. What a
+withdrawn grant looks like to a user depends on the integration's own error handling, and the
+design cannot make it uniform.
+
+Two failures are kept, and both are results rather than defects. `regensburg_transport`'s departure
+in B is *2 Schwabenstraße at 16:05* against A's *16:04*: the same bus on the same diverted route, its
+real-time estimate moved by a minute between arms run minutes apart. The check requires equality
+because §7.27's claim was *the same number*, and that is the right test for a price or an index. For
+a live estimate it is too strict, and it fails here for a stated reason rather than being loosened to
+pass.
+
+The second is more useful. `dwd_weather`'s declaration was written from its source before any run,
+and it missed a host. Arm A's recorder saw `httpx` resolve `www.dwd.de` as well as
+`opendata.dwd.de`, because the library also fetches a text report. In arm B the mediator refused
+`www.dwd.de` by absence, the refusal is in the record, and the integration loaded and published
+regardless. The host was deliberately not added afterwards, since a clause inferred from what arm A
+happened to reach would make arm B's success circular. **A declaration written in good faith from
+reading the code was incomplete, and the design contained the omission rather than breaking on it.**
+Chapter 3 put *"guaranteeing the manifest is minimal or honest"* out of scope, and this is what that
+exclusion looks like in practice: the first time this report has met an incomplete declaration of a
+*destination* in a real integration, rather than of a package as in §6.13.
+
+### 7.31.6 §7.17's five, re-run on the corrected instance
+
+§7.31.3 means two conclusions of §7.17 rest on an instance that was wrong. `scheduler` was
+withdrawn because the baseline showed it failing on the frame helper, and `powercalc` was charged
+as confinement's cost because it failed confined on `network`. Rather than replace either with
+"unknown", §7.17's two arms were re-run on the corrected instance, with predictions committed after
+launch and before any output was read (the addendum to `notes/ch7_31_compat_rerun_prediction.md`).
+
+| Integration | Unconfined, 2 Sept | Confined, 2 Sept | Unconfined, 3 Oct | Confined, 3 Oct |
+|---|---|---|---|---|
+| `thermal_comfort` | LOADED | LOADED | LOADED | LOADED |
+| `watchman` | LOADED | LOADED | LOADED | LOADED |
+| `adaptive_lighting` | LOADED | LOADED | LOADED | LOADED |
+| `powercalc` | LOADED | NOT_LOADED | LOADED | **LOADED** |
+| `scheduler` | SETUP_ERROR | SETUP_ERROR | **LOADED** | **LOADED** |
+
+All five load in both arms. **The measured cost of confinement across §7.17's named set goes from one
+integration to none**, and all five predictions held. `powercalc` now publishes five entities through
+the mediator, and `scheduler` loads in both arms without publishing anything, because it creates an
+entity only when a schedule is added.
+
+Both of §7.17's attributions were therefore wrong, and they were wrong in opposite directions, which
+is the instructive part. `scheduler` was charged to the *platform* when the fault was the harness's
+instance, and the baseline arm made that error look like evidence, because both arms ran on the same
+deficient instance. `powercalc` was charged to the *design* when the fault was the same instance,
+in a way that only the confined arm exposed, because the unconfined arm set up `default_config` and
+got `network` from it. A paired baseline controls for everything the two arms do not share. It
+cannot control for what they share, and here they shared the thing that was broken.
+
+What survives is the component-closure argument of §7.17.4, as an argument without its example. It
+is still true that a static analysis of a derived manifest should resolve
+`homeassistant.components.*` imports, and that this is computable exactly. `powercalc` is no longer
+evidence for it, since its missing component was the platform's, not the author's.
+
+### 7.31.7 What else was re-run, and what did not move
+
+`build_hass` sits under every runtime in the framework, including the `inspect()` that every
+compatibility figure in §7.12, §7.23 and §7.29 comes from. Those figures were measured on the
+instance §7.31.3 found deficient, so they were re-measured rather than assumed. The prediction was
+committed first (`notes/ch7_31_compat_rerun_prediction.md`): nothing would move, because every
+non-`ok` row in the earlier runs was read beforehand and none was a frame, `network` or TLS failure,
+and because `inspect()` imports modules rather than setting up config entries, which is where all
+three defects live.
+
+It held. The head corpus is 31 of 37 in both arms and the uniform corpus 37 of 40 in both. No member
+changed category in any of the four runs, and C1 counts zero source changes in all four, which is the
+first C1 count the uniform pair has had. **The import-level parity result stands on the corrected
+instance.**
+
+All twenty `selftest_*` suites and the base `selftest` also pass after the changes to `sandbox.py`
+and `build_hass`. That includes the adversary suite, which matters here because `/etc` now exists
+inside a sandbox and `/etc/shadow` must still not.
+
+### 7.31.8 The predictions, scored
+
+| | Prediction | Outcome |
+|---|---|---|
+| P1 | A loads and produces a real value for all three | ❌ as a prediction about the first run, where A failed for two of three on the frame fault; ✅ on the corrected instance. Scored against the first run, because that is the run it was about |
+| P2 | `smhi_brandrisk` B matches A exactly, C publishes nothing fetched | ✅ |
+| P3 | `regensburg_transport`'s `requests` call is granted through the shim's seams | ✅ |
+| P4 | `regensburg_transport` C fails its config flow rather than degrading | ✅ — `ConnectionError` is not caught |
+| P5 | `dwd_weather` B loads and publishes over `httpx` | ✅ |
+| P6 | `dwd_weather` C degrades to `unavailable` while LOADED | ❌ — it retries setup instead |
+| P7 | D grants the forecast host, refuses the warnings host, value equals A | ✅ |
+| P8 | at least one subject finds something the suites did not | ✅ — three framework defects |
+| — | the compatibility arms do not move (§7.31.7) | ✅ |
+| — | §7.17's five: `scheduler` loads in both arms, `powercalc` loads confined, the rest unchanged, cost goes to zero (§7.31.6) | ✅ all five |
+
+Six of eight held outright, and with §7.31.6's five that is eleven of thirteen, which is roughly the
+reverse of §8.4.1's six of eight wrong. It should not be read as improved foresight. Every prediction was about the *subjects*, and the subjects behaved as their code
+said they would. What none of the eight anticipated was that the instance, the harness and the
+sandbox would each be wrong, and P8, which predicted only that *something* would be found, is the
+one that carried the section.
+
+### 7.31.9 The harness's own checks, wrong three times
+
+The harness's checks were wrong three times in this section, and each is recorded because each
+would have reported something false.
+
+The first version of the end-to-end check counted any published entity with a real state as a fetched
+value, and `regensburg_transport` passed 13 of 13 on its first run on that basis. The value was the
+delay sensor's `0`, which its own code assigns at the end of every update whatever it fetched, and
+the departure sensor read `unavailable` in **both** arms, because the sensor polls every 120 seconds
+and the settle window was 40. Arm C could not catch this, because its flow failed before any entity
+existed. The checks now name the entity that carries evidence for each subject, filter arm A to the
+integration's own entities by registry platform (arm A's count had been including `zone.home = 0`
+from `default_config`), and require that **one value in B equals A's**, which is what §7.27 actually
+claimed.
+
+The arm-C check was then wrong twice. §7.27's form required every refusal to target the one declared
+host, which `dwd_weather` broke by being refused a host its declaration had missed. The replacement
+required C to be refused every host B was granted, which `smhi_brandrisk` broke, because C is
+refused its critical host first, raises, and never asks for the second. The check now requires that
+some destination B was granted is one C was refused, which is what the control is for. The data did
+not change between these versions, so the harness gained a `--recheck` mode that re-evaluates the
+checks over a recorded run without running anything. `smhi_brandrisk`'s 17 of 17 is that re-check
+of a run that scored 16 of 17 under the second form.
+
+### 7.31.10 What this does and does not establish
+
+**Established.** The egress path works confined for three network stacks rather than one, against
+four real APIs, with the output in each matching an unconfined run. Grants are per destination, as
+arm D shows directly. The real-integration method found three defects behind twenty passing suites,
+two of which had already produced wrong attributions in this chapter. With those corrected, §7.17's
+named set shows no end-to-end cost of confinement at all, and the paired zero-cost result at import
+level holds on the corrected instance.
+
+**Not established.**
+
+- **Four is still a named set, not a rate.** The credential wall of §7.17.1 still holds for the head
+  corpus and binds any confinement scheme equally, and one of the four is in the head corpus.
+- **Raw sockets have still not been spawned confined.** Two of §7.24.5's three stacks have; the
+  third has no credential-free member in either corpus.
+- **The equality check is wrong for live data**, as `regensburg_transport` shows, and a better check
+  for a real-time feed would compare structure rather than value.
+- **The static bound on the TLS defect is an upper bound.** No integration other than
+  `regensburg_transport` was observed failing on it.
+- **The mediator still acts on §6.10.2's stand-in.** Nothing here changes §8.6.3's limit 2.
+- **Another defect of this kind is likely.** Three were found by three integrations, after one was
+  found by one. Nothing in this section suggests the supply is exhausted, and §8.4.2's argument
+  predicts that it is not.
 
 ---
 

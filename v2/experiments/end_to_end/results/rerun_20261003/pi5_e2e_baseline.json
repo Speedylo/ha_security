@@ -1,0 +1,1003 @@
+[
+  {
+    "domain": "scheduler",
+    "arm": "unconfined",
+    "egress_attempts": [
+      {
+        "kind": "connect",
+        "host": "224.0.0.251",
+        "port": 1,
+        "phase": "platform"
+      },
+      {
+        "kind": "connect",
+        "host": "8.8.8.8",
+        "port": 1,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "239.255.255.250",
+        "port": 1900,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "10.126.83.113",
+        "port": 0,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "ff02::c%3",
+        "port": 1900,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "fe80::9ba0:68cd:7165:a581%3",
+        "port": 0,
+        "phase": "platform"
+      },
+      {
+        "kind": "connect",
+        "host": "/var/run/dbus/system_bus_socket",
+        "port": null,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "fe80::9ba0:68cd:7165:a581%3",
+        "port": 53099,
+        "phase": "integration"
+      },
+      {
+        "kind": "connect",
+        "host": "104.26.5.238",
+        "port": 443,
+        "phase": "integration"
+      },
+      {
+        "kind": "resolve",
+        "host": "192.168.1.128",
+        "port": null,
+        "phase": "integration"
+      },
+      {
+        "kind": "connect",
+        "host": "10.255.255.255",
+        "port": 1,
+        "phase": "integration"
+      }
+    ],
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false,
+      "http": true,
+      "websocket_api": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "entries": [
+      {
+        "title": "Scheduler",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "conversation.home_assistant",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sun.sun",
+      "zone.home"
+    ],
+    "published": [
+      {
+        "entity": "conversation.home_assistant",
+        "state": "unknown",
+        "platform": null
+      },
+      {
+        "entity": "sensor.sun_next_dawn",
+        "state": "2026-10-04T05:32:17+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_dusk",
+        "state": "2026-10-03T18:07:21+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_midnight",
+        "state": "2026-10-03T23:49:13+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_noon",
+        "state": "2026-10-04T11:49:21+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_rising",
+        "state": "2026-10-04T06:06:13+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_setting",
+        "state": "2026-10-03T17:33:31+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sun.sun",
+        "state": "above_horizon",
+        "platform": null
+      },
+      {
+        "entity": "zone.home",
+        "state": "0",
+        "platform": null
+      }
+    ]
+  },
+  {
+    "domain": "adaptive_lighting",
+    "arm": "unconfined",
+    "egress_attempts": [
+      {
+        "kind": "connect",
+        "host": "224.0.0.251",
+        "port": 1,
+        "phase": "platform"
+      },
+      {
+        "kind": "connect",
+        "host": "8.8.8.8",
+        "port": 1,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "239.255.255.250",
+        "port": 1900,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "10.126.83.113",
+        "port": 0,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "ff02::c%3",
+        "port": 1900,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "fe80::9ba0:68cd:7165:a581%3",
+        "port": 0,
+        "phase": "platform"
+      },
+      {
+        "kind": "connect",
+        "host": "/var/run/dbus/system_bus_socket",
+        "port": null,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "fe80::9ba0:68cd:7165:a581%3",
+        "port": 37893,
+        "phase": "integration"
+      },
+      {
+        "kind": "connect",
+        "host": "104.26.5.238",
+        "port": 443,
+        "phase": "integration"
+      },
+      {
+        "kind": "resolve",
+        "host": "192.168.1.128",
+        "port": null,
+        "phase": "integration"
+      },
+      {
+        "kind": "connect",
+        "host": "10.255.255.255",
+        "port": 1,
+        "phase": "integration"
+      }
+    ],
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false,
+      "light": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "name"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "entries": [
+      {
+        "title": "confined test",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "conversation.home_assistant",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sun.sun",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+      "switch.confined_test_adaptive_lighting_confined_test",
+      "zone.home"
+    ],
+    "published": [
+      {
+        "entity": "conversation.home_assistant",
+        "state": "unknown",
+        "platform": null
+      },
+      {
+        "entity": "sensor.sun_next_dawn",
+        "state": "2026-10-04T05:32:17+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_dusk",
+        "state": "2026-10-03T18:07:21+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_midnight",
+        "state": "2026-10-03T23:49:13+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_noon",
+        "state": "2026-10-04T11:49:21+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_rising",
+        "state": "2026-10-04T06:06:13+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_setting",
+        "state": "2026-10-03T17:33:31+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sun.sun",
+        "state": "above_horizon",
+        "platform": null
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "state": "on",
+        "platform": "adaptive_lighting"
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "state": "on",
+        "platform": "adaptive_lighting"
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "state": "off",
+        "platform": "adaptive_lighting"
+      },
+      {
+        "entity": "switch.confined_test_adaptive_lighting_confined_test",
+        "state": "on",
+        "platform": "adaptive_lighting"
+      },
+      {
+        "entity": "zone.home",
+        "state": "0",
+        "platform": null
+      }
+    ]
+  },
+  {
+    "domain": "thermal_comfort",
+    "arm": "unconfined",
+    "egress_attempts": [
+      {
+        "kind": "connect",
+        "host": "224.0.0.251",
+        "port": 1,
+        "phase": "platform"
+      },
+      {
+        "kind": "connect",
+        "host": "8.8.8.8",
+        "port": 1,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "ff02::c%3",
+        "port": 1900,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "fe80::9ba0:68cd:7165:a581%3",
+        "port": 0,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "239.255.255.250",
+        "port": 1900,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "10.126.83.113",
+        "port": 0,
+        "phase": "platform"
+      },
+      {
+        "kind": "connect",
+        "host": "/var/run/dbus/system_bus_socket",
+        "port": null,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "fe80::9ba0:68cd:7165:a581%3",
+        "port": 42515,
+        "phase": "integration"
+      },
+      {
+        "kind": "connect",
+        "host": "172.67.68.90",
+        "port": 443,
+        "phase": "integration"
+      },
+      {
+        "kind": "resolve",
+        "host": "192.168.1.128",
+        "port": null,
+        "phase": "integration"
+      },
+      {
+        "kind": "connect",
+        "host": "10.255.255.255",
+        "port": 1,
+        "phase": "integration"
+      }
+    ],
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "custom_icons",
+            "enabled_sensors",
+            "humidity_sensor",
+            "name",
+            "poll",
+            "scan_interval",
+            "temperature_sensor"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "entries": [
+      {
+        "title": "living room",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "conversation.home_assistant",
+      "sensor.living_room_absolute_humidity",
+      "sensor.living_room_dew_point",
+      "sensor.living_room_dew_point_perception",
+      "sensor.living_room_frost_point",
+      "sensor.living_room_frost_risk",
+      "sensor.living_room_heat_index",
+      "sensor.living_room_humidex",
+      "sensor.living_room_humidex_perception",
+      "sensor.living_room_moist_air_enthalpy",
+      "sensor.living_room_relative_strain_perception",
+      "sensor.living_room_summer_scharlau_perception",
+      "sensor.living_room_summer_simmer_index",
+      "sensor.living_room_summer_simmer_perception",
+      "sensor.living_room_thoms_discomfort_perception",
+      "sensor.living_room_winter_scharlau_perception",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sun.sun",
+      "zone.home"
+    ],
+    "published": [
+      {
+        "entity": "conversation.home_assistant",
+        "state": "unknown",
+        "platform": null
+      },
+      {
+        "entity": "sensor.living_room_absolute_humidity",
+        "state": "8.99806096686178",
+        "platform": "thermal_comfort"
+      },
+      {
+        "entity": "sensor.living_room_dew_point",
+        "state": "9.95645201102777",
+        "platform": "thermal_comfort"
+      },
+      {
+        "entity": "sensor.living_room_dew_point_perception",
+        "state": "dry",
+        "platform": "thermal_comfort"
+      },
+      {
+        "entity": "sensor.living_room_frost_point",
+        "state": "7.06306588826203",
+        "platform": "thermal_comfort"
+      },
+      {
+        "entity": "sensor.living_room_frost_risk",
+        "state": "no_risk",
+        "platform": "thermal_comfort"
+      },
+      {
+        "entity": "sensor.living_room_heat_index",
+        "state": "20.8488888888889",
+        "platform": "thermal_comfort"
+      },
+      {
+        "entity": "sensor.living_room_humidex",
+        "state": "22.658186777006",
+        "platform": "thermal_comfort"
+      },
+      {
+        "entity": "sensor.living_room_humidex_perception",
+        "state": "comfortable",
+        "platform": "thermal_comfort"
+      },
+      {
+        "entity": "sensor.living_room_moist_air_enthalpy",
+        "state": "40.8471436926806",
+        "platform": "thermal_comfort"
+      },
+      {
+        "entity": "sensor.living_room_relative_strain_perception",
+        "state": "outside_calculable_range",
+        "platform": "thermal_comfort"
+      },
+      {
+        "entity": "sensor.living_room_summer_scharlau_perception",
+        "state": "comfortable",
+        "platform": "thermal_comfort"
+      },
+      {
+        "entity": "sensor.living_room_summer_simmer_index",
+        "state": "24.283208",
+        "platform": "thermal_comfort"
+      },
+      {
+        "entity": "sensor.living_room_summer_simmer_perception",
+        "state": "slightly_cool",
+        "platform": "thermal_comfort"
+      },
+      {
+        "entity": "sensor.living_room_thoms_discomfort_perception",
+        "state": "no_discomfort",
+        "platform": "thermal_comfort"
+      },
+      {
+        "entity": "sensor.living_room_winter_scharlau_perception",
+        "state": "outside_calculable_range",
+        "platform": "thermal_comfort"
+      },
+      {
+        "entity": "sensor.sun_next_dawn",
+        "state": "2026-10-04T05:32:17+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_dusk",
+        "state": "2026-10-03T18:07:21+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_midnight",
+        "state": "2026-10-03T23:49:13+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_noon",
+        "state": "2026-10-04T11:49:21+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_rising",
+        "state": "2026-10-04T06:06:13+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_setting",
+        "state": "2026-10-03T17:33:31+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sun.sun",
+        "state": "above_horizon",
+        "platform": null
+      },
+      {
+        "entity": "zone.home",
+        "state": "0",
+        "platform": null
+      }
+    ]
+  },
+  {
+    "domain": "powercalc",
+    "arm": "unconfined",
+    "egress_attempts": [
+      {
+        "kind": "connect",
+        "host": "224.0.0.251",
+        "port": 1,
+        "phase": "platform"
+      },
+      {
+        "kind": "connect",
+        "host": "8.8.8.8",
+        "port": 1,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "239.255.255.250",
+        "port": 1900,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "10.126.83.113",
+        "port": 0,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "ff02::c%3",
+        "port": 1900,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "fe80::9ba0:68cd:7165:a581%3",
+        "port": 0,
+        "phase": "platform"
+      },
+      {
+        "kind": "connect",
+        "host": "/var/run/dbus/system_bus_socket",
+        "port": null,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "fe80::9ba0:68cd:7165:a581%3",
+        "port": 58993,
+        "phase": "integration"
+      },
+      {
+        "kind": "connect",
+        "host": "104.26.4.238",
+        "port": 443,
+        "phase": "integration"
+      },
+      {
+        "kind": "resolve",
+        "host": "192.168.1.128",
+        "port": null,
+        "phase": "integration"
+      },
+      {
+        "kind": "connect",
+        "host": "10.255.255.255",
+        "port": 1,
+        "phase": "integration"
+      }
+    ],
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false,
+      "light": true,
+      "group": true,
+      "template": true,
+      "select": true,
+      "utility_meter": true,
+      "integration": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "menu": "virtual_power"
+        },
+        {
+          "step": "virtual_power",
+          "sent": [
+            "create_energy_sensor",
+            "create_standby_energy_sensor",
+            "create_utility_meters",
+            "entity_id",
+            "mode",
+            "name"
+          ]
+        },
+        {
+          "step": "fixed",
+          "sent": [
+            "fixed_value"
+          ]
+        },
+        {
+          "step": "power_advanced",
+          "sent": [
+            "energy_filter_outlier_enabled",
+            "energy_integration_method"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "entries": [
+      {
+        "title": "lamp power",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "conversation.home_assistant",
+      "sensor.all_standby_energy",
+      "sensor.all_standby_power",
+      "sensor.lamp_power_energy",
+      "sensor.lamp_power_power",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sun.sun",
+      "zone.home"
+    ],
+    "published": [
+      {
+        "entity": "conversation.home_assistant",
+        "state": "unknown",
+        "platform": null
+      },
+      {
+        "entity": "sensor.all_standby_energy",
+        "state": "unknown",
+        "platform": "powercalc"
+      },
+      {
+        "entity": "sensor.all_standby_power",
+        "state": "unknown",
+        "platform": "powercalc"
+      },
+      {
+        "entity": "sensor.lamp_power_energy",
+        "state": "0.0000",
+        "platform": "powercalc"
+      },
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "5.00",
+        "platform": "powercalc"
+      },
+      {
+        "entity": "sensor.sun_next_dawn",
+        "state": "2026-10-04T05:32:17+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_dusk",
+        "state": "2026-10-03T18:07:21+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_midnight",
+        "state": "2026-10-03T23:49:13+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_noon",
+        "state": "2026-10-04T11:49:21+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_rising",
+        "state": "2026-10-04T06:06:13+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_setting",
+        "state": "2026-10-03T17:33:31+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sun.sun",
+        "state": "above_horizon",
+        "platform": null
+      },
+      {
+        "entity": "zone.home",
+        "state": "0",
+        "platform": null
+      }
+    ]
+  },
+  {
+    "domain": "watchman",
+    "arm": "unconfined",
+    "egress_attempts": [
+      {
+        "kind": "connect",
+        "host": "224.0.0.251",
+        "port": 1,
+        "phase": "platform"
+      },
+      {
+        "kind": "connect",
+        "host": "8.8.8.8",
+        "port": 1,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "ff02::c%3",
+        "port": 1900,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "fe80::9ba0:68cd:7165:a581%3",
+        "port": 0,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "239.255.255.250",
+        "port": 1900,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "10.126.83.113",
+        "port": 0,
+        "phase": "platform"
+      },
+      {
+        "kind": "connect",
+        "host": "/var/run/dbus/system_bus_socket",
+        "port": null,
+        "phase": "platform"
+      },
+      {
+        "kind": "resolve",
+        "host": "fe80::9ba0:68cd:7165:a581%3",
+        "port": 39619,
+        "phase": "integration"
+      },
+      {
+        "kind": "connect",
+        "host": "104.26.5.238",
+        "port": 443,
+        "phase": "integration"
+      },
+      {
+        "kind": "resolve",
+        "host": "192.168.1.128",
+        "port": null,
+        "phase": "integration"
+      },
+      {
+        "kind": "connect",
+        "host": "10.255.255.255",
+        "port": 1,
+        "phase": "integration"
+      }
+    ],
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "entries": [
+      {
+        "title": "Watchman",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "button.watchman_create_report_file",
+      "conversation.home_assistant",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sensor.watchman_ignored_files",
+      "sensor.watchman_last_parse",
+      "sensor.watchman_last_update",
+      "sensor.watchman_missing_actions",
+      "sensor.watchman_missing_entities",
+      "sensor.watchman_parse_duration",
+      "sensor.watchman_processed_files",
+      "sensor.watchman_status",
+      "sun.sun",
+      "text.watchman_ignored_labels",
+      "zone.home"
+    ],
+    "published": [
+      {
+        "entity": "button.watchman_create_report_file",
+        "state": "unknown",
+        "platform": "watchman"
+      },
+      {
+        "entity": "conversation.home_assistant",
+        "state": "unknown",
+        "platform": null
+      },
+      {
+        "entity": "sensor.sun_next_dawn",
+        "state": "2026-10-04T05:32:17+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_dusk",
+        "state": "2026-10-03T18:07:21+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_midnight",
+        "state": "2026-10-03T23:49:13+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_noon",
+        "state": "2026-10-04T11:49:21+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_rising",
+        "state": "2026-10-04T06:06:13+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_setting",
+        "state": "2026-10-03T17:33:31+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.watchman_ignored_files",
+        "state": "0",
+        "platform": "watchman"
+      },
+      {
+        "entity": "sensor.watchman_last_parse",
+        "state": "unknown",
+        "platform": "watchman"
+      },
+      {
+        "entity": "sensor.watchman_last_update",
+        "state": "2026-10-03T14:42:35+00:00",
+        "platform": "watchman"
+      },
+      {
+        "entity": "sensor.watchman_missing_actions",
+        "state": "0",
+        "platform": "watchman"
+      },
+      {
+        "entity": "sensor.watchman_missing_entities",
+        "state": "0",
+        "platform": "watchman"
+      },
+      {
+        "entity": "sensor.watchman_parse_duration",
+        "state": "0.0",
+        "platform": "watchman"
+      },
+      {
+        "entity": "sensor.watchman_processed_files",
+        "state": "0",
+        "platform": "watchman"
+      },
+      {
+        "entity": "sensor.watchman_status",
+        "state": "pending",
+        "platform": "watchman"
+      },
+      {
+        "entity": "sun.sun",
+        "state": "above_horizon",
+        "platform": null
+      },
+      {
+        "entity": "text.watchman_ignored_labels",
+        "state": "",
+        "platform": "watchman"
+      },
+      {
+        "entity": "zone.home",
+        "state": "0",
+        "platform": null
+      }
+    ]
+  }
+]

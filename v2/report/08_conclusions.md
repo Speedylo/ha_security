@@ -102,6 +102,17 @@ So the precise claim is: **zero import-level cost across 77 integrations, and on
 five costed at the level that matters more, with the reason known and a named fix.** That is
 smaller than "confinement is free" and it is what the measurements support.
 
+> **Corrected by §7.31.6 (2026-10-03).** The one integration in five was a fault in the instance
+> both arms ran on, not a cost of confinement. `powercalc` lost `network` because the harness loaded
+> that singleton only as a side effect of `http`, where a real instance loads it at startup;
+> `scheduler`, withdrawn above, was failing on the same instance's missing frame helper. On a
+> corrected instance all five load in both arms. The precise claim is now **zero cost at import level
+> across 77 integrations, and zero across §7.17's five executed end to end**, with the import figures
+> re-measured on the corrected instance and unchanged (§7.31.7). It is still not "confinement is
+> free": it is two named sets and two corpora, and §7.31 is the evidence that defects of this kind
+> keep turning up.
+
+
 **A sixth integration was added after those five, and it is the one that carries F2.** §7.27 ran
 `nordpool` — unmodified community source, `cloud_polling`, the only member of the corpus that both
 needs a network and can be configured without a credential — in three arms: unconfined, confined
@@ -111,6 +122,13 @@ the mediator's durable record naming `dataportal-api.nordpoolgroup.com:443` thre
 clause removed, the same three requests were refused and the sensor read `unavailable`. F2's
 criterion is therefore met by a real integration polling its own real API and not only by a
 coordinator written for the test.
+
+> **Extended by §7.31 (2026-10-03).** `nordpool` was not the only such member of the corpus, and
+> three more have since run the same three arms through three network stacks: `smhi_brandrisk`
+> (`aiohttp`, two hosts, plus an arm that withholds one), `regensburg_transport` (`requests`, then a
+> bare `aiohttp` session) and `dwd_weather` (`httpx`). Each confined arm reproduced its unconfined
+> output from the same API.
+
 
 **And it found a compatibility cost that no other measurement in this report could have found.**
 The first run failed: `nordpool` calls `async_get_clientsession(hass)`, which is what the platform
@@ -313,7 +331,7 @@ Four specific mechanisms did the catching, a fifth is named below, and each is t
 project of this shape.
 **A paired baseline stopped three misattributions** — three attacks blocked in both arms and
 therefore not this framework's doing; a multicast finding withdrawn when the integration turned out
-broken either way; an opaque `ImportError` that looked exactly like a confinement failure and was
+broken either way (*a withdrawal §7.31.6 shows rested on a fault both arms shared — see below*); an opaque `ImportError` that looked exactly like a confinement failure and was
 the integration's own defect. **Two instruments bounded one another**: an in-process recorder paired
 with `strace` caught the same class of counting error twice — once an observed-egress figure
 inflated twenty-threefold by attributing the platform's own connections to integrations, and once a
@@ -351,6 +369,24 @@ instruments bound each other, a self-test freezes a surprising fact, recomputati
 sentence against its source — **and running unmodified real code finds the things none of the four
 were looking for.** It is also the most expensive, which is why it happened last and why §8.7's
 future work is ordered the way it is.
+
+> **Added 2026-10-03, after §7.31.** The fifth mechanism was applied three more times and found
+> three more defects in the artifact, so the count of corrections that were not to a sentence goes
+> from two to five. `build_hass` never set up the frame helper, so the platform's deprecation
+> reporting raised where a real instance ignores it; it loaded the `network` singleton only as a side
+> effect of `http`, so the platform's HTTP helper failed for any integration not declaring `http`;
+> and the sandbox had no CA store, so any TLS client not built on `certifi` failed verification
+> after the mediator had granted and connected it. None changed a measured figure, and the four
+> compatibility arms were re-run to show it (§7.31.7). Two of them had already produced wrong
+> attributions in Chapter 7.
+>
+> They also qualify the first mechanism. **A paired baseline controls for everything its two arms
+> do not share, and nothing they do.** Both of §7.17's arms ran on the same deficient instance, so
+> the baseline reproduced the frame fault and made `scheduler`'s withdrawal look like evidence, and
+> hid the `network` fault behind `default_config` so that `powercalc` looked like confinement's
+> cost. The baseline is only as real as the platform it stands up, and the only check on that was,
+> again, running real code.
+
 
 ## 8.5 The finding nobody was looking for
 
@@ -432,10 +468,10 @@ reach. That is smaller than "over-declaration is a residual risk" and it is more
 | 7 | **The MAC key does not outlive the mediator.** Records from an earlier run stay hash-verifiable and are no longer MAC-verifiable by anyone | §6.8.4 | Persisting the key hands it to exactly the adversary it exists to stop — anyone who can write the log can read the key beside it. A position on a trade-off, not a defect |
 | 8 | **The identity hash records what was *loaded*, not what *executed*.** An integration that fetches or generates code at runtime defeats it | §5.9.6, §5.12.1 | Inherited from the approach; it bounds T12's treatment, and T12 is also the one threat with no evidence (§7.26.5) |
 | 9 | **A quarter of datagram integrations are unserved.** The UDP relay serves synchronous senders; asyncio `DatagramProtocol` transports — 4 of 15 measured — are not | §7.25.5 | Named at build time rather than found later. The relay's own reach is measured, not assumed |
-| 10 | **The confined UDP round trip was never spawned**, and only one of §7.24.5's three network stacks has run confined. `udp_relay.py` is evaluated against the mediator's decision path, not from inside real namespaces; §7.27 spawned `aiohttp` + `async_get_clientsession`, which is the platform's own, and neither `urllib3`/`requests` nor a raw socket | §7.25.5, §7.27.7 | **Relayed UDP is procedural where handed-over TCP is structural**, and that asymmetry is not measured. §7.27 is the reason to rank this higher than it was ranked: the one stack that was actually spawned turned out to break, and the other two have had no such test |
-| 11 | **The egress path is coupled to `aiodns`, and now to the shape of one platform helper.** 96% of resolutions bypass `getaddrinfo`, so the shim patches the platform's resolver stack by name — and §7.27.2 found a second dependency on the same line: `async_get_clientsession(hass)` instantiates Zeroconf to build that resolver, so the sandbox must offer a multicast join or no integration can construct an HTTP client | §7.24.2, §7.24.6, §7.27.2 | A working run today says nothing about a release that replaces `aiodns` or rearranges `aiohttp_client`. §4.12's review triggers already record that the platform moves underneath this model — **and §7.27 is the first measured instance of that risk being real rather than anticipated** |
+| 10 | **The confined UDP round trip was never spawned**, and only one of §7.24.5's three network stacks has run confined. `udp_relay.py` is evaluated against the mediator's decision path, not from inside real namespaces; §7.27 spawned `aiohttp` + `async_get_clientsession`, which is the platform's own, and neither `urllib3`/`requests` nor a raw socket | §7.25.5, §7.27.7 | **Relayed UDP is procedural where handed-over TCP is structural**, and that asymmetry is not measured. §7.27 is the reason to rank this higher than it was ranked: the one stack that was actually spawned turned out to break, and the other two have had no such test. *Updated 2026-10-03: §7.31 spawned `requests` and `httpx` against real APIs, and both work confined; a raw socket and the UDP round trip remain unspawned* |
+| 11 | **The egress path is coupled to `aiodns`, and now to the shape of one platform helper.** 96% of resolutions bypass `getaddrinfo`, so the shim patches the platform's resolver stack by name — and §7.27.2 found a second dependency on the same line: `async_get_clientsession(hass)` instantiates Zeroconf to build that resolver, so the sandbox must offer a multicast join or no integration can construct an HTTP client | §7.24.2, §7.24.6, §7.27.2 | A working run today says nothing about a release that replaces `aiodns` or rearranges `aiohttp_client`. §4.12's review triggers already record that the platform moves underneath this model — **and §7.27 is the first measured instance of that risk being real rather than anticipated**. *§7.31 (2026-10-03) found the same helper also depends on the `network` integration having loaded, which a real instance guarantees and a stripped one must arrange* |
 | 12 | **mDNS discovery does not work in the sandbox, and now fails silently rather than loudly.** The multicast route added in §7.27.3 points at `lo`, so a join succeeds and discovers nothing | §7.27.3, §7.27.7 | The alternative was `ENODEV` at client-session construction, which broke every cloud-facing integration. Silence is the better failure and it is still a failure. §7.24.4's finding that no integration in that sample established a listener does **not** bound this, because that sample was recorded unconfined, where discovery worked |
-| 13 | **The declaration is incomplete for packages *and* components.** 16% of the head corpus imports a package it never declared; **8% still does with the core set supplied**; `powercalc` needs a component (`network`) it does not declare | §6.13.3, §6.14.4, §7.17.4, §7.23.5 | The answer is §5.9.3's static analysis marked *derived*, not asking the author — priced in §8.7 |
+| 13 | **The declaration is incomplete for packages *and* components.** 16% of the head corpus imports a package it never declared; **8% still does with the core set supplied**; ~~`powercalc` needs a component (`network`) it does not declare~~ — *withdrawn by §7.31.6 (2026-10-03): that `network` was the platform helper's dependency, absent from the harness's instance, and `powercalc` loads confined on a corrected one. The component case is now an argument without a measured example* | §6.13.3, §6.14.4, §7.17.4, §7.23.5 | The answer is §5.9.3's static analysis marked *derived*, not asking the author — priced in §8.7 |
 
 **On item 13, one detail is worth more than the rate.** `aiofiles` has now blocked integrations in
 the compatibility run, the end-to-end run and the egress-shape run — three independent occasions —
@@ -507,11 +543,11 @@ incidental to the design, which item 1 would break.
 |---|---|---|---|
 | **1** | **The push loop** (§6.11.2) | S3's subscription half moves from a refusal to a demonstrated filter, and the one latency path that could consume §7.20.1's 63× margin becomes measurable. Both are currently stated gaps in the artifact rather than in the measurement | Days. It is the largest missing piece and the highest-value one |
 | **2** | **The real Home Assistant component** (§6.10.2, §6.11.2) | **Limitation 2 of §8.6.3, and the largest of them that this list did not price until now.** Step 5 of the mediated call acts on an in-memory stand-in, so what a *live* instance does with a mediated write is untested — §7.14.4 and §7.17.6 each state this beside their own figure. What it would settle is **identity, not realism**: the spike's `registry_gap` finding — cited as prior work in §6.10.2 and deliberately not relied on — is that publishing over the states API produces states with no entity-registry row, no `unique_id`, no config entry and nothing surviving a restart, and §5.6.1 measured that **83% of community integrations publish through `async_add_entities`**, which is the path that produces the registry row and the state machine does not. Until it exists, the end-to-end arm speaks for the mediator's decision and not for what the platform then does with it | Days. The spike's `sandbox_bridge` is ~250 lines that load and execute nothing from any integration, and `00_METHOD.md` §5 permits reusing that code — but its *finding* is private knowledge under §2, so the registry claim has to be re-measured here rather than cited |
-| **3** | **Static analysis for the derived manifest**, extended one level up (§6.14.4, §7.17.4) | The undeclared-package *and* undeclared-component bound — item 13 above, and the only measured compatibility cost in the whole report. `import aiofiles` is a top-level import and trivially detectable; **a component dependency is a name in the platform's own source, so the transitive closure is computable exactly rather than approximated**, which `core_requirements()` already does for `default_config`. A strictly larger analysis and a strictly easier one | Days. `--derived` alongside the author's manifest, with every added clause marked as derived per §5.9.3 |
+| **3** | **Static analysis for the derived manifest**, extended one level up (§6.14.4, §7.17.4) | The undeclared-package *and* undeclared-component bound — item 13 above, and the only measured compatibility cost in the whole report. *(2026-10-03: the component half has lost its example, §7.31.6; the package half stands, and §7.31.5's `dwd_weather` adds an undeclared **host** to what a derived manifest would have to find.)* `import aiofiles` is a top-level import and trivially detectable; **a component dependency is a name in the platform's own source, so the transitive closure is computable exactly rather than approximated**, which `core_requirements()` already does for `default_config`. A strictly larger analysis and a strictly easier one | Days. `--derived` alongside the author's manifest, with every added clause marked as derived per §5.9.3 |
 | ~~**4**~~ | ~~**Count C1 instead of arguing it**~~ (§7.28) | ✅ **Done 2026-09-06 — §7.29.** `confine/integrity.py`, wired into both arms of `compat.py` rather than kept as a separate script, so every future compatibility run counts C1 by running at all. **37 trees baseline, 38 confined, zero source changes, zero diff lines.** Two departures from this row as priced: hashing *at fetch* proved impossible — the corpus manifest pins `HEAD` and stores no content hash, so the count covers a run and not the project's history (§7.29.2) — and the instrument reports an uncountable line delta as *unknown* rather than zero, after the first version returned a reassuring 0 by comparing the baseline tree against itself (§7.29.3, §6.4.5's failure mode for the fourth time) | **It was an hour**, and the hour was right |
 | ~~**5**~~ | ~~**T12's measurement**~~ (§7.26.5) | **✅ Done 2026-10-01 — §7.30, `selftest_t12.py`, 29 checks.** Priced at hours and took hours, because every mechanism already existed and three of them named T12 in their own comments. It came in at the decision and identity layers rather than through a spawn (§7.30.4), and it produced item **14** below, which this list did not anticipate — and then §7.30.6, where a question about the deployment path found that the user-facing half of T12 had no caller able to compute it. Fixed the same day. Original text: *The only threat in either register with no evidence. Set an integration up, change its manifest, spawn it again, show the second run is bounded by the second declaration and that the change is visible through `describe.py` before it takes effect* | Hours. It was never scheduled, which is why the schedule's close-out did not catch it |
 | **6** | **Re-run the API-surface parser on the uniform corpus** (§8.3) | Contribution 1's other half — what most *integrations* ask for, against what most *installations* run. §7.23 answered that question for compatibility and not for the API surface | **One run.** The script exists and the corpus is already fetched: the cheapest outstanding item in the report |
-| **7** | **The other two network stacks, confined** (§7.24.5, §7.27.7) | `urllib3`/`requests` synchronously and a raw socket, each spawned in real namespaces against a real destination. **Promoted above the datagram work by §7.27's result**: the one stack that was actually spawned failed on a platform helper nobody had exercised, and the argument that the other two are fine is now exactly the argument that was wrong once | Days. `localtuya` and `midea_ac_lan` are the corpus's members, and both need a device or a credential — so this may need recorded fixtures |
+| **7** | **The other two network stacks, confined** (§7.24.5, §7.27.7) — *`requests` and `httpx` done 2026-10-03, §7.31; a raw socket remains* | `urllib3`/`requests` synchronously and a raw socket, each spawned in real namespaces against a real destination. **Promoted above the datagram work by §7.27's result**: the one stack that was actually spawned failed on a platform helper nobody had exercised, and the argument that the other two are fine is now exactly the argument that was wrong once | Days. `localtuya` and `midea_ac_lan` are the corpus's members, and both need a device or a credential — so this may need recorded fixtures |
 | **8** | **asyncio datagram transports, and a confined UDP round trip** (§7.25.5) | The unserved quarter, and whether relayed UDP behaves in real namespaces as it does against the decision path. It would also let the procedural/structural asymmetry between UDP and TCP be measured rather than conceded | Days |
 | **9** | **Filesystem quota for `/sandbox/data`** (§7.22.2) | Item 5 above. Needs privilege, so it also needs a decision about whether the unprivileged position of §5.7.4 admits a privileged installer step. `io.max` is *not* in this row — non-delegation is not a matter of effort | Small, plus a design decision that is not small |
 | **10** | **The end-to-end arm at scale** | N2's second number as something other than a named set of five. Blocked on credentials for 26 of 37, so it needs either a cooperating vendor set or recorded request fixtures — the second is the tractable route and would change the measurement's character, which should be stated if it is taken | Weeks, and the honest framing is that this is a different project's measurement |
