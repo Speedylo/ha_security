@@ -11,9 +11,12 @@ not the one §5.10.3 assumed.
 
 Home Assistant gives every client session an `AsyncDualMDNSResolver` built on `aiodns`
 (`aiohttp_client.py:479`), and `aiodns` resolves through `pycares` in C without ever calling
-`getaddrinfo`. Across twelve integrations, **96% of resolutions went that way** — 3,073 of 3,193,
-uniformly 93-97%, which is what makes it a property of the platform rather than of anyone's taste
-in libraries. A shim watching only `getaddrinfo` would see about one name in twenty-five.
+`getaddrinfo`. Of six integrations that resolved their own API's hostname, **four went that way**
+(§7.31.11) — the platform's client session — and two, on `httpx` and `requests`, went through
+`getaddrinfo`. A shim watching either seam alone misses names integrations actually use.
+
+(§7.24 first reported 96% — 3,073 of 3,193. That figure was the platform's `dhcp` discovery doing
+reverse lookups across a /24 LAN, attributed to the integrations; without it the share is 17%.)
 
 The other half of the finding is worse for a naive design: **the name does not survive to the
 connection.** By the time `connect` is called the destination is an address — the §7.24 recorder
@@ -357,7 +360,7 @@ class EgressShim:
         self._installed.append((cls, "connect_ex", real_connect_ex))
 
     def _patch_aiohttp_resolvers(self) -> None:
-        """The asynchronous seam — 96% of the corpus's resolutions.
+        """The asynchronous seam — the platform's client session, and four of six integrations' API names.
 
         Interposed at **aiohttp's resolver interface** rather than inside `aiodns`, for two
         reasons. `aiodns` resolves in `pycares`, which is C and owns its own sockets, so there

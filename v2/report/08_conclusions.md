@@ -315,7 +315,8 @@ Chapter 6 corrected Chapter 5; Chapter 7 corrected Chapter 6 five times and itse
 two read-throughs. **Not one of those corrections has been to a measured figure.** 46/57/70/84%,
 the 9.0/32.2/19.1 MB premiums, 31 of 37, the 0.7 MB noise floor, §6.3.2's 136.6-against-136.5 MB
 replication, 96% of resolutions via `aiodns`, 2-of-2 canaries, 36-to-1 entities — all hold as first
-printed. What was corrected was, every time, a *sentence standing next to* a measurement: a count
+printed. *(Two exceptions found on 2026-10-03 are set out in the note at the end of this section;
+the 96% is one of them.)* What was corrected was, every time, a *sentence standing next to* a measurement: a count
 recited wrongly, an inference presented as an observation, a prediction paraphrased, a column that
 could not be added up, a claim about a string the code had never produced.
 
@@ -398,6 +399,18 @@ future work is ordered the way it is.
 > hid the `network` fault behind `default_config` so that `powercalc` looked like confinement's
 > cost. The baseline is only as real as the platform it stands up, and the only check on that was,
 > again, running real code.
+>
+> **The same day produced a second moved figure, by a different route.** Re-running §7.24 to check
+> whether the corrected instance changed it showed that its headline — 96% of resolutions through
+> `aiodns` — was 3,048 reverse lookups by the platform's own `dhcp` discovery sweeping a `/24` LAN,
+> attributed to the integrations because they ran after the recorder switched phase (§7.31.11).
+> Without the sweep the share is 17%, in the original run and in the re-run. This one was not the
+> harness's instance: it was the instrument's attribution, the error §7.18 caught once and the
+> phase boundary did not fully close. The design conclusion it supported survives on a better
+> count — four of six integrations' own API names resolve through `aiodns` — and the figure does
+> not. It was found only because the experiment was run again on a different network, which is a
+> sixth mechanism this section did not list: **repeat a measurement where the environment differs,
+> and see whether the number was about the subject.**
 
 
 ## 8.5 The finding nobody was looking for
@@ -481,7 +494,7 @@ reach. That is smaller than "over-declaration is a residual risk" and it is more
 | 8 | **The identity hash records what was *loaded*, not what *executed*.** An integration that fetches or generates code at runtime defeats it | §5.9.6, §5.12.1 | Inherited from the approach; it bounds T12's treatment, and T12 is also the one threat with no evidence (§7.26.5) |
 | 9 | **A quarter of datagram integrations are unserved.** The UDP relay serves synchronous senders; asyncio `DatagramProtocol` transports — 4 of 15 measured — are not | §7.25.5 | Named at build time rather than found later. The relay's own reach is measured, not assumed |
 | 10 | **The confined UDP round trip was never spawned**, and only one of §7.24.5's three network stacks has run confined. `udp_relay.py` is evaluated against the mediator's decision path, not from inside real namespaces; §7.27 spawned `aiohttp` + `async_get_clientsession`, which is the platform's own, and neither `urllib3`/`requests` nor a raw socket | §7.25.5, §7.27.7 | **Relayed UDP is procedural where handed-over TCP is structural**, and that asymmetry is not measured. §7.27 is the reason to rank this higher than it was ranked: the one stack that was actually spawned turned out to break, and the other two have had no such test. *Updated 2026-10-03: §7.31 spawned `requests` and `httpx` against real APIs, and both work confined; a raw socket and the UDP round trip remain unspawned* |
-| 11 | **The egress path is coupled to `aiodns`, and now to the shape of one platform helper.** 96% of resolutions bypass `getaddrinfo`, so the shim patches the platform's resolver stack by name — and §7.27.2 found a second dependency on the same line: `async_get_clientsession(hass)` instantiates Zeroconf to build that resolver, so the sandbox must offer a multicast join or no integration can construct an HTTP client | §7.24.2, §7.24.6, §7.27.2 | A working run today says nothing about a release that replaces `aiodns` or rearranges `aiohttp_client`. §4.12's review triggers already record that the platform moves underneath this model — **and §7.27 is the first measured instance of that risk being real rather than anticipated**. *§7.31 (2026-10-03) found the same helper also depends on the `network` integration having loaded, which a real instance guarantees and a stripped one must arrange* |
+| 11 | **The egress path is coupled to `aiodns`, and now to the shape of one platform helper.** ~~96% of resolutions bypass `getaddrinfo`~~ *(corrected 2026-10-03, §7.31.11: that figure was the platform's `dhcp` sweep; four of six integrations' own API names bypass it)*, so the shim patches the platform's resolver stack by name — and §7.27.2 found a second dependency on the same line: `async_get_clientsession(hass)` instantiates Zeroconf to build that resolver, so the sandbox must offer a multicast join or no integration can construct an HTTP client | §7.24.2, §7.24.6, §7.27.2 | A working run today says nothing about a release that replaces `aiodns` or rearranges `aiohttp_client`. §4.12's review triggers already record that the platform moves underneath this model — **and §7.27 is the first measured instance of that risk being real rather than anticipated**. *§7.31 (2026-10-03) found the same helper also depends on the `network` integration having loaded, which a real instance guarantees and a stripped one must arrange* |
 | 12 | **mDNS discovery does not work in the sandbox, and now fails silently rather than loudly.** The multicast route added in §7.27.3 points at `lo`, so a join succeeds and discovers nothing | §7.27.3, §7.27.7 | The alternative was `ENODEV` at client-session construction, which broke every cloud-facing integration. Silence is the better failure and it is still a failure. §7.24.4's finding that no integration in that sample established a listener does **not** bound this, because that sample was recorded unconfined, where discovery worked |
 | 13 | **The declaration is incomplete for packages *and* components.** 16% of the head corpus imports a package it never declared; **8% still does with the core set supplied**; ~~`powercalc` needs a component (`network`) it does not declare~~ — *withdrawn by §7.31.6 (2026-10-03): that `network` was the platform helper's dependency, absent from the harness's instance, and `powercalc` loads confined on a corrected one. The component case is now an argument without a measured example* | §6.13.3, §6.14.4, §7.17.4, §7.23.5 | The answer is §5.9.3's static analysis marked *derived*, not asking the author — priced in §8.7 |
 

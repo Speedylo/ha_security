@@ -14,7 +14,7 @@ in four ways, and the corrections do not fit inside one list. This note fixes th
 
 | Finding | Consequence for the clause |
 |---|---|
-| 96% of name resolution goes through `aiodns`, and the name does not survive to `connect` (§7.24.2) | the enforcement point is the resolver, and a placeholder address carries the name to the connection |
+| ~~96%~~ of name resolution goes through `aiodns`, and the name does not survive to `connect` (§7.24.2) — *2026-10-03, §7.31.11: the 96% was the platform's `dhcp` LAN sweep; four of six integrations' own API names go through `aiodns`, two through `getaddrinfo`, so both seams stand* | the enforcement point is the resolver, and a placeholder address carries the name to the connection |
 | Ports 443, 8123, 6445, 20086, 5000 all reached (§7.24.3) | a host without a port grants **all 65,535 ports** on that host |
 | 15 of 75 integrations need UDP (`udp_demand.md`) | TCP-only costs 20% of the corpus |
 | `localtuya` **listens** rather than broadcasts; `govee` needs a multicast **join**; three others broadcast (`broadcast_fallbacks.md`) | "discovery" is three capabilities, not one |

@@ -2155,6 +2155,17 @@ resolves through `pycares` in C and never calls `getaddrinfo`.
 **A mediator interposing at `getaddrinfo` would see one name in twenty-five.** The design's
 enforcement point, as §5.10.3 describes it, is in the wrong place.
 
+> **Corrected by §7.31.11 (2026-10-03).** The figure in this section is wrong and its conclusion is
+> not. Of the 3,073 `aiodns` resolutions, 3,048 were reverse lookups of every address in
+> `192.168.11.0/24` by `aiodiscover` — Home Assistant's own `dhcp` discovery — which ran after the
+> recorder switched its phase to the integration's. That is the uniformity this section found, and
+> it is the platform's, but not for the reason given. Without the sweep the share is 17%, in this
+> run and in a re-run. Counted by the names integrations resolved for their own APIs, four of six
+> went through `aiodns` and two through `getaddrinfo`: not one name in twenty-five, but four API
+> names in six invisible to a `getaddrinfo`-only shim, and two invisible to an `aiodns`-only one.
+> The enforcement point is still where this section says it is.
+
+
 The correction is not to the principle but to its location, and the principle survives intact.
 T11 requires that the address connected to be the address that was checked. What the measurement
 adds is *where the only opportunity to do that is*: **the name exists at the resolver and nowhere
@@ -2707,7 +2718,9 @@ it stopped being current the moment §7.22 ran.
 **No result in this chapter contradicts another.** Every figure quoted twice is quoted the same way:
 84% and the zero cost in §7.12 against §7.23's 92% and zero; 31.5 µs in §7.19 against §7.20.1's
 correction to 272 decisions per second, which §7.19.3 carries in place; 36-to-1 entities in §7.14;
-2-of-2 canaries in §7.13; 96% of resolutions via `aiodns` in §7.24. The four corrections in §7.26.6
+2-of-2 canaries in §7.13; 96% of resolutions via `aiodns` in §7.24 *(a figure §7.31.11 corrects
+on 2026-10-03: it was the platform's `dhcp` discovery sweeping the LAN, and without it the share is
+17%)*. The four corrections in §7.26.6
 are **one misquotation of a register, one uncheckable sum, one convention lapse, three stale counts
 and one field named wrongly** — and, as in §7.21.7, every one of them is a sentence next to a
 measurement rather than a measurement. Finding 5 is the sharpest instance: two figures that look
@@ -2818,7 +2831,8 @@ attempted — which is why the mediator's audit was empty rather than full of de
 amount of testing the egress path would have found it.
 
 **This is the same seam §7.24.2 measured from the other side.** That section found that 96% of
-resolutions go through `aiodns` because `aiohttp_client.py` gives every session an
+resolutions go through `aiodns` *(a figure §7.31.11 corrects: the platform's `dhcp` sweep, not the
+integrations; the seam is real, as four of six integrations' own API names show)* because `aiohttp_client.py` gives every session an
 `AsyncDualMDNSResolver`, and drew the conclusion that the *enforcement point* was in the wrong
 place. The same line has a second consequence it did not draw: the resolver is not merely a
 different code path, it is one with a **hard dependency on multicast being available**. §7.24
@@ -3692,12 +3706,13 @@ argument. It now carries this exception.
   device or a credential.
 - **Not every experiment built on the corrected instance was re-measured.** `build_hass` also
   underlies the reads experiment of §7.14, the gc experiment of §7.15, the egress-shape run of §7.24
-  and Chapter 6's `unstrip`. Only the compatibility arms (§7.31.7) and §7.17's end-to-end arms
-  (§7.31.6) were re-measured. `selftest_reads` and `selftest_gc`, which run the unconfined halves of
+  and Chapter 6's `unstrip`. The compatibility arms (§7.31.7), §7.17's end-to-end arms (§7.31.6)
+  and §7.24 (§7.31.11) were re-measured; §7.14, §7.15 and `unstrip` were not. `selftest_reads` and `selftest_gc`, which run the unconfined halves of
   §7.14 and §7.15, pass on the corrected instance, but a passing suite is not a re-recorded figure.
   The defects live in setup and fetching, so figures taken at import or on the mediator's decision
-  path are unlikely to move; that is an expectation, not a measurement. §7.24 is the one most likely
-  to move, since `dwd_weather` reached no network there and would now.
+  path are unlikely to move; that is an expectation, not a measurement. §7.24 was the one most
+  likely to move, and it was then re-run (§7.31.11): `dwd_weather` moved as expected, and §7.24.2's
+  headline figure turned out to be wrong for a reason unrelated to the instance.
 - **The equality check is wrong for live data**, as `regensburg_transport` shows, and a better check
   for a real-time feed would compare structure rather than value.
 - **The static bound on the TLS defect is an upper bound.** No integration other than
@@ -3706,6 +3721,65 @@ argument. It now carries this exception.
 - **Another defect of this kind is likely.** Three were found by three integrations, after one was
   found by one. Nothing in this section suggests the supply is exhausted, and §8.4.2's argument
   predicts that it is not.
+
+### 7.31.11 §7.24 re-run, and a headline figure that was a LAN sweep
+
+§7.31.10 named §7.24's egress-shape run as the experiment on the deficient instance most likely to
+move, because `dwd_weather` reached no network there and would now. It was re-run the same day with
+§7.24's command, corpus and settle window, predictions committed first
+(`notes/ch7_31_egress_shape_rerun_prediction.md`). The results are in
+`experiments/egress_shape/results/rerun_20261003/`.
+
+The part that was predicted happened. `dwd_weather` now reaches `opendata.dwd.de:443` three times,
+resolved through `getaddrinfo` and wrapped by `wrap_socket` with verification on, as `httpx`
+does; seven of the twelve now reach the network rather than six; the non-web ports and the UDP are
+still there; and still no integration establishes a listener.
+
+The part that was not predicted is larger. §7.24.2's headline was that **96%** of resolutions, 3,073
+against 120, went through `aiodns` rather than `getaddrinfo`, uniformly across all twelve
+integrations. Today the same count is **17%**, 25 against 121. The original run's records show why.
+Of its 3,073 `aiodns` resolutions, **3,048 were reverse lookups of every address in
+`192.168.11.0/24`**, 254 per integration, from `aiodiscover/discovery.py` — the library behind Home
+Assistant's own `dhcp` integration, sweeping the LAN for devices. They ran after the recorder had
+switched its phase to the integration's, so they were attributed to the integration. The Pi has
+since moved to a `/16` network, and `aiodiscover` declines to sweep anything larger than 2,048
+addresses, so today's run has no sweep to count. Recomputing the *original* run with the sweep
+excluded gives 25 against 120: **17%, the same as today's**. The re-run and the re-analysis agree,
+and neither depends on the corrected instance.
+
+So §7.24.2's figure was a measurement of the platform's device discovery on a `/24` LAN, and its
+explanation for the uniformity — that every client session's `AsyncDualMDNSResolver` routes
+resolution through `aiodns` — was a true fact about the platform that this number did not show.
+The uniformity was real; it came from `dhcp`, which ran identically in every integration's
+instance. This is §7.18's phase-attribution error in a new place: §7.18 caught the platform's
+`network` probe and mDNS join inflating observed demand twenty-three-fold, and the recorder's
+phase boundary still let a later platform task through.
+
+**The design conclusion survives, on better evidence.** What §7.24.2 needed to show was that a
+mediator watching only `getaddrinfo` would miss names integrations actually use. Counting the
+names each integration resolved for its own destinations, rather than all resolutions, gives that
+directly:
+
+| Path | Integrations whose own API hostname went this way |
+|---|---|
+| `aiodns`, through the platform's client session | `pirateweather`, `nordpool`, `sonoff`, `frigate` |
+| `getaddrinfo` | `dwd_weather` (`httpx`), `localtuya` (`requests`) |
+
+Four of the six would be invisible to a `getaddrinfo`-only shim, and two would be invisible to an
+`aiodns`-only one. The shim interposes at both, which is what §7.24.2 concluded and what §7.31.5
+then exercised with all three stacks. What changes is the figure and the sentence built on it:
+not "one name in twenty-five", but four of six integrations' API names.
+
+| | Prediction | Outcome |
+|---|---|---|
+| P1 | `dwd_weather` reaches `opendata.dwd.de:443` over `httpx` | ✅ |
+| P2 | no other integration changes between reaching the network and not | ✅ |
+| P3 | seven of twelve reach the network | ✅ |
+| P4 | §7.24's conclusions hold in kind, the `aiodns` share falling by about a point | ❌ on the share, which fell 79 points; ✅ on ports, UDP and listeners |
+| P5 | recorder-to-kernel ratios stay within 42–87% | ❌, narrowly — 44–92%. The kernel's non-IP traffic also roughly halved, which §7.24.6 already treats as not egress |
+
+P4's miss is the useful one. It was written assuming §7.24.2's figure described integrations, and
+the prediction could only be as right as that assumption.
 
 ---
 

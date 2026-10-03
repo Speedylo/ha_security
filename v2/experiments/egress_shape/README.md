@@ -113,3 +113,13 @@ python3 -m confine.egress_shape --corpus ~/r2exp/corpus \
 
 python3 analyse.py results/pi5_egress_shape.json
 ```
+
+## Re-run 2026-10-03 — §7.31.11, `results/rerun_20261003/`
+
+Same command on the corrected instance. `dwd_weather` now reaches `opendata.dwd.de:443`, so seven of
+twelve reach the network. **The 96% `aiodns` share in §1 of `results/analysis.md` is not a property
+of the integrations**: 3,048 of its 3,073 `aiodns` resolutions were reverse lookups of
+`192.168.11.0/24` by `aiodiscover` (the platform's `dhcp` discovery), attributed to the integration
+phase. The Pi is now on a `/16`, which `aiodiscover` does not sweep (`MAX_ADDRESSES = 2048`), and
+the re-run's share is 17%; the original run with the sweep excluded is also 17%. Predictions:
+`notes/ch7_31_egress_shape_rerun_prediction.md`.

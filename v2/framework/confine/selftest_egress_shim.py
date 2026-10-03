@@ -11,8 +11,8 @@ client library can show that.
   2  the sandbox never holds a real address: the name resolves to 240.0.0.0/4 throughout
   3  an undeclared host fails the way a network failure fails, not with a framework exception
      escaping into integration code that has never heard of this project
-  4  `aiohttp` reaches a declared host — the 96% seam, and the one §5.10.3's design would have
-     missed entirely
+  4  `aiohttp` reaches a declared host — the platform's own seam, which four of six integrations'
+     API names use (§7.31.11), and the one §5.10.3's design would have missed entirely
   5  a connection to a real address is **not** intercepted, and is left to fail
 
 Case 5 is the design's dividing line rather than a gap in it: security is the network namespace,
@@ -195,7 +195,7 @@ def case_urllib(root: Path) -> None:
         server.shutdown()
 
 
-# -- 4: the asynchronous path, which is 96% of the corpus's resolutions -----------------
+# -- 4: the asynchronous path, which four of six integrations' API names take (§7.31.11) --
 
 def case_aiohttp(root: Path) -> None:
     try:

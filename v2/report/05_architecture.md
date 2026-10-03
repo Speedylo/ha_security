@@ -999,6 +999,13 @@ Eight, each with the measured cost of denying it by default.
 > every client session an `AsyncDualMDNSResolver`. Resolution and connection happen in
 > different libraries, so the name exists at the resolver and nowhere after it. §7.24.2 argues
 > this makes resolve-then-pin *more* structural than the paragraph below claims, not less.
+
+> **The figure in this note is corrected by §7.31.11 (2026-10-03):** the 96% was 3,048 reverse lookups from the platform's own `dhcp` discovery sweeping a `/24` LAN,
+> attributed to the integrations by the recorder's phase boundary. Without it the share is 17%, in the
+> original run and in a re-run. Counted by the names integrations resolved for their own APIs, four of
+> six went through `aiodns` and two through `getaddrinfo`, so the conclusion that both seams must be
+> interposed holds and the figure does not.
+
 > The sample also sends **UDP**, which this clause cannot express in either direction.
 
 `hass.auth` — 5.6%, eight integrations — **has no clause and cannot be declared.** Users and

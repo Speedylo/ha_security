@@ -147,8 +147,8 @@ class DemoFlow(ConfigFlow, domain="demo_egress"):
 # nobody notices until the sandbox fails to import it. `.format()` with named fields, once.
 COORDINATOR_TEMPLATE = '''
 """A coordinator that reaches its declared host with its own aiohttp session — the ordinary
-shape, and the one that exercises the 96% of resolutions this project measured going through
-aiodns rather than getaddrinfo.
+shape, and the one that exercises the aiodns seam, which four of six integrations' own API names
+went through when measured (§7.31.11).
 
 It then makes a **second** request to `PROBE_URL` — a host this integration never declared,
 because it is the one the *other* integration in this run declared instead. That second
