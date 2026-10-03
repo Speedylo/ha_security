@@ -1,5 +1,10 @@
 # Where the project stands — a plain-English overview
 
+> **Out of date on results since 2026-10-03.** This overview predates §7.30–§7.35: T12 measured, three
+> more real integrations and the defects they found, a credentialed integration, the durable audit log
+> wired everywhere, and the footprint re-runs. Its explanations of how the system works still hold. For
+> where the project is now, read the top of `STATE.md` and `notes/remaining_work_20261003.md`.
+
 **Written 2026-09-06.** This is the orientation document: what the project is, how it works, what
 has been proven and what has not. `STATE.md` is the working resume point with all the detail;
 this is the version you can hold in your head.
