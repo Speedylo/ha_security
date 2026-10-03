@@ -123,14 +123,26 @@ SUBJECTS: dict[str, dict] = {
         "egress": ["efa.rvv.de:443"],
         "flow_input": {"search": "Arnulfsplatz"},
         "select_first": ["selected_stop"],
-        "numeric": False, "settle": 40.0,
+        # Its delay sensor ends every update with `= 0` whatever it fetched (`sensor.py:255`),
+        # so only the departure carries evidence. Polled every 120 s with no update before
+        # add, so the first poll needs a window longer than that — 40 s saw none in any arm.
+        "evidence": "next_departure",
+        "numeric": False, "settle": 150.0,
     },
     "dwd_weather": {
         # §7.31. `httpx`, synchronous, in an executor, after setup — the flow itself is offline.
         # Station 10865 is München-Stadt, which carries reports as well as forecasts.
+        #
+        # **`www.dwd.de` is deliberately left out.** This list was written from reading the
+        # source before the first run and it missed that host (the library's text-report
+        # fetch); arm A's recorder found it by name. Adding it now would turn a measured miss
+        # into a clause inferred from a run — the circularity this table's header rules out.
         "egress": ["opendata.dwd.de:443"],
         "flow_input": {"station_id": "10865"},
-        "numeric": True, "settle": 60.0,
+        # Its numeric sensors are disabled by default; what it publishes enabled is the weather
+        # entity and two timestamps — the forecast's issue time and the last measurement's —
+        # which exist only if the download succeeded (arm C: `ForecastDownloadError`).
+        "evidence": "_time_", "numeric": False, "settle": 60.0,
     },
 }
 
@@ -358,7 +370,8 @@ def run_unconfined(component: Path, domain: str, subject: dict, python: Path, uv
 NO_VALUE = {None, "", "unknown", "unavailable", "None"}
 
 
-def _fetched(report: dict, numeric: bool = True) -> list[dict]:
+def _fetched(report: dict, numeric: bool = True, domain: str | None = None,
+             evidence: str | None = None) -> list[dict]:
     """Published entities carrying a value the integration could only have got from its API.
 
     `numeric` is §7.27's original test — a number, as a price is. For a subject whose output is
@@ -368,6 +381,12 @@ def _fetched(report: dict, numeric: bool = True) -> list[dict]:
     """
     out = []
     for entry in report.get("published") or []:
+        # Arm A has no boundary, so its `published` is the whole state machine; only entities
+        # the registry attributes to this integration count (`platform`, from §7.31).
+        if domain and "platform" in entry and entry["platform"] != domain:
+            continue
+        if evidence and evidence not in str(entry.get("entity")):
+            continue
         state = entry.get("state")
         if numeric:
             try:
@@ -400,15 +419,30 @@ def _reachable(target: str) -> str | None:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--subject", default="nordpool", choices=sorted(SUBJECTS))
-    ap.add_argument("--corpus", type=Path, required=True)
-    ap.add_argument("--python", required=True, type=Path)
+    ap.add_argument("--corpus", type=Path)
+    ap.add_argument("--python", type=Path)
+    # Re-evaluate the checks over a run already recorded, without running anything. The
+    # checks are arguments about the data; when one is found to be wrong, the data stands.
+    ap.add_argument("--recheck", type=Path, metavar="RESULT_JSON")
     ap.add_argument("--uv", default=str(Path.home() / ".local/bin/uv"))
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
 
-    domain = args.subject
+    recorded = json.loads(args.recheck.read_text()) if args.recheck else None
+    domain = recorded["integration"] if recorded else args.subject
     subject = SUBJECTS[domain]
     declared_set = set(subject["egress"])
+    arms = arms_for(subject)
+
+    def fetched_in(report: dict) -> list[dict]:
+        return _fetched(report, subject["numeric"], domain, subject.get("evidence"))
+
+    if recorded:
+        print(f"re-checking {args.recheck} — nothing is run\n")
+        return evaluate(domain, subject, declared_set, fetched_in, recorded["reports"],
+                        recorded.get("unreachable_before_run") or {}, args.json, recorded)
+    if not (args.corpus and args.python):
+        ap.error("--corpus and --python are required unless --recheck is given")
     component = args.corpus / domain
     if not component.is_dir():
         print(f"{domain} is not in {args.corpus}")
@@ -432,8 +466,6 @@ def main() -> int:
     uv = args.uv if Path(args.uv).exists() else None
     platform_deps = Path.home() / "r2exp/platform-deps"
     platform_deps = platform_deps if platform_deps.is_dir() else None
-    arms = arms_for(subject)
-    numeric = subject["numeric"]
 
     print(f"F2 against a real integration's real API — {domain} → {', '.join(subject['egress'])}\n")
 
@@ -445,7 +477,12 @@ def main() -> int:
         print(f"  {spec['label']} ...", flush=True)
         reports[arm] = run_confined(component, domain, subject, arm, spec["permissions"],
                                     args.python, delegation, uv, platform_deps)
+    return evaluate(domain, subject, declared_set, fetched_in, reports, unreachable, args.json)
 
+
+def evaluate(domain: str, subject: dict, declared_set: set, fetched_in, reports: dict,
+             unreachable: dict, out: Path | None, recorded: dict | None = None) -> int:
+    """The table and the checks, over four reports however they were obtained."""
     base, declared, undeclared = (reports["unconfined"], reports["confined_declared"],
                                   reports["confined_undeclared"])
 
@@ -456,7 +493,7 @@ def main() -> int:
         decisions = [d for d in (report.get("logged") or [])
                      if d.get("op") == "network.egress"]
         print(f"  {key:<28} {str(state).split('.')[-1]:<16} "
-              f"{len(report.get('published') or []):>9}  {len(_fetched(report, numeric)):>7}  "
+              f"{len(report.get('published') or []):>9}  {len(fetched_in(report)):>7}  "
               f"{''.join('T' if d['allowed'] else 'F' for d in decisions) or '—'}")
     for key, report in reports.items():
         flow = report.get("flow") or {}
@@ -480,7 +517,7 @@ def main() -> int:
     check(results, base.get("loaded"),
           f"A — {domain} loads unconfined on this release, so there is something to confine",
           f"{base.get('level', '')} {str(base.get('error', ''))[:200]} flow={base.get('flow')}")
-    check(results, bool(_fetched(base, numeric)),
+    check(results, bool(fetched_in(base)),
           "A — and publishes a fetched value unconfined",
           f"published={(base.get('published') or [])[:8]}")
 
@@ -492,15 +529,21 @@ def main() -> int:
           f"{declared.get('level', '')} {str(declared.get('error', ''))[:300]} "
           f"flow={declared.get('flow')}")
 
-    fetched = _fetched(declared, numeric)
+    fetched = fetched_in(declared)
     check(results, bool(fetched),
           "**F2** — it published a fetched value through the mediator, from its own call to "
           "its own API",
           f"published={(declared.get('published') or [])[:8]}")
-    base_values = {e["entity"]: e["state"] for e in _fetched(base, numeric)}
+    base_values = {e["entity"]: e["state"] for e in fetched_in(base)}
     for entry in fetched[:3]:
         print(f"       {entry['entity']} = {entry['state']}  "
               f"(A: {base_values.get(entry['entity'], '—')})")
+    # §7.27's claim was not that a value appeared but that it was *the same number*. Added in
+    # §7.31 after `regensburg_transport` passed on a sensor's own fallback `0`, which arm C could
+    # not catch because C's flow failed before any entity existed.
+    check(results, any(base_values.get(e["entity"]) == e["state"] for e in fetched),
+          "**F2** — and at least one value equals arm A's, fetched from the same API minutes apart",
+          f"B={[(e['entity'], e['state']) for e in fetched[:4]]} A={list(base_values.items())[:4]}")
 
     allowed = _egress(declared, True)
     check(results, bool(allowed),
@@ -520,11 +563,16 @@ def main() -> int:
     # Arm C — the control that makes B evidence rather than a coincidence.
     denied = _egress(undeclared, False)
     granted_b = {d.get("target") for d in allowed}
-    check(results, not _fetched(undeclared, numeric),
+    check(results, not fetched_in(undeclared),
           "**C** — with the clause removed, no fetched value crosses the boundary",
-          f"fetched={_fetched(undeclared, numeric)[:6]}")
-    check(results, bool(denied) and {d.get("target") for d in denied} <= declared_set
-          and bool(granted_b & {d.get("target") for d in denied}),
+          f"fetched={fetched_in(undeclared)[:6]}")
+    # **Overlap, and the check has been wrong twice.** §7.27's form required every refusal to
+    # be the one declared host, which `dwd_weather` broke by being refused `www.dwd.de`, a
+    # host its declaration missed. The second form required C to refuse *every* host B was
+    # granted, which `smhi_brandrisk` broke: refused its critical host first, it raises
+    # `UpdateFailed` and never asks for the second. What C must show is narrower and is what
+    # the control is for — a destination B was granted is one C was refused.
+    check(results, bool(denied) and bool(granted_b & {d.get("target") for d in denied}),
           "**C** — and the mediator refused the destinations it granted in B",
           f"logged={undeclared.get('logged')}")
     if denied:
@@ -537,7 +585,7 @@ def main() -> int:
     if partial is not None:
         kept = set(subject["partial"])
         p_allowed, p_denied = _egress(partial, True), _egress(partial, False)
-        check(results, bool(_fetched(partial, numeric)),
+        check(results, bool(fetched_in(partial)),
               "**D** — with only some hosts declared, the integration still publishes",
               f"published={(partial.get('published') or [])[:8]}")
         check(results, bool(p_allowed) and all(d.get("target") in kept for d in p_allowed),
@@ -549,22 +597,24 @@ def main() -> int:
               "**D** — and the withheld host is refused by itself, by absence, in the same run",
               str([(d.get("target"), d.get("clause")) for d in p_denied]))
 
-    check(results, bool(fetched) and not _fetched(undeclared, numeric),
+    check(results, bool(fetched) and not fetched_in(undeclared),
           "**the difference between B and C is the mediated path and nothing else** — same "
           "integration, flow, profile, host and minute")
 
     passed = sum(1 for r in results if r)
     print(f"\n  {passed}/{len(results)} checks passed")
 
-    if args.json:
-        args.json.parent.mkdir(parents=True, exist_ok=True)
-        args.json.write_text(json.dumps(
-            {"integration": domain, "egress": subject["egress"],
-             "partial": subject.get("partial"), "flow_input": subject["flow_input"],
-             "select_first": subject.get("select_first"), "settle_seconds": subject["settle"],
-             "unreachable_before_run": unreachable, "reports": reports,
-             "checks": {"passed": passed, "total": len(results)}}, indent=2) + "\n")
-        print(f"  wrote {args.json}")
+    if out:
+        record = recorded or {
+            "integration": domain, "egress": subject["egress"],
+            "partial": subject.get("partial"), "flow_input": subject["flow_input"],
+            "select_first": subject.get("select_first"), "settle_seconds": subject["settle"],
+            "unreachable_before_run": unreachable, "reports": reports}
+        key = "rechecked" if recorded else "checks"
+        record[key] = {"passed": passed, "total": len(results)}
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(record, indent=2) + "\n")
+        print(f"  wrote {out}")
     return 0 if passed == len(results) else 1
 
 

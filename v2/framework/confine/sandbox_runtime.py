@@ -115,8 +115,8 @@ async def build_hass(config_dir: str, with_auth: bool = False):
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import (
         area_registry, category_registry, condition, device_registry, entity,
-        entity_registry, floor_registry, issue_registry, label_registry, restore_state,
-        translation, trigger,
+        entity_registry, floor_registry, frame, issue_registry, label_registry, restore_state,
+        template, translation, trigger,
     )
     from homeassistant.util.hass_dict import HassKey
     from homeassistant.util.unit_system import METRIC_SYSTEM
@@ -135,6 +135,13 @@ async def build_hass(config_dir: str, with_auth: bool = False):
     await hass.config_entries.async_initialize()
 
     entity.async_setup(hass)
+    # §7.31. `bootstrap.async_load_base_functionality` sets these up unconditionally, beside
+    # `entity`, and this recipe did not. Without `frame`, the platform's own `report_usage` —
+    # which a real instance **ignores** for custom integrations — raises "Frame helper not set
+    # up" instead, so any `DataUpdateCoordinator` built without a config entry failed setup in
+    # *every* arm. That is what §7.17.5 read as `scheduler` being broken on 2026.8.3.
+    frame.async_setup(hass)
+    template.async_setup(hass)
     loader.async_setup(hass)
     await condition.async_setup(hass)
     await trigger.async_setup(hass)
@@ -152,6 +159,16 @@ async def build_hass(config_dir: str, with_auth: bool = False):
         from homeassistant import auth
         hass.auth = await auth.auth_manager_from_config(hass, [], [])
     hass.data[HassKey("bootstrap_registries_loaded")] = None
+    # §7.31. `network` is a stage-0 integration in a real instance (`bootstrap`'s
+    # `LOGGING_AND_HTTP_DEPS_INTEGRATIONS`), so its singleton is always loaded. The platform's
+    # own HTTP helper depends on it: `async_get_clientsession` → zeroconf's resolver →
+    # `network.async_get_loaded_adapters`, which is a bare `hass.data` lookup. Here it was
+    # loaded only as a side effect of setting up `http`, so an integration that did not
+    # happen to declare `http` could not build an HTTP client at all — `KeyError: 'network'`,
+    # which §7.17 charged to `powercalc`'s declaration. Inside a sandbox it enumerates the
+    # namespace's adapters, which is `lo` and nothing else: present and empty, like §7.27.3.
+    from homeassistant.components.network.network import async_get_network
+    await async_get_network(hass)
     return hass
 
 

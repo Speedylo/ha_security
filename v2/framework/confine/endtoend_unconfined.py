@@ -102,8 +102,18 @@ async def run(spec: dict) -> dict:
     # because F1 is about the value being right and not only about the entity existing. The
     # unconfined arm has no boundary, so its counterpart is the state machine itself — named
     # `published` so the two arms are comparable field for field.
+    # Tagged with the registry's platform from §7.31: without it, `default_config`'s own
+    # entities (`zone.home = 0`) counted as the integration's fetched output in arm A.
+    from homeassistant.helpers import entity_registry as er
+    registry = er.async_get(hass)
+
+    def platform_of(entity_id: str) -> str | None:
+        entry = registry.async_get(entity_id)
+        return entry.platform if entry else None
+
     result["published"] = sorted(
-        ({"entity": s.entity_id, "state": s.state} for s in own),
+        ({"entity": s.entity_id, "state": s.state, "platform": platform_of(s.entity_id)}
+         for s in own),
         key=lambda item: item["entity"])
 
     try:

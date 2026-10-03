@@ -91,7 +91,16 @@ DEV_NODES = ("null", "zero", "full", "random", "urandom", "tty")
 
 # The interpreter and its libraries. Bound read-only, and enumerated rather than inherited so
 # that adding to the list is a visible decision.
-DEFAULT_RUNTIME_PATHS = ("/usr", "/lib", "/lib64", "/bin", "/sbin")
+#
+# **`/etc/ssl/certs` was added by §7.31, and it is the directory, not `/etc/ssl`** — Debian
+# keeps private keys in `/etc/ssl/private`, beside it. Without it, `ssl.create_default_context()`
+# inside a sandbox held **zero** CA certificates, so any TLS client not built on `certifi` —
+# a bare `aiohttp.ClientSession()`, `urllib` — failed verification after the mediator had
+# granted and connected it. `regensburg_transport` caught the error and showed `unavailable`
+# behind three granted connections. `requests`, `httpx` and the platform's own helper session
+# all use `certifi`, which is why nothing before §7.31 noticed. The contents are public trust
+# anchors, and read-only, so a sandbox can use the host's roots and cannot add one.
+DEFAULT_RUNTIME_PATHS = ("/usr", "/lib", "/lib64", "/bin", "/sbin", "/etc/ssl/certs")
 
 
 class GrantRefused(ValueError):
