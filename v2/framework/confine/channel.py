@@ -66,6 +66,19 @@ class Channel:
         """The sandbox's own view: a file descriptor it was born holding."""
         return cls(socket.socket(socket.AF_UNIX, socket.SOCK_STREAM, fileno=fd))
 
+    @staticmethod
+    def frame(message: dict) -> bytes:
+        """The bytes of one frame, for a sender that queues them instead of blocking on them.
+
+        The mediator needs this once it speaks first (W1's push loop): it must never block on
+        a sandbox that has stopped reading, so it queues frames and writes them when the socket
+        is writable, and the length check has to happen at queueing time.
+        """
+        payload = json.dumps(message, separators=(",", ":")).encode()
+        if len(payload) > MAX_FRAME:
+            raise ProtocolError(f"message of {len(payload)} bytes exceeds {MAX_FRAME}")
+        return _LENGTH.pack(len(payload)) + payload
+
     def send(self, message: dict, fd: int | None = None) -> None:
         """One frame, optionally carrying one open file descriptor.
 
@@ -80,10 +93,7 @@ class Channel:
         read. A partial `sendmsg` is finished with an ordinary `sendall`: the descriptor has
         already crossed with the first byte and must not be sent twice.
         """
-        payload = json.dumps(message, separators=(",", ":")).encode()
-        if len(payload) > MAX_FRAME:
-            raise ProtocolError(f"message of {len(payload)} bytes exceeds {MAX_FRAME}")
-        frame = _LENGTH.pack(len(payload)) + payload
+        frame = self.frame(message)
 
         if fd is None:
             self.sock.sendall(frame)

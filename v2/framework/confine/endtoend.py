@@ -113,8 +113,15 @@ SUBJECTS: dict[str, dict] = {
 }
 
 
+#: W1's push run (`notes/w1_push_loop_prediction.md`, P4). The value the living room's temperature
+#: is changed to once the integration has published, which is far enough from WORLD's 21.4 that
+#: any quantity derived from it must move.
+PUSHED_TEMPERATURE = "30.0"
+
+
 def run_one(domain: str, component: Path, subject: dict, python: Path,
-            delegation: Delegation, uv: str | None, platform_deps: Path | None) -> dict:
+            delegation: Delegation, uv: str | None, platform_deps: Path | None,
+            push: bool = False) -> dict:
     root = Path(tempfile.mkdtemp(prefix=f"e2e-{domain}-"))
     mediator = Mediator()
     # T4: §7.17's decisions, durably and reconciled — `report["decisions"]` below is read from
@@ -128,8 +135,15 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
         # The authority manifest goes beside the integration, never inside its own manifest.json
         # — §5.9.4's precedence: the file's location is the provenance signal, and rewriting the
         # integration's own file would breach C1.
+        permissions = json.loads(json.dumps(subject["permissions"]))
+        if push:
+            # The subscription is declared for exactly what is read, and no more: the push run
+            # widens nothing that §7.17 measured.
+            entities = permissions.get("entities") or {}
+            if entities.get("read"):
+                entities["subscribe"] = list(entities["read"])
         (root / "custom_components" / f"{domain}.permissions.json").write_text(
-            json.dumps(subject["permissions"]))
+            json.dumps(permissions))
         data = root / ".confine" / domain
         data.mkdir(parents=True)
 
@@ -149,8 +163,24 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
         for entity_id, (state, attributes) in WORLD.items():
             platform.seed(entity_id, state, **attributes)
 
+        # Every state the integration publishes, in order, and the moment the push went out, so
+        # the report shows a value before the change and a value after it rather than a count.
+        history: list[tuple[str, str]] = []
+        pushed: list[str] = []
+
+        def observe(entity_id: str, state: str, _attributes: dict) -> None:
+            if platform.owners.get(entity_id) == domain:
+                history.append((entity_id, state))
+                if push and not pushed:
+                    pushed.append(entity_id)
+                    platform.set_state("sensor.living_room_temperature", PUSHED_TEMPERATURE,
+                                       WORLD["sensor.living_room_temperature"][1])
+                    history.append(("<push>", PUSHED_TEMPERATURE))
+        platform.listeners.append(observe)
+
         manifest = Manifest.load(own, root)
         mediator.policy = acting_policy({domain: manifest}, platform)
+        platform.listeners.append(mediator.push)
         mediator_end, sandbox_end = Channel.pair()
         mediator.register(domain, Channel(mediator_end), component=own)
 
@@ -162,6 +192,7 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
             "entities": declared_entities, "services": [],
             "setup_components": wanted,
             "record_egress": True,
+            "push": push, "settle_seconds": 20 if push else 0,
             "menu_choice": subject.get("menu_choice") or {},
             "flow_input": subject["flow_input"]}))
 
@@ -214,6 +245,10 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
     report["durable"] = durable
     report["platform_states"] = {k: v[0] for k, v in platform.states.items()
                                  if k not in WORLD}
+    if push:
+        report["publish_history"] = history
+        report["pushes_sent"] = dict(mediator.pushes_sent)
+        report["subscribers"] = mediator.subscribers("sensor.living_room_temperature")
     return report
 
 
@@ -279,6 +314,9 @@ def main() -> int:
     ap.add_argument("--baseline", action="store_true",
                     help="§7.17.5's arm: the same five unconfined, so the two failures are "
                          "attributed by comparison rather than by their tracebacks")
+    ap.add_argument("--push", action="store_true",
+                    help="W1: subscribe to what is read, change the temperature once the "
+                         "integration has published, and report what it published after")
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
 
@@ -306,7 +344,8 @@ def main() -> int:
         if args.baseline:
             report = run_one_unconfined(domain, component, subject, python, uv, platform_deps)
         else:
-            report = run_one(domain, component, subject, python, delegation, uv, platform_deps)
+            report = run_one(domain, component, subject, python, delegation, uv, platform_deps,
+                             push=args.push)
         results.append(report)
         entities = [e for e in report.get("own_entities", report.get("local_entities", []))
                     if e.split(".")[0] not in ("persistent_notification",)

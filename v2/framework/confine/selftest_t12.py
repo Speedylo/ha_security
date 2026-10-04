@@ -113,6 +113,68 @@ def egress(host: str) -> dict:
     return {"op": "network.egress", "integration": DOMAIN, "host": name, "port": int(port)}
 
 
+def long_lived_mediator(root: Path) -> None:
+    """§8.7 #14. Everything above builds a fresh policy by hand, so it cannot see the trigger go.
+
+    The push loop needs a mediator that outlives a sandbox, so that it keeps watching the platform
+    across respawns. Here one `Mediator` serves two registrations of the same domain, with the
+    manifest edited in between, and only the calls a supervisor makes are used: build the
+    mediator once, then `register` each spawn with its component. If the declaration is
+    re-checked per spawn, the second registration decides by v2. The case was run against the
+    code before `bind` existed and failed there (`notes/w1_push_loop_prediction.md`, P1).
+    """
+    from .channel import Channel
+    from .mediator import Mediator
+    from .platform import Platform, acting_policy
+
+    component = root / "long_lived" / "custom_components" / "reader"
+    component.mkdir(parents=True)
+    (component / "__init__.py").write_text("")
+
+    def declare(entity: str, version: str) -> None:
+        (component / "manifest.json").write_text(json.dumps(
+            {"domain": "reader", "name": "Reader", "version": version, "requirements": [],
+             "permissions": {"schema_version": 1, "entities": {"read": [entity]}}}))
+
+    def ask(mediator: Mediator, sandbox, entity: str) -> dict:
+        sandbox.send({"op": "entity.read", "entity": entity})
+        mediator.serve(timeout=0.2)
+        return sandbox.recv() or {}
+
+    platform = Platform()
+    platform.seed("sensor.v1_only", "1")
+    platform.seed("sensor.v2_only", "2")
+
+    declare("sensor.v1_only", "1.0.0")
+    mediator = Mediator(policy=acting_policy(
+        {"reader": Manifest.load(component, root / "long_lived")}, platform))
+
+    ours, theirs = Channel.pair()
+    mediator.register("reader", Channel(ours), component=component)
+    first = Channel(theirs)
+    check("one long-lived mediator: the first spawn reads what v1 declares",
+          ask(mediator, first, "sensor.v1_only").get("ok") is True)
+
+    # The update lands while the first sandbox is still running.
+    declare("sensor.v2_only", "1.1.0")
+    check("a manifest edit does not re-bind the sandbox already running",
+          ask(mediator, first, "sensor.v2_only").get("ok") is False
+          and ask(mediator, first, "sensor.v1_only").get("ok") is True)
+
+    first.sock.close()
+    mediator.serve(timeout=0.2)          # the mediator notices the hang-up and drops the channel
+
+    # The respawn: same mediator, same domain, a new channel.
+    ours, theirs = Channel.pair()
+    mediator.register("reader", Channel(ours), component=component)
+    second = Channel(theirs)
+    check("the respawn is bound to v2: what v2 declares is granted",
+          ask(mediator, second, "sensor.v2_only").get("ok") is True)
+    check("and what only v1 declared is denied, with no fresh mediator to cause it",
+          ask(mediator, second, "sensor.v1_only").get("ok") is False)
+    second.sock.close()
+
+
 def main() -> int:
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -300,6 +362,8 @@ def main() -> int:
 
         breaks = log.verify()
         check("both chains verify across the version change", breaks == [], f"breaks={breaks}")
+
+        long_lived_mediator(root)
 
     print()
     print(f"{sum(results)}/{len(results)} checks passed")

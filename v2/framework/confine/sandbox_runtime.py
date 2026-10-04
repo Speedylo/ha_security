@@ -35,12 +35,15 @@ from __future__ import annotations
 
 import asyncio
 import array
+import collections
 import json
 import logging
 import os
+import select
 import socket
 import struct
 import sys
+import threading
 import traceback
 from pathlib import Path
 
@@ -52,13 +55,71 @@ DATA = "/sandbox/data"
 # --------------------------------------------------------------------------- the channel
 
 class Channel:
-    """The sandbox's only route out. Four-byte big-endian length, then a JSON object."""
+    """The sandbox's only route out. Four-byte big-endian length, then a JSON object.
+
+    **Two kinds of frame arrive since W1.** A reply answers the request this end just sent. A
+    push (`"push": "entity.state"`) is a state change the mediator sends unasked, for an entity
+    this sandbox subscribed to. A push can arrive while a request is waiting for its reply, so
+    `request` reads frames until the reply comes and hands every push it passes on the way to
+    `on_push`. When no request is in flight, `poll` reads pushes, and the bridge calls it
+    whenever the event loop sees the socket readable.
+
+    **One request at a time, across threads.** The egress shim calls `request` from Home
+    Assistant's executor threads as well as the loop's, and until W1 nothing stopped two
+    threads interleaving their frames on this one socket, or one overwriting the descriptor the
+    other was about to collect (`notes/w1_push_loop_prediction.md`, P9). The lock covers a
+    whole exchange, from the send to the reply.
+    """
 
     def __init__(self, fd: int) -> None:
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM, fileno=fd)
+        self.lock = threading.Lock()
+        self.on_push = lambda message: None
+
+    def exchange(self, message: dict) -> tuple[dict, int | None]:
+        """One request, its reply, and the descriptor the reply carried, if any."""
+        payload = json.dumps(message).encode()
+        with self.lock:
+            self.sock.sendall(struct.pack(">I", len(payload)) + payload)
+            while True:
+                reply, fd = self._read_frame()
+                if "push" in reply:
+                    self.on_push(reply)
+                    continue
+                return reply, fd
 
     def request(self, message: dict) -> dict:
-        """One request, one reply. Any descriptor the reply carried is on `self.last_fd`.
+        """One request, one reply. A descriptor nobody asked for is closed, not kept."""
+        reply, fd = self.exchange(message)
+        if fd is not None:
+            os.close(fd)
+        return reply
+
+    def poll(self) -> bool:
+        """Read whatever pushes are waiting, without blocking. False once the mediator has gone.
+
+        Readiness is checked again here, not trusted from the event loop: a `request` earlier
+        in the same loop iteration may already have read what woke it. If another thread holds
+        the lock, its `request` is reading the socket and will pass any push to `on_push`.
+        """
+        if not self.lock.acquire(blocking=False):
+            return True
+        try:
+            while select.select([self.sock], [], [], 0)[0]:
+                try:
+                    frame, fd = self._read_frame()
+                except ConnectionError:
+                    return False
+                if fd is not None:
+                    os.close(fd)
+                if "push" in frame:
+                    self.on_push(frame)
+            return True
+        finally:
+            self.lock.release()
+
+    def _read_frame(self) -> tuple[dict, int | None]:
+        """One frame, and the descriptor that came with it.
 
         The header is read with `recvmsg` rather than `recv` because on a stream socket
         ancillary data arrives with the first byte of the frame, which is in the header. A
@@ -66,9 +127,7 @@ class Channel:
         itself came through intact — a failure that would present as "the connection did not
         work" three layers away from its cause.
         """
-        self.last_fd: int | None = None
-        payload = json.dumps(message).encode()
-        self.sock.sendall(struct.pack(">I", len(payload)) + payload)
+        fd: int | None = None
         header = b""
         while len(header) < 4:
             chunk, ancillary, _flags, _addr = self.sock.recvmsg(
@@ -83,8 +142,8 @@ class Channel:
                         # One is expected. Any beyond the first is closed rather than kept:
                         # this end is small and trusting, but not so trusting that a mediator
                         # bug fills the sandbox's descriptor table.
-                        if self.last_fd is None:
-                            self.last_fd = descriptor
+                        if fd is None:
+                            fd = descriptor
                         else:
                             os.close(descriptor)
             if not chunk:
@@ -97,7 +156,7 @@ class Channel:
             if not chunk:
                 raise ConnectionError("the mediator closed the channel mid-frame")
             body += chunk
-        return json.loads(body)
+        return json.loads(body), fd
 
 
 # ------------------------------------------------------------------ the minimal instance
@@ -186,6 +245,10 @@ class Bridge:
         self.mirrored: set[str] = set()
         self.published: list[dict] = []
         self.refused: list[dict] = []
+        self.subscribed: set[str] = set()
+        self.pending: collections.deque = collections.deque()
+        self.received: list[dict] = []
+        self.unexpected: list[str] = []
 
     # -- inbound ---------------------------------------------------------------------
 
@@ -204,6 +267,54 @@ class Bridge:
             else:
                 self.refused.append({"op": "entity.read", "target": entity_id,
                                      "clause": answer.get("clause")})
+
+    def subscribe_declared_entities(self) -> None:
+        """Ask to be told when each declared entity changes (W1's push loop).
+
+        Each `entity.subscribe` is decided and recorded by the mediator like any other request,
+        and only a granted one puts the entity in this sandbox's subscription table, on the far
+        side. This end keeps a list only for the run's report: what arrives is decided there.
+        """
+        for entity_id in self.declared_entities:
+            answer = self.channel.request({"op": "entity.subscribe", "entity": entity_id})
+            if answer.get("ok"):
+                self.subscribed.add(entity_id)
+            else:
+                self.refused.append({"op": "entity.subscribe", "target": entity_id,
+                                     "clause": answer.get("clause")})
+
+    def receive_pushes(self) -> None:
+        """Apply pushed states to the local state machine, on the event loop, never re-entrantly.
+
+        A push can be read on an executor thread, inside another thread's request, or inside a
+        state-change callback that is itself in the middle of a request. So reading only
+        queues, and `call_soon_threadsafe` applies the queue on a later loop iteration, where
+        `async_set` fires the integration's own listeners as if the change had happened here.
+        """
+        loop = asyncio.get_running_loop()
+        self.channel.on_push = lambda message: (self.pending.append(message),
+                                                loop.call_soon_threadsafe(self._apply_pushes))
+
+        def readable() -> None:
+            if not self.channel.poll():
+                loop.remove_reader(self.channel.sock.fileno())
+        loop.add_reader(self.channel.sock.fileno(), readable)
+
+    def _apply_pushes(self) -> None:
+        while self.pending:
+            message = self.pending.popleft()
+            entity_id = message.get("entity")
+            if entity_id not in self.subscribed:
+                # The mediator's filter is the authority, and this is not a second one: a push
+                # for an entity this end never subscribed to means the two disagree, which is
+                # a framework bug worth seeing rather than an input worth applying.
+                self.unexpected.append(entity_id)
+                continue
+            # Mirrored, so `watch_local_state` does not send it back out as a publish.
+            self.mirrored.add(entity_id)
+            self.hass.states.async_set(entity_id, message.get("state"),
+                                       message.get("attributes") or {})
+            self.received.append({"entity": entity_id, "state": message.get("state")})
 
     # -- outbound --------------------------------------------------------------------
 
@@ -391,8 +502,14 @@ def install_egress(channel: Channel) -> dict:
         return answer
 
     def connect_via(host: str, port: int) -> int:
-        ask("network.egress", host=host, port=port)
-        fd = channel.last_fd
+        # `exchange` returns the descriptor with its own reply. Before W1 it was read from a
+        # shared `channel.last_fd` after the call, which another thread's request could have
+        # replaced in between.
+        answer, fd = channel.exchange({"op": "network.egress", "host": host, "port": port})
+        if not answer.get("ok"):
+            if fd is not None:
+                os.close(fd)
+            raise EgressDenied(str(answer.get("reason") or "denied"), answer.get("clause"))
         if fd is None:
             raise EgressDenied("the mediator permitted the connection but sent no descriptor")
         return fd
@@ -681,6 +798,11 @@ async def run() -> dict:
     bridge.register_declared_services()
     bridge.mirror_declared_entities()
     bridge.watch_local_state()
+    if spec.get("push"):
+        # W1. Opt-in for now, so that every measured run before it is reproducible as it was;
+        # once step 2 lands this becomes the default.
+        bridge.subscribe_declared_entities()
+        bridge.receive_pushes()
 
     from homeassistant.config_entries import ConfigEntryState, ConfigEntry, SOURCE_USER
 
@@ -730,6 +852,8 @@ async def run() -> dict:
         # entity the integration created, forwarded to the mediator and accepted by it.
         result["published"] = bridge.published
         result["refused"] = bridge.refused
+        result["push"] = {"subscribed": sorted(bridge.subscribed),
+                          "received": bridge.received, "unexpected": bridge.unexpected}
         result["egress"] = {**(result.get("egress") or {}), **egress_summary()}
         await hass.async_stop()
         return result
@@ -785,6 +909,8 @@ async def run() -> dict:
     result["mirrored"] = sorted(bridge.mirrored)
     result["published"] = bridge.published
     result["refused"] = bridge.refused
+    result["push"] = {"subscribed": sorted(bridge.subscribed),
+                      "received": bridge.received, "unexpected": bridge.unexpected}
 
     # What the integration can and cannot reach, asked from inside rather than inferred.
     probes = spec.get("probe_entities", [])

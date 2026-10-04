@@ -196,6 +196,35 @@ def main() -> int:
               durable[-1]["allowed"] and durable[-1]["target"] == "lock.lock",
               f"{durable[-1]['op']} {durable[-1]['target']}", failures)
 
+        # The case above stages the order by hand: it calls `decision()` and then its own
+        # `act()`, so it shows the log can be written first, not that the mediator writes it
+        # first. W1 found by reading that the real path acted inside `acting_policy` and recorded
+        # after (`notes/w1_push_loop_prediction.md` §1 (1)). This one goes through `Mediator`
+        # and `acting_policy`, with a platform whose state write dies, and asks what is on disk.
+        from .manifest import Manifest
+        from .platform import Platform, acting_policy
+
+        class _DyingStates(dict):
+            def __setitem__(self, key, value):
+                raise RuntimeError("the mediator dies while acting")
+
+        log3 = AuditLog(root / "ordering-mediated.jsonl")
+        dying = Platform(states=_DyingStates())
+        mediator = Mediator(policy=acting_policy(
+            {"demo": Manifest.load(component, root)}, dying), log=log3)
+        ours, theirs = Channel.pair()
+        mediator.register("demo", Channel(ours), component=component)
+        Channel(theirs).send({"op": "entity.publish", "entity": "sensor.demo", "state": "1"})
+        try:
+            mediator.serve(timeout=1)
+        except RuntimeError:
+            pass
+        decided = [r for r in log3.records() if r["kind"] == "decision"]
+        check("through the mediator, an action that dies leaves its record on disk",
+              len(decided) == 1 and decided[0]["allowed"],
+              f"{len(decided)} decision records on disk", failures)
+        theirs.close()
+
         # -- T4: the record names what was decided, and the instrument that compares records --
         print("\n  T4 — what the record names, and the check that compares it with memory")
         log3 = AuditLog(path=root / "t4.jsonl")
