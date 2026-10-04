@@ -34,9 +34,8 @@ integration and its deps compile every start unless the installer compiles them 
 
 **W2 (a) done 2026-10-04** (§7.40): `network.tcp.local` existed only in the schema — built; `midea_ac_lan`
 loads confined against a fake device (`experiments/local_tcp/`). Six defects fixed on the way (4 in the
-UDP shim, `serve` deadline, results before shutdown). **Open decision for Younes: the refusal flood**
-(463,631 refused records in 7.5 min from one looping sandbox). **Next: that decision, then (b) asyncio
-datagrams, (d) token refresh.**
+UDP shim, `serve` deadline, results before shutdown). **Refusal flood noted, deferred by Younes** (§8.6.3 #14, §8.7 #15: options
+priced, nothing built; may revisit). **Next: (b) asyncio datagrams, (d) token refresh.**
 
 **In one screen — where we are, 2026-10-03:**
 
