@@ -56,6 +56,8 @@ import errno
 import ipaddress
 import os
 import socket
+import time
+import weakref
 from dataclasses import dataclass
 from typing import Callable
 
@@ -114,6 +116,17 @@ class EgressDenied(OSError):
         self.clause = clause
 
 
+def _home_network(address: str) -> bool:
+    """Routing only: private, and not this sandbox's own loopback, which never leaves it."""
+    try:
+        parsed = ipaddress.ip_address(address)
+    except ValueError:
+        return False
+    if isinstance(parsed, ipaddress.IPv6Address) and parsed.ipv4_mapped is not None:
+        parsed = parsed.ipv4_mapped
+    return parsed.is_private and not (parsed.is_loopback or parsed.is_unspecified)
+
+
 class EgressShim:
     """Installed in the sandbox before the integration is imported.
 
@@ -123,8 +136,12 @@ class EgressShim:
     """
 
     def __init__(self, connect_via: Callable[[str, int], int],
-                 datagrams: DatagramMediator | None = None) -> None:
+                 datagrams: DatagramMediator | None = None,
+                 connect_local: Callable[[str, int], int] | None = None) -> None:
         self.connect_via = connect_via
+        #: W2 (a): a connection to a device on the home network, by address. Injected for the
+        #: same reason as `connect_via`; `None` keeps the old fail-closed behaviour.
+        self.connect_local = connect_local
         #: The relay, if this sandbox is permitted datagrams at all. `None` means UDP falls
         #: through to the ordinary socket calls, where it fails — the same fail-closed default
         #: an unrecognised TCP destination gets.
@@ -133,9 +150,12 @@ class EgressShim:
         self._placeholders: dict[str, str] = {}   # and back, so a repeat lookup is stable
         self._next = int(PLACEHOLDER_NET.network_address) + 1
         self._installed: list[tuple] = []
-        #: Per-socket datagram state, keyed by descriptor. A UDP socket in the sandbox is never
-        #: connected to anything — it is a handle the shim keeps notes against.
-        self._dgram: dict[int, dict] = {}
+        #: Per-socket datagram state. A UDP socket in the sandbox is never connected to anything
+        #: — it is a handle the shim keeps notes against. **Keyed by the socket object, weakly,
+        #: not by its descriptor number**, and cleared on `close`. Keyed by number, a new socket
+        #: that reused a closed one's descriptor inherited its peers and its queued datagrams
+        #: (W2 (a), 2026-10-04, found by `selftest_udp` case 2c).
+        self._dgram: weakref.WeakKeyDictionary = weakref.WeakKeyDictionary()
         #: Every name resolved and every connection made, for the evaluation and for tests.
         self.resolved: list[str] = []
         self.connected: list[tuple[str, int]] = []
@@ -198,8 +218,8 @@ class EgressShim:
                     return None
             except OSError:
                 return None
-            return shim._dgram.setdefault(sock.fileno(), {"port": None, "peer": None,
-                                                          "broadcast": False})
+            return shim._dgram.setdefault(sock, {"port": None, "peer": None,
+                                                 "broadcast": False})
 
         def wrap(name: str, handler) -> None:
             real = getattr(cls, name)
@@ -232,9 +252,17 @@ class EgressShim:
                 return None
             return _FALL_THROUGH
 
+        def remember(notes, peer) -> None:
+            # Every peer this socket has sent to, in order, so a reply from any of them is
+            # collected — not only from the last one sent to (W2 (a), 2026-10-04).
+            notes["peer"] = peer
+            peers = notes.setdefault("peers", [])
+            if peer not in peers:
+                peers.append(peer)
+
         def on_connect(sock, notes, real, address, *rest):
             if isinstance(address, tuple) and len(address) >= 2:
-                notes["peer"] = (str(address[0]), int(address[1]))
+                remember(notes, (str(address[0]), int(address[1])))
                 return None
             return _FALL_THROUGH
 
@@ -249,8 +277,13 @@ class EgressShim:
                 notes["scanned"] = shim.datagrams.scan(port, bytes(data))
                 notes["port"] = port
                 return len(data)
-            notes["peer"] = (host, port)
-            return shim.datagrams.send(host, port, bytes(data))
+            # Sent first, remembered only if it was allowed. Remembered first, a refused send left
+            # a peer that every later `recvfrom` asked the relay for, was refused again, and the
+            # integration's own retry loop turned that into ~1,000 refused decisions a second —
+            # 463,631 durable records in 7.5 minutes (W2 (a) baseline, arm C).
+            sent = shim.datagrams.send(host, port, bytes(data))
+            remember(notes, (host, port))
+            return sent
 
         def on_send(sock, notes, real, data, *rest):
             peer = notes.get("peer")
@@ -258,27 +291,44 @@ class EgressShim:
                 return _FALL_THROUGH
             return shim.datagrams.send(peer[0], peer[1], bytes(data))
 
-        def on_recvfrom(sock, notes, real, bufsize=65535, *rest):
-            queued = notes.get("scanned")
-            if queued:
-                data, sender = queued.pop(0)
-                return data[:bufsize], sender
-            if notes.get("port") is not None and notes.get("peer") is None:
+        def collect(notes) -> tuple[bytes, tuple] | None:
+            """One datagram already queued, or asked for from the relay once, or None."""
+            if notes.get("scanned"):
+                return notes["scanned"].pop(0)
+            if notes.get("port") is not None and not notes.get("peers"):
                 for data, sender in shim.datagrams.listen(int(notes["port"])):
                     notes.setdefault("scanned", []).append((data, sender))
-                if notes.get("scanned"):
-                    data, sender = notes["scanned"].pop(0)
-                    return data[:bufsize], sender
-                raise BlockingIOError(errno.EAGAIN, "no datagram available")
-            peer = notes.get("peer")
-            if peer is None:
+            else:
+                for peer in notes.get("peers") or []:
+                    try:
+                        arrived = shim.datagrams.recv(peer[0], peer[1])
+                    except OSError:
+                        # Refused or failed: from this peer, nothing arrives. A real socket would
+                        # simply receive nothing, and its timeout is what ends the wait.
+                        continue
+                    for data in arrived:
+                        notes.setdefault("scanned", []).append((data, peer))
+            return notes["scanned"].pop(0) if notes.get("scanned") else None
+
+        def on_recvfrom(sock, notes, real, bufsize=65535, *rest):
+            if not notes.get("scanned") and not notes.get("peers") \
+                    and notes.get("port") is None:
                 return _FALL_THROUGH
-            for data in shim.datagrams.recv(peer[0], peer[1]):
-                notes.setdefault("scanned", []).append((data, peer))
-            if notes.get("scanned"):
-                data, sender = notes["scanned"].pop(0)
-                return data[:bufsize], sender
-            raise BlockingIOError(errno.EAGAIN, "no datagram available")
+            # A real socket's timeout, honoured. Until W2 (a) this raised `BlockingIOError` at
+            # once whatever the socket's mode, and `midea-lan`'s discovery — a socket with a 5 s
+            # timeout, ending on `TimeoutError` — treated it as an ordinary error and asked again,
+            # once a second, forever: 1,409 times before the run was stopped.
+            timeout = sock.gettimeout()
+            deadline = None if timeout is None else time.monotonic() + timeout
+            while True:
+                got = collect(notes)
+                if got is not None:
+                    data, sender = got
+                    return data[:bufsize], sender
+                if timeout == 0:
+                    raise BlockingIOError(errno.EAGAIN, "no datagram available")
+                if deadline is not None and time.monotonic() >= deadline:
+                    raise socket.timeout("timed out")
 
         def on_recv(sock, notes, real, bufsize=65535, *rest):
             outcome = on_recvfrom(sock, notes, real, bufsize)
@@ -286,6 +336,11 @@ class EgressShim:
                 return _FALL_THROUGH
             return outcome[0]
 
+        def on_close(sock, notes, real, *rest):
+            shim._dgram.pop(sock, None)
+            return _FALL_THROUGH
+
+        wrap("close", on_close)
         wrap("bind", on_bind)
         wrap("setsockopt", on_setsockopt)
         wrap("connect", on_connect)
@@ -324,10 +379,19 @@ class EgressShim:
             if not (isinstance(address, tuple) and len(address) >= 2):
                 return False
             name = self._names.get(str(address[0]))
-            if name is None:
-                return False
             port = address[1]
-            fd = self.connect_via(name, int(port))
+            if name is None:
+                # Not a name this shim resolved. If it is an address on the home network, a
+                # device the user typed in, ask the mediator for `network.tcp.local`; until W2 (a)
+                # it fell through to the real `connect`, and the sandbox has no route, so every
+                # LAN device over TCP failed. Anything else still falls through and fails. The
+                # mediator re-checks the address and is the authority; this only routes.
+                if self.connect_local is None or not _home_network(str(address[0])):
+                    return False
+                fd = self.connect_local(str(address[0]), int(port))
+                name = str(address[0])
+            else:
+                fd = self.connect_via(name, int(port))
             # `dup2` makes the integration's descriptor refer to the mediator's connection. The
             # integration keeps the socket object it created and never learns that the thing
             # underneath it changed — which is what C1 requires, since it cannot be asked to

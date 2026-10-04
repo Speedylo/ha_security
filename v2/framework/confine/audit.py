@@ -278,8 +278,10 @@ class AuditLog:
         # refused egress request that named no port records target `None` and the log no longer
         # says which host was attempted — a denial should still say what it denied. These are
         # the sandbox's own claims, labelled as such, exactly as `claimed` is for identity.
+        # `address` since W2 (a): a `network.tcp.local` decision is made on the port, and the
+        # address it pins must be in the record too, or the log could not say which device.
         requested = {k: request[k] for k in ("entity", "service", "domain", "service_name",
-                                             "host", "port", "event") if k in request}
+                                             "host", "address", "port", "event") if k in request}
         return self._append({
             "kind": "decision", "run": run_id, "integration": identity,
             "op": request.get("op"), "target": target, "requested": requested,

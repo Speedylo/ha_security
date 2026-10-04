@@ -632,6 +632,19 @@ def install_egress(channel: Channel) -> dict:
             raise EgressDenied("the mediator permitted the connection but sent no descriptor")
         return fd
 
+    def connect_local(address: str, port: int) -> int:
+        # W2 (a): a device on the home network, by address. The descriptor comes back with its
+        # own reply, as for egress.
+        answer, fd = channel.exchange({"op": "network.tcp.local", "address": address,
+                                       "port": port})
+        if not answer.get("ok"):
+            if fd is not None:
+                os.close(fd)
+            raise EgressDenied(str(answer.get("reason") or "denied"), answer.get("clause"))
+        if fd is None:
+            raise EgressDenied("the mediator permitted the connection but sent no descriptor")
+        return fd
+
     def send(address: str, port: int, data: bytes) -> int:
         return int(ask("network.udp.send", address=address, port=port,
                        data=data.hex()).get("sent", 0))
@@ -652,7 +665,8 @@ def install_egress(channel: Channel) -> dict:
 
     shim = EgressShim(connect_via=connect_via,
                       datagrams=DatagramMediator(send=send, recv=recv,
-                                                 scan=scan, listen=listen))
+                                                 scan=scan, listen=listen),
+                      connect_local=connect_local)
     shim.install()
     EGRESS_SHIM.append(shim)
     return {"installed": True}
@@ -980,6 +994,10 @@ async def run() -> dict:
         result["egress"] = {**(result.get("egress") or {}), **egress_summary()}
         if spec.get("report_bytecode"):
             result["bytecode"] = bytecode_report()
+        # The result now, as well as after stopping: the harness takes the last JSON line, and an
+        # integration whose device thread keeps retrying can hold Home Assistant's shutdown for
+        # minutes, past the harness's limit — the W2 (a) control arm lost its whole report so.
+        print(json.dumps(result), flush=True)
         await hass.async_stop()
         return result
 

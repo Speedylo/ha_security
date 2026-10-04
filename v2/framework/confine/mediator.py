@@ -28,6 +28,7 @@ import collections
 import os
 import selectors
 import socket
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
@@ -272,9 +273,16 @@ class Mediator:
         return [self._by_fd[fd][0] for fd, entities in self._subscriptions.items()
                 if entity_id in entities]
 
-    def serve(self, timeout: float | None = None) -> None:
-        """Answer requests and deliver pushes until every sandbox has closed its end."""
+    def serve(self, timeout: float | None = None, until: float | None = None) -> None:
+        """Answer requests and deliver pushes until every sandbox has closed its end.
+
+        `until` is a `time.monotonic()` deadline. Without one, a sandbox that never stops asking
+        keeps this loop busy forever, since `timeout` only ends an *idle* wait: the W2 (a)
+        baseline's arm C ran for 7.5 minutes this way before it was stopped by hand.
+        """
         while self._by_fd:
+            if until is not None and time.monotonic() >= until:
+                return
             # What (A) sent during the last request's calls is applied here, between requests,
             # and never inside one (W1 review, `real_platform.py`). Polled without waiting while
             # anything is queued, since a queue filled during a call has no socket event to wake on.

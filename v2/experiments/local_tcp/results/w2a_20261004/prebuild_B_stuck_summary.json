@@ -1,0 +1,1 @@
+{"records": 1474, "decisions": {"network.udp.send 6445 allowed=True": 1, "network.udp.send 20086 allowed=True": 1, "network.udp.recv 20086 allowed=True": 1471}, "span_s": 1477.1}

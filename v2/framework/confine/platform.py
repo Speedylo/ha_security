@@ -228,6 +228,22 @@ class ActingPolicy:
                                 data={"host": record["host"], "port": record["port"]}, fd=fd)
             return Decision(True, decision.reason, decision.clause, act=connect)
 
+        if operation == "network.tcp.local":
+            broker = self.broker
+            if broker is None:
+                return Decision(False, "this framework was started without an egress broker",
+                                clause=decision.clause)
+
+            def connect_local() -> Decision:
+                try:
+                    fd, record = broker.open_local(identity, request, decision)
+                except _EgressRefused as err:
+                    return Decision(False, err.reason, err.clause)
+                return Decision(True, decision.reason, decision.clause,
+                                data={"address": record["address"], "port": record["port"]},
+                                fd=fd)
+            return Decision(True, decision.reason, decision.clause, act=connect_local)
+
         if operation in ("network.udp.send", "network.udp.recv",
                          "discover.scan", "discover.listen"):
             relay = self.relay

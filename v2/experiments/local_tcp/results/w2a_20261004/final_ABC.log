@@ -1,0 +1,12 @@
+  unconfined           loaded=True timed_out=True  device saw: udp 2, tcp 8 conns / 7616 bytes, from ['10.126.83.113']
+  confined_declared    loaded=True timed_out=True  device saw: udp 2, tcp 6 conns / 4440 bytes, from ['10.126.83.113']
+           1 × network.udp.send     6445     allowed=True  /permissions/network/local/udp/0
+           1 × network.udp.send     20086    allowed=True  /permissions/network/local/udp/1
+           4 × network.udp.recv     6445     allowed=True  /permissions/network/local/udp/0
+           4 × network.udp.recv     20086    allowed=True  /permissions/network/local/udp/1
+           6 × network.tcp.local    6444     allowed=True  /permissions/network/local/tcp/0
+  confined_undeclared  loaded=False timed_out=False  device saw: udp 0, tcp 0 conns / 0 bytes, from []
+           9 × network.udp.send     6445     allowed=False  /permissions/network/local/udp
+
+wrote /home/younes/r2exp/t2/w2a/final_ABC.json
+exit=0

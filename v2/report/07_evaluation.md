@@ -1254,7 +1254,7 @@ third of the three findings behind "the declaration always already exists". Acro
 | Declared `iot_class` | Count | What it needs | Served by scope item 2? |
 |---|---|---|---|
 | `cloud_polling` (13) + `cloud_push` (2) | **15 — 41%** | the internet | **yes** — hostnames, resolved and pinned (T11) |
-| `local_push` (12) + `local_polling` (3) | **15 — 41%** | devices on the home LAN | **only with §5.10.3's separate flag** for non-public destinations (T10) |
+| `local_push` (12) + `local_polling` (3) | **15 — 41%** | devices on the home LAN | **only with §5.10.3's separate flag** for non-public destinations (T10). *2026-10-04, §7.40: for TCP the flag existed only in the manifest schema until that day, so these integrations failed closed whatever they declared; built and measured with a real integration in §7.40* |
 | `calculated` | 6 — 16% | nothing | not applicable |
 | none declared | 1 — 3% | unknown | — |
 
@@ -3741,7 +3741,8 @@ argument. It now carries this exception.
   are head-corpus members.
 - **Raw sockets have still not been spawned confined.** Two of §7.24.5's three stacks have. §8.7
   item 7 names the corpus's raw-socket members, `localtuya` and `midea_ac_lan`, and both need a
-  device or a credential.
+  device or a credential. *(2026-10-04, §7.40: `midea_ac_lan` spawned confined against a fake
+  device, and it loads; doing so found that local TCP had never been built.)*
 - **Not every experiment built on the corrected instance was re-measured.** `build_hass` also
   underlies the reads experiment of §7.14, the gc experiment of §7.15, the egress-shape run of §7.24,
   and the `minimal` and `unstripped` profiles and `scale.py` behind §6.11 and §6.12.
@@ -4634,6 +4635,86 @@ Five of six predictions held. The one that failed was the hedge on the platform'
 which was fully warm rather than mixed. §7.35.4's open question is closed. What this does not
 establish is the memory side of the cold cost, which §7.35.2 put at about 16 MB for a fully cold
 platform. Only the integration's share is cold here, and it was not separately measured.
+
+
+## 7.40 Devices on the home network, and a capability that existed only on paper
+
+**2026-10-04.** W2 (a) was meant to close the last untested network stack: a plain socket, which
+§7.24.5 found in `midea_ac_lan` and which no confined run had exercised. Planning it found something
+larger. Predictions were committed before any code (`notes/w2a_local_tcp_prediction.md`).
+
+### 7.40.1 What reading found
+
+§7.18.1 and §8.2.2 describe the 41% of the corpus that reaches devices on the home network as served
+"only with §5.10.3's separate flag". That reads as available behind a declaration, and
+`decision_network_capability.md` designs it: the manifest declares ports, never addresses, and an
+address is pinned on its first successful connection to a declared port. For TCP, none of this was
+built. The egress shim substitutes a mediator-connected socket only for the placeholder addresses it
+hands out for hostnames, and a device's IP address, which a user types in, fell through to the real
+`connect`, in a namespace with no route. The mediator had no step 5 for `network.tcp.local`, and
+nothing sent the request. Every confined integration reaching a home-network device over TCP
+therefore failed closed, whatever it declared. That was safe, but it was not what the report said.
+
+### 7.40.2 What was built
+
+The shim now sends `network.tcp.local`, naming the address and port, when an integration connects to
+an address on the home network, and it adopts the connected descriptor the mediator hands back, as the
+egress path does. The sandbox's own loopback is never relayed. The manifest decides on the port.
+The mediator then accepts only a home-network address: private, and not loopback, link-local,
+multicast, reserved or unspecified. That check lives in the mediator, which does not trust the
+sandbox's routing, and the durable record names the address it pinned. What this does not limit is
+stated in the design note and stands: an integration declaring a port can reach any home-network
+host that answers on it.
+
+### 7.40.3 A real integration against a fake device
+
+The subject is `midea_ac_lan`, unmodified, the corpus's raw-socket member. Its manual setup
+discovers the device by synchronous UDP, then connects by blocking TCP, so one run exercises the
+raw-socket stack, local TCP, and the UDP relay in real namespaces, which §8.7 #8 had left untested.
+The device is a program on the Pi's LAN address that answers discovery as a protocol-V2 air
+conditioner, accepts the connection, and logs every datagram and connection with its source address.
+That log is the evidence that does not come from the framework.
+
+Run first on the code before the build, the real integration found what the decision-layer tests
+had not. The relay delivered both discovery datagrams, but the sandbox's side of it did not behave
+like a socket. It asked only the last address sent to, so half the replies were never collected. It
+answered a socket with a timeout by raising `BlockingIOError` where a real socket raises
+`TimeoutError`, and the library looped on that for ever: 1,471 polls in 25 minutes. With nothing
+declared it was worse. A refused send still registered its peer, every later read was refused again,
+and the library's retry loop made the mediator write **463,631 refused decisions, a 289 MB audit log,
+in 7.5 minutes**. The regression test for that found a fourth defect: per-socket state was keyed by
+descriptor number, so a new socket could inherit a closed one's peers. Two harness defects came out
+of the same runs. `Mediator.serve` had no deadline, and both runners printed their results only after
+a shutdown that the integration's retrying device thread could hold up past any limit. All six are
+fixed, each with a test that fails without the fix where that can be shown.
+
+| Arm | Loaded | What the device saw | Decisions |
+|---|---|---|---|
+| unconfined | yes | 2 datagrams, 8 connections, 7,616 bytes | — |
+| confined, `network.local` declared | **yes** | 2 datagrams, 6 connections, 4,440 bytes, all from the host | 2 sends, 8 receives, 6 local TCP, all allowed |
+| confined, nothing declared | no: its own flow reports `invalid_device_ip` | **nothing** | 9 sends refused, each with its clause |
+
+The confined integration publishes the same climate entity as the unconfined one. Its traffic left
+the host only through the mediator, which is the only route a sandbox has, and the audit chain
+verifies and reconciles.
+
+### 7.40.4 The predictions, and what this establishes
+
+Seven of eight predictions held, one only after the fixes. The one that held in substance but not in
+detail was the baseline: confined setup failed, but in discovery, before it ever reached the TCP gap
+the build was for. The open prediction held six times.
+
+**Established.** A confined integration can reach a device on the home network over TCP, through a
+declared port and an address the mediator itself checks and records. The raw-socket stack works
+confined, with a real integration. Synchronous UDP discovery through the relay works in real
+namespaces. With nothing declared, the integration is refused at every step and the device receives
+nothing.
+
+**Not established.** The device never answers the integration's queries, so device-to-integration
+traffic over a passed descriptor is covered only by its being a real connected socket. The four
+asyncio datagram integrations of §7.25.5 are still not served. And arm C's flood leaves a design
+question open: every refusal is a durable record, so a sandbox that issues refused requests in a loop,
+deliberately rather than by accident as here, can use up the mediator's decision budget and the disk.
 
 ---
 

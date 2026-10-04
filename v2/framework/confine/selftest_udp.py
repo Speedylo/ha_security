@@ -32,6 +32,7 @@ import socket
 import sys
 import tempfile
 import threading
+import time
 from pathlib import Path
 
 try:
@@ -175,10 +176,76 @@ def case_unicast(root: Path) -> None:
         check(refused is not None and refused.clause == "/permissions/network/local/udp",
               "2b. and the denial names the clause that held no match (F3)",
               str(refused.clause) if refused else "")
+
+        # 2c. W2 (a) baseline, arm C: a refused send left a peer behind, every later recvfrom
+        # asked the relay for it and was refused, and the integration's retry loop turned that
+        # into ~1,000 refused decisions a second. Now the socket just times out, asking nothing.
+        asked_before = sum(1 for op, _ in decisions if op == "network.udp.recv")
+        other2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        other2.settimeout(0.5)
+        try:
+            other2.sendto(b"probe", ("127.0.0.1", port + 1))
+        except EgressRefused:
+            pass
+        try:
+            other2.recvfrom(2048)
+            outcome = "received something"
+        except socket.timeout:
+            outcome = "timed out"
+        other2.close()
+        asked_after = sum(1 for op, _ in decisions if op == "network.udp.recv")
+        check(outcome == "timed out" and asked_after == asked_before,
+              "2c. after a refused send, recvfrom times out and asks the mediator nothing",
+              f"{outcome}; {asked_after - asked_before} recv requests")
     finally:
         shim.uninstall()
         relay.close()
         device.close()
+
+
+# -- 8-9: what midea_ac_lan's discovery found, in a real sandbox (W2 (a), 2026-10-04) ---------
+
+def case_two_peers_and_timeout(root: Path) -> None:
+    """The two defects a real integration found, each as its own check.
+
+    `midea-lan` sends one discovery datagram to port 6445 and one to 20086, then reads with a
+    5 s timeout until `TimeoutError`. The shim asked only the last peer, and raised
+    `BlockingIOError` instead of honouring the timeout, so discovery looped forever.
+    """
+    first, port_a = echo_device(b"reply-from-a")
+    second, port_b = echo_device(b"reply-from-b")
+    shim, relay, _ = wire(root, "demo_two_peers",
+                          {"network": {"local": {"udp": [port_a, port_b]}}})
+    try:
+        shim.install()
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.settimeout(1.5)
+        sock.sendto(b"discover", ("127.0.0.1", port_a))
+        sock.sendto(b"discover", ("127.0.0.1", port_b))
+        got = set()
+        timed_out_after = None
+        start = time.monotonic()
+        while True:
+            try:
+                data, _ = sock.recvfrom(2048)
+                got.add(data)
+            except socket.timeout:
+                timed_out_after = time.monotonic() - start
+                break
+            if time.monotonic() - start > 30:
+                break
+        sock.close()
+        check(got == {b"reply-from-a", b"reply-from-b"},
+              "8. replies from every peer the socket sent to are collected, not only the last",
+              str(sorted(got)))
+        check(timed_out_after is not None and timed_out_after < 10,
+              "9. a socket with a timeout raises TimeoutError once nothing more arrives",
+              f"after {timed_out_after:.1f} s" if timed_out_after else "it never timed out")
+    finally:
+        shim.uninstall()
+        relay.close()
+        first.close()
+        second.close()
 
 
 # -- 3-5: discovery ------------------------------------------------------------------------
@@ -291,6 +358,7 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="confine-udp-") as tmp:
         root = Path(tmp)
         case_unicast(root)
+        case_two_peers_and_timeout(root)
         case_discovery(root)
         case_bounds(root)
         case_no_relay_fails_closed(root)

@@ -30,7 +30,13 @@ end-to-end runs, 40/40 against (A)). Next: W2.**
 
 **W2 (c) done 2026-10-04** (§7.39): a read-only mount does not make a confined start cold; the
 integration and its deps compile every start unless the installer compiles them (`powercalc` −24% with
-`--compile-bytecode`). Harness no longer copies the corpus's stale `__pycache__`. **Next: W2 (a), (b), (d).**
+`--compile-bytecode`). Harness no longer copies the corpus's stale `__pycache__`.
+
+**W2 (a) done 2026-10-04** (§7.40): `network.tcp.local` existed only in the schema — built; `midea_ac_lan`
+loads confined against a fake device (`experiments/local_tcp/`). Six defects fixed on the way (4 in the
+UDP shim, `serve` deadline, results before shutdown). **Open decision for Younes: the refusal flood**
+(463,631 refused records in 7.5 min from one looping sandbox). **Next: that decision, then (b) asyncio
+datagrams, (d) token refresh.**
 
 **In one screen — where we are, 2026-10-03:**
 

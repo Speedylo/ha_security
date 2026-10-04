@@ -1,0 +1,396 @@
+[
+  {
+    "arm": "unconfined",
+    "level": "timeout",
+    "timed_out": null,
+    "loaded": null,
+    "flow": {},
+    "error": null,
+    "device_saw": {
+      "udp": 2,
+      "tcp_connections": 8,
+      "tcp_bytes": 7616,
+      "peers": [
+        "10.126.83.113"
+      ]
+    },
+    "decisions": [],
+    "published": null,
+    "audit_breaks": null,
+    "reconcile": null
+  },
+  {
+    "arm": "confined_declared",
+    "level": null,
+    "timed_out": true,
+    "loaded": true,
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "action"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "error": null,
+    "device_saw": {
+      "udp": 2,
+      "tcp_connections": 6,
+      "tcp_bytes": 4440,
+      "peers": [
+        "10.126.83.113"
+      ]
+    },
+    "decisions": [
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": true,
+        "clause": "/permissions/network/local/udp/0"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "20086",
+        "allowed": true,
+        "clause": "/permissions/network/local/udp/1"
+      },
+      {
+        "op": "network.udp.recv",
+        "target": "6445",
+        "allowed": true,
+        "clause": "/permissions/network/local/udp/0"
+      },
+      {
+        "op": "network.udp.recv",
+        "target": "20086",
+        "allowed": true,
+        "clause": "/permissions/network/local/udp/1"
+      },
+      {
+        "op": "network.udp.recv",
+        "target": "6445",
+        "allowed": true,
+        "clause": "/permissions/network/local/udp/0"
+      },
+      {
+        "op": "network.udp.recv",
+        "target": "20086",
+        "allowed": true,
+        "clause": "/permissions/network/local/udp/1"
+      },
+      {
+        "op": "network.udp.recv",
+        "target": "6445",
+        "allowed": true,
+        "clause": "/permissions/network/local/udp/0"
+      },
+      {
+        "op": "network.udp.recv",
+        "target": "20086",
+        "allowed": true,
+        "clause": "/permissions/network/local/udp/1"
+      },
+      {
+        "op": "network.udp.recv",
+        "target": "6445",
+        "allowed": true,
+        "clause": "/permissions/network/local/udp/0"
+      },
+      {
+        "op": "network.udp.recv",
+        "target": "20086",
+        "allowed": true,
+        "clause": "/permissions/network/local/udp/1"
+      },
+      {
+        "op": "network.tcp.local",
+        "target": "6444",
+        "allowed": true,
+        "clause": "/permissions/network/local/tcp/0"
+      },
+      {
+        "op": "network.tcp.local",
+        "target": "6444",
+        "allowed": true,
+        "clause": "/permissions/network/local/tcp/0"
+      },
+      {
+        "op": "network.tcp.local",
+        "target": "6444",
+        "allowed": true,
+        "clause": "/permissions/network/local/tcp/0"
+      },
+      {
+        "op": "network.tcp.local",
+        "target": "6444",
+        "allowed": true,
+        "clause": "/permissions/network/local/tcp/0"
+      },
+      {
+        "op": "network.tcp.local",
+        "target": "6444",
+        "allowed": true,
+        "clause": "/permissions/network/local/tcp/0"
+      },
+      {
+        "op": "network.tcp.local",
+        "target": "6444",
+        "allowed": true,
+        "clause": "/permissions/network/local/tcp/0"
+      }
+    ],
+    "published": [
+      {
+        "entity": "climate.151732605161920_climate",
+        "state": "unavailable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      }
+    ],
+    "audit_breaks": [],
+    "reconcile": []
+  },
+  {
+    "arm": "confined_undeclared",
+    "level": null,
+    "timed_out": false,
+    "loaded": false,
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "action"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        }
+      ],
+      "type": "form",
+      "errors": {
+        "base": "invalid_device_ip"
+      },
+      "reason": null,
+      "step_id": "manually"
+    },
+    "error": null,
+    "device_saw": {
+      "udp": 0,
+      "tcp_connections": 0,
+      "tcp_bytes": 0,
+      "peers": []
+    },
+    "decisions": [
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      }
+    ],
+    "published": [],
+    "audit_breaks": [],
+    "reconcile": []
+  }
+]

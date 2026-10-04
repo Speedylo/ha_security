@@ -72,6 +72,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import urllib.error
 import urllib.request
 from dataclasses import replace
@@ -209,7 +210,7 @@ def _requirements(component: Path, python: Path) -> tuple[list[str], list[str]]:
 
 def run_confined(component: Path, domain: str, subject: dict, arm: str, permissions: dict,
                  python: Path, delegation: Delegation, uv: str | None,
-                 platform_deps: Path | None) -> dict:
+                 platform_deps: Path | None, max_seconds: float | None = None) -> dict:
     root = Path(tempfile.mkdtemp(prefix=f"e2e-egress-{arm}-"))
     # The audit log lives **outside** `root`, because `root` is removed in the `finally` below
     # and the records are read after it. Keeping it inside meant `records()` found an empty
@@ -220,7 +221,9 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
     try:
         own = root / "custom_components" / domain
         own.parent.mkdir(parents=True)
-        shutil.copytree(component, own)
+        # Without `__pycache__`, as in `endtoend` since §7.39: the corpus copy's bytecode is from
+        # the 2026-09-02 unconfined runs, and a fresh download has none.
+        shutil.copytree(component, own, ignore=shutil.ignore_patterns("__pycache__"))
         # Beside the integration, never inside its own manifest.json — §5.9.4's provenance
         # rule, and rewriting the integration's file would breach C1.
         (root / "custom_components" / f"{domain}.permissions.json").write_text(
@@ -290,7 +293,18 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
                                          stderr=stderr.fileno(),
                                          channel_end=sandbox_end.fileno())
                 sandbox_end.detach()
-                mediator.serve(timeout=420)
+                # A deadline, because `serve` only stops on an *idle* timeout and a sandbox that
+                # never stops asking keeps it busy for ever (W2 (a) baseline). When it passes the
+                # sandbox is killed through its cgroup and the arm is reported as timed out.
+                deadline = time.monotonic() + max_seconds if max_seconds else None
+                mediator.serve(timeout=420, until=deadline)
+                timed_out = deadline is not None and time.monotonic() >= deadline
+                if timed_out:
+                    for pid in cgroup.pids:
+                        try:
+                            os.kill(pid, 9)
+                        except ProcessLookupError:
+                            pass
                 sandbox.wait(timeout=420)
             oom = cgroup.event_count("oom_kill")
         finally:
@@ -322,12 +336,14 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
     if not text:
         tail = diagnostic.splitlines()
         return {"arm": arm, "level": "no_report", "install": install, "audit": audit,
-                "logged": logged, "oom_kill": oom, "error": "\n".join(tail[-12:])[:900]}
+                "logged": logged, "oom_kill": oom, "timed_out": timed_out,
+                "error": "\n".join(tail[-12:])[:900]}
     report = json.loads(text.splitlines()[-1])
     if "fatal" in report:
         return {"arm": arm, "level": "fatal", "install": install, "audit": audit,
                 "logged": logged, "oom_kill": oom, "error": report["fatal"].strip().splitlines()[-1][:300]}
     report["arm"] = arm
+    report["timed_out"] = timed_out
     report["install"] = install
     report["audit"] = audit
     report["logged"] = logged
@@ -367,18 +383,26 @@ def run_unconfined(component: Path, domain: str, subject: dict, python: Path, uv
 
         path = [str(deps)] + ([str(platform_deps)] if platform_deps else [])
         env = {**os.environ, "PYTHONPATH": ":".join(path)}
+        timed_out = False
         try:
             proc = subprocess.run(
                 [str(python), str(root / "endtoend_unconfined.py"), str(spec_file)],
                 capture_output=True, text=True, timeout=900, env=env, cwd=str(root))
-        except subprocess.TimeoutExpired:
-            return {"arm": "unconfined", "level": "timeout"}
-        text = (proc.stdout or "").strip()
+            text, stderr = (proc.stdout or "").strip(), proc.stderr or ""
+        except subprocess.TimeoutExpired as err:
+            # The runner prints its result before shutting Home Assistant down, so a shutdown
+            # held up past the limit still leaves the result in what was captured (W2 (a)).
+            timed_out = True
+            out = err.stdout or b""
+            text = (out.decode() if isinstance(out, bytes) else out).strip()
+            stderr = ""
+            if not text:
+                return {"arm": "unconfined", "level": "timeout", "timed_out": True}
     finally:
         shutil.rmtree(root, ignore_errors=True)
 
     if not text:
-        tail = (proc.stderr or "").strip().splitlines()
+        tail = stderr.strip().splitlines()
         return {"arm": "unconfined", "level": "no_report",
                 "error": "\n".join(tail[-12:])[:900]}
     report = json.loads(text.splitlines()[-1])
@@ -386,6 +410,7 @@ def run_unconfined(component: Path, domain: str, subject: dict, python: Path, uv
         return {"arm": "unconfined", "level": "fatal",
                 "error": report["fatal"].strip().splitlines()[-1][:300]}
     report["arm"] = "unconfined"
+    report["timed_out"] = timed_out
     return report
 
 

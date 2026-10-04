@@ -70,3 +70,47 @@ message, so a real entity state reaches the house.
 | **L6** | Each connection is a durable decision naming both address and port | high |
 | **L7** | Arm A completes against the fake device | medium-high |
 | **L8** | Something not listed is found | high |
+
+---
+
+## 5. Outcomes, 2026-10-04 (appended; §4 is unchanged)
+
+Evidence: `experiments/local_tcp/results/w2a_20261004/`. A correction to §2: `midea_ac_lan`'s
+version is 2026.8.0, not 0.6.x.
+
+**The baseline, on the code before the build.** Arm A worked against the fake device. Arm B
+**hung in discovery** and never reached TCP: 1,471 `udp.recv` polls over 25 minutes before it was
+stopped. Arm C hung too, and worse: **463,631 refused decisions, a 289 MB audit log, in 7.5
+minutes**. Arm A's report was lost when the run was stopped during C.
+
+**What the baseline found, besides the gap the build closes:** four defects in the sandbox side of
+the UDP relay, and two in the harnesses.
+1. `recvfrom` asked only the last peer sent to, so discovery replies from port 6445 sat unread.
+2. A socket's timeout was not honoured. `BlockingIOError` was raised where a real socket raises
+   `TimeoutError`, and `midea-lan` looped on it for ever.
+3. A refused `sendto` still registered its peer, so every later `recvfrom` asked for it, was refused
+   again, and the integration's retry loop made about 1,000 refused decisions a second. That was arm
+   C's flood.
+4. Per-socket state was keyed by descriptor number, so a new socket that reused a closed one's
+   number inherited its peers. This was found by the regression test written for item 3.
+5. `Mediator.serve` had no deadline, so a sandbox that never stops asking held a harness for ever.
+6. Both runners printed their result only after Home Assistant had shut down, which an integration
+   retrying a silent device can delay past any harness limit.
+
+All six are fixed, each with a test that fails without the fix where that can be shown.
+
+| | Outcome |
+|---|---|
+| **L1** | **Held in substance, not in its detail.** Arm B failed before the build, but in discovery (items 1–2), not at the TCP connect as predicted. It never got far enough to meet the TCP gap |
+| **L2** | **Held.** After the build, arm B's flow completes and the entry loads, publishing `climate.151732605161920_climate`. The device saw 6 connections and 4,440 bytes of the integration's own query frames, all from the host's address |
+| **L3** | **Held only after the fixes.** The relay itself worked in real namespaces from the first run (the device received both discovery datagrams), but the sandbox side did not behave like a socket (items 1–4). After the fixes, discovery took 2 sends and 8 bounded polls |
+| **L4** | **Held.** Arm C: 9 refused sends, each with its clause `/permissions/network/local/udp`; the integration's own flow reported `invalid_device_ip`; the device saw nothing |
+| **L5** | **Held.** `selftest_local_tcp`: loopback, link-local and public addresses refused by the mediator even with the port declared (12/12) |
+| **L6** | **Held.** The durable record names the address and the port (`selftest_local_tcp`) |
+| **L7** | **Held.** Arm A loads and publishes the same climate entity, recovered from a shutdown that ran past the limit |
+| **L8** | **Held, six times** (above). Item 3's flood also exposed a design question that remains open: every refusal is a durable record, so a hostile sandbox can issue refused requests in a loop and exhaust the mediator's decision budget and the disk |
+
+**Not done:** stage B. The fake device never answers the integration's queries, so device-to-
+integration bytes over a passed descriptor are covered only by the descriptor being a real
+connected socket, which `selftest_local_tcp` exercises in one direction. The asyncio datagram
+shape (§7.25.5's four integrations) is still not served.

@@ -80,6 +80,25 @@ def is_public(address: str) -> bool:
                 or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified)
 
 
+def is_lan(address: str) -> bool:
+    """Is this a device on the home network — the only kind of address `network.tcp.local` reaches?
+
+    Private (RFC 1918, and IPv6 unique-local), and **none** of the special ranges a private check
+    also matches: not loopback, which would be the mediator's own host and its services; not
+    link-local; not multicast, reserved or unspecified. IPv4-mapped IPv6 is unwrapped first, for
+    the reason `is_public` gives. W2 (a), 2026-10-04.
+    """
+    try:
+        parsed = ipaddress.ip_address(address)
+    except ValueError:
+        return False
+    if isinstance(parsed, ipaddress.IPv6Address) and parsed.ipv4_mapped is not None:
+        parsed = parsed.ipv4_mapped
+    return parsed.is_private and not (parsed.is_loopback or parsed.is_link_local
+                                      or parsed.is_multicast or parsed.is_reserved
+                                      or parsed.is_unspecified)
+
+
 @dataclass
 class EgressBroker:
     """Opens outbound connections on behalf of sandboxes that are permitted them.
@@ -168,6 +187,43 @@ class EgressBroker:
         raise EgressRefused(
             f"no permitted address for {host}:{port} — " + "; ".join(errors[:4]),
             decision.clause)
+
+
+    def open_local(self, identity: str, request: dict, decision: Decision) -> tuple[int, dict]:
+        """`network.tcp.local`: connect to a device on the home network, on a declared port.
+
+        Built in W2 (a), 2026-10-04: until then the capability existed in the manifest schema
+        only, and every confined integration reaching a LAN device over TCP failed closed
+        (`notes/w2a_local_tcp_prediction.md` §1). The manifest has already decided on the
+        **port**. What is checked here is the **address**, and only a home-network address is
+        accepted (`is_lan`). The sandbox's own test merely decides what to route here, and it is
+        not trusted for this. A successful connection pins the address
+        (`decision_network_capability.md` §4, the manual-entry case), and the pin is what
+        `opened` and the durable record carry.
+        """
+        if not decision.allowed:
+            raise EgressRefused(decision.reason, decision.clause)
+        address, port = request.get("address"), request.get("port")
+        if not isinstance(address, str) or not isinstance(port, int):
+            raise EgressRefused("a request must name an address and a port", decision.clause)
+        if not is_lan(address):
+            raise EgressRefused(f"{address} is not an address on the home network",
+                                decision.clause)
+        parsed = ipaddress.ip_address(address)
+        family = socket.AF_INET6 if parsed.version == 6 else socket.AF_INET
+        sock = socket.socket(family, socket.SOCK_STREAM)
+        try:
+            sock.settimeout(self.connect_timeout)
+            sock.connect((address, port))
+            sock.settimeout(None)
+        except OSError as err:
+            sock.close()
+            raise EgressRefused(f"{address}:{port}: {err.strerror or err}",
+                                decision.clause) from err
+        record = {"identity": identity, "host": address, "port": port, "address": address,
+                  "clause": decision.clause, "pinned": "manual entry: first connection"}
+        self.opened.append(record)
+        return sock.detach(), record
 
 
 def egress_response(record: dict) -> dict:
