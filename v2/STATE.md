@@ -1,5 +1,39 @@
 # Where the rebuild stands
 
+## ▶ Resume here (last updated 2026-10-04, night)
+
+**Engineering W1 and W2 are complete, and the day's work has been reviewed and retested (§7.43).**
+Everything is committed; all 25 suites pass on the Pi.
+
+**Next session, in this order:**
+1. **The refusal-flood decision** (§8.6.3 #14, §8.7 #15). A sandbox looping on refused requests makes
+   the mediator write a durable record for each one (463,631 records, 289 MB, in 7.5 minutes,
+   measured in W2 (a)). Recommended: **cut off**: past a refusal rate (e.g. 50 in 10 s), close that
+   sandbox's channel and write one record saying why; about a day, including a threat-model entry
+   (denial of service against the audit log) and a test. Alternatives (coalesce, throttle, leave as
+   residual) are priced in §8.7 #15. **Younes has not decided.**
+2. **The engineering cut-off**: no new engineering after it.
+3. **Phase R**: the submission rewrite against current figures (the draft in `submission/` is
+   stale), figures from source, appendices B–F, a full read-through (`notes/remaining_work_20261003.md`
+   §2 and `notes/rewrite_consolidation_backlog.md`).
+
+**The day's work, by report section:** §7.36 push loop · §7.37 real Home Assistant (A) · §7.38
+commands into sandboxes · §7.39 bytecode cache · §7.40 local TCP · §7.41 asyncio datagrams · §7.42
+OAuth refresh · §7.43 review and retest. Each has a `notes/w1_*` or `notes/w2*_prediction.md` with its
+predictions and outcomes.
+
+**State of the Pi:** (A) is **stopped** (`python3 -m confine.house_a up --fresh` from
+`~/r2exp/v2/framework` brings it back; `selftest_real_platform` needs it). Credentials, never
+printed or committed: `~/.config/capstone/{house_a.token, pirateweather.key, trakt.json}`.
+
+**Rules learned today:** after any shim or mediator change, re-run a real aiohttp subject
+(`nordpool`), not only the suites; never use a variable-expanded `rm`; quote every heredoc that carries
+prose or code; set a completion watch on every long Pi run.
+
+---
+
+*Older status follows, newest appended in place below.*
+
 **Last updated 2026-10-03 (evening). The live plan is `notes/remaining_work_20261003.md` — read it
 first.** It holds the order of the remaining work and the explanations behind it: the two Home
 Assistants, the push loop, and why the push loop drags §8.7 #14 in with it. The T-table below is
