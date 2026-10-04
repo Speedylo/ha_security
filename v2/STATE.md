@@ -40,8 +40,14 @@ pushes into; `localtuya` discovers confined exactly as unconfined, 2 recorded de
 (§7.42): `trakt_tv` with Younes's Trakt account refreshes inside the sandbox; the single-use token lives
 only in `/sandbox/data`, so persistence of that directory decides whether OAuth integrations stay logged
 in. Found on the way and fixed: a W2 (b) regression that broke the platform's shared HTTP session
-(Zeroconf bind), and `api.tmdb.org` as a second measured missed host. **W2 is complete. Next: the
-engineering cut-off, then phase R (the report).**
+(Zeroconf bind), and `api.tmdb.org` as a second measured missed host. **W2 is complete.**
+
+**2026-10-04 (night): the day's work reviewed and retested (§7.43).** Found by reading: a month-old UDP
+exfiltration path (a declared local port reached any internet host; the scan target came from the
+request) and asyncio broadcast scans delivering nothing — both fixed with failing-first tests. Found by
+retesting: the stand-in push harness silently broken since the W1 review — fixed. Everything re-run on
+the Pi: all results reproduce, 25/25 suites. **Next: Younes's call on the refusal flood (§8.7 #15), then
+the engineering cut-off and phase R.**
 
 **In one screen — where we are, 2026-10-03:**
 

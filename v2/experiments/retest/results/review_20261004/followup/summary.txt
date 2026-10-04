@@ -1,0 +1,7 @@
+e2e_standin_thermal exit=0
+local_midea exit=0
+local_localtuya exit=0
+egress_nordpool exit=0
+egress_pirateweather exit=1
+suites exit=0
+ALLDONE

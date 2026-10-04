@@ -1,0 +1,1077 @@
+{
+  "integration": "pirateweather",
+  "egress": [
+    "api.pirateweather.net:443"
+  ],
+  "partial": null,
+  "flow_input": {
+    "pw_platform": [
+      "Sensor",
+      "Weather"
+    ],
+    "monitored_conditions": [
+      "temperature"
+    ]
+  },
+  "select_first": null,
+  "settle_seconds": 40.0,
+  "unreachable_before_run": {},
+  "reports": {
+    "unconfined": {
+      "domain": "pirateweather",
+      "arm": "unconfined",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "platform"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "ff02::c%3",
+          "port": 1900,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "fe80::9ba0:68cd:7165:a581%3",
+          "port": 0,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "239.255.255.250",
+          "port": 1900,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "10.126.83.113",
+          "port": 0,
+          "phase": "platform"
+        },
+        {
+          "kind": "connect",
+          "host": "/var/run/dbus/system_bus_socket",
+          "port": null,
+          "phase": "platform"
+        },
+        {
+          "kind": "connect",
+          "host": "108.157.98.36",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "108.157.98.78",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "resolve",
+          "host": "fe80::9ba0:68cd:7165:a581%3",
+          "port": 59529,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "172.67.68.90",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "resolve",
+          "host": "192.168.1.128",
+          "port": null,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "10.255.255.255",
+          "port": 1,
+          "phase": "integration"
+        }
+      ],
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "setup_errors": [],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "api_key",
+              "endpoint",
+              "forecast",
+              "hourly_forecast",
+              "language",
+              "latitude",
+              "longitude",
+              "models",
+              "monitored_conditions",
+              "name",
+              "pw_platform",
+              "pw_round",
+              "scan_interval",
+              "units"
+            ]
+          }
+        ],
+        "type": "create_entry",
+        "errors": null,
+        "reason": null
+      },
+      "entries": [
+        {
+          "title": "PirateWeather",
+          "state": "ConfigEntryState.LOADED",
+          "loaded": true
+        }
+      ],
+      "loaded": true,
+      "own_entities": [
+        "conversation.home_assistant",
+        "sensor.pirateweather_temperature",
+        "sensor.sun_next_dawn",
+        "sensor.sun_next_dusk",
+        "sensor.sun_next_midnight",
+        "sensor.sun_next_noon",
+        "sensor.sun_next_rising",
+        "sensor.sun_next_setting",
+        "sun.sun",
+        "weather.pirateweather",
+        "zone.home"
+      ],
+      "published": [
+        {
+          "entity": "conversation.home_assistant",
+          "state": "unknown",
+          "platform": null
+        },
+        {
+          "entity": "sensor.pirateweather_temperature",
+          "state": "13.1666666666667",
+          "platform": "pirateweather"
+        },
+        {
+          "entity": "sensor.sun_next_dawn",
+          "state": "2026-10-05T05:33:54+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_dusk",
+          "state": "2026-10-05T18:02:52+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_midnight",
+          "state": "2026-10-04T23:48:54+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_noon",
+          "state": "2026-10-05T11:49:02+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_rising",
+          "state": "2026-10-05T06:07:52+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_setting",
+          "state": "2026-10-05T17:29:01+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sun.sun",
+          "state": "below_horizon",
+          "platform": null
+        },
+        {
+          "entity": "weather.pirateweather",
+          "state": "partlycloudy",
+          "platform": "pirateweather"
+        },
+        {
+          "entity": "zone.home",
+          "state": "0",
+          "platform": null
+        }
+      ],
+      "probe": null,
+      "timed_out": false
+    },
+    "confined_declared": {
+      "domain": "pirateweather",
+      "egress": {
+        "installed": true,
+        "resolved": [
+          "api.pirateweather.net"
+        ],
+        "connected": [
+          [
+            "api.pirateweather.net",
+            443
+          ]
+        ],
+        "datagrams_delivered": 0,
+        "refused_listens": [
+          5353
+        ]
+      },
+      "setup_errors": [],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "api_key",
+              "endpoint",
+              "forecast",
+              "hourly_forecast",
+              "language",
+              "latitude",
+              "longitude",
+              "models",
+              "monitored_conditions",
+              "name",
+              "pw_platform",
+              "pw_round",
+              "scan_interval",
+              "units"
+            ]
+          }
+        ],
+        "type": "create_entry",
+        "errors": null,
+        "reason": null
+      },
+      "entries": [
+        {
+          "title": "PirateWeather",
+          "state": "ConfigEntryState.LOADED",
+          "loaded": true
+        }
+      ],
+      "loaded": true,
+      "local_entities": [
+        "sensor.pirateweather_temperature",
+        "weather.pirateweather"
+      ],
+      "mirrored": [],
+      "published": [
+        {
+          "entity": "weather.pirateweather",
+          "state": "partlycloudy",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.pirateweather_temperature",
+          "state": "13.1555555555556",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "refused": [],
+      "push": {
+        "subscribed": [],
+        "received": [],
+        "unexpected": [],
+        "commands": []
+      },
+      "probe": null,
+      "arm": "confined_declared",
+      "timed_out": false,
+      "data_inspection": null,
+      "install": {
+        "ok": true,
+        "installed": [
+          "acme",
+          "aiodhcpwatcher",
+          "aiodiscover",
+          "aiodns",
+          "aiohappyeyeballs",
+          "aiohasupervisor",
+          "aiohttp",
+          "aiooui",
+          "aiosignal",
+          "aiousbwatcher",
+          "annotated_types",
+          "anyio",
+          "async_interrupt",
+          "async_timeout",
+          "async_upnp_client",
+          "asyncinotify",
+          "atomicwrites_homeassistant",
+          "attrs",
+          "av",
+          "awesomeversion",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "boto3",
+          "botocore",
+          "btsocket",
+          "cached_ipaddress",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "ciso8601",
+          "cronsim",
+          "cryptography",
+          "dacite",
+          "dbus_fast",
+          "defusedxml",
+          "distro",
+          "envs",
+          "file_read_backwards",
+          "fnv_hash_fast",
+          "fnvhash",
+          "frozenlist",
+          "go2rtc_client",
+          "greenlet",
+          "grpcio",
+          "h11",
+          "ha_ffmpeg",
+          "habluetooth",
+          "hass_nabucasa",
+          "hassil",
+          "home_assistant_frontend",
+          "home_assistant_intents",
+          "httpcore",
+          "httpx",
+          "icmplib",
+          "idna",
+          "ifaddr",
+          "jiter",
+          "jmespath",
+          "josepy",
+          "mashumaro",
+          "matter_ble_proxy",
+          "matter_python_client",
+          "multidict",
+          "mutagen",
+          "numpy",
+          "openai",
+          "orjson",
+          "pillow",
+          "propcache",
+          "psutil",
+          "psutil_home_assistant",
+          "pycares",
+          "pycognito",
+          "pycparser",
+          "pydantic",
+          "pydantic_core",
+          "pyjwt",
+          "pymicro_vad",
+          "pynacl",
+          "pyopenssl",
+          "pyrfc3339",
+          "pyric",
+          "pyroute2",
+          "pyspeex_noise",
+          "python_dateutil",
+          "python_didl_lite",
+          "pyturbojpeg",
+          "pyyaml",
+          "regex",
+          "requests",
+          "s3transfer",
+          "scapy",
+          "securetar",
+          "sentence_stream",
+          "serialx",
+          "six",
+          "sniffio",
+          "snitun",
+          "sqlalchemy",
+          "tqdm",
+          "typing_extensions",
+          "typing_inspection",
+          "uart_devices",
+          "unicode_rbnf",
+          "urllib3",
+          "usb_devices",
+          "voluptuous",
+          "webrtc_models",
+          "yarl",
+          "zeroconf"
+        ],
+        "resolved": [
+          "acme-5.4.0",
+          "aiodhcpwatcher-1.2.7",
+          "aiodiscover-3.3.2",
+          "aiodns-4.0.4",
+          "aiohappyeyeballs-2.7.1",
+          "aiohasupervisor-0.6.0",
+          "aiohttp-3.14.3",
+          "aiooui-0.1.11",
+          "aiosignal-1.4.0",
+          "aiousbwatcher-1.1.2",
+          "annotated_types-0.8.0",
+          "anyio-4.15.1",
+          "async_interrupt-1.2.2",
+          "async_timeout-5.0.1",
+          "async_upnp_client-0.47.1",
+          "asyncinotify-4.4.4",
+          "atomicwrites_homeassistant-1.4.1",
+          "attrs-26.1.0",
+          "av-17.0.1",
+          "awesomeversion-25.8.0",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "boto3-1.43.108",
+          "botocore-1.43.108",
+          "btsocket-0.3.0",
+          "cached_ipaddress-1.1.2",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.2",
+          "ciso8601-2.3.3",
+          "cronsim-2.7",
+          "cryptography-50.0.2",
+          "dacite-1.9.2",
+          "dbus_fast-5.0.22",
+          "defusedxml-0.7.1",
+          "distro-1.9.0",
+          "envs-1.4",
+          "file_read_backwards-2.0.0",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "frozenlist-1.8.0",
+          "go2rtc_client-0.4.0",
+          "greenlet-3.5.6",
+          "grpcio-1.84.0",
+          "h11-0.16.0",
+          "ha_ffmpeg-3.2.2",
+          "habluetooth-6.26.5",
+          "hass_nabucasa-2.2.0",
+          "hassil-3.11.0",
+          "home_assistant_frontend-20260729.7",
+          "home_assistant_intents-2026.7.30",
+          "httpcore-1.0.9",
+          "httpx-0.28.1",
+          "icmplib-3.0.4",
+          "idna-3.20",
+          "ifaddr-0.2.0",
+          "jiter-0.17.0",
+          "jmespath-1.1.0",
+          "josepy-2.2.0",
+          "mashumaro-3.23",
+          "matter_ble_proxy-0.7.1",
+          "matter_python_client-1.3.0",
+          "multidict-6.9.1",
+          "mutagen-1.48.1",
+          "numpy-2.3.2",
+          "openai-2.45.0",
+          "orjson-3.12.0",
+          "pillow-12.3.0",
+          "propcache-0.5.4",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pycares-5.0.1",
+          "pycognito-2024.5.1",
+          "pycparser-3.0",
+          "pydantic-2.13.5",
+          "pydantic_core-2.46.5",
+          "pyjwt-2.15.1",
+          "pymicro_vad-1.0.1",
+          "pynacl-1.6.2",
+          "pyopenssl-26.4.0",
+          "pyrfc3339-2.1.0",
+          "pyric-0.1.6.3",
+          "pyroute2-0.9.6",
+          "pyspeex_noise-1.0.2",
+          "python_dateutil-2.9.0.post0",
+          "python_didl_lite-1.5.1",
+          "pyturbojpeg-1.8.3",
+          "pyyaml-6.0.3",
+          "regex-2026.9.29",
+          "requests-2.34.2",
+          "s3transfer-0.19.2",
+          "scapy-2.8.0",
+          "securetar-2026.4.1",
+          "sentence_stream-1.3.0",
+          "serialx-1.8.2",
+          "six-1.17.0",
+          "sniffio-1.3.1",
+          "snitun-0.45.1",
+          "sqlalchemy-2.0.51",
+          "tqdm-4.70.1",
+          "typing_extensions-4.16.0",
+          "typing_inspection-0.4.4",
+          "uart_devices-0.1.1",
+          "unicode_rbnf-2.4.0",
+          "urllib3-2.8.0",
+          "usb_devices-0.5.1",
+          "voluptuous-0.16.0",
+          "webrtc_models-0.3.0",
+          "yarl-1.25.1",
+          "zeroconf-0.150.0"
+        ]
+      },
+      "audit": [
+        {
+          "identity": "pirateweather",
+          "op": "discover.listen",
+          "allowed": false,
+          "clause": "/permissions/network/discover/listen"
+        },
+        {
+          "identity": "pirateweather",
+          "op": "network.egress",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "identity": "pirateweather",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "pirateweather",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "logged": [
+        {
+          "op": "discover.listen",
+          "target": "5353",
+          "allowed": false,
+          "clause": "/permissions/network/discover/listen"
+        },
+        {
+          "op": "network.egress",
+          "target": "api.pirateweather.net:443",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "op": "entity.publish",
+          "target": "weather.pirateweather",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.pirateweather_temperature",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "audit_breaks": [],
+      "reconcile": [],
+      "durable_raw": [
+        {
+          "hash": "5a523128f539546dc7ea488d233f4385084256d886405fd7d3a8712ff9901c71",
+          "identity": {
+            "composite": "75df6ec3663e5b5d626184ecbdc01994fc8fc642ba6bbd7c9b2fb21f8d4b20fe",
+            "domain": "pirateweather",
+            "manifest": "605f89b7afe9878986ac22f3169fa42199509279f394e140c8a965235bdef6f9",
+            "requirements": "1061b645f6e505401934ff4aa283d34abe8f4cc4f9bda053eddedd4372f7d0f9",
+            "source": "099603672182f36206c6d48b541de385b3d30ca1fcdc5b69d81f392ee9895c63"
+          },
+          "integration": "pirateweather",
+          "kind": "run",
+          "mac": "c95ca99e093331375952cb0c89a6378891fb71127d108946b40173aa269d8da3",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "prev_mac": "0000000000000000000000000000000000000000000000000000000000000000",
+          "provenance": "author-declared",
+          "run": "966c2a4d3f201cd0",
+          "seq": 0,
+          "time": 1791148895.7721167
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/discover/listen",
+          "hash": "bc4de01ef6c66d65d951f4a57e9e64b9c47b40a062d3ce465a07e441d8790312",
+          "integration": "pirateweather",
+          "kind": "decision",
+          "mac": "2bb79a5f155c604ea1708448f6195cf104838d05c8b07bb0fd5079f1b3995bf2",
+          "op": "discover.listen",
+          "prev_hash": "5a523128f539546dc7ea488d233f4385084256d886405fd7d3a8712ff9901c71",
+          "prev_mac": "c95ca99e093331375952cb0c89a6378891fb71127d108946b40173aa269d8da3",
+          "reason": "nothing is declared at /permissions/network/discover/listen",
+          "requested": {
+            "port": 5353
+          },
+          "run": "966c2a4d3f201cd0",
+          "seq": 1,
+          "target": "5353",
+          "time": 1791148898.2283552
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "/permissions/network/egress/0",
+          "hash": "e10ba4ba0a9a88940a0bb6b2d7a143b0ce494841a2f4186534e44926dac16f75",
+          "integration": "pirateweather",
+          "kind": "decision",
+          "mac": "2e2efc546f585d3ab08cccfcfa7b366183d1d30a6c280120cd44fab58fabff70",
+          "op": "network.egress",
+          "prev_hash": "bc4de01ef6c66d65d951f4a57e9e64b9c47b40a062d3ce465a07e441d8790312",
+          "prev_mac": "2bb79a5f155c604ea1708448f6195cf104838d05c8b07bb0fd5079f1b3995bf2",
+          "reason": "declared",
+          "requested": {
+            "host": "api.pirateweather.net",
+            "port": 443
+          },
+          "run": "966c2a4d3f201cd0",
+          "seq": 2,
+          "target": "api.pirateweather.net:443",
+          "time": 1791148898.2307637
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "778ba53f7e749fa023b57561e8ddd094bba4f6367ea32c96fc781b9bae0d9131",
+          "integration": "pirateweather",
+          "kind": "decision",
+          "mac": "173f3a44e08adffe20fd5e73fdab4c1954f7713a8e6b6139c98757fb0463fce5",
+          "op": "entity.publish",
+          "prev_hash": "e10ba4ba0a9a88940a0bb6b2d7a143b0ce494841a2f4186534e44926dac16f75",
+          "prev_mac": "2e2efc546f585d3ab08cccfcfa7b366183d1d30a6c280120cd44fab58fabff70",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "weather.pirateweather"
+          },
+          "run": "966c2a4d3f201cd0",
+          "seq": 3,
+          "target": "weather.pirateweather",
+          "time": 1791148898.8404915
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "1cef4f216c63a9fcfbfd5696dcdd44a65ea63f4d38fd257a039a09d57c51573b",
+          "integration": "pirateweather",
+          "kind": "decision",
+          "mac": "14fcf230895b9e159610b7bbe599adab38d405925eb489aef2cc45a49dadade4",
+          "op": "entity.publish",
+          "prev_hash": "778ba53f7e749fa023b57561e8ddd094bba4f6367ea32c96fc781b9bae0d9131",
+          "prev_mac": "173f3a44e08adffe20fd5e73fdab4c1954f7713a8e6b6139c98757fb0463fce5",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.pirateweather_temperature"
+          },
+          "run": "966c2a4d3f201cd0",
+          "seq": 4,
+          "target": "sensor.pirateweather_temperature",
+          "time": 1791148898.842883
+        }
+      ],
+      "oom_kill": 0,
+      "credential_in_mediator_records": false
+    },
+    "confined_undeclared": {
+      "domain": "pirateweather",
+      "egress": {
+        "installed": true,
+        "resolved": [
+          "api.pirateweather.net"
+        ],
+        "connected": [],
+        "datagrams_delivered": 0,
+        "refused_listens": [
+          5353
+        ]
+      },
+      "setup_errors": [],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "api_key",
+              "endpoint",
+              "forecast",
+              "hourly_forecast",
+              "language",
+              "latitude",
+              "longitude",
+              "models",
+              "monitored_conditions",
+              "name",
+              "pw_platform",
+              "pw_round",
+              "scan_interval",
+              "units"
+            ]
+          }
+        ],
+        "error": "UnboundLocalError: cannot access local variable 'api_status' where it is not associated with a value"
+      },
+      "entries": [],
+      "loaded": false,
+      "local_entities": [],
+      "mirrored": [],
+      "published": [],
+      "refused": [],
+      "push": {
+        "subscribed": [],
+        "received": [],
+        "unexpected": [],
+        "commands": []
+      },
+      "probe": null,
+      "arm": "confined_undeclared",
+      "timed_out": false,
+      "data_inspection": null,
+      "install": {
+        "ok": true,
+        "installed": [
+          "acme",
+          "aiodhcpwatcher",
+          "aiodiscover",
+          "aiodns",
+          "aiohappyeyeballs",
+          "aiohasupervisor",
+          "aiohttp",
+          "aiooui",
+          "aiosignal",
+          "aiousbwatcher",
+          "annotated_types",
+          "anyio",
+          "async_interrupt",
+          "async_timeout",
+          "async_upnp_client",
+          "asyncinotify",
+          "atomicwrites_homeassistant",
+          "attrs",
+          "av",
+          "awesomeversion",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "boto3",
+          "botocore",
+          "btsocket",
+          "cached_ipaddress",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "ciso8601",
+          "cronsim",
+          "cryptography",
+          "dacite",
+          "dbus_fast",
+          "defusedxml",
+          "distro",
+          "envs",
+          "file_read_backwards",
+          "fnv_hash_fast",
+          "fnvhash",
+          "frozenlist",
+          "go2rtc_client",
+          "greenlet",
+          "grpcio",
+          "h11",
+          "ha_ffmpeg",
+          "habluetooth",
+          "hass_nabucasa",
+          "hassil",
+          "home_assistant_frontend",
+          "home_assistant_intents",
+          "httpcore",
+          "httpx",
+          "icmplib",
+          "idna",
+          "ifaddr",
+          "jiter",
+          "jmespath",
+          "josepy",
+          "mashumaro",
+          "matter_ble_proxy",
+          "matter_python_client",
+          "multidict",
+          "mutagen",
+          "numpy",
+          "openai",
+          "orjson",
+          "pillow",
+          "propcache",
+          "psutil",
+          "psutil_home_assistant",
+          "pycares",
+          "pycognito",
+          "pycparser",
+          "pydantic",
+          "pydantic_core",
+          "pyjwt",
+          "pymicro_vad",
+          "pynacl",
+          "pyopenssl",
+          "pyrfc3339",
+          "pyric",
+          "pyroute2",
+          "pyspeex_noise",
+          "python_dateutil",
+          "python_didl_lite",
+          "pyturbojpeg",
+          "pyyaml",
+          "regex",
+          "requests",
+          "s3transfer",
+          "scapy",
+          "securetar",
+          "sentence_stream",
+          "serialx",
+          "six",
+          "sniffio",
+          "snitun",
+          "sqlalchemy",
+          "tqdm",
+          "typing_extensions",
+          "typing_inspection",
+          "uart_devices",
+          "unicode_rbnf",
+          "urllib3",
+          "usb_devices",
+          "voluptuous",
+          "webrtc_models",
+          "yarl",
+          "zeroconf"
+        ],
+        "resolved": [
+          "acme-5.4.0",
+          "aiodhcpwatcher-1.2.7",
+          "aiodiscover-3.3.2",
+          "aiodns-4.0.4",
+          "aiohappyeyeballs-2.7.1",
+          "aiohasupervisor-0.6.0",
+          "aiohttp-3.14.3",
+          "aiooui-0.1.11",
+          "aiosignal-1.4.0",
+          "aiousbwatcher-1.1.2",
+          "annotated_types-0.8.0",
+          "anyio-4.15.1",
+          "async_interrupt-1.2.2",
+          "async_timeout-5.0.1",
+          "async_upnp_client-0.47.1",
+          "asyncinotify-4.4.4",
+          "atomicwrites_homeassistant-1.4.1",
+          "attrs-26.1.0",
+          "av-17.0.1",
+          "awesomeversion-25.8.0",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "boto3-1.43.108",
+          "botocore-1.43.108",
+          "btsocket-0.3.0",
+          "cached_ipaddress-1.1.2",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.2",
+          "ciso8601-2.3.3",
+          "cronsim-2.7",
+          "cryptography-50.0.2",
+          "dacite-1.9.2",
+          "dbus_fast-5.0.22",
+          "defusedxml-0.7.1",
+          "distro-1.9.0",
+          "envs-1.4",
+          "file_read_backwards-2.0.0",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "frozenlist-1.8.0",
+          "go2rtc_client-0.4.0",
+          "greenlet-3.5.6",
+          "grpcio-1.84.0",
+          "h11-0.16.0",
+          "ha_ffmpeg-3.2.2",
+          "habluetooth-6.26.5",
+          "hass_nabucasa-2.2.0",
+          "hassil-3.11.0",
+          "home_assistant_frontend-20260729.7",
+          "home_assistant_intents-2026.7.30",
+          "httpcore-1.0.9",
+          "httpx-0.28.1",
+          "icmplib-3.0.4",
+          "idna-3.20",
+          "ifaddr-0.2.0",
+          "jiter-0.17.0",
+          "jmespath-1.1.0",
+          "josepy-2.2.0",
+          "mashumaro-3.23",
+          "matter_ble_proxy-0.7.1",
+          "matter_python_client-1.3.0",
+          "multidict-6.9.1",
+          "mutagen-1.48.1",
+          "numpy-2.3.2",
+          "openai-2.45.0",
+          "orjson-3.12.0",
+          "pillow-12.3.0",
+          "propcache-0.5.4",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pycares-5.0.1",
+          "pycognito-2024.5.1",
+          "pycparser-3.0",
+          "pydantic-2.13.5",
+          "pydantic_core-2.46.5",
+          "pyjwt-2.15.1",
+          "pymicro_vad-1.0.1",
+          "pynacl-1.6.2",
+          "pyopenssl-26.4.0",
+          "pyrfc3339-2.1.0",
+          "pyric-0.1.6.3",
+          "pyroute2-0.9.6",
+          "pyspeex_noise-1.0.2",
+          "python_dateutil-2.9.0.post0",
+          "python_didl_lite-1.5.1",
+          "pyturbojpeg-1.8.3",
+          "pyyaml-6.0.3",
+          "regex-2026.9.29",
+          "requests-2.34.2",
+          "s3transfer-0.19.2",
+          "scapy-2.8.0",
+          "securetar-2026.4.1",
+          "sentence_stream-1.3.0",
+          "serialx-1.8.2",
+          "six-1.17.0",
+          "sniffio-1.3.1",
+          "snitun-0.45.1",
+          "sqlalchemy-2.0.51",
+          "tqdm-4.70.1",
+          "typing_extensions-4.16.0",
+          "typing_inspection-0.4.4",
+          "uart_devices-0.1.1",
+          "unicode_rbnf-2.4.0",
+          "urllib3-2.8.0",
+          "usb_devices-0.5.1",
+          "voluptuous-0.16.0",
+          "webrtc_models-0.3.0",
+          "yarl-1.25.1",
+          "zeroconf-0.150.0"
+        ]
+      },
+      "audit": [
+        {
+          "identity": "pirateweather",
+          "op": "discover.listen",
+          "allowed": false,
+          "clause": "/permissions/network/discover/listen"
+        },
+        {
+          "identity": "pirateweather",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        }
+      ],
+      "logged": [
+        {
+          "op": "discover.listen",
+          "target": "5353",
+          "allowed": false,
+          "clause": "/permissions/network/discover/listen"
+        },
+        {
+          "op": "network.egress",
+          "target": "api.pirateweather.net:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        }
+      ],
+      "audit_breaks": [],
+      "reconcile": [],
+      "durable_raw": [
+        {
+          "hash": "c15d78c9ddd9955c199554d431e3406132b148591c92564c1bdf149b3a3da7d8",
+          "identity": {
+            "composite": "75df6ec3663e5b5d626184ecbdc01994fc8fc642ba6bbd7c9b2fb21f8d4b20fe",
+            "domain": "pirateweather",
+            "manifest": "605f89b7afe9878986ac22f3169fa42199509279f394e140c8a965235bdef6f9",
+            "requirements": "1061b645f6e505401934ff4aa283d34abe8f4cc4f9bda053eddedd4372f7d0f9",
+            "source": "099603672182f36206c6d48b541de385b3d30ca1fcdc5b69d81f392ee9895c63"
+          },
+          "integration": "pirateweather",
+          "kind": "run",
+          "mac": "67ab00d0e42e7f3dd431862b64ee00d8cf68c1f9737b11015f92361b76bf9d3b",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "prev_mac": "0000000000000000000000000000000000000000000000000000000000000000",
+          "provenance": "author-declared",
+          "run": "62e6c5c4fb5cccb0",
+          "seq": 0,
+          "time": 1791148940.3272448
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/discover/listen",
+          "hash": "93ea4810ef21e1b366461071de859b7a2b0a2d8f7fa7ff3dd9af0a91931b0e17",
+          "integration": "pirateweather",
+          "kind": "decision",
+          "mac": "cf7eb730c22e30ce4e7b83ccf8732ff182506d63ce65a1ede64584d9340539a8",
+          "op": "discover.listen",
+          "prev_hash": "c15d78c9ddd9955c199554d431e3406132b148591c92564c1bdf149b3a3da7d8",
+          "prev_mac": "67ab00d0e42e7f3dd431862b64ee00d8cf68c1f9737b11015f92361b76bf9d3b",
+          "reason": "nothing is declared at /permissions/network/discover/listen",
+          "requested": {
+            "port": 5353
+          },
+          "run": "62e6c5c4fb5cccb0",
+          "seq": 1,
+          "target": "5353",
+          "time": 1791148942.7825623
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "1e77e0e885f183980ff1885a29692b48c4991eb557411b193d3bb3a1436efacf",
+          "integration": "pirateweather",
+          "kind": "decision",
+          "mac": "154d037c30836edb192da1dd19fd6b81ad7b613e1bbe6af08b8047281dc1997c",
+          "op": "network.egress",
+          "prev_hash": "93ea4810ef21e1b366461071de859b7a2b0a2d8f7fa7ff3dd9af0a91931b0e17",
+          "prev_mac": "cf7eb730c22e30ce4e7b83ccf8732ff182506d63ce65a1ede64584d9340539a8",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "api.pirateweather.net",
+            "port": 443
+          },
+          "run": "62e6c5c4fb5cccb0",
+          "seq": 2,
+          "target": "api.pirateweather.net:443",
+          "time": 1791148942.785465
+        }
+      ],
+      "oom_kill": 0,
+      "credential_in_mediator_records": false
+    }
+  },
+  "checks": {
+    "passed": 16,
+    "total": 17
+  }
+}

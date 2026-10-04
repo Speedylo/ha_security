@@ -192,7 +192,12 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
         pushed: list[str] = []
 
         def observe(entity_id: str, state: str, _attributes: dict) -> None:
-            if platform.owners.get(entity_id) == domain:
+            # The integration's own publishes: anything that is not the seeded world. Not
+            # `owners.get(entity_id) == domain`, which is how this read until the review of W2:
+            # since the W1 review the owner is recorded only after the publish succeeds, so inside
+            # the publish, where this listener runs, it was never yet set, and the push trigger
+            # silently never fired — 15 publishes and no push, where §7.36 had 30 and one.
+            if entity_id not in WORLD and not entity_id.startswith("<"):
                 history.append((entity_id, state))
                 if push and not pushed:
                     pushed.append(entity_id)

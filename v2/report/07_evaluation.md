@@ -4786,6 +4786,9 @@ All eight predictions held. D4, that the integration sees the device's real addr
 decision layer only, because `localtuya` reads the address from the payload rather than from the
 sender.
 
+> *2026-10-04, §7.43: not yet for broadcast scans. An asyncio endpoint's scan replies were kept where
+> its event loop never looked, which the review of the day's work found and fixed.*
+
 **Established.** asyncio datagram endpoints are served confined, and a real integration using them
 discovers devices exactly as it does unconfined, on one recorded decision per listen. With nothing
 declared it is refused at the listen and discovers nothing, with no flood. §7.25.5's unserved quarter
@@ -4878,6 +4881,81 @@ out by the provider. With nothing declared, the refresh is refused and the token
 **Not established.** One provider and one integration. The re-authentication flow, which a user
 runs after a refresh fails, needs a browser and was not exercised. And the persistence the result
 depends on is a property of the deployment, which this artifact assumes rather than enforces.
+
+
+## 7.43 Reviewing and retesting the day's work
+
+**2026-10-04, after §7.36–§7.42.** Before moving on, Younes asked for the day's work to be reviewed
+and retested. Every framework change since W1 was verified clean, about 1,400 lines in 16 files,
+was re-read, and every end-to-end subject touched that day was run again on the Pi, together with the
+full suite.
+
+### 7.43.1 What reading found
+
+**A declared local UDP port reached the internet.** The relay sent a `network.local.udp` datagram
+to any address. Its own comment argued that no check was needed, because the clause exists to reach
+the home network, but nothing enforced that meaning. And a scan's target was read from the sandbox's
+request: the mistake §7.26.2 fixed for `allow_private`, made again the same day, 2026-09-03. A
+confined integration declaring a local port could therefore send datagrams to any internet host on
+that port, an exfiltration channel around the egress allowlist, for a month. This is the risk the
+design note's residual 6 predicted for relayed UDP, realised as the check's absence rather than a bug
+in it. The relay now accepts only home-network destinations, by the rule local TCP uses, and scans
+only its own configured broadcast address. Two new tests fail without either check.
+
+**An asyncio broadcast scan never delivered its replies.** The shim kept a scan's replies in a list
+for the next `recvfrom`, and an asyncio transport never calls `recvfrom` unless its descriptor becomes
+readable. `govee` scans this way from its bound socket, so §7.41's asyncio support did not yet serve
+its discovery. Scan replies now go into the socket's pair, and a test of the shape fails without
+that.
+
+**One docstring overclaimed.** `is_lan` refuses loopback, and its documentation said that protected
+the mediator's whole host. It protects what the host serves on loopback only. A service the host
+exposes on all interfaces is reachable on its LAN address on a declared port, as any other device's
+is, which is the ceiling the design note already states, and which W2 (a)'s own fake devices relied
+on. **One minor leak is noted and not fixed.** A pair-backed socket garbage-collected without `close`
+leaves its writer in the routing table, where deliveries fill it until it is full.
+
+### 7.43.2 What retesting found
+
+On the code before these fixes, every subject reproduced its result except one:
+
+| Subject | Result |
+|---|---|
+| `selftest_real_platform`, with a restart of (A) | 40/40 |
+| `thermal_comfort` against (A), with a push | 15 registry rows; 4 pushes sent and received; dew point 17.81 °C |
+| `adaptive_lighting` against (A), a user's command | succeeds in 14.6 ms; the switch reads `on` |
+| `midea_ac_lan`, three arms | loads confined; the device sees only the host; nothing undeclared |
+| `localtuya`, three arms | confined discovery equals unconfined |
+| `nordpool` | 16/16 |
+| `trakt_tv`, four runs | refreshed inside the sandbox; the spent token refused with 400 |
+| `powercalc`, bytecode | 0/84 and 0/80 from cache, 84/84 and 80/80 compiled; 2.76 → 1.97 s |
+| all suites | 25/25 |
+| `thermal_comfort` on the stand-in, with a push | **15 publishes and no push** |
+
+The last one exposed a harness regression. Since the W1 review, ownership is recorded only after a
+publish succeeds (§7.38.4), and the stand-in harness recognised the integration's publishes by their
+owner, from inside the publish, where it was not yet set. So its push trigger never fired, and
+§7.36's stand-in measurement had silently stopped measuring anything. The suites passed throughout,
+because `selftest_push` exercises the mechanism and not that harness. The harness now recognises the
+integration's publishes without depending on that order.
+
+### 7.43.3 After the fixes
+
+With the relay's checks, the scan delivery and the harness fix in place, everything the fixes touch
+was run again on the Pi. The stand-in push measures again: 30 publishes, one push, dew point
+17.81 °C, as in §7.36. `midea_ac_lan` and `localtuya` are unchanged under the relay's new checks,
+since their devices are on the home network. `nordpool` passes 16 of 16. The credentialed
+`pirateweather`, which also uses the platform's shared session, loads and fetches through the
+mediator, using only declared destinations, with its audit chain verified and reconciled. Its one
+failed check compares a live temperature between two runs minutes apart (13.156 against 13.167 °C), the
+movement §7.31 already allows for. All 25 suites pass. `selftest_real_platform` first failed
+because (A), started inside the previous run's systemd unit, had been stopped with that unit. Started
+outside it, it passes 40 of 40.
+
+**What this establishes.** The day's results stand, now on code that closes a month-old exfiltration
+path and serves asyncio broadcast scans. The review found more than the measurements did: two
+security-relevant defects by reading, one silent harness regression by re-running a measurement that
+the suites do not cover, and no regression in any measured figure.
 
 ---
 

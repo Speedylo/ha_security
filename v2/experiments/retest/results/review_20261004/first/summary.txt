@@ -1,0 +1,15 @@
+house_a_down exit=0
+house_a_up exit=0
+real_platform exit=0
+e2e_real_thermal exit=0
+e2e_real_adaptive exit=0
+e2e_standin_thermal exit=0
+local_midea exit=0
+local_localtuya exit=0
+egress_nordpool exit=0
+egress_pirateweather exit=2
+oauth_trakt exit=0
+bytecode_default exit=0
+bytecode_compiled exit=0
+suites exit=0
+ALLDONE

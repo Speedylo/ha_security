@@ -37,7 +37,7 @@ from __future__ import annotations
 import socket
 from dataclasses import dataclass, field
 
-from .egress import EgressRefused
+from .egress import EgressRefused, is_lan
 from .mediator import Decision
 
 # **The real socket methods, captured at import.** The mediator is the trusted side of this
@@ -84,6 +84,12 @@ class UdpRelay:
 
     #: Per-peer connected sockets, so the kernel drops datagrams from anyone but the pinned peer.
     peers: dict[tuple[str, str, int], socket.socket] = field(default_factory=dict)
+    #: Where a scan is sent. The relay's own configuration, never the request's (review of W2,
+    #: 2026-10-04): until then a sandbox could name any host as its "broadcast" address.
+    broadcast_address: str = "255.255.255.255"
+    #: Loopback as a destination, for in-process tests that have no other machine. A constructor
+    #: argument and never a request field; a relay built without it refuses loopback.
+    allow_loopback: bool = False
     #: Streaming listens (W2 (b)), per integration and port.
     listeners: dict[tuple[str, int], socket.socket] = field(default_factory=dict)
     #: Every datagram sent and every scan performed, for the audit record.
@@ -102,13 +108,15 @@ class UdpRelay:
             raise EgressRefused("a datagram must name an address and a port", decision.clause)
         payload = _decode(data, decision.clause)
 
-        # **No `is_public` check here, and that is deliberate rather than an omission.**
-        # `network.egress` is the internet-host clause and T10 restricts it to public
-        # addresses. `network.local.udp` is a different clause with a different meaning: it
-        # exists *specifically* to reach a device on the home network, so a private address is
-        # what this operation is for, not an exception to it. Gating is done once, upstream,
-        # by whether the `local` clause matches at all (`manifest.py`'s `decide`) — there is no
-        # second, request-controlled gate to bypass here the way the egress path had.
+        # `network.local.udp` exists to reach a device on the home network, so a home-network
+        # address is what this operation is for — and, since the review of W2 (2026-10-04), the
+        # only kind it reaches. The comment here used to argue that no address check was needed
+        # because the clause's meaning implied one; nothing enforced the meaning, and a declared
+        # local port reached any internet host, an exfiltration channel around the egress
+        # allowlist, open since 2026-09-03. Same rule as `network.tcp.local` (`egress.is_lan`).
+        if not (is_lan(address) or (self.allow_loopback and _is_loopback(address))):
+            raise EgressRefused(f"{address} is not an address on the home network",
+                                decision.clause)
         new = (identity, address, port) not in self.peers \
             or self.peers[(identity, address, port)].fileno() == -1
         sock = self._peer(identity, address, port)
@@ -180,7 +188,9 @@ class UdpRelay:
             raise EgressRefused("a scan must name a port", decision.clause)
         payload = _decode(request.get("data", ""), decision.clause)
         wait = min(float(request.get("timeout", 1.0)), MAX_WAIT)
-        target = str(request.get("broadcast", "255.255.255.255"))
+        # The relay's own, never the request's (review of W2): a sandbox-chosen "broadcast"
+        # address made a scan a datagram to any host the sandbox liked.
+        target = self.broadcast_address
 
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
@@ -193,7 +203,8 @@ class UdpRelay:
             sock.close()
 
         self.activity.append({"identity": identity, "op": "discover.scan", "port": port,
-                              "responses": len(answers), "clause": decision.clause})
+                              "target": target, "responses": len(answers),
+                              "clause": decision.clause})
         # The addresses that answered are the only ones this integration may later be pinned to
         # (`decision_network_capability.md` §4): a machine that does not speak the protocol
         # cannot be reached merely by naming it.
@@ -260,6 +271,14 @@ class UdpRelay:
             sock.close()
         self.peers.clear()
         self.listeners.clear()
+
+
+def _is_loopback(address: str) -> bool:
+    import ipaddress
+    try:
+        return ipaddress.ip_address(address).is_loopback
+    except ValueError:
+        return False
 
 
 def _drain(sock: socket.socket, wait: float, expect_address: bool) -> list[dict]:

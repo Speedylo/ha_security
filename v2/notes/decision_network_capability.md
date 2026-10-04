@@ -281,6 +281,15 @@ Stated here so they are chosen rather than discovered.
    asymmetry between the two transports and it should be stated as one: TCP's guarantee survives a
    bug in the mediator's relay loop, UDP's does not.
 
+   > **Realised, 2026-10-04 (§7.43).** Not as a bug in the destination check but as its absence. From
+   > 2026-09-03 to 2026-10-04 the relay sent a `network.local.udp` datagram to **any** address,
+   > public ones included, on the grounds that the clause's meaning implied the home network; and a
+   > scan's target was read from the sandbox's own request, the `allow_private` mistake of §7.26.2
+   > made again the same day it was fixed. A declared local port was therefore an exfiltration
+   > channel around the egress allowlist. Found by reviewing W2, not by any test or run. The relay
+   > now accepts only home-network destinations (`egress.is_lan`) and scans only its own configured
+   > broadcast address, and `selftest_udp` 2d and 5b fail without either check.
+
 ---
 
 ## 9. What this changes in Chapter 5

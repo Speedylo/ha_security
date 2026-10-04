@@ -333,8 +333,21 @@ class EgressShim:
             host, port = str(address[0]), int(address[1])
             if _is_broadcast(host):
                 # The integration is scanning. The mediator performs it — bounded, rate-limited
-                # and attributed — and the replies are collected for the next recvfrom.
-                notes["scanned"] = shim.datagrams.scan(port, bytes(data))
+                # and attributed — and returns the replies.
+                replies = shim.datagrams.scan(port, bytes(data))
+                if notes.get("writer") is not None:
+                    # A pair-backed socket, which an event loop may be watching: the replies go
+                    # into the pair, so the descriptor becomes readable. Kept in a list instead,
+                    # they never woke an asyncio transport, and a broadcast scan from asyncio
+                    # (`govee`'s) found nothing (review of W2, 2026-10-04, `selftest_udp` 7f).
+                    for payload, sender in replies:
+                        try:
+                            notes["writer"].send(json.dumps([sender[0], sender[1]]).encode()
+                                                 + b"\n" + payload)
+                        except OSError:
+                            pass
+                else:
+                    notes["scanned"] = replies
                 notes["port"] = port
                 return len(data)
             # Routed **before** sending: the peer's reply can be pushed and delivered before the

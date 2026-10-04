@@ -84,8 +84,15 @@ def is_lan(address: str) -> bool:
     """Is this a device on the home network — the only kind of address `network.tcp.local` reaches?
 
     Private (RFC 1918, and IPv6 unique-local), and **none** of the special ranges a private check
-    also matches: not loopback, which would be the mediator's own host and its services; not
-    link-local; not multicast, reserved or unspecified. IPv4-mapped IPv6 is unwrapped first, for
+    also matches: not loopback; not link-local; not multicast, reserved or unspecified.
+
+    **What refusing loopback protects, stated precisely** (review of W2, 2026-10-04): services the
+    mediator's host binds to loopback **only**, such as the house's Home Assistant on 127.0.0.1:8123.
+    The host also has an address on the home network, and anything it serves on *all* interfaces is
+    reachable there on a declared port, exactly as any other device on the network is. That is the
+    ceiling `decision_network_capability.md` §4.1 states, and W2 (a)'s own fake devices sat on the
+    Pi's LAN address. An earlier version of this docstring said loopback was "the mediator's own host
+    and its services", which overclaimed. IPv4-mapped IPv6 is unwrapped first, for
     the reason `is_public` gives. W2 (a), 2026-10-04.
     """
     try:
