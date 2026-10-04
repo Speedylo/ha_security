@@ -1,0 +1,18 @@
+running the unconfined arm ...
+running the confined arm ...
+§7.15 — Corno & Mannella's gc attack, with the credential real
+
+  the published attack (§2.4.1): walk gc.get_objects(), read another component's live secret
+
+  UNCONFINED — victim integration and adversary in one process
+    victim's token reached by the heap walk : YES — 7 live objects held it
+    reached as                              : CloudClient.attr, dict-value, module.attr
+
+  CONFINED — credential in the mediator (S2), adversary in a sandbox (S1)
+    adversary's heap                        : 8942 objects, all its own
+    token reached by the heap walk          : no
+    same token live in the mediator process : yes (7 refs)
+
+PASS — the published in-process attack succeeds unconfined and fails confined, with
+       the credential proven live in the mediator throughout. S1 and S2 defeat the
+       one result (§2.4.1) that forced them, measured here rather than only cited.

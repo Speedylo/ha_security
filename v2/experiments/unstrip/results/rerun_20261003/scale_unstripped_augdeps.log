@@ -1,0 +1,16 @@
+scale — 6 sandboxes, unstripped
+
+  sandbox 1: RSS  175.7 MB   PSS  172.6 MB   machine +  95.2 MB
+  sandbox 2: RSS  175.6 MB   PSS  150.5 MB   machine + 247.8 MB
+  sandbox 3: RSS  175.7 MB   PSS  143.1 MB   machine + 356.2 MB
+  sandbox 4: RSS  175.7 MB   PSS  139.4 MB   machine + 504.3 MB
+  sandbox 5: RSS  175.6 MB   PSS  137.1 MB   machine + 603.1 MB
+  sandbox 6: RSS  175.6 MB   PSS  135.7 MB   machine + 720.8 MB
+
+  sum of RSS              1053.8 MB
+  sum of PSS               813.9 MB
+  PSS per sandbox          135.7 MB   <- the §6.3.2 figure's successor
+
+  4050 MB machine; in 60% of it (2430 MB), about 17 sandboxes fit
+
+wrote /home/younes/r2exp/t2/rest_20261003/pi5_scale_unstripped_augdeps.json

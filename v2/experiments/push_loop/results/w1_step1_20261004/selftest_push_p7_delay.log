@@ -1,0 +1,43 @@
+
+A — a subscription is a recorded decision
+
+  ok    a declared subscription is granted with a clause pointer  — clause=/permissions/entities/subscribe/0
+  ok    every undeclared subscription is refused
+  ok    an integration that declares no subscriptions is refused the same entity  — nothing is declared at /permissions/entities/subscribe
+  ok    all five decisions are on disk, the grant and the four refusals  — 5 records, 1 allowed
+
+P5 — what crosses, and what does not
+
+  ok    the subscribed entity's changes arrive, in order  — [('sensor.living_room_temperature', '21.5'), ('sensor.living_room_temperature', '21.7')]
+  ok    no change to an undeclared entity arrives  — 0 of 3 undeclared changes delivered
+  ok    and the integration with no grant receives nothing at all  — 0 received
+  ok    the attributes travel with the state
+  ok    no delivery wrote a record: the subscription is the record (decision A)
+  ok    mutation: with the table bypassed, the same observer sees every undeclared change  — 3 of 3 seen
+
+wire — a push that arrives while a request waits for its reply
+
+  ok    the reply is still the reply  — state=22.0
+  ok    and the push read on the way is handed to on_push, not lost
+
+P7 — a sandbox that stops reading
+
+  ok    20000 changes with one sandbox never reading: the mediator never blocked  — 0.43 s
+  ok    what it holds for that sandbox is one state per subscribed entity  — 1 queued, 19720 replaced unsent
+  ok    the sandbox that reads got the last value  — last=19999
+  ok    a stalled neighbour does not slow the reading sandbox's pushes materially  — median 20.9 µs alone, 24.9 µs beside a stalled sandbox whose socket is full
+  ok    when the stalled one reads at last it gets a bounded backlog, then the latest  — 278 frames held by the kernel's socket buffer for 20000 changes, then the latest
+
+#14 — a respawn has to be granted its subscriptions again
+
+  ok    the closed channel's subscriptions are gone  — subscribers=['stalled']
+  ok    a respawn receives nothing until it subscribes
+  ok    and receives again once the subscription is granted anew
+
+P8 — what one delivered push costs the mediator
+
+  ok    every push was written, so the figure is a delivery and not a coalesce  — 5000 of 5000 written
+  ok    one delivered push costs the mediator well under a millisecond, no fsync on it  — 11.3 µs per push — against 3.67 ms per recorded decision (§7.20.1)
+  ok    every chain verifies
+
+23/23 checks passed

@@ -1,0 +1,31 @@
+  ok    v1 permits the host it declares  — clause=/permissions/network/egress/0
+  ok    and v1 denies the host it does not  — 'collector.elsewhere.example:8443' matches no clause at /permissions/network/egress
+  ok    a manifest edit moves `manifest` and not `source`  — changed=['manifest']
+  ok    and the composite moves with it, so the run is a different run
+  ok    the already-built policy still decides v1's way after the file changed  — a manifest edit must not re-authorise a running sandbox
+  ok    and still grants what v1 granted, so nothing has silently re-read the file
+  ok    the request v1 permitted is denied under v2  — 'api.vendor.example:443' matches no clause at /permissions/network/egress
+  ok    and the denial carries a clause pointer into the capability v2 declares  — clause=/permissions/network/egress
+  ok    and the host v2 adds is granted, so the bound moved in both directions  — clause=/permissions/network/egress/0
+  ok    describe() renders the v2 surface before the sandbox runs
+  ok    and v1's surface named v1's host, so the rendering tracks the declaration
+  ok    a source edit under an unchanged manifest moves `source` alone  — changed=['source']
+  ok    and describe() warns the code changed
+  ok    while saying the permissions did not — the half that must not overclaim
+  ok    a version bump alone still moves `manifest` — the hash is over bytes, not grants  — so `manifest` moved does not imply the authority moved
+  ok    while the grant it renders is unchanged, which is the half that matters
+  ok    with no approval on record there is no baseline, and none is invented
+  ok    an approval is recoverable from the log as an Identity
+  ok    and it is the approval that is read, not the run records beside it
+  ok    a code change after approval is computable from the log alone  — changed=['source']
+  ok    so the banner fires without anyone being told to set the flag
+  ok    when both moved, the banner does not claim the permissions held still
+  ok    and a permissions-only change says so, rather than saying nothing
+  ok    the durable log carries one run record per declaration  — runs=2
+  ok    whose manifest hashes differ, so the version change is attributable
+  ok    and whose source hashes are identical, so it is not read as a code change
+  ok    each decision names the run that made it, so a decision maps to a declaration  — under v2: [('api.vendor.example:443', False), ('collector.elsewhere.example:8443', True)]
+  ok    and the revoked host appears as a denial, not as an absence
+  ok    both chains verify across the version change  — breaks=[]
+
+29/29 checks passed

@@ -1,0 +1,44 @@
+F2 against a real integration's real API — smhi_brandrisk → opendata-download-metfcst.smhi.se:443, opendata-download-warnings.smhi.se:443
+
+  A  unconfined baseline ...
+  B  confined, every host declared ...
+  C  confined, clause absent ...
+  D  confined, some hosts declared ...
+
+  arm                          entry            published  fetched  egress decisions
+  unconfined                   SETUP_ERROR              9        1  —
+  confined_declared            SETUP_ERROR              0        0  —
+  confined_undeclared          SETUP_ERROR              0        0  —
+  confined_partial             SETUP_ERROR              0        0  —
+  unconfined: flow=create_entry errors=None error=None setup=['homeassistant.config_entries: Error setting up entry Brandrisk hemma for smhi_brandrisk || ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<2 lines>...\n        custom_integration_behavior=frame.ReportBehavior.IGNORE,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/frame.py", line 185, in report_usage\n    raise RuntimeError("Frame helper not set up")\nRuntimeError: Frame helper not set up\n']
+  confined_declared: flow=create_entry errors=None error=None setup=['homeassistant.config_entries: Error setting up entry Brandrisk hemma for smhi_brandrisk || /components/network/__init__.py", line 51, in async_get_loaded_adapters\n    return async_get_loaded_network(hass).adapters\n           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/network/network.py", line 30, in async_get_loaded_network\n    return hass.data[DATA_NETWORK]\n           ~~~~~~~~~^^^^^^^^^^^^^^\nKeyError: \'network\'\n']
+  confined_undeclared: flow=create_entry errors=None error=None setup=['homeassistant.config_entries: Error setting up entry Brandrisk hemma for smhi_brandrisk || /components/network/__init__.py", line 51, in async_get_loaded_adapters\n    return async_get_loaded_network(hass).adapters\n           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/network/network.py", line 30, in async_get_loaded_network\n    return hass.data[DATA_NETWORK]\n           ~~~~~~~~~^^^^^^^^^^^^^^\nKeyError: \'network\'\n']
+  confined_partial: flow=create_entry errors=None error=None setup=['homeassistant.config_entries: Error setting up entry Brandrisk hemma for smhi_brandrisk || /components/network/__init__.py", line 51, in async_get_loaded_adapters\n    return async_get_loaded_network(hass).adapters\n           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/network/network.py", line 30, in async_get_loaded_network\n    return hass.data[DATA_NETWORK]\n           ~~~~~~~~~^^^^^^^^^^^^^^\nKeyError: \'network\'\n']
+
+  A resolved, attributed to the integration: ['192.168.1.128', 'fe80::9ba0:68cd:7165:a581%3']
+
+  FAIL A — smhi_brandrisk loads unconfined on this release, so there is something to confine
+         flow={'steps': [{'step': 'user', 'sent': ['latitude', 'longitude', 'name']}], 'type': 'create_entry', 'errors': None, 'reason': None}
+  ok   A — and publishes a fetched value unconfined
+  ok   B — the confined arm stayed inside its memory limit
+  FAIL **F2** — a real community integration's config entry reached LOADED while confined
+         flow={'steps': [{'step': 'user', 'sent': ['latitude', 'longitude', 'name']}], 'type': 'create_entry', 'errors': None, 'reason': None}
+  FAIL **F2** — it published a fetched value through the mediator, from its own call to its own API
+       published=[]
+  FAIL B — the mediator's own durable record shows it granted a declared destination
+       logged=[]
+  ok   B — and nothing the integration asked for was refused (the declared set is complete)
+  ok   B — that record's hash and MAC chains both verify (S7)
+  ok   **C** — with the clause removed, no fetched value crosses the boundary
+  FAIL **C** — and the mediator refused the destinations it granted in B
+       logged=[]
+  FAIL **D** — with only some hosts declared, the integration still publishes
+       published=[]
+  FAIL **D** — every grant is to a host D declares
+       []
+  FAIL **D** — and the withheld host is refused by itself, by absence, in the same run
+       []
+  FAIL **the difference between B and C is the mediated path and nothing else** — same integration, flow, profile, host and minute
+
+  5/14 checks passed
+  wrote /home/younes/r2exp/t2/pi5_smhi_brandrisk_egress.json

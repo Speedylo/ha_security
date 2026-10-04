@@ -1,0 +1,63 @@
+compatibility — 40 community integrations, one sandbox each
+
+  ARM A — the baseline instance
+
+  [ 1/40] ok  alarm_clocks             platforms_clean          ok                         
+  [ 2/40] ok  als_sundance_marin       platforms_clean          ok                         
+  [ 3/40] ok  apsystems_ecu_reader     platforms_clean          ok                         
+  [ 4/40]     bermuda                  import_failed            undeclared_dependency      aiofiles
+  [ 5/40] ok  browser_mod              platforms_clean          ok                         
+  [ 6/40] ok  circuitsetup_energy_analyzer platforms_clean          ok                         
+  [ 7/40] ok  ecobot                   platforms_clean          ok                         
+  [ 8/40] ok  enki                     platforms_clean          ok                         
+  [ 9/40] ok  enphase_ev               platforms_clean          ok                         
+  [10/40] ok  ha_insights              platforms_clean          ok                         
+  [11/40] ok  honor_x3                 platforms_clean          ok                         
+  [12/40] ok  irrigationprogram        platforms_clean          ok                         
+  [13/40] ok  kamstrup_403             platforms_clean          ok                         
+  [14/40] ok  kroki                    platforms_clean          ok                         
+  [15/40] ok  lifesmart                platforms_clean          ok                         
+  [16/40]     lightwave2               platform_import_failed   other                      light: ImportError: cannot imp
+  [17/40] ok  localtuya_rc             platforms_clean          ok                         
+  [18/40] ok  nature_remo              platforms_clean          ok                         
+  [19/40] ok  network_scanner          platforms_clean          ok                         
+  [20/40]     next_rocket_launch       platform_import_failed   other                      sensor: ImportError: Exception
+  [21/40] ok  nuki_otp                 platforms_clean          ok                         
+  [22/40] ok  ocado                    platforms_clean          ok                         
+  [23/40] ok  oekofen_pellematic_compact platforms_clean          ok                         
+  [24/40] ok  polleninformation        platforms_clean          ok                         
+  [25/40] ok  pronote                  platforms_clean          ok                         
+  [26/40] ok  qolsys_panel             platforms_clean          ok                         
+  [27/40] ok  regensburg_transport     platforms_clean          ok                         
+  [28/40] ok  saj_esolar_air           platforms_clean          ok                         
+  [29/40] ok  sessy                    platforms_clean          ok                         
+  [30/40] ok  skybellgen               platforms_clean          ok                         
+  [31/40] ok  smhi_brandrisk           platforms_clean          ok                         
+  [32/40] ok  solis_modbus             platforms_clean          ok                         
+  [33/40] ok  sonyavr                  platforms_clean          ok                         
+  [34/40] ok  tasmota_mielhvac         platforms_clean          ok                         
+  [35/40] ok  trakt_tv                 platforms_clean          ok                         
+  [36/40] ok  trmnl_webhook_push       platforms_clean          ok                         
+  [37/40] ok  tvoverlay_ui             platforms_clean          ok                         
+  [38/40] ok  vacation_mode            platforms_clean          ok                         
+  [39/40] ok  warema_wms               platforms_clean          ok                         
+  [40/40] ok  zendure_ha               platforms_clean          ok                         
+
+  arm A
+    imports-clean or better    37/40   92%
+    platforms-clean            37/40   92%
+    peak memory               median 281 MB, max 300 MB (RSS, not comparable to cgroup peak)
+
+    other                        2
+    undeclared_dependency        1
+
+  §5.6.5 trigger 2 — 'real integrations fail for reasons a fuller instance would fix'
+    failed on the minimal instance for that reason: 0/40
+
+  C1 — integrations run unmodified (baseline arm)
+    trees hashed before and after     40
+    with changed source               0
+    total diff lines                  0
+    trees that gained bytecode only   0
+
+wrote /home/younes/r2exp/t2/compat_20261003/uniform_baseline.json

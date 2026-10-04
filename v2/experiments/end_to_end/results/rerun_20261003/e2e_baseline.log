@@ -1,0 +1,16 @@
+N2's second number — 5 integrations through their own config flows, UNCONFINED (§7.17.5's baseline)
+
+  [1] ok  scheduler            entry LOADED                       own entities  9  published  9
+  [2] ok  adaptive_lighting    entry LOADED                       own entities 13  published 13
+  [3] ok  thermal_comfort      entry LOADED                       own entities 24  published 24
+  [4] ok  powercalc            entry LOADED                       own entities 13  published 13
+  [5] ok  watchman             entry LOADED                       own entities 19  published 19
+
+  config entry LOADED           5/5
+  published through the mediator 5/5
+
+  Reported as a named set, never as a rate (§3.6 N2). The denominator for any
+  end-to-end measurement of this corpus is 11, not 37: 26 of the 37 need a
+  credential or a device before any config flow can complete.
+
+wrote /home/younes/r2exp/t2/e2e5_20261003/pi5_e2e_baseline.json

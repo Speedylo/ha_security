@@ -9,6 +9,9 @@ venv/
 
 # Spike scratch
 *.log
+# ...but v2's experiment logs are evidence, cited by the report. Until 2026-10-04 this rule
+# silently kept 100 of them out of every commit, including ones a commit message said it added.
+!v2/experiments/**/*.log
 
 # Spike run artefacts
 spike/audit/

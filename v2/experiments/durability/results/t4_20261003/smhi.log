@@ -1,0 +1,41 @@
+F2 against a real integration's real API — smhi_brandrisk → opendata-download-metfcst.smhi.se:443, opendata-download-warnings.smhi.se:443
+
+  A  unconfined baseline ...
+  B  confined, every host declared ...
+  C  confined, clause absent ...
+  D  confined, some hosts declared ...
+
+  arm                          entry            published  fetched  egress decisions
+  unconfined                   LOADED                  21        8  —
+  confined_declared            LOADED                  12        8  TTTT
+  confined_undeclared          SETUP_RETRY              0        0  FFFF
+  confined_partial             LOADED                  12        8  TFFTF
+
+  A resolved, attributed to the integration: ['192.168.1.128', 'fe80::9ba0:68cd:7165:a581%3']
+
+  ok   A — smhi_brandrisk loads unconfined on this release, so there is something to confine
+  ok   A — and publishes a fetched value unconfined
+  ok   B — the confined arm stayed inside its memory limit
+  ok   **F2** — a real community integration's config entry reached LOADED while confined
+  ok   **F2** — it published a fetched value through the mediator, from its own call to its own API
+       sensor.smhi_brandrisk_brandrisk_hemma_fwi_index = 11.2  (A: 11.2)
+       sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle = 84.5  (A: 84.5)
+       sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium = 27.2  (A: 27.2)
+  ok   **F2** — and at least one value equals arm A's, fetched from the same API minutes apart
+  ok   B — the mediator's own durable record shows it granted a declared destination
+  ok   B — every granted destination is one the manifest names, host **and port**
+  ok   B — and nothing the integration asked for was refused (the declared set is complete)
+  ok   B — that record's hash and MAC chains both verify (S7)
+  ok   declared — the durable record matches the in-memory one, decision by decision, and every decision names its run (T4)
+  ok   undeclared — the durable record matches the in-memory one, decision by decision, and every decision names its run (T4)
+  ok   partial — the durable record matches the in-memory one, decision by decision, and every decision names its run (T4)
+  ok   **C** — with the clause removed, no fetched value crosses the boundary
+  ok   **C** — and the mediator refused the destinations it granted in B
+  ok   **C** — each refusal names the clause, S6's denial by absence
+  ok   **D** — with only some hosts declared, the integration still publishes
+  ok   **D** — every grant is to a host D declares
+  ok   **D** — and the withheld host is refused by itself, by absence, in the same run
+  ok   **the difference between B and C is the mediated path and nothing else** — same integration, flow, profile, host and minute
+
+  20/20 checks passed
+  wrote /home/younes/r2exp/t2/t4_20261003/pi5_smhi_egress.json

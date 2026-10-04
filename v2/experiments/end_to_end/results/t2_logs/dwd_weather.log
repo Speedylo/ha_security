@@ -1,0 +1,34 @@
+F2 against a real integration's real API — dwd_weather → opendata.dwd.de:443
+
+  A  unconfined baseline ...
+  B  confined, every host declared ...
+  C  confined, clause absent ...
+
+  arm                          entry            published  fetched  egress decisions
+  unconfined                   LOADED                  12        2  —
+  confined_declared            LOADED                   3        2  TFTT
+  confined_undeclared          SETUP_RETRY              0        0  FFFFFFFFFFFF
+  confined_undeclared: flow=create_entry errors=None error=None setup=['custom_components.dwd_weather: Unexpected error fetching DWD Weather Coordinator for 10865 data || ad_small_kml(stationid)\n         ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^\n  File "/sandbox/deps/simple_dwd_weatherforecast/dwdforecast.py", line 1334, in download_small_kml\n    raise ForecastDownloadError(\n        f"Failed to download forecast data for station {stationid}."\n    ) from error\nsimple_dwd_weatherforecast.dwdforecast.ForecastDownloadError: Failed to download forecast data for station 10865.\n']
+
+  A resolved, attributed to the integration: ['192.168.1.128', 'fe80::9ba0:68cd:7165:a581%3', 'opendata.dwd.de', 'www.dwd.de']
+
+  ok   A — dwd_weather loads unconfined on this release, so there is something to confine
+  ok   A — and publishes a fetched value unconfined
+  ok   B — the confined arm stayed inside its memory limit
+  ok   **F2** — a real community integration's config entry reached LOADED while confined
+  ok   **F2** — it published a fetched value through the mediator, from its own call to its own API
+       sensor.muenchen_stadt_time_forecast_values = 2026-10-03 09:00:00+00:00  (A: 2026-10-03 09:00:00+00:00)
+       sensor.muenchen_stadt_time_measured_values = 2026-10-03T13:00:00+00:00  (A: 2026-10-03T13:00:00+00:00)
+  ok   **F2** — and at least one value equals arm A's, fetched from the same API minutes apart
+  ok   B — the mediator's own durable record shows it granted a declared destination
+  ok   B — every granted destination is one the manifest names, host **and port**
+  FAIL B — and nothing the integration asked for was refused (the declared set is complete)
+       [('www.dwd.de:443', '/permissions/network/egress')]
+  ok   B — that record's hash and MAC chains both verify (S7)
+  ok   **C** — with the clause removed, no fetched value crosses the boundary
+  ok   **C** — and the mediator refused the destinations it granted in B
+  ok   **C** — each refusal names the clause, S6's denial by absence
+  ok   **the difference between B and C is the mediated path and nothing else** — same integration, flow, profile, host and minute
+
+  13/14 checks passed
+  wrote /home/younes/r2exp/t2/pi5_dwd_weather_egress.json

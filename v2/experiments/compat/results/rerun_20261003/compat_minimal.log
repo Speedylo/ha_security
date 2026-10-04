@@ -1,0 +1,87 @@
+compatibility — 37 community integrations, one sandbox each
+
+  ARM A — the minimal instance
+
+  [ 1/37] ok  adaptive_lighting        platforms_clean          ok                         
+  [ 2/37]     alarmo                   import_failed            needs_component            paho <- http/panel_custom/mqtt
+  [ 3/37]     alexa_media              import_failed            needs_component            async_timeout <- persistent_no
+  [ 4/37]     bambu_lab                import_failed            needs_component            aiofiles <- device_automation/
+  [ 5/37]     battery_notes            import_failed            undeclared_dependency      async_timeout
+  [ 6/37]     bermuda                  import_failed            needs_component            aiofiles <- bluetooth_adapters
+  [ 7/37] ok  ble_monitor              platforms_clean          ok                         
+  [ 8/37]     browser_mod              import_failed            needs_component            numpy <- panel_custom/websocke
+  [ 9/37]     dreame_vacuum            platform_import_failed   undeclared_dependency      turbojpeg
+  [10/37]     dwd_weather              platform_import_failed   undeclared_dependency      numpy
+  [11/37]     eufy_security            platform_import_failed   needs_component            haffmpeg <- ffmpeg/stream
+  [12/37]     frigate                  import_failed            needs_component            async_timeout <- http/media_so
+  [13/37] ok  govee                    platforms_clean          ok                         
+  [14/37]     hacs                     import_failed            needs_component            custom_components <- http/webs
+  [15/37]     homematicip_local        import_failed            needs_component            paho <- backup/http/mqtt
+  [16/37]     llmvision                import_failed            needs_component            numpy <- http
+  [17/37] ok  localtuya                platforms_clean          ok                         
+  [18/37]     meross_lan               import_failed            needs_component            paho <- mqtt/dhcp/recorder
+  [19/37] ok  midea_ac_lan             platforms_clean          ok                         
+  [20/37]     nodered                  import_failed            needs_component            hassil <- conversation/mqtt
+  [21/37] ok  nordpool                 platforms_clean          ok                         
+  [22/37] ok  octopus_energy           platforms_clean          ok                         
+  [23/37] ok  pirateweather            platforms_clean          ok                         
+  [24/37]     powercalc                import_failed            needs_component            turbojpeg <- light/group/templ
+  [25/37] ok  scheduler                platforms_clean          ok                         
+  [26/37] ok  smartthinq_sensors       platforms_clean          ok                         
+  [27/37] ok  solarman                 platforms_clean          ok                         
+  [28/37] ok  solcast_solar            platforms_clean          ok                         
+  [29/37] ok  sonoff                   platforms_clean          ok                         
+  [30/37]     spook                    not_found                other                      IntegrationNotFound: Integrati
+  [31/37]     tapo_control             import_failed            needs_component            haffmpeg <- ffmpeg/onvif/strea
+  [32/37] ok  thermal_comfort          platforms_clean          ok                         
+  [33/37] ok  waste_collection_schedule platforms_clean          ok                         
+  [34/37] ok  watchman                 platforms_clean          ok                         
+  [35/37]     webrtc                   import_failed            needs_component            numpy <- http/lovelace
+  [36/37] ok  xiaomi_home              platforms_clean          ok                         
+  [37/37]     xiaomi_miot              platform_import_failed   needs_component            pyhap <- http/intent/persisten
+
+  arm A
+    imports-clean or better    17/37   46%
+    platforms-clean            17/37   46%
+    peak memory               median 102 MB, max 145 MB
+
+    needs_component             16
+    undeclared_dependency        3
+    other                        1
+
+  ARM B — the same 16, with the components they declare
+
+  [ 1/16] ok  alarmo                   platforms_clean          ok                         components failed: http,panel_custom
+  [ 2/16]     alexa_media              import_failed            needs_component            components failed: http
+  [ 3/16]     bambu_lab                import_failed            needs_component            components failed: frontend,http
+  [ 4/16]     bermuda                  import_failed            needs_component            components failed: bluetooth_adapters,private_ble_device
+  [ 5/16]     browser_mod              import_failed            needs_component            components failed: panel_custom,websocket_api
+  [ 6/16]     eufy_security            platform_import_failed   other                      components failed: stream
+  [ 7/16]     frigate                  import_failed            needs_component            components failed: http,media_source
+  [ 8/16]     hacs                     import_failed            needs_component            components failed: http,websocket_api
+  [ 9/16] ok  homematicip_local        platforms_clean          ok                         components failed: backup,http
+  [10/16]     llmvision                import_failed            needs_component            components failed: http
+  [11/16] ok  meross_lan               platforms_clean          ok                         components failed: mqtt,recorder
+  [12/16] ok  nodered                  platforms_clean          ok                         components failed: conversation,mqtt
+  [13/16]     powercalc                import_failed            undeclared_dependency      turbojpeg
+  [14/16]     tapo_control             import_failed            needs_component            components failed: stream
+  [15/16]     webrtc                   import_failed            needs_component            components failed: http,lovelace
+  [16/16]     xiaomi_miot              platform_import_failed   needs_component            components failed: http,intent
+
+  arm B
+    imports-clean or better     4/16   25%
+    platforms-clean             4/16   25%
+    peak memory               median 109 MB, max 210 MB
+
+  §5.6.5 trigger 2 — 'real integrations fail for reasons a fuller instance would fix'
+    failed on the minimal instance for that reason: 16/37
+    fixed by setting up their declared components: 4/16
+    -> the trigger FIRES: a fuller instance does fix them
+
+  C1 — integrations run unmodified (confined arm)
+    trees hashed before and after     53
+    with changed source               0
+    total diff lines                  0
+    trees that gained bytecode only   0
+
+wrote /home/younes/r2exp/t2/rest_20261003/compat_minimal.json

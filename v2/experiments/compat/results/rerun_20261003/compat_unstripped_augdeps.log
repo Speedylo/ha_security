@@ -1,0 +1,79 @@
+compatibility — 37 community integrations, one sandbox each
+
+  ARM A — the unstripped instance
+
+  [ 1/37] ok  adaptive_lighting        platforms_clean          ok                         
+  [ 2/37] ok  alarmo                   platforms_clean          ok                         
+  [ 3/37]     alexa_media              import_failed            needs_component            async_timeout <- persistent_no
+  [ 4/37]     bambu_lab                import_failed            needs_component            aiofiles <- device_automation/
+  [ 5/37]     battery_notes            import_failed            undeclared_dependency      async_timeout
+  [ 6/37]     bermuda                  import_failed            needs_component            aiofiles <- bluetooth_adapters
+  [ 7/37] ok  ble_monitor              platforms_clean          ok                         
+  [ 8/37] ok  browser_mod              platforms_clean          ok                         
+  [ 9/37] ok  dreame_vacuum            platforms_clean          ok                         
+  [10/37] ok  dwd_weather              platforms_clean          ok                         
+  [11/37]     eufy_security            platform_import_failed   needs_component            haffmpeg <- ffmpeg
+  [12/37]     frigate                  import_failed            undeclared_dependency      async_timeout
+  [13/37] ok  govee                    platforms_clean          ok                         
+  [14/37]     hacs                     import_failed            needs_component            custom_components <- persisten
+  [15/37] ok  homematicip_local        platforms_clean          ok                         
+  [16/37] ok  llmvision                platforms_clean          ok                         
+  [17/37] ok  localtuya                platforms_clean          ok                         
+  [18/37] ok  meross_lan               platforms_clean          ok                         
+  [19/37] ok  midea_ac_lan             platforms_clean          ok                         
+  [20/37]     nodered                  import_failed            needs_component            hassil <- conversation
+  [21/37] ok  nordpool                 platforms_clean          ok                         
+  [22/37] ok  octopus_energy           platforms_clean          ok                         
+  [23/37] ok  pirateweather            platforms_clean          ok                         
+  [24/37] ok  powercalc                platforms_clean          ok                         
+  [25/37] ok  scheduler                platforms_clean          ok                         
+  [26/37] ok  smartthinq_sensors       platforms_clean          ok                         
+  [27/37] ok  solarman                 platforms_clean          ok                         
+  [28/37] ok  solcast_solar            platforms_clean          ok                         
+  [29/37] ok  sonoff                   platforms_clean          ok                         
+  [30/37]     spook                    not_found                other                      IntegrationNotFound: Integrati
+  [31/37]     tapo_control             import_failed            needs_component            haffmpeg <- ffmpeg/onvif/netwo
+  [32/37] ok  thermal_comfort          platforms_clean          ok                         
+  [33/37] ok  waste_collection_schedule platforms_clean          ok                         
+  [34/37] ok  watchman                 platforms_clean          ok                         
+  [35/37] ok  webrtc                   platforms_clean          ok                         
+  [36/37] ok  xiaomi_home              platforms_clean          ok                         
+  [37/37]     xiaomi_miot              platform_import_failed   needs_component            pyhap <- intent/persistent_not
+
+  arm A
+    imports-clean or better    26/37   70%
+    platforms-clean            26/37   70%
+    peak memory               median 135 MB, max 232 MB
+
+    needs_component              8
+    undeclared_dependency        2
+    other                        1
+
+  ARM B — the same 8, with the components they declare
+
+  [ 1/8]     alexa_media              import_failed            undeclared_dependency      async_timeout
+  [ 2/8]     bambu_lab                import_failed            undeclared_dependency      aiofiles
+  [ 3/8]     bermuda                  import_failed            needs_component            components failed: bluetooth_adapters,private_ble_device
+  [ 4/8]     eufy_security            platform_import_failed   other                      device_tracker: ImportError: c
+  [ 5/8]     hacs                     import_failed            needs_component            components failed: python_script
+  [ 6/8] ok  nodered                  platforms_clean          ok                         
+  [ 7/8]     tapo_control             import_failed            undeclared_dependency      aiofiles
+  [ 8/8] ok  xiaomi_miot              platforms_clean          ok                         
+
+  arm B
+    imports-clean or better     2/8   25%
+    platforms-clean             2/8   25%
+    peak memory               median 139 MB, max 174 MB
+
+  §5.6.5 trigger 2 — 'real integrations fail for reasons a fuller instance would fix'
+    failed on the minimal instance for that reason: 8/37
+    fixed by setting up their declared components: 2/8
+    -> the trigger FIRES: a fuller instance does fix them
+
+  C1 — integrations run unmodified (confined arm)
+    trees hashed before and after     45
+    with changed source               0
+    total diff lines                  0
+    trees that gained bytecode only   0
+
+wrote /home/younes/r2exp/t2/rest_20261003/compat_unstripped_augdeps.json
