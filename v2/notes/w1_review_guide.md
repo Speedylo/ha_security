@@ -38,6 +38,11 @@ could have caught. It found three, and all are fixed and re-tested against a fre
 None of the three changes a measured figure in §7.36–§7.38, but the first is a real
 availability defect, and the report needs a pointer for it (done with this guide's commit).
 
+4. **The fix for item 1 caused a fourth defect**, found when the end-to-end runs were repeated.
+   `RealPlatform` applied (A)'s events inside the action that made a call, so a user's command
+   arriving mid-publish was decided before the owner was recorded, and refused. Events are now
+   applied only between requests, from the mediator's loop. (§7.38.4.)
+
 ---
 
 ## Part 1 — The wire: frames, and one socket shared by threads

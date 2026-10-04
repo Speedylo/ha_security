@@ -115,4 +115,7 @@ That is step 2b.
 than by a run: a refusal by (A) crashed the mediator (one sandbox publishing a `light` stopped it for
 all, after recording ownership); the mediator's 10 s socket timeout raced the bridge's 10 s waits;
 and (A) restarted itself, which unsupervised means exited, five minutes after every fresh start,
-because 2026.8 requires an `http:` YAML config to be confirmed. All fixed; none changes a figure.
+because 2026.8 requires an `http:` YAML config to be confirmed. All fixed; none changes a figure. A fourth came from the fix for the first, and only repeating the end-to-end runs showed it:
+`RealPlatform` applied (A)'s events inside the action that made a call, so a user's command arriving
+mid-publish was decided before ownership was recorded and refused. Events are now applied only
+between requests (§7.38.4).

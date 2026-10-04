@@ -22,9 +22,11 @@ real pushes at 0.71 ms, names match (B). Five defects found and fixed; §7.37 wr
 (`adaptive_lighting`, unmodified): 16 ms round trip, recorded, refusals at once (§7.38). **W1 is complete.**
 
 **2026-10-04 (late): Younes chose to review W1 before W2.** The guide is `notes/w1_review_guide.md`
-(ten parts, bottom-up, with exercises and a 7-day schedule). Preparing it found three defects, all fixed
-(§7.38.4): a refusal by (A) crashed the mediator; a 10 s timeout race; (A) exiting 5 min after a fresh
-start. **Next: Younes works through the guide; W2 waits for him.**
+(ten parts, bottom-up, with exercises and a 7-day schedule). Preparing it found three defects, and fixing
+one caused a fourth, all fixed (§7.38.4): a refusal by (A) crashed the mediator; a 10 s timeout race;
+(A) exiting 5 min after a fresh start; (A)'s events applied mid-action. **Younes then clarified he
+wanted a verification review, not study. W1 verified clean the same evening (all suites, both real
+end-to-end runs, 40/40 against (A)). Next: W2.**
 
 **In one screen — where we are, 2026-10-03:**
 

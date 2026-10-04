@@ -1,0 +1,18 @@
+bridge self-test — an unmodified integration, inside a sandbox
+
+  ok    C1  the config entry reaches LOADED                 ConfigEntryState.LOADED
+  ok    F1  it published an entity locally                  ['sensor.outdoor_temperature', 'sensor.ticks']
+  ok    F1  the entity reached the platform through the mediator  ['sensor.ticks'] = ['1']
+  ok    F1  ...attributed to the integration that published it  owner recorded at publish time
+  ok    §5.6.2  the declared entity is readable inside the sandbox  sensor.outdoor_temperature = '11.5'
+  ok    §5.6.2  the undeclared entity is ABSENT, not refused  sensor.bedroom_occupancy = None
+  ok    §5.6.2  ...and the integration read it through its own state machine  mirrored in at construction, not fetched per read
+  ok    S5  the declared service call goes through          lock.lock -> called
+  ok    S5  lock.unlock does not exist to be called         lock.unlock -> ServiceNotFound
+  ok    S5  ...and the platform saw only the permitted call  [('lock', 'lock', {})]
+  ok    every mediated decision named a clause              3 decisions, 0 denials
+
+PASS — an integration whose source was never touched ran inside the sandbox,
+       published its entity through the mediator, read what it declared, and
+       found no way to call the service it did not.
+  ok    the durable record (T4): 1 run, 3 decisions, chains verify and match the in-memory record

@@ -275,8 +275,17 @@ class Mediator:
     def serve(self, timeout: float | None = None) -> None:
         """Answer requests and deliver pushes until every sandbox has closed its end."""
         while self._by_fd:
-            events = self._selector.select(timeout)
+            # What (A) sent during the last request's calls is applied here, between requests,
+            # and never inside one (W1 review, `real_platform.py`). Polled without waiting while
+            # anything is queued, since a queue filled during a call has no socket event to wake on.
+            dispatch = getattr(self._platform, "dispatch", None)
+            if dispatch is not None:
+                dispatch()
+            queued = bool(getattr(self._platform, "pending", False))
+            events = self._selector.select(0 if queued else timeout)
             if not events:
+                if queued:
+                    continue
                 return
             for key, mask in events:
                 if key.fileobj is self._platform:

@@ -1,0 +1,16 @@
+Datagrams through the relay, with real sockets on both ends.
+==============================================================================
+[  ok  ] 1. a unicast datagram is accepted for a declared port — 19 bytes
+[  ok  ] 1b. and the device's reply comes back through the relay — inverter-says-hello
+[  ok  ] 1c. with the address it came from, so the integration can tell devices apart — ('127.0.0.1', 32983)
+[  ok  ] 2. an undeclared port is denied — '32984' matches no clause at /permissions/network/local/udp
+[  ok  ] 2b. and the denial names the clause that held no match (F3) — /permissions/network/local/udp
+[  ok  ] 4. SO_BROADCAST is recorded by the shim and never applied to the sandbox's socket — the sandbox's socket reports 0
+[  ok  ] 3. **discovery** — the mediator broadcast on the declared port and got an answer — device-here from ('127.0.0.1', 48573)
+[  ok  ] 5. the scan reports which addresses answered — the observed-responder set — ['127.0.0.1']
+[  ok  ] 6. an oversized payload is refused before it is decoded, not after — payload of 65517 bytes exceeds 65507
+[  ok  ] 6b. and a payload that is not hex is refused rather than guessed at — payload is not hex: non-hexadecimal number found in fromhex() arg at position 0
+[  ok  ] 7. with no datagram grant the shim intercepts nothing and asks nobody — fail-closed: in a sandbox this reaches nothing, because the namespace has no route
+[  ok  ] 7b. the asyncio DatagramProtocol shape is not served — 4 of 15, named not hidden — govee, localtuya, tapo_control, xiaomi_miot: they select on a descriptor the design does not give them
+==============================================================================
+12/12 checks passed

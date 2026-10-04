@@ -4551,7 +4551,7 @@ seen from the other side.
 
 **2026-10-04, after §7.36–§7.38 were written.** Preparing a review of W1 for its author
 (`notes/w1_review_guide.md`) meant re-reading all of it, and that found three defects the
-measurements had not. None changes a figure above.
+measurements had not. Fixing the first caused a fourth. None changes a figure above.
 
 The first is an availability defect. The bridge refuses domains it cannot stand in for, and that
 refusal reached the mediator as an exception nothing caught. A single confined integration
@@ -4571,6 +4571,16 @@ minutes. Unsupervised, a restart is an exit, so (A) stopped five minutes after e
 Every evidence run above finished inside that window, which is both why no result is affected and
 why nothing noticed until (A) was found down after a suite run. The harness now confirms the
 configuration, and (A) was checked to be running after the deadline had passed.
+
+The fix for the first defect caused a fourth, which only repeating the end-to-end runs showed.
+Recording ownership after the publish opened a window, and something could arrive in it, because
+`RealPlatform` applied whatever (A) had sent during a call as soon as the call returned, which is
+inside the action that made it. A user's command that arrived while a publish was in progress was
+therefore decided before the owner was recorded, and `adaptive_lighting`'s sleep-mode switch was
+refused with "belongs to None". Moving the line back would only have narrowed the window. The
+cause was that events from (A) were applied inside actions at all, so they are now queued and
+applied only by the mediator's own loop, between requests. After that, the command succeeds in
+14 ms, `thermal_comfort` is unchanged, and `selftest_real_platform` passes 40 of 40 on a fresh (A).
 
 
 ---

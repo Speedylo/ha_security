@@ -11,12 +11,18 @@ one WebSocket connection to (A), authenticated with the mediator's long-lived to
     call_service  call_service — the real service, executed by (A)
     watch         subscribe_entities, re-issued over the set of every entity subscribed to
 
-**Changes arrive on the same connection as answers.** (A) sends `subscribe_entities` events
-whenever it likes, including while the mediator waits for the answer to something else. So every
-message read is sorted: answers go to `_results` by id, events to `_events`, and events are
-applied — and the listeners called, which is where the push loop starts — only once no call is in
-progress. Otherwise a listener that itself calls (A) (as the push experiment's trigger does) would
-read the outer call's answer as its own.
+**Changes arrive on the same connection as answers.** (A) sends `subscribe_entities` events and
+users' commands whenever it likes, including while the mediator waits for the answer to something
+else. So every message read is sorted — answers to `_results` by id, events and commands to their
+queues — and the queues are applied **only by `dispatch`, which the mediator calls from its own
+loop, between requests**. Never from inside `call`.
+
+That last rule is from the W1 review (2026-10-04). Until then `call` applied the queues itself once
+the outermost call returned, which is inside whatever action made the call. A user's command that
+arrived while a publish was in progress was therefore decided before that publish had recorded its
+owner, and refused with "belongs to None" — reproduced with `adaptive_lighting`, whose sleep-mode
+switch could not be operated. Applying them between requests means no action is ever interrupted by
+another, and a listener that itself calls (A) cannot read someone else's answer.
 
 **A call blocks the mediator for one round trip to (A).** The sandbox that asked is waiting for
 the answer anyway; every other sandbox waits a few milliseconds. That is the head-of-line cost of
@@ -126,18 +132,23 @@ class RealPlatform:
         finally:
             self._depth -= 1
         answer = self._results.pop(ident)
-        if self._depth == 0:
-            self._apply_events()
         if not answer.get("success", False):
             raise PlatformError(f"{message.get('type')}: {answer.get('error')}")
         return answer.get("result")
 
     def pump(self) -> None:
-        """The mediator's selector says (A)'s socket is readable: take what arrived and apply it."""
+        """The mediator's selector says (A)'s socket is readable: take what arrived, and queue it."""
         try:
             self._sort(self.ws.messages())
         except (OSError, WebSocketError) as err:
             raise PlatformLost(f"the connection to (A) failed: {err}") from err
+
+    @property
+    def pending(self) -> bool:
+        return bool(self._commands or self._events)
+
+    def dispatch(self) -> None:
+        """Apply queued commands and changes. Called by the mediator between requests only."""
         if self._depth == 0:
             self._apply_events()
 
