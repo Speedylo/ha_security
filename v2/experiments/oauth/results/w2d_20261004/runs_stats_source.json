@@ -1,0 +1,117 @@
+[
+  {
+    "run": "1_expiring",
+    "loaded": false,
+    "entry_state": "ConfigEntryState.SETUP_IN_PROGRESS",
+    "entry_reason": null,
+    "setup_error": null,
+    "setup_log": [],
+    "level": null,
+    "error": null,
+    "egress": [
+      {
+        "target": "api.trakt.tv:443",
+        "allowed": true,
+        "clause": "/permissions/network/egress/0"
+      }
+    ],
+    "inspection": {
+      "stored_entry": true,
+      "where": ".confine/trakt_tv/.storage/core.config_entries",
+      "refresh_token_changed": true,
+      "access_token_changed": true,
+      "valid_for_hours": 168.0
+    },
+    "published": [],
+    "audit_breaks": [],
+    "reconcile": []
+  },
+  {
+    "run": "2_respawn_spent",
+    "loaded": false,
+    "entry_state": "ConfigEntryState.SETUP_ERROR",
+    "entry_reason": "400, message='Bad Request', url='https://api.trakt.tv/oauth/token'",
+    "setup_error": null,
+    "setup_log": [
+      "custom_components.trakt_tv: Config entry 'trakt_tv' for trakt_tv integration could not authenticate: 400, message='Bad Request', url='https://api.trakt.tv/oauth/token'"
+    ],
+    "level": null,
+    "error": null,
+    "egress": [
+      {
+        "target": "api.trakt.tv:443",
+        "allowed": true,
+        "clause": "/permissions/network/egress/0"
+      }
+    ],
+    "inspection": {
+      "stored_entry": true,
+      "where": ".confine/trakt_tv/.storage/core.config_entries",
+      "refresh_token_changed": false,
+      "access_token_changed": false,
+      "valid_for_hours": -0.0
+    },
+    "published": [],
+    "audit_breaks": [],
+    "reconcile": []
+  },
+  {
+    "run": "3_respawn_carried",
+    "loaded": false,
+    "entry_state": "ConfigEntryState.SETUP_IN_PROGRESS",
+    "entry_reason": null,
+    "setup_error": null,
+    "setup_log": [],
+    "level": null,
+    "error": null,
+    "egress": [
+      {
+        "target": "api.trakt.tv:443",
+        "allowed": true,
+        "clause": "/permissions/network/egress/0"
+      }
+    ],
+    "inspection": {
+      "stored_entry": true,
+      "where": ".confine/trakt_tv/.storage/core.config_entries",
+      "refresh_token_changed": true,
+      "access_token_changed": true,
+      "valid_for_hours": 168.0
+    },
+    "published": [],
+    "audit_breaks": [],
+    "reconcile": []
+  },
+  {
+    "run": "C_nothing_declared",
+    "loaded": false,
+    "entry_state": "ConfigEntryState.SETUP_IN_PROGRESS",
+    "entry_reason": null,
+    "setup_error": null,
+    "setup_log": [],
+    "level": null,
+    "error": null,
+    "egress": [
+      {
+        "target": "api.trakt.tv:443",
+        "allowed": false,
+        "clause": "/permissions/network/egress"
+      },
+      {
+        "target": "api.trakt.tv:443",
+        "allowed": false,
+        "clause": "/permissions/network/egress"
+      }
+    ],
+    "inspection": {
+      "stored_entry": true,
+      "where": ".confine/trakt_tv/.storage/core.config_entries",
+      "refresh_token_changed": false,
+      "access_token_changed": false,
+      "valid_for_hours": -0.0
+    },
+    "published": [],
+    "audit_breaks": [],
+    "reconcile": []
+  }
+]

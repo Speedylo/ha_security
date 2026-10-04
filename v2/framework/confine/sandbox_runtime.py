@@ -728,7 +728,8 @@ def egress_summary() -> dict:
         return {}
     shim = EGRESS_SHIM[0]
     return {"resolved": list(shim.resolved), "connected": list(shim.connected),
-            "datagrams_delivered": shim.delivered}
+            "datagrams_delivered": shim.delivered,
+            "refused_listens": [port for port, _ in shim.refused_listens]}
 
 
 def record_egress_attempts(into: list) -> None:
@@ -1072,11 +1073,36 @@ async def run() -> dict:
                         title=spec["domain"], data=spec.get("entry_data", {}),
                         source=SOURCE_USER, options={}, unique_id=None,
                         discovery_keys={}, subentries_data=())
+    if spec.get("component_config"):
+        # W2 (d): the integration's YAML, given to its component before the entry exists, for an
+        # integration that reads its options from there (`trakt_tv` its sensors).
+        from homeassistant.setup import async_setup_component
+        result["component_setup"] = await async_setup_component(
+            hass, spec["domain"], spec["component_config"])
+    # A failed setup is logged, not raised, so the log is the diagnosis. Flow mode already kept
+    # it (§6.12); entry mode did not, and W2 (d)'s first runs failed with nothing to say why.
+    entry_log: list[str] = []
+
+    class _EntryCapture(logging.Handler):
+        def emit(self, record: logging.LogRecord) -> None:
+            if record.levelno >= logging.WARNING:
+                try:
+                    entry_log.append(f"{record.name}: {record.getMessage()}"[:300])
+                    if record.exc_info and record.exc_info[1] is not None:
+                        error = record.exc_info[1]
+                        entry_log.append(f"  {type(error).__name__}: {error}"[:300])
+                except Exception:  # noqa: BLE001
+                    pass
+    capture = _EntryCapture()
+    logging.getLogger().addHandler(capture)
     try:
         await hass.config_entries.async_add(entry)
         await hass.async_block_till_done()
     except Exception as err:  # noqa: BLE001 — a failed setup is a compatibility result
         result["setup_error"] = f"{type(err).__name__}: {err}"
+    finally:
+        logging.getLogger().removeHandler(capture)
+        result["setup_log"] = entry_log[:12]
 
     # §6.3.3: start last, after every component is set up.
     await hass.async_start()
@@ -1092,6 +1118,9 @@ async def run() -> dict:
             await asyncio.sleep(3600)
 
     result["entry_state"] = str(entry.state)
+    # Why setup failed, in the platform's own words: an authentication failure is reported here
+    # rather than raised (W2 (d)).
+    result["entry_reason"] = getattr(entry, "reason", None)
     result["loaded"] = entry.state is ConfigEntryState.LOADED
     result["local_entities"] = sorted(s.entity_id for s in hass.states.async_all())
     result["mirrored"] = sorted(bridge.mirrored)
@@ -1114,6 +1143,8 @@ async def run() -> dict:
         except Exception as err:  # noqa: BLE001
             calls[clause] = f"{type(err).__name__}"
     result["calls"] = calls
+    # Entry mode reports what the egress shim did too, as flow mode does (W2 (d)).
+    result["egress"] = {**(result.get("egress") or {}), **egress_summary()}
 
     await hass.async_stop()
     return result

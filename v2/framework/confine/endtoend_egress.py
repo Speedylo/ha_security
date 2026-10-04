@@ -77,6 +77,7 @@ import urllib.error
 import urllib.request
 from dataclasses import replace
 from pathlib import Path
+from typing import Callable
 
 from .audit import AuditLog, reconcile
 from .cgroup import Delegation, SandboxCgroup
@@ -210,7 +211,9 @@ def _requirements(component: Path, python: Path) -> tuple[list[str], list[str]]:
 
 def run_confined(component: Path, domain: str, subject: dict, arm: str, permissions: dict,
                  python: Path, delegation: Delegation, uv: str | None,
-                 platform_deps: Path | None, max_seconds: float | None = None) -> dict:
+                 platform_deps: Path | None, max_seconds: float | None = None,
+                 entry_data: dict | None = None,
+                 inspect_data: Callable[[Path], dict] | None = None) -> dict:
     root = Path(tempfile.mkdtemp(prefix=f"e2e-egress-{arm}-"))
     # The audit log lives **outside** `root`, because `root` is removed in the `finally` below
     # and the records are read after it. Keeping it inside meant `records()` found an empty
@@ -259,7 +262,11 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
 
         spec_file = root / "spec.json"
         spec_file.write_text(json.dumps({
-            "domain": domain, "mode": "flow", "auth": True,
+            # W2 (d): with `entry_data`, the sandbox builds the config entry directly instead of
+            # driving the integration's flow — an OAuth flow needs a browser.
+            **({"mode": "flow"} if entry_data is None else {"entry_data": entry_data}),
+            "component_config": subject.get("component_config"),
+            "domain": domain, "auth": True,
             "entities": [], "services": [], "setup_components": wanted,
             "egress": True, "settle_seconds": subject["settle"],
             "menu_choice": {}, "flow_input": subject["flow_input"],
@@ -317,6 +324,14 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
     except (SandboxFailed, OSError, TimeoutError) as err:
         return {"arm": arm, "level": "sandbox_failed", "error": str(err)[:300]}
     finally:
+        # W2 (d): what the sandbox left in its data directory — (B)'s storage — read before the
+        # run's root is removed. The hook decides what leaves; it must not return secrets.
+        inspection = None
+        if inspect_data is not None:
+            try:
+                inspection = inspect_data(root / ".confine" / domain)
+            except Exception as err:  # noqa: BLE001
+                inspection = {"error": f"{type(err).__name__}: {err}"[:200]}
         shutil.rmtree(root, ignore_errors=True)
 
     audit = [{"identity": d.get("identity"), "op": d.get("op"),
@@ -345,6 +360,7 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
                 "logged": logged, "oom_kill": oom, "error": report["fatal"].strip().splitlines()[-1][:300]}
     report["arm"] = arm
     report["timed_out"] = timed_out
+    report["data_inspection"] = inspection
     report["install"] = install
     report["audit"] = audit
     report["logged"] = logged

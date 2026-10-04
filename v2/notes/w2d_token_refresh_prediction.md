@@ -60,3 +60,26 @@ data directory and keeps the new token aside, in a mode-600 file, so the account
 | **K4** | Run 3, the token (B) stored: the entry loads again | high |
 | **K5** | Arm C: the egress is refused with its clause, the refresh cannot happen, and the entry does not load | high |
 | **K6** | Something not listed is found | medium |
+
+---
+
+## 5. Outcomes, 2026-10-04 (appended; §4 is unchanged)
+
+Evidence: `experiments/oauth/results/w2d_20261004/`. Three sets of runs; the final one is `runs.json`.
+
+| | Outcome |
+|---|---|
+| **K1** | **Held, at the third attempt, and the first two each found something.** Final: run 1 loads and publishes `sensor.trakt_anticipated_movies`; the expired token was refreshed **inside the sandbox**, through the granted egress to `api.trakt.tv:443`. The first set failed at setup before any network request: a W2 (b) regression (below). The second set refreshed correctly but never finished setup, because `trakt_tv` also fetches from **`api.tmdb.org:80`**, a host the declaration, written from reading the source, did not name; the mediator refused it six times with its clause (`runs_tmdb_undeclared.json`). Separately, the user's stats, the first source chosen, come back from Trakt as 204 with no body for an empty account, which `trakt_tv` cannot decode, unconfined as well (`runs_stats_source.json`) |
+| **K2** | **Held.** Both tokens changed, and the new pair (valid 168 h) exists only in (B)'s storage, at `.confine/trakt_tv/.storage/core.config_entries` in the sandbox's data directory. The durable log holds the egress decisions (host and port), never a token; the harness's scrubber found nothing to redact in any output |
+| **K3** | **Held.** Run 2, the original token after run 1 had spent it: Trakt's token endpoint answered **400**, the integration reported "could not authenticate", and setup failed |
+| **K4** | **Held.** Run 3, the token run 1's sandbox stored: refreshed again, loaded, published |
+| **K5** | **Held.** Arm C: the refresh's egress was refused with its clause, the token was untouched, nothing loaded |
+| **K6** | **Held, three times.** (1) **A regression from W2 (b)**: an undeclared datagram `bind` raised, and a pair-backed socket refused IP options, so Zeroconf, built by the platform's shared HTTP session, failed, and with it every confined integration using that session. Fixed, tested (`selftest_udp` 7e), and `nordpool` re-run confined, 16/16. (2) `api.tmdb.org`, a missed host, the second measured after §7.31.5's `dwd_weather`. (3) Trakt now issues only public clients, and Cloudflare filters Python's default User-Agent, both found while checking feasibility |
+
+**What it establishes.** A confined OAuth integration refreshes its own token inside its sandbox, and
+the refreshed single-use credential exists nowhere but in (B)'s storage in the sandbox's data
+directory. **Whether the integration stays logged in across a respawn therefore depends on that
+directory persisting**: without it, the next spawn holds a spent token and authentication fails.
+The design keeps `/sandbox/data` per integration and persistent, so it is served; but a deployment
+that rebuilds the data directory, or a reinstall, logs every OAuth integration out, and neither the
+house's Home Assistant nor the mediator holds a copy to restore it from.

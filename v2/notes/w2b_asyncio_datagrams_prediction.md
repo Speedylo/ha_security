@@ -94,3 +94,16 @@ running a measurement.**
 `connect`. All four asyncio integrations in the corpus bind or connect first, `govee`'s send socket by
 binding port 0. The unicast half (`govee`'s and `xiaomi_miot`'s replies) uses the same push and is
 tested at the decision layer only (`selftest_udp` 7d).
+
+**Corrected 2026-10-04, by W2 (d): the build had a regression, and nothing above saw it.** Making a
+`bind` request a streaming listen meant that a bind on an undeclared port **raised**, and that once
+bound, a socket backed by the pair refused IP-level options with EOPNOTSUPP. Zeroconf, which Home
+Assistant's shared HTTP session constructs (§7.27), does both: it binds 5353 and joins the mDNS group.
+So every confined integration using that session, which is the cloud-facing 41% the egress path is
+for, failed at setup. `trakt_tv` found it in W2 (d). The suites passed because none builds that
+session, and §7.31's real aiohttp subjects were not re-run after this change. Fixed: an undeclared
+bind succeeds with nothing ever delivered (the refusal is still recorded, once), and IP-level options
+on a pair are recorded and treated as applied. `selftest_udp` 7e reproduces Zeroconf's sequence and
+fails with the fix removed. `nordpool` was re-run confined (16/16) and `localtuya` again (unchanged).
+Lesson: after any change to the shim, re-run a real aiohttp subject, not only the suites.
+

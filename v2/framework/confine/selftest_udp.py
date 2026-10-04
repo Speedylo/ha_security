@@ -39,7 +39,7 @@ from pathlib import Path
 
 try:
     from .egress import EgressRefused
-    from .egress_shim import DatagramMediator, EgressShim
+    from .egress_shim import EgressDenied, DatagramMediator, EgressShim
     from .manifest import Manifest, policy_for
     from .udp_relay import MAX_DATAGRAM, UdpRelay
 except ImportError:  # run as a plain script
@@ -158,7 +158,12 @@ def wire(root: Path, domain: str, permissions: dict) -> tuple[EgressShim, UdpRel
 
     def listen_stream(port: int) -> None:
         request, decision = decide("discover.listen", port=port, stream=True)
-        watch(relay.listen(domain, request, decision))
+        try:
+            watch(relay.listen(domain, request, decision))
+        except EgressRefused as err:
+            # What the sandbox's `listen_stream` raises for a refusal: an `OSError`, which is what
+            # unmodified integration code expects from the network (`egress_shim.EgressDenied`).
+            raise EgressDenied(err.reason, err.clause) from err
 
     def recv(address: str, port: int) -> list[bytes]:
         request, decision = decide("network.udp.recv", address=address, port=port, timeout=1.0)
@@ -456,6 +461,31 @@ def case_no_relay_fails_closed(root: Path) -> None:
     check(replies == [b"govee-reply"],
           "7d. a socket bound to port 0 before its event loop registers it still gets replies",
           f"{replies}")
+    # 7e. Zeroconf's sequence, which the platform's shared HTTP session runs (§7.27): bind 5353
+    # with no listen declared, then join the mDNS group. W2 (b) made the bind raise, and then
+    # the group join on the socket pair raise EOPNOTSUPP; either broke every confined
+    # integration using that session (found by W2 (d), 2026-10-04). Both must succeed, quietly.
+    shim3, relay3, decisions3 = wire(root, "demo_zeroconf", {"network": {}})
+    outcome = "ok"
+    try:
+        shim3.install()
+        zc = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            zc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            zc.bind(("", 5353))
+            zc.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP,
+                          socket.inet_aton("224.0.0.251") + socket.inet_aton("0.0.0.0"))
+            zc.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 255)
+        except OSError as err:
+            outcome = f"{type(err).__name__}: {err}"
+        zc.close()
+    finally:
+        shim3.uninstall()
+        relay3.close()
+    refused = [d for op, d in decisions3 if op == "discover.listen" and not d.allowed]
+    check(outcome == "ok" and len(refused) == 1,
+          "7e. an undeclared bind and a multicast join succeed quietly; the listen is refused once",
+          f"{outcome}; {len(refused)} refused listen")
     listens = [d for op, d in decisions if op == "discover.listen"]
     check(len(listens) == 1 and listens[0].allowed,
           "7c. and the listen is one recorded decision, however many datagrams follow",

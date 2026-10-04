@@ -4121,7 +4121,9 @@ same property that keeps the key out of the mediator's records, seen from the ot
 ### 7.34.4 What this does not establish
 
 - **Re-authentication and token refresh are still untested.** Pirate Weather's key is static, so the
-  phase where egress demand appears at refresh rather than at setup has still not been looked at.
+  phase where egress demand appears at refresh rather than at setup has still not been looked at. *(Token refresh
+  observed 2026-10-04, §7.42: it happens inside the sandbox, and the refreshed token lives only in its
+  data directory. Re-authentication is still untested.)*
 - **One integration, one service.** The ceiling of §7.17.1 is unchanged and remains a property of the
   ecosystem. What changes is that "the credentialed path is untested" becomes "untested at scale, and
   here is one worked instance in which it holds".
@@ -4789,10 +4791,93 @@ discovers devices exactly as it does unconfined, on one recorded decision per li
 declared it is refused at the listen and discovers nothing, with no flood. §7.25.5's unserved quarter
 is served, and §8.6.3's limitations 9 and 10 are closed for the shapes the corpus uses.
 
+> **Corrected by §7.42 (2026-10-04): this build shipped a regression.** Making `bind` request a
+> listen meant an undeclared bind raised, and a pair-backed socket refused IP-level options.
+> Zeroconf, which the platform's shared HTTP session constructs (§7.27), binds 5353 and joins the
+> mDNS group, so every confined integration using that session failed at setup. The suites did not
+> build that session, and §7.31's aiohttp subjects were not re-run, so nothing saw it until W2 (d)'s
+> `trakt_tv` did. Fixed the same day and tested (`selftest_udp` 7e); `nordpool` passes confined again.
+
 **Not established.** The unicast half, replies to datagrams an asyncio endpoint sent, as `govee` and
 `xiaomi_miot` use, is tested at the decision layer only, because no corpus member that needs it can
 run without a real device or account. A socket registered by an event loop before its first bind or
 connect would still not be served; none in the corpus is.
+
+
+## 7.42 An OAuth token refreshed inside a sandbox
+
+**2026-10-04.** §7.34.4 left token refresh unobserved: Pirate Weather's key is static, and no
+credentialed confined run had ever outlived a token. Integrations that authenticate with OAuth
+exchange a refresh token for a new pair when the access token is about to expire, and write the new
+pair into their config entry. Confined, that entry lives in (B), the sandbox's private instance.
+Predictions were committed before the runs (`notes/w2d_token_refresh_prediction.md`).
+
+### 7.42.1 The subject, and what using it required
+
+`trakt_tv` is the only OAuth integration in either corpus that needs no paid account and no
+device. It refreshes through Home Assistant's own `OAuth2Session`, so its refresh is the one most
+OAuth integrations perform. It ran with Younes's own Trakt account. Two facts about the provider
+had to be established first. Trakt now issues only public clients, with no secret, which
+`trakt_tv`'s form was not written for; the helper omits an empty secret, and a refresh sent exactly
+as the helper sends it is accepted. And Trakt's refresh tokens are **single-use**: every refresh
+spends the old one. A first feasibility check was refused with HTTP 403, because it carried Python's
+default `User-Agent`, which the provider's front end filters. Home Assistant's own is accepted. The
+credentials stayed on the Pi, mode 600, and no report, log or commit contains them.
+
+### 7.42.2 The result
+
+The harness gives the sandbox a config entry whose token is marked expired, so the first request
+refreshes it, then reads (B)'s stored entry from the sandbox's data directory before the run's
+directory is removed.
+
+| Run | Token given | Result |
+|---|---|---|
+| 1 | the stored token, expired | **refreshed inside the sandbox; loads; publishes its sensor.** The new pair exists only in (B)'s storage in the sandbox's data directory |
+| 2 | the same token again, now spent | Trakt answers **400**; "could not authenticate"; setup fails |
+| 3 | the token run 1 left in (B) | refreshed again; loads; publishes |
+| C | nothing declared | the refresh's egress refused with its clause; token untouched; nothing loads |
+
+**So a confined OAuth integration stays logged in only if its data directory persists.** Its only
+valid credential is the one (B) wrote there. Neither the house's Home Assistant nor the mediator ever
+holds it, since it travels inside the integration's own TLS connection. Run 2 is what a respawn
+without that directory looks like. The design keeps `/sandbox/data` per integration and persistent,
+so the common case is served. But a reinstall, or any deployment that rebuilds the directory, logs
+every OAuth integration out, and nothing outside the sandbox has a copy to restore it from. That is a
+requirement on the installer, and §8.6.3 now states it.
+
+### 7.42.3 What the runs found on the way
+
+The first set of runs failed at setup before any network request, which is how a regression in §7.41
+came to light. Making a datagram `bind` request a listen meant an undeclared bind raised, and a
+pair-backed socket refused IP-level options. Zeroconf, which the platform's shared HTTP session
+constructs (§7.27), binds 5353 and joins the mDNS group, so **every confined integration using that
+session**, the cloud-facing 41% the egress path exists for, failed at setup. No suite built that
+session, and §7.31's real aiohttp subjects had not been re-run after §7.41. Now an undeclared bind
+succeeds with nothing ever delivered, the refusal still recorded once, and IP options on a pair are
+recorded and treated as applied. A new test reproduces Zeroconf's sequence and fails without the fix,
+and `nordpool` passes confined again, 16 of 16.
+
+The second set refreshed correctly and never finished setup, because `trakt_tv` also fetches poster
+metadata from **`api.tmdb.org`, over plain HTTP**. The declaration, written from reading the source,
+named only `api.trakt.tv`, and the mediator refused TMDB six times, each refusal with its clause. That
+is the second measured missed host, after §7.31.5's `dwd_weather`, and it was added to the
+declaration from the measurement, as that one was. Separately, the first source chosen, the user's
+own statistics, comes back from Trakt as 204 with no body for an account that has watched nothing,
+which `trakt_tv` cannot decode, unconfined as well. The final runs use a public list instead.
+
+### 7.42.4 The predictions, and what this establishes
+
+All six predictions held. K1 held only at the third attempt, and each failed attempt found something
+the prediction did not name.
+
+**Established.** A confined integration refreshes its own OAuth token inside its sandbox, through a
+declared egress, and loads. The refreshed single-use credential is written only to the sandbox's
+data directory. A respawn that keeps that directory stays authenticated; one that does not is logged
+out by the provider. With nothing declared, the refresh is refused and the token is not spent.
+
+**Not established.** One provider and one integration. The re-authentication flow, which a user
+runs after a refresh fails, needs a browser and was not exercised. And the persistence the result
+depends on is a property of the deployment, which this artifact assumes rather than enforces.
 
 ---
 

@@ -163,6 +163,8 @@ class EgressShim:
         #: the writer ends of the sockets routed to it.
         self._routes: dict[tuple, list] = {}
         self.delivered = 0
+        #: Listens the mediator refused, by port: recorded there, reported here.
+        self.refused_listens: list[tuple[int, str]] = []
         #: Every name resolved and every connection made, for the evaluation and for tests.
         self.resolved: list[str] = []
         self.connected: list[tuple[str, int]] = []
@@ -274,7 +276,17 @@ class EgressShim:
                 port = int(address[1])
                 notes["port"] = port
                 if port:
-                    shim.datagrams.listen_stream(port)
+                    try:
+                        shim.datagrams.listen_stream(port)
+                    except OSError as err:
+                        # Refused: the bind still succeeds, and nothing will ever arrive — which
+                        # is how a bind behaved before W2 (b), and is still fail-closed. Raising
+                        # here broke every integration using the platform's shared HTTP session:
+                        # Zeroconf, which that session builds (§7.27), binds 5353, and the
+                        # session's construction failed with it (W2 (d), 2026-10-04).
+                        shim.refused_listens.append((port, str(err)))
+                        attach(sock, notes, None)
+                        return None
                     attach(sock, notes, ("listen", port))
                 else:
                     # An ephemeral port: nothing to listen for, but the pair goes in **now**,
@@ -293,6 +305,17 @@ class EgressShim:
                 # served as discovery", and discovery is a declared capability of its own.
                 notes["broadcast"] = bool(rest[0]) if rest else True
                 return None
+            if notes.get("writer") is not None:
+                # Backed by a Unix socket pair since W2 (b), so IP-level options — multicast
+                # membership, TTL, loopback — have nothing to apply to, and the pair refuses them
+                # with EOPNOTSUPP. Recorded and treated as applied: nothing reaches this socket
+                # except through the mediator, so pretending it joined a group grants nothing.
+                # Raising broke Zeroconf, and with it the platform's shared HTTP session (W2 (d)).
+                try:
+                    return real(sock, level, option, *rest)
+                except OSError:
+                    notes.setdefault("ignored_options", []).append((level, option))
+                    return None
             return _FALL_THROUGH
 
         def on_connect(sock, notes, real, address, *rest):
