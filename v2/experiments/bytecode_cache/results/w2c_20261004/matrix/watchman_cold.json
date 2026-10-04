@@ -1,0 +1,316 @@
+[
+  {
+    "domain": "watchman",
+    "egress_attempts": [
+      {
+        "kind": "connect",
+        "host": "224.0.0.251",
+        "port": 1,
+        "phase": "platform"
+      }
+    ],
+    "setup_errors": [],
+    "flow": {
+      "steps": [],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "entries": [
+      {
+        "title": "Watchman",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "button.watchman_create_report_file",
+      "sensor.watchman_ignored_files",
+      "sensor.watchman_last_parse",
+      "sensor.watchman_last_update",
+      "sensor.watchman_missing_actions",
+      "sensor.watchman_missing_entities",
+      "sensor.watchman_parse_duration",
+      "sensor.watchman_processed_files",
+      "sensor.watchman_status",
+      "text.watchman_ignored_labels"
+    ],
+    "mirrored": [],
+    "published": [
+      {
+        "entity": "text.watchman_ignored_labels",
+        "state": "",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.watchman_last_update",
+        "state": "2026-10-04T11:28:12+00:00",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.watchman_missing_entities",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.watchman_missing_actions",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.watchman_status",
+        "state": "waiting_for_ha",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.watchman_parse_duration",
+        "state": "0.0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.watchman_last_parse",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.watchman_processed_files",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.watchman_ignored_files",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "button.watchman_create_report_file",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.watchman_missing_entities",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.watchman_missing_actions",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.watchman_status",
+        "state": "pending",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      }
+    ],
+    "refused": [],
+    "push": {
+      "subscribed": [],
+      "received": [],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "bytecode": {
+      "groups": {
+        "stdlib": {
+          "from_cache": 0,
+          "compiled": 217,
+          "examples": [
+            "encodings.aliases",
+            "encodings",
+            "encodings.utf_8"
+          ]
+        },
+        "platform (site-packages)": {
+          "from_cache": 0,
+          "compiled": 325,
+          "examples": [
+            "_virtualenv",
+            "homeassistant",
+            "slugify.special"
+          ]
+        },
+        "platform-deps": {
+          "from_cache": 0,
+          "compiled": 609,
+          "examples": [
+            "async_interrupt",
+            "propcache",
+            "propcache._helpers"
+          ]
+        },
+        "component": {
+          "from_cache": 0,
+          "compiled": 18,
+          "examples": [
+            "custom_components.watchman.const",
+            "custom_components.watchman.utils",
+            "custom_components.watchman.utils.logger"
+          ]
+        },
+        "deps": {
+          "from_cache": 0,
+          "compiled": 3,
+          "examples": [
+            "prettytable._version",
+            "prettytable.prettytable",
+            "prettytable"
+          ]
+        }
+      },
+      "seconds_since_start": 4.05
+    },
+    "install": {
+      "ok": true,
+      "installed": [
+        "prettytable",
+        "wcwidth"
+      ],
+      "resolved": [
+        "prettytable-3.12.0",
+        "wcwidth-0.9.1"
+      ]
+    },
+    "decisions": [
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "durable": {
+      "records": 14,
+      "runs": 1,
+      "decisions": 13,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "platform_states": {
+      "text.watchman_ignored_labels": "",
+      "sensor.watchman_last_update": "2026-10-04T11:28:12+00:00",
+      "sensor.watchman_missing_entities": "0",
+      "sensor.watchman_missing_actions": "0",
+      "sensor.watchman_status": "pending",
+      "sensor.watchman_parse_duration": "0.0",
+      "sensor.watchman_last_parse": "unknown",
+      "sensor.watchman_processed_files": "0",
+      "sensor.watchman_ignored_files": "0",
+      "button.watchman_create_report_file": "unknown"
+    }
+  }
+]

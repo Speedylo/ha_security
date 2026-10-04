@@ -1,0 +1,361 @@
+[
+  {
+    "domain": "thermal_comfort",
+    "egress_attempts": [
+      {
+        "kind": "connect",
+        "host": "224.0.0.251",
+        "port": 1,
+        "phase": "platform"
+      }
+    ],
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "custom_icons",
+            "enabled_sensors",
+            "humidity_sensor",
+            "name",
+            "poll",
+            "scan_interval",
+            "temperature_sensor"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "entries": [
+      {
+        "title": "living room",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "sensor.living_room_absolute_humidity",
+      "sensor.living_room_dew_point",
+      "sensor.living_room_dew_point_perception",
+      "sensor.living_room_frost_point",
+      "sensor.living_room_frost_risk",
+      "sensor.living_room_heat_index",
+      "sensor.living_room_humidex",
+      "sensor.living_room_humidex_perception",
+      "sensor.living_room_humidity",
+      "sensor.living_room_moist_air_enthalpy",
+      "sensor.living_room_relative_strain_perception",
+      "sensor.living_room_summer_scharlau_perception",
+      "sensor.living_room_summer_simmer_index",
+      "sensor.living_room_summer_simmer_perception",
+      "sensor.living_room_temperature",
+      "sensor.living_room_thoms_discomfort_perception",
+      "sensor.living_room_winter_scharlau_perception"
+    ],
+    "mirrored": [
+      "sensor.living_room_humidity",
+      "sensor.living_room_temperature"
+    ],
+    "published": [
+      {
+        "entity": "sensor.living_room_absolute_humidity",
+        "state": "8.99806096686178",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.living_room_dew_point",
+        "state": "9.95645201102777",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.living_room_dew_point_perception",
+        "state": "dry",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.living_room_frost_point",
+        "state": "7.06306588826203",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.living_room_frost_risk",
+        "state": "no_risk",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.living_room_heat_index",
+        "state": "20.8488888888889",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.living_room_humidex",
+        "state": "22.658186777006",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.living_room_humidex_perception",
+        "state": "comfortable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.living_room_moist_air_enthalpy",
+        "state": "40.8471436926806",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.living_room_relative_strain_perception",
+        "state": "outside_calculable_range",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.living_room_summer_scharlau_perception",
+        "state": "comfortable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.living_room_winter_scharlau_perception",
+        "state": "outside_calculable_range",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.living_room_summer_simmer_index",
+        "state": "24.283208",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.living_room_summer_simmer_perception",
+        "state": "slightly_cool",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.living_room_thoms_discomfort_perception",
+        "state": "no_discomfort",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      }
+    ],
+    "refused": [],
+    "push": {
+      "subscribed": [],
+      "received": [],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "bytecode": {
+      "groups": {
+        "stdlib": {
+          "from_cache": 212,
+          "compiled": 0,
+          "examples": []
+        },
+        "platform (site-packages)": {
+          "from_cache": 245,
+          "compiled": 0,
+          "examples": []
+        },
+        "platform-deps": {
+          "from_cache": 560,
+          "compiled": 0,
+          "examples": []
+        },
+        "component": {
+          "from_cache": 0,
+          "compiled": 4,
+          "examples": [
+            "custom_components.thermal_comfort.const",
+            "custom_components.thermal_comfort.sensor",
+            "custom_components.thermal_comfort.config_flow"
+          ]
+        }
+      },
+      "seconds_since_start": 0.92
+    },
+    "install": {
+      "ok": true,
+      "installed": [],
+      "note": "no requirements declared"
+    },
+    "decisions": [
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/1",
+        "reason": "declared"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "durable": {
+      "records": 18,
+      "runs": 1,
+      "decisions": 17,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "platform_states": {
+      "sensor.living_room_absolute_humidity": "8.99806096686178",
+      "sensor.living_room_dew_point": "9.95645201102777",
+      "sensor.living_room_dew_point_perception": "dry",
+      "sensor.living_room_frost_point": "7.06306588826203",
+      "sensor.living_room_frost_risk": "no_risk",
+      "sensor.living_room_heat_index": "20.8488888888889",
+      "sensor.living_room_humidex": "22.658186777006",
+      "sensor.living_room_humidex_perception": "comfortable",
+      "sensor.living_room_moist_air_enthalpy": "40.8471436926806",
+      "sensor.living_room_relative_strain_perception": "outside_calculable_range",
+      "sensor.living_room_summer_scharlau_perception": "comfortable",
+      "sensor.living_room_winter_scharlau_perception": "outside_calculable_range",
+      "sensor.living_room_summer_simmer_index": "24.283208",
+      "sensor.living_room_summer_simmer_perception": "slightly_cool",
+      "sensor.living_room_thoms_discomfort_perception": "no_discomfort"
+    }
+  }
+]

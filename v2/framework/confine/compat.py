@@ -74,7 +74,7 @@ UNSTRIPPED = ["http", "websocket_api", "frontend", "lovelace", "panel_custom", "
 
 
 def install_requirements(requirements: list[str], target: Path, python: Path,
-                         uv: str, timeout: int = 300) -> dict:
+                         uv: str, timeout: int = 300, compile_bytecode: bool = False) -> dict:
     """Install an integration's declared dependencies into a directory of its own.
 
     Faithful to the design rather than convenient for the test: §5.2 has Home Assistant
@@ -87,7 +87,10 @@ def install_requirements(requirements: list[str], target: Path, python: Path,
         return {"ok": True, "installed": [], "note": "no requirements declared"}
     proc = subprocess.run(
         [uv, "pip", "install", "--quiet", "--python", str(python),
-         "--target", str(target), *requirements],
+         "--target", str(target),
+         # W2 (c): `uv` does not compile bytecode by default, and inside the sandbox this tree is
+         # read-only, so without it every confined start compiles these modules again.
+         *(["--compile-bytecode"] if compile_bytecode else []), *requirements],
         capture_output=True, text=True, timeout=timeout)
     installed = sorted(p.name.split("-")[0] for p in target.glob("*.dist-info"))
     if proc.returncode != 0:

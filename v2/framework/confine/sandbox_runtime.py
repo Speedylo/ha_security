@@ -44,8 +44,13 @@ import socket
 import struct
 import sys
 import threading
+import time
 import traceback
 from pathlib import Path
+
+#: When this process began, before any of Home Assistant was imported. A `.pyc` written after this
+#: was compiled by this run, whatever it says now (W2 (c)).
+PROCESS_START = time.time()
 
 SPEC_PATH = "/sandbox/spec.json"
 COMPONENT = "/sandbox/component"
@@ -430,6 +435,58 @@ def _plain(value: object) -> bool:
     scalars = (str, int, float, bool, type(None))
     return isinstance(value, scalars) or (isinstance(value, list)
                                           and all(isinstance(v, scalars) for v in value))
+
+
+def bytecode_report() -> dict:
+    """For every module loaded from source: was its bytecode read from a cache, or compiled? (W2 (c))
+
+    Decided the way `SourceFileLoader` decides: a `.pyc` is used when its 16-byte header matches —
+    magic number; then either the source's hash (hash-based pycs) or its modification time and size.
+    Reading one needs no write access, so a read-only mount does not by itself make a start cold.
+    A `.pyc` whose file is newer than this process is counted as **compiled**, because this run
+    wrote it: on a writable tree, the cache existing afterwards says nothing about before.
+    Grouped by where the module really lives, symbolic links resolved.
+    """
+    import importlib.util
+    import sysconfig
+
+    roots = [("component", os.path.realpath(COMPONENT)),
+             ("deps", "/sandbox/deps"), ("platform-deps", "/sandbox/platform-deps"),
+             ("platform (site-packages)", sysconfig.get_paths()["purelib"]),
+             ("stdlib", sysconfig.get_paths()["stdlib"])]
+    groups: dict[str, dict] = {}
+    for module in list(sys.modules.values()):
+        origin = getattr(getattr(module, "__spec__", None), "origin", None)
+        cached = getattr(module, "__cached__", None)
+        if not origin or not origin.endswith(".py") or not cached:
+            continue
+        real = os.path.realpath(origin)
+        group = next((name for name, root in roots if real.startswith(root + os.sep)), "other")
+        state = "compiled"
+        try:
+            with open(cached, "rb") as fh:
+                header = fh.read(16)
+            source = os.stat(origin)
+            if len(header) == 16 and header[:4] == importlib.util.MAGIC_NUMBER \
+                    and os.stat(cached).st_mtime < PROCESS_START:
+                flags = int.from_bytes(header[4:8], "little")
+                if flags & 0b1:
+                    with open(origin, "rb") as fh:
+                        valid = header[8:16] == importlib.util.source_hash(fh.read())
+                else:
+                    valid = (int.from_bytes(header[8:12], "little") == int(source.st_mtime)
+                             & 0xFFFFFFFF
+                             and int.from_bytes(header[12:16], "little")
+                             == source.st_size & 0xFFFFFFFF)
+                if valid:
+                    state = "from_cache"
+        except OSError:
+            pass
+        bucket = groups.setdefault(group, {"from_cache": 0, "compiled": 0, "examples": []})
+        bucket[state] += 1
+        if state == "compiled" and len(bucket["examples"]) < 3:
+            bucket["examples"].append(module.__name__)
+    return {"groups": groups, "seconds_since_start": round(time.time() - PROCESS_START, 2)}
 
 
 def callback_shim(func):
@@ -921,6 +978,8 @@ async def run() -> dict:
                           "received": bridge.received, "unexpected": bridge.unexpected,
                           "commands": bridge.commands}
         result["egress"] = {**(result.get("egress") or {}), **egress_summary()}
+        if spec.get("report_bytecode"):
+            result["bytecode"] = bytecode_report()
         await hass.async_stop()
         return result
 

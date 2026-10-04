@@ -41,3 +41,26 @@ sandbox without saying whether a confined one is ever warm.
 | **B4** | `platform-deps` is mixed, with some modules cached and some not | low |
 | **B5** | Installing the per-run trees with `--compile-bytecode` turns B2 and B3 into ≥ 95% from cache, and shortens the sandbox's start measurably | medium |
 | **B6** | Something not listed is found | medium |
+
+---
+
+## 5. Outcomes, 2026-10-04 (appended; §4 is unchanged)
+
+Evidence: `experiments/bytecode_cache/results/w2c_20261004/`. Three subjects × three modes on the Pi,
+one run per cell. **The control holds:** with `--cold` (an empty `PYTHONPYCACHEPREFIX` inside the
+sandbox), the probe reports 0 modules from cache in every tree, so it can tell the two apart.
+
+| | Outcome |
+|---|---|
+| **B1** | **Held, more strongly than predicted.** Standard library and `ha314`: 100% from cache in all three subjects (212–218 and 245–508 modules) |
+| **B2** | **Held.** The run's own `deps`: 0/3 (`watchman`), 0/84 (`powercalc`), compiled on every start |
+| **B3** | **Held, but only after a confound was removed.** The integration's own code: 0/4, 0/18, 0/80. The first run said 4/4, because the harness copied the corpus's `__pycache__`, written by the 2026-09-02 unconfined runs, into every confined run. A fresh HACS download has none. The harness now leaves it out |
+| **B4** | **Wrong.** `platform-deps` was 100% from cache (560–846 modules), not mixed |
+| **B5** | **Held.** With `--compile-bytecode` (deps) and `compileall` (component), both are 100% from cache. Time at report: `powercalc` 2.47 → 1.87 s (−24%), `watchman` 1.24 → 1.18 s, `thermal_comfort` 0.92 → 0.91 s. A cold platform, for scale, costs 3–4.6 s more |
+| **B6** | **Held: the confound in B3.** Every earlier confined end-to-end run was warm for the integration's own code, because of the copied cache. No reported figure depends on start time, so nothing changes |
+
+**The answer.** A read-only mount does not make a confined start cold: the sandbox reads whatever
+bytecode already exists. What it cannot do is create any. The platform's trees are warm because
+something with write access compiled them; the integration and its dependencies are compiled on every
+start unless the installer compiles them. That is one installer flag, and §7.35.4's open question
+is closed.

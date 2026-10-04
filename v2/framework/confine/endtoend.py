@@ -123,7 +123,9 @@ PUSHED_TEMPERATURE = "30.0"
 
 def run_one(domain: str, component: Path, subject: dict, python: Path,
             delegation: Delegation, uv: str | None, platform_deps: Path | None,
-            push: bool = False, real: bool = False, command: bool = False) -> dict:
+            push: bool = False, real: bool = False, command: bool = False,
+            bytecode: bool = False, compile_bytecode: bool = False,
+            cold: bool = False) -> dict:
     root = Path(tempfile.mkdtemp(prefix=f"e2e-{domain}-"))
     mediator = Mediator()
     # T4: §7.17's decisions, durably and reconciled — `report["decisions"]` below is read from
@@ -133,7 +135,10 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
     try:
         own = root / "custom_components" / domain
         own.parent.mkdir(parents=True)
-        shutil.copytree(component, own)
+        # Without `__pycache__`: the corpus copies carry bytecode written by the 2026-09-02
+        # unconfined runs, which a fresh download from HACS would not have. Copied with the tree,
+        # it made every confined run warm and hid W2 (c)'s question (found 2026-10-04).
+        shutil.copytree(component, own, ignore=shutil.ignore_patterns("__pycache__"))
         # The authority manifest goes beside the integration, never inside its own manifest.json
         # — §5.9.4's precedence: the file's location is the provenance signal, and rewriting the
         # integration's own file would breach C1.
@@ -156,10 +161,16 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
         if uv:
             try:
                 install = install_requirements(declared_requirements(component) + extra,
-                                               deps, python, uv)
+                                               deps, python, uv,
+                                               compile_bytecode=compile_bytecode)
             except (subprocess.TimeoutExpired, OSError) as err:
                 install = {"ok": False, "installed": [], "error": str(err)[:200]}
         deps.mkdir(parents=True, exist_ok=True)
+        if compile_bytecode:
+            # The integration's own tree too, with the interpreter the sandbox will run: a `.pyc`
+            # carries the interpreter's magic number, so compiling with another would be ignored.
+            subprocess.run([str(python), "-m", "compileall", "-q", str(own)], check=False,
+                           capture_output=True, timeout=300)
 
         if real:
             # W1 step 2: the house's real Home Assistant. Its world is its own entities, set back
@@ -237,6 +248,7 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
             "setup_components": wanted,
             "record_egress": True,
             "push": push, "settle_seconds": 20 if push else 0,
+            "report_bytecode": bytecode,
             "menu_choice": subject.get("menu_choice") or {},
             "flow_input": subject["flow_input"]}))
 
@@ -246,7 +258,10 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
             runtime_files={str(HERE / "sandbox_runtime.py"): "/sandbox/runtime.py",
                            str(spec_file): "/sandbox/spec.json",
                            str(deps): DEPS},
-            env={"PYTHONPATH": DEPS})
+            env={"PYTHONPATH": DEPS,
+                 # W2 (c)'s control: an empty cache directory in the sandbox's private /tmp, so
+                 # every module must be compiled. The probe must then report nothing from cache.
+                 **({"PYTHONPYCACHEPREFIX": "/tmp/pycache-cold"} if cold else {})})
         if platform_deps:
             spec.runtime_files[str(platform_deps)] = PLATFORM_DEPS
             spec.env["PYTHONPATH"] = f"{DEPS}:{PLATFORM_DEPS}"
@@ -392,6 +407,12 @@ def main() -> int:
     ap.add_argument("--command", action="store_true",
                     help="W1 step 2b, with --platform real: a user in (A) turns the "
                          "integration's sleep-mode switch on while it runs")
+    ap.add_argument("--bytecode", action="store_true",
+                    help="W2 (c): report, per module, whether bytecode came from a cache")
+    ap.add_argument("--compile-bytecode", action="store_true",
+                    help="W2 (c): compile the per-run trees while they are still writable")
+    ap.add_argument("--cold", action="store_true",
+                    help="W2 (c)'s control: point the sandbox's bytecode cache at an empty dir")
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
 
@@ -421,7 +442,8 @@ def main() -> int:
         else:
             report = run_one(domain, component, subject, python, delegation, uv, platform_deps,
                              push=args.push, real=args.platform == "real",
-                             command=args.command)
+                             command=args.command, bytecode=args.bytecode,
+                             compile_bytecode=args.compile_bytecode, cold=args.cold)
         results.append(report)
         entities = [e for e in report.get("own_entities", report.get("local_entities", []))
                     if e.split(".")[0] not in ("persistent_notification",)

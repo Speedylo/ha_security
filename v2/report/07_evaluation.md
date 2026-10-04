@@ -4267,6 +4267,10 @@ interpreter tree the sandboxes import from had its cache populated by August's f
 reads that cache was not checked. An installer should compile bytecode, and no measurement here
 confirms the cost inside a sandbox.
 
+> **Answered by §7.39 (2026-10-04).** A confined sandbox reads the platform's existing cache, so the
+> platform starts warm. The integration and its dependencies are compiled on every start unless the
+> installer compiles them, which cost `powercalc` 0.6 s per start.
+
 
 ## 7.36 The push loop, and an ordering guarantee that did not hold where it mattered
 
@@ -4582,6 +4586,54 @@ cause was that events from (A) were applied inside actions at all, so they are n
 applied only by the mediator's own loop, between requests. After that, the command succeeds in
 14 ms, `thermal_comfort` is unchanged, and `selftest_real_platform` passes 40 of 40 on a fresh (A).
 
+
+
+## 7.39 Whether a confined sandbox starts warm
+
+**2026-10-04.** §7.35.2 found that §5.6.3's first-sandbox figure was a cold start, the run that
+first compiled Home Assistant's bytecode, and §7.35.4 left open whether a confined sandbox is ever
+warm. The sandbox binds the interpreter, the platform's dependencies and the integration read-only.
+So any module without valid bytecode already on disk would be compiled on every start, and never
+saved. Predictions were committed first (`notes/w2c_bytecode_cache_prediction.md`).
+
+### 7.39.1 Measured module by module
+
+Python uses a module's cached bytecode when the cache file's header matches the source: a magic
+number, then either the source's modification time and size or its hash. Reading the file needs no
+write access. So, rather than infer warmth from memory or time, each confined run now checks every
+loaded module exactly as the loader does, and counts it as compiled if its cache was written after
+the process started. A control points the cache at an empty directory inside the sandbox. The
+check then reports nothing from cache in any tree, so it can tell the two cases apart.
+
+The first runs said every module came from cache, the integration's own code included. That was the
+harness, not the sandbox. It copied each integration from the corpus together with a `__pycache__`
+the 2 September unconfined runs had written there, which a fresh download would not have. Every
+earlier confined end-to-end run was therefore warm for the integration's own code. No reported figure
+depends on start time, so nothing above changes, but the harness now leaves the cache out.
+
+### 7.39.2 The result
+
+Modules read from cache, out of those loaded, for `powercalc`; `watchman` and `thermal_comfort`
+follow the same pattern with fewer modules of their own. One run per cell.
+
+| | standard library | platform | platform's dependencies | integration's dependencies | integration | time at report |
+|---|---|---|---|---|---|---|
+| as installed today | 218/218 | 508/508 | 846/846 | **0/84** | **0/80** | 2.47 s |
+| compiled at install | 218/218 | 508/508 | 846/846 | 84/84 | 80/80 | **1.87 s** |
+| control: empty cache | 0/218 | 0/508 | 0/846 | 0/84 | 0/80 | 7.05 s |
+
+**A read-only mount does not make a confined start cold.** The sandbox reads whatever bytecode already
+exists; it cannot create any. The platform's trees are warm because something with write access
+compiled them. The integration and its dependencies are compiled on every start, because `uv` does
+not compile at install unless asked, and that cost 0.6 s per start for `powercalc`, 24% of its start
+to that point. The fix belongs to the installer, not the sandbox: compile while the trees are still
+writable, with `--compile-bytecode` for the dependencies and `compileall` for the integration. The
+harness now offers both.
+
+Five of six predictions held. The one that failed was the hedge on the platform's dependency tree,
+which was fully warm rather than mixed. §7.35.4's open question is closed. What this does not
+establish is the memory side of the cold cost, which §7.35.2 put at about 16 MB for a fully cold
+platform. Only the integration's share is cold here, and it was not separately measured.
 
 ---
 

@@ -28,6 +28,10 @@ one caused a fourth, all fixed (§7.38.4): a refusal by (A) crashed the mediator
 wanted a verification review, not study. W1 verified clean the same evening (all suites, both real
 end-to-end runs, 40/40 against (A)). Next: W2.**
 
+**W2 (c) done 2026-10-04** (§7.39): a read-only mount does not make a confined start cold; the
+integration and its deps compile every start unless the installer compiles them (`powercalc` −24% with
+`--compile-bytecode`). Harness no longer copies the corpus's stale `__pycache__`. **Next: W2 (a), (b), (d).**
+
 **In one screen — where we are, 2026-10-03:**
 
 | | Status |
