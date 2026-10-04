@@ -6,6 +6,11 @@ Assistants, the push loop, and why the push loop drags §8.7 #14 in with it. The
 **finished** (T1–T6 and §7.35 all done) and is now history, kept for the record. Everything after it
 is older history, newest first.
 
+**2026-10-04: W1 step 1 done** (push loop + §8.7 #14 re-check against the stand-in; record-before-act
+defect found and fixed; 22/22 suites on the Pi). Record and outcomes: `notes/w1_push_loop_prediction.md`.
+**Next: W1 step 2** — the bridge integration in the real Home Assistant and `RealPlatform`, feeding
+`Platform.listeners`' shape from (A)'s event bus. Report debts from step 1 are listed at the end of that note.
+
 **In one screen — where we are, 2026-10-03:**
 
 | | Status |
