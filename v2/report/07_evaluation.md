@@ -298,13 +298,13 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **C2** | Every arm runs against an unmodified official Home Assistant release, version recorded in the result file | All arms | ✅ **Met** — §7.12 — every arm ran against unmodified Home Assistant 2026.8.3 (`759e465`), the release recorded in each result file |
 | **C3** | The adversarial run includes an absent manifest, an over-broad manifest, and one deliberately mismatched to behaviour — and all three are handled per §5.9's precedence rules | Security | ✅ **Met** — §7.16.1 — `selftest_c3`: absent, over-broad and mismatched manifests. Over-broad **is honoured** (R1) and the section says so; the ceiling it cannot raise holds what §4.9 rated Critical |
 | **C4** | Every performance figure is produced on the Raspberry Pi 5, reporting per-integration memory *and* added latency | Performance | ✅ **Met** — §7.19–§7.22 — every performance figure produced on the Pi 5, per-integration memory *and* added latency both reported |
-| **F1** | A confined integration's entities are present in Home Assistant and behave as native entities under the measures used in this chapter | Compatibility, level 2 | ✅ **Met** — §7.17.3 — `thermal_comfort`: two declared entities mirrored in, fifteen derived sensors published out, dew point physically correct. **Bounded by §8.6.3 #2**: the mediator acts on a stand-in, not a live instance |
+| **F1** | A confined integration's entities are present in Home Assistant and behave as native entities under the measures used in this chapter | Compatibility, level 2 | ✅ **Met** — §7.17.3 — `thermal_comfort`: two declared entities mirrored in, fifteen derived sensors published out, dew point physically correct. *2026-10-04, §7.37: the same fifteen are now registry entities in the house's real Home Assistant, with their unconfined names, surviving a restart, which lifts the bound below for a sensor-publishing integration.* **Bounded by §8.6.3 #2**: the mediator acts on a stand-in, not a live instance |
 | **F2** | An integration polling a **declared** remote API completes successfully while confined | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met — §7.25, and by a *real* integration in §7.27.** Two purpose-built integrations polled declared hosts concurrently in real namespaces (§7.25); `nordpool` — unmodified community source — then polled its own Nord Pool API confined and published **the same price as the unconfined arm**, with the mediator's durable record naming `dataportal-api.nordpoolgroup.com:443` (§7.27). **§7.31 (2026-10-03) adds three more real integrations across `requests`, `httpx` and `aiohttp`, each matching its unconfined output, and §7.34 one with a valid credential — an authenticated round trip whose key never reached the mediator** |
 | **F3** | Every enforcement decision in the evaluation names the manifest clause that produced it; a decision with no attributable clause is shown to be unconstructible | Security | ✅ **Met** — §7.4.2, §7.16.1 — every decision record carries a clause pointer; seven mismatched behaviours produced seven denials naming **seven distinct clauses** |
 | **F4** | The manifest of each evaluated integration renders in human-readable form, with denials shown at the same weight as grants | §6.7, re-run over the evaluated set | ✅ **Met** — §7.16.2 — `selftest_describe`, four states, denials rendered at the same weight as grants. Bounded to *availability* by §3.4; comprehension is excluded by §3.7 |
 | **S1** | The published garbage-collector technique (§2.4.1) is attempted from inside the sandbox and reaches no platform object; the mediator and its credential are not locatable from within | Security | ✅ **Met, paired** — §7.15.3 — the published `gc` technique reaches a live credential **7 ways** unconfined and **0** confined across 8,942 objects, while the same token is confirmed live in the mediator |
 | **S2** | No platform credential is recoverable from the sandbox's environment, filesystem, process table or memory | Security | ✅ **Met, paired** — §7.13, §7.15.3 — another process’s environment `LEAKED` unconfined and `EMPTY` confined; no platform credential recoverable from the sandbox |
-| **S3** | A confined integration is denied both a **read** and a **subscription** to undeclared entities, each refusal naming its clause, **against a paired unconfined baseline** quantifying what is readable without the framework | Security | ✅ **Met, 2026-10-04 — §7.36.** The subscription half is now a delivered and filtered stream: **0 of 3** undeclared changes delivered against §7.14.4's **4 of 4** unconfined, with a mutation showing the zero is the filter's. At the stand-in platform, so bounded by §8.6.3 #2 as F1 is. *Until 2026-10-04 this read:* ◐ **Partial** — §7.14.2 — the read half is met and paired: **36/36 → 1/36**, and **20/20 → 0/20** presence entities. **The subscription half is verified at the decision layer only**; no push loop exists to deliver a stream (§6.11.2, §8.6.3 #1) |
+| **S3** | A confined integration is denied both a **read** and a **subscription** to undeclared entities, each refusal naming its clause, **against a paired unconfined baseline** quantifying what is readable without the framework | Security | ✅ **Met, 2026-10-04 — §7.36.** The subscription half is now a delivered and filtered stream: **0 of 3** undeclared changes delivered against §7.14.4's **4 of 4** unconfined, with a mutation showing the zero is the filter's. At the stand-in platform, so bounded by §8.6.3 #2 as F1 is; repeated against the house's real Home Assistant in §7.37. *Until 2026-10-04 this read:* ◐ **Partial** — §7.14.2 — the read half is met and paired: **36/36 → 1/36**, and **20/20 → 0/20** presence entities. **The subscription half is verified at the decision layer only**; no push loop exists to deliver a stream (§6.11.2, §8.6.3 #1) |
 | **S4** | An integration is denied a host declared only by a *different* integration | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met — §7.25.** Two confined integrations, running at once, each denied the host declared only by the other — evidenced by the mediator's own audit record |
 | **S5** | A manifest permitting `lock.lock` is shown not to permit `lock.unlock`, and the refusal is structural rather than a check | §6.10.1 — re-verified in the evaluation run | ✅ **Met** — §7.16.1 — a manifest declaring `lock.lock` does not permit `lock.unlock`, and `lock.*` is rejected at **parse** time rather than at the point of use |
 | **S6** | An integration with **no** manifest and one with an **unparseable** manifest are each denied all mediated capability, each refusal naming its rule | Security | ✅ **Met** — §7.16.2 — `selftest_policy`: absent and unparseable manifests each denied all mediated capability, each refusal naming the rule |
@@ -879,7 +879,8 @@ Two further limits, neither of which the number should be read past:
 
 - **The confined arm's mediator acts on §6.10.2's stand-in, not a live instance.** What is under
   test is which entities the mediator will surrender, and that is decided before any platform is
-  reached.
+  reached. *(2026-10-04: §7.37 repeats the filter against the house's real Home Assistant, which
+  is asked only for subscribed entities and whose unsubscribed changes are not delivered.)*
 - **36 entities is a small home.** The proportion is the finding, not the count; a larger home
   moves the unconfined figure up and the confined figure not at all, since the confined figure
   is the size of the declaration.
@@ -1230,6 +1231,8 @@ paired discipline rather than for trusting a traceback.
   supports is `loaded`, and that is what §7.17.5 compares.
 - **The mediator acts on §6.10.2's stand-in.** What crossed the boundary is real and is recorded
   with its clause; what a live Home Assistant would do with those fifteen entities is not tested.
+  *(Tested 2026-10-04, §7.37: against the house's real Home Assistant the fifteen are registry
+  entities with a device and a config entry, keep their names, and survive a restart.)*
 
 ## 7.18 How much egress is actually needed, and of what kind
 
@@ -3756,6 +3759,7 @@ argument. It now carries this exception.
 - **The static bound on the TLS defect is an upper bound.** No integration other than
   `regensburg_transport` was observed failing on it.
 - **The mediator still acts on §6.10.2's stand-in.** Nothing here changes §8.6.3's limit 2.
+  *(§7.37 changes it, 2026-10-04, for integrations that publish sensors.)*
 - **Another defect of this kind is likely.** Three were found by three integrations, after one was
   found by one. Nothing in this section suggests the supply is exhausted, and §8.4.2's argument
   predicts that it is not.
@@ -4369,10 +4373,116 @@ absence. An unmodified integration reacts to a pushed change as it would to a lo
 that outlives its sandboxes re-reads each declaration at spawn. A sandbox that stops reading cannot
 stall the mediator or measurably delay other sandboxes.
 
-**Not established.** The platform is still the stand-in, so whether the house's real Home Assistant
+**Not established.** *(The first half of this paragraph is answered by §7.37, the same day: (A) feeds
+the push loop at 0.71 ms median and keeps the confined entities as registry entities.)* The platform is still the stand-in, so whether the house's real Home Assistant
 can feed the push loop at its real rates, and what it does with what the mediator sends it, is §8.7
 #2's to answer. The rates measured here are synthetic, and a busy home's actual rate of state changes
 was not measured. The cost is measured at the mediator only.
+
+
+## 7.37 The real Home Assistant behind the mediator
+
+**2026-10-04.** Every confined run before this section acted on §6.10.2's stand-in: step 5 of
+§5.11.3 wrote to two dictionaries and a list, and no running Home Assistant ever received what the
+mediator permitted. §8.6.3 carried that as limitation 2, and §8.7 #2 named what it costs: not
+realism but identity, because states published over the states API have no registry row, while 83%
+of integrations publish through the path that creates one (§5.6.1). This section puts the house's
+real Home Assistant, called (A) here, behind the mediator. The private instance inside each sandbox,
+(B), is unchanged. Predictions were committed before any code (`notes/w1_step2_real_platform_prediction.md`).
+
+### 7.37.1 What was built
+
+Chapter 5 fixed the shape. The mediator holds a long-lived token for (A) and uses it only at step 5
+(§5.15.3), so it reaches (A) as a client of (A)'s own API. That API is the WebSocket one, because
+REST, which the 2026-08 spike used, cannot push. The Pi's system Python has no WebSocket library and
+the mediator is a single-threaded loop, so the client is RFC 6455 written out with the standard
+library, about 200 lines. It is tested against the RFC's own examples, so that the test cannot share
+a misunderstanding with the code. `RealPlatform` turns step 5's operations into messages on that
+one connection: reads, service calls, and a subscription to exactly the entities some sandbox has
+subscribed to. Changes (A) sends arrive on the mediator's selector beside the sandboxes' requests and
+feed §7.36's push loop unchanged.
+
+Inside (A), a bridge integration gives confined integrations their identity. It is adapted from the
+spike's `sandbox_bridge`, which `00_METHOD.md` §5 permits reusing. It owns one config entry, creates
+a registry-backed entity for each published one under a device, and restores its roster when (A)
+restarts. Publishing is an administrator-only WebSocket command rather than the spike's service, so
+that no automation or dashboard button in (A) can publish as a confined integration. It decides
+nothing; every publish it receives was permitted by the mediator first.
+
+(A) itself is the pinned release, run as its own process on the Pi and rebuilt from nothing before
+each evidence run. Its world is real: two `input_number` helpers with template sensors over them, so
+that a push is caused by a real service call into (A) rather than by a harness writing a dictionary.
+
+### 7.37.2 Five things the stand-in had hidden
+
+**(A) could not run at first without a component nobody uses here.** Home Assistant always sets up
+its frontend, treats it as the one critical integration, and enters recovery mode if it fails to
+load. Recovery mode disables every custom integration, so the bridge simply did not exist, and the
+only symptom was "Cannot find integration confine_bridge" from a config flow. The frontend is
+installed beside the pinned environment rather than into it, so that no other experiment's
+environment changed.
+
+**The sandbox could lose a push.** It sent its subscriptions before installing the handler for
+pushes, so a push that arrived while a subscribe request waited for its answer went to a handler that
+discarded it. Against (A) the mediator sent four push frames and the sandbox received three. The lost
+one was a duplicate initial state, which is why the stand-in, which sends no initial state, never
+showed it. After reversing the order, four were sent and four received.
+
+**Every bridged entity was renamed.** Since 2026.8, Home Assistant builds a friendly name from the
+registry as the device's name followed by the entity's own, whatever the state's attribute says. The
+bridge received only the composed name from the sandbox, so `thermal_comfort`'s dew point appeared in
+(A) as "thermal_comfort living room Dew point", where the same integration unconfined shows "living
+room Dew point". The sandbox now sends the two parts its own registry holds, and the bridge recreates
+the integration's device. All 15 friendly names in (A) now equal those in (B).
+
+**Lists never left the sandbox.** The sandbox forwarded only scalar attributes, so an enum sensor's
+`options`, the list of states it may take, was dropped on the way out. The stand-in never looked at
+attributes. All 7 of `thermal_comfort`'s enum sensors now carry their options into (A).
+
+**One figure was the test's own.** The first latency measurement, 50.7 ms, was the polling interval of
+the loop that waited for it. It is timestamped where the change arrives at the mediator now.
+
+### 7.37.3 The result
+
+| | Result |
+|---|---|
+| Registry identity | **15 of 15** of `thermal_comfort`'s entities have registry rows in (A), with config entry and device; the same state posted to `/api/states` has **none**. The spike's finding, re-measured |
+| Restart of (A), no sandbox running | 15 of 15 rows remain, 15 of 15 states identical |
+| A real change pushed in | `input_number.set_value` to 30.0 °C: dew point 9.96 → 17.81 °C, heat index 20.85 → 30.74, as on the stand-in |
+| Change in (A) to the mediator's push | median **0.71 ms**, worst 1.57 ms, 30 changes |
+| Filter | (A) is asked only for subscribed entities; an unsubscribed change is not delivered |
+| Ownership | a sandbox publishing an entity id (A) already has is refused without `entities.write`, and (A)'s entity is untouched |
+| Service calls | a permitted call executes in (A); a refused one never reaches it |
+| Names and options | 15 of 15 friendly names equal (B)'s; 7 of 7 enum sensors carry their options |
+| Durable log | 34 decisions, chain verifies, reconciles with memory |
+| Regression | all 24 suites pass on the Pi |
+
+**What this changes in the report's claims.** §8.6.3's limitation 2 was that what crossed the
+boundary was real but what a live instance did with it was untested. For a sensor-publishing
+integration it is now tested: its entities are first-class in the house's Home Assistant, survive a
+restart, and react to the house's own changes. The 0.71 ms is the platform's side of the push path;
+§7.36 measured the mediator's.
+
+### 7.37.4 The predictions, and what this establishes
+
+All eight predictions held. R2 held better than predicted: the risk named was restoration ordering,
+and the states were restored exactly. R5 held by a wider margin than predicted, sub-millisecond
+rather than milliseconds, once the test's own interval was removed from the measurement. R8, that
+something not listed would be found, held five times, all five fixed and re-measured the same day.
+
+**Established.** A confined integration's entities are first-class in the house's real Home
+Assistant: registry rows, a device, a config entry, survival across a restart, and the names the
+integration would have had unconfined. Real changes in (A) reach the confined integration within a
+millisecond at the mediator, filtered to what it subscribed to. Permitted service calls execute in
+(A), and refused ones never reach it.
+
+**Not established.** Commands in the other direction, a user in (A) operating an entity a sandbox
+owns, are not built. That is step 2b of the plan, and until it exists a confined switch or light
+cannot be driven from (A). The bridge stands in for sensors and binary sensors only, and refuses
+other domains rather than approximating them. One integration was run, and it publishes only
+sensors. The older security suites still run against the stand-in. Their decisions are made before
+any platform is reached, so this should not matter, but that is an argument, not a measurement.
+`selftest_real_platform` measures the platform-dependent properties against (A).
 
 ---
 

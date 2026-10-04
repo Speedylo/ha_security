@@ -361,14 +361,43 @@ class Bridge:
                 return
             answer = self.channel.request({
                 "op": "entity.publish", "entity": entity_id, "state": new.state,
-                "attributes": {k: v for k, v in new.attributes.items()
-                               if isinstance(v, (str, int, float, bool, type(None)))},
+                "attributes": {k: v for k, v in new.attributes.items() if _plain(v)},
+                "naming": self._naming(entity_id),
             })
             self.published.append({"entity": entity_id, "state": new.state,
                                    "accepted": bool(answer.get("ok")),
                                    "clause": answer.get("clause")})
 
         self.hass.bus.async_listen(EVENT_STATE_CHANGED, _changed)
+
+    def _naming(self, entity_id: str) -> dict:
+        """The two parts Home Assistant builds a friendly name from: the device's and the entity's.
+
+        Since 2026.8 the platform composes a friendly name from the registry — the device's name,
+        then the entity's own — and not from the state attribute. Sending only the composed name
+        made the bridge file "living room Dew point" under a device called "thermal_comfort", and
+        (A) showed "thermal_comfort living room Dew point" where the same integration unconfined
+        shows "living room Dew point" (§7.37). These are display names only; they grant nothing.
+        """
+        from homeassistant.helpers import device_registry as dr, entity_registry as er
+
+        entry = er.async_get(self.hass).async_get(entity_id)
+        if entry is None:
+            return {}
+        device = dr.async_get(self.hass).async_get(entry.device_id) if entry.device_id else None
+        return {"name": entry.original_name, "has_entity_name": entry.has_entity_name,
+                "device": (device.name_by_user or device.name) if device else None}
+
+
+def _plain(value: object) -> bool:
+    """JSON-safe without conversion: a scalar, or a list of scalars (an enum sensor's `options`).
+
+    Until W1 step 2 only scalars passed, so every list-valued attribute was dropped on the way out
+    — including the `options` an enum sensor needs. The stand-in never looked at attributes.
+    """
+    scalars = (str, int, float, bool, type(None))
+    return isinstance(value, scalars) or (isinstance(value, list)
+                                          and all(isinstance(v, scalars) for v in value))
 
 
 def callback_shim(func):
@@ -801,8 +830,12 @@ async def run() -> dict:
     if spec.get("push"):
         # W1. Opt-in for now, so that every measured run before it is reproducible as it was;
         # once step 2 lands this becomes the default.
-        bridge.subscribe_declared_entities()
+        # The handler first, then the subscriptions. The other order loses any push that arrives
+        # while a subscribe request waits for its answer: `request` hands it to `on_push`, which
+        # until `receive_pushes` runs is a no-op. Found against (A) on 2026-10-04, where the
+        # mediator wrote four push frames and the sandbox received three (§7.37).
         bridge.receive_pushes()
+        bridge.subscribe_declared_entities()
 
     from homeassistant.config_entries import ConfigEntryState, ConfigEntry, SOURCE_USER
 

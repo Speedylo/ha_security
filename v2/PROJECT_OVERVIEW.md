@@ -9,6 +9,8 @@
 > requirement are closed at the stand-in platform; all 20 requirements are now met. Building it found
 > that the mediator had recorded each action *after* carrying it out, from 2026-08-25 to 2026-10-04,
 > so the audit log's "record before act" promise held only in its own self-test. Fixed the same day.
+> The same day (§7.37) the mediator was put in front of a **real** Home Assistant: confined entities
+> now have registry identity there and survive restarts. Commands from it into a sandbox remain.
 
 **Written 2026-09-06.** This is the orientation document: what the project is, how it works, what
 has been proven and what has not. `STATE.md` is the working resume point with all the detail;

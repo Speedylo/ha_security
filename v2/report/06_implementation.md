@@ -1268,6 +1268,11 @@ the shape of the claim is independently plausible from §5.6.1's own measurement
 integrations publish through `async_add_entities` rather than through the state machine, and the
 registry row is what that path produces and the state machine does not.
 
+> **Re-measured in §7.37 (2026-10-04), and it holds.** Against the house's real Home Assistant,
+> the same state posted to `/api/states` has no registry row, while all 15 of a confined
+> `thermal_comfort`'s entities published through the bridge have one, with a config entry and a
+> device, and survive a restart. The finding is now evidence in this report, not prior work.
+
 ### 6.10.3 One rule Chapter 5 implies and does not state
 
 Implementing `entity.publish` forced a decision. §5.10.2 makes an integration's own things ambient
@@ -1322,7 +1327,8 @@ to report the exit status and the cgroup's own counters.
 - **The platform is a stand-in.** Step 5 acts on an in-memory object, not a running Home
   Assistant. §5.8.2 makes the same concession about the lock and the reason is the same: what is
   under test is the mediator's decision. What a real instance would add is §6.10.2's registry
-  identity, which is not nothing.
+  identity, which is not nothing. *(2026-10-04, §7.37: the mediator now acts on a real instance
+  as well, through a bridge integration in it; the stand-in remains the default for the suites.)*
 - **The integration is written for this test.** It is written in the idiom §5.6.1 measured as
   dominant and its source is never touched, which is what C1 asks — but it is not a community
   integration off HACS, and §6.11.1 scores it accordingly.
@@ -1358,7 +1364,7 @@ The bridge of §6.10 removed the largest gap. Six remain, in descending order of
 | **Executed end-to-end** | N2's second number. Needs configuration data that only each integration's own config flow produces |
 | **The egress proxy** | Scope item 2's second half, and F2 |
 | **The push loop** | §5.11.3's push shape. Declared entities are mirrored once at construction, so an integration sees the value that existed when its sandbox was built. *Built 2026-10-04, §7.36* |
-| **The real Home Assistant component** | Step 5 currently acts on a stand-in. §6.10.2 records what a real instance would add, and why it is more than realism |
+| **The real Home Assistant component** | Step 5 currently acts on a stand-in. §6.10.2 records what a real instance would add, and why it is more than realism. *Built 2026-10-04, §7.37, for publishing, push and service calls; commands into a sandbox remain* |
 | **Dependency installation** | §6.8.1's third identity component, which stays vestigial until resolved versions exist |
 
 So the honest summary of where Chapter 6 leaves the work has moved, and it is worth stating

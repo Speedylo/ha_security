@@ -175,6 +175,17 @@ class Mediator:
     _subscriptions: dict[int, set[str]] = field(default_factory=dict)
     _out: dict[int, _Outbox] = field(default_factory=dict)
     _selector: selectors.BaseSelector = field(default_factory=selectors.DefaultSelector)
+    _platform: object | None = None
+
+    def attach_platform(self, platform) -> None:
+        """Put a platform that pushes — `RealPlatform`'s connection to (A) — on the selector.
+
+        Its changes then arrive in the same loop as the sandboxes' requests, and its listeners,
+        which include `push`, run on this thread like everything else here (W1 step 2).
+        """
+        self._platform = platform
+        self._selector.register(platform, selectors.EVENT_READ)
+        platform.listeners.append(self.push)
 
     def register(self, identity: str, channel: Channel, run_id: str = "", *,
                  component: Path | None = None, provenance: str = "author-declared") -> None:
@@ -240,6 +251,9 @@ class Mediator:
             if not events:
                 return
             for key, mask in events:
+                if key.fileobj is self._platform:
+                    self._platform.pump()  # type: ignore[union-attr]
+                    continue
                 fd = key.fileobj.fileno()  # type: ignore[union-attr]
                 if fd in self._by_fd and mask & selectors.EVENT_WRITE:
                     self._flush(fd)

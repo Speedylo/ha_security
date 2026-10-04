@@ -13,6 +13,12 @@ defect found and fixed; 22/22 suites on the Pi). Record and outcomes: `notes/w1_
 dated pointers wherever the report relied on the old facts, abstract and counts updated, `toc.py --check` passes.
 All 20 requirements are now ✅ (S3 at the stand-in platform).
 
+**2026-10-04 (later): W1 step 2 done** — the mediator acts on a real HA, (A), on the Pi
+(`python3 -m confine.house_a up --fresh`): registry identity re-measured (15/15), restart survival,
+real pushes at 0.71 ms, names match (B). Five defects found and fixed; §7.37 written with dated pointers;
+24/24 suites on the Pi. **Next: step 2b** — commands from (A) into a sandbox (needs a switch-shaped
+test integration), then W2.
+
 **In one screen — where we are, 2026-10-03:**
 
 | | Status |

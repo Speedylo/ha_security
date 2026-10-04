@@ -1,0 +1,34 @@
+
+R1 — identity: a registry row, against a bare state
+
+  ok    the publish is allowed as the integration's own entity  — (ambient: §5.10.2)
+  ok    it has an entity-registry row in (A)  — entity_id=sensor.selftest_dew_point
+  ok    with the bridge as platform and a unique_id naming the integration  — selftest:sensor.selftest_dew_point
+  ok    and a config entry and a device
+  ok    and (A) holds its state, with its unit  — 9.96 {'unit_of_measurement': '°C', 'device_class': 'temperature', 'friendly_name': 'selftest Dew point'}
+  ok    the same state posted to /api/states exists in (A)
+  ok    but has no registry row at all — the spike's finding, re-measured
+
+ownership — against what (A) already has
+
+  ok    publishing an entity id (A) already has is refused without entities.write  — sensor.living_room_temperature belongs to the platform; nothing is declared at /permissions/entities/write
+  ok    and (A)'s own entity is untouched  — sensor.living_room_temperature=21.4
+
+R6 — service calls execute in (A), refusals never arrive
+
+  ok    a permitted call executes: (A)'s humidity is now 55  — 55.0
+  ok    a refused call never reaches (A): still 55
+  ok    and (A) executed exactly one call on the mediator's behalf  — [('input_number', 'set_value', {'entity_id': 'input_number.living_room_humidity', 'value': 55})]
+
+R4 — what (A) is asked to send, and what reaches the sandbox
+
+  ok    the subscription is granted
+  ok    (A) is asked for exactly the subscribed entities  — watched=['sensor.living_room_temperature']
+  ok    the subscribed entity's real change arrives  — {('sensor.living_room_temperature', '21.4'), ('sensor.living_room_temperature', '23.0')}
+  ok    the humidity change, unsubscribed, does not
+  ok    R5: a real change reaches the mediator's push in milliseconds  — median 0.71 ms, max 2.23 ms over 30 changes
+  ok    and each of the 30 changes reached the sandbox
+  ok    no delivery wrote a record; the log holds decisions only  — 5 decisions
+  ok    every chain verifies
+
+20/20 checks passed

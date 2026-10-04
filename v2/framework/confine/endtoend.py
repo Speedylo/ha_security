@@ -49,6 +49,7 @@ from .compat import (DEPS, PLATFORM_DEPS, component_requirements, declared_compo
 from .manifest import Manifest
 from .mediator import Mediator
 from .platform import Platform, acting_policy
+from .real_platform import RealPlatform
 from .preflight import require_ready
 from .sandbox import SandboxSpec
 from .selftest_bridge import interpreter_trees
@@ -121,7 +122,7 @@ PUSHED_TEMPERATURE = "30.0"
 
 def run_one(domain: str, component: Path, subject: dict, python: Path,
             delegation: Delegation, uv: str | None, platform_deps: Path | None,
-            push: bool = False) -> dict:
+            push: bool = False, real: bool = False) -> dict:
     root = Path(tempfile.mkdtemp(prefix=f"e2e-{domain}-"))
     mediator = Mediator()
     # T4: §7.17's decisions, durably and reconciled — `report["decisions"]` below is read from
@@ -159,9 +160,19 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
                 install = {"ok": False, "installed": [], "error": str(err)[:200]}
         deps.mkdir(parents=True, exist_ok=True)
 
-        platform = Platform()
-        for entity_id, (state, attributes) in WORLD.items():
-            platform.seed(entity_id, state, **attributes)
+        if real:
+            # W1 step 2: the house's real Home Assistant. Its world is its own entities, set back
+            # to WORLD's values first so every run starts where the stand-in's runs start.
+            platform = RealPlatform()
+            for helper, value in (("input_number.living_room_temperature", 21.4),
+                                  ("input_number.living_room_humidity", 48)):
+                platform.call({"type": "call_service", "domain": "input_number",
+                               "service": "set_value",
+                               "service_data": {"entity_id": helper, "value": value}})
+        else:
+            platform = Platform()
+            for entity_id, (state, attributes) in WORLD.items():
+                platform.seed(entity_id, state, **attributes)
 
         # Every state the integration publishes, in order, and the moment the push went out, so
         # the report shows a value before the change and a value after it rather than a count.
@@ -176,11 +187,34 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
                     platform.set_state("sensor.living_room_temperature", PUSHED_TEMPERATURE,
                                        WORLD["sensor.living_room_temperature"][1])
                     history.append(("<push>", PUSHED_TEMPERATURE))
-        platform.listeners.append(observe)
+        if real:
+            # (A)'s listeners fire for (A)'s changes, not for what the mediator publishes, so the
+            # history is taken where the publish happens, and the push is caused by a real
+            # `input_number.set_value` into (A) rather than by writing the stand-in's dict.
+            publish = platform.publish
+
+            def published(identity: str, entity_id: str, state: str, attributes: dict,
+                          naming: dict | None = None) -> None:
+                publish(identity, entity_id, state, attributes, naming)
+                history.append((entity_id, state))
+                if push and not pushed:
+                    pushed.append(entity_id)
+                    platform.call({"type": "call_service", "domain": "input_number",
+                                   "service": "set_value",
+                                   "service_data": {"entity_id":
+                                                    "input_number.living_room_temperature",
+                                                    "value": float(PUSHED_TEMPERATURE)}})
+                    history.append(("<push>", PUSHED_TEMPERATURE))
+            platform.publish = published  # type: ignore[method-assign]
+        else:
+            platform.listeners.append(observe)
 
         manifest = Manifest.load(own, root)
         mediator.policy = acting_policy({domain: manifest}, platform)
-        platform.listeners.append(mediator.push)
+        if real:
+            mediator.attach_platform(platform)
+        else:
+            platform.listeners.append(mediator.push)
         mediator_end, sandbox_end = Channel.pair()
         mediator.register(domain, Channel(mediator_end), component=own)
 
@@ -243,12 +277,28 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
     report["install"] = install
     report["decisions"] = [d for d in mediator.audit]
     report["durable"] = durable
-    report["platform_states"] = {k: v[0] for k, v in platform.states.items()
-                                 if k not in WORLD}
+    if real:
+        # What (A) now holds for this integration: every registry row the bridge created for it,
+        # read back from (A) itself rather than from what the mediator believes it published.
+        rows = [e for e in platform.call({"type": "config/entity_registry/list"})
+                if e.get("platform") == "confine_bridge"
+                and (e.get("unique_id") or "").startswith(f"{domain}:")]
+        report["registry"] = [{"entity_id": e["entity_id"], "unique_id": e["unique_id"],
+                               "config_entry": bool(e.get("config_entry_id")),
+                               "device": bool(e.get("device_id"))} for e in rows]
+        report["platform_states"] = {e["entity_id"]: platform.read(e["entity_id"])[0]
+                                     for e in rows}
+        report["calls_executed_in_A"] = platform.calls
+        platform.close()
+    else:
+        report["platform_states"] = {k: v[0] for k, v in platform.states.items()
+                                     if k not in WORLD}
     if push:
         report["publish_history"] = history
         report["pushes_sent"] = dict(mediator.pushes_sent)
         report["subscribers"] = mediator.subscribers("sensor.living_room_temperature")
+        if real:
+            report["watched_in_A"] = platform.watched
     return report
 
 
@@ -317,6 +367,9 @@ def main() -> int:
     ap.add_argument("--push", action="store_true",
                     help="W1: subscribe to what is read, change the temperature once the "
                          "integration has published, and report what it published after")
+    ap.add_argument("--platform", choices=["stand-in", "real"], default="stand-in",
+                    help="W1 step 2: act on the house's real Home Assistant, (A), which must be "
+                         "running (`python3 -m confine.house_a up`)")
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
 
@@ -345,7 +398,7 @@ def main() -> int:
             report = run_one_unconfined(domain, component, subject, python, uv, platform_deps)
         else:
             report = run_one(domain, component, subject, python, delegation, uv, platform_deps,
-                             push=args.push)
+                             push=args.push, real=args.platform == "real")
         results.append(report)
         entities = [e for e in report.get("own_entities", report.get("local_entities", []))
                     if e.split(".")[0] not in ("persistent_notification",)

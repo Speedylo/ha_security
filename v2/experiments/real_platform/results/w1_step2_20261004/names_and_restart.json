@@ -1,0 +1,68 @@
+{
+ "entities": 15,
+ "friendly_name_matches_B": 15,
+ "mismatches": {},
+ "enum_options": {
+  "sensor.living_room_dew_point_perception": [
+   "dry",
+   "very_comfortable",
+   "comfortable",
+   "ok_but_humid",
+   "somewhat_uncomfortable",
+   "quite_uncomfortable",
+   "extremely_uncomfortable",
+   "severely_high"
+  ],
+  "sensor.living_room_humidex_perception": [
+   "comfortable",
+   "noticable_discomfort",
+   "evident_discomfort",
+   "great_discomfort",
+   "dangerous_discomfort",
+   "heat_stroke"
+  ],
+  "sensor.living_room_relative_strain_perception": [
+   "outside_calculable_range",
+   "comfortable",
+   "slight_discomfort",
+   "discomfort",
+   "significant_discomfort",
+   "extreme_discomfort"
+  ],
+  "sensor.living_room_summer_scharlau_perception": [
+   "outside_calculable_range",
+   "comfortable",
+   "slightly_uncomfortable",
+   "moderately_uncomfortable",
+   "highly_uncomfortable"
+  ],
+  "sensor.living_room_winter_scharlau_perception": [
+   "outside_calculable_range",
+   "comfortable",
+   "slightly_uncomfortable",
+   "moderately_uncomfortable",
+   "highly_uncomfortable"
+  ],
+  "sensor.living_room_summer_simmer_perception": [
+   "cool",
+   "slightly_cool",
+   "comfortable",
+   "slightly_warm",
+   "increasing_discomfort",
+   "extremely_warm",
+   "danger_of_heatstroke",
+   "extreme_danger_of_heatstroke",
+   "circulatory_collapse_imminent"
+  ],
+  "sensor.living_room_thoms_discomfort_perception": [
+   "no_discomfort",
+   "less_than_half",
+   "more_than_half",
+   "most",
+   "everyone",
+   "dangerous"
+  ]
+ },
+ "rows_after_restart": 15,
+ "states_identical_after_restart": 15
+}

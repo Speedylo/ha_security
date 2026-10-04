@@ -62,6 +62,31 @@ class Platform:
         self.owners.setdefault(entity_id, "the platform")
         self.set_state(entity_id, state, attributes)
 
+    # Step 5's four operations. `ActingPolicy` calls only these, so that `RealPlatform` (W1 step 2)
+    # can stand behind the same policy: there they are WebSocket messages to the house's Home
+    # Assistant, and here they are the dictionary writes they always were.
+
+    def read(self, entity_id: str) -> tuple[str | None, dict]:
+        return self.states.get(entity_id, (None, {}))
+
+    def publish(self, identity: str, entity_id: str, state: str, attributes: dict,
+                naming: dict | None = None) -> None:
+        """An integration's own entity. The real platform gives it a registry row; here, a state.
+
+        `naming` (the device's name and the entity's own, W1 step 2) is display only, and the
+        stand-in has no registry to display it in."""
+        self.set_state(entity_id, state, attributes)
+
+    def write(self, entity_id: str, state: str, attributes: dict) -> None:
+        """Someone else's entity, under an `entities.write` clause."""
+        self.set_state(entity_id, state, attributes)
+
+    def call_service(self, domain: str, service: str, data: dict) -> None:
+        self.calls.append((domain, service, data))
+
+    def watch(self, entity_id: str) -> None:
+        """Start delivering this entity's changes. Every change already reaches the listeners here."""
+
 
 class ActingPolicy:
     """Steps 2, 3 and 5. The mediator keeps 1 and 4, which is where identity and the record are.
@@ -111,11 +136,13 @@ class ActingPolicy:
             entity_id = request.get("entity") or ""
             state = str(request.get("state"))
             attributes = dict(request.get("attributes") or {})
+            naming = {k: v for k, v in dict(request.get("naming") or {}).items()
+                      if k in ("name", "device", "has_entity_name")}
             owner = platform.owners.get(entity_id)
             if owner is None or owner == identity:
                 def publish_own() -> Decision:
                     platform.owners[entity_id] = identity
-                    platform.set_state(entity_id, state, attributes)
+                    platform.publish(identity, entity_id, state, attributes, naming)
                     return granted
                 granted = Decision(True, "its own entity", clause="(ambient: §5.10.2)",
                                    act=publish_own)
@@ -127,7 +154,7 @@ class ActingPolicy:
                                 clause=decision.clause)
 
             def write_theirs() -> Decision:
-                platform.set_state(entity_id, state, attributes)
+                platform.write(entity_id, state, attributes)
                 return decision
             return Decision(True, decision.reason, decision.clause, act=write_theirs)
 
@@ -140,7 +167,7 @@ class ActingPolicy:
             entity_id = request.get("entity") or ""
 
             def read() -> Decision:
-                state, attributes = platform.states.get(entity_id, (None, {}))
+                state, attributes = platform.read(entity_id)
                 return Decision(True, decision.reason, decision.clause,
                                 data={"state": state, "attributes": attributes})
             return Decision(True, decision.reason, decision.clause, act=read)
@@ -151,7 +178,7 @@ class ActingPolicy:
             data = dict(request.get("data") or {})
 
             def call() -> Decision:
-                platform.calls.append((service_domain, service_name, data))
+                platform.call_service(service_domain, service_name, data)
                 return decision
             return Decision(True, decision.reason, decision.clause, act=call)
 
@@ -195,8 +222,18 @@ class ActingPolicy:
                                       if k not in ("ok", "clause")})
             return Decision(True, decision.reason, decision.clause, act=datagrams)
 
-        # `entity.subscribe` ends here: the decision is the whole of it, and the mediator, which
-        # holds the channels, adds the entity to that channel's subscriptions if it is allowed.
+        # `entity.subscribe`: the mediator, which holds the channels, adds the entity to that
+        # channel's subscriptions once this is allowed and recorded. Step 5 is asking the platform
+        # to start sending that entity's changes — a no-op on the stand-in, and on the real
+        # platform a widened `subscribe_entities`, so (A) sends only what someone subscribed to.
+        if operation == "entity.subscribe":
+            entity_id = request.get("entity") or ""
+
+            def watch() -> Decision:
+                platform.watch(entity_id)
+                return decision
+            return Decision(True, decision.reason, decision.clause, act=watch)
+
         return decision
 
 
