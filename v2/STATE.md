@@ -19,8 +19,12 @@ real pushes at 0.71 ms, names match (B). Five defects found and fixed; §7.37 wr
 24/24 suites on the Pi.
 
 **2026-10-04 (evening): W1 step 2b done** — a user in (A) operates a confined integration's switch
-(`adaptive_lighting`, unmodified): 16 ms round trip, recorded, refusals at once (§7.38). **W1 is complete.
-Next: W2** (bytecode cache first; then plain-socket integration, UDP in a real sandbox, token refresh).
+(`adaptive_lighting`, unmodified): 16 ms round trip, recorded, refusals at once (§7.38). **W1 is complete.**
+
+**2026-10-04 (late): Younes chose to review W1 before W2.** The guide is `notes/w1_review_guide.md`
+(ten parts, bottom-up, with exercises and a 7-day schedule). Preparing it found three defects, all fixed
+(§7.38.4): a refusal by (A) crashed the mediator; a 10 s timeout race; (A) exiting 5 min after a fresh
+start. **Next: Younes works through the guide; W2 waits for him.**
 
 **In one screen — where we are, 2026-10-03:**
 
