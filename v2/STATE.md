@@ -53,7 +53,7 @@ the engineering cut-off and phase R.**
 option: *cut off* (past a refusal rate, e.g. 50 in 10 s, close the sandbox's channel and record one
 record saying why), ~1 day incl. a threat-model entry (DoS against the audit log) and a test;
 alternatives coalesce / throttle / leave as residual (§8.7 #15 prices all four). Younes has not decided.
-State of the Pi: (A) left running (`python3 -m confine.house_a down` stops it); Trakt token current in
+State of the Pi: (A) stopped at Younes's request (`python3 -m confine.house_a up --fresh` brings it back); Trakt token current in
 `~/.config/capstone/trakt.json`. Everything committed; 25/25 suites at `9e49522`.
 
 **In one screen — where we are, 2026-10-03:**
