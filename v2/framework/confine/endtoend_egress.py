@@ -263,7 +263,8 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
             "entities": [], "services": [], "setup_components": wanted,
             "egress": True, "settle_seconds": subject["settle"],
             "menu_choice": {}, "flow_input": subject["flow_input"],
-            "select_first": subject.get("select_first", [])}))
+            "select_first": subject.get("select_first", []),
+            "report_attr": subject.get("report_attr")}))
 
         runtime_files = {str(HERE / "sandbox_runtime.py"): "/sandbox/runtime.py",
                          str(HERE / "egress_shim.py"): "/sandbox/egress_shim.py",
@@ -379,7 +380,8 @@ def run_unconfined(component: Path, domain: str, subject: dict, python: Path, uv
             "domain": domain, "config_dir": str(config), "setup_components": wanted,
             "world": {}, "record_egress": True, "settle_seconds": subject["settle"],
             "menu_choice": {}, "flow_input": subject["flow_input"],
-            "select_first": subject.get("select_first", [])}))
+            "select_first": subject.get("select_first", []),
+            "report_attr": subject.get("report_attr")}))
 
         path = [str(deps)] + ([str(platform_deps)] if platform_deps else [])
         env = {**os.environ, "PYTHONPATH": ":".join(path)}

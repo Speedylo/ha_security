@@ -57,3 +57,40 @@ fake Tuya device broadcasts both kinds to the Pi's LAN address, once a second. T
 | **D6** | §7.40's synchronous path (`midea_ac_lan` arm B) still loads, through the same pair | medium |
 | **D7** | A sandbox that never reads its datagrams costs the mediator a bounded queue | high |
 | **D8** | Something not listed is found | high |
+
+---
+
+## 4. Outcomes, 2026-10-04 (appended; §3 is unchanged)
+
+Evidence: `experiments/local_tcp/results/w2b_20261004/` (`prebuild.*` is the baseline, `build_*` the
+built code, for both subjects).
+
+| | Outcome |
+|---|---|
+| **D1** | **Held exactly.** Before the build, confined `localtuya` with the listen declared loaded and discovered **nothing**, with no error anywhere, so it could not be told apart from the arm with nothing declared. Unconfined, it discovered both fake devices |
+| **D2** | **Held.** After the build, confined `localtuya` discovers `fakeplain000006666` and `fakecrypt000006667`, the same as unconfined, through its own unmodified `asyncio.DatagramProtocol` |
+| **D3** | **Held.** **Two** durable decisions, one listen per port, for every broadcast the fake device sent in the run (one a second on each port) |
+| **D4** | **Held at the decision layer only.** `selftest_udp` 7b: the asyncio endpoint sees the device's real address and port. `localtuya` reads the address from the payload, so the end-to-end run does not test this |
+| **D5** | **Held.** With nothing declared, both listens are refused and recorded once each, the bind fails where a real bind would, `localtuya` logs that discovery failed to start, and there is no flood |
+| **D6** | **Held, and improved.** `midea_ac_lan`, synchronous, still loads confined through the same pair, and its 8 per-poll `udp.recv` decisions are gone: replies are pushed, with no record per datagram |
+| **D7** | **Held.** Flooded with 20,000 datagrams it never reads, a stalled sandbox costs the mediator 64 queued, oldest dropped first (8,609 dropped), and its relay socket is closed when its channel goes (`selftest_push`) |
+| **D8** | **Held once, and the finding is in the test suite.** `selftest_udp`'s case 7b, "the asyncio DatagramProtocol shape is not served", was `check(True, …)`: a stated limitation counted as a passing check, testing nothing. It is now a real test of the shape being served |
+
+**Two more found after the first build ran, both fixed, both by checking a claim rather than
+running a measurement.**
+- The first draft of this section said "no asyncio endpoint in the corpus" registers a socket before
+  binding it. **That was false.** `govee` binds its send socket to port 0 and hands it to
+  `create_datagram_endpoint(sock=...)`, and the build attached the pair only for a real port, so
+  that socket would have got its pair at its first `sendto`, after `epoll` was already watching the
+  old file description. Its replies would never have woken the loop. A bind to port 0 now attaches
+  the pair too. `selftest_udp` 7d tests `govee`'s shape, and fails with the line removed.
+- On the Pi, `selftest_udp` case 8 lost the first device's reply, which never happened on the laptop.
+  The shim added a peer's route only after the send returned, and on the Pi's loopback the reply
+  could be pushed and delivered in that gap with nowhere to go. The same gap exists in a real
+  sandbox, where the event loop's thread delivers while the sending thread is still returning. The
+  route is now added before sending and removed if the send is refused. Five runs on the Pi, 17/17.
+
+**Not served:** an asyncio socket that its event loop registered before its first `bind` or
+`connect`. All four asyncio integrations in the corpus bind or connect first, `govee`'s send socket by
+binding port 0. The unicast half (`govee`'s and `xiaomi_miot`'s replies) uses the same push and is
+tested at the decision layer only (`selftest_udp` 7d).

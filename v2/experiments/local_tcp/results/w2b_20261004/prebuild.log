@@ -1,0 +1,6 @@
+  unconfined           loaded=True timed_out=False  device saw: udp 0, tcp 0 conns / 0 bytes, from []  probe=['fakecrypt000006667', 'fakeplain000006666']
+  confined_declared    loaded=True timed_out=False  device saw: udp 0, tcp 0 conns / 0 bytes, from []  probe=[]
+  confined_undeclared  loaded=True timed_out=False  device saw: udp 0, tcp 0 conns / 0 bytes, from []  probe=[]
+
+wrote /home/younes/r2exp/t2/w2b/prebuild.json
+exit=0

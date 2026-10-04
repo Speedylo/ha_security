@@ -267,6 +267,37 @@ def main() -> int:
               per_push < 1e-3, f"{per_push * 1e6:.1f} µs per push — against 3.67 ms per "
               f"recorded decision (§7.20.1)")
 
+        print("\nD7 (W2 (b)) — datagrams for a sandbox that never reads\n")
+        # A relay socket the mediator watches for a stalled channel, flooded. What the mediator
+        # holds must be bounded by its own queue, whatever the network sends.
+        from .mediator import MAX_DATAGRAMS
+        import socket as _socket
+        quiet = Sandbox(mediator, "quiet", component(root, "quiet", []))
+        source = _socket.socket(_socket.AF_INET, _socket.SOCK_DGRAM)
+        source.bind(("127.0.0.1", 0))
+        source.setblocking(False)
+        quiet_fd = next(fd for fd, (who, _) in mediator._by_fd.items() if who == "quiet")
+        mediator.watch_source(quiet_fd, source, {"kind": "listen",
+                                                 "port": source.getsockname()[1]})
+        flood = _socket.socket(_socket.AF_INET, _socket.SOCK_DGRAM)
+        for n in range(20_000):
+            try:
+                flood.sendto(b"x" * 200, source.getsockname())
+            except OSError:
+                pass
+            if n % 500 == 0:
+                mediator.serve(timeout=0.01)
+        mediator.serve(timeout=0.2)
+        flood.close()
+        box = mediator._out[quiet_fd]
+        check("the mediator's queue for it stays at its bound",
+              len(box.datagrams) <= MAX_DATAGRAMS,
+              f"{len(box.datagrams)} queued (bound {MAX_DATAGRAMS}), {box.datagrams_dropped} "
+              f"dropped oldest-first, {mediator.datagrams_pushed.get('quiet', 0)} pushed in all")
+        quiet.channel.sock.close()
+        mediator.serve(timeout=0.1)
+        check("and the relay socket is closed when that channel goes", source.fileno() == -1)
+
         check("every chain verifies", log.verify() == [])
 
     print()

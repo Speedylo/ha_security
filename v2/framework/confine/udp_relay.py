@@ -84,6 +84,8 @@ class UdpRelay:
 
     #: Per-peer connected sockets, so the kernel drops datagrams from anyone but the pinned peer.
     peers: dict[tuple[str, str, int], socket.socket] = field(default_factory=dict)
+    #: Streaming listens (W2 (b)), per integration and port.
+    listeners: dict[tuple[str, int], socket.socket] = field(default_factory=dict)
     #: Every datagram sent and every scan performed, for the audit record.
     activity: list[dict] = field(default_factory=list)
 
@@ -107,11 +109,19 @@ class UdpRelay:
         # what this operation is for, not an exception to it. Gating is done once, upstream,
         # by whether the `local` clause matches at all (`manifest.py`'s `decide`) — there is no
         # second, request-controlled gate to bypass here the way the egress path had.
+        new = (identity, address, port) not in self.peers \
+            or self.peers[(identity, address, port)].fileno() == -1
         sock = self._peer(identity, address, port)
         _SEND(sock, payload)
         self.activity.append({"identity": identity, "op": "udp.send", "address": address,
                               "port": port, "bytes": len(payload), "clause": decision.clause})
-        return {"ok": True, "sent": len(payload), "clause": decision.clause}
+        answer = {"ok": True, "sent": len(payload), "clause": decision.clause}
+        if new:
+            # W2 (b): the first permitted send to a peer opens its socket, and from then on the
+            # mediator watches it and pushes the peer's replies, with no record per datagram.
+            # The kernel still filters it to that peer, because the socket is connected.
+            answer["_source"] = (sock, {"kind": "peer", "address": address, "port": port})
+        return answer
 
     def recv(self, identity: str, request: dict, decision: Decision) -> dict:
         """Whatever the pinned peer has sent back, up to the queue limit."""
@@ -138,7 +148,8 @@ class UdpRelay:
         """
         key = (identity, address, port)
         sock = self.peers.get(key)
-        if sock is None:
+        # A socket the mediator closed when the sandbox's channel went is replaced, not reused.
+        if sock is None or sock.fileno() == -1:
             sock = socket.socket(socket.AF_INET6 if ":" in address else socket.AF_INET,
                                  socket.SOCK_DGRAM)
             _CONNECT(sock, (address, port))
@@ -198,6 +209,9 @@ class UdpRelay:
             raise EgressRefused("a listen must name a port", decision.clause)
         wait = min(float(request.get("timeout", 1.0)), MAX_WAIT)
 
+        if request.get("stream"):
+            return self._listen_stream(identity, port, decision)
+
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             _SETSOCKOPT(sock, socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -215,10 +229,37 @@ class UdpRelay:
         return {"ok": True, "responses": answers, "clause": decision.clause,
                 "observed": sorted({a["address"] for a in answers})}
 
+    def _listen_stream(self, identity: str, port: int, decision: Decision) -> dict:
+        """W2 (b): bind a declared port and keep it, for the mediator to watch and push from.
+
+        One decision, one record, then every datagram that arrives is pushed without one — the
+        listen is the grant, as a subscription is (decision A of W1 step 1). Polling instead
+        would make every poll a durable decision, one or two a second for as long as the
+        integration runs (§8.6.3 #14).
+        """
+        existing = self.listeners.get((identity, port))
+        if existing is not None and existing.fileno() != -1:
+            return {"ok": True, "clause": decision.clause, "streaming": True}
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            _SETSOCKOPT(sock, socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            _BIND(sock, ("", port))
+            sock.setblocking(False)
+        except OSError as err:
+            sock.close()
+            raise EgressRefused(f"cannot listen on {port}: {err.strerror or err}",
+                                decision.clause) from err
+        self.listeners[(identity, port)] = sock
+        self.activity.append({"identity": identity, "op": "discover.listen", "port": port,
+                              "streaming": True, "clause": decision.clause})
+        return {"ok": True, "clause": decision.clause, "streaming": True,
+                "_source": (sock, {"kind": "listen", "port": port})}
+
     def close(self) -> None:
-        for sock in self.peers.values():
+        for sock in [*self.peers.values(), *self.listeners.values()]:
             sock.close()
         self.peers.clear()
+        self.listeners.clear()
 
 
 def _drain(sock: socket.socket, wait: float, expect_address: bool) -> list[dict]:

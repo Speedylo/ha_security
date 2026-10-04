@@ -35,7 +35,9 @@ integration and its deps compile every start unless the installer compiles them 
 **W2 (a) done 2026-10-04** (§7.40): `network.tcp.local` existed only in the schema — built; `midea_ac_lan`
 loads confined against a fake device (`experiments/local_tcp/`). Six defects fixed on the way (4 in the
 UDP shim, `serve` deadline, results before shutdown). **Refusal flood noted, deferred by Younes** (§8.6.3 #14, §8.7 #15: options
-priced, nothing built; may revisit). **Next: (b) asyncio datagrams, (d) token refresh.**
+priced, nothing built; may revisit). **W2 (b) done 2026-10-04** (§7.41): asyncio datagram endpoints served through a socket pair the mediator
+pushes into; `localtuya` discovers confined exactly as unconfined, 2 recorded decisions. **Next: W2 (d) token
+refresh, if a free OAuth integration exists; then the cut-off.**
 
 **In one screen — where we are, 2026-10-03:**
 

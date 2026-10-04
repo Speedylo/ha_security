@@ -22,3 +22,20 @@ accepts TCP 6444, and logs every datagram and connection with its source address
 | A unconfined | yes | 2 datagrams, 8 connections, 7,616 bytes | — |
 | B confined, `network.local` declared | **yes** | 2 datagrams, 6 connections, 4,440 bytes, all from the host | 2 send, 8 recv, 6 tcp.local, all allowed |
 | C confined, nothing declared | no (`invalid_device_ip`) | **nothing** | 9 sends refused |
+
+## W2 (b) — asyncio datagram endpoints (`results/w2b_20261004/`)
+
+`localtuya`, unmodified, `no_cloud`, listening with asyncio on 6666/6667, against `fake_tuya.py`
+broadcasting a plaintext and an encrypted announcement once a second. Evidence: `localtuya`'s own
+`hass.data["localtuya"]["discovery"].devices` (`probe`).
+
+    ... -m confine.endtoend_local --subject localtuya ...
+
+| Arm | Before the build (`prebuild.json`) | After (`build_localtuya.json`) | Decisions after |
+|---|---|---|---|
+| unconfined | both devices | both devices | — |
+| confined, `discover.listen: [6666, 6667]` | **nothing, silently** | **both devices** | 2 listens, allowed |
+| confined, nothing declared | nothing | nothing (discovery fails to start) | 2 listens, refused |
+
+`final_*` repeat both subjects on the final code, after the two late fixes (port-0 binds, route-before-send), with the same results; `suites/` is all 25 suites on the Pi. `build_midea_ac_lan.*` is §7.40's subject on the first build: it still loads, and its per-poll
+receive decisions are gone.

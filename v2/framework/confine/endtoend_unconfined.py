@@ -119,6 +119,8 @@ async def run(spec: dict) -> dict:
     # The result now, as well as after stopping: the harness takes the last JSON line, and an
     # integration whose device thread keeps retrying can hold Home Assistant's shutdown for
     # minutes, past the harness's limit — the W2 (a) control arm lost its whole report so.
+    from sandbox_runtime import probe
+    result["probe"] = probe(hass, spec.get("report_attr"))
     print(json.dumps(result), flush=True)
     try:
         await hass.async_stop()

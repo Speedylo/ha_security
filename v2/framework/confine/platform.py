@@ -258,9 +258,12 @@ class ActingPolicy:
                     answer = action(identity, request, decision)
                 except _EgressRefused as err:
                     return Decision(False, err.reason, err.clause)
+                # A socket the relay opened for this channel goes to the mediator to watch
+                # (W2 (b)); it is never part of the answer.
+                source = answer.pop("_source", None)
                 return Decision(True, decision.reason, decision.clause,
                                 data={k: v for k, v in answer.items()
-                                      if k not in ("ok", "clause")})
+                                      if k not in ("ok", "clause")}, source=source)
             return Decision(True, decision.reason, decision.clause, act=datagrams)
 
         # `entity.subscribe`: the mediator, which holds the channels, adds the entity to that

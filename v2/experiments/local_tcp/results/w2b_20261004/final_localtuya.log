@@ -1,0 +1,10 @@
+  unconfined           loaded=True timed_out=False  device saw: udp 0, tcp 0 conns / 0 bytes, from []  probe=['fakecrypt000006667', 'fakeplain000006666']
+  confined_declared    loaded=True timed_out=False  device saw: udp 0, tcp 0 conns / 0 bytes, from []  probe=['fakecrypt000006667', 'fakeplain000006666']
+           1 × discover.listen      6666     allowed=True  /permissions/network/discover/listen/0
+           1 × discover.listen      6667     allowed=True  /permissions/network/discover/listen/1
+  confined_undeclared  loaded=True timed_out=False  device saw: udp 0, tcp 0 conns / 0 bytes, from []  probe={'missing': 'discovery'}
+           1 × discover.listen      6666     allowed=False  /permissions/network/discover/listen
+           1 × discover.listen      6667     allowed=False  /permissions/network/discover/listen
+
+wrote /home/younes/r2exp/t2/w2b/final_localtuya.json
+exit=0

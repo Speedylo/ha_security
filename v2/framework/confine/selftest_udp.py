@@ -28,6 +28,8 @@ Run: `python3 -m confine.selftest_udp`
 from __future__ import annotations
 
 import json
+import selectors
+import asyncio
 import socket
 import sys
 import tempfile
@@ -67,6 +69,14 @@ def check(condition: bool, name: str, detail: str = "") -> None:
 _RAW_RECVFROM = socket.socket.recvfrom
 _RAW_SENDTO = socket.socket.sendto
 _RAW_BIND = socket.socket.bind
+
+
+def free_port() -> tuple[None, int]:
+    probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    _RAW_BIND(probe, ("127.0.0.1", 0))
+    port = probe.getsockname()[1]
+    probe.close()
+    return None, port
 
 
 def echo_device(reply: bytes) -> tuple[socket.socket, int]:
@@ -110,10 +120,45 @@ def wire(root: Path, domain: str, permissions: dict) -> tuple[EgressShim, UdpRel
         decisions.append((op, decision))
         return request, decision
 
+    # W2 (b): the mediator watches every socket the relay opens for this sandbox and pushes
+    # what arrives. Played here by a thread, so the shim's delivery path is the one under test.
+    watched: dict = {}
+    holder: list = []
+    selector = selectors.DefaultSelector()
+
+    def watch(answer: dict) -> None:
+        source = answer.pop("_source", None)
+        if source is not None:
+            sock, route = source
+            watched[sock] = route
+            selector.register(sock, selectors.EVENT_READ)
+
+    def pump() -> None:
+        while True:
+            try:
+                ready = selector.select(0.05)
+            except (OSError, ValueError):
+                return
+            for key, _ in ready:
+                try:
+                    data, sender = _RAW_RECVFROM(key.fileobj, 65535)
+                except OSError:
+                    continue
+                if holder:
+                    holder[0].deliver({"route": watched[key.fileobj],
+                                       "sender": [sender[0], sender[1]], "data": data.hex()})
+    threading.Thread(target=pump, daemon=True).start()
+
     def send(address: str, port: int, data: bytes) -> int:
         request, decision = decide("network.udp.send", address=address, port=port,
                                    data=data.hex())
-        return relay.send(domain, request, decision)["sent"]
+        answer = relay.send(domain, request, decision)
+        watch(answer)
+        return answer["sent"]
+
+    def listen_stream(port: int) -> None:
+        request, decision = decide("discover.listen", port=port, stream=True)
+        watch(relay.listen(domain, request, decision))
 
     def recv(address: str, port: int) -> list[bytes]:
         request, decision = decide("network.udp.recv", address=address, port=port, timeout=1.0)
@@ -136,7 +181,9 @@ def wire(root: Path, domain: str, permissions: dict) -> tuple[EgressShim, UdpRel
 
     shim = EgressShim(connect_via=lambda h, p: (_ for _ in ()).throw(
         OSError("TCP is not what this suite tests")),
-        datagrams=DatagramMediator(send=send, recv=recv, scan=scan, listen=listen))
+        datagrams=DatagramMediator(send=send, recv=recv, scan=scan, listen=listen,
+                                   listen_stream=listen_stream))
+    holder.append(shim)
     return shim, relay, decisions
 
 
@@ -346,10 +393,73 @@ def case_no_relay_fails_closed(root: Path) -> None:
         shim.uninstall()
         device.close()
 
-    check(True,
-          "7b. the asyncio DatagramProtocol shape is not served — 4 of 15, named not hidden",
-          "govee, localtuya, tapo_control, xiaomi_miot: they select on a descriptor "
-          "the design does not give them")
+    # 7b. Until W2 (b) this line was `check(True, "...not served...")` — a limitation stated
+    # as a passing check that tested nothing. It is now a test of the shape being served:
+    # an asyncio endpoint bound to a declared port, as `localtuya`'s discovery binds 6666.
+    device, port = free_port()
+    shim, relay, decisions = wire(root, "demo_asyncio",
+                                  {"network": {"discover": {"listen": [port]}}})
+    received: list = []
+
+    class Protocol(asyncio.DatagramProtocol):
+        def datagram_received(self, data, addr):
+            received.append((data, addr))
+
+    async def listen_and_wait() -> None:
+        loop = asyncio.get_running_loop()
+        transport, _ = await loop.create_datagram_endpoint(
+            Protocol, local_addr=("0.0.0.0", port))
+        sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        for _ in range(3):
+            _RAW_SENDTO(sender, b"tuya-announce", ("127.0.0.1", port))
+            await asyncio.sleep(0.2)
+        sender.close()
+        transport.close()
+    try:
+        shim.install()
+        asyncio.run(listen_and_wait())
+    finally:
+        shim.uninstall()
+        relay.close()
+    check(len(received) >= 1 and received[0][0] == b"tuya-announce",
+          "7b. an asyncio DatagramProtocol bound to a declared port receives what arrives",
+          f"{len(received)} datagrams" + (f", first from {received[0][1]}" if received else ""))
+    # 7d. `govee`'s shape: a socket bound to port 0, handed to `create_datagram_endpoint` with
+    # `sock=`, then used to send. Its peer's reply must wake the event loop.
+    device2, port2 = echo_device(b"govee-reply")
+    shim2, relay2, _ = wire(root, "demo_ephemeral", {"network": {"local": {"udp": [port2]}}})
+    replies: list = []
+
+    class Reply(asyncio.DatagramProtocol):
+        def datagram_received(self, data, addr):
+            replies.append(data)
+
+    async def send_and_wait() -> None:
+        loop = asyncio.get_running_loop()
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.bind(("0.0.0.0", 0))
+        sock.setblocking(False)
+        transport, _ = await loop.create_datagram_endpoint(Reply, sock=sock)
+        transport.sendto(b"scan", ("127.0.0.1", port2))
+        for _ in range(20):
+            if replies:
+                break
+            await asyncio.sleep(0.1)
+        transport.close()
+    try:
+        shim2.install()
+        asyncio.run(send_and_wait())
+    finally:
+        shim2.uninstall()
+        relay2.close()
+        device2.close()
+    check(replies == [b"govee-reply"],
+          "7d. a socket bound to port 0 before its event loop registers it still gets replies",
+          f"{replies}")
+    listens = [d for op, d in decisions if op == "discover.listen"]
+    check(len(listens) == 1 and listens[0].allowed,
+          "7c. and the listen is one recorded decision, however many datagrams follow",
+          f"{len(listens)} listen decisions for {len(received)} datagrams")
 
 
 def main() -> int:

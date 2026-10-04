@@ -79,7 +79,14 @@ class Channel:
     def __init__(self, fd: int) -> None:
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM, fileno=fd)
         self.lock = threading.Lock()
-        self.on_push = lambda message: None
+        #: Handlers by push type (W2 (b)): "entity.state" and "entity.command" from the bridge,
+        #: "datagram" from the egress shim. A push with no handler is dropped.
+        self.handlers: dict = {}
+
+    def on_push(self, message: dict) -> None:
+        handler = self.handlers.get(message.get("push"))
+        if handler is not None:
+            handler(message)
 
     def exchange(self, message: dict) -> tuple[dict, int | None]:
         """One request, its reply, and the descriptor the reply carried, if any."""
@@ -299,13 +306,10 @@ class Bridge:
         `async_set` fires the integration's own listeners as if the change had happened here.
         """
         loop = asyncio.get_running_loop()
-        self.channel.on_push = lambda message: (self.pending.append(message),
-                                                loop.call_soon_threadsafe(self._apply_pushes))
-
-        def readable() -> None:
-            if not self.channel.poll():
-                loop.remove_reader(self.channel.sock.fileno())
-        loop.add_reader(self.channel.sock.fileno(), readable)
+        queue = lambda message: (self.pending.append(message),  # noqa: E731
+                                 loop.call_soon_threadsafe(self._apply_pushes))
+        self.channel.handlers["entity.state"] = queue
+        self.channel.handlers["entity.command"] = queue
 
     def _apply_pushes(self) -> None:
         while self.pending:
@@ -437,6 +441,24 @@ def _plain(value: object) -> bool:
                                           and all(isinstance(v, scalars) for v in value))
 
 
+def probe(hass, path: list | None) -> object:
+    """What a subject names in `report_attr`: a path into `hass.data`, keys first, then attributes.
+
+    W2 (b): `localtuya` keeps the devices its asyncio discovery heard in
+    `hass.data["localtuya"]["discovery"].devices`, and that is the integration's own account of
+    what arrived, which is the evidence the measurement needs. Reports the keys of what it finds.
+    """
+    if not path:
+        return None
+    value = hass.data
+    for part in path:
+        try:
+            value = value[part] if isinstance(value, dict) else getattr(value, part)
+        except (KeyError, AttributeError):
+            return {"missing": part}
+    return sorted(map(str, value)) if isinstance(value, dict) else repr(value)[:300]
+
+
 def bytecode_report() -> dict:
     """For every module loaded from source: was its bytecode read from a cache, or compiled? (W2 (c))
 
@@ -487,6 +509,20 @@ def bytecode_report() -> dict:
         if state == "compiled" and len(bucket["examples"]) < 3:
             bucket["examples"].append(module.__name__)
     return {"groups": groups, "seconds_since_start": round(time.time() - PROCESS_START, 2)}
+
+
+def start_push_reader(channel: Channel) -> None:
+    """Read pushes whenever the channel is readable and no request is in flight.
+
+    Installed for every run since W2 (b), not only when the bridge subscribes: datagrams the
+    mediator pushes for the egress shim arrive whether or not any entity was subscribed to.
+    """
+    loop = asyncio.get_running_loop()
+
+    def readable() -> None:
+        if not channel.poll():
+            loop.remove_reader(channel.sock.fileno())
+    loop.add_reader(channel.sock.fileno(), readable)
 
 
 def callback_shim(func):
@@ -663,10 +699,16 @@ def install_egress(channel: Channel) -> dict:
     def listen(port: int) -> list:
         return _responses(ask("discover.listen", port=port, timeout=1.0))
 
+    def listen_stream(port: int) -> None:
+        # W2 (b): one decision, then the mediator pushes what arrives on `port`.
+        ask("discover.listen", port=port, stream=True)
+
     shim = EgressShim(connect_via=connect_via,
                       datagrams=DatagramMediator(send=send, recv=recv,
-                                                 scan=scan, listen=listen),
+                                                 scan=scan, listen=listen,
+                                                 listen_stream=listen_stream),
                       connect_local=connect_local)
+    channel.handlers["datagram"] = shim.deliver
     shim.install()
     EGRESS_SHIM.append(shim)
     return {"installed": True}
@@ -685,7 +727,8 @@ def egress_summary() -> dict:
     if not EGRESS_SHIM:
         return {}
     shim = EGRESS_SHIM[0]
-    return {"resolved": list(shim.resolved), "connected": list(shim.connected)}
+    return {"resolved": list(shim.resolved), "connected": list(shim.connected),
+            "datagrams_delivered": shim.delivered}
 
 
 def record_egress_attempts(into: list) -> None:
@@ -882,6 +925,7 @@ async def run() -> dict:
     # an absence of code rather than as a branch that has to remember to deny.
     if spec.get("egress"):
         result["egress"] = install_egress(channel)
+    start_push_reader(channel)
     hass = await build_hass(DATA, with_auth=bool(spec.get("auth")))
 
     # Optionally set up the components the integration says it depends on. §6.3.2 dropped the
@@ -994,6 +1038,7 @@ async def run() -> dict:
         result["egress"] = {**(result.get("egress") or {}), **egress_summary()}
         if spec.get("report_bytecode"):
             result["bytecode"] = bytecode_report()
+        result["probe"] = probe(hass, spec.get("report_attr"))
         # The result now, as well as after stopping: the harness takes the last JSON line, and an
         # integration whose device thread keeps retrying can hold Home Assistant's shutdown for
         # minutes, past the harness's limit — the W2 (a) control arm lost its whole report so.

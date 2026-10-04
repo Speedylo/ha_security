@@ -36,32 +36,46 @@ from .preflight import require_ready
 from .spawn import become_subreaper
 
 HERE = Path(__file__).resolve().parent
-FAKE = HERE.parent.parent / "experiments" / "local_tcp" / "fake_midea.py"
+FAKES = HERE.parent.parent / "experiments" / "local_tcp"
 MIDEA_SRC = Path.home() / "r2exp" / "t2" / "midea-src"
 LAN = "10.126.83.113"
 DEVICE_ID = 151732605161920
 
-SUBJECT = {
-    "flow_input": {
-        "action": "manually", "name": "fake ac", "device_id": DEVICE_ID, "type": 0xAC,
-        "ip_address": LAN, "port": 6444, "protocol": 2, "model": "00000000", "subtype": 0,
-        "token": "", "key": "",
+SUBJECTS = {
+    # W2 (a), §7.40: discovery by synchronous UDP, then blocking TCP to the device.
+    "midea_ac_lan": {
+        "flow_input": {
+            "action": "manually", "name": "fake ac", "device_id": DEVICE_ID, "type": 0xAC,
+            "ip_address": LAN, "port": 6444, "protocol": 2, "model": "00000000",
+            "subtype": 0, "token": "", "key": "",
+        },
+        # Long enough for the integration's own device thread to connect and send queries.
+        "settle": 40.0,
+        "fake": ["fake_midea.py", "--bind", LAN],
+        "declared": {"local": {"tcp": [6444], "udp": [6445, 20086]}},
     },
-    # Long enough for the integration's own device thread to connect and send its queries.
-    "settle": 40.0,
+    # W2 (b): asyncio datagram endpoints listening for broadcasts. The evidence is the
+    # integration's own record of what it discovered.
+    "localtuya": {
+        "flow_input": {"region": "eu", "username": "localtuya", "no_cloud": True},
+        "settle": 30.0,
+        "fake": ["fake_tuya.py", "--to", LAN],
+        "declared": {"discover": {"listen": [6666, 6667]}},
+        "report_attr": ["localtuya", "discovery", "devices"],
+    },
 }
 
-ARMS = {
-    "unconfined": None,
-    "confined_declared": {"schema_version": 1,
-                          "network": {"local": {"tcp": [6444], "udp": [6445, 20086]}}},
-    "confined_undeclared": {"schema_version": 1},
-}
+
+def arms_for(subject: dict) -> dict:
+    return {"unconfined": None,
+            "confined_declared": {"schema_version": 1, "network": subject["declared"]},
+            "confined_undeclared": {"schema_version": 1}}
 
 
-def fake_device(log: Path, python: Path) -> subprocess.Popen:
+def fake_device(subject: dict, log: Path, python: Path) -> subprocess.Popen:
     env = {**os.environ, "PYTHONPATH": str(MIDEA_SRC)}
-    proc = subprocess.Popen([str(python), str(FAKE), "--bind", LAN, "--log", str(log),
+    script, *rest = subject["fake"]
+    proc = subprocess.Popen([str(python), str(FAKES / script), *rest, "--log", str(log),
                              "--seconds", "900"], stdout=subprocess.PIPE, text=True, env=env)
     ready = proc.stdout.readline() if proc.stdout else ""
     if '"ready": true' not in ready:
@@ -86,10 +100,13 @@ def summarise(arm: str, report: dict, events: list[dict]) -> dict:
             "udp": sum(e["kind"] == "udp" for e in events),
             "tcp_connections": sum(e["kind"] == "tcp_accept" for e in events),
             "tcp_bytes": sum(e["bytes"] for e in events if e["kind"] == "tcp_data"),
-            "peers": sorted({e["peer"] for e in events}),
+            "peers": sorted({e["peer"] for e in events if "peer" in e}),
+            # The Tuya device only sends, so its log is of what it announced, not what it heard.
+            "sent": sum(e["kind"] == "sent" for e in events),
         },
         "decisions": local,
         "published": report.get("published"),
+        "probe": report.get("probe"),
         "audit_breaks": report.get("audit_breaks"),
         "reconcile": report.get("reconcile"),
     }
@@ -100,7 +117,8 @@ def main() -> int:
     ap.add_argument("--corpus", type=Path, required=True)
     ap.add_argument("--python", type=Path, required=True)
     ap.add_argument("--uv", default=str(Path.home() / ".local/bin/uv"))
-    ap.add_argument("--arms", default=",".join(ARMS))
+    ap.add_argument("--subject", default="midea_ac_lan", choices=sorted(SUBJECTS))
+    ap.add_argument("--arms", default="unconfined,confined_declared,confined_undeclared")
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
 
@@ -110,20 +128,23 @@ def main() -> int:
     uv = args.uv if Path(args.uv).exists() else None
     platform_deps = Path.home() / "r2exp/platform-deps"
     platform_deps = platform_deps if platform_deps.is_dir() else None
-    component = args.corpus / "midea_ac_lan"
+    domain = args.subject
+    subject = SUBJECTS[domain]
+    arms = arms_for(subject)
+    component = args.corpus / domain
 
     results = []
     for arm in args.arms.split(","):
         log = Path(tempfile.mkstemp(suffix=f"-{arm}.jsonl")[1])
-        device = fake_device(log, args.python)
+        device = fake_device(subject, log, args.python)
         try:
-            if ARMS[arm] is None:
-                report = run_unconfined(component, "midea_ac_lan", SUBJECT, args.python, uv,
+            if arms[arm] is None:
+                report = run_unconfined(component, domain, subject, args.python, uv,
                                         platform_deps)
             else:
                 # Five minutes is far beyond setup and the 40 s settle; a confined arm still
                 # running then is looping, as both baseline arms did.
-                report = run_confined(component, "midea_ac_lan", SUBJECT, arm, ARMS[arm],
+                report = run_confined(component, domain, subject, arm, arms[arm],
                                       args.python, delegation, uv, platform_deps,
                                       max_seconds=300)
         finally:
@@ -138,7 +159,7 @@ def main() -> int:
         print(f"  {arm:<20} loaded={summary['loaded']} timed_out={summary['timed_out']}  "
               f"device saw: udp {saw['udp']}, "
               f"tcp {saw['tcp_connections']} conns / {saw['tcp_bytes']} bytes, "
-              f"from {saw['peers']}", flush=True)
+              f"from {saw['peers']}  probe={summary['probe']}", flush=True)
         counts: dict = {}
         for d in summary["decisions"]:
             key = (d.get("op"), str(d.get("target")), d.get("allowed"), d.get("clause"))

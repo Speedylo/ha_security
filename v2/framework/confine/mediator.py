@@ -59,6 +59,11 @@ class Decision:
     #: actually went out: the same grant with its data or descriptor, or a refusal found while
     #: acting, such as an egress name that now resolves to a private address.
     act: Callable[[], "Decision"] | None = field(default=None, compare=False)
+    #: A socket for the mediator to watch on this channel's behalf, and the route its datagrams
+    #: are pushed under (W2 (b)). Set by an act that opened one — a streaming listen, or a new
+    #: per-peer socket — so that what arrives on it is pushed down the channel without a record
+    #: per datagram: the record is the decision that opened it.
+    source: tuple | None = field(default=None, compare=False)
 
     def as_response(self, request_id: object) -> dict:
         response: dict = {"id": request_id, "ok": self.allowed, "reason": self.reason}
@@ -99,6 +104,11 @@ class _Outbox:
     #: coalesced: a state is a value and only the latest matters, a command is an instruction.
     #: Bounded by the mediator at `MAX_COMMANDS`.
     commands: collections.deque = field(default_factory=collections.deque)
+    #: Datagrams pushed from the relay's sockets (W2 (b)): first in first out, never coalesced,
+    #: and bounded at `MAX_DATAGRAMS` by dropping the oldest, as a real socket's full receive
+    #: buffer drops what does not fit.
+    datagrams: collections.deque = field(default_factory=collections.deque)
+    datagrams_dropped: int = 0
     pushes: dict[str, dict] = field(default_factory=dict)
     inflight: bytearray = field(default_factory=bytearray)
     inflight_fd: int | None = None
@@ -112,7 +122,7 @@ class _Outbox:
     @property
     def empty(self) -> bool:
         return (not self.inflight and self.reply is None and not self.commands
-                and not self.pushes)
+                and not self.datagrams and not self.pushes)
 
     def drain(self, sock) -> int:
         """Write as much as the socket takes without blocking. Returns pushes fully sent.
@@ -129,6 +139,9 @@ class _Outbox:
                     self.inflight_is_push = False
                 elif self.commands:
                     self.inflight = bytearray(Channel.frame(self.commands.popleft()))
+                    self.inflight_is_reply = self.inflight_is_push = False
+                elif self.datagrams:
+                    self.inflight = bytearray(Channel.frame(self.datagrams.popleft()))
                     self.inflight_is_reply = self.inflight_is_push = False
                 elif self.pushes:
                     message = self.pushes.pop(next(iter(self.pushes)))
@@ -169,6 +182,9 @@ class _Outbox:
 #: once rather than queued without limit behind a sandbox that is not reading.
 MAX_COMMANDS = 32
 
+#: Datagrams queued for one sandbox, at most (W2 (b)). Matches the relay's `QUEUE_LIMIT`.
+MAX_DATAGRAMS = 64
+
 
 @dataclass
 class Mediator:
@@ -196,6 +212,10 @@ class Mediator:
     #: Commands pushed and not yet answered: command id -> the channel it was sent down. An answer
     #: is accepted only from that channel, and only once (W1 step 2b, C7).
     _sent_commands: dict[int, int] = field(default_factory=dict)
+    #: Relay sockets watched for a channel (W2 (b)): socket -> (channel fd, route).
+    _sources: dict = field(default_factory=dict)
+    #: Datagrams pushed, per integration. Counted, not recorded, like `pushes_sent`.
+    datagrams_pushed: dict[str, int] = field(default_factory=dict)
 
     def attach_platform(self, platform) -> None:
         """Put a platform that pushes — `RealPlatform`'s connection to (A) — on the selector.
@@ -252,6 +272,14 @@ class Mediator:
                 del self._sent_commands[command]
                 self._platform.command_result(  # type: ignore[union-attr]
                     command, False, "the confined integration's sandbox exited")
+        for sock, (owner, _route) in list(self._sources.items()):
+            if owner == fd:
+                del self._sources[sock]
+                try:
+                    self._selector.unregister(sock)
+                except (KeyError, ValueError):
+                    pass
+                sock.close()
         identity, channel = self._by_fd.pop(fd, (None, None))
         self._subscriptions.pop(fd, None)
         outbox = self._out.pop(fd, None)
@@ -298,6 +326,9 @@ class Mediator:
             for key, mask in events:
                 if key.fileobj is self._platform:
                     self._platform.pump()  # type: ignore[union-attr]
+                    continue
+                if key.fileobj in self._sources:
+                    self._read_source(key.fileobj)
                     continue
                 fd = key.fileobj.fileno()  # type: ignore[union-attr]
                 if fd in self._by_fd and mask & selectors.EVENT_WRITE:
@@ -392,6 +423,34 @@ class Mediator:
         self._out[fd].reply = (Channel.frame(answer.as_response(request.get("id"))), None)
         self._flush(fd)
 
+    def watch_source(self, fd: int, sock, route: dict) -> None:
+        """Watch a relay socket for one channel, and push what arrives on it (W2 (b))."""
+        if fd not in self._by_fd or sock in self._sources:
+            return
+        self._sources[sock] = (fd, route)
+        self._selector.register(sock, selectors.EVENT_READ)
+
+    def _read_source(self, sock) -> None:
+        fd, route = self._sources[sock]
+        if fd not in self._by_fd:
+            return
+        identity = self._by_fd[fd][0]
+        outbox = self._out[fd]
+        for _ in range(MAX_DATAGRAMS):
+            try:
+                data, sender = sock.recvfrom(65535)
+            except BlockingIOError:
+                break
+            except OSError:
+                break
+            if len(outbox.datagrams) >= MAX_DATAGRAMS:
+                outbox.datagrams.popleft()
+                outbox.datagrams_dropped += 1
+            outbox.datagrams.append({"push": "datagram", "route": route,
+                                     "sender": [sender[0], sender[1]], "data": data.hex()})
+            self.datagrams_pushed[identity] = self.datagrams_pushed.get(identity, 0) + 1
+        self._flush(fd)
+
     def _flush(self, fd: int) -> None:
         identity, channel = self._by_fd[fd]
         outbox = self._out[fd]
@@ -464,6 +523,8 @@ class Mediator:
 
         if decision.allowed and request.get("op") == "entity.subscribe":
             self._subscriptions[fd].add(str(request.get("entity")))
+        if decision.allowed and decision.source is not None:
+            self.watch_source(fd, *decision.source)
 
         try:
             frame = Channel.frame(decision.as_response(request.get("id")))

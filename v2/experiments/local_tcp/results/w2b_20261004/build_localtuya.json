@@ -1,0 +1,179 @@
+[
+  {
+    "arm": "unconfined",
+    "level": null,
+    "timed_out": false,
+    "loaded": true,
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "no_cloud",
+            "region",
+            "username"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "error": null,
+    "device_saw": {
+      "udp": 0,
+      "tcp_connections": 0,
+      "tcp_bytes": 0,
+      "peers": [],
+      "sent": 82
+    },
+    "decisions": [],
+    "published": [
+      {
+        "entity": "sensor.sun_next_dawn",
+        "state": "2026-10-05T05:33:54+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_dusk",
+        "state": "2026-10-04T18:05:06+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_midnight",
+        "state": "2026-10-04T23:48:54+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_noon",
+        "state": "2026-10-05T11:49:02+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_rising",
+        "state": "2026-10-05T06:07:52+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_setting",
+        "state": "2026-10-04T17:31:16+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sun.sun",
+        "state": "above_horizon",
+        "platform": null
+      },
+      {
+        "entity": "zone.home",
+        "state": "0",
+        "platform": null
+      }
+    ],
+    "probe": [
+      "fakecrypt000006667",
+      "fakeplain000006666"
+    ],
+    "audit_breaks": null,
+    "reconcile": null
+  },
+  {
+    "arm": "confined_declared",
+    "level": null,
+    "timed_out": false,
+    "loaded": true,
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "no_cloud",
+            "region",
+            "username"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "error": null,
+    "device_saw": {
+      "udp": 0,
+      "tcp_connections": 0,
+      "tcp_bytes": 0,
+      "peers": [],
+      "sent": 72
+    },
+    "decisions": [
+      {
+        "op": "discover.listen",
+        "target": "6666",
+        "allowed": true,
+        "clause": "/permissions/network/discover/listen/0"
+      },
+      {
+        "op": "discover.listen",
+        "target": "6667",
+        "allowed": true,
+        "clause": "/permissions/network/discover/listen/1"
+      }
+    ],
+    "published": [],
+    "probe": [
+      "fakecrypt000006667",
+      "fakeplain000006666"
+    ],
+    "audit_breaks": [],
+    "reconcile": []
+  },
+  {
+    "arm": "confined_undeclared",
+    "level": null,
+    "timed_out": false,
+    "loaded": true,
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "no_cloud",
+            "region",
+            "username"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "error": null,
+    "device_saw": {
+      "udp": 0,
+      "tcp_connections": 0,
+      "tcp_bytes": 0,
+      "peers": [],
+      "sent": 72
+    },
+    "decisions": [
+      {
+        "op": "discover.listen",
+        "target": "6666",
+        "allowed": false,
+        "clause": "/permissions/network/discover/listen"
+      },
+      {
+        "op": "discover.listen",
+        "target": "6667",
+        "allowed": false,
+        "clause": "/permissions/network/discover/listen"
+      }
+    ],
+    "published": [],
+    "probe": {
+      "missing": "discovery"
+    },
+    "audit_breaks": [],
+    "reconcile": []
+  }
+]

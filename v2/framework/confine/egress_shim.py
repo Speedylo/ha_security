@@ -54,6 +54,7 @@ from __future__ import annotations
 
 import errno
 import ipaddress
+import json
 import os
 import socket
 import time
@@ -103,6 +104,8 @@ class DatagramMediator:
     recv: Callable[[str, int], list]
     scan: Callable[[int, bytes], list]
     listen: Callable[[int], list]
+    #: W2 (b): ask the mediator to bind `port` and push what arrives. Raises if refused.
+    listen_stream: Callable[[int], None] | None = None
 
 
 class EgressDenied(OSError):
@@ -156,6 +159,10 @@ class EgressShim:
         #: that reused a closed one's descriptor inherited its peers and its queued datagrams
         #: (W2 (a), 2026-10-04, found by `selftest_udp` case 2c).
         self._dgram: weakref.WeakKeyDictionary = weakref.WeakKeyDictionary()
+        #: Where pushed datagrams go (W2 (b)): ("listen", port) or ("peer", address, port) ->
+        #: the writer ends of the sockets routed to it.
+        self._routes: dict[tuple, list] = {}
+        self.delivered = 0
         #: Every name resolved and every connection made, for the evaluation and for tests.
         self.resolved: list[str] = []
         self.connected: list[tuple[str, int]] = []
@@ -190,21 +197,29 @@ class EgressShim:
     # -- datagrams ---------------------------------------------------------------------
 
     def _patch_datagrams(self) -> None:
-        """Datagrams are emulated, not handed over, and this is where that shows.
+        """Datagrams are relayed, not handed over — and since W2 (b), delivered into a real descriptor.
 
         TCP could be given a real connected descriptor because a connected TCP socket cannot be
-        re-pointed. UDP cannot (`selftest_socket_pinning.py`), so the sandbox's UDP socket is
-        never connected to anything and never carries traffic: it is a handle, and every
-        operation on it becomes a request to the mediator.
+        re-pointed. UDP cannot (`selftest_socket_pinning.py`), so the mediator owns every real UDP
+        socket and every send is a request to it.
 
-        **The limit this imposes, stated where it is created.** Only the *synchronous* shape can
-        be intercepted this way — `sendto` and `recvfrom` on a socket object. An integration
-        driving `asyncio.DatagramProtocol` waits on a real descriptor becoming readable, and
-        under this design there is no descriptor for the event loop to watch. Four of the
-        fifteen datagram integrations in `results/udp_demand.md` take that route (`govee`,
-        `localtuya`, `tapo_control`, `xiaomi_miot`) and are **not served**. That is §6.11.1's
-        rule applied in advance: name which half is missing rather than publish a figure that
-        hides it.
+        **Receiving.** Until W2 (b) a `recvfrom` asked the relay, and an asyncio transport, which
+        waits for its descriptor to become readable before it calls `recvfrom` at all, waited for
+        ever: §7.25.5's four integrations (`govee`, `localtuya`, `tapo_control`, `xiaomi_miot`)
+        were not served. Now each relayed socket is backed by one end of an `AF_UNIX` datagram
+        socket pair, put under the integration's own descriptor with `dup2`, and the mediator
+        **pushes** what arrives: for a listen, from the port it bound once the listen was granted;
+        for a peer, from the connected socket its first permitted send opened. `deliver` writes
+        each datagram into the pair, framed with its sender, so the descriptor becomes readable
+        exactly as a real one would, and `recvfrom` is a plain read of it — which honours the
+        socket's own timeout or non-blocking mode with no emulation at all. The grant is recorded
+        once; the datagrams are not, as decision A of W1 step 1 has it for states.
+
+        **What is still not served:** a socket whose event loop registered it before its first
+        `bind` or `connect` (a `sendto` comes too late). `dup2` replaces the file description, and
+        an `epoll` registration follows the old one. All four asyncio integrations in the corpus
+        bind or connect first — `govee`'s send socket by binding port 0, which is why a bind to
+        port 0 attaches the pair too.
         """
         cls = socket.socket
         shim = self
@@ -235,11 +250,39 @@ class EgressShim:
             setattr(cls, name, method)
             self._installed.append((cls, name, real))
 
-        # `bind` on a datagram socket declares which port the integration wants to hear on. It
-        # is recorded rather than performed: the mediator holds the only socket that binds.
+        def attach(sock, notes, key: tuple | None) -> None:
+            """Back this socket with a pair, once, and route `key`'s datagrams into it, if any."""
+            if notes.get("writer") is None:
+                inner, outer = socket.socketpair(socket.AF_UNIX, socket.SOCK_DGRAM)
+                timeout = sock.gettimeout()
+                os.dup2(inner.fileno(), sock.fileno())
+                inner.close()
+                # dup2 brought the pair's blocking mode; restore the integration's own.
+                sock.settimeout(timeout)
+                outer.setblocking(False)
+                notes["writer"] = outer
+            if key is None:
+                return
+            writers = shim._routes.setdefault(key, [])
+            if notes["writer"] not in writers:
+                writers.append(notes["writer"])
+
+        # `bind` declares the port the integration wants to hear on. The mediator binds it and
+        # pushes what arrives; a refusal is raised here, where a real bind would fail.
         def on_bind(sock, notes, real, address, *rest):
             if isinstance(address, tuple) and len(address) >= 2:
-                notes["port"] = int(address[1])
+                port = int(address[1])
+                notes["port"] = port
+                if port:
+                    shim.datagrams.listen_stream(port)
+                    attach(sock, notes, ("listen", port))
+                else:
+                    # An ephemeral port: nothing to listen for, but the pair goes in **now**,
+                    # before an event loop can register this descriptor. `govee`'s send socket
+                    # binds port 0 and is then handed to `create_datagram_endpoint`; attached at
+                    # its first `sendto` instead, the pair would replace a file description that
+                    # `epoll` was already watching, and its replies would never wake the loop.
+                    attach(sock, notes, None)
                 return None
             return _FALL_THROUGH
 
@@ -252,17 +295,11 @@ class EgressShim:
                 return None
             return _FALL_THROUGH
 
-        def remember(notes, peer) -> None:
-            # Every peer this socket has sent to, in order, so a reply from any of them is
-            # collected — not only from the last one sent to (W2 (a), 2026-10-04).
-            notes["peer"] = peer
-            peers = notes.setdefault("peers", [])
-            if peer not in peers:
-                peers.append(peer)
-
         def on_connect(sock, notes, real, address, *rest):
             if isinstance(address, tuple) and len(address) >= 2:
-                remember(notes, (str(address[0]), int(address[1])))
+                peer = (str(address[0]), int(address[1]))
+                notes["peer"] = peer
+                attach(sock, notes, ("peer", *peer))
                 return None
             return _FALL_THROUGH
 
@@ -277,12 +314,21 @@ class EgressShim:
                 notes["scanned"] = shim.datagrams.scan(port, bytes(data))
                 notes["port"] = port
                 return len(data)
-            # Sent first, remembered only if it was allowed. Remembered first, a refused send left
-            # a peer that every later `recvfrom` asked the relay for, was refused again, and the
-            # integration's own retry loop turned that into ~1,000 refused decisions a second —
-            # 463,631 durable records in 7.5 minutes (W2 (a) baseline, arm C).
-            sent = shim.datagrams.send(host, port, bytes(data))
-            remember(notes, (host, port))
+            # Routed **before** sending: the peer's reply can be pushed and delivered before the
+            # send's own answer returns, and arriving with no route it was dropped — `selftest_udp`
+            # case 8 lost the first device's reply that way on the Pi (W2 (b)). And unrouted again
+            # if the send is refused, so a refusal still leaves nothing behind (W2 (a) baseline,
+            # arm C: 463,631 refused decisions in 7.5 minutes).
+            key = ("peer", host, port)
+            fresh = notes.get("writer") is None or notes["writer"] not in shim._routes.get(key, [])
+            attach(sock, notes, key)
+            try:
+                sent = shim.datagrams.send(host, port, bytes(data))
+            except OSError:
+                if fresh and notes["writer"] in shim._routes.get(key, []):
+                    shim._routes[key].remove(notes["writer"])
+                raise
+            notes["peer"] = (host, port)
             return sent
 
         def on_send(sock, notes, real, data, *rest):
@@ -291,44 +337,18 @@ class EgressShim:
                 return _FALL_THROUGH
             return shim.datagrams.send(peer[0], peer[1], bytes(data))
 
-        def collect(notes) -> tuple[bytes, tuple] | None:
-            """One datagram already queued, or asked for from the relay once, or None."""
-            if notes.get("scanned"):
-                return notes["scanned"].pop(0)
-            if notes.get("port") is not None and not notes.get("peers"):
-                for data, sender in shim.datagrams.listen(int(notes["port"])):
-                    notes.setdefault("scanned", []).append((data, sender))
-            else:
-                for peer in notes.get("peers") or []:
-                    try:
-                        arrived = shim.datagrams.recv(peer[0], peer[1])
-                    except OSError:
-                        # Refused or failed: from this peer, nothing arrives. A real socket would
-                        # simply receive nothing, and its timeout is what ends the wait.
-                        continue
-                    for data in arrived:
-                        notes.setdefault("scanned", []).append((data, peer))
-            return notes["scanned"].pop(0) if notes.get("scanned") else None
-
         def on_recvfrom(sock, notes, real, bufsize=65535, *rest):
-            if not notes.get("scanned") and not notes.get("peers") \
-                    and notes.get("port") is None:
+            if notes.get("scanned"):
+                data, sender = notes["scanned"].pop(0)
+                return data[:bufsize], sender
+            if notes.get("writer") is None:
                 return _FALL_THROUGH
-            # A real socket's timeout, honoured. Until W2 (a) this raised `BlockingIOError` at
-            # once whatever the socket's mode, and `midea-lan`'s discovery — a socket with a 5 s
-            # timeout, ending on `TimeoutError` — treated it as an ordinary error and asked again,
-            # once a second, forever: 1,409 times before the run was stopped.
-            timeout = sock.gettimeout()
-            deadline = None if timeout is None else time.monotonic() + timeout
-            while True:
-                got = collect(notes)
-                if got is not None:
-                    data, sender = got
-                    return data[:bufsize], sender
-                if timeout == 0:
-                    raise BlockingIOError(errno.EAGAIN, "no datagram available")
-                if deadline is not None and time.monotonic() >= deadline:
-                    raise socket.timeout("timed out")
+            # A plain read of the pair: the socket's own timeout or non-blocking mode applies,
+            # and raises what a real socket raises (`TimeoutError`, `BlockingIOError`).
+            frame = real(sock, bufsize + 512)[0]
+            header, _, data = frame.partition(b"\n")
+            sender = json.loads(header)
+            return data[:bufsize], (str(sender[0]), int(sender[1]))
 
         def on_recv(sock, notes, real, bufsize=65535, *rest):
             outcome = on_recvfrom(sock, notes, real, bufsize)
@@ -337,6 +357,12 @@ class EgressShim:
             return outcome[0]
 
         def on_close(sock, notes, real, *rest):
+            writer = notes.get("writer")
+            if writer is not None:
+                for writers in shim._routes.values():
+                    if writer in writers:
+                        writers.remove(writer)
+                writer.close()
             shim._dgram.pop(sock, None)
             return _FALL_THROUGH
 
@@ -348,6 +374,29 @@ class EgressShim:
         wrap("send", on_send)
         wrap("recvfrom", on_recvfrom)
         wrap("recv", on_recv)
+
+    def deliver(self, push: dict) -> int:
+        """A datagram the mediator pushed, into every socket routed to it. Returns how many took it.
+
+        Called from whichever thread read the push off the channel. Writing to a socket pair is
+        safe from any thread, and a full pair drops the datagram, as a full receive buffer does.
+        """
+        route = push.get("route") or {}
+        if route.get("kind") == "listen":
+            key: tuple = ("listen", int(route.get("port", 0)))
+        else:
+            key = ("peer", str(route.get("address")), int(route.get("port", 0)))
+        frame = json.dumps(push.get("sender")).encode() + b"\n" \
+            + bytes.fromhex(str(push.get("data", "")))
+        taken = 0
+        for writer in list(self._routes.get(key, [])):
+            try:
+                writer.send(frame)
+                taken += 1
+            except OSError:
+                pass
+        self.delivered += taken
+        return taken
 
     def _patch_getaddrinfo(self) -> None:
         """The synchronous seam — `requests`, `urllib3`, and anything using raw sockets.

@@ -2448,7 +2448,8 @@ is not edited — it gains this pointer. All twenty requirements in §7.5 now ca
   (§7.24.3). §7.24.4's UDP finding and `udp_relay.py`'s build are evaluated by `selftest_udp`
   against the same decision path, not inside a spawned sandbox; a confined UDP round trip
   through real namespaces is not built and is owed to Chapter 8 alongside the unserved
-  asyncio-datagram quarter.
+  asyncio-datagram quarter. *(2026-10-04: both done, §7.40 for the round trip with a real integration
+  and §7.41 for the asyncio quarter.)*
 - **Two sandboxes, not the corpus.** This is a targeted demonstration of F2 and S4's own stated
   criteria, with a selection defended the way §7.4.1 requires — not a coverage claim across the
   37- or 40-integration corpora. Whether the egress path holds up against a real community
@@ -4712,9 +4713,86 @@ nothing.
 
 **Not established.** The device never answers the integration's queries, so device-to-integration
 traffic over a passed descriptor is covered only by its being a real connected socket. The four
-asyncio datagram integrations of §7.25.5 are still not served. And arm C's flood leaves a design
+asyncio datagram integrations of §7.25.5 are still not served. *(Served the same day, §7.41.)* And arm C's flood leaves a design
 question open: every refusal is a durable record, so a sandbox that issues refused requests in a loop,
 deliberately rather than by accident as here, can use up the mediator's decision budget and the disk.
+
+
+## 7.41 asyncio datagram endpoints, served
+
+**2026-10-04.** §7.25.5 found that 4 of the corpus's 15 UDP integrations (`govee`, `localtuya`,
+`tapo_control`, `xiaomi_miot`) use asyncio datagram endpoints, and that the design did not serve
+them. asyncio waits for a socket's descriptor to become readable before it reads, and under this
+design the sandbox holds no socket that anything ever arrives on. Predictions were committed first
+(`notes/w2b_asyncio_datagrams_prediction.md`).
+
+### 7.41.1 The design
+
+The only way to serve such an endpoint is to give it a descriptor that really becomes readable. Each
+relayed datagram socket in the sandbox is now backed by one end of a Unix datagram socket pair,
+placed under the integration's own descriptor. The mediator pushes what arrives, and the shim writes
+each datagram into the pair with its sender, so the event loop wakes up as it would for a real
+socket. `recvfrom` becomes a plain read of the pair, which honours the socket's own timeout or
+non-blocking mode without emulating either. The synchronous path of §7.40 goes through the same
+pair, so there is one mechanism.
+
+The datagrams are pushed, not polled. A listen is decided and recorded once, and the mediator binds
+the port and watches it in its own loop. A peer's replies come from the socket its first permitted
+send opened. Neither writes a record per datagram, which is decision A of W1 step 1 applied to
+datagrams. Polling from the sandbox would have made every poll a durable decision, which is the flood
+§8.6.3 #14 describes. A sandbox that stops reading costs the mediator a queue of 64, oldest dropped
+first.
+
+### 7.41.2 The result
+
+`localtuya`, unmodified, set up without a cloud account, listens for device announcements with
+asyncio on UDP 6666 and 6667. A fake device broadcast both kinds once a second, and the evidence is
+`localtuya`'s own record of what it discovered.
+
+| Arm | Before the build | After | Decisions after |
+|---|---|---|---|
+| unconfined | both devices | both devices | — |
+| confined, listen declared | **nothing, with no error anywhere** | **both devices** | 2 listens, one per port, however many broadcasts arrived |
+| confined, nothing declared | nothing | nothing; discovery fails to start | 2 listens refused, no flood |
+
+Before the build, the declared and undeclared arms could not be told apart: the endpoint was created
+without error and simply never received anything. After it, confined discovery matches unconfined.
+§7.40's synchronous `midea_ac_lan` still loads through the same pair, and its per-poll receive
+decisions are gone.
+
+### 7.41.3 What checking claims found
+
+Three findings came from checking what had been written, not from the measurements.
+`selftest_udp`'s case asserting that asyncio endpoints are *not* served was `check(True, …)`, a stated
+limitation counted as a passing test while testing nothing. It now tests the shape being served.
+
+The first draft of the outcomes said no asyncio endpoint in the corpus registers its socket before
+binding it, and that was false. `govee` binds its send socket to port 0 and hands it to asyncio, and
+the build attached the pair only for real ports. That socket would therefore have got its pair at
+its first send, after the event loop was already watching the descriptor's old file description,
+and its replies would never have arrived. A bind to port 0 now attaches the pair too, and a test of
+`govee`'s shape fails without that line.
+
+And on the Pi, a test that passed on the laptop lost the first device's reply. The shim added a
+peer's route only after the send returned, and on the Pi's loopback the reply arrived in that gap
+with nowhere to go. A real sandbox has the same gap between the thread that sends and the thread
+that delivers. The route is now added before sending and removed if the send is refused.
+
+### 7.41.4 The predictions, and what this establishes
+
+All eight predictions held. D4, that the integration sees the device's real address, held at the
+decision layer only, because `localtuya` reads the address from the payload rather than from the
+sender.
+
+**Established.** asyncio datagram endpoints are served confined, and a real integration using them
+discovers devices exactly as it does unconfined, on one recorded decision per listen. With nothing
+declared it is refused at the listen and discovers nothing, with no flood. §7.25.5's unserved quarter
+is served, and §8.6.3's limitations 9 and 10 are closed for the shapes the corpus uses.
+
+**Not established.** The unicast half, replies to datagrams an asyncio endpoint sent, as `govee` and
+`xiaomi_miot` use, is tested at the decision layer only, because no corpus member that needs it can
+run without a real device or account. A socket registered by an event loop before its first bind or
+connect would still not be served; none in the corpus is.
 
 ---
 
