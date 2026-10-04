@@ -16,8 +16,11 @@ All 20 requirements are now ✅ (S3 at the stand-in platform).
 **2026-10-04 (later): W1 step 2 done** — the mediator acts on a real HA, (A), on the Pi
 (`python3 -m confine.house_a up --fresh`): registry identity re-measured (15/15), restart survival,
 real pushes at 0.71 ms, names match (B). Five defects found and fixed; §7.37 written with dated pointers;
-24/24 suites on the Pi. **Next: step 2b** — commands from (A) into a sandbox (needs a switch-shaped
-test integration), then W2.
+24/24 suites on the Pi.
+
+**2026-10-04 (evening): W1 step 2b done** — a user in (A) operates a confined integration's switch
+(`adaptive_lighting`, unmodified): 16 ms round trip, recorded, refusals at once (§7.38). **W1 is complete.
+Next: W2** (bytecode cache first; then plain-socket integration, UDP in a real sandbox, token refresh).
 
 **In one screen — where we are, 2026-10-03:**
 

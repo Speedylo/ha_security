@@ -11,4 +11,10 @@ STORAGE_VERSION = 1
 SIGNAL_NEW_ENTITY = f"{DOMAIN}_new_entity_{{}}"
 
 #: The entity domains the bridge can stand in for. Others are refused, not approximated.
-SUPPORTED = ("sensor", "binary_sensor")
+SUPPORTED = ("sensor", "binary_sensor", "switch")
+
+#: How long a user's command waits for the confined integration to answer (W1 step 2b).
+COMMAND_TIMEOUT = 10
+
+#: Commands waiting for an answer, at most. Past this a command is refused, not queued.
+MAX_PENDING_COMMANDS = 32

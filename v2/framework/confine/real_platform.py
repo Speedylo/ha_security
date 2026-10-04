@@ -70,6 +70,10 @@ class RealPlatform:
             raise PlatformError(f"(A) refused the mediator's token: {answer.get('type')}")
 
         self.listeners: list[Callable[[str, str, dict], None]] = []
+        #: Called with each user's command for a confined entity (W1 step 2b): a dict with
+        #: `command`, `integration`, `entity_id`, `service` and `data`. The mediator handles it.
+        self.command_handlers: list[Callable[[dict], None]] = []
+        self._commands: deque = deque()
         self.calls: list[tuple[str, str, dict]] = []      # what (A) executed, for reports
         self.published: dict[tuple[str, str], str] = {}   # (integration, its id) -> id in (A)
         self._next = 1
@@ -89,6 +93,11 @@ class RealPlatform:
         for state in self.call({"type": "get_states"}):
             existing.setdefault(state["entity_id"], "the platform")
         self.owners = _Owners(existing)
+
+        # The bridge's command stream. Subscribed once, at connect, because commands can arrive
+        # for any confined entity at any time, not only for entities someone subscribed to.
+        self._command_stream = self._next
+        self.call({"type": "confine_bridge/commands"})
 
     # ---------------------------------------------------------------- the connection
 
@@ -128,9 +137,18 @@ class RealPlatform:
                 self._results[message["id"]] = message
             elif message.get("type") == "event" and message.get("id") == self._subscription:
                 self._events.append(message["event"])
+            elif message.get("type") == "event" and message.get("id") == self._command_stream:
+                self._commands.append(message["event"])
 
     def _apply_events(self) -> None:
-        """`subscribe_entities`' compressed format: `a` adds whole states, `c` changes, `r` removes."""
+        """`subscribe_entities`' compressed format: `a` adds whole states, `c` changes, `r` removes.
+
+        Commands are handed on here too, for the same reason: only once no call is in progress.
+        """
+        while self._commands:
+            command = self._commands.popleft()
+            for handler in list(self.command_handlers):
+                handler(command)
         while self._events:
             event = self._events.popleft()
             changed: list[str] = []
@@ -179,6 +197,11 @@ class RealPlatform:
         self.call({"type": "call_service", "domain": domain, "service": service,
                    "service_data": data})
         self.calls.append((domain, service, data))
+
+    def command_result(self, command: int, ok: bool, error: str | None = None) -> None:
+        """The confined integration's answer, back to the bridge, which returns or raises."""
+        self.call({"type": "confine_bridge/command_result", "command": command, "ok": ok,
+                   "error": error})
 
     def watch(self, entity_id: str) -> None:
         """Widen (A)'s subscription to include `entity_id`. Only subscribed entities are asked for."""

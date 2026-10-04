@@ -24,6 +24,7 @@ returns; the push loop's subscription table and outbox are also here. See
 from __future__ import annotations
 
 import array
+import collections
 import os
 import selectors
 import socket
@@ -93,10 +94,15 @@ class _Outbox:
     """
 
     reply: tuple[bytes, int | None] | None = None
+    #: Users' commands for this sandbox's entities (W1 step 2b), first in first out and never
+    #: coalesced: a state is a value and only the latest matters, a command is an instruction.
+    #: Bounded by the mediator at `MAX_COMMANDS`.
+    commands: collections.deque = field(default_factory=collections.deque)
     pushes: dict[str, dict] = field(default_factory=dict)
     inflight: bytearray = field(default_factory=bytearray)
     inflight_fd: int | None = None
     inflight_is_reply: bool = False
+    inflight_is_push: bool = False
 
     @property
     def owes_reply(self) -> bool:
@@ -104,7 +110,8 @@ class _Outbox:
 
     @property
     def empty(self) -> bool:
-        return not self.inflight and self.reply is None and not self.pushes
+        return (not self.inflight and self.reply is None and not self.commands
+                and not self.pushes)
 
     def drain(self, sock) -> int:
         """Write as much as the socket takes without blocking. Returns pushes fully sent.
@@ -118,10 +125,14 @@ class _Outbox:
                     data, self.inflight_fd = self.reply
                     self.reply = None
                     self.inflight, self.inflight_is_reply = bytearray(data), True
+                    self.inflight_is_push = False
+                elif self.commands:
+                    self.inflight = bytearray(Channel.frame(self.commands.popleft()))
+                    self.inflight_is_reply = self.inflight_is_push = False
                 elif self.pushes:
                     message = self.pushes.pop(next(iter(self.pushes)))
                     self.inflight = bytearray(Channel.frame(message))
-                    self.inflight_is_reply = False
+                    self.inflight_is_reply, self.inflight_is_push = False, True
                 else:
                     return completed
             try:
@@ -139,7 +150,7 @@ class _Outbox:
             except BlockingIOError:
                 return completed
             del self.inflight[:sent]
-            if not self.inflight and not self.inflight_is_reply:
+            if not self.inflight and self.inflight_is_push:
                 completed += 1
 
     def discard(self) -> None:
@@ -151,6 +162,11 @@ class _Outbox:
                 except OSError:
                     pass
         self.inflight_fd, self.reply = None, None
+
+
+#: Commands queued for one sandbox, at most (W1 step 2b). Past this a user's command is refused at
+#: once rather than queued without limit behind a sandbox that is not reading.
+MAX_COMMANDS = 32
 
 
 @dataclass
@@ -176,6 +192,9 @@ class Mediator:
     _out: dict[int, _Outbox] = field(default_factory=dict)
     _selector: selectors.BaseSelector = field(default_factory=selectors.DefaultSelector)
     _platform: object | None = None
+    #: Commands pushed and not yet answered: command id -> the channel it was sent down. An answer
+    #: is accepted only from that channel, and only once (W1 step 2b, C7).
+    _sent_commands: dict[int, int] = field(default_factory=dict)
 
     def attach_platform(self, platform) -> None:
         """Put a platform that pushes — `RealPlatform`'s connection to (A) — on the selector.
@@ -186,6 +205,8 @@ class Mediator:
         self._platform = platform
         self._selector.register(platform, selectors.EVENT_READ)
         platform.listeners.append(self.push)
+        if hasattr(platform, "command_handlers"):
+            platform.command_handlers.append(self.command)
 
     def register(self, identity: str, channel: Channel, run_id: str = "", *,
                  component: Path | None = None, provenance: str = "author-declared") -> None:
@@ -223,6 +244,13 @@ class Mediator:
         self._selector.register(channel.sock, selectors.EVENT_READ)
 
     def unregister(self, fd: int) -> None:
+        # Commands this sandbox will now never answer are answered for it, so that a user's call
+        # fails at once with a reason instead of at the bridge's timeout.
+        for command, sent_to in list(self._sent_commands.items()):
+            if sent_to == fd:
+                del self._sent_commands[command]
+                self._platform.command_result(  # type: ignore[union-attr]
+                    command, False, "the confined integration's sandbox exited")
         identity, channel = self._by_fd.pop(fd, (None, None))
         self._subscriptions.pop(fd, None)
         outbox = self._out.pop(fd, None)
@@ -282,6 +310,71 @@ class Mediator:
             outbox.pushes[entity_id] = message
             self._flush(fd)
 
+    def command(self, command: dict) -> None:
+        """A user in the house operated an entity a confined integration owns (W1 step 2b).
+
+        Recorded before it is pushed, like every action (§7.36.1). Ambient rather than declared:
+        operating an integration's own entity through its own platform is what having the entity
+        means, as publishing it is (§5.10.2). Refused, and recorded as refused, when the
+        integration has no running sandbox, when it does not own the entity, or when its queue is
+        full. Every refusal is answered to the user at once.
+        """
+        ident = command.get("command")
+        identity = str(command.get("integration") or "")
+        entity_id = str(command.get("entity_id") or "")
+        service = str(command.get("service") or "")
+        request = {"op": "entity.command", "entity": entity_id,
+                   "service": f"{entity_id.partition('.')[0]}.{service}",
+                   "data": dict(command.get("data") or {})}
+        channels = [fd for fd, (who, _) in self._by_fd.items() if who == identity]
+        owner = self._platform.owners.get(entity_id) if self._platform else None  # type: ignore
+
+        if not channels:
+            decision = Decision(False, f"{identity} has no running sandbox", clause=None)
+        elif owner != identity:
+            decision = Decision(False, f"{entity_id} belongs to {owner}, not {identity}",
+                                clause=None)
+        elif service not in ("turn_on", "turn_off"):
+            decision = Decision(False, f"{service} is not a command the bridge forwards",
+                                clause=None)
+        elif len(self._out[channels[0]].commands) >= MAX_COMMANDS:
+            decision = Decision(False, f"{MAX_COMMANDS} commands are already queued for "
+                                       f"{identity}", clause=None)
+        else:
+            decision = Decision(True, "the platform operating the integration's own entity",
+                                clause="(ambient: §5.10.2)")
+        self._record(identity, request, decision)
+        if not decision.allowed:
+            self._platform.command_result(ident, False, decision.reason)  # type: ignore
+            return
+        fd = channels[0]
+        self._sent_commands[ident] = fd
+        self._out[fd].commands.append({"push": "entity.command", "command": ident,
+                                       "entity": entity_id, "service": service,
+                                       "data": request["data"]})
+        self._flush(fd)
+
+    def _answer_command(self, fd: int, identity: str, request: dict) -> None:
+        """A sandbox's answer to a command. Accepted only from the channel it was sent to, once."""
+        ident = request.get("command")
+        if self._sent_commands.get(ident) != fd:  # type: ignore[arg-type]
+            # Not a decision, and not grounds to drop the channel: recorded, and ignored. A
+            # sandbox must not be able to use the answer path to make the house do anything.
+            detail = f"answer to command {ident!r}, which was not sent to this channel"
+            self.audit.append({"identity": identity, "event": "protocol_error",
+                               "detail": detail})
+            if self.log is not None:
+                self.log.protocol_error(self._runs.get(identity, ""), identity, detail)
+            answer = Decision(False, detail)
+        else:
+            del self._sent_commands[ident]  # type: ignore[arg-type]
+            self._platform.command_result(  # type: ignore[union-attr]
+                ident, bool(request.get("ok")),
+                None if request.get("ok") else str(request.get("error") or "failed")[:300])
+            answer = Decision(True, "relayed")
+        self._out[fd].reply = (Channel.frame(answer.as_response(request.get("id"))), None)
+        self._flush(fd)
+
     def _flush(self, fd: int) -> None:
         identity, channel = self._by_fd[fd]
         outbox = self._out[fd]
@@ -330,6 +423,10 @@ class Mediator:
             return
         if request is None:
             self.unregister(fd)
+            return
+
+        if request.get("op") == "entity.command_result":
+            self._answer_command(fd, identity, request)
             return
 
         # Steps 1–3. Identity comes from `identity`, which came from the socket. Whatever the

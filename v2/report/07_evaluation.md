@@ -4476,13 +4476,76 @@ integration would have had unconfined. Real changes in (A) reach the confined in
 millisecond at the mediator, filtered to what it subscribed to. Permitted service calls execute in
 (A), and refused ones never reach it.
 
-**Not established.** Commands in the other direction, a user in (A) operating an entity a sandbox
+**Not established.** *(The first point is answered by §7.38, the same day, for switches.)* Commands in the other direction, a user in (A) operating an entity a sandbox
 owns, are not built. That is step 2b of the plan, and until it exists a confined switch or light
 cannot be driven from (A). The bridge stands in for sensors and binary sensors only, and refuses
 other domains rather than approximating them. One integration was run, and it publishes only
 sensors. The older security suites still run against the stand-in. Their decisions are made before
 any platform is reached, so this should not matter, but that is an argument, not a measurement.
 `selftest_real_platform` measures the platform-dependent properties against (A).
+
+
+## 7.38 Commands from the house into a confined integration
+
+**2026-10-04.** §7.37 left one direction unbuilt: a user in the house's Home Assistant, (A), operating
+an entity that a confined integration owns. Until it existed, a confined switch was display-only in
+the house. Predictions were committed first (`notes/w1_step2b_commands_prediction.md`).
+
+### 7.38.1 What was built, and why each choice
+
+A user's `switch.turn_on` reaches the bridge's entity in (A). The bridge sends the command on a stream
+the mediator subscribes to, and waits for an answer. The mediator identifies the integration from the
+entity, records the command, and pushes it down that integration's channel. In the sandbox, the same
+service is called on the same entity in (B), so the integration's own handler runs to completion and
+anything it changes is published back the ordinary way. Then the result travels back, and the user's
+call either returns or raises an error the user sees, as a native entity's failing call would.
+
+A command is recorded because it tells an integration to act, and for a lock integration that would
+mean "unlock". The record is written before the push, as every action is since §7.36.1. It needs no
+manifest clause: operating an integration's own entity through its own platform is what having the
+entity means, as publishing it is (§5.10.2). It is refused, and recorded as refused, when the
+integration has no running sandbox, when it does not own the entity, or when 32 commands are already
+queued for it.
+
+Commands get their own queue and are never coalesced, unlike states (§7.36.2), because a command is
+an instruction and not a value. And an answer is accepted only from the channel the command was sent
+to, and only once, so that a sandbox cannot use the answer path to make the house do anything.
+
+### 7.38.2 The result
+
+The test integration is `adaptive_lighting`, unmodified, so the switch handler under test was not
+written by the author of the sandbox.
+
+| | Result |
+|---|---|
+| A user turns on `adaptive_lighting`'s sleep-mode switch in (A) | the integration's own handler runs in (B); the call succeeds in **16 ms**; the switch reads `on` in (A) |
+| Two sandboxes connected | the command reaches only the owner's |
+| Recording | one durable `entity.command` decision per command, naming the service, before the push |
+| Owner's sandbox gone | the user's call fails in **2 ms**, and the refusal is recorded |
+| Sandbox never answers | the user's call fails at the 10 s timeout; another sandbox is answered in 1.0 ms meanwhile |
+| An answer to a command never sent | refused and recorded; the channel survives |
+| Regression | `thermal_comfort` against (A) unchanged from §7.37; all 24 suites pass on the Pi |
+
+### 7.38.3 The predictions, and what this establishes
+
+All eight predictions held. The open one, that something unlisted would be found, held only on the
+test's side: two defects in the test itself, and none in the framework. One repeated §7.37's R5
+mistake. A "meanwhile" latency was timed around a helper that waits out its own polling interval,
+and reported 301 ms where the mediator took 1.0 ms. The other was a race: the simulated user's socket
+timeout equalled the bridge's 10 s, so one run lost the user's outcome. Both were found because a
+figure looked wrong for a specific reason, and both are fixed.
+
+**Established.** A confined integration's switches are operable from the house: the user's command
+reaches the integration's own code, the result reaches the user, and failures surface the way a native
+integration's would, at once when the integration is not running. Every command is attributable in
+the durable log.
+
+**Not established.** Only switches are forwarded. Lights, covers and locks need the same path with
+more service shapes and data, and the bridge refuses those domains rather than approximating them. If
+two sandboxes claim the same integration, a command goes to the first one registered. And the
+simulated user holds the mediator's own owner token, so the log cannot yet tell a user's command apart
+from the mediator's own identity in (A). §5.15.3's R3, the unscoped token, is the same limitation
+seen from the other side.
 
 ---
 

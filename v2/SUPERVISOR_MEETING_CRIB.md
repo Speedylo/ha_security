@@ -75,7 +75,7 @@ Then the sentence that makes him stop worrying about you:
 | Requirements | 20 total — **all 20 met** since 2026-10-04 (the last, entity subscriptions, closed by the push loop, against a stand-in platform) |
 | Threat model | 18 threats · 7 residual risks · STRIDE + ISO 31000 + OWASP Threat Dragon |
 | Tests | **23 self-test suites** pass on the Pi (plus the base `selftest`) |
-| Real platform | Since 2026-10-04 the mediator drives a real Home Assistant: confined entities get registry rows, keep their names, survive restarts; real changes reach them in under 1 ms |
+| Real platform | Since 2026-10-04 the mediator drives a real Home Assistant: confined entities get registry rows, keep their names, survive restarts; real changes reach them in under 1 ms; a user's switch press in the house reaches the confined integration's own code in 16 ms |
 | Attacks | Unconfined: **2/2** canary secrets stolen, 11 attacks returned data. Confined: **0/2** |
 | The gc attack | Unconfined reaches a live token **7 ways**; confined finds nothing — token confirmed still live in the mediator |
 | Entity visibility | Unconfined **36/36** + all presence; confined **1/36** |

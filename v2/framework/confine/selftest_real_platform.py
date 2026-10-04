@@ -16,6 +16,15 @@ Predictions: `notes/w1_step2_real_platform_prediction.md` §4.
     R2   with --restart: (A) is restarted, and the bridged entity is still registered and holds
          its last state before anything republishes it
 
+  W1 step 2b, commands from (A) into a sandbox (`notes/w1_step2b_commands_prediction.md`):
+
+    C2   a user's command reaches only the owning integration's sandbox
+    C3   each command is a durable `entity.command` decision, written before it is pushed
+    C4   a command for an integration whose sandbox has gone fails to the user at once
+    C5   a sandbox that never answers fails the user's call at the bridge's timeout, and the
+         mediator keeps answering other sandboxes meanwhile
+    C7   an answer to a command the channel was never sent is refused and recorded
+
 Run:  python3 -m confine.selftest_real_platform [--restart]
 """
 
@@ -26,10 +35,12 @@ import json
 import statistics
 import sys
 import tempfile
+import threading
 import time
 from pathlib import Path
 
 from . import house_a
+from .house_a import User
 from .audit import AuditLog
 from .mediator import Mediator
 from .platform import ActingPolicy
@@ -61,6 +72,19 @@ def registry(platform: RealPlatform) -> dict[str, dict]:
 def set_value(platform: RealPlatform, entity: str, value: float) -> None:
     platform.call({"type": "call_service", "domain": "input_number", "service": "set_value",
                    "service_data": {"entity_id": entity, "value": value}})
+
+
+def commands_of(sandbox: Sandbox) -> list[dict]:
+    return [m for m in sandbox.received if m.get("push") == "entity.command"]
+
+
+def serve_until(mediator: Mediator, condition, seconds: float = 12) -> bool:
+    deadline = time.monotonic() + seconds
+    while time.monotonic() < deadline:
+        if condition():
+            return True
+        mediator.serve(timeout=0.01)
+    return condition()
 
 
 def main() -> int:
@@ -191,7 +215,103 @@ def main() -> int:
               len(decisions) == 5, f"{len(decisions)} decisions")
         check("every chain verifies", log.verify() == [])
 
+        print("\nW1 step 2b — commands from (A) into a sandbox\n")
+        SWITCH, OTHER_SWITCH = "switch.selftest_sleep_mode", "switch.other_switch"
+        other = Sandbox(mediator, "other", manifest(root, "other", {}))
+        reader.ask({"op": "entity.publish", "entity": SWITCH, "state": "off"})
+        other.ask({"op": "entity.publish", "entity": OTHER_SWITCH, "state": "off"})
+        a_switch = platform.published[("selftest", SWITCH)]
+        check("a published switch is a switch entity in (A), owned through the bridge",
+              registry(platform).get(a_switch, {}).get("platform") == "confine_bridge",
+              a_switch)
+
+        # The happy path, played by hand: the in-process sandbox does what `sandbox_runtime`
+        # does — runs the command, publishes what changed, answers.
+        user = User()
+        reader.received.clear()
+        other.received.clear()
+        pressed = user.press(a_switch, "turn_on")
+        arrived = serve_until(mediator, lambda: (reader.drain(), commands_of(reader))[1])
+        command = commands_of(reader)[0] if arrived else {}
+        check("C2: the user's command reaches the owning sandbox",
+              command.get("entity") == SWITCH and command.get("service") == "turn_on",
+              f"{command}")
+        other.drain()
+        check("C2: and not the other sandbox", commands_of(other) == [])
+        records = [r for r in log.records() if r["kind"] == "decision"
+                   and r["op"] == "entity.command"]
+        check("C3: the command is a durable decision, written before the push arrived",
+              len(records) == 1 and records[0]["allowed"]
+              and records[0]["integration"] == "selftest"
+              and records[0]["requested"].get("service") == "switch.turn_on",
+              f"{[(r['target'], r['requested'], r['allowed']) for r in records]}")
+        reader.ask({"op": "entity.publish", "entity": SWITCH, "state": "on"})
+        answered = reader.ask({"op": "entity.command_result",
+                               "command": command.get("command"), "ok": True})
+        serve_until(mediator, lambda: not pressed.is_alive())
+        pressed.join()
+        check("C1 (in process): the user's call succeeds once the sandbox answers",
+              answered.get("ok") is True and user.outcome.get("success") is True,
+              f"{user.outcome}")
+        check("and the switch reads on in (A), published back the ordinary way",
+              platform.read(a_switch)[0] == "on")
+
+        print()
+        forged = reader.ask({"op": "entity.command_result", "command": 424242, "ok": True})
+        errors = [r for r in log.records() if r["kind"] == "protocol_error"]
+        check("C7: an answer to a command never sent is refused",
+              forged.get("ok") is False, forged.get("reason", ""))
+        check("C7: and recorded, and the channel survives it",
+              len(errors) == 1 and reader.ask({"op": "entity.read", "entity": TEMP})
+              .get("ok") is True)
+
+        # C5: a sandbox that never answers. The user's call must fail at the bridge's timeout,
+        # and meanwhile the mediator must keep answering everyone else.
+        user2 = User()
+        pressed = user2.press(a_switch, "turn_off")
+        serve_until(mediator, lambda: (reader.drain(), commands_of(reader)[1:])[1])
+        # Timed from the request's own thread, until its answer — not with `Sandbox.ask`, whose
+        # helper waits out `serve(timeout=0.3)` and reported 301 ms the first time: its own idle
+        # period, not the mediator's (§7.37's R5 again).
+        meanwhile: dict = {}
+
+        def ask_other() -> None:
+            start = time.perf_counter()
+            meanwhile.update(other.channel.request(
+                {"op": "entity.publish", "entity": OTHER_SWITCH, "state": "on"}))
+            meanwhile["seconds"] = time.perf_counter() - start
+        asking = threading.Thread(target=ask_other)
+        asking.start()
+        serve_until(mediator, lambda: not asking.is_alive())
+        asking.join()
+        responsive = meanwhile.get("seconds", 99.0)
+        serve_until(mediator, lambda: not pressed.is_alive(), seconds=15)
+        pressed.join()
+        check("C5: a sandbox that never answers fails the user's call at the timeout",
+              user2.outcome.get("success") is False
+              and 9 <= user2.outcome.get("seconds", 0) <= 12,
+              f"{user2.outcome.get('seconds', 0):.1f} s: {user2.outcome.get('error')}")
+        check("C5: while the mediator kept answering another sandbox",
+              meanwhile.get("ok") is True and responsive < 1, f"{responsive * 1e3:.1f} ms")
+
+        # C4: the owning sandbox goes away. Its unanswered command, and any new one, fail at once.
         reader.channel.sock.close()
+        mediator.serve(timeout=0.2)
+        user3 = User()
+        pressed = user3.press(a_switch, "turn_on")
+        serve_until(mediator, lambda: not pressed.is_alive())
+        pressed.join()
+        check("C4: a command for an integration with no sandbox fails at once",
+              user3.outcome.get("success") is False and user3.outcome.get("seconds", 9) < 1,
+              f"{user3.outcome.get('seconds', 0) * 1e3:.0f} ms: {user3.outcome.get('error')}")
+        refused = [r for r in log.records() if r["kind"] == "decision"
+                   and r["op"] == "entity.command" and not r["allowed"]]
+        check("C4: and the refusal is recorded too", len(refused) == 1, f"{len(refused)}")
+        check("every chain still verifies", log.verify() == [])
+        for person in (user, user2, user3):
+            person.close()
+
+        other.channel.sock.close()
         platform.close()
 
     if args.restart:

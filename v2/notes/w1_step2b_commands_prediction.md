@@ -66,3 +66,24 @@ with a 10 s timeout; and the command is recorded durably.
 | **C6** | A command's round trip, from the user's call to its return, is tens of milliseconds, dominated by (B)'s service handling | medium |
 | **C7** | A sandbox answering a command it was never sent is ignored and recorded as a protocol error, and nothing happens in (A) | high |
 | **C8** | Something not listed is found | high |
+
+---
+
+## 5. Outcomes, 2026-10-04 (appended; §4 is unchanged)
+
+Evidence: `experiments/real_platform/results/w1_step2b_20261004/`, against a fresh (A) on the Pi.
+
+| | Outcome |
+|---|---|
+| **C1** | **Held, with the real integration.** A user in (A) turned on `adaptive_lighting`'s sleep-mode switch. Its own handler ran in (B), the call returned success, and the switch reads `on` in (A), published back the ordinary way |
+| **C2** | **Held.** With two sandboxes connected, the command reached only the owner's |
+| **C3** | **Held.** One durable `entity.command` decision per command, with `requested.service = switch.turn_on`, written before the push |
+| **C4** | **Held.** With the owner's sandbox gone, the user's call failed in 2 ms ("selftest has no running sandbox"), and the refusal is recorded |
+| **C5** | **Held.** A sandbox that never answers failed the user's call at 10.0 s, and another sandbox was answered in 1.0 ms meanwhile |
+| **C6** | **Held, at the low end.** 16 ms from the user's call to its return, through the real `adaptive_lighting` |
+| **C7** | **Held.** An answer to a command never sent was refused and recorded as a protocol error, and the channel survived |
+| **C8** | **Held only on the test's side. No framework defect was found.** Two defects in my own test: C5's "meanwhile" was first reported as 301 ms, which was the test helper's `serve(timeout=0.3)` (the same mistake as step 2's R5); and the simulated user's socket timeout equalled the bridge's 10 s, so the two raced, and one run lost the outcome |
+
+**Limits.** Switches only (`turn_on`, `turn_off`). If two sandboxes claim the same integration, a
+command goes to the first one registered. The simulated user in (A) uses the mediator's own owner
+token, so the command's context names the same user as the mediator.

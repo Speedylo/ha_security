@@ -249,6 +249,8 @@ class Bridge:
         self.pending: collections.deque = collections.deque()
         self.received: list[dict] = []
         self.unexpected: list[str] = []
+        self.published_ids: set[str] = set()
+        self.commands: list[dict] = []
 
     # -- inbound ---------------------------------------------------------------------
 
@@ -304,6 +306,9 @@ class Bridge:
         while self.pending:
             message = self.pending.popleft()
             entity_id = message.get("entity")
+            if message.get("push") == "entity.command":
+                self.hass.async_create_task(self._run_command(message))
+                continue
             if entity_id not in self.subscribed:
                 # The mediator's filter is the authority, and this is not a second one: a push
                 # for an entity this end never subscribed to means the two disagree, which is
@@ -315,6 +320,31 @@ class Bridge:
             self.hass.states.async_set(entity_id, message.get("state"),
                                        message.get("attributes") or {})
             self.received.append({"entity": entity_id, "state": message.get("state")})
+
+    async def _run_command(self, message: dict) -> None:
+        """A user in the house operated one of this integration's entities (W1 step 2b).
+
+        Run as the same service on the same entity in this instance, with `blocking=True`, so the
+        integration's own handler runs to completion — and anything it changes is published back
+        the ordinary way — before the answer goes back. Only for an entity this integration
+        published; anything else is answered as refused, not attempted.
+        """
+        entity_id = str(message.get("entity") or "")
+        domain = entity_id.partition(".")[0]
+        ok, error = True, None
+        if entity_id not in self.published_ids:
+            ok, error = False, f"{entity_id} is not an entity this integration published"
+        else:
+            try:
+                await self.hass.services.async_call(
+                    domain, str(message.get("service")),
+                    {"entity_id": entity_id, **(message.get("data") or {})}, blocking=True)
+            except Exception as err:  # noqa: BLE001 — the user is told, as a native call would
+                ok, error = False, f"{type(err).__name__}: {err}"[:300]
+        self.commands.append({"entity": entity_id, "service": message.get("service"),
+                              "ok": ok, "error": error})
+        self.channel.request({"op": "entity.command_result", "command": message.get("command"),
+                              "ok": ok, "error": error})
 
     # -- outbound --------------------------------------------------------------------
 
@@ -367,6 +397,8 @@ class Bridge:
             self.published.append({"entity": entity_id, "state": new.state,
                                    "accepted": bool(answer.get("ok")),
                                    "clause": answer.get("clause")})
+            if answer.get("ok"):
+                self.published_ids.add(entity_id)
 
         self.hass.bus.async_listen(EVENT_STATE_CHANGED, _changed)
 
@@ -886,7 +918,8 @@ async def run() -> dict:
         result["published"] = bridge.published
         result["refused"] = bridge.refused
         result["push"] = {"subscribed": sorted(bridge.subscribed),
-                          "received": bridge.received, "unexpected": bridge.unexpected}
+                          "received": bridge.received, "unexpected": bridge.unexpected,
+                          "commands": bridge.commands}
         result["egress"] = {**(result.get("egress") or {}), **egress_summary()}
         await hass.async_stop()
         return result
@@ -943,7 +976,8 @@ async def run() -> dict:
     result["published"] = bridge.published
     result["refused"] = bridge.refused
     result["push"] = {"subscribed": sorted(bridge.subscribed),
-                      "received": bridge.received, "unexpected": bridge.unexpected}
+                      "received": bridge.received, "unexpected": bridge.unexpected,
+                      "commands": bridge.commands}
 
     # What the integration can and cannot reach, asked from inside rather than inferred.
     probes = spec.get("probe_entities", [])

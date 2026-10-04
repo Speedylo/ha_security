@@ -49,6 +49,7 @@ from .compat import (DEPS, PLATFORM_DEPS, component_requirements, declared_compo
 from .manifest import Manifest
 from .mediator import Mediator
 from .platform import Platform, acting_policy
+from .house_a import User
 from .real_platform import RealPlatform
 from .preflight import require_ready
 from .sandbox import SandboxSpec
@@ -122,7 +123,7 @@ PUSHED_TEMPERATURE = "30.0"
 
 def run_one(domain: str, component: Path, subject: dict, python: Path,
             delegation: Delegation, uv: str | None, platform_deps: Path | None,
-            push: bool = False, real: bool = False) -> dict:
+            push: bool = False, real: bool = False, command: bool = False) -> dict:
     root = Path(tempfile.mkdtemp(prefix=f"e2e-{domain}-"))
     mediator = Mediator()
     # T4: §7.17's decisions, durably and reconciled — `report["decisions"]` below is read from
@@ -192,11 +193,20 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
             # history is taken where the publish happens, and the push is caused by a real
             # `input_number.set_value` into (A) rather than by writing the stand-in's dict.
             publish = platform.publish
+            pressed: list = []
 
             def published(identity: str, entity_id: str, state: str, attributes: dict,
                           naming: dict | None = None) -> None:
                 publish(identity, entity_id, state, attributes, naming)
                 history.append((entity_id, state))
+                # W1 step 2b: a user in (A) turns the integration's sleep-mode switch on, from
+                # their own connection, as a dashboard would — once, the first time it appears.
+                if command and not pressed and entity_id.startswith("switch.") \
+                        and "sleep_mode" in entity_id:
+                    user = User()
+                    in_a = platform.published[(identity, entity_id)]
+                    pressed.append((user, in_a, user.press(in_a, "turn_on")))
+                    history.append(("<command>", f"{in_a} turn_on"))
                 if push and not pushed:
                     pushed.append(entity_id)
                     platform.call({"type": "call_service", "domain": "input_number",
@@ -277,6 +287,15 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
     report["install"] = install
     report["decisions"] = [d for d in mediator.audit]
     report["durable"] = durable
+    if real and command:
+        if pressed:
+            user, in_a, thread = pressed[0]
+            thread.join(timeout=15)
+            report["command"] = {"entity_in_A": in_a, "outcome": user.outcome,
+                                 "state_in_A_after": platform.read(in_a)[0]}
+            user.close()
+        else:
+            report["command"] = {"outcome": "no sleep-mode switch was published"}
     if real:
         # What (A) now holds for this integration: every registry row the bridge created for it,
         # read back from (A) itself rather than from what the mediator believes it published.
@@ -370,6 +389,9 @@ def main() -> int:
     ap.add_argument("--platform", choices=["stand-in", "real"], default="stand-in",
                     help="W1 step 2: act on the house's real Home Assistant, (A), which must be "
                          "running (`python3 -m confine.house_a up`)")
+    ap.add_argument("--command", action="store_true",
+                    help="W1 step 2b, with --platform real: a user in (A) turns the "
+                         "integration's sleep-mode switch on while it runs")
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
 
@@ -398,7 +420,8 @@ def main() -> int:
             report = run_one_unconfined(domain, component, subject, python, uv, platform_deps)
         else:
             report = run_one(domain, component, subject, python, delegation, uv, platform_deps,
-                             push=args.push, real=args.platform == "real")
+                             push=args.push, real=args.platform == "real",
+                             command=args.command)
         results.append(report)
         entities = [e for e in report.get("own_entities", report.get("local_entities", []))
                     if e.split(".")[0] not in ("persistent_notification",)

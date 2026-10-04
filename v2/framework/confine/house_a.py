@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import threading
 import os
 import shutil
 import signal
@@ -93,7 +94,24 @@ input_number:
     initial: 48
     unit_of_measurement: "%"
 
+input_boolean:
+  living_room_light:
+    name: Living room light (state of the test)
+    initial: true
+
 template:
+  - light:
+      - name: Living room
+        unique_id: house_a_living_room_light
+        state: "{{ is_state('input_boolean.living_room_light', 'on') }}"
+        turn_on:
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.living_room_light
+        turn_off:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.living_room_light
   - sensor:
       - name: Living room temperature
         unique_id: house_a_living_room_temperature
@@ -239,6 +257,38 @@ def up(config: Path, fresh: bool) -> None:
     token = TOKEN_FILE.read_text().strip()
     add_bridge_entry(token)
     print(f"(A) up on {BASE}, config {config}, bridge entry present, token in {TOKEN_FILE}")
+
+
+class User:
+    """A person in (A), on their own connection: what a dashboard button does, from a thread."""
+
+    def __init__(self) -> None:
+        # Longer than the bridge's 10 s command timeout, which C5 waits out. At 10 s the two
+        # raced, and the user's read could give up just before (A)'s answer arrived.
+        self.ws = WebSocket(HOST, PORT, timeout=30)
+        self.ws.receive()
+        self.ws.send({"type": "auth", "access_token": TOKEN_FILE.read_text().strip()})
+        self.ws.receive()
+        self.outcome: dict = {}
+
+    def press(self, entity_id: str, service: str) -> threading.Thread:
+        def run() -> None:
+            start = time.perf_counter()
+            self.ws.send({"id": 1, "type": "call_service", "domain": "switch",
+                          "service": service, "service_data": {"entity_id": entity_id}})
+            answer: list = []
+            while not answer:
+                answer = [m for m in self.ws.receive() if m.get("id") == 1]
+            self.outcome = {"success": answer[0].get("success"),
+                            "error": (answer[0].get("error") or {}).get("message"),
+                            "seconds": time.perf_counter() - start}
+        thread = threading.Thread(target=run)
+        thread.start()
+        return thread
+
+    def close(self) -> None:
+        self.ws.close()
+
 
 
 def main() -> int:
