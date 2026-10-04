@@ -226,6 +226,35 @@ def onboard() -> str:
     return reply["result"]
 
 
+def confirm_http_config(token: str) -> bool:
+    """Confirm the `http:` section, or (A) restarts itself five minutes after every fresh start.
+
+    Since 2026.8, Home Assistant migrates an `http:` YAML section into a *pending* trial config
+    and reverts it, with a restart, unless an administrator confirms it within five minutes
+    (`homeassistant/components/http/config.py`, `async_schedule_revert_to_stable`). A restart
+    means exiting for a supervisor to start it again, and nothing supervises this `hass`, so (A)
+    simply stopped — found 2026-10-04, when it was down after a suite run. Returns whether a
+    pending config was confirmed.
+    """
+    ws = WebSocket(HOST, PORT)
+    try:
+        ws.receive()
+        ws.send({"type": "auth", "access_token": token})
+        if ws.receive()[0].get("type") != "auth_ok":
+            raise RuntimeError("(A) refused the token while confirming the HTTP config")
+        ws.send({"id": 1, "type": "http/config"})
+        current = [m for m in ws.receive() if m.get("id") == 1][0]
+        if not (current.get("result") or {}).get("pending"):
+            return False
+        ws.send({"id": 2, "type": "http/config/promote"})
+        promoted = [m for m in ws.receive() if m.get("id") == 2][0]
+        if not promoted.get("success"):
+            raise RuntimeError(f"(A) would not confirm its HTTP config: {promoted.get('error')}")
+        return True
+    finally:
+        ws.close()
+
+
 def add_bridge_entry(token: str) -> None:
     entries = request("GET", "/api/config/config_entries/entry", token=token)
     if any(e.get("domain") == "confine_bridge" for e in entries):
@@ -255,6 +284,7 @@ def up(config: Path, fresh: bool) -> None:
         TOKEN_FILE.touch(mode=0o600)
         TOKEN_FILE.write_text(token)
     token = TOKEN_FILE.read_text().strip()
+    confirm_http_config(token)
     add_bridge_entry(token)
     print(f"(A) up on {BASE}, config {config}, bridge entry present, token in {TOKEN_FILE}")
 

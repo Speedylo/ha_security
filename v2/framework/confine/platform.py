@@ -39,6 +39,26 @@ from .egress import EgressRefused as _EgressRefused
 from .mediator import Decision
 
 
+class PlatformRefused(Exception):
+    """The platform declined an action the mediator had already permitted and recorded.
+
+    Not a crash: the real platform can refuse things the stand-in never would — the bridge stands
+    in for a few domains only, and (A) can reject a service call. Such a refusal becomes a recorded
+    refusal answered to the sandbox. Anything else an act raises is a crash and propagates, which is
+    what §7.36.1's ordering test depends on. Until the W1 review (2026-10-04) a refusal crashed the
+    mediator: one sandbox publishing a `light` stopped every sandbox's mediator.
+    """
+
+
+def _refusable(act: Callable[[], Decision], clause: str | None) -> Callable[[], Decision]:
+    def run() -> Decision:
+        try:
+            return act()
+        except PlatformRefused as err:
+            return Decision(False, f"the platform refused: {err}", clause=clause)
+    return run
+
+
 @dataclass
 class Platform:
     """A stand-in Home Assistant: entity states, their owners, and the calls made on it."""
@@ -141,11 +161,13 @@ class ActingPolicy:
             owner = platform.owners.get(entity_id)
             if owner is None or owner == identity:
                 def publish_own() -> Decision:
-                    platform.owners[entity_id] = identity
+                    # Owner recorded only once the platform has the entity. Recorded first, a
+                    # refused publish still left the sandbox owning the id (W1 review).
                     platform.publish(identity, entity_id, state, attributes, naming)
+                    platform.owners[entity_id] = identity
                     return granted
                 granted = Decision(True, "its own entity", clause="(ambient: §5.10.2)",
-                                   act=publish_own)
+                                   act=_refusable(publish_own, "(ambient: §5.10.2)"))
                 return granted
             # Someone else's entity. Now it is a permission, and §5.10.3 names which one.
             decision = manifest.decide({"op": "entity.write", "entity": entity_id})
@@ -156,7 +178,8 @@ class ActingPolicy:
             def write_theirs() -> Decision:
                 platform.write(entity_id, state, attributes)
                 return decision
-            return Decision(True, decision.reason, decision.clause, act=write_theirs)
+            return Decision(True, decision.reason, decision.clause,
+                            act=_refusable(write_theirs, decision.clause))
 
         decision = manifest.decide(request)
         if not decision.allowed:
@@ -170,7 +193,8 @@ class ActingPolicy:
                 state, attributes = platform.read(entity_id)
                 return Decision(True, decision.reason, decision.clause,
                                 data={"state": state, "attributes": attributes})
-            return Decision(True, decision.reason, decision.clause, act=read)
+            return Decision(True, decision.reason, decision.clause,
+                            act=_refusable(read, decision.clause))
 
         if operation == "service.call":
             service = request.get("service") or ""
@@ -180,7 +204,8 @@ class ActingPolicy:
             def call() -> Decision:
                 platform.call_service(service_domain, service_name, data)
                 return decision
-            return Decision(True, decision.reason, decision.clause, act=call)
+            return Decision(True, decision.reason, decision.clause,
+                            act=_refusable(call, decision.clause))
 
         # §7.24's egress path. The one capability whose step 5 produces a **kernel object**
         # rather than a value: the mediator resolves, re-checks the resolved address and
@@ -232,7 +257,8 @@ class ActingPolicy:
             def watch() -> Decision:
                 platform.watch(entity_id)
                 return decision
-            return Decision(True, decision.reason, decision.clause, act=watch)
+            return Decision(True, decision.reason, decision.clause,
+                            act=_refusable(watch, decision.clause))
 
         return decision
 

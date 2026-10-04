@@ -4547,6 +4547,32 @@ simulated user holds the mediator's own owner token, so the log cannot yet tell 
 from the mediator's own identity in (A). §5.15.3's R3, the unscoped token, is the same limitation
 seen from the other side.
 
+### 7.38.4 What reviewing W1 found
+
+**2026-10-04, after §7.36–§7.38 were written.** Preparing a review of W1 for its author
+(`notes/w1_review_guide.md`) meant re-reading all of it, and that found three defects the
+measurements had not. None changes a figure above.
+
+The first is an availability defect. The bridge refuses domains it cannot stand in for, and that
+refusal reached the mediator as an exception nothing caught. A single confined integration
+publishing a `light` therefore stopped the mediator, and with it every other sandbox, after the
+mediator had already recorded that integration as the light's owner. It was reproduced against (A)
+before the fix. A platform's refusal is now a recorded refusal answered to the sandbox, while a
+genuine crash still propagates, as §7.36.1's ordering test requires, and ownership is recorded only
+once the publish has succeeded. `selftest_real_platform` carries the case. The stand-in never
+refuses a publish, which is why no earlier run could show it.
+
+The second is a race. The mediator's connection to (A) timed out at 10 s, the same as the bridge's
+own waits, which is the race §7.38.3 fixed in the test's simulated user and missed in the framework.
+
+The third concerns (A) itself. Since 2026.8, Home Assistant treats an `http:` YAML section as a
+trial configuration that reverts, with a restart, unless an administrator confirms it within five
+minutes. Unsupervised, a restart is an exit, so (A) stopped five minutes after every fresh start.
+Every evidence run above finished inside that window, which is both why no result is affected and
+why nothing noticed until (A) was found down after a suite run. The harness now confirms the
+configuration, and (A) was checked to be running after the deadline had passed.
+
+
 ---
 
 *§7.1–§7.11 written 2026-09-02, before any measurement specified here had been run. Criteria in

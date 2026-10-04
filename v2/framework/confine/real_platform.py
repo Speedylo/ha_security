@@ -35,11 +35,16 @@ from collections import deque
 from pathlib import Path
 from typing import Callable
 
+from .platform import PlatformRefused
 from .ws import WebSocket, WebSocketError
 
 
-class PlatformError(RuntimeError):
-    """(A) answered a call with `success: false`, or the connection failed."""
+class PlatformError(PlatformRefused):
+    """(A) answered a call with `success: false`. A refusal, answered to the sandbox as one."""
+
+
+class PlatformLost(RuntimeError):
+    """The connection to (A) failed. Not a refusal: the mediator cannot act at all, and stops."""
 
 
 class _Owners(dict):
@@ -60,7 +65,10 @@ class RealPlatform:
                  token: str | None = None, token_file: Path | None = None) -> None:
         token = token or Path(token_file or Path.home() / ".config/capstone/house_a.token") \
             .read_text().strip()
-        self.ws = WebSocket(host, port)
+        # Longer than any wait inside (A): the bridge waits up to 10 s for an entity to be added
+        # and for a command's answer. At 10 s here the two raced, and a slow add would have made
+        # the mediator's read give up first (W1 review, 2026-10-04).
+        self.ws = WebSocket(host, port, timeout=30)
         greeting = self.ws.receive()[0]
         if greeting.get("type") != "auth_required":
             raise PlatformError(f"unexpected greeting from (A): {greeting}")
@@ -113,6 +121,8 @@ class RealPlatform:
             self.ws.send({"id": ident, **message})
             while ident not in self._results:
                 self._sort(self.ws.receive())
+        except (OSError, WebSocketError) as err:
+            raise PlatformLost(f"the connection to (A) failed: {err}") from err
         finally:
             self._depth -= 1
         answer = self._results.pop(ident)
@@ -126,8 +136,8 @@ class RealPlatform:
         """The mediator's selector says (A)'s socket is readable: take what arrived and apply it."""
         try:
             self._sort(self.ws.messages())
-        except WebSocketError as err:
-            raise PlatformError(str(err)) from err
+        except (OSError, WebSocketError) as err:
+            raise PlatformLost(f"the connection to (A) failed: {err}") from err
         if self._depth == 0:
             self._apply_events()
 

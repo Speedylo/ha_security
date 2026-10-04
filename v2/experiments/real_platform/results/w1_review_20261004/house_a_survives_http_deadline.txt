@@ -1,0 +1,5 @@
+(A) started fresh 11:33:36 with house_a.confirm_http_config (http/config/promote).
+http/config right after start: pending None, revert_at None, active stable.
+11:40:08: `house_a status` -> up; hass pid 5738 elapsed 06:34;
+"Pending HTTP config was not confirmed" lines in hass.stdout: 0.
+Before the fix (11:17 start), the same message appeared at 11:22:50 and (A) exited.

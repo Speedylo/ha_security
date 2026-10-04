@@ -110,3 +110,9 @@ Pi, rebuilt from nothing (`house_a up --fresh`) before each evidence run.
 
 **Not done in step 2, by decision (B, 2026-10-04):** commands from (A) into a confined integration.
 That is step 2b.
+
+**Added after the W1 review, 2026-10-04 (§7.38.4).** Three more defects, found by re-reading rather
+than by a run: a refusal by (A) crashed the mediator (one sandbox publishing a `light` stopped it for
+all, after recording ownership); the mediator's 10 s socket timeout raced the bridge's 10 s waits;
+and (A) restarted itself, which unsupervised means exited, five minutes after every fresh start,
+because 2026.8 requires an `http:` YAML config to be confirmed. All fixed; none changes a figure.

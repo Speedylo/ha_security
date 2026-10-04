@@ -25,6 +25,9 @@ Predictions: `notes/w1_step2_real_platform_prediction.md` §4.
          mediator keeps answering other sandboxes meanwhile
     C7   an answer to a command the channel was never sent is refused and recorded
 
+  Found in the W1 review: a publish (A) refuses is answered as a refusal, and does not stop the
+  mediator or leave the sandbox owning the entity.
+
 Run:  python3 -m confine.selftest_real_platform [--restart]
 """
 
@@ -307,6 +310,25 @@ def main() -> int:
         refused = [r for r in log.records() if r["kind"] == "decision"
                    and r["op"] == "entity.command" and not r["allowed"]]
         check("C4: and the refusal is recorded too", len(refused) == 1, f"{len(refused)}")
+        print("\nW1 review — a refusal by (A) is a refusal, not a crash\n")
+        # Found reviewing W1 (2026-10-04): the bridge refuses domains it cannot stand in for, the
+        # refusal reached the mediator as an exception nothing caught, and one sandbox publishing
+        # a light stopped the mediator for every sandbox — after recording it as the light's owner.
+        refused_publish = other.ask({"op": "entity.publish", "entity": "light.probe",
+                                     "state": "on"})
+        check("a publish (A) refuses is answered to the sandbox as a refusal",
+              refused_publish.get("ok") is False
+              and "platform refused" in refused_publish.get("reason", ""),
+              refused_publish.get("reason", ""))
+        check("and the mediator still serves", other.ask(
+            {"op": "entity.publish", "entity": OTHER_SWITCH, "state": "off"}).get("ok") is True)
+        check("and the sandbox is not recorded as owning what was never published",
+              platform.owners.get("light.probe") is None)
+        both = [r["allowed"] for r in log.records() if r["kind"] == "decision"
+                and r.get("target") == "light.probe"]
+        check("the log shows the grant and then the refusal, so the refusal is the last word",
+              both == [True, False], f"{both}")
+
         check("every chain still verifies", log.verify() == [])
         for person in (user, user2, user3):
             person.close()
