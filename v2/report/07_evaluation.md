@@ -304,7 +304,7 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **F4** | The manifest of each evaluated integration renders in human-readable form, with denials shown at the same weight as grants | §6.7, re-run over the evaluated set | ✅ **Met** — §7.16.2 — `selftest_describe`, four states, denials rendered at the same weight as grants. Bounded to *availability* by §3.4; comprehension is excluded by §3.7 |
 | **S1** | The published garbage-collector technique (§2.4.1) is attempted from inside the sandbox and reaches no platform object; the mediator and its credential are not locatable from within | Security | ✅ **Met, paired** — §7.15.3 — the published `gc` technique reaches a live credential **7 ways** unconfined and **0** confined across 8,942 objects, while the same token is confirmed live in the mediator |
 | **S2** | No platform credential is recoverable from the sandbox's environment, filesystem, process table or memory | Security | ✅ **Met, paired** — §7.13, §7.15.3 — another process’s environment `LEAKED` unconfined and `EMPTY` confined; no platform credential recoverable from the sandbox |
-| **S3** | A confined integration is denied both a **read** and a **subscription** to undeclared entities, each refusal naming its clause, **against a paired unconfined baseline** quantifying what is readable without the framework | Security | ◐ **Partial** — §7.14.2 — the read half is met and paired: **36/36 → 1/36**, and **20/20 → 0/20** presence entities. **The subscription half is verified at the decision layer only**; no push loop exists to deliver a stream (§6.11.2, §8.6.3 #1) |
+| **S3** | A confined integration is denied both a **read** and a **subscription** to undeclared entities, each refusal naming its clause, **against a paired unconfined baseline** quantifying what is readable without the framework | Security | ✅ **Met, 2026-10-04 — §7.36.** The subscription half is now a delivered and filtered stream: **0 of 3** undeclared changes delivered against §7.14.4's **4 of 4** unconfined, with a mutation showing the zero is the filter's. At the stand-in platform, so bounded by §8.6.3 #2 as F1 is. *Until 2026-10-04 this read:* ◐ **Partial** — §7.14.2 — the read half is met and paired: **36/36 → 1/36**, and **20/20 → 0/20** presence entities. **The subscription half is verified at the decision layer only**; no push loop exists to deliver a stream (§6.11.2, §8.6.3 #1) |
 | **S4** | An integration is denied a host declared only by a *different* integration | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met — §7.25.** Two confined integrations, running at once, each denied the host declared only by the other — evidenced by the mediator's own audit record |
 | **S5** | A manifest permitting `lock.lock` is shown not to permit `lock.unlock`, and the refusal is structural rather than a check | §6.10.1 — re-verified in the evaluation run | ✅ **Met** — §7.16.1 — a manifest declaring `lock.lock` does not permit `lock.unlock`, and `lock.*` is rejected at **parse** time rather than at the point of use |
 | **S6** | An integration with **no** manifest and one with an **unparseable** manifest are each denied all mediated capability, each refusal naming its rule | Security | ✅ **Met** — §7.16.2 — `selftest_policy`: absent and unparseable manifests each denied all mediated capability, each refusal naming the rule |
@@ -870,6 +870,11 @@ What is not: a working subscription that delivers declared changes and withholds
 is therefore **discharged on reads and partially on subscriptions**, and the partial half is a
 gap in the artifact rather than in the measurement.
 
+> **Closed by §7.36 (2026-10-04).** The push loop now exists, and the subscription half is a
+> demonstrated filter: a declared change reaches the integration, no undeclared change does, and
+> bypassing the subscription table makes the same observer see every undeclared change. This
+> section's first limit still applies, since the platform is still the stand-in.
+
 Two further limits, neither of which the number should be read past:
 
 - **The confined arm's mediator acts on §6.10.2's stand-in, not a live instance.** What is under
@@ -1039,6 +1044,7 @@ The five that are not divide into three kinds, and the distinction matters more 
 - **Partially discharged — S3, N2.** S3's subscription half is a decision without a delivered
   stream (§7.14.4); N2's executed-end-to-end population is one (§6.11.1). Both are gaps in the
   artifact rather than in the measurement, and both are named where the figure appears.
+  *(2026-10-04: S3's half is closed by §7.36, at the stand-in platform. N2's is unchanged here.)*
 
 ## 7.17 N2's second number — integrations executed end-to-end
 
@@ -1480,6 +1486,14 @@ window of loss, is not needed and should not be taken.
 subscription delivering every state change in a busy home is not obviously affordable, and
 §7.14.4 records that the push loop does not exist to measure. And the figure is storage-bound —
 an SD card is the worst realistic case and also the most common one for this deployment (C4).
+
+> **Corrected by §7.36 (2026-10-04), in two ways.** First, "§5.11.3's ordering guarantee is real"
+> was true of `AuditLog`, which is what this section measured, and false of the path the mediator
+> took. From 2026-08-25 to 2026-10-04 every operation that acts was carried out before its record
+> was written (§7.36.1). The cost measured here is unchanged, and so is the answer to keep the
+> `fsync`; what changed is that the order it pays for now holds. Second, the hot path is measured.
+> A subscription is one recorded decision, and each delivery it allows costs the mediator 10.9 µs
+> and writes nothing, so the push loop does not draw on the 272 decisions per second.
 
 ### 7.20.2 §6.9.4 and P5 — falsified, and S9 is narrower than feared
 
@@ -2554,7 +2568,7 @@ the standard §3.5 imposed on S8 and S3, and the only standard under which a blo
 | T03 | S1 — mediator unreachable from the address space | §7.15.3, §7.13.3 | ✅ Demonstrated, **unpairable by construction** — unconfined there is no mediator to tamper with, and the suite reports `UNMEDIATED` rather than a comparison |
 | T04 | S2 — credential only in the mediator | §7.15.3: token **live in the mediator, 7 references**, at the moment the sandbox's sweep finds nothing | ✅ **Paired** |
 | T05 | F3, S5, S6 — manifest-checked calls | §7.16.1: unlock refused to a manifest declaring only `lock.lock`; `lock.*` rejected at parse | ✅ Demonstrated |
-| T06 | S3 — mediate reads *and* subscriptions | §7.14.2: **36/36 → 1/36**, and **20/20 → 0/20** presence entities | ⚠ **Partial.** Reads paired; the subscription half is a refusal without a delivered stream (§7.14.4) |
+| T06 | S3 — mediate reads *and* subscriptions | §7.14.2: **36/36 → 1/36**, and **20/20 → 0/20** presence entities | ⚠ **Partial.** Reads paired; the subscription half is a refusal without a delivered stream (§7.14.4). *2026-10-04: the subscription half is now a filtered stream, §7.36, at the stand-in platform* |
 | T07 | F3, S6 — writes to declared entities only | §7.16.1: `/permissions/entities/write` | ✅ Demonstrated |
 | T08 | S4 — per-integration egress allow-list | §7.25.2: two concurrent sandboxes, each denied the other's host, audit `[True, False]` | ✅ Demonstrated |
 | T09 | **Retain** (R5) | §7.24.5: every TLS wrap had `check_hostname`; the mediator supplies a descriptor and sees destination, never content | ⊘ **Retained — and now measured rather than asserted** |
@@ -2566,7 +2580,7 @@ the standard §3.5 imposed on S8 and S3, and the only standard under which a blo
 | T15 | S8 — process-table isolation | §7.13: *"read another process's environ"* → `LEAKED` unconfined, `EMPTY` confined | ✅ **Paired** |
 | T16 | S9 — resource limits | §7.22.1: four bounds, each checked by a sandbox exceeding it | ⚠ **Partial against §4.10.1's wording** — space yes, I/O bandwidth not delegated (§7.22.2); `/sandbox/data` unbounded |
 | T17 | S1 — separate process removes the shared heap | §7.15.3 — this is the threat §2.4.1 demonstrated and the one that forced the architecture | ✅ **Paired** |
-| T18 | S7 — attributed, tamper-evident log | §7.16.2 `selftest_audit`, hash and MAC chains failing independently; §7.25.2's per-identity record | ✅ Demonstrated, bounded by **R4** — §7.11 and §7.13.2: an OOM kill leaves no record, and unconfined the attacker found a real audit log on the host |
+| T18 | S7 — attributed, tamper-evident log | §7.16.2 `selftest_audit`, hash and MAC chains failing independently; §7.25.2's per-identity record | ✅ Demonstrated, bounded by **R4** — §7.11 and §7.13.2: an OOM kill leaves no record, and unconfined the attacker found a real audit log on the host. *2026-10-04, §7.36.1: from 2026-08-25 until that day a mediator crash between an action and its record would also have left the action unrecorded, because the mediator recorded after acting* |
 
 **Thirteen demonstrated, five of them against an unconfined arm; two partial; two retained by a
 decision Chapter 4 already recorded; one not evaluated.** The five paired ones are T01, T04, T14,
@@ -2586,7 +2600,7 @@ project's threat-identification work. Mapping from §4.8's `CM` column, unaltere
 
 | CM | Their threat | Maps from | Verdict |
 |---|---|---|---|
-| **T1** | Confidentiality — use of data outside scope | T04, T06, T14, T15, T17 | ✅ Demonstrated, **four of five paired**; T06's subscription half partial |
+| **T1** | Confidentiality — use of data outside scope | T04, T06, T14, T15, T17 | ✅ Demonstrated, **four of five paired**; T06's subscription half partial *(closed at the stand-in platform by §7.36, 2026-10-04)* |
 | **T2** | Spread of data outside scope | T08, T09 | ⚠ **Split, and the split is the design's honest boundary.** T08 demonstrated (§7.25); T09 retained (R5) — destination is controlled, content is not |
 | **T3** | Integrity — alter device state | T05, T10 | ✅ Demonstrated |
 | **T4** | Integrity — alter private data | T07, T17 | ✅ Demonstrated |
@@ -2641,6 +2655,9 @@ carried it in advance if it was not going to be run.
 > worth stating about it: `Identity.manifest` says *the manifest changed*, not *the grant changed*
 > (§7.30.3), and the design has no re-check trigger of its own because no mediator outlives a
 > respawn (§7.30.4). **T12 is no longer the exception this section names**, and it was the last one.
+>
+> *2026-10-04: a mediator that outlives a respawn now exists, and it re-reads the manifest at every
+> registration (§7.36.2). The trigger this paragraph found missing is built and tested.*
 
 ### 7.26.6 Four corrections the read-through made, and how each was handled
 
@@ -3290,7 +3307,10 @@ limitation inside the instrument.
   design has **no re-check trigger of its own**. If a future version keeps a mediator alive across
   a respawn, the re-load must become explicit, and this suite would pass unchanged while the
   property it certifies had quietly become false. That is a limitation of the design, not of the
-  measurement, and §8.7 owes it a row.
+  measurement, and §8.7 owes it a row. *(2026-10-04, §7.36: the push loop made the mediator
+  long-lived, and the re-load is now explicit at every registration. `selftest_t12` gained a case
+  with one mediator across two registrations, which failed on the code before the change, as this
+  bullet predicted it would need to.)*
 - **The update path itself is not exercised.** Nothing here installs an update through HACS. What
   is measured is what happens to the grant when the manifest changes, which is §4.10's clause;
   whether the store would deliver such a change is §4.2's out-of-scope boundary and §1.6's.
@@ -3867,6 +3887,12 @@ by decision. The two harnesses that measure latency and memory are left out deli
 fsync per decision would change the quantity they measure, and §7.20.1 measured durability on its
 own. Predictions are in `notes/t4_auditlog_wiring_prediction.md`.
 
+> **Corrected by §7.36 (2026-10-04).** "Fsynced before the action it records" was true of
+> `AuditLog` and false of the mediator using it. The mediator wrote each record after the acting
+> policy had already acted, so in every harness this section wired, an action preceded its record.
+> The records this section reconciled are complete, because no run crashed between the two; what
+> was missing was the guarantee. §7.36.1 gives the window and the fix.
+
 ### 7.32.1 Three defects, found by reading the code in order to wire it
 
 None of the three needed a run to find. Each came from reading what the wiring would have to touch.
@@ -4236,6 +4262,117 @@ interpreter tree the sandboxes import from had its cache populated by August's f
 §6.3.2's warm 161.3 MB is consistent with sandboxes using it, but whether a confined sandbox actually
 reads that cache was not checked. An installer should compile bytecode, and no measurement here
 confirms the cost inside a sandbox.
+
+
+## 7.36 The push loop, and an ordering guarantee that did not hold where it mattered
+
+**2026-10-04.** §8.7 ranked the push loop first among the artifact's missing pieces, for two reasons. S3's
+subscription half was a refusal with nothing behind it (§7.14.4), and the one latency path that could
+use up §7.20.1's headroom could not be measured while it did not exist. §8.7 #14 is bound to it: a push
+loop needs a mediator that outlives a sandbox, and §7.30.4 showed that such a mediator would quietly stop
+re-reading manifests while `selftest_t12` kept passing. Both were built together, against §6.10's
+stand-in platform, so that the result does not depend on the real Home Assistant component. That
+component is the next piece of work (§8.7 #2). Predictions were committed before any code changed
+(`notes/w1_push_loop_prediction.md`).
+
+Reading the code in order to change it found a defect larger than either item. It is reported first.
+
+### 7.36.1 The record came after the action
+
+§5.11.3 orders the mediator's work so that the record (step 4) comes before the action (step 5), and
+says why: an action that succeeds and then crashes the mediator must still be attributable. §6.8.3
+states that the implementation keeps this order, and §7.20.1 and §7.32 relied on it.
+
+The implementation kept it only for policies that decide and do not act. The mediator called the
+policy, and wrote the record when the policy returned. Until 25 August the policies only decided, so
+the order held. On that day §6.10 added `acting_policy`, which carried out step 5 inside the call:
+it wrote the published state, appended the service call, and later, from §7.24, had the egress broker
+resolve the name and **connect to the internet**. All of that happened before the mediator wrote a
+record. So for every operation that acts, the order was decide, act, record.
+
+The self-test that §6.8.3 cites could not see this. It writes a record and then calls an action of
+its own, so it shows that the log *can* be written first, not that the mediator writes it first. A
+new case sends an allowed `entity.publish` through the real `Mediator` and `acting_policy`, to a
+platform whose state write raises. On the code as it stood, **no decision record reached the disk**.
+
+The window was 2026-08-25 to 2026-10-04. Before 3 September no run had a durable log attached, so the
+gap was in the design's claim rather than in any record. From §7.27 on 3 September the egress harness
+had one, and from §7.32 on 3 October every harness did. No measured result depends on the ordering,
+because no run crashed between an action and its record, and §7.32's reconciliation matched every
+durable record to the in-memory one. What was false was the guarantee: had a crash occurred, the
+action would have left no record.
+
+The fix splits deciding from acting. A policy that must act now returns the action as a closure
+alongside its decision, and the mediator runs it only after the record is durable. When acting turns up
+a refusal the decision could not see, such as an egress name that now resolves to a private address,
+that refusal is recorded too. The log never shows a grant as the last word on a request that was in
+fact refused. The new case passes, as does every existing suite.
+
+### 7.36.2 What was built
+
+The push loop has three parts. The stand-in platform calls its listeners on every state change, which
+is the shape a real instance's event bus will feed in §8.7 #2. A sandbox asks, at start, to subscribe
+to each entity it declared, and each request is decided and recorded like any other. Only a granted
+subscription enters that channel's subscription table, and a change is pushed only to channels whose
+table holds the entity. Every entry in the table therefore traces back to a recorded, allowed decision,
+and the table is S3's filter. Individual deliveries are counted in memory and not recorded, by the same
+argument as egress, where the connection is recorded and the bytes that later flow through it are not.
+
+Speaking first raised two problems that request and response never had. A sandbox that stops reading
+fills its socket, and a blocking send to it would stop the mediator's only thread, and with it every
+other sandbox. So the mediator never blocks. It owes each sandbox at most one reply, because it stops
+reading a sandbox's requests while a reply is owed, and at most one state per subscribed entity,
+because a newer state replaces an unsent one. A state is a value rather than an event, so only the
+latest is worth sending. On the sandbox's side, a push can arrive while a request waits for its reply.
+Reading it showed that the sandbox's channel had never been safe across threads. The egress shim calls
+it from Home Assistant's executor threads, and nothing stopped two threads interleaving frames, or one
+taking the descriptor meant for the other. A lock now covers each exchange.
+
+The re-check of §8.7 #14 is now explicit. The mediator re-reads an integration's manifest at every
+registration, which is every spawn, and at no other time, so a manifest edit still never re-binds a
+sandbox that is already running. A respawn starts with no subscriptions and must be granted each one
+again.
+
+### 7.36.3 The result
+
+| | Result |
+|---|---|
+| Ordering, through the real mediator | 0 records on disk before the fix; the record present after it |
+| One long-lived mediator across a manifest change | the respawn decided by v1 before the fix (2 of 33 checks failed); by v2 after it, with the running sandbox still on v1 |
+| Undeclared changes delivered | **0 of 3**; with the table bypassed, the same observer sees **3 of 3** |
+| A real integration in a real sandbox | `thermal_comfort`, unmodified, recomputed after a pushed temperature: dew point 9.96 → 17.81 °C, heat index 20.85 → 30.74; nothing echoed back; 34 decisions, chain and reconciliation clean |
+| Mediator cost of one delivered push | **10.9 µs** on the Pi, against 3.67 ms per recorded decision |
+| A neighbour that never reads | 20,000 changes in 0.43 s without blocking; the reading sandbox's median delivery 20.9 µs alone and 24.9 µs beside it |
+| What a non-reading sandbox costs | the kernel's socket buffer (278 frames here) plus one state per subscribed entity |
+| Regression | all 22 suites pass on the Pi |
+
+**The push path does not compete with decisions for §7.20.1's budget.** The 272 per second there is a
+limit on recorded decisions. A subscription is one recorded decision, and the deliveries it allows
+cost the mediator about three hundred times less each and write nothing to disk. The hot path that
+§7.20.1 and §8.2.3 could not measure is therefore affordable at a home's rates of change, measured at
+the mediator. The sandbox's own cost of applying a pushed state is not part of this figure.
+
+### 7.36.4 The predictions, and what this establishes
+
+Eight of nine predictions held. P7 held in substance, but its bound was wrong: it expected
+the mediator to hold one state per entity for a sandbox that stops reading, and the kernel's socket
+buffer holds 278 frames before coalescing starts. P8 held, but its first measurement had to be thrown
+out. A reader thread raced the loop, so 98% of the pushes were coalesced, and the 5.0 µs it produced
+was the cost of replacing a dictionary entry rather than of delivering a state. P9, that something not
+listed would be found, held twice: the thread-safety defect, and the ordering defect, which matters
+more than anything the predictions named.
+
+**Established.** The mediator records each decision before acting on it, for every operation, from
+2026-10-04; before that it did not for any operation that acts. A confined integration receives
+changes to the entities it subscribed to and to no others, and the zero is the filter's doing, not an
+absence. An unmodified integration reacts to a pushed change as it would to a local one. A mediator
+that outlives its sandboxes re-reads each declaration at spawn. A sandbox that stops reading cannot
+stall the mediator or measurably delay other sandboxes.
+
+**Not established.** The platform is still the stand-in, so whether the house's real Home Assistant
+can feed the push loop at its real rates, and what it does with what the mediator sends it, is §8.7
+#2's to answer. The rates measured here are synthetic, and a busy home's actual rate of state changes
+was not measured. The cost is measured at the mediator only.
 
 ---
 

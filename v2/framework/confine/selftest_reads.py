@@ -199,10 +199,10 @@ def render(unconfined: dict, confined: dict) -> int:
     print("  On the delivery of other integrations' changes: unconfined, all "
           f"{ev_u} of {churn} arrive")
     print("  through EVENT_STATE_CHANGED, unasked and unfiltered. Confined, none arrive — but")
-    print("  **that is an absent feature, not a demonstrated filter**: §6.11.2 records that no")
-    print("  push loop exists, so declared entities are mirrored once at construction and there")
-    print("  is no path by which any state change could arrive. S3's subscription half is")
-    print("  therefore verified at the decision layer only, and §7.14.4 says so.")
+    print("  **in this run that is an absent feature, not a demonstrated filter**: this harness")
+    print("  does not subscribe, so declared entities are mirrored once at construction and")
+    print("  no state change has a path in. The filter itself is measured by selftest_push")
+    print("  (§7.36, since 2026-10-04): declared changes delivered, undeclared ones not.")
 
     # ---- the criterion, from §7.5 ------------------------------------------------------
     undeclared = [e for e in probe_set() if e != DECLARED]
@@ -238,8 +238,8 @@ def render(unconfined: dict, confined: dict) -> int:
     print(f"       Confined, {len(absent)} of {len(undeclared)} undeclared probes are not in its "
           f"state machine at all,\n       every mediated read and subscription is refused with a "
           f"clause, and the one\n       entity it declared is readable.")
-    print("       The subscription half is a decision, not a delivered stream — see the note "
-          "above.")
+    print("       In this run the subscription half is a decision, not a delivered stream; the "
+          "delivered,\n       filtered stream is selftest_push's (§7.36) — see the note above.")
     return 0
 
 

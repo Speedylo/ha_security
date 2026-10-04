@@ -61,3 +61,13 @@ valuable only as *chronology*. Fold them into the provenance note of item 1.
 symptom worth naming in the rewrite plan rather than a defect to fix in place. Splitting the
 results half by *axis* (compatibility / security / performance) rather than by *date measured*
 would let §7.5's four columns become the chapter's spine.
+
+## 6. Added 2026-10-04: §7.36's pointers are another layer of the same kind
+
+§7.36 added dated pointers in about twenty places across Chapters 5 to 8 and the abstract, listed
+in `notes/w1_push_loop_prediction.md` §5. The worst stack is now the record-before-act ordering. §5.11.3 states it, §6.8.3 claims it
+is implemented, §7.20.1 and §7.32 rely on it, and §7.36.1 shows it held for no operation that acts
+from 2026-08-25 to 2026-10-04. In the rewrite it should be stated once, as it now holds, with the
+window given in §7.36's provenance note rather than at each place that relied on it. The submission
+draft in `submission/` carries none of this and must be rewritten from the report, not patched.
+

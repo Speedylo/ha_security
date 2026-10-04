@@ -24,7 +24,7 @@ asked for it to be recorded as the plan.
 
 | Weeks (from 5 Oct) | Work | Notes |
 |---|---|---|
-| **1–2** | **W1: the real Home Assistant component, plus the push loop, plus §8.7 #14's re-check trigger** | One job: the three are coupled (see §3 and §4 below) |
+| **1–2** | **W1: the real Home Assistant component, plus the push loop, plus §8.7 #14's re-check trigger** | One job: the three are coupled (see §3 and §4 below). *2026-10-04: split into two steps; **step 1 done** — the push loop and the re-check against the stand-in, plus the record-before-act defect it found (§7.36, `notes/w1_push_loop_prediction.md`). Step 2, the real component, is next* |
 | **3** | **W2: the small items.** (a) one plain-`socket` integration confined; (b) UDP in a real sandbox, plus asyncio datagram endpoints; (c) whether a confined sandbox reads the bytecode cache; (d) token refresh, if a free OAuth integration can be found | (c) is minutes; do it first |
 | — | **Hard cut-off after week 3: no new engineering.** Every new piece adds sections and corrections the rewrite must absorb | |
 | **4–6** | **R: the report.** Submission rewrite against current figures (checklist item 5); ~8 figures, each generated from source with an assertion it still matches the prose; appendices B–F (Appendix D is what lets an examiner check the zero-compatibility-cost claim); the first full read-through; three `[To verify]` citations; four handbook-blocked title-page fields | |

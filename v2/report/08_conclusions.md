@@ -167,7 +167,8 @@ platform can do.*
 | Per-sandbox memory budget on the C4 device | **26 sandboxes** (§6.3.2) | a measured mean of **4.02** integrations per HACS-running installation |
 | Mediator capacity, audit write included | **272 decisions/s** (§7.20.1) | realistic demand of **4.33 req/s** at the full budget — **63× headroom** |
 | Latency at 0.009% utilisation | **31.5 µs** | — |
-| Durability | `fsync` per decision costs **3.67 ms**, 59× the non-durable write | affordable; §5.11.3's ordering guarantee is kept |
+| Durability | `fsync` per decision costs **3.67 ms**, 59× the non-durable write | affordable; §5.11.3's ordering guarantee is kept *(from 2026-10-04 only: before §7.36.1 the mediator recorded after acting)* |
+| Push delivery | **10.9 µs** per delivered state change, nothing written to disk (§7.36) | the hot path below, measured: it does not draw on the 272 decisions/s |
 
 **Assertion C holds, and the arithmetic behind it was corrected once inside the chapter.** §7.19.3
 first reported 11,000× headroom by excluding the audit write; §7.20.1 measured that write at a
@@ -183,6 +184,11 @@ unmeasured**: at 272 decisions/s a subscription delivering every state change in
 obviously affordable, and §7.14.4 records that the push loop does not exist to measure. C is
 established for the request/response shape §5.11.1 calls mediated, and for no other.
 
+> **2026-10-04: the hot path is measured (§7.36).** A subscription is one recorded decision, and
+> the deliveries it allows cost the mediator 10.9 µs each and write nothing, so C now holds for the
+> push shape too, at the mediator and against the stand-in platform. A busy home's real rate of
+> change, and the sandbox's own cost of applying a change, are still unmeasured.
+
 ### 8.2.4 The fourth falsifier was about the evaluation, and it fired
 
 §7.7 added a falsifier that does not concern the artifact:
@@ -192,7 +198,7 @@ established for the request/response shape §5.11.1 calls mediated, and for no o
 
 Nothing was reported as passed that was not demonstrated: all twenty of §7.5's requirements carry a
 verdict, S9's is explicitly against narrowed wording (§7.22.2), S3's and N2's are explicitly
-partial, and the two rows that were blocked were named in the criteria table on the day the
+partial *(S3's until 2026-10-04, §7.36)*, and the two rows that were blocked were named in the criteria table on the day the
 criteria were frozen rather than conceded in a limitations section later.
 
 > **That sentence was wrong about one requirement, and Stage 5 found it on 2026-09-04 (§7.28).**
@@ -261,8 +267,8 @@ corpus — and §8.7 prices it as such.
 
 **Contribution 2 — a confinement architecture for an extension model that cannot be changed.**
 Delivered and evaluated. Eighteen self-test suites pass on the target hardware — nineteen from
-2026-09-06, when §7.29 added `selftest_integrity`, and **twenty from 2026-10-01**, when §7.30 added
-`selftest_t12`; C2 holds because
+2026-09-06, when §7.29 added `selftest_integrity`, **twenty from 2026-10-01**, when §7.30 added
+`selftest_t12`, and **twenty-one from 2026-10-04**, when §7.36 added `selftest_push`; C2 holds because
 every arm runs against an unmodified official release. **C1 — the word the report's title rests
 on — is the one place this chapter has to correct itself**: §8.3 said until 2026-09-04 that
 *unmodified* was "counted rather than asserted" by a mechanical diff. **That diff does not exist**
@@ -501,7 +507,7 @@ reach. That is smaller than "over-declaration is a residual risk" and it is more
 
 | # | Limitation | Where measured | Why it is not fixed here |
 |---|---|---|---|
-| 1 | **The push loop does not exist.** Declared entities are mirrored once at sandbox construction, so an integration sees the value that existed when it was built | §6.11.2, §7.14.4 | It is the largest missing piece and it blocks two things: S3's subscription half is a refusal without a delivered stream, and the only latency path that could consume §7.20.1's 63× margin is unmeasurable without it |
+| ~~1~~ | ~~**The push loop does not exist.** Declared entities are mirrored once at sandbox construction, so an integration sees the value that existed when it was built~~ — ✅ **built 2026-10-04, §7.36**, against the stand-in platform; what remains of it is limitation 2 | §6.11.2, §7.14.4 | It is the largest missing piece and it blocks two things: S3's subscription half is a refusal without a delivered stream, and the only latency path that could consume §7.20.1's 63× margin is unmeasurable without it |
 | 2 | **The mediator acts on a stand-in, not a live Home Assistant** | §6.10.2, §6.11.2 | What crossed the boundary in §7.17 is real and carries its clause; what a live instance would do with those fifteen entities is untested. **What it costs is entity *identity*, not realism** — §6.10.2's prior-work finding is that the states API publishes without a registry row, and §5.6.1 measured 83% of the corpus publishing by the path that creates one. Priced in §8.7 #2 |
 | 3 | **Dependency installation is unresolved**, so the third component of the three-part identity stays vestigial | §6.8.1, §6.11.2 | The identity is well-formed and attributed without it; resolved versions are what it is waiting on |
 | 4 | **Disk means space, not I/O bandwidth.** A sandbox cannot exhaust space outside its scratch but it can saturate the device | §7.22.2 | The `io` controller is **present on the host and not delegated to a user manager** — `+io` to the delegated subtree fails with `ENOENT` — so an unprivileged supervisor cannot implement it at any effort. §5.7.4 chose unprivileged. **This is a live T16 vector, and §4.11 now carries it as R7** (entered 2026-09-04; §7.22.2 is where it was found) |
@@ -585,11 +591,12 @@ list after it was first written** — running one real integration promoted the 
 from nowhere to seventh, which is the ordering evidence is supposed to do to a plan. **§7.30 then
 added item 14 on 2026-10-01**, and it is the only row here a *measurement* put on the list rather
 than an unbuilt scope item: running item 5 showed that T12's second clause holds for a reason
-incidental to the design, which item 1 would break.
+incidental to the design, which item 1 would break. *(2026-10-04: items 1 and 14 were built
+together, §7.36.)*
 
 | # | Work | What it settles | Cost |
 |---|---|---|---|
-| **1** | **The push loop** (§6.11.2) | S3's subscription half moves from a refusal to a demonstrated filter, and the one latency path that could consume §7.20.1's 63× margin becomes measurable. Both are currently stated gaps in the artifact rather than in the measurement | Days. It is the largest missing piece and the highest-value one |
+| ~~**1**~~ | ~~**The push loop**~~ (§6.11.2) — ✅ **done 2026-10-04, §7.36**, with item 14, against the stand-in platform. S3's subscription half is a demonstrated filter, and the push path costs 10.9 µs per delivery and nothing from the decision budget. Building it also found that §5.11.3's record-before-act order had not held for any acting operation since 2026-08-25 (§7.36.1). Original text: | S3's subscription half moves from a refusal to a demonstrated filter, and the one latency path that could consume §7.20.1's 63× margin becomes measurable. Both are currently stated gaps in the artifact rather than in the measurement | Days. It is the largest missing piece and the highest-value one |
 | **2** | **The real Home Assistant component** (§6.10.2, §6.11.2) | **Limitation 2 of §8.6.3, and the largest of them that this list did not price until now.** Step 5 of the mediated call acts on an in-memory stand-in, so what a *live* instance does with a mediated write is untested — §7.14.4 and §7.17.6 each state this beside their own figure. What it would settle is **identity, not realism**: the spike's `registry_gap` finding — cited as prior work in §6.10.2 and deliberately not relied on — is that publishing over the states API produces states with no entity-registry row, no `unique_id`, no config entry and nothing surviving a restart, and §5.6.1 measured that **83% of community integrations publish through `async_add_entities`**, which is the path that produces the registry row and the state machine does not. Until it exists, the end-to-end arm speaks for the mediator's decision and not for what the platform then does with it | Days. The spike's `sandbox_bridge` is ~250 lines that load and execute nothing from any integration, and `00_METHOD.md` §5 permits reusing that code — but its *finding* is private knowledge under §2, so the registry claim has to be re-measured here rather than cited |
 | **3** | **Static analysis for the derived manifest**, extended one level up (§6.14.4, §7.17.4) | The undeclared-package *and* undeclared-component bound — item 13 above, and the only measured compatibility cost in the whole report. *(2026-10-03: the component half has lost its example, §7.31.6; the package half stands, and §7.31.5's `dwd_weather` adds an undeclared **host** to what a derived manifest would have to find.)* `import aiofiles` is a top-level import and trivially detectable; **a component dependency is a name in the platform's own source, so the transitive closure is computable exactly rather than approximated**, which `core_requirements()` already does for `default_config`. A strictly larger analysis and a strictly easier one | Days. `--derived` alongside the author's manifest, with every added clause marked as derived per §5.9.3 |
 | ~~**4**~~ | ~~**Count C1 instead of arguing it**~~ (§7.28) | ✅ **Done 2026-09-06 — §7.29.** `confine/integrity.py`, wired into both arms of `compat.py` rather than kept as a separate script, so every future compatibility run counts C1 by running at all. **37 trees baseline, 38 confined, zero source changes, zero diff lines.** Two departures from this row as priced: hashing *at fetch* proved impossible — the corpus manifest pins `HEAD` and stores no content hash, so the count covers a run and not the project's history (§7.29.2) — and the instrument reports an uncountable line delta as *unknown* rather than zero, after the first version returned a reassuring 0 by comparing the baseline tree against itself (§7.29.3, §6.4.5's failure mode for the fourth time) | **It was an hour**, and the hour was right |
@@ -602,7 +609,7 @@ incidental to the design, which item 1 would break.
 | **11** | **Off-box audit anchoring** (R4, §5.12.6) | The audit log's authority against whoever controls the machine, and item 7's key-lifetime trade-off. §5.12.6 declined to define a format because *"the moment this chapter specified a format for another machine to consume, the scope would have moved"* — **but the artifact already emits the record such a layer would consume**, which is a more useful piece of future work than an unevidenced suggestion | A different project. The contribution here is that its input already exists |
 | ~~**12**~~ | ~~**Re-run `r2_footprint` on the corrected builder; PSS with more sandboxes per point**~~ (§7.20.3, §7.20.4) — ✅ **done 2026-10-03, §7.35**: the builder changes nothing; the depth series is monotonic and exact, and §7.20.3's first row was mislabelled | Two measurement debts, neither load-bearing on any claim | Small |
 | **13** | **L2 — enforcement inside the platform's own loader** (§5.15.2) | §5.15.2 states plainly that L2 is the better design on every axis but deployability, and that this project's most durable contribution to it may be the evidence it would need. A platform proposal must answer what confinement costs in compatibility, what the declaration should express, and what threats it closes. **Those answers do not depend on the L3 architecture that produced them, and §8.5's finding says the surface such a check must cover is far smaller than the platform's size suggests** | Not this project's to do, and the reason it is last rather than absent |
-| **14** | **An explicit re-check trigger for a mediator that outlives a respawn** (§7.30.2, §7.30.4) | **Added 2026-10-01 by the measurement of item 5, which is the only item on this list a *measurement* put here rather than an unbuilt scope item.** T12's second clause holds today for a reason that is incidental to the design: `Manifest.load` sits inside the per-run setup of every harness, so a fresh policy is built because a fresh process is, and no manifest survives a run. **Nothing re-checks a declaration; something re-reads it by construction.** Item 1 is what would break that — a push loop implies a mediator that lives across a sandbox's lifetime — and at that point `selftest_t12` would keep passing while the property it certifies had quietly become false, which is §6.4.5's failure mode relocated from an instrument to a design. What is owed is a re-load at spawn that is written down as a re-load, and a case in that suite which fails if it is removed | Small, and it must land **with** item 1 rather than after it. The reason it is cheap now and expensive later is that today there is no long-lived state to migrate |
+| ~~**14**~~ | ~~**An explicit re-check trigger for a mediator that outlives a respawn**~~ (§7.30.2, §7.30.4) — ✅ **done 2026-10-04, §7.36**, with item 1 as this row required. The mediator re-reads the manifest at every registration, and `selftest_t12`'s new case failed on the code before the change. Original text: | **Added 2026-10-01 by the measurement of item 5, which is the only item on this list a *measurement* put here rather than an unbuilt scope item.** T12's second clause holds today for a reason that is incidental to the design: `Manifest.load` sits inside the per-run setup of every harness, so a fresh policy is built because a fresh process is, and no manifest survives a run. **Nothing re-checks a declaration; something re-reads it by construction.** Item 1 is what would break that — a push loop implies a mediator that lives across a sandbox's lifetime — and at that point `selftest_t12` would keep passing while the property it certifies had quietly become false, which is §6.4.5's failure mode relocated from an instrument to a design. What is owed is a re-load at spawn that is written down as a re-load, and a case in that suite which fails if it is removed | Small, and it must land **with** item 1 rather than after it. The reason it is cheap now and expensive later is that today there is no long-lived state to migrate |
 
 ## 8.8 The single ask of the platform
 

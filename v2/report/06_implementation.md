@@ -1030,6 +1030,17 @@ things were needed to make it true rather than nominal:
   written leaves the record on disk, saying what was permitted. That is a two-line test and it
   is the only thing standing between this ordering and a comment claiming it.
 
+> **Corrected by §7.36.1 (2026-10-04): the first bullet was true of the log and not of the
+> mediator.** This section was written on 2026-08-25, when the mediator's only policies decided and
+> did not act, so recording when the policy returned *was* recording before acting. Later that day
+> §6.10 added `acting_policy`, which carried out step 5 inside the policy: it wrote the state,
+> placed the call and, from §7.24, opened the egress connection, all before the mediator wrote a
+> record. The second bullet's self-test could not see it, because it calls `decision()` and then
+> an action of its own rather than going through the mediator. From 2026-08-25 to 2026-10-04 the
+> ordering therefore held for no operation that acts. A policy now returns its action instead of
+> performing it, the mediator runs it after the record is durable, and `selftest_audit` has a case
+> that goes through the real mediator: on the old code it left no record on disk.
+
 The cost is real and belongs in Chapter 7's performance axis rather than hidden here: an
 `fsync` per decision is far more expensive than the 2.4 µs §6.6.4 measured for the decision
 itself, and §6.5.3's latency figures do **not** include it. Whether S7's durability is worth
@@ -1304,7 +1315,8 @@ to report the exit status and the cgroup's own counters.
 
 - **No push loop.** Declared entities are mirrored once, at construction. §5.11.3's push shape —
   the mediator sending a declared entity's changes as they happen — is not implemented, so an
-  integration sees the value that existed when its sandbox was built.
+  integration sees the value that existed when its sandbox was built. *(Built 2026-10-04, §7.36:
+  the bridge now subscribes to each declared entity and applies what the mediator pushes.)*
 - **No egress.** Scope item 2's second half is untouched: no proxy, no resolve-then-pin at
   connection time.
 - **The platform is a stand-in.** Step 5 acts on an in-memory object, not a running Home
@@ -1345,7 +1357,7 @@ The bridge of §6.10 removed the largest gap. Six remain, in descending order of
 | **A baseline arm** | Whether 46% is the design's doing or the corpus's. Running the same 37 against a *full* Home Assistant is what decomposes it, and without it the number describes both |
 | **Executed end-to-end** | N2's second number. Needs configuration data that only each integration's own config flow produces |
 | **The egress proxy** | Scope item 2's second half, and F2 |
-| **The push loop** | §5.11.3's push shape. Declared entities are mirrored once at construction, so an integration sees the value that existed when its sandbox was built |
+| **The push loop** | §5.11.3's push shape. Declared entities are mirrored once at construction, so an integration sees the value that existed when its sandbox was built. *Built 2026-10-04, §7.36* |
 | **The real Home Assistant component** | Step 5 currently acts on a stand-in. §6.10.2 records what a real instance would add, and why it is more than realism |
 | **Dependency installation** | §6.8.1's third identity component, which stays vestigial until resolved versions exist |
 

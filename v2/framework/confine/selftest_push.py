@@ -15,8 +15,9 @@ What each case checks:
     A    the subscription is a recorded decision, and a refused one is recorded too
     wire a push that arrives while a request waits for its reply is handed to `on_push`, and
          the reply still comes back as the reply
-    P7   a sandbox that never reads neither blocks the mediator nor delays another sandbox,
-         and what the mediator holds for it is bounded by its subscriptions
+    P7   a sandbox that never reads neither blocks the mediator nor delays another sandbox;
+         what the mediator holds for it is the kernel's socket buffer plus one state per
+         subscribed entity
     #14  a respawn starts with no subscriptions and has to be granted each one again
     P8   what one delivered push costs the mediator (reported; judged on the Pi)
 
@@ -171,6 +172,21 @@ def main() -> int:
         reader.received.clear()
 
         print("\nP7 — a sandbox that stops reading\n")
+
+        def to_reader(samples: int = 2_000) -> float:
+            """Median seconds from a change on the platform to the reading sandbox holding it."""
+            times = []
+            for n in range(samples):
+                before = len(reader.received)
+                start = time.perf_counter()
+                platform.set_state(DECLARED, f"t{n}")
+                while len(reader.received) == before:
+                    reader.drain()
+                times.append(time.perf_counter() - start)
+            reader.received.clear()
+            return sorted(times)[len(times) // 2]
+
+        alone = to_reader()
         stalled = Sandbox(mediator, "stalled", component(root, "stalled", [DECLARED]))
         stalled.ask({"op": "entity.subscribe", "entity": DECLARED})
         changes = 20_000
@@ -194,13 +210,21 @@ def main() -> int:
         # The first run of this suite expected one frame here and found 278. Coalescing starts
         # only once `send` says EAGAIN, so before that the kernel's socket buffer takes frames
         # as fast as they come. The bound is that buffer plus one state per entity, not one.
+        # The cross-sandbox half of P7, which the first version of this suite did not measure:
+        # does a neighbour with a full socket slow down what the reading sandbox receives?
+        beside = to_reader()
+        check("a stalled neighbour does not slow the reading sandbox's pushes materially",
+              beside < alone * 2 + 20e-6,
+              f"median {alone * 1e6:.1f} µs alone, {beside * 1e6:.1f} µs beside a stalled "
+              f"sandbox whose socket is full")
+
         stalled.drain()
         backlog = len(stalled.received)
         mediator.serve(timeout=0.2)           # writable again: the coalesced state goes out
         stalled.drain()
         check("when the stalled one reads at last it gets a bounded backlog, then the latest",
               backlog < changes // 10 and stalled.received
-              and stalled.received[-1]["state"] == str(changes - 1),
+              and stalled.received[-1]["state"] == platform.states[DECLARED][0],
               f"{backlog} frames held by the kernel's socket buffer for {changes} changes, "
               f"then the latest")
 

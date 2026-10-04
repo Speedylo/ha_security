@@ -56,6 +56,11 @@ a run. Stating it as a property of *when the policy is built* rather than of *th
 honest form, and §7.30 records the limitation it implies: a long-lived mediator has no re-check
 trigger of its own, because nothing in this design keeps one alive across a respawn.
 
+*2026-10-04 (§7.36): the push loop now keeps one alive, so the re-load was made explicit —
+`Mediator.register` asks the policy to `bind`, which re-reads the manifest, at every registration.
+`long_lived_mediator` below is the case that fails if that is removed, and it did fail on the code
+before the change.*
+
 **Layer.** This is the decision layer and the identity layer, not a spawned sandbox — the same
 scope §7.14 states for S3's subscription half. T12's second clause is a property of what binds a
 run, and a real spawn would add namespace setup and a root requirement without touching the

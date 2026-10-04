@@ -1240,6 +1240,11 @@ The mediator's handling of one request is five steps, in this order:
 The order matters and is not an implementation detail: the record is written **before** the
 action, so an action that succeeds and then crashes the mediator is still attributable.
 
+> **The design stands; the implementation did not meet it until 2026-10-04 (§7.36.1).** From
+> 2026-08-25, when step 5 was first implemented, the policy acted inside step 3 and the mediator
+> recorded afterwards, so for every operation that acts the order was decide, act, record. The
+> mediator now runs the action only after the record is durable.
+
 ### 5.11.4 What it costs
 
 N1 requires the overhead be small enough not to change how the platform is used. Measured on

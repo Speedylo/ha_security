@@ -9,7 +9,9 @@ is older history, newest first.
 **2026-10-04: W1 step 1 done** (push loop + §8.7 #14 re-check against the stand-in; record-before-act
 defect found and fixed; 22/22 suites on the Pi). Record and outcomes: `notes/w1_push_loop_prediction.md`.
 **Next: W1 step 2** — the bridge integration in the real Home Assistant and `RealPlatform`, feeding
-`Platform.listeners`' shape from (A)'s event bus. Report debts from step 1 are listed at the end of that note.
+`Platform.listeners`' shape from (A)'s event bus. **Step 1's report debts are paid** (same day): §7.36 written,
+dated pointers wherever the report relied on the old facts, abstract and counts updated, `toc.py --check` passes.
+All 20 requirements are now ✅ (S3 at the stand-in platform).
 
 **In one screen — where we are, 2026-10-03:**
 

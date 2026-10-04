@@ -72,9 +72,9 @@ Then the sentence that makes him stop worrying about you:
 | Ecosystem | 669,743 installs · 4,220 community integrations · 56.6% run HACS · median integration has 20 installs |
 | Hardware | Raspberry Pi 5, 4 GB · Home Assistant 2026.8.3 · Python 3.14 · unprivileged, no root |
 | Compatibility | **84%** head corpus (37) · **92%** uniform corpus (40) · **identical in both arms** · design's cost **0**, twice |
-| Requirements | 20 total — **19 met, 1 partial** (entity subscriptions, needs the push loop) |
+| Requirements | 20 total — **all 20 met** since 2026-10-04 (the last, entity subscriptions, closed by the push loop, against a stand-in platform) |
 | Threat model | 18 threats · 7 residual risks · STRIDE + ISO 31000 + OWASP Threat Dragon |
-| Tests | **19 self-test suites** pass on the Pi |
+| Tests | **21 self-test suites** pass on the Pi (plus the base `selftest`) |
 | Attacks | Unconfined: **2/2** canary secrets stolen, 11 attacks returned data. Confined: **0/2** |
 | The gc attack | Unconfined reaches a live token **7 ways**; confined finds nothing — token confirmed still live in the mediator |
 | Entity visibility | Unconfined **36/36** + all presence; confined **1/36** |

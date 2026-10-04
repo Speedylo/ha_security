@@ -140,14 +140,18 @@ Pi: Python 3.13.5 for the decision layer, `~/r2exp/ha314` for the spawned run).
 | **P4** | **Held, in a real sandbox.** `thermal_comfort`, unmodified, recomputed from a pushed 30.0 °C: dew point 9.96 → 17.81 °C, heat index 20.85 → 30.74, perception "dry" → "ok_but_humid". 34 decisions, chain verifies, reconciles with memory |
 | **P5** | **Held.** 0 of 3 undeclared changes delivered, nothing to the integration with no grant, and the mutation that bypasses the table delivers 3 of 3 to the same observer |
 | **P6** | **Held.** None of the 30 publishes is one of the two pushed entities |
-| **P7** | **Partly, and the bound was wrong.** The mediator never blocked (20,000 changes, 0.43 s on the Pi, one sandbox never reading), and the reading sandbox got the latest value. But the stalled sandbox's backlog was **278 frames**, not one: coalescing starts only when `send` returns `EAGAIN`, so the kernel's socket buffer fills first. The bound is the socket buffer plus one state per entity. The cross-sandbox *delay* was not measured, only that it completed |
+| **P7** | **Partly, and the bound was wrong.** The mediator never blocked (20,000 changes, 0.43 s on the Pi, one sandbox never reading), and the reading sandbox got the latest value. But the stalled sandbox's backlog was **278 frames**, not one: coalescing starts only when `send` returns `EAGAIN`, so the kernel's socket buffer fills first. The bound is the socket buffer plus one state per entity. The cross-sandbox *delay* was not measured in the first run, only that it completed. *Measured the same day, after this note's first commit:* the reading sandbox's median delivery was 20.9 µs alone and 24.9 µs beside a stalled neighbour on the Pi (`selftest_push_p7_delay.log`) |
 | **P8** | **Held, after the first measurement was thrown out.** The first version let a reader thread race the loop, so 98% of pushes were coalesced and the 5.0 µs was the cost of replacing a dict entry. Re-measured with every push written: **10.9 µs per delivered push on the Pi** (6.1 µs on the x86 laptop), against 3.67 ms per recorded decision. That is the mediator's side only; the sandbox's apply cost is not in it |
 | **P9** | **Held.** The sandbox's `channel.request` had no lock and is called from executor threads, and `last_fd` was shared between threads. Fixed with a per-exchange lock and `exchange()` returning the descriptor with its own reply |
 
 **Regression:** all 22 suites (the 21 from 2026-10-03 plus `selftest_push`) pass on the Pi against
 the changed code, logs in `experiments/push_loop/results/w1_step1_20261004/suites/`.
 
-**What the report owes from this:** §6.8.3's "written and fsynced before the action" needs a dated
+**Paid 2026-10-04, before step 2** (§7.36 written, and dated pointers at every place the report
+stated what this changed: §5.11.3; §6.8.3, §6.10.5, §6.11.2; §7.5's S3 row, §7.14.4, §7.16.3,
+§7.20.1, the threat tables' T06, T1 and T18 rows, §7.26.5, §7.30, §7.32; the abstract and the
+front matter's counts; §8.2.3 (table and limits), §8.2.4, §8.3's suite count, §8.6.3 #1, and
+§8.7's introduction, #1 and #14). **What the report owed from this:** §6.8.3's "written and fsynced before the action" needs a dated
 correction (true from 2026-10-04, false before for every acting operation); §7.14.4's "absent
 feature" becomes a measured filter; §8.7 item 1 and #14 move to done-at-the-stand-in; §7.20.1 gains
 the push cost; and the P7 bound (socket buffer plus one per entity) is stated as found.
