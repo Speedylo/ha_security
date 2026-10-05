@@ -258,7 +258,7 @@ rows of their own (CS01–CS16).
 | CS06 | Modifying, deleting or reordering any record breaks every link after it | §5.12 | `selftest_audit` (strong form); X8 | |
 | CS07 | The log is unreachable from the sandbox: outside its mount namespace, and no verb writes to it | §5.12 | independent attacks | |
 | CS08 | The MAC key is generated at start and held only in the mediator's memory | §5.12, §6.8 | code read; scan disk and logs for the key | |
-| CS09 | An integration cannot learn where on the host it was installed | §6.4 | independent attack: read `/proc/self/mountinfo` from inside | to test |
+| CS09 | An integration cannot learn where on the host it was installed | §6.4 | independent attack: read `/proc/self/mountinfo` from inside | **F11: false — mountinfo shows the host paths of its component and data directories (2026-10-05)** |
 | CS10 | Every declared path is verified in the new root before the sandbox runs; construction fails loudly | §6.4 | mutant (skip the check); `selftest_bridge` | |
 | CS11 | Seccomp is a deny-list; a syscall not on it is allowed (a stated residual) | §6.4 | compare the list with the text; X13 | |
 | CS12 | Over-broad and unsafe declarations are rejected at parse time, not at use | §6.6 | `selftest_policy`; X17 | |
@@ -282,4 +282,6 @@ These are findings before any test has run. They also go into the findings log i
 | F07 | Experiment READMEs | Nine results sections (§7.16, 7.19, 7.22, 7.25, 7.29, 7.30, 7.32, 7.38, 7.41) are named by no experiment README, so a reader cannot follow those figures from the claim to the data. `durability/` has no README at all | Minor (traceability) |
 | F08 | §5.12, `audit.py`, §8.6.3 #3 | The run record should carry **resolved** dependency versions; the identity hashes the **declared** requirements, with a comment saying installation "is not built yet", although per-run installation has existed since September, and §8.6.3 #3 still calls it unresolved. Three statements to reconcile, and possibly a small fix | Minor to Major, open |
 | F09 | §5.11, §6.5 | Mediation per polling cycle stated as 0.30 ms (Ch5) and 0.36 ms (Ch6); today's 31.5 µs gives about 0.32 ms for ten reads | Minor |
+| F10 | `selftest` | The home-absent check holds only when the configuration root is outside home; realistic placement makes home a skeleton | Minor (test design) |
+| F11 | §6.4, CS09 | `/proc/self/mountinfo` reveals the host paths of the component and data directories | Major claim, low impact |
 | F05 | Experiments | The adversary pair (§7.13) and mediation latency (§7.19) were last run before the mediator's October changes | Re-measure (plan Phase 3) |

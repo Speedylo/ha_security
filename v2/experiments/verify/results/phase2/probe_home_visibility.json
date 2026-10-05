@@ -1,0 +1,97 @@
+{
+  "home": [
+    {
+      "path": "/home/younes",
+      "kind": "dir",
+      "entries": 1
+    },
+    {
+      "path": "/home/younes/r2exp",
+      "kind": "dir",
+      "entries": 1
+    },
+    {
+      "path": "/home/younes/r2exp/disktmp",
+      "kind": "dir",
+      "entries": 1
+    },
+    {
+      "path": "/home/younes/r2exp/disktmp/home-probe-0q2g788p",
+      "kind": "dir",
+      "entries": 1
+    },
+    {
+      "path": "/home/younes/r2exp/disktmp/home-probe-0q2g788p/shared",
+      "kind": "dir",
+      "entries": 1
+    },
+    {
+      "path": "/home/younes/r2exp/disktmp/home-probe-0q2g788p/shared/readable.txt",
+      "kind": "file",
+      "readable": true
+    }
+  ],
+  "mountinfo_root_and_point": [
+    [
+      "/",
+      "/"
+    ],
+    [
+      "/usr",
+      "/usr"
+    ],
+    [
+      "/etc/ssl/certs",
+      "/etc/ssl/certs"
+    ],
+    [
+      "/home/younes/r2exp/disktmp/home-probe-0q2g788p/custom_components/demo_a",
+      "/sandbox/component"
+    ],
+    [
+      "/home/younes/r2exp/disktmp/home-probe-0q2g788p/.confine/demo_a",
+      "/sandbox/data"
+    ],
+    [
+      "/",
+      "/proc"
+    ],
+    [
+      "/",
+      "/dev"
+    ],
+    [
+      "/null",
+      "/dev/null"
+    ],
+    [
+      "/zero",
+      "/dev/zero"
+    ],
+    [
+      "/full",
+      "/dev/full"
+    ],
+    [
+      "/random",
+      "/dev/random"
+    ],
+    [
+      "/urandom",
+      "/dev/urandom"
+    ],
+    [
+      "/tty",
+      "/dev/tty"
+    ],
+    [
+      "/",
+      "/tmp"
+    ],
+    [
+      "/home/younes/r2exp/disktmp/home-probe-0q2g788p/shared/readable.txt",
+      "/home/younes/r2exp/disktmp/home-probe-0q2g788p/shared/readable.txt"
+    ]
+  ],
+  "configuration_root_on_host": "/home/younes/r2exp/disktmp/home-probe-0q2g788p"
+}
