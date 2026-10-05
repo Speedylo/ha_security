@@ -217,12 +217,13 @@ rows of their own (CS01–CS16).
 | Disposition | Candidates | Meaning |
 |---|---|---|
 | Tier B row (`B 7.n`, `ref 7.n`) | 942 | tested by that measurement's re-run and the re-derivation of its numbers |
-| Tier A row | 108 | tested through A1, A2 or A5 |
-| Tier C group C01–C16 | 698 | tested by the group's suites, mutants and base experiments, below |
+| Tier A row | 74 | tested through A1, A2 or A5 |
+| Tier C group C01–C16 | 614 | tested by the group's suites, mutants and base experiments, below |
 | Tier C single row CS01–CS16 | 24 | tested one by one, below |
 | history | 191 | a dated past state kept on purpose; checked only that it is dated |
 | argued | 53 | design rationale; checked only that it reads as argument (plan §7.9) |
 | structure | 82 | the report describing itself (contents, glossary); checked by `toc.py` |
+| **Total** | **1,980** | recounted from `triage.jsonl`, not added by hand |
 
 ### C01–C16 — mechanism groups (Chapters 5, 6 and 8)
 
