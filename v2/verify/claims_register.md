@@ -153,7 +153,7 @@ These are findings before any test has run. They also go into the findings log i
 |---|---|---|---|
 | F01 | Abstract | "Ten integrations … all ten" is stale: thirteen have run end to end since §7.40–§7.42 (`midea_ac_lan`, `localtuya`, `trakt_tv`) | Minor |
 | F02 | Abstract | "Within a millisecond" is true of the median (0.71 ms) and not of the worst case measured (1.57 ms) | Minor, wording |
-| F03 | §7.5 F3 | Claims every decision names a clause and that a clause-less decision is unconstructible; the mediator builds refusals with `clause=None`. To test against every committed log before judging | **Potentially Major** |
+| F03 | §7.5 F3 | Claims every decision names a clause and that a clause-less decision is unconstructible; the mediator builds refusals with `clause=None` (`deny_everything`; `command` with no sandbox, a non-owner, a full queue). **Checked 2026-10-05 against every committed record: 0 of 467 durable decisions lack a clause**, so no run on file exercised those paths durably. To test: exercise each path with a durable log and read the records; then judge whether F3's wording holds, needs narrowing to the manifest decision path, or the code needs a rule name in `clause` | Potentially Major, open |
 | F04 | §7.26.4 CM-T7 | T19 maps to CM-T7, so the "partial" row predates it | Minor |
 | F06 | §8.3, contribution 2 | The running tally of suites stops at twenty-four; the count is twenty-six | Minor |
 | F05 | Experiments | The adversary pair (§7.13) and mediation latency (§7.19) were last run before the mediator's October changes | Re-measure (plan Phase 3) |
