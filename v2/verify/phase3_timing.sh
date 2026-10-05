@@ -29,4 +29,7 @@ for mode in default compile cold; do
   case $mode in default) a="" ;; compile) a="--compile-bytecode" ;; cold) a="--cold" ;; esac
   step bytecode_$mode  $F $scope python3 -u -m confine.endtoend --corpus ~/r2exp/corpus --python $P --only powercalc --bytecode $a --json "$OUT/bytecode_$mode.json"
 done
+# A user's command into a confined integration (§7.38). Added before pass 2; pass 1's sample is
+# phase 2's L3 run of the same command on the same tag (verify/timing_stats.py says so).
+step e2e_real_adaptive $F $scope python3 -u -m confine.endtoend --corpus ~/r2exp/corpus --python $P --only adaptive_lighting --push --platform real --command --json "$OUT/e2e_real_adaptive.json"
 echo ALLDONE >> "$S"
