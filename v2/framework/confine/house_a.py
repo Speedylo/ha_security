@@ -197,6 +197,28 @@ def stop(config: Path, seconds: float = 60) -> None:
     pid_file.unlink()
 
 
+def seed_onboarding(config: Path) -> None:
+    """Record the wizard's later steps as done before (A)'s first start, so a browser is not sent
+    back into it.
+
+    `onboard` takes only the first step, creating the owner, on purpose (its comment says why).
+    Until 2026-10-05 the others were simply never taken, and a person logging in through a browser
+    was put back into the wizard at the step after it: `core_config` started the flows `onboard`
+    avoids, and the analytics page then failed with "unknown command", because `analytics` is not
+    loaded here. Found by Younes, testing the refusal flood by hand. Home Assistant reads this file
+    once at start (`onboarding/__init__.py`), and the owner `onboard` creates completes the last
+    step, so onboarding ends with none of the later steps' side effects. Written only when there
+    is no record yet: an instance that already has one is left as it is.
+    """
+    store = config / ".storage" / "onboarding"
+    if store.exists():
+        return
+    store.parent.mkdir(parents=True, exist_ok=True)
+    store.write_text(json.dumps({"version": 4, "minor_version": 1, "key": "onboarding",
+                                 "data": {"done": ["core_config", "analytics", "integration"]}},
+                                indent=2))
+
+
 def onboard() -> str:
     """Create the owner and return a long-lived token minted over WebSocket."""
     result = request("POST", "/api/onboarding/users",
@@ -276,6 +298,7 @@ def up(config: Path, fresh: bool) -> None:
     if target.exists():
         shutil.rmtree(target)
     shutil.copytree(BRIDGE, target, ignore=shutil.ignore_patterns("__pycache__"))
+    seed_onboarding(config)
 
     start(config)
     if not TOKEN_FILE.exists() or fresh:
