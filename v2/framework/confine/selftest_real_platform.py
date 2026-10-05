@@ -28,6 +28,12 @@ Predictions: `notes/w1_step2_real_platform_prediction.md` §4.
   Found in the W1 review: a publish (A) refuses is answered as a refusal, and does not stop the
   mediator or leave the sandbox owning the entity.
 
+  The refusal flood (`notes/flood_cutoff_prediction.md`), the household's half:
+
+    F7   a cut-off raises a Repairs issue in (A) within 1 s, fixable, in plain words; confirming
+         it over the same HTTP API the interface uses reinstates the integration, recorded, and
+         the issue is gone
+
 Run:  python3 -m confine.selftest_real_platform [--restart]
 """
 
@@ -328,6 +334,66 @@ def main() -> int:
                 and r.get("target") == "light.probe"]
         check("the log shows the grant and then the refusal, so the refusal is the last word",
               both == [True, False], f"{both}")
+
+        print("\nF7 — a cut-off reaches the household, and the way back\n")
+        # The limit is lowered for speed: what is under test here is the path through (A), and
+        # `selftest_flood` covers the limit itself at its real value.
+        limit, mediator.flood_limit = mediator.flood_limit, 5
+        flooder = Sandbox(mediator, "flooder", manifest(root, "flooder", {}))
+        issue_id = "cut_off_flooder"
+
+        def issue() -> dict:
+            return next((i for i in platform.call({"type": "repairs/list_issues"})["issues"]
+                         if i["domain"] == "confine_bridge" and i["issue_id"] == issue_id), {})
+
+        for _ in range(4):
+            flooder.ask({"op": "entity.read", "entity": "lock.front_door"})
+        # The fifth by hand: `Sandbox.ask` would raise before joining its server thread, and
+        # that thread is the one telling (A), on the connection this one is about to poll.
+        started = time.perf_counter()
+        server = threading.Thread(target=mediator.serve, kwargs={"timeout": 0.3})
+        server.start()
+        try:
+            flooder.channel.request({"op": "entity.read", "entity": "lock.front_door"})
+        except (ConnectionError, OSError):
+            pass
+        server.join()
+        raised = {}
+        while time.perf_counter() - started < 5 and not raised:
+            raised = issue()
+        seen = time.perf_counter() - started
+        mediator.flood_limit = limit
+        check("the fifth refusal cuts the integration off, and (A) is not left untold",
+              "flooder" in mediator.cut_off and not mediator.undelivered,
+              f"{mediator.undelivered}")
+        check("F7: a Repairs issue for it is in (A) within 1 s of the cut-off",
+              bool(raised) and seen < 1.0, f"{seen * 1000:.0f} ms")
+        check("an error the user can fix, worded from the bridge's own strings, naming it",
+              raised.get("is_fixable") is True and raised.get("severity") == "error"
+              and raised.get("translation_key") == "cut_off"
+              and (raised.get("translation_placeholders") or {}).get("name") == "flooder",
+              f"{ {k: raised.get(k) for k in ('severity', 'translation_key')} }")
+
+        token = house_a.TOKEN_FILE.read_text().strip()
+        flow = house_a.request("POST", "/api/repairs/issues/fix",
+                               {"handler": "confine_bridge", "issue_id": issue_id}, token=token)
+        check("opening it shows one confirm step, as the Repairs panel would",
+              flow.get("type") == "form" and flow.get("step_id") == "confirm", f"{flow}")
+        done = house_a.request("POST", f"/api/repairs/issues/fix/{flow['flow_id']}", {},
+                               token=token)
+        back = serve_until(mediator, lambda: "flooder" not in mediator.cut_off)
+        check("submitting it reinstates the integration in the mediator",
+              done.get("type") == "create_entry" and back, f"{done.get('type')}")
+        reinstated = [r for r in log.records() if r["kind"] == "reinstate"]
+        check("the reinstatement is durable, and says it came from the user",
+              len(reinstated) == 1
+              and reinstated[0]["detail"] == "reinstated by a user, from the Repairs panel",
+              reinstated[0]["detail"] if reinstated else "none")
+        check("and the issue is gone from (A)", issue() == {})
+        again = Sandbox(mediator, "flooder", manifest(root, "flooder", {}))
+        check("the integration can be registered again", mediator.open_channels >= 1
+              and "flooder" not in mediator.cut_off)
+        again.channel.sock.close()
 
         check("every chain still verifies", log.verify() == [])
         for person in (user, user2, user3):

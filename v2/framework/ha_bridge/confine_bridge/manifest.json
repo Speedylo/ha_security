@@ -3,7 +3,10 @@
   "name": "Confined Integration Bridge",
   "codeowners": [],
   "config_flow": true,
-  "dependencies": ["websocket_api"],
+  "dependencies": [
+    "repairs",
+    "websocket_api"
+  ],
   "documentation": "https://example.invalid/capstone",
   "iot_class": "local_push",
   "requirements": [],

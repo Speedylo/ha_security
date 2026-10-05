@@ -38,11 +38,12 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.storage import Store
 
-from .const import (COMMAND_TIMEOUT, DOMAIN, MAX_PENDING_COMMANDS, SIGNAL_NEW_ENTITY,
-                    STORAGE_KEY, STORAGE_VERSION, SUPPORTED)
+from .const import (COMMAND_TIMEOUT, DOMAIN, ISSUE_CUT_OFF, MAX_PENDING_COMMANDS,
+                    SIGNAL_NEW_ENTITY, STORAGE_KEY, STORAGE_VERSION, SUPPORTED)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -93,6 +94,19 @@ class BridgeData:
         if not result.get("ok"):
             raise HomeAssistantError(f"{entity_id}: {result.get('error') or 'refused'}")
 
+    def request_restart(self, integration: str) -> bool:
+        """Ask the mediator to let a cut-off integration run again. False if none is listening.
+
+        Sent down the command stream, the one channel the mediator already holds open to this
+        component. The mediator decides what a restart means; this only says a user asked.
+        """
+        if self.commander is None:
+            return False
+        connection, subscription = self.commander
+        connection.send_message(websocket_api.event_message(subscription,
+                                                            {"restart": integration}))
+        return True
+
     def save_soon(self) -> None:
         # Delayed, as Home Assistant's own integrations do: a sensor updating every few seconds
         # must not cost a disk write each time. A crash loses at most this window, and the
@@ -105,6 +119,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     websocket_api.async_register_command(hass, ws_set_state)
     websocket_api.async_register_command(hass, ws_commands)
     websocket_api.async_register_command(hass, ws_command_result)
+    websocket_api.async_register_command(hass, ws_cut_off)
     return True
 
 
@@ -237,4 +252,35 @@ def ws_command_result(hass: HomeAssistant, connection: websocket_api.ActiveConne
     answer = data.commands.get(msg["command"]) if data else None
     if answer is not None and not answer.done():
         answer.set_result({"ok": msg["ok"], "error": msg.get("error")})
+    connection.send_result(msg["id"])
+
+
+@websocket_api.require_admin
+@websocket_api.websocket_command({
+    vol.Required("type"): "confine_bridge/cut_off",
+    vol.Required("integration"): cv.string,
+    vol.Optional("detail", default=""): cv.string,
+})
+@callback
+def ws_cut_off(hass: HomeAssistant, connection: websocket_api.ActiveConnection,
+               msg: dict) -> None:
+    """The mediator stopped a confined integration for flooding it with refused requests.
+
+    Raised as a Repairs issue, because that is where Home Assistant already tells a household
+    that something needs their attention, and in words that assume nothing technical
+    (`notes/flood_cutoff_prediction.md` §3). The mediator's own reason — how many refusals in how
+    long — is in its audit record, and is kept out of the user's sight on purpose. Persistent, so
+    a restart of the house's instance does not lose the explanation while the integration is
+    still stopped.
+    """
+    integration = msg["integration"]
+    ir.async_create_issue(
+        hass, DOMAIN, ISSUE_CUT_OFF.format(integration),
+        data={"integration": integration},
+        is_fixable=True, is_persistent=True,
+        severity=ir.IssueSeverity.ERROR,
+        translation_key="cut_off",
+        translation_placeholders={"name": integration})
+    _LOGGER.warning("confine_bridge: %s was cut off by the mediator (%s)", integration,
+                    msg["detail"])
     connection.send_result(msg["id"])

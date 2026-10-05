@@ -87,6 +87,9 @@ class RealPlatform:
         #: Called with each user's command for a confined entity (W1 step 2b): a dict with
         #: `command`, `integration`, `entity_id`, `service` and `data`. The mediator handles it.
         self.command_handlers: list[Callable[[dict], None]] = []
+        #: Called with an integration's name when a user confirms its Repairs issue, asking for
+        #: a cut-off integration to be started again (the refusal flood). Same stream as commands.
+        self.restart_handlers: list[Callable[[str], None]] = []
         self._commands: deque = deque()
         self.calls: list[tuple[str, str, dict]] = []      # what (A) executed, for reports
         self.published: dict[tuple[str, str], str] = {}   # (integration, its id) -> id in (A)
@@ -168,6 +171,10 @@ class RealPlatform:
         """
         while self._commands:
             command = self._commands.popleft()
+            if "restart" in command:
+                for restart in list(self.restart_handlers):
+                    restart(str(command["restart"]))
+                continue
             for handler in list(self.command_handlers):
                 handler(command)
         while self._events:
@@ -223,6 +230,10 @@ class RealPlatform:
         """The confined integration's answer, back to the bridge, which returns or raises."""
         self.call({"type": "confine_bridge/command_result", "command": command, "ok": ok,
                    "error": error})
+
+    def cut_off(self, identity: str, detail: str) -> None:
+        """Tell the household: the bridge raises a Repairs issue for `identity`, in plain language."""
+        self.call({"type": "confine_bridge/cut_off", "integration": identity, "detail": detail})
 
     def watch(self, entity_id: str) -> None:
         """Widen (A)'s subscription to include `entity_id`. Only subscribed entities are asked for."""

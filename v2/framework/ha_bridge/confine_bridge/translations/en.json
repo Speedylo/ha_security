@@ -1,1 +1,23 @@
-{"config": {"abort": {"already_configured": "The bridge is already set up."}}}
+{
+  "config": {
+    "abort": {
+      "already_configured": "The bridge is already set up."
+    }
+  },
+  "issues": {
+    "cut_off": {
+      "title": "{name} was stopped",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Restart {name}",
+            "description": "**{name}** kept trying to do things it does not have permission to do, so it was stopped to protect your home and keep Home Assistant responsive.\n\nThis is usually caused by a bug in the integration. It is worth checking whether an update is available for it.\n\nSelect **Submit** to restart {name}. Restarting does not give it any new permissions. If the problem continues, it will be stopped again."
+          }
+        },
+        "abort": {
+          "not_connected": "The service that runs confined integrations is not running at the moment, so nothing can be restarted. Try again later."
+        }
+      }
+    }
+  }
+}

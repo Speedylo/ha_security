@@ -18,3 +18,6 @@ COMMAND_TIMEOUT = 10
 
 #: Commands waiting for an answer, at most. Past this a command is refused, not queued.
 MAX_PENDING_COMMANDS = 32
+
+#: The Repairs issue raised when the mediator cuts an integration off (the refusal flood).
+ISSUE_CUT_OFF = "cut_off_{}"
