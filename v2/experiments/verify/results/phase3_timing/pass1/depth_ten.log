@@ -1,0 +1,13 @@
+scale — 3 sandboxes, unstripped
+
+  sandbox 1: RSS  176.0 MB   PSS  158.3 MB   machine + 147.2 MB
+  sandbox 2: RSS  176.1 MB   PSS  146.2 MB   machine + 272.5 MB
+  sandbox 3: RSS  176.0 MB   PSS  141.2 MB   machine + 412.5 MB
+
+  sum of RSS               528.1 MB
+  sum of PSS               423.7 MB
+  PSS per sandbox          141.2 MB   <- the §6.3.2 figure's successor
+
+  4050 MB machine; in 60% of it (2430 MB), about 17 sandboxes fit
+
+wrote /home/younes/r2exp/verify/v2/experiments/verify/results/phase3_timing/pass1/depth_ten.json

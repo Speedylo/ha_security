@@ -1,0 +1,15 @@
+1 pass(es): pass1
+
+  mediation latency, one client, median            §7.19   stated    31.5 µs  passes [43.2]  → OUTSIDE T (+37.1%)
+  mediation latency, 26 clients, median            §7.19   stated       — µs  passes [800]  → reported
+  durable record with fsync, median                §7.20.1 stated  3670.7 µs  passes [3.66e+03]  → within T (-0.3%)
+  one sandbox, RSS at running                      §7.35   stated   161.3 MB  passes [162]  → within M (+0.2%)
+  marginal memory per added sandbox                §7.35   stated   124.4 MB  passes [126]  → within M (+1.7%)
+  PSS per sandbox, no components                   §7.35   stated    56.5 MB  passes [58.8]  → within M (+4.1%)
+  PSS per sandbox, ten components                  §7.35   stated   135.6 MB  passes [141]  → within M (+4.1%)
+  one delivered push, mediator cost                §7.36   stated    10.9 µs  passes [11.5]  → within T (+5.5%)
+  change in (A) to the mediator's push, median     §7.37   stated    0.71 ms  passes [0.74]  → within T (+4.2%)
+  a user's command to the integration's code       §7.38   stated    16.0 ms  passes [15.7]  → within T (-1.9%)
+  flood start to cut-off, on disk                  §7.44   stated   0.812 s   passes [0.809]  → within T (-0.4%)
+  powercalc time to report, default install        §7.39   stated    2.47 s   passes [2.29]  → within T (-7.3%)
+  powercalc time to report, compiled install       §7.39   stated    1.87 s   passes [1.94]  → within T (+3.7%)

@@ -1,0 +1,132 @@
+[
+  {
+    "id": "latency_1",
+    "stated": 31.5,
+    "values": [
+      43.2
+    ],
+    "median": 43.2,
+    "verdict": "OUTSIDE T (+37.1%)",
+    "section": "\u00a77.19"
+  },
+  {
+    "id": "latency_26_median",
+    "stated": null,
+    "values": [
+      799.7
+    ],
+    "median": 799.7,
+    "verdict": "reported",
+    "section": "\u00a77.19"
+  },
+  {
+    "id": "durability",
+    "stated": 3670.7,
+    "values": [
+      3660.2
+    ],
+    "median": 3660.2,
+    "verdict": "within T (-0.3%)",
+    "section": "\u00a77.20.1"
+  },
+  {
+    "id": "footprint_single",
+    "stated": 161.3,
+    "values": [
+      161.6
+    ],
+    "median": 161.6,
+    "verdict": "within M (+0.2%)",
+    "section": "\u00a77.35"
+  },
+  {
+    "id": "footprint_marginal",
+    "stated": 124.4,
+    "values": [
+      126.5
+    ],
+    "median": 126.5,
+    "verdict": "within M (+1.7%)",
+    "section": "\u00a77.35"
+  },
+  {
+    "id": "depth_none",
+    "stated": 56.5,
+    "values": [
+      58.8
+    ],
+    "median": 58.8,
+    "verdict": "within M (+4.1%)",
+    "section": "\u00a77.35"
+  },
+  {
+    "id": "depth_ten",
+    "stated": 135.6,
+    "values": [
+      141.2
+    ],
+    "median": 141.2,
+    "verdict": "within M (+4.1%)",
+    "section": "\u00a77.35"
+  },
+  {
+    "id": "push_cost",
+    "stated": 10.9,
+    "values": [
+      11.5
+    ],
+    "median": 11.5,
+    "verdict": "within T (+5.5%)",
+    "section": "\u00a77.36"
+  },
+  {
+    "id": "push_latency",
+    "stated": 0.71,
+    "values": [
+      0.74
+    ],
+    "median": 0.74,
+    "verdict": "within T (+4.2%)",
+    "section": "\u00a77.37"
+  },
+  {
+    "id": "command",
+    "stated": 16.0,
+    "values": [
+      15.701792000015757
+    ],
+    "median": 15.701792000015757,
+    "verdict": "within T (-1.9%)",
+    "section": "\u00a77.38"
+  },
+  {
+    "id": "flood",
+    "stated": 0.812,
+    "values": [
+      0.809
+    ],
+    "median": 0.809,
+    "verdict": "within T (-0.4%)",
+    "section": "\u00a77.44"
+  },
+  {
+    "id": "bytecode_default",
+    "stated": 2.47,
+    "values": [
+      2.29
+    ],
+    "median": 2.29,
+    "verdict": "within T (-7.3%)",
+    "section": "\u00a77.39"
+  },
+  {
+    "id": "bytecode_compiled",
+    "stated": 1.87,
+    "values": [
+      1.94
+    ],
+    "median": 1.94,
+    "verdict": "within T (+3.7%)",
+    "section": "\u00a77.39"
+  }
+]

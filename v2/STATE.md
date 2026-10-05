@@ -18,8 +18,7 @@ Testing by hand also fixed (A) for browsers: onboarding seeded, base-component r
 **2026-10-05 (night): VERIFICATION CAMPAIGN in progress** (`notes/verification_plan_20261005.md`; register
 `verify/claims_register.md`; results `experiments/verify/results/`). Frozen at tag `verify-2026-10`
 (6aa2eb6), copied to `~/r2exp/verify/v2` on the Pi. Phases 0, 1, 2 done; findings F01–F13 in the
-plan's log (F11 resolved; F03 and F08 the open ones that matter). **3a DONE 2026-10-05** (53/55 headlines equal, two explained; F14–F16). **Resume at sitting 3b**
-(timing pass 1); then 3c, 3d (timing passes on separate boots). The cut-off waits for the
+plan's log (F11 resolved; F03 and F08 the open ones that matter). **3a DONE 2026-10-05** (53/55 headlines equal, two explained; F14–F16). **3b DONE 2026-10-05**: pass 1, 12 of 13 figures within criterion; mediation latency 43 µs vs 31.5 (F17, bisected). **Resume at 3c**: reboot, then `bash ~/r2exp/verify/phase3_timing.sh 2`; then 3d (reboot, pass 3, `verify/timing_stats.py`). The cut-off waits for the
 campaign's exit criteria.
 
 **Next session, in this order (as of 2026-10-04):**

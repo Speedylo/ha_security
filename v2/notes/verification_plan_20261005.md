@@ -359,4 +359,5 @@ so the first day serves both.
 | F14 | 3a | traceability | Minor | Result files do not record the command, profile or flags that produced them; reconstructed wrongly once (baseline without `--platform-deps`) | open |
 | F15 | 3a | B 7.24, 7.31.11 | Minor | `aiodns` share 11% today against 17% on 10-03, outside the criterion (17 ± 5); `frigate` alone 11 → 1; the design conclusion holds; report a range | open |
 | F16 | 3a | A5.1 | Minor | The 144-integration sample behind contribution 1's head figures is not kept on disk; not re-runnable as it was | open |
+| F17 | 3b | A1.18, B 7.19, N1, CS03 | **Major (a headline figure is stale)** | Mediation latency is ~42 µs on the frozen code, not §7.19's 31.5 µs (+35%; 26 clients +50%). The 09-02 code reproduces 30–32 µs on the same Pi the same minute. Bisection: +15% at 68448a6 (descriptor passing, 09-03) and +15% at 4222ab0 (the push loop, 10-04). Stale since 09-03; under 0.3% of the 3.67 ms durable record, so the headroom conclusion stands (`experiments/verify/results/phase3_timing/latency_bisect.md`) | open: report correction, Younes to decide whether to optimise |
 
