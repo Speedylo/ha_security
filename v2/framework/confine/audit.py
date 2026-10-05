@@ -299,6 +299,25 @@ class AuditLog:
         return self._append({"kind": "protocol_error", "run": run_id, "integration": identity,
                              "detail": detail})
 
+    def cutoff(self, run_id: str, identity: str, refusals: int, window: float) -> dict:
+        """A sandbox refused too often, and was stopped (`notes/flood_cutoff_prediction.md`).
+
+        One record in place of the unbounded number its refusals would otherwise have cost:
+        the refusals up to the limit are each recorded as decisions, and this says why the
+        channel then closed and who closed it.
+        """
+        return self._append({"kind": "cutoff", "run": run_id, "integration": identity,
+                             "detail": f"{refusals} refusals within {window:g} s"})
+
+    def reinstate(self, identity: str, by: str) -> dict:
+        """A cut-off integration was allowed to run again, and on whose say-so.
+
+        No run: the integration is not running when this is written. The next run record,
+        written when it registers again, is the one its decisions will name.
+        """
+        return self._append({"kind": "reinstate", "run": "", "integration": identity,
+                             "detail": f"reinstated by {by}"})
+
     # -- verifying ----------------------------------------------------------------------
 
     def verify(self, key: bytes | None = None) -> list[Break]:
@@ -355,6 +374,11 @@ class AuditLog:
         return [json.loads(line) for line in self.path.read_text().splitlines() if line.strip()]
 
 
+#: Records that are not decisions, but are kept in the mediator's memory beside them and must
+#: match one for one: a malformed frame (T4), and a cut-off and a reinstatement (the flood).
+EVENTS = ("protocol_error", "cutoff", "reinstate")
+
+
 def reconcile(memory: list[dict], records: list[dict]) -> list[str]:
     """Every way the durable record disagrees with the mediator's in-memory one, in order.
 
@@ -365,13 +389,14 @@ def reconcile(memory: list[dict], records: list[dict]) -> list[str]:
     """
     problems: list[str] = []
     runs = {r.get("run"): r for r in records if r.get("kind") == "run"}
-    durable = [r for r in records if r.get("kind") in ("decision", "protocol_error")]
+    durable = [r for r in records if r.get("kind") in ("decision", *EVENTS)]
     if len(memory) != len(durable):
         problems.append(f"{len(memory)} in memory against {len(durable)} durable")
     for index, (mem, rec) in enumerate(zip(memory, durable)):
-        if mem.get("event") == "protocol_error":
-            if rec.get("kind") != "protocol_error" or rec.get("integration") != mem.get("identity"):
-                problems.append(f"#{index}: a protocol error in memory is {rec.get('kind')} durably")
+        if mem.get("event") in EVENTS:
+            if rec.get("kind") != mem["event"] or rec.get("integration") != mem.get("identity"):
+                problems.append(f"#{index}: a {mem['event']} in memory is {rec.get('kind')} "
+                                f"durably")
             continue
         for field_mem, field_rec in (("identity", "integration"), ("op", "op"),
                                      ("allowed", "allowed"), ("clause", "clause")):

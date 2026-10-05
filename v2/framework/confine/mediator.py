@@ -185,6 +185,18 @@ MAX_COMMANDS = 32
 #: Datagrams queued for one sandbox, at most (W2 (b)). Matches the relay's `QUEUE_LIMIT`.
 MAX_DATAGRAMS = 64
 
+#: The refusal flood (`notes/flood_cutoff_prediction.md`). Every refusal is a durable record, so
+#: a sandbox that keeps asking for what it may not have spends the fsync budget every other
+#: sandbox shares. Past `FLOOD_LIMIT` refusals of its own requests within `FLOOD_WINDOW` seconds
+#: it is cut off. Chosen from data: the worst honest run measured made 12 refusals in its whole
+#: life, and W2 (a)'s flood made about 1,000 a second.
+FLOOD_LIMIT = 100
+FLOOD_WINDOW = 10.0
+
+
+class CutOff(RuntimeError):
+    """An integration that was cut off for flooding, and has not been reinstated."""
+
 
 @dataclass
 class Mediator:
@@ -216,6 +228,21 @@ class Mediator:
     _sources: dict = field(default_factory=dict)
     #: Datagrams pushed, per integration. Counted, not recorded, like `pushes_sent`.
     datagrams_pushed: dict[str, int] = field(default_factory=dict)
+    flood_limit: int = FLOOD_LIMIT
+    flood_window: float = FLOOD_WINDOW
+    #: Integrations cut off for flooding and not yet reinstated. They cannot be registered, so a
+    #: respawn cannot reset the count. Held in memory only: a restart of the mediator forgets it,
+    #: which costs at most one more `flood_limit` of records per start (the note's §3).
+    cut_off: set[str] = field(default_factory=set)
+    #: Called with the integration's name after a cut-off and after a reinstatement: the
+    #: supervisor's cue to kill the sandbox, and to start it again.
+    on_cut_off: list[Callable[[str], None]] = field(default_factory=list)
+    on_reinstate: list[Callable[[str], None]] = field(default_factory=list)
+    #: Cut-offs the house could not be told about, because (A) was unreachable. The cut-off
+    #: itself stands; only the Repairs issue is missing, and this says so.
+    undelivered: list[str] = field(default_factory=list)
+    #: When each integration's recent refusals happened, oldest first, within the window.
+    _refusals: dict[str, collections.deque] = field(default_factory=dict)
 
     def attach_platform(self, platform) -> None:
         """Put a platform that pushes — `RealPlatform`'s connection to (A) — on the selector.
@@ -228,6 +255,9 @@ class Mediator:
         platform.listeners.append(self.push)
         if hasattr(platform, "command_handlers"):
             platform.command_handlers.append(self.command)
+        if hasattr(platform, "restart_handlers"):
+            platform.restart_handlers.append(
+                lambda identity: self.reinstate(identity, "a user, from the Repairs panel"))
 
     def register(self, identity: str, channel: Channel, run_id: str = "", *,
                  component: Path | None = None, provenance: str = "author-declared") -> None:
@@ -249,6 +279,9 @@ class Mediator:
         registration, which is to say at every spawn — and only here, so a file edit never
         re-binds a sandbox that is already running.
         """
+        if identity in self.cut_off:
+            raise CutOff(f"{identity} was cut off for flooding the mediator with refused "
+                         f"requests, and has not been reinstated")
         bind = getattr(self.policy, "bind", None)
         if bind is not None and component is not None:
             bind(identity, Path(component))
@@ -467,6 +500,57 @@ class Mediator:
             | (0 if outbox.empty else selectors.EVENT_WRITE)
         self._selector.modify(channel.sock, events)
 
+    # ------------------------------------------------------------------- the refusal flood
+
+    def _refused(self, identity: str) -> bool:
+        """Count one refusal of `identity`'s own request; cut it off at the limit. True if it was."""
+        now = time.monotonic()
+        recent = self._refusals.setdefault(identity, collections.deque())
+        recent.append(now)
+        while recent and now - recent[0] > self.flood_window:
+            recent.popleft()
+        if len(recent) < self.flood_limit:
+            return False
+        self._cut_off(identity, len(recent))
+        return True
+
+    def _cut_off(self, identity: str, refusals: int) -> None:
+        """Record why, close every channel `identity` holds, and tell the house and the supervisor.
+
+        Recorded first, like every action here: the record is what lets a user, or an auditor,
+        tell a stopped integration from a crashed one.
+        """
+        detail = f"{refusals} refusals within {self.flood_window:g} s"
+        self.cut_off.add(identity)
+        self._refusals.pop(identity, None)
+        self.audit.append({"identity": identity, "event": "cutoff", "detail": detail})
+        if self.log is not None:
+            self.log.cutoff(self._runs.get(identity, ""), identity, refusals, self.flood_window)
+        for fd, (who, _channel) in list(self._by_fd.items()):
+            if who == identity:
+                self.unregister(fd)
+        notify = getattr(self._platform, "cut_off", None)
+        if notify is not None:
+            try:
+                notify(identity, detail)
+            except Exception as err:  # noqa: BLE001 — the house being down must not undo a cut-off
+                self.undelivered.append(f"{identity}: {err}")
+        for callback in self.on_cut_off:
+            callback(identity)
+
+    def reinstate(self, identity: str, by: str) -> bool:
+        """Let a cut-off integration be registered again. Recorded before it can be. False if it was not cut off."""
+        if identity not in self.cut_off:
+            return False
+        self.audit.append({"identity": identity, "event": "reinstate",
+                           "detail": f"reinstated by {by}"})
+        if self.log is not None:
+            self.log.reinstate(identity, by)
+        self.cut_off.discard(identity)
+        for callback in self.on_reinstate:
+            callback(identity)
+        return True
+
     # --------------------------------------------------------------- requests, §5.11.3
 
     def _record(self, identity: str, request: dict, decision: Decision) -> None:
@@ -515,10 +599,14 @@ class Mediator:
         # address — that refusal is recorded too, so the log never shows a grant as the last
         # word on a request that was in fact refused.
         self._record(identity, request, decision)
+        if not decision.allowed and self._refused(identity):
+            return
         if decision.allowed and decision.act is not None:
             outcome = decision.act()
             if not outcome.allowed:
                 self._record(identity, request, outcome)
+                if self._refused(identity):
+                    return
             decision = outcome
 
         if decision.allowed and request.get("op") == "entity.subscribe":
