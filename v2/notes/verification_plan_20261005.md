@@ -12,7 +12,7 @@ Three facts make one necessary.
 **Most headline figures were measured on code that has changed since.** The mediator changed on
 4 and 5 October: record-before-act, the push loop, ownership recorded after a publish, the UDP
 relay's new checks, and the flood cut-off. But the 31.5 µs mediation figure was last measured on
-24 August. The adversary suite's paired arm was last run on 2 September. Compatibility, the
+2 September. The adversary suite's paired arm was last run on 2 September. Compatibility, the
 garbage-collector attack, entity visibility, footprint and durability were last run on 3 October.
 Each of those figures is true of the code it ran on. Nothing yet shows it is true of the code the
 report now describes.
@@ -137,7 +137,7 @@ the run.
 | Entity visibility, paired (S3) | §7.14 | 2026-10-03 | 36/36 → 1/36 and 20/20 → 0/20 exactly |
 | Garbage-collector attack, paired (S1, T01, T04) | §7.15 | 2026-10-03 | unconfined reaches the token; confined finds only its own objects |
 | Adversary suite and its unconfined baseline (S2, S8, T14, T15) | §7.13, §7.22 | 2026-09-02 | each attack's outcome unchanged in both arms |
-| Mediation latency, one client and 26 | §7.19, §7.20 | **2026-08-24** | median within the stated tolerance of 31.5 µs, or a dated correction |
+| Mediation latency, one client and 26 | §7.19, §7.20 | **2026-09-02** | median within the stated tolerance of 31.5 µs, or a dated correction |
 | Durability, **on disk** | §7.20.1 | 2026-10-03 | 3.67 ms within tolerance; the 63× headroom recomputed |
 | Footprint, depth series and PSS | §7.20, §7.35 | 2026-10-03 | monotonic; within tolerance of 56.5–135.6 MB |
 | Resource bounds (S9) | §7.22 | — | each of the four bounds trips, and the gateway stays responsive |

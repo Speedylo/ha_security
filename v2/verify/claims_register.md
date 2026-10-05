@@ -49,7 +49,7 @@ same result or record dated history. So the register works in three tiers:
 | A1.15 | Five that poll an API match unconfined output: three exactly, two within a live value's movement | M | §7.31 | 10-03 | RM, RD | pending | |
 | A1.16 | Through mediated connections logged to a named host and port, over three network stacks | M | §7.31 | 10-03 | RM, RD | pending | |
 | A1.17 | One with a valid account credential that never reached the mediator | M | §7.34 | 10-03 | RM, RD (scan of records) | pending | |
-| A1.18 | Mediation costs 31.5 µs on the Pi 5 | M | §7.19 | **08-24** | RM ×3 | pending | stale code |
+| A1.18 | Mediation costs 31.5 µs on the Pi 5 | M | §7.19 | **09-02** | RM ×3 | pending | stale code |
 | A1.19 | Audit record durable before its action, 3.67 ms | M | §7.20.1, §7.36.1 | 10-03 | RM on disk ×3, X7 | pending | |
 | A1.20 | 63× clear of realistic demand | M | §7.20.1, §7.18 | 09-02 | RD | pending | |
 | A1.21 | Entities in (A) are registry entities with unconfined names and survive a restart | M | §7.37 | 10-04 | R (L2, `--restart`) | pending | |
@@ -88,7 +88,7 @@ same result or record dated history. So the register works in three tiers:
 | S7 | Three-part identity; modification, deletion, reordering each detected, chains independent | Met | `selftest_audit`, §7.32 | 10-05 | R, X8, FI (disk full) | pending | |
 | S8 | 2021 file theft succeeds unconfined, blocked confined, same host and release | Met, paired | §7.13.2 | **09-02** | RM, CT, X13, X14 | pending | stale code |
 | S9 | CPU, memory, disk exhaustion does not hang the gateway, unprivileged | Met, narrowed | §7.22 | 09 | RM | pending | |
-| N1 | Latency, memory, concurrency reported against a baseline | Met as specified | §7.19–§7.20 | **08-24** / 10-03 | RM ×3 | pending | |
+| N1 | Latency, memory, concurrency reported against a baseline | Met as specified | §7.19–§7.20 | **09-02** / 10-03 | RM ×3 | pending | |
 | N2 | Imports-clean and end-to-end reported separately, never conflated | Met | §7.12, §7.17 | — | DC | pending | |
 | N3 | Mediator unavailability specified and tested; refuses rather than degrades | Met | `preflight`, §7.16.2 | 10-05 | FI | pending | |
 
@@ -144,47 +144,66 @@ same result or record dated history. So the register works in three tiers:
 | A5.2 | Contribution 2: a confinement architecture for an unchangeable extension model, delivered and evaluated; suites pass on the target; C2 holds; C1 counted (75 comparisons, zero changes) | M | §8.3, §7.29 | R (L1), RM (C1) | pending | **F06: the suite tally in this paragraph stops at twenty-four** |
 | A5.3 | Contribution 3: a quantified trade-off; compatibility half 77 integrations, cost 0, against prior work's three; security half per-threat over two registers, five paired | M/C | §8.3 | via A1, A3; CI for the prior-work comparison | pending | |
 
-## B — Chapter 7, one row per results section (skeleton)
+## B — Chapter 7, one row per measurement
 
-Generated 2026-10-05 from the candidates and from the experiment READMEs that name each section.
-**Next:** for each row, name the exact result files, the commit they ran on, and the criterion for
-the re-run, then split any section that holds more than one independent measurement.
+Each row names the result files the claim rests on, the commit and date they ran on, and the pass
+criterion for the re-run. **The criteria are fixed here, on 2026-10-05, before any re-run**, and are
+not re-read to fit a result. Paths are under `experiments/` unless they start with `framework/` or
+`figures/`.
 
-| § | Section | Candidates | Evidence named by an experiment README | Test | Criterion | Status |
-|---|---|---|---|---|---|---|
-| 7.12 | The baseline arm (84%) | 29 | end_to_end | RM, RD | same failing set, same reasons | pending |
-| 7.13 | S8's paired baseline | 18 | adversary_baseline, gc_attack | RM, CT | each attack's outcome, both arms | pending |
-| 7.14 | S3's paired baseline | 14 | entity_visibility | RM, CT | 36/36 → 1/36; 20/20 → 0/20 | pending |
-| 7.15 | S1's baseline, the GC attack | 6 | gc_attack | RM, CT | 7 ways unconfined, 0 confined | pending |
-| 7.16 | C3 and the remaining security criteria | 19 | **none — F07** | R | suite counts | pending |
-| 7.17 | End-to-end, N2's second number | 26 | end_to_end | R (L3) | per-subject verdicts | pending |
-| 7.18 | Egress demand | 26 | egress_demand, egress_shape | RM, RD | 63× recomputed | pending |
-| 7.19 | Mediation latency at the budget | 19 | **none — F07** (mediation_latency names §5.11.4) | RM ×3 | to set before the run | pending |
-| 7.20 | Durability, S9 cost, footprint | 24 | r2_footprint, unstrip; durability has no README | RM ×3 on disk | to set | pending |
-| 7.21 | Reconciliation pass | 48 | — (reading) | DC | — | pending |
-| 7.22 | S9 wired to the manifest | 24 | **none — F07** | RM | four bounds trip | pending |
-| 7.23 | The uniform corpus | 51 | compat | RM, RD | same failing set; 92% | pending |
-| 7.24 | Egress shape | 40 | egress_shape | RM on a /16 | shares within variance | pending |
-| 7.25 | F2 and S4 closed, the egress proxy | 16 | **none — F07** | R | two sandboxes, each denied the other's host | pending |
-| 7.26 | Read-through, two registers scored | 79 | — (reading) | DC | see A3, A4 | pending |
-| 7.27 | F2 against a real API | 42 | end_to_end | R (L3) | `nordpool` 16/16 | pending |
-| 7.28 | Whole-report read-through | 12 | — (reading) | DC | — | pending |
-| 7.29 | C1 counted | 14 | **none — F07** (lives in compat's results) | RM | zero changes | pending |
-| 7.30 | T12 measured | 28 | **none — F07** (`selftest_t12`) | R, X9 | 29 checks | pending |
-| 7.31 | Three more real integrations | 123 | end_to_end, egress_shape, entity_visibility, gc_attack, r2_footprint, unstrip | R (L3), RM | per subject | pending |
-| 7.32 | The durable log engaged | 31 | **none — F07** (durability/t4) | R, RD | records reconcile | pending |
-| 7.33 | API surface, uniform corpus | 23 | compat | RM, RD | identical counts | pending |
-| 7.34 | One valid credential | 17 | end_to_end | R (L3), RD | key absent from every record | pending |
-| 7.35 | Audit directory fsync; footprint debts | 60 | bytecode_cache, r2_footprint, selftests, unstrip | RM | monotonic series | pending |
-| 7.36 | Push loop; record-before-act | 39 | push_loop, real_platform | R, X7, X10 | 25 checks; 0 of 3 undeclared | pending |
-| 7.37 | Real Home Assistant behind the mediator | 29 | real_platform | R (L2), RM | 15/15; 0.71 ms | pending |
-| 7.38 | Commands into a confined integration | 29 | **none — F07** (real_platform's step 2b) | R (L2), RM | 16 ms | pending |
-| 7.39 | Starting warm | 13 | bytecode_cache | RM | from-cache counts | pending |
-| 7.40 | Local TCP | 21 | local_tcp | R (L3) | three arms | pending |
-| 7.41 | asyncio datagrams | 15 | **none — F07** (local_tcp's w2b results) | R (L3) | `localtuya` discovers confined | pending |
-| 7.42 | OAuth refresh | 17 | oauth | R (L3) | runs 1–3, C | pending |
-| 7.43 | Review and retest | 22 | retest | — (its own regression) | — | pending |
-| 7.44 | Refusal flood | 36 | flood | R, RM, X11, X12, H | 100, one cutoff, < 1 s | pending |
+### Criterion kinds, declared before running
+
+- **E — exact.** Counts, sets of integrations, verdicts and decision tuples `(op, target, allowed,
+  clause)` must match exactly. Any difference is a finding.
+- **T — timing.** Three runs on different boots, with logs on disk. The new median must be within
+  **±20% of the reported median, or inside the run-to-run spread already recorded, whichever is
+  wider**. p99 is reported and not judged. Outside that range, the report gets a dated correction;
+  the figure is not averaged away.
+- **M — memory.** Within **±5%** of the reported value, and the depth series monotonic.
+- **L — live value.** A value fetched from a live API is compared with an unconfined fetch made in
+  the same run, within the movement §7.31 already allows (one minute's change of the quantity).
+- **V — verdict.** Each subject's outcome (loads, publishes, refused, reaches) is unchanged.
+
+| § | Claim (headline) | Result files | Ran on | Kind | Criterion for the re-run |
+|---|---|---|---|---|---|
+| 7.12 | Head corpus, both arms: 31/37 (84%) clean confined, cost 0 on the corrected instance | `compat/results/compat_baseline.json`, `compat_declared_core.json`, `rerun_20261003/` | 54e97e4, 10-03 | E | the same 31; the same 6 failing, for the same reasons, in both arms |
+| 7.13 | 2021 file theft: 2/2 canaries unconfined, 0/2 confined; another process's environ LEAKED/EMPTY; adversary split 21/6/10/1 over 38 | `adversary_baseline/results/pi5_unconfined.txt`, `pi5_confined.txt` | d6e5e7a, **09-02** | E, V | 2/2 → 0/2; LEAKED → EMPTY; every attack's outcome unchanged in both arms |
+| 7.14 | Entity visibility: 36/36 → 1/36; presence 20/20 → 0/20 | `entity_visibility/results/pi5_s3.json`, `rerun_20261003/` | 7b8f4d2, 10-03 | E | exactly those four counts |
+| 7.15 | GC attack: token reached 7 ways unconfined, 0 confined in 8,942 objects; 7 live references in the mediator | `gc_attack/results/pi5_s1.json`, `rerun_20261003/` | 7b8f4d2, 10-03 | E, V | 7 → 0; the token live in the mediator; the object count reported, not judged |
+| 7.16 | C3, F3, F4, S5, S6, S7 by suite | suite logs: `selftest_c3`, `_policy`, `_audit`, `_describe`, `_channel` (`flood/results/pi_20261005/suites/`) | 10-05 | E | each suite's internal count equal to its last log; F03 judged separately |
+| 7.17 | End to end on the stand-in: 5 subjects; the denominator is 11 of 37 | `end_to_end/results/pi5_e2e.json`, `rerun_20261003/` | e4d63e2, 10-03 | V, E | `scheduler`, `adaptive_lighting`, `thermal_comfort`, `powercalc`, `watchman`: same load and publish verdicts, same decisions |
+| 7.18 | 15 integrations (41%) need egress; none at import; demand ≈ 4/s | `egress_demand/results/pi5_import_phase.json`, `pi5_endtoend_phase.json` | 87f9a65, **09-02** | E, RD | 15 and 0 exactly; the 63× headroom recomputed from 7.18 and 7.20 |
+| 7.19 | Mediation latency: 31.5 µs median with one client; p99 +85% at 26 | `mediation_latency/results/pi5.json`, `pi5_scale.json` | 00dccc8, **09-02** | T | median within T of 31.5 µs on the tag (the mediator has changed since) |
+| 7.20 | Durable record 3,670.7 µs (3.67 ms) with `fsync`, on real storage; PSS curve | `durability/results/pi5.json`, `t4_20261003/`; `r2_footprint/results/pi5_scale.json` | 9775592 / 04a31db, 09-02 / 10-03 | T, M | 3.67 ms within T, scratch confirmed not tmpfs; memory within M |
+| 7.22 | S9 bounds: OOM, forks capped, CPU 25.1% at a 25% cap, `ENOSPC` at the disk cap; 13 of 13 | `framework/confine/selftest_resources.py` log | 10-05 suites | E, T | all four trip; CPU within ±2 points of the cap |
+| 7.23 | Uniform corpus (seed 20260902): 37/40 (92%) clean in both arms | `compat/results/uniform_baseline.json`, `uniform_con*`, `figures/hacs_corpus_manifest_uniform.json` | 54e97e4, 10-03 | E | the same 37; the same 3 failing, same reasons |
+| 7.24 / 7.31.11 | Egress shape: aiodns share 17% on a /16 (not 96%); 4 of 6 integrations' API names via aiodns | `egress_shape/results/rerun_20261003/` | 1f63011, 10-03 | E, L | the 4 of 6 exactly; the share within ±5 points, on a /16 |
+| 7.25 | Two sandboxes, each denied the other's host; audit `[True, False]` | `selftest_egress_sandboxed` log | 10-05 suites | E | the same decision pair |
+| 7.27 | `nordpool` against its real API: loads, publishes, value equals the unconfined one; 3 granted, 3 denied | `end_to_end/results/pi5_nordpool_egress.json`; `flood/results/pi_20261005/egress_nordpool.json` | 10-05 | V, E, L | 16/16 checks |
+| 7.29 | C1: 75 tree comparisons, zero source changes, zero diff lines | `compat/results/c1_baseline.json`, `c1_declared_core.json` | 10-03 | E | zero and zero, every tree |
+| 7.30 | T12: a v1-permitted request denied under v2; v2's host granted; `describe` before run | `selftest_t12` log | 10-05 suites | E | 29+ checks, unchanged count |
+| 7.31 | Three more real integrations (`smhi_brandrisk`, `regensburg_transport`, `dwd_weather`); end-to-end cost none; 17/37 and 26/37 unchanged; footprint 56.5 MB | `end_to_end/results/rerun_20261003/`, `pi5_*_egress.json`, `unstrip/results/rerun_20261003/` | e4d63e2 / 7b8f4d2, 10-03 | V, E, L, M | each subject's checks; the sets of 17 and 26 identical; memory within M |
+| 7.32 | Durable log in every harness; records reconcile, chains verify | `durability/results/t4_20261003/` | 04a31db, 10-03 | E | `reconcile` empty and chains intact in every harness's summary |
+| 7.33 | API surface, uniform corpus: 37.5% and 17.5%; no granularity decision moves | `figures/api_surface_uniform.json` | 10-03 | E | identical counts |
+| 7.34 | `pirateweather` with a valid key; key absent from every record | `end_to_end/results/t3_20261003/` | 5773839, 10-03 | V, L, E | loads and fetches; a scan of every output finds the key 0 times |
+| 7.35 | Audit directory fsync; footprint series monotonic and exact | `r2_footprint/results/item12_20261003/`, `unstrip/results/item12_20261003/` | e9ec2b1, 10-03 | M, E | monotonic; within M |
+| 7.36 | Push loop: 0 of 3 undeclared changes delivered (4 of 4 unconfined); 10.9 µs per delivery; record before act | `push_loop/results/w1_step1_20261004/`, `prefix_20261004/` | 4222ab0, 10-04 | E, T | 0 of 3 exactly, with the mutation; 10.9 µs within T |
+| 7.37 | Against (A): 15 of 15 registry rows, survive a restart; push 0.71 ms median, 1.57 ms worst | `real_platform/results/w1_step2_20261004/`, `w1_final_20261004/` | 0187f5e, 10-04 | E, T | 15 of 15 before and after a restart; median within T |
+| 7.38 | A user's command reaches the integration in 16 ms; no sandbox fails in 2 ms | `real_platform/results/w1_step2b_20261004/` | 0187f5e, 10-04 | T, V | within T; the refusal cases unchanged |
+| 7.39 | Bytecode: `powercalc`'s deps 0/84 and component 0/80 from cache; with compiled bytecode its time to report 2.47 → 1.87 s | `bytecode_cache/results/w2c_20261004/` | 4bb3f12, 10-04 | E, T | the from-cache counts exactly; times within T |
+| 7.40 | `midea_ac_lan` via local TCP: loads confined; device sees only the host; nothing undeclared reaches it | `local_tcp/results/w2a_20261004/` | 3a05e8f, 10-04 | V, E | three arms' verdicts and the device's log |
+| 7.41 | `localtuya` asyncio discovery confined equals unconfined; 2 decisions | `local_tcp/results/w2b_20261004/` | cd26992, 10-04 | V, E | the same devices discovered; 2 listens |
+| 7.42 | `trakt_tv` refresh inside the sandbox; spent token refused 400; control refused | `oauth/results/w2d_20261004/` | 9040671, 10-04 | V | runs 1, 3 and C as before (run 2 consumes no fresh token) |
+| 7.43 | The retest's table | `retest/results/review_20261004/` | 9e49522, 10-04 | — | superseded by this campaign's own regression |
+| 7.44 | Flood: 100 refusals, one cutoff, 0.81 s on disk; neighbour 235 answers, worst 26.1 ms; Repairs within 302 ms | `flood/results/pi_20261005/` | 2056e92, 10-05 | E, T | 100 and one exactly; under 1 s; the Repairs path end to end |
+
+**Reading-only sections** (§7.21, §7.26, §7.28) make claims about the report itself. They are checked
+by the document-consistency phase (plan §7.9), not by a re-run.
+
+**Base evidence outside Chapter 7** that these rows depend on, and that also re-runs: the
+`selftests/results/final_20261003/` suite logs (superseded by each campaign run), and
+`host_isolation_probe`, `cgroup_placement` and `base_component` from August, which Chapter 5 and 6's
+design claims rest on (Tier C).
 
 ## Flags found while building the register
 
