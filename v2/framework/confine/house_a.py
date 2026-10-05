@@ -51,6 +51,19 @@ HASS = Path.home() / "r2exp" / "ha314" / "bin" / "hass"
 #: `frontend` is the one it treats as critical, and if it fails to load Home Assistant enters
 #: recovery mode — which disables every custom integration, the bridge included. Found on the
 #: first start, 2026-10-04 (`notes/w1_step2_real_platform_prediction.md` §5).
+#:
+#: **What is in it, and how it is built** (recorded 2026-10-05; until then nothing said). The
+#: frontend, and the pinned requirements of the components the frontend's `get_services` imports
+#: (`helpers/service.py`'s `_base_components`, walked through their manifests' dependencies).
+#: Without those, a browser's first `get_services` failed on `No module named 'hassil'` and the
+#: interface stayed on "Loading" forever — found by Younes testing the refusal flood by hand. API
+#: clients never send that command, so no suite saw it. `--no-deps` throughout, so nothing here
+#: shadows a package `ha314` already has:
+#:
+#:     uv pip install --python ~/r2exp/ha314/bin/python --target ~/r2exp/houseA-deps --no-deps \
+#:         home-assistant-frontend==20260729.7 hassil==3.11.0 home-assistant-intents==2026.7.30 \
+#:         unicode-rbnf==2.4.0 PyTurboJPEG==1.8.3 numpy==2.3.2 ha-ffmpeg==3.2.2 mutagen==1.48.1 \
+#:         pymicro-vad==1.0.1 pyspeex-noise==1.0.2 async-timeout==4.0.3
 DEPS = Path.home() / "r2exp" / "houseA-deps"
 HOST, PORT = "127.0.0.1", 8123
 BASE = f"http://{HOST}:{PORT}"
