@@ -144,6 +144,48 @@ same result or record dated history. So the register works in three tiers:
 | A5.2 | Contribution 2: a confinement architecture for an unchangeable extension model, delivered and evaluated; suites pass on the target; C2 holds; C1 counted (75 comparisons, zero changes) | M | §8.3, §7.29 | R (L1), RM (C1) | pending | **F06: the suite tally in this paragraph stops at twenty-four** |
 | A5.3 | Contribution 3: a quantified trade-off; compatibility half 77 integrations, cost 0, against prior work's three; security half per-threat over two registers, five paired | M/C | §8.3 | via A1, A3; CI for the prior-work comparison | pending | |
 
+## B — Chapter 7, one row per results section (skeleton)
+
+Generated 2026-10-05 from the candidates and from the experiment READMEs that name each section.
+**Next:** for each row, name the exact result files, the commit they ran on, and the criterion for
+the re-run, then split any section that holds more than one independent measurement.
+
+| § | Section | Candidates | Evidence named by an experiment README | Test | Criterion | Status |
+|---|---|---|---|---|---|---|
+| 7.12 | The baseline arm (84%) | 29 | end_to_end | RM, RD | same failing set, same reasons | pending |
+| 7.13 | S8's paired baseline | 18 | adversary_baseline, gc_attack | RM, CT | each attack's outcome, both arms | pending |
+| 7.14 | S3's paired baseline | 14 | entity_visibility | RM, CT | 36/36 → 1/36; 20/20 → 0/20 | pending |
+| 7.15 | S1's baseline, the GC attack | 6 | gc_attack | RM, CT | 7 ways unconfined, 0 confined | pending |
+| 7.16 | C3 and the remaining security criteria | 19 | **none — F07** | R | suite counts | pending |
+| 7.17 | End-to-end, N2's second number | 26 | end_to_end | R (L3) | per-subject verdicts | pending |
+| 7.18 | Egress demand | 26 | egress_demand, egress_shape | RM, RD | 63× recomputed | pending |
+| 7.19 | Mediation latency at the budget | 19 | **none — F07** (mediation_latency names §5.11.4) | RM ×3 | to set before the run | pending |
+| 7.20 | Durability, S9 cost, footprint | 24 | r2_footprint, unstrip; durability has no README | RM ×3 on disk | to set | pending |
+| 7.21 | Reconciliation pass | 48 | — (reading) | DC | — | pending |
+| 7.22 | S9 wired to the manifest | 24 | **none — F07** | RM | four bounds trip | pending |
+| 7.23 | The uniform corpus | 51 | compat | RM, RD | same failing set; 92% | pending |
+| 7.24 | Egress shape | 40 | egress_shape | RM on a /16 | shares within variance | pending |
+| 7.25 | F2 and S4 closed, the egress proxy | 16 | **none — F07** | R | two sandboxes, each denied the other's host | pending |
+| 7.26 | Read-through, two registers scored | 79 | — (reading) | DC | see A3, A4 | pending |
+| 7.27 | F2 against a real API | 42 | end_to_end | R (L3) | `nordpool` 16/16 | pending |
+| 7.28 | Whole-report read-through | 12 | — (reading) | DC | — | pending |
+| 7.29 | C1 counted | 14 | **none — F07** (lives in compat's results) | RM | zero changes | pending |
+| 7.30 | T12 measured | 28 | **none — F07** (`selftest_t12`) | R, X9 | 29 checks | pending |
+| 7.31 | Three more real integrations | 123 | end_to_end, egress_shape, entity_visibility, gc_attack, r2_footprint, unstrip | R (L3), RM | per subject | pending |
+| 7.32 | The durable log engaged | 31 | **none — F07** (durability/t4) | R, RD | records reconcile | pending |
+| 7.33 | API surface, uniform corpus | 23 | compat | RM, RD | identical counts | pending |
+| 7.34 | One valid credential | 17 | end_to_end | R (L3), RD | key absent from every record | pending |
+| 7.35 | Audit directory fsync; footprint debts | 60 | bytecode_cache, r2_footprint, selftests, unstrip | RM | monotonic series | pending |
+| 7.36 | Push loop; record-before-act | 39 | push_loop, real_platform | R, X7, X10 | 25 checks; 0 of 3 undeclared | pending |
+| 7.37 | Real Home Assistant behind the mediator | 29 | real_platform | R (L2), RM | 15/15; 0.71 ms | pending |
+| 7.38 | Commands into a confined integration | 29 | **none — F07** (real_platform's step 2b) | R (L2), RM | 16 ms | pending |
+| 7.39 | Starting warm | 13 | bytecode_cache | RM | from-cache counts | pending |
+| 7.40 | Local TCP | 21 | local_tcp | R (L3) | three arms | pending |
+| 7.41 | asyncio datagrams | 15 | **none — F07** (local_tcp's w2b results) | R (L3) | `localtuya` discovers confined | pending |
+| 7.42 | OAuth refresh | 17 | oauth | R (L3) | runs 1–3, C | pending |
+| 7.43 | Review and retest | 22 | retest | — (its own regression) | — | pending |
+| 7.44 | Refusal flood | 36 | flood | R, RM, X11, X12, H | 100, one cutoff, < 1 s | pending |
+
 ## Flags found while building the register
 
 These are findings before any test has run. They also go into the findings log in
@@ -156,4 +198,5 @@ These are findings before any test has run. They also go into the findings log i
 | F03 | §7.5 F3 | Claims every decision names a clause and that a clause-less decision is unconstructible; the mediator builds refusals with `clause=None` (`deny_everything`; `command` with no sandbox, a non-owner, a full queue). **Checked 2026-10-05 against every committed record: 0 of 467 durable decisions lack a clause**, so no run on file exercised those paths durably. To test: exercise each path with a durable log and read the records; then judge whether F3's wording holds, needs narrowing to the manifest decision path, or the code needs a rule name in `clause` | Potentially Major, open |
 | F04 | §7.26.4 CM-T7 | T19 maps to CM-T7, so the "partial" row predates it | Minor |
 | F06 | §8.3, contribution 2 | The running tally of suites stops at twenty-four; the count is twenty-six | Minor |
+| F07 | Experiment READMEs | Nine results sections (§7.16, 7.19, 7.22, 7.25, 7.29, 7.30, 7.32, 7.38, 7.41) are named by no experiment README, so a reader cannot follow those figures from the claim to the data. `durability/` has no README at all | Minor (traceability) |
 | F05 | Experiments | The adversary pair (§7.13) and mediation latency (§7.19) were last run before the mediator's October changes | Re-measure (plan Phase 3) |
