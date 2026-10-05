@@ -5,7 +5,17 @@
 **Engineering W1 and W2 are complete, and the day's work has been reviewed and retested (§7.43).**
 Everything is committed; all 25 suites pass on the Pi.
 
-**Next session, in this order:**
+**2026-10-05: the refusal flood is DECIDED and BUILT, not yet run on the Pi** (the Pi was unreachable).
+Younes chose the cut-off, surfaced in Home Assistant's Repairs panel with one safe "restart" button,
+because the household user is not assumed to be technical. Predictions: `notes/flood_cutoff_prediction.md`
+(274132f, before any code). Built: c16a151 (mediator window 100/10 s from the recorded runs, `cutoff` /
+`reinstate` records, sticky until reinstated; `selftest_flood` 22/22 locally) and 354dc5d (bridge Repairs
+issue + fix flow, `RealPlatform` routing, `supervise.py`, `experiments/flood/demo_flood`, F7 in
+`selftest_real_platform`). **Next:** on the Pi, sync, `house_a up --fresh`, all suites + `nordpool` (F6),
+`selftest_real_platform` (F7), the supervisor run, then Younes's manual test (`experiments/flood/README.md`);
+then §7.44, T19 in Chapter 4, dated pointers at §8.6.3 #14 / §8.7 #15; then the cut-off.
+
+**Next session, in this order (as of 2026-10-04):**
 1. **The refusal-flood decision** (§8.6.3 #14, §8.7 #15). A sandbox looping on refused requests makes
    the mediator write a durable record for each one (463,631 records, 289 MB, in 7.5 minutes,
    measured in W2 (a)). Recommended: **cut off**: past a refusal rate (e.g. 50 in 10 s), close that
