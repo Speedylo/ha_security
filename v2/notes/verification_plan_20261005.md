@@ -325,7 +325,15 @@ so the first day serves both.
 
 ## 11. Findings log
 
-*(Empty until the campaign starts.)*
+*Phase 0 began 2026-10-05; the register's flags are recorded here as they are raised. Detail in
+`verify/claims_register.md`.*
 
 | ID | Phase | Claim | Severity | Evidence | Resolution |
 |---|---|---|---|---|---|
+| F01 | 0 | A1.13–14 | Minor | Abstract says ten integrations end to end; thirteen since §7.40–§7.42 | open |
+| F02 | 0 | A1.22 | Minor | "Within a millisecond" holds for the median (0.71 ms), not the worst (1.57 ms) | open |
+| F03 | 0 | F3 | Potentially Major | Clause-less refusals are constructible; 0 of 467 committed records lack a clause, but those paths were never exercised durably | open, test in Phase 4 |
+| F04 | 0 | CM-T7 | Minor | T19 now maps to CM-T7; the row predates it | open |
+| F05 | 0 | A1.18, S8, T14, T15 | Re-measure | Adversary pair and mediation latency last run before the October changes | Phase 3 |
+| F06 | 0 | A5.2 | Minor | Contribution 2's suite tally stops at twenty-four | open |
+| F07 | 0 | Tier B | Minor | Nine results sections named by no experiment README; `durability/` has none | open |
