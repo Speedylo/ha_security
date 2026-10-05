@@ -1,0 +1,14 @@
+real_platform_restart exit=127 seconds=0
+drive_demo exit=0 seconds=1
+e2e_standin exit=127 seconds=0
+e2e_real_thermal exit=127 seconds=0
+e2e_real_adaptive exit=127 seconds=0
+egress_nordpool exit=127 seconds=0
+egress_dwd_weather exit=127 seconds=0
+egress_pirateweather exit=127 seconds=0
+egress_smhi_brandrisk exit=127 seconds=0
+egress_regensburg_transport exit=127 seconds=0
+local_midea_ac_lan exit=127 seconds=0
+local_localtuya exit=127 seconds=0
+oauth_trakt exit=127 seconds=0
+ALLDONE

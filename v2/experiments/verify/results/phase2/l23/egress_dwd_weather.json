@@ -1,0 +1,1611 @@
+{
+  "integration": "dwd_weather",
+  "egress": [
+    "opendata.dwd.de:443"
+  ],
+  "partial": null,
+  "flow_input": {
+    "station_id": "10865"
+  },
+  "select_first": null,
+  "settle_seconds": 60.0,
+  "unreachable_before_run": {},
+  "reports": {
+    "unconfined": {
+      "domain": "dwd_weather",
+      "arm": "unconfined",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "ff02::c%3",
+          "port": 1900,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "fe80::9ba0:68cd:7165:a581%3",
+          "port": 0,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "239.255.255.250",
+          "port": 1900,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "10.126.83.113",
+          "port": 0,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "opendata.dwd.de",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "141.38.2.164",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "resolve",
+          "host": "www.dwd.de",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "141.38.3.62",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "104.26.5.238",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "resolve",
+          "host": "192.168.1.128",
+          "port": null,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "10.255.255.255",
+          "port": 1,
+          "phase": "integration"
+        }
+      ],
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "setup_errors": [],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "entity_type"
+            ]
+          },
+          {
+            "step": "station_select",
+            "sent": [
+              "custom_location",
+              "station_id"
+            ]
+          },
+          {
+            "step": "station_configure_report",
+            "sent": [
+              "data_type"
+            ]
+          },
+          {
+            "step": "station_configure",
+            "sent": [
+              "additional_forecast_attributes",
+              "daily_temp_high_precision",
+              "download_precipitation_sensors",
+              "hourly_update",
+              "interpolate",
+              "sensor_forecast_steps",
+              "station_name",
+              "wind_direction_type"
+            ]
+          }
+        ],
+        "type": "create_entry",
+        "errors": null,
+        "reason": null
+      },
+      "entries": [
+        {
+          "title": "10865: Muenchen Stadt",
+          "state": "ConfigEntryState.LOADED",
+          "loaded": true
+        }
+      ],
+      "loaded": true,
+      "own_entities": [
+        "sensor.muenchen_stadt_time_forecast_values",
+        "sensor.muenchen_stadt_time_measured_values",
+        "sensor.sun_next_dawn",
+        "sensor.sun_next_dusk",
+        "sensor.sun_next_midnight",
+        "sensor.sun_next_noon",
+        "sensor.sun_next_rising",
+        "sensor.sun_next_setting",
+        "sun.sun",
+        "weather.muenchen_stadt",
+        "zone.home"
+      ],
+      "published": [
+        {
+          "entity": "sensor.muenchen_stadt_time_forecast_values",
+          "state": "2026-10-05 15:00:00+00:00",
+          "platform": "dwd_weather"
+        },
+        {
+          "entity": "sensor.muenchen_stadt_time_measured_values",
+          "state": "2026-10-05T19:00:00+00:00",
+          "platform": "dwd_weather"
+        },
+        {
+          "entity": "sensor.sun_next_dawn",
+          "state": "2026-10-06T05:35:32+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_dusk",
+          "state": "2026-10-06T18:00:39+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_midnight",
+          "state": "2026-10-05T23:48:36+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_noon",
+          "state": "2026-10-06T11:48:44+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_rising",
+          "state": "2026-10-06T06:09:31+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_setting",
+          "state": "2026-10-06T17:26:46+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sun.sun",
+          "state": "below_horizon",
+          "platform": null
+        },
+        {
+          "entity": "weather.muenchen_stadt",
+          "state": "clear-night",
+          "platform": "dwd_weather"
+        },
+        {
+          "entity": "zone.home",
+          "state": "0",
+          "platform": null
+        }
+      ],
+      "probe": null,
+      "timed_out": false
+    },
+    "confined_declared": {
+      "domain": "dwd_weather",
+      "egress": {
+        "installed": true,
+        "resolved": [
+          "opendata.dwd.de",
+          "www.dwd.de"
+        ],
+        "connected": [
+          [
+            "opendata.dwd.de",
+            443
+          ],
+          [
+            "opendata.dwd.de",
+            443
+          ],
+          [
+            "opendata.dwd.de",
+            443
+          ]
+        ],
+        "datagrams_delivered": 0,
+        "refused_listens": []
+      },
+      "setup_errors": [],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "entity_type"
+            ]
+          },
+          {
+            "step": "station_select",
+            "sent": [
+              "custom_location",
+              "station_id"
+            ]
+          },
+          {
+            "step": "station_configure_report",
+            "sent": [
+              "data_type"
+            ]
+          },
+          {
+            "step": "station_configure",
+            "sent": [
+              "additional_forecast_attributes",
+              "daily_temp_high_precision",
+              "download_precipitation_sensors",
+              "hourly_update",
+              "interpolate",
+              "sensor_forecast_steps",
+              "station_name",
+              "wind_direction_type"
+            ]
+          }
+        ],
+        "type": "create_entry",
+        "errors": null,
+        "reason": null
+      },
+      "entries": [
+        {
+          "title": "10865: Muenchen Stadt",
+          "state": "ConfigEntryState.LOADED",
+          "loaded": true
+        }
+      ],
+      "loaded": true,
+      "local_entities": [
+        "sensor.muenchen_stadt_time_forecast_values",
+        "sensor.muenchen_stadt_time_measured_values",
+        "weather.muenchen_stadt"
+      ],
+      "mirrored": [],
+      "published": [
+        {
+          "entity": "weather.muenchen_stadt",
+          "state": "clear-night",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.muenchen_stadt_time_forecast_values",
+          "state": "2026-10-05 15:00:00+00:00",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.muenchen_stadt_time_measured_values",
+          "state": "2026-10-05T19:00:00+00:00",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "refused": [],
+      "push": {
+        "subscribed": [],
+        "received": [],
+        "unexpected": [],
+        "commands": []
+      },
+      "probe": null,
+      "arm": "confined_declared",
+      "timed_out": false,
+      "data_inspection": null,
+      "install": {
+        "ok": true,
+        "installed": [
+          "acme",
+          "aiodhcpwatcher",
+          "aiodiscover",
+          "aiodns",
+          "aiohappyeyeballs",
+          "aiohasupervisor",
+          "aiohttp",
+          "aiooui",
+          "aiosignal",
+          "aiousbwatcher",
+          "annotated_types",
+          "anyio",
+          "arrow",
+          "async_interrupt",
+          "async_timeout",
+          "async_upnp_client",
+          "asyncinotify",
+          "atomicwrites_homeassistant",
+          "attrs",
+          "av",
+          "awesomeversion",
+          "beautifulsoup4",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "boto3",
+          "botocore",
+          "btsocket",
+          "cached_ipaddress",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "ciso8601",
+          "cronsim",
+          "cryptography",
+          "dacite",
+          "dbus_fast",
+          "defusedxml",
+          "distro",
+          "envs",
+          "file_read_backwards",
+          "fnv_hash_fast",
+          "fnvhash",
+          "frozenlist",
+          "go2rtc_client",
+          "greenlet",
+          "grpcio",
+          "h11",
+          "ha_ffmpeg",
+          "habluetooth",
+          "hass_nabucasa",
+          "hassil",
+          "home_assistant_frontend",
+          "home_assistant_intents",
+          "httpcore",
+          "httpx",
+          "icmplib",
+          "idna",
+          "ifaddr",
+          "jdcal",
+          "jiter",
+          "jmespath",
+          "josepy",
+          "lxml",
+          "markdownify",
+          "mashumaro",
+          "matter_ble_proxy",
+          "matter_python_client",
+          "multidict",
+          "mutagen",
+          "numpy",
+          "openai",
+          "orjson",
+          "pillow",
+          "propcache",
+          "psutil",
+          "psutil_home_assistant",
+          "pycares",
+          "pycognito",
+          "pycparser",
+          "pycryptodome",
+          "pydantic",
+          "pydantic_core",
+          "pyjwt",
+          "pymicro_vad",
+          "pynacl",
+          "pyopenssl",
+          "pyrfc3339",
+          "pyric",
+          "pyroute2",
+          "pyspeex_noise",
+          "python_dateutil",
+          "python_didl_lite",
+          "pyturbojpeg",
+          "pytz",
+          "pyyaml",
+          "regex",
+          "requests",
+          "s3transfer",
+          "scapy",
+          "securetar",
+          "sentence_stream",
+          "serialx",
+          "simple_dwd_weatherforecast",
+          "six",
+          "sniffio",
+          "snitun",
+          "soupsieve",
+          "sqlalchemy",
+          "stream_inflate",
+          "stream_unzip",
+          "suntimes",
+          "tqdm",
+          "typing_extensions",
+          "typing_inspection",
+          "tzdata",
+          "tzlocal",
+          "uart_devices",
+          "unicode_rbnf",
+          "urllib3",
+          "usb_devices",
+          "voluptuous",
+          "webrtc_models",
+          "yarl",
+          "zeroconf"
+        ],
+        "resolved": [
+          "acme-5.4.0",
+          "aiodhcpwatcher-1.2.7",
+          "aiodiscover-3.3.2",
+          "aiodns-4.0.4",
+          "aiohappyeyeballs-2.7.1",
+          "aiohasupervisor-0.6.0",
+          "aiohttp-3.14.4",
+          "aiooui-0.1.11",
+          "aiosignal-1.4.0",
+          "aiousbwatcher-1.1.2",
+          "annotated_types-0.8.0",
+          "anyio-4.15.1",
+          "arrow-1.4.0",
+          "async_interrupt-1.2.2",
+          "async_timeout-5.0.1",
+          "async_upnp_client-0.47.1",
+          "asyncinotify-4.4.4",
+          "atomicwrites_homeassistant-1.4.1",
+          "attrs-26.1.0",
+          "av-17.0.1",
+          "awesomeversion-25.8.0",
+          "beautifulsoup4-4.15.0",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "boto3-1.43.108",
+          "botocore-1.43.108",
+          "btsocket-0.3.0",
+          "cached_ipaddress-1.1.2",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.2",
+          "ciso8601-2.3.3",
+          "cronsim-2.7",
+          "cryptography-50.0.2",
+          "dacite-1.9.2",
+          "dbus_fast-5.0.22",
+          "defusedxml-0.7.1",
+          "distro-1.9.0",
+          "envs-1.4",
+          "file_read_backwards-2.0.0",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "frozenlist-1.8.0",
+          "go2rtc_client-0.4.0",
+          "greenlet-3.5.6",
+          "grpcio-1.84.0",
+          "h11-0.16.0",
+          "ha_ffmpeg-3.2.2",
+          "habluetooth-6.26.5",
+          "hass_nabucasa-2.2.0",
+          "hassil-3.11.0",
+          "home_assistant_frontend-20260729.7",
+          "home_assistant_intents-2026.7.30",
+          "httpcore-1.0.9",
+          "httpx-0.28.1",
+          "icmplib-3.0.4",
+          "idna-3.20",
+          "ifaddr-0.2.0",
+          "jdcal-1.4.1",
+          "jiter-0.17.0",
+          "jmespath-1.1.0",
+          "josepy-2.2.0",
+          "lxml-6.1.3",
+          "markdownify-1.2.3",
+          "mashumaro-3.23",
+          "matter_ble_proxy-0.7.1",
+          "matter_python_client-1.3.0",
+          "multidict-6.9.1",
+          "mutagen-1.48.1",
+          "numpy-2.3.2",
+          "openai-2.45.0",
+          "orjson-3.12.0",
+          "pillow-12.3.0",
+          "propcache-0.5.4",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pycares-5.1.0",
+          "pycognito-2024.5.1",
+          "pycparser-3.0",
+          "pycryptodome-3.24.0",
+          "pydantic-2.13.5",
+          "pydantic_core-2.46.5",
+          "pyjwt-2.15.1",
+          "pymicro_vad-1.0.1",
+          "pynacl-1.6.2",
+          "pyopenssl-26.4.0",
+          "pyrfc3339-2.1.0",
+          "pyric-0.1.6.3",
+          "pyroute2-0.9.6",
+          "pyspeex_noise-1.0.2",
+          "python_dateutil-2.9.0.post0",
+          "python_didl_lite-1.5.1",
+          "pyturbojpeg-1.8.3",
+          "pytz-2026.5",
+          "pyyaml-6.0.3",
+          "regex-2026.9.29",
+          "requests-2.34.2",
+          "s3transfer-0.19.2",
+          "scapy-2.8.0",
+          "securetar-2026.4.1",
+          "sentence_stream-1.3.0",
+          "serialx-1.8.2",
+          "simple_dwd_weatherforecast-3.5.0",
+          "six-1.17.0",
+          "sniffio-1.3.1",
+          "snitun-0.45.1",
+          "soupsieve-2.10",
+          "sqlalchemy-2.0.51",
+          "stream_inflate-0.0.43",
+          "stream_unzip-0.0.101",
+          "suntimes-1.1.2",
+          "tqdm-4.70.1",
+          "typing_extensions-4.16.0",
+          "typing_inspection-0.4.4",
+          "tzdata-2026.5",
+          "tzlocal-5.4.4",
+          "uart_devices-0.1.1",
+          "unicode_rbnf-2.4.0",
+          "urllib3-2.8.0",
+          "usb_devices-0.5.1",
+          "voluptuous-0.16.0",
+          "webrtc_models-0.3.0",
+          "yarl-1.25.1",
+          "zeroconf-0.150.0"
+        ]
+      },
+      "audit": [
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "logged": [
+        {
+          "op": "network.egress",
+          "target": "opendata.dwd.de:443",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "op": "network.egress",
+          "target": "www.dwd.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata.dwd.de:443",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata.dwd.de:443",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "op": "entity.publish",
+          "target": "weather.muenchen_stadt",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.muenchen_stadt_time_forecast_values",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.muenchen_stadt_time_measured_values",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "audit_breaks": [],
+      "reconcile": [],
+      "durable_raw": [
+        {
+          "hash": "96cc76c5c5eff128e951a182e4c7e8138aff4bdde2ab333c055690b180eacbd5",
+          "identity": {
+            "composite": "c3bda1c400b496562dea2cfa196f6c1b3f5da073796daef59fb7db29d2553867",
+            "domain": "dwd_weather",
+            "manifest": "807bdaea316e6ed645c1166f2ec742079286e2c427e03c2b163cb8367aab2517",
+            "requirements": "a1dfbcbc8f0b0e705ca59c509f12633123e25a97d42b5626c8e76bf692c95a96",
+            "source": "ad312cb6bbd66bf9a0f98d4a4b2a3a15e6c7d39fcca3e1e467638ab29bba382c"
+          },
+          "integration": "dwd_weather",
+          "kind": "run",
+          "mac": "8d77c4f7d6bde21025b5392fed5379bc251cacb4bc0c9de47dea346a0fa4f504",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "prev_mac": "0000000000000000000000000000000000000000000000000000000000000000",
+          "provenance": "author-declared",
+          "run": "dd5af5deb43c7b4f",
+          "seq": 0,
+          "time": 1791230310.8229892
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "/permissions/network/egress/0",
+          "hash": "f75ef28951dffb2fe610a47185736b914a2798934e2089ac65d7a76f03038ca6",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "f2fc46977725cc599c631c36e9e8a964121bedc84195765a758489447a912126",
+          "op": "network.egress",
+          "prev_hash": "96cc76c5c5eff128e951a182e4c7e8138aff4bdde2ab333c055690b180eacbd5",
+          "prev_mac": "8d77c4f7d6bde21025b5392fed5379bc251cacb4bc0c9de47dea346a0fa4f504",
+          "reason": "declared",
+          "requested": {
+            "host": "opendata.dwd.de",
+            "port": 443
+          },
+          "run": "dd5af5deb43c7b4f",
+          "seq": 1,
+          "target": "opendata.dwd.de:443",
+          "time": 1791230314.3258808
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "a78675fa9572c6fa15fedcd51e639cea28b29a41cf0e21923717e4f948e17170",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "2b5f821a5990f4fc5735f3949d0bad7945ca1a91eb5ada745436ec1cccb32c15",
+          "op": "network.egress",
+          "prev_hash": "f75ef28951dffb2fe610a47185736b914a2798934e2089ac65d7a76f03038ca6",
+          "prev_mac": "f2fc46977725cc599c631c36e9e8a964121bedc84195765a758489447a912126",
+          "reason": "'www.dwd.de:443' matches no clause at /permissions/network/egress",
+          "requested": {
+            "host": "www.dwd.de",
+            "port": 443
+          },
+          "run": "dd5af5deb43c7b4f",
+          "seq": 2,
+          "target": "www.dwd.de:443",
+          "time": 1791230314.7920215
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "/permissions/network/egress/0",
+          "hash": "53daa37a49cb69ab632e35ffd512e159e40a5b29db0ecf92e1ee4f60e4ed5ffc",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "89f513eeb209f68c6a8541dc893e87c754b773e40a3f2c8f63188bba7650eb26",
+          "op": "network.egress",
+          "prev_hash": "a78675fa9572c6fa15fedcd51e639cea28b29a41cf0e21923717e4f948e17170",
+          "prev_mac": "2b5f821a5990f4fc5735f3949d0bad7945ca1a91eb5ada745436ec1cccb32c15",
+          "reason": "declared",
+          "requested": {
+            "host": "opendata.dwd.de",
+            "port": 443
+          },
+          "run": "dd5af5deb43c7b4f",
+          "seq": 3,
+          "target": "opendata.dwd.de:443",
+          "time": 1791230314.8021877
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "/permissions/network/egress/0",
+          "hash": "0e94e2fb837a388e97da4b89e1e74d076e131628db7e2666436c16c25879d0ac",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "a67918b4aa27bd812b80ce0d15fe968ed8eda1eed8acb3a7951d8489ed20c4a9",
+          "op": "network.egress",
+          "prev_hash": "53daa37a49cb69ab632e35ffd512e159e40a5b29db0ecf92e1ee4f60e4ed5ffc",
+          "prev_mac": "89f513eeb209f68c6a8541dc893e87c754b773e40a3f2c8f63188bba7650eb26",
+          "reason": "declared",
+          "requested": {
+            "host": "opendata.dwd.de",
+            "port": 443
+          },
+          "run": "dd5af5deb43c7b4f",
+          "seq": 4,
+          "target": "opendata.dwd.de:443",
+          "time": 1791230315.363645
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "44dce98803e75f5dbc55ca04d3a5c485b1ce8487bc6a63a8c8bee8c14da6011d",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "7aa0d95a194765b8e0a393b83edd504a3e194a0b0b48221e18d6e646e8978d80",
+          "op": "entity.publish",
+          "prev_hash": "0e94e2fb837a388e97da4b89e1e74d076e131628db7e2666436c16c25879d0ac",
+          "prev_mac": "a67918b4aa27bd812b80ce0d15fe968ed8eda1eed8acb3a7951d8489ed20c4a9",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "weather.muenchen_stadt"
+          },
+          "run": "dd5af5deb43c7b4f",
+          "seq": 5,
+          "target": "weather.muenchen_stadt",
+          "time": 1791230315.8837721
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "f728c778c27b912b60f5ca6c35d9c87563e7eb5bef405c946dbc754133351a92",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "802a045d70b3ae332026220a0b25941173d5e2baf099df42b74ce032ef5d666c",
+          "op": "entity.publish",
+          "prev_hash": "44dce98803e75f5dbc55ca04d3a5c485b1ce8487bc6a63a8c8bee8c14da6011d",
+          "prev_mac": "7aa0d95a194765b8e0a393b83edd504a3e194a0b0b48221e18d6e646e8978d80",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.muenchen_stadt_time_forecast_values"
+          },
+          "run": "dd5af5deb43c7b4f",
+          "seq": 6,
+          "target": "sensor.muenchen_stadt_time_forecast_values",
+          "time": 1791230315.9002771
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "e96916a68c01acfcd2a584515da2020681d20fec63d3e9184cc678681f594164",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "cb06beeb205c96492a70a1c61e4150a1078ba7794c93c65212526c0484a6aba2",
+          "op": "entity.publish",
+          "prev_hash": "f728c778c27b912b60f5ca6c35d9c87563e7eb5bef405c946dbc754133351a92",
+          "prev_mac": "802a045d70b3ae332026220a0b25941173d5e2baf099df42b74ce032ef5d666c",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.muenchen_stadt_time_measured_values"
+          },
+          "run": "dd5af5deb43c7b4f",
+          "seq": 7,
+          "target": "sensor.muenchen_stadt_time_measured_values",
+          "time": 1791230315.901737
+        }
+      ],
+      "oom_kill": 0
+    },
+    "confined_undeclared": {
+      "domain": "dwd_weather",
+      "egress": {
+        "installed": true,
+        "resolved": [
+          "opendata.dwd.de",
+          "www.dwd.de"
+        ],
+        "connected": [],
+        "datagrams_delivered": 0,
+        "refused_listens": []
+      },
+      "setup_errors": [
+        "custom_components.dwd_weather: Unexpected error fetching DWD Weather Coordinator for 10865 data || ad_small_kml(stationid)\n         ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^\n  File \"/sandbox/deps/simple_dwd_weatherforecast/dwdforecast.py\", line 1334, in download_small_kml\n    raise ForecastDownloadError(\n        f\"Failed to download forecast data for station {stationid}.\"\n    ) from error\nsimple_dwd_weatherforecast.dwdforecast.ForecastDownloadError: Failed to download forecast data for station 10865.\n"
+      ],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "entity_type"
+            ]
+          },
+          {
+            "step": "station_select",
+            "sent": [
+              "custom_location",
+              "station_id"
+            ]
+          },
+          {
+            "step": "station_configure_report",
+            "sent": [
+              "data_type"
+            ]
+          },
+          {
+            "step": "station_configure",
+            "sent": [
+              "additional_forecast_attributes",
+              "daily_temp_high_precision",
+              "download_precipitation_sensors",
+              "hourly_update",
+              "interpolate",
+              "sensor_forecast_steps",
+              "station_name",
+              "wind_direction_type"
+            ]
+          }
+        ],
+        "type": "create_entry",
+        "errors": null,
+        "reason": null
+      },
+      "entries": [
+        {
+          "title": "10865: Muenchen Stadt",
+          "state": "ConfigEntryState.SETUP_RETRY",
+          "loaded": false
+        }
+      ],
+      "loaded": false,
+      "local_entities": [],
+      "mirrored": [],
+      "published": [],
+      "refused": [],
+      "push": {
+        "subscribed": [],
+        "received": [],
+        "unexpected": [],
+        "commands": []
+      },
+      "probe": null,
+      "arm": "confined_undeclared",
+      "timed_out": false,
+      "data_inspection": null,
+      "install": {
+        "ok": true,
+        "installed": [
+          "acme",
+          "aiodhcpwatcher",
+          "aiodiscover",
+          "aiodns",
+          "aiohappyeyeballs",
+          "aiohasupervisor",
+          "aiohttp",
+          "aiooui",
+          "aiosignal",
+          "aiousbwatcher",
+          "annotated_types",
+          "anyio",
+          "arrow",
+          "async_interrupt",
+          "async_timeout",
+          "async_upnp_client",
+          "asyncinotify",
+          "atomicwrites_homeassistant",
+          "attrs",
+          "av",
+          "awesomeversion",
+          "beautifulsoup4",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "boto3",
+          "botocore",
+          "btsocket",
+          "cached_ipaddress",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "ciso8601",
+          "cronsim",
+          "cryptography",
+          "dacite",
+          "dbus_fast",
+          "defusedxml",
+          "distro",
+          "envs",
+          "file_read_backwards",
+          "fnv_hash_fast",
+          "fnvhash",
+          "frozenlist",
+          "go2rtc_client",
+          "greenlet",
+          "grpcio",
+          "h11",
+          "ha_ffmpeg",
+          "habluetooth",
+          "hass_nabucasa",
+          "hassil",
+          "home_assistant_frontend",
+          "home_assistant_intents",
+          "httpcore",
+          "httpx",
+          "icmplib",
+          "idna",
+          "ifaddr",
+          "jdcal",
+          "jiter",
+          "jmespath",
+          "josepy",
+          "lxml",
+          "markdownify",
+          "mashumaro",
+          "matter_ble_proxy",
+          "matter_python_client",
+          "multidict",
+          "mutagen",
+          "numpy",
+          "openai",
+          "orjson",
+          "pillow",
+          "propcache",
+          "psutil",
+          "psutil_home_assistant",
+          "pycares",
+          "pycognito",
+          "pycparser",
+          "pycryptodome",
+          "pydantic",
+          "pydantic_core",
+          "pyjwt",
+          "pymicro_vad",
+          "pynacl",
+          "pyopenssl",
+          "pyrfc3339",
+          "pyric",
+          "pyroute2",
+          "pyspeex_noise",
+          "python_dateutil",
+          "python_didl_lite",
+          "pyturbojpeg",
+          "pytz",
+          "pyyaml",
+          "regex",
+          "requests",
+          "s3transfer",
+          "scapy",
+          "securetar",
+          "sentence_stream",
+          "serialx",
+          "simple_dwd_weatherforecast",
+          "six",
+          "sniffio",
+          "snitun",
+          "soupsieve",
+          "sqlalchemy",
+          "stream_inflate",
+          "stream_unzip",
+          "suntimes",
+          "tqdm",
+          "typing_extensions",
+          "typing_inspection",
+          "tzdata",
+          "tzlocal",
+          "uart_devices",
+          "unicode_rbnf",
+          "urllib3",
+          "usb_devices",
+          "voluptuous",
+          "webrtc_models",
+          "yarl",
+          "zeroconf"
+        ],
+        "resolved": [
+          "acme-5.4.0",
+          "aiodhcpwatcher-1.2.7",
+          "aiodiscover-3.3.2",
+          "aiodns-4.0.4",
+          "aiohappyeyeballs-2.7.1",
+          "aiohasupervisor-0.6.0",
+          "aiohttp-3.14.4",
+          "aiooui-0.1.11",
+          "aiosignal-1.4.0",
+          "aiousbwatcher-1.1.2",
+          "annotated_types-0.8.0",
+          "anyio-4.15.1",
+          "arrow-1.4.0",
+          "async_interrupt-1.2.2",
+          "async_timeout-5.0.1",
+          "async_upnp_client-0.47.1",
+          "asyncinotify-4.4.4",
+          "atomicwrites_homeassistant-1.4.1",
+          "attrs-26.1.0",
+          "av-17.0.1",
+          "awesomeversion-25.8.0",
+          "beautifulsoup4-4.15.0",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "boto3-1.43.108",
+          "botocore-1.43.108",
+          "btsocket-0.3.0",
+          "cached_ipaddress-1.1.2",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.2",
+          "ciso8601-2.3.3",
+          "cronsim-2.7",
+          "cryptography-50.0.2",
+          "dacite-1.9.2",
+          "dbus_fast-5.0.22",
+          "defusedxml-0.7.1",
+          "distro-1.9.0",
+          "envs-1.4",
+          "file_read_backwards-2.0.0",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "frozenlist-1.8.0",
+          "go2rtc_client-0.4.0",
+          "greenlet-3.5.6",
+          "grpcio-1.84.0",
+          "h11-0.16.0",
+          "ha_ffmpeg-3.2.2",
+          "habluetooth-6.26.5",
+          "hass_nabucasa-2.2.0",
+          "hassil-3.11.0",
+          "home_assistant_frontend-20260729.7",
+          "home_assistant_intents-2026.7.30",
+          "httpcore-1.0.9",
+          "httpx-0.28.1",
+          "icmplib-3.0.4",
+          "idna-3.20",
+          "ifaddr-0.2.0",
+          "jdcal-1.4.1",
+          "jiter-0.17.0",
+          "jmespath-1.1.0",
+          "josepy-2.2.0",
+          "lxml-6.1.3",
+          "markdownify-1.2.3",
+          "mashumaro-3.23",
+          "matter_ble_proxy-0.7.1",
+          "matter_python_client-1.3.0",
+          "multidict-6.9.1",
+          "mutagen-1.48.1",
+          "numpy-2.3.2",
+          "openai-2.45.0",
+          "orjson-3.12.0",
+          "pillow-12.3.0",
+          "propcache-0.5.4",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pycares-5.1.0",
+          "pycognito-2024.5.1",
+          "pycparser-3.0",
+          "pycryptodome-3.24.0",
+          "pydantic-2.13.5",
+          "pydantic_core-2.46.5",
+          "pyjwt-2.15.1",
+          "pymicro_vad-1.0.1",
+          "pynacl-1.6.2",
+          "pyopenssl-26.4.0",
+          "pyrfc3339-2.1.0",
+          "pyric-0.1.6.3",
+          "pyroute2-0.9.6",
+          "pyspeex_noise-1.0.2",
+          "python_dateutil-2.9.0.post0",
+          "python_didl_lite-1.5.1",
+          "pyturbojpeg-1.8.3",
+          "pytz-2026.5",
+          "pyyaml-6.0.3",
+          "regex-2026.9.29",
+          "requests-2.34.2",
+          "s3transfer-0.19.2",
+          "scapy-2.8.0",
+          "securetar-2026.4.1",
+          "sentence_stream-1.3.0",
+          "serialx-1.8.2",
+          "simple_dwd_weatherforecast-3.5.0",
+          "six-1.17.0",
+          "sniffio-1.3.1",
+          "snitun-0.45.1",
+          "soupsieve-2.10",
+          "sqlalchemy-2.0.51",
+          "stream_inflate-0.0.43",
+          "stream_unzip-0.0.101",
+          "suntimes-1.1.2",
+          "tqdm-4.70.1",
+          "typing_extensions-4.16.0",
+          "typing_inspection-0.4.4",
+          "tzdata-2026.5",
+          "tzlocal-5.4.4",
+          "uart_devices-0.1.1",
+          "unicode_rbnf-2.4.0",
+          "urllib3-2.8.0",
+          "usb_devices-0.5.1",
+          "voluptuous-0.16.0",
+          "webrtc_models-0.3.0",
+          "yarl-1.25.1",
+          "zeroconf-0.150.0"
+        ]
+      },
+      "audit": [
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "dwd_weather",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        }
+      ],
+      "logged": [
+        {
+          "op": "network.egress",
+          "target": "opendata.dwd.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "www.dwd.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata.dwd.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata.dwd.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "www.dwd.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata.dwd.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata.dwd.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "www.dwd.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata.dwd.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata.dwd.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "www.dwd.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata.dwd.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        }
+      ],
+      "audit_breaks": [],
+      "reconcile": [],
+      "durable_raw": [
+        {
+          "hash": "c72784a6e9155da2b0fc4e462d5b72f5bf4a33ef670c6b83f7452aed8a5d967b",
+          "identity": {
+            "composite": "c3bda1c400b496562dea2cfa196f6c1b3f5da073796daef59fb7db29d2553867",
+            "domain": "dwd_weather",
+            "manifest": "807bdaea316e6ed645c1166f2ec742079286e2c427e03c2b163cb8367aab2517",
+            "requirements": "a1dfbcbc8f0b0e705ca59c509f12633123e25a97d42b5626c8e76bf692c95a96",
+            "source": "ad312cb6bbd66bf9a0f98d4a4b2a3a15e6c7d39fcca3e1e467638ab29bba382c"
+          },
+          "integration": "dwd_weather",
+          "kind": "run",
+          "mac": "66340deb9cba684761478b6acc7bdea1c193969d8d1bd8b58ffefc27a2e2989c",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "prev_mac": "0000000000000000000000000000000000000000000000000000000000000000",
+          "provenance": "author-declared",
+          "run": "4ebed52191072339",
+          "seq": 0,
+          "time": 1791230377.5454497
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "6a3af0abc62cf50e63608cb53c21a0b2588919325b72f5b259116a6691a6262a",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "28db85b371ebe5b7ac68c90cf389b44f457025c1bded72e6033d83c4f7822a96",
+          "op": "network.egress",
+          "prev_hash": "c72784a6e9155da2b0fc4e462d5b72f5bf4a33ef670c6b83f7452aed8a5d967b",
+          "prev_mac": "66340deb9cba684761478b6acc7bdea1c193969d8d1bd8b58ffefc27a2e2989c",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "opendata.dwd.de",
+            "port": 443
+          },
+          "run": "4ebed52191072339",
+          "seq": 1,
+          "target": "opendata.dwd.de:443",
+          "time": 1791230380.9237049
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "16a294d604f2a38b30c7d5c2b1e1742de3d3bb5db27de7c5e2c2d150e943db38",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "dc6c3b66aa47afbfbeeee3ff33768308fe04ac5acd4e093218f3db2434f77459",
+          "op": "network.egress",
+          "prev_hash": "6a3af0abc62cf50e63608cb53c21a0b2588919325b72f5b259116a6691a6262a",
+          "prev_mac": "28db85b371ebe5b7ac68c90cf389b44f457025c1bded72e6033d83c4f7822a96",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "www.dwd.de",
+            "port": 443
+          },
+          "run": "4ebed52191072339",
+          "seq": 2,
+          "target": "www.dwd.de:443",
+          "time": 1791230380.933687
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "80402c4f2720a6864a9eb6c4fe9903c2dca51fc769ce8122d47709bfb1a4dc65",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "4601f3803d5067b01442c004f8ce1e8d4d3221f5e0a9ed622984cb035d2a276a",
+          "op": "network.egress",
+          "prev_hash": "16a294d604f2a38b30c7d5c2b1e1742de3d3bb5db27de7c5e2c2d150e943db38",
+          "prev_mac": "dc6c3b66aa47afbfbeeee3ff33768308fe04ac5acd4e093218f3db2434f77459",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "opendata.dwd.de",
+            "port": 443
+          },
+          "run": "4ebed52191072339",
+          "seq": 3,
+          "target": "opendata.dwd.de:443",
+          "time": 1791230380.9432125
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "38812fae5ff650b1c3739b1eeea546f1d9f98eabfe582b1e0b19b58c740e89af",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "6c663a4458c62ccb53566016446fdb918d9177e1e76162a4d50469961d29e2d7",
+          "op": "network.egress",
+          "prev_hash": "80402c4f2720a6864a9eb6c4fe9903c2dca51fc769ce8122d47709bfb1a4dc65",
+          "prev_mac": "4601f3803d5067b01442c004f8ce1e8d4d3221f5e0a9ed622984cb035d2a276a",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "opendata.dwd.de",
+            "port": 443
+          },
+          "run": "4ebed52191072339",
+          "seq": 4,
+          "target": "opendata.dwd.de:443",
+          "time": 1791230380.9635723
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "31c2ee8ea42969c68491f69139dc3a3ae553a30265f4cbfae3df73c3d56c339c",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "1cb91a8fb349be1c52a54549c8373d35e955e91857c48dab147b20998f08c26c",
+          "op": "network.egress",
+          "prev_hash": "38812fae5ff650b1c3739b1eeea546f1d9f98eabfe582b1e0b19b58c740e89af",
+          "prev_mac": "6c663a4458c62ccb53566016446fdb918d9177e1e76162a4d50469961d29e2d7",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "www.dwd.de",
+            "port": 443
+          },
+          "run": "4ebed52191072339",
+          "seq": 5,
+          "target": "www.dwd.de:443",
+          "time": 1791230380.9731534
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "1ff5bd729c576a34869984f19a77da7637571038cf62fa7e7fa550e3bfd801c7",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "4255a96e6f5d146d6b33b32c482cf1dfaff8c883bfb8b3879f48a8c48161aa3b",
+          "op": "network.egress",
+          "prev_hash": "31c2ee8ea42969c68491f69139dc3a3ae553a30265f4cbfae3df73c3d56c339c",
+          "prev_mac": "1cb91a8fb349be1c52a54549c8373d35e955e91857c48dab147b20998f08c26c",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "opendata.dwd.de",
+            "port": 443
+          },
+          "run": "4ebed52191072339",
+          "seq": 6,
+          "target": "opendata.dwd.de:443",
+          "time": 1791230380.9825296
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "bfcff0f7c42d0fc257de2f59f22bb20b9e76a2927dcbe342e62b0a5f74c85f13",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "36ad41497ceb30a3bfcab1d7ea88d38f295c27046c842478021364db04c4bb45",
+          "op": "network.egress",
+          "prev_hash": "1ff5bd729c576a34869984f19a77da7637571038cf62fa7e7fa550e3bfd801c7",
+          "prev_mac": "4255a96e6f5d146d6b33b32c482cf1dfaff8c883bfb8b3879f48a8c48161aa3b",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "opendata.dwd.de",
+            "port": 443
+          },
+          "run": "4ebed52191072339",
+          "seq": 7,
+          "target": "opendata.dwd.de:443",
+          "time": 1791230391.487804
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "9581e09330bcf43392c6825a604756ae50193e1b919cbfa22eb4e1b5facf2256",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "ad11bb990d990e0c2679c54adf0b426e7cc96758a638c484d14b46df6efe9ab9",
+          "op": "network.egress",
+          "prev_hash": "bfcff0f7c42d0fc257de2f59f22bb20b9e76a2927dcbe342e62b0a5f74c85f13",
+          "prev_mac": "36ad41497ceb30a3bfcab1d7ea88d38f295c27046c842478021364db04c4bb45",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "www.dwd.de",
+            "port": 443
+          },
+          "run": "4ebed52191072339",
+          "seq": 8,
+          "target": "www.dwd.de:443",
+          "time": 1791230391.5025866
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "e022d61d07e374fc2741deb459225bdcbdee03d4a71020885cccb2517eff40fd",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "4751cfa043337060ed396d2d35d9d9518e4f516f10a676047f98ee626c480d33",
+          "op": "network.egress",
+          "prev_hash": "9581e09330bcf43392c6825a604756ae50193e1b919cbfa22eb4e1b5facf2256",
+          "prev_mac": "ad11bb990d990e0c2679c54adf0b426e7cc96758a638c484d14b46df6efe9ab9",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "opendata.dwd.de",
+            "port": 443
+          },
+          "run": "4ebed52191072339",
+          "seq": 9,
+          "target": "opendata.dwd.de:443",
+          "time": 1791230391.5171158
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "64cf61c2e3bf7049568bc6bfb5344617703831ed7a72bab374a0e9ba12232fb6",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "8cdb8939c4d5fc32040182713e8b99b139acbdf0023d5aaae0550eef91fd7d7c",
+          "op": "network.egress",
+          "prev_hash": "e022d61d07e374fc2741deb459225bdcbdee03d4a71020885cccb2517eff40fd",
+          "prev_mac": "4751cfa043337060ed396d2d35d9d9518e4f516f10a676047f98ee626c480d33",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "opendata.dwd.de",
+            "port": 443
+          },
+          "run": "4ebed52191072339",
+          "seq": 10,
+          "target": "opendata.dwd.de:443",
+          "time": 1791230411.7584703
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "2daf84bcee1b4568de4368ae2314f30cb5a4af7f31763a45e616da2a409db187",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "aad269b84e26e63cf518ed6244771beb13274f03c35d09691ce439470eb3d481",
+          "op": "network.egress",
+          "prev_hash": "64cf61c2e3bf7049568bc6bfb5344617703831ed7a72bab374a0e9ba12232fb6",
+          "prev_mac": "8cdb8939c4d5fc32040182713e8b99b139acbdf0023d5aaae0550eef91fd7d7c",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "www.dwd.de",
+            "port": 443
+          },
+          "run": "4ebed52191072339",
+          "seq": 11,
+          "target": "www.dwd.de:443",
+          "time": 1791230411.7732477
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "653cf37e210dd557915d38d8574d4eeeade3350ff505d5cd4ca774976584129f",
+          "integration": "dwd_weather",
+          "kind": "decision",
+          "mac": "8e53c01dca49a37b85a7f2e6757936899f7ca5f8549fef0d5baf343fa188419c",
+          "op": "network.egress",
+          "prev_hash": "2daf84bcee1b4568de4368ae2314f30cb5a4af7f31763a45e616da2a409db187",
+          "prev_mac": "aad269b84e26e63cf518ed6244771beb13274f03c35d09691ce439470eb3d481",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "opendata.dwd.de",
+            "port": 443
+          },
+          "run": "4ebed52191072339",
+          "seq": 12,
+          "target": "opendata.dwd.de:443",
+          "time": 1791230411.7926266
+        }
+      ],
+      "oom_kill": 0
+    }
+  },
+  "checks": {
+    "passed": 15,
+    "total": 16
+  }
+}

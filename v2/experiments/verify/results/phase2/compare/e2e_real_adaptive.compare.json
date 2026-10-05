@@ -1,0 +1,11 @@
+{
+  "old": "experiments/retest/results/review_20261004/first/e2e_real_adaptive.json",
+  "new": "experiments/verify/results/phase2/l23/e2e_real_adaptive.json",
+  "counts": {
+    "exact": 0,
+    "numeric": 0,
+    "added": 0,
+    "removed": 0
+  },
+  "differences": []
+}

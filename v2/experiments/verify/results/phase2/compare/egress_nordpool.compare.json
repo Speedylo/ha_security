@@ -1,0 +1,69 @@
+{
+  "old": "experiments/flood/results/pi_20261005/egress_nordpool.json",
+  "new": "experiments/verify/results/phase2/l23/egress_nordpool.json",
+  "counts": {
+    "exact": 9,
+    "numeric": 0,
+    "added": 0,
+    "removed": 0
+  },
+  "differences": [
+    {
+      "kind": "exact",
+      "path": "reports.confined_declared.install.resolved",
+      "old": "[\"aiohttp-3.14.3\"]",
+      "new": "[\"aiohttp-3.14.4\"]",
+      "note": "list content"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_declared.published[entity=sensor.nordpool_kwh_se1_eur_3_10_025].state",
+      "old": "\"0.002\"",
+      "new": "\"0.001\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_undeclared.install.resolved",
+      "old": "[\"aiohttp-3.14.3\"]",
+      "new": "[\"aiohttp-3.14.4\"]",
+      "note": "list content"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_undeclared.setup_errors",
+      "old": "[\"homeassistant.components.sensor: Error adding entity sensor.nordpool_kwh_se1_eur_3_10_025 for domain sensor with platform nordpool ||                    ^^^^^\u2026",
+      "new": "[\"homeassistant.components.sensor: Error adding entity sensor.nordpool_kwh_se1_eur_3_10_025 for domain sensor with platform nordpool ||                    ^^^^^\u2026",
+      "note": "list content"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.egress_attempts[4].host",
+      "old": "\"104.26.5.238\"",
+      "new": "\"104.26.4.238\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sensor.nordpool_kwh_se1_eur_3_10_025].state",
+      "old": "\"0.002\"",
+      "new": "\"0.001\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sensor.sun_next_dusk].state",
+      "old": "\"2026-10-05T18:02:52+00:00\"",
+      "new": "\"2026-10-06T18:00:39+00:00\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sensor.sun_next_setting].state",
+      "old": "\"2026-10-05T17:29:01+00:00\"",
+      "new": "\"2026-10-06T17:26:46+00:00\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sun.sun].state",
+      "old": "\"above_horizon\"",
+      "new": "\"below_horizon\""
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+  unconfined           loaded=True timed_out=True  device saw: udp 2, tcp 8 conns / 7616 bytes, from ['10.126.83.113']  probe=None
+  confined_declared    loaded=True timed_out=True  device saw: udp 2, tcp 6 conns / 4440 bytes, from ['10.126.83.113']  probe=None
+           1 × network.udp.send     6445     allowed=True  /permissions/network/local/udp/0
+           1 × network.udp.send     20086    allowed=True  /permissions/network/local/udp/1
+           6 × network.tcp.local    6444     allowed=True  /permissions/network/local/tcp/0
+  confined_undeclared  loaded=False timed_out=False  device saw: udp 0, tcp 0 conns / 0 bytes, from []  probe=None
+           9 × network.udp.send     6445     allowed=False  /permissions/network/local/udp
+
+wrote /home/younes/r2exp/verify/v2/experiments/verify/results/phase2/l23/local_midea_ac_lan.json

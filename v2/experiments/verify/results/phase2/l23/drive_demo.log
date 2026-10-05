@@ -1,0 +1,39 @@
+{
+  "switch_in_A": "switch.demo_flood_misbehave",
+  "press": {
+    "success": true,
+    "error": null,
+    "seconds": 0.011948065000012775
+  },
+  "cut_off_after_s": 0.5533186110000088,
+  "issue_after_s": 0.00042096599997876183,
+  "press_to_issue_s": 0.5660667190000481,
+  "issue": {
+    "severity": "error",
+    "is_fixable": true,
+    "translation_key": "cut_off",
+    "translation_placeholders": {
+      "name": "demo_flood"
+    }
+  },
+  "supervisor_after_cut_off": [
+    "20:53:19  demo_flood cut off by the mediator; killing its sandbox"
+  ],
+  "records_during_flood": {
+    "cutoff": 1,
+    "decision": 102
+  },
+  "fix_flow": [
+    "confirm",
+    "create_entry"
+  ],
+  "restarted_after_s": 0.10077617200005307,
+  "issue_gone": true,
+  "switch_back_off_after_s": 0.6178244970000151,
+  "records_total": {
+    "cutoff": 1,
+    "decision": 103,
+    "reinstate": 1,
+    "run": 1
+  }
+}

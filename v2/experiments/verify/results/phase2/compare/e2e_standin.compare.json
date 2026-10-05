@@ -1,0 +1,106 @@
+{
+  "old": "experiments/end_to_end/results/rerun_20261003/pi5_e2e.json",
+  "new": "experiments/verify/results/phase2/l23/e2e_standin.json",
+  "counts": {
+    "exact": 3,
+    "numeric": 0,
+    "added": 15,
+    "removed": 0
+  },
+  "differences": [
+    {
+      "kind": "added",
+      "path": "[domain=adaptive_lighting].durable",
+      "new": "{\"breaks\": [], \"decisions\": 8, \"ok\": true, \"reconcile\": [], \"records\": 9, \"runs\": 1}"
+    },
+    {
+      "kind": "added",
+      "path": "[domain=adaptive_lighting].probe",
+      "new": "null"
+    },
+    {
+      "kind": "added",
+      "path": "[domain=adaptive_lighting].push",
+      "new": "{\"commands\": [], \"received\": [], \"subscribed\": [], \"unexpected\": []}"
+    },
+    {
+      "kind": "added",
+      "path": "[domain=powercalc].durable",
+      "new": "{\"breaks\": [], \"decisions\": 6, \"ok\": true, \"reconcile\": [], \"records\": 7, \"runs\": 1}"
+    },
+    {
+      "kind": "added",
+      "path": "[domain=powercalc].probe",
+      "new": "null"
+    },
+    {
+      "kind": "added",
+      "path": "[domain=powercalc].push",
+      "new": "{\"commands\": [], \"received\": [], \"subscribed\": [], \"unexpected\": []}"
+    },
+    {
+      "kind": "added",
+      "path": "[domain=scheduler].durable",
+      "new": "{\"breaks\": [], \"decisions\": 0, \"ok\": true, \"reconcile\": [], \"records\": 1, \"runs\": 1}"
+    },
+    {
+      "kind": "added",
+      "path": "[domain=scheduler].probe",
+      "new": "null"
+    },
+    {
+      "kind": "added",
+      "path": "[domain=scheduler].push",
+      "new": "{\"commands\": [], \"received\": [], \"subscribed\": [], \"unexpected\": []}"
+    },
+    {
+      "kind": "added",
+      "path": "[domain=thermal_comfort].durable",
+      "new": "{\"breaks\": [], \"decisions\": 17, \"ok\": true, \"reconcile\": [], \"records\": 18, \"runs\": 1}"
+    },
+    {
+      "kind": "added",
+      "path": "[domain=thermal_comfort].probe",
+      "new": "null"
+    },
+    {
+      "kind": "added",
+      "path": "[domain=thermal_comfort].push",
+      "new": "{\"commands\": [], \"received\": [], \"subscribed\": [], \"unexpected\": []}"
+    },
+    {
+      "kind": "added",
+      "path": "[domain=watchman].durable",
+      "new": "{\"breaks\": [], \"decisions\": 13, \"ok\": true, \"reconcile\": [], \"records\": 14, \"runs\": 1}"
+    },
+    {
+      "kind": "exact",
+      "path": "[domain=watchman].install.resolved",
+      "old": "[\"wcwidth-0.9.1\"]",
+      "new": "[\"wcwidth-0.9.2\"]",
+      "note": "list content"
+    },
+    {
+      "kind": "exact",
+      "path": "[domain=watchman].platform_states.sensor.watchman_last_update",
+      "old": "\"2026-10-03T14:42:05+00:00\"",
+      "new": "\"2026-10-05T19:54:40+00:00\""
+    },
+    {
+      "kind": "added",
+      "path": "[domain=watchman].probe",
+      "new": "null"
+    },
+    {
+      "kind": "exact",
+      "path": "[domain=watchman].published[3].state",
+      "old": "\"2026-10-03T14:42:05+00:00\"",
+      "new": "\"2026-10-05T19:54:40+00:00\""
+    },
+    {
+      "kind": "added",
+      "path": "[domain=watchman].push",
+      "new": "{\"commands\": [], \"received\": [], \"subscribed\": [], \"unexpected\": []}"
+    }
+  ]
+}

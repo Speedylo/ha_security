@@ -1,0 +1,13 @@
+real_platform_restart exit=0 seconds=26
+e2e_standin exit=0 seconds=13
+e2e_real_thermal exit=0 seconds=21
+e2e_real_adaptive exit=0 seconds=22
+egress_nordpool exit=0 seconds=110
+egress_dwd_weather exit=1 seconds=207
+egress_pirateweather exit=0 seconds=139
+egress_smhi_brandrisk exit=0 seconds=186
+egress_regensburg_transport exit=0 seconds=469
+local_midea_ac_lan exit=0 seconds=1322
+local_localtuya exit=0 seconds=113
+oauth_trakt exit=0 seconds=25
+ALLDONE

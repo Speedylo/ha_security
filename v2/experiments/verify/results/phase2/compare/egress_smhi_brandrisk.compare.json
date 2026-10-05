@@ -1,0 +1,393 @@
+{
+  "old": "experiments/end_to_end/results/pi5_smhi_brandrisk_egress.json",
+  "new": "experiments/verify/results/phase2/l23/egress_smhi_brandrisk.json",
+  "counts": {
+    "exact": 36,
+    "numeric": 2,
+    "added": 26,
+    "removed": 2
+  },
+  "differences": [
+    {
+      "kind": "numeric",
+      "path": "checks.passed",
+      "old": 16,
+      "new": 20,
+      "relative": 0.25
+    },
+    {
+      "kind": "numeric",
+      "path": "checks.total",
+      "old": 17,
+      "new": 20,
+      "relative": 0.1765
+    },
+    {
+      "kind": "removed",
+      "path": "rechecked",
+      "old": "{\"passed\": 17, \"total\": 17}"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_declared.audit",
+      "old": "16 items",
+      "new": "17 items",
+      "note": "list length"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_declared.data_inspection",
+      "new": "null"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_declared.durable_raw",
+      "new": "[{\"allowed\": false, \"claimed\": null, \"clause\": \"/permissions/network/discover/listen\", \"integration\": \"smhi_brandrisk\", \"kind\": \"decision\", \"op\": \"discover.list\u2026"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_declared.egress.datagrams_delivered",
+      "new": "0"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_declared.egress.refused_listens",
+      "new": "[5353]"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_declared.install.resolved",
+      "old": "[\"aiohttp-3.14.3\", \"pycares-5.0.1\"]",
+      "new": "[\"aiohttp-3.14.4\", \"pycares-5.1.0\"]",
+      "note": "list content"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_declared.logged",
+      "old": "16 items",
+      "new": "17 items",
+      "note": "list length"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_declared.probe",
+      "new": "null"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_declared.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang].state",
+      "old": "\"49.0\"",
+      "new": "\"51.8\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_declared.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt].state",
+      "old": "\"618.0\"",
+      "new": "\"625.1\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_declared.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium].state",
+      "old": "\"27.2\"",
+      "new": "\"28.9\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_declared.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle].state",
+      "old": "\"84.5\"",
+      "new": "\"84.6\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_declared.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_fwi_index].state",
+      "old": "\"11.2\"",
+      "new": "\"12.2\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_declared.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet].state",
+      "old": "\"4.1\"",
+      "new": "\"4.4\""
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_declared.push",
+      "new": "{\"commands\": [], \"received\": [], \"subscribed\": [], \"unexpected\": []}"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_declared.reconcile",
+      "new": "[]"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_declared.timed_out",
+      "new": "false"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_partial.audit",
+      "old": "17 items",
+      "new": "18 items",
+      "note": "list length"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_partial.data_inspection",
+      "new": "null"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_partial.durable_raw",
+      "new": "[{\"allowed\": false, \"claimed\": null, \"clause\": \"/permissions/network/discover/listen\", \"integration\": \"smhi_brandrisk\", \"kind\": \"decision\", \"op\": \"discover.list\u2026"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_partial.egress.datagrams_delivered",
+      "new": "0"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_partial.egress.refused_listens",
+      "new": "[5353]"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_partial.install.resolved",
+      "old": "[\"aiohttp-3.14.3\", \"pycares-5.0.1\"]",
+      "new": "[\"aiohttp-3.14.4\", \"pycares-5.1.0\"]",
+      "note": "list content"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_partial.logged",
+      "old": "17 items",
+      "new": "18 items",
+      "note": "list length"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_partial.probe",
+      "new": "null"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_partial.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang].state",
+      "old": "\"49.0\"",
+      "new": "\"51.8\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_partial.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt].state",
+      "old": "\"618.0\"",
+      "new": "\"625.1\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_partial.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium].state",
+      "old": "\"27.2\"",
+      "new": "\"28.9\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_partial.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle].state",
+      "old": "\"84.5\"",
+      "new": "\"84.6\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_partial.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_fwi_index].state",
+      "old": "\"11.2\"",
+      "new": "\"12.2\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_partial.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet].state",
+      "old": "\"4.1\"",
+      "new": "\"4.4\""
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_partial.push",
+      "new": "{\"commands\": [], \"received\": [], \"subscribed\": [], \"unexpected\": []}"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_partial.reconcile",
+      "new": "[]"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_partial.timed_out",
+      "new": "false"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_undeclared.audit",
+      "old": "4 items",
+      "new": "5 items",
+      "note": "list length"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_undeclared.data_inspection",
+      "new": "null"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_undeclared.durable_raw",
+      "new": "[{\"allowed\": false, \"claimed\": null, \"clause\": \"/permissions/network/discover/listen\", \"integration\": \"smhi_brandrisk\", \"kind\": \"decision\", \"op\": \"discover.list\u2026"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_undeclared.egress.datagrams_delivered",
+      "new": "0"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_undeclared.egress.refused_listens",
+      "new": "[5353]"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_undeclared.install.resolved",
+      "old": "[\"aiohttp-3.14.3\", \"pycares-5.0.1\"]",
+      "new": "[\"aiohttp-3.14.4\", \"pycares-5.1.0\"]",
+      "note": "list content"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.confined_undeclared.logged",
+      "old": "4 items",
+      "new": "5 items",
+      "note": "list length"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_undeclared.probe",
+      "new": "null"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_undeclared.push",
+      "new": "{\"commands\": [], \"received\": [], \"subscribed\": [], \"unexpected\": []}"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_undeclared.reconcile",
+      "new": "[]"
+    },
+    {
+      "kind": "added",
+      "path": "reports.confined_undeclared.timed_out",
+      "new": "false"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.egress_attempts",
+      "old": "13 items",
+      "new": "10 items",
+      "note": "list length"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.own_entities",
+      "old": "[\"conversation.home_assistant\"]",
+      "new": "20",
+      "note": "list content"
+    },
+    {
+      "kind": "added",
+      "path": "reports.unconfined.probe",
+      "new": "null"
+    },
+    {
+      "kind": "removed",
+      "path": "reports.unconfined.published[entity=conversation.home_assistant]",
+      "old": "present"
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang].state",
+      "old": "\"49.0\"",
+      "new": "\"51.8\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt].state",
+      "old": "\"618.0\"",
+      "new": "\"625.1\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium].state",
+      "old": "\"27.2\"",
+      "new": "\"28.9\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle].state",
+      "old": "\"84.5\"",
+      "new": "\"84.6\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_fwi_index].state",
+      "old": "\"11.2\"",
+      "new": "\"12.2\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet].state",
+      "old": "\"4.1\"",
+      "new": "\"4.4\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sensor.sun_next_dawn].state",
+      "old": "\"2026-10-04T05:32:17+00:00\"",
+      "new": "\"2026-10-06T05:35:32+00:00\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sensor.sun_next_dusk].state",
+      "old": "\"2026-10-03T18:07:21+00:00\"",
+      "new": "\"2026-10-06T18:00:39+00:00\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sensor.sun_next_midnight].state",
+      "old": "\"2026-10-03T23:49:13+00:00\"",
+      "new": "\"2026-10-05T23:48:36+00:00\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sensor.sun_next_noon].state",
+      "old": "\"2026-10-04T11:49:21+00:00\"",
+      "new": "\"2026-10-06T11:48:44+00:00\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sensor.sun_next_rising].state",
+      "old": "\"2026-10-04T06:06:13+00:00\"",
+      "new": "\"2026-10-06T06:09:31+00:00\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sensor.sun_next_setting].state",
+      "old": "\"2026-10-03T17:33:31+00:00\"",
+      "new": "\"2026-10-06T17:26:46+00:00\""
+    },
+    {
+      "kind": "exact",
+      "path": "reports.unconfined.published[entity=sun.sun].state",
+      "old": "\"above_horizon\"",
+      "new": "\"below_horizon\""
+    },
+    {
+      "kind": "added",
+      "path": "reports.unconfined.timed_out",
+      "new": "false"
+    }
+  ]
+}

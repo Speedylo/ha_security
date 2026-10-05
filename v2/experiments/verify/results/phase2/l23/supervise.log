@@ -1,0 +1,6 @@
+20:52:53  supervising demo_flood; durable log in /home/younes/r2exp/verify-supervise-audit; Ctrl-C to stop
+20:52:53  demo_flood started (run 1, pid 2916)
+20:53:19  demo_flood cut off by the mediator; killing its sandbox
+20:53:19  demo_flood reinstated (recorded); starting it again
+20:53:19  demo_flood started (run 2, pid 2935)
+20:53:19  stopped
