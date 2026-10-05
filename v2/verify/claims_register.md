@@ -205,6 +205,67 @@ by the document-consistency phase (plan §7.9), not by a re-run.
 `host_isolation_probe`, `cgroup_placement` and `base_component` from August, which Chapter 5 and 6's
 design claims rest on (Tier C).
 
+## C — every remaining candidate, triaged
+
+`verify/triage_claims.py` gives each of the 1,980 candidates a disposition, recorded in
+`verify/triage.jsonl`; **none is left unplaced**. The rules run in order: front-matter structure;
+dated history; a Chapter 7 candidate goes to the Tier B row for its own section; a candidate citing
+a §7 section goes to that row; then every remaining subsection goes to the Tier A row or Tier C
+group that tests it. Twenty-four claims, read one by one in the security-critical subsections, get
+rows of their own (CS01–CS16).
+
+| Disposition | Candidates | Meaning |
+|---|---|---|
+| Tier B row (`B 7.n`, `ref 7.n`) | 942 | tested by that measurement's re-run and the re-derivation of its numbers |
+| Tier A row | 108 | tested through A1, A2 or A5 |
+| Tier C group C01–C16 | 698 | tested by the group's suites, mutants and base experiments, below |
+| Tier C single row CS01–CS16 | 24 | tested one by one, below |
+| history | 191 | a dated past state kept on purpose; checked only that it is dated |
+| argued | 53 | design rationale; checked only that it reads as argument (plan §7.9) |
+| structure | 82 | the report describing itself (contents, glossary); checked by `toc.py` |
+
+### C01–C16 — mechanism groups (Chapters 5, 6 and 8)
+
+| Group | What its claims say | Candidates | Test | Criterion |
+|---|---|---|---|---|
+| C01 | How the integration runs (R2) and the API surface it uses (§5.6) | 34 | `base_component` re-run; B 7.33; RD | figures as stated, or dated |
+| C02 | Isolation: namespaces, cgroups, placement, preflight, the sandbox's build (§5.7, §6.3, §6.4) | 74 | `host_isolation_probe`, `cgroup_placement` re-run; L1; X13–X15; FI | every isolation property demonstrated on the tag |
+| C03 | The manifest, its schema, parse-time rejection, `describe` (§5.9, §5.10, §6.6, §6.7) | 90 | `selftest_policy`, `_c3`, `_describe`; X1, X3, X17 | suites green; mutants killed |
+| C04 | Mediator and channel: identity from the socket, verbs, framing, latency (§5.11, §6.5) | 33 | `selftest_channel`, `_fdpass`, `_socket_pinning`; X2, X16; B 7.19 | as stated |
+| C05 | Identity and the audit record (§5.12, §6.8) | 27 | `selftest_audit`, `_integrity`; X7, X8; FI (disk full) | as stated |
+| C06 | Defence in depth and the adversarial cases (§5.13, §6.9) | 49 | `selftest_adversary` paired; independent attacks | every layer's claim holds or is argued |
+| C07 | The design drawn and the controls checked (§5.14) | 37 | figures regenerated from the model; DC | figure equals model; mapping consistent |
+| C08 | What the design does not do (§5.15) | 30 | DC against current state | still true, or dated |
+| C09 | The bridge (§6.10) | 20 | `selftest_bridge`, `selftest_real_platform` | as stated |
+| C10 | Un-stripping and its cost (§6.12) | 37 | `unstrip` re-run (B 7.31, 7.35) | M |
+| C11 | The declared profile and the core package set (§6.13, §6.14) | 77 | `compat` declared-core arm re-run (B 7.12) | E |
+| C12 | Chapter 7's method: axes, criteria, schedule, validity, obligations (§7.1–§7.11, except §7.5–§7.7) | 48 | DC; obligations register reconciled | every obligation discharged or stated open |
+| C13 | Status claims: "not built" (§6.11), limitations (§8.6), future work (§8.7) | 46 | DC against today's code | each still true, or dated |
+| C14 | §8.5: the baseline loads a median of 52 components where a sandbox sets up 2 (head) and 0 (uniform) | 4 | RD from the compat results | the medians exactly |
+| C15 | §8.8: R3, no scoped credential exists; the mediator's token reachable seven ways | 4 | CI against HA 2026.8.3's auth source; B 7.15 | still true of the pinned release |
+| C16 | "The artifact": what the repository contains and how to run it | 4 | clean-checkout reproduction (plan §7.2) | every step works as written |
+
+### CS01–CS16 — single claims
+
+| ID | Claim | Where | Test | Flag |
+|---|---|---|---|---|
+| CS01 | Nothing but the socket crosses the boundary: no route, a private IPC namespace, no path to any other socket | §5.11 | independent attacks; X13, X15 | |
+| CS02 | Every response carries the clause that decided it; the pointer is built by the deciding branch, so a clause-less decision is unconstructible | §5.11, §5.12, §6.6 | exercise each refusal path with a durable log | **F03** |
+| CS03 | ~33,000 requests per second; 0.30 ms of mediation per polling cycle (Ch5), 0.36 ms (Ch6) | §5.11, §6.5 | RD from today's latency | **F09: three versions of one figure (0.30, 0.36, and ~0.32 ms from 31.5 µs)** |
+| CS04 | With the mediator gone, the sandbox reaches nothing | §5.11 | FI | |
+| CS05 | Each run record carries the full identity, provenance and **resolved dependency versions** | §5.12 | read the run records; code read | **F08** |
+| CS06 | Modifying, deleting or reordering any record breaks every link after it | §5.12 | `selftest_audit` (strong form); X8 | |
+| CS07 | The log is unreachable from the sandbox: outside its mount namespace, and no verb writes to it | §5.12 | independent attacks | |
+| CS08 | The MAC key is generated at start and held only in the mediator's memory | §5.12, §6.8 | code read; scan disk and logs for the key | |
+| CS09 | An integration cannot learn where on the host it was installed | §6.4 | independent attack: read `/proc/self/mountinfo` from inside | to test |
+| CS10 | Every declared path is verified in the new root before the sandbox runs; construction fails loudly | §6.4 | mutant (skip the check); `selftest_bridge` | |
+| CS11 | Seccomp is a deny-list; a syscall not on it is allowed (a stated residual) | §6.4 | compare the list with the text; X13 | |
+| CS12 | Over-broad and unsafe declarations are rejected at parse time, not at use | §6.6 | `selftest_policy`; X17 | |
+| CS13 | Someone who can write the log cannot forge the HMAC chain; a stored hash is never an input to verification | §6.8 | `selftest_audit`; mutant (verify from the stored hash) | |
+| CS14 | The sandbox's bridge is not an enforcement point; every forwarded request is checked again by the mediator | §6.10 | independent attack: raw requests on the socket, bypassing the bridge | |
+| CS15 | Cross-integration services (`homeassistant.turn_on`) are routed through the mediator | §6.3 | test with an undeclared target | |
+| CS16 | The instance is started last, so `RestoreEntity` restores; measured in both arms | §6.3 | R (the round trip) | |
+
 ## Flags found while building the register
 
 These are findings before any test has run. They also go into the findings log in
@@ -218,4 +279,6 @@ These are findings before any test has run. They also go into the findings log i
 | F04 | §7.26.4 CM-T7 | T19 maps to CM-T7, so the "partial" row predates it | Minor |
 | F06 | §8.3, contribution 2 | The running tally of suites stops at twenty-four; the count is twenty-six | Minor |
 | F07 | Experiment READMEs | Nine results sections (§7.16, 7.19, 7.22, 7.25, 7.29, 7.30, 7.32, 7.38, 7.41) are named by no experiment README, so a reader cannot follow those figures from the claim to the data. `durability/` has no README at all | Minor (traceability) |
+| F08 | §5.12, `audit.py`, §8.6.3 #3 | The run record should carry **resolved** dependency versions; the identity hashes the **declared** requirements, with a comment saying installation "is not built yet", although per-run installation has existed since September, and §8.6.3 #3 still calls it unresolved. Three statements to reconcile, and possibly a small fix | Minor to Major, open |
+| F09 | §5.11, §6.5 | Mediation per polling cycle stated as 0.30 ms (Ch5) and 0.36 ms (Ch6); today's 31.5 µs gives about 0.32 ms for ten reads | Minor |
 | F05 | Experiments | The adversary pair (§7.13) and mediation latency (§7.19) were last run before the mediator's October changes | Re-measure (plan Phase 3) |

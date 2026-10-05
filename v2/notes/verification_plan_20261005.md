@@ -337,3 +337,5 @@ so the first day serves both.
 | F05 | 0 | A1.18, S8, T14, T15 | Re-measure | Adversary pair and mediation latency last run before the October changes | Phase 3 |
 | F06 | 0 | A5.2 | Minor | Contribution 2's suite tally stops at twenty-four | open |
 | F07 | 0 | Tier B | Minor | Nine results sections named by no experiment README; `durability/` has none | open |
+| F08 | 0 | CS05 | Minor to Major | Identity hashes declared, not resolved, requirements; the code comment and §8.6.3 #3 say installation is unbuilt, but it exists | open |
+| F09 | 0 | CS03 | Minor | Mediation per cycle stated as 0.30 and 0.36 ms; today's figure gives ~0.32 ms | open |
