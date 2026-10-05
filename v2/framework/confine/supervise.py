@@ -28,6 +28,7 @@ import json
 import os
 import selectors
 import shutil
+import signal
 import sys
 import tempfile
 import time
@@ -94,8 +95,14 @@ class Supervisor:
 
     def launch(self) -> None:
         self.wanted = False
-        data = self.root / ".confine" / self.domain
-        data.mkdir(parents=True, exist_ok=True)
+        # A fresh data directory for every start, as every experiment harness gives one. Found on
+        # the Pi (2026-10-05): with the first start's directory reused, the private instance finds
+        # the integration's config entry already stored, the config flow aborts as
+        # `already_configured`, and flow mode never sets the stored entry up — so the restarted
+        # integration ran and published nothing. Keeping `/sandbox/data` across starts, which an
+        # OAuth integration needs to stay logged in (§7.42), is therefore not supported yet.
+        data = self.root / ".confine" / f"{self.domain}-start{self.starts + 1}"
+        data.mkdir(parents=True)
         spec_file = self.root / "spec.json"
         spec_file.write_text(json.dumps({
             "domain": self.domain, "mode": "flow", "auth": True,
@@ -114,6 +121,8 @@ class Supervisor:
             domain=self.domain, own_dir=str(self.own), data_dir=str(data),
             argv=[str(self.python), "/sandbox/runtime.py"],
             runtime_files={str(HERE / "sandbox_runtime.py"): "/sandbox/runtime.py",
+                           # `"egress": True` imports it inside the sandbox (`endtoend_egress`).
+                           str(HERE / "egress_shim.py"): "/sandbox/egress_shim.py",
                            str(spec_file): "/sandbox/spec.json", str(self.deps): DEPS},
             env={"PYTHONPATH": DEPS})
         platform_deps = Path.home() / "r2exp/platform-deps"
@@ -129,9 +138,10 @@ class Supervisor:
         self.starts += 1
         self.cgroup = SandboxCgroup.create(self.delegation, f"sup-{self.domain}-{self.starts}",
                                            limits)
-        # The sandbox's own Home Assistant log, one file per start, beside the audit log.
-        log_path = self.audit_dir / f"{self.domain}-run{self.starts}.log"
-        with open(os.devnull, "wb") as stdout, open(log_path, "wb") as stderr:
+        # The sandbox's report (stdout, JSON) and its Home Assistant log (stderr), one pair per
+        # start, beside the audit log. A setup failure is reported on stdout, as `"fatal"`.
+        base = self.audit_dir / f"{self.domain}-run{self.starts}"
+        with open(f"{base}.json", "wb") as stdout, open(f"{base}.log", "wb") as stderr:
             self.sandbox = start(spec, self.cgroup, stdout=stdout.fileno(),
                                  stderr=stderr.fileno(), channel_end=sandbox_end.fileno())
         sandbox_end.detach()
@@ -201,6 +211,13 @@ def main() -> int:
 
     require_ready(deep=False)
     become_subreaper()
+
+    # Stop cleanly on SIGTERM, which is what systemd and `kill` send. Started in the background
+    # from a non-interactive shell, this process inherits SIGINT as ignored, so Ctrl-C's signal
+    # alone cannot stop it — found when three supervisors outlived `pkill -INT` (2026-10-05).
+    def terminate(_signum, _frame) -> None:
+        raise KeyboardInterrupt
+    signal.signal(signal.SIGTERM, terminate)
     supervisor = Supervisor(args.component.resolve(), json.loads(args.permissions),
                             args.python, args.audit_dir, args.hours)
     say(f"supervising {supervisor.domain}; durable log in {args.audit_dir}; Ctrl-C to stop")
