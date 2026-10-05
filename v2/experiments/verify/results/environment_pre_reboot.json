@@ -1,0 +1,47 @@
+{
+  "recorded": "2026-10-05T20:46:09+0100",
+  "phase": "1, before reboot",
+  "tag": "verify-2026-10",
+  "commit": "6aa2eb6",
+  "tree": "/home/younes/r2exp/verify/v2",
+  "tree_check": "704 files, sha256 identical to the tag, file by file",
+  "kernel": "Linux 6.12.47+rpt-rpi-2712 aarch64",
+  "os": "Debian GNU/Linux 13 (trixie)",
+  "model": "Raspberry Pi 5 Model B Rev 1.0",
+  "python_system": "Python 3.13.5",
+  "python_ha314": "Python 3.14.7",
+  "homeassistant": "2026.8.3",
+  "env_ha314": {
+    "packages": 102,
+    "sha256": "3f5359912f21c64b0401ea20412652b1c6edb2ea5b4107bc73563bdba846f602"
+  },
+  "env_platform_deps": {
+    "packages": 113,
+    "sha256": "504e9ded2a843f47d2854b7d5534e6259fd03c841d8e4e0a7837ab96bfd95c3b"
+  },
+  "env_houseA_deps": {
+    "packages": 11,
+    "sha256": "f8cb7d93e15e845ec24f7f3ddb364656dce2f148485c12d1c83309325d7361b7"
+  },
+  "filesystems": {
+    "/tmp": "tmpfs",
+    "/home/younes": "ext4",
+    "/home/younes/r2exp": "ext4",
+    "/home/younes/r2exp/disktmp": "ext4"
+  },
+  "memory_mb": "Mem:            4049         823        1243          38        2093        3226",
+  "disk_home": "/dev/mmcblk0p2   29G   16G   12G  57% /",
+  "uptime": "up 2 hours, 55 minutes",
+  "cgroup": "cgroup2fs",
+  "corpora": {
+    "corpus": 37,
+    "corpus_uniform": 40
+  },
+  "credentials_mode": {
+    "house_a.token": "0o600",
+    "pirateweather.key": "0o600",
+    "trakt.json": "0o600"
+  },
+  "ha_source": "759e4658 (tag 2026.8.3), checked out on the development machine, not the Pi",
+  "trakt_access_expires": "2026-10-11 21:51 \u2014 OAuth runs must finish before then"
+}

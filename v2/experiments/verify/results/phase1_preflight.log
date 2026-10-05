@@ -1,0 +1,12 @@
+confinement preflight — uid 1000, python 3.13.5
+
+  PASS  cgroup v2 hierarchy       this process is in user.slice/user-1000.slice/user@1000.service/app.slice/run-p2236-i2536.scope
+  PASS  cgroup subtree delegated  delegated at user.slice/user-1000.slice/user@1000.service
+  PASS  supervisor inside it      supervisor in user.slice/user-1000.slice/user@1000.service/app.slice/run-p2236-i2536.scope; delegated subtree user.slice/user-1000.slice/user@1000.service
+  PASS  memory controller         available in user.slice/user-1000.slice/user@1000.service/app.slice
+  PASS  placement permitted       child ran in /user.slice/user-1000.slice/user@1000.service/app.slice/preflight-2236
+  PASS  memory limit enforced     192 MB against a 64 MB cap: killed, oom_kill=1
+  PASS  unprivileged namespaces   uid 0 in the new namespace
+  PASS  seccomp filter            chroot denied, keyctl denied, ptrace denied, unshare denied
+
+READY — every control this framework claims is available and was exercised

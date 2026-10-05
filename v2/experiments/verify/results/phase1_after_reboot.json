@@ -1,0 +1,1 @@
+{"recorded": "2026-10-05T20:47:33+01:00", "phase": "1, after reboot", "uptime": "up 0 minutes", "leftover_processes": 0, "leftover_cgroups": 0, "disktmp_entries": 0, "house_a": "up --fresh from ~/r2exp/verify/v2/framework; bridge identical to the tag apart from __pycache__", "memory_mb": "Mem: 4049 860 2408 38 886 3189"}
