@@ -4846,7 +4846,10 @@ holds it, since it travels inside the integration's own TLS connection. Run 2 is
 without that directory looks like. The design keeps `/sandbox/data` per integration and persistent,
 so the common case is served. But a reinstall, or any deployment that rebuilds the directory, logs
 every OAuth integration out, and nothing outside the sandbox has a copy to restore it from. That is a
-requirement on the installer, and §8.6.3 now states it.
+requirement on the installer, and §8.6.3 now states it. *(2026-10-05, §7.44.4: run 3 carried the
+token into a new entry in a fresh directory; keeping the directory itself was first tried in §7.44,
+and the runtime did not set the integration up. The token result stands; the persistence it
+depends on is not yet supported.)*
 
 ### 7.42.3 What the runs found on the way
 
@@ -4876,7 +4879,7 @@ the prediction did not name.
 **Established.** A confined integration refreshes its own OAuth token inside its sandbox, through a
 declared egress, and loads. The refreshed single-use credential is written only to the sandbox's
 data directory. A respawn that keeps that directory stays authenticated; one that does not is logged
-out by the provider. With nothing declared, the refresh is refused and the token is not spent.
+out by the provider. *(2026-10-05: the first half was argued, not run — §7.44.4.)* With nothing declared, the refresh is refused and the token is not spent.
 
 **Not established.** One provider and one integration. The re-authentication flow, which a user
 runs after a refresh fails, needs a browser and was not exercised. And the persistence the result
@@ -4956,6 +4959,133 @@ outside it, it passes 40 of 40.
 path and serves asyncio broadcast scans. The review found more than the measurements did: two
 security-relevant defects by reading, one silent harness regression by re-running a measurement that
 the suites do not cover, and no regression in any measured figure.
+
+## 7.44 The refusal flood, bounded, and a way back for the household
+
+**2026-10-05.** §7.40.4 left one design question open, and §8.7 #15 priced four answers to it.
+Every refusal is a durable record, written and fsynced before the sandbox is answered, and nothing
+bounded how many a sandbox could cause: in W2 (a) a shim defect made `midea_ac_lan` write 463,631
+refusals, 289 MB, in 7.5 minutes. One record costs about 3.7 ms on the Pi (§7.20.1), so the mediator
+has about 272 decisions a second to share between every sandbox, and a sandbox that keeps asking
+for what it may not have spends all of them. Younes chose the cut-off, and asked that the person in
+the house be told in Home Assistant's own interface, because the household is not assumed to be
+technical. Predictions were committed before any code (`notes/flood_cutoff_prediction.md`).
+
+### 7.44.1 The design
+
+Two traditions answer this problem in opposite ways. Logging built for diagnostics keeps the system
+running and gives up records: journald drops a service's messages past a per-service rate and writes
+one line saying how many it suppressed. Security audit standards take the other side and prefer
+stopping the audited activity to losing its record *(Common Criteria's FAU_STG.4 and NIST SP 800-53's
+AU-5; both still to be verified against their primary texts before citation)*. Jiang et al. [29]
+describe the attack itself as a "super producer": one unprivileged process generating events fast
+enough to corrupt a centralised auditing framework or paralyse the system, which they trace to the
+absence of isolation between the processes the framework audits. The mediator is such a centralised
+auditor. The cut-off takes the audit standards' side, because dropping records would break S7, but
+applies it to **one sandbox** rather than to the system, which is the per-process isolation Jiang
+et al. call for, in its bluntest form.
+
+**The limit came from the data.** Across the 70 runs in `experiments/` whose decisions were
+recorded, the most refusals any run made in its whole life was 12, from the S3 test subject that asks
+for undeclared entities on purpose; real integrations reached 9 and 2. The flood ran at about 1,000 a
+second. The limit is **100 refusals within any 10 seconds**, eight times the worst honest run, and
+reached by a flood in a fraction of a second. Only refusals of requests the sandbox itself sent are
+counted. A user's command refused because the integration is not running is not its doing.
+
+**At the limit**, the mediator writes one `cutoff` record, closes every channel the integration holds,
+and refuses to register it again. The mark is what stops a respawn from resetting the count, and it
+lasts until someone reinstates the integration, which is itself recorded before registration is
+allowed. The supervisor kills the sandbox through its cgroup. The bridge in the house's Home Assistant
+raises a Repairs issue in plain words: the integration *"kept trying to do things it does not have
+permission to do"*, this is usually a bug, and restarting gives it no new permissions. The issue has
+one action, Restart. **A restart never widens what the integration may do**, because it registers
+under the same manifest, re-read at registration (§7.36), so a user who confirms without reading
+cannot make the house less safe. A supervisor that keeps one integration running against (A), and
+restarts it when told to, was built for this (`confine/supervise.py`); until now every entry point
+was an experiment that ran and exited.
+
+### 7.44.2 The result
+
+Measured on the Pi with the durable log on its SD card (ext4).
+
+| | Result |
+|---|---|
+| A flood against the real limit (`selftest_flood`) | cut off within **0.81 s**; exactly **100** refusals on disk, then one `cutoff`, then nothing |
+| A second sandbox during the flood | answered **235** times, every answer a grant, the slowest **26.1 ms** |
+| The same flood with the limit out of reach | still running past twice the limit, nothing cut off: the stop comes from the cut-off |
+| Registration while cut off; reinstatement | refused; `reinstate` recorded before the new `run`; a second flood cut off the same way |
+| Twenty refused commands from a user | recorded and answered; none counted |
+| The Repairs path through (A) (`selftest_real_platform`, 45/45) | issue in (A) within **302 ms**, an upper bound; confirming it reinstates the integration, recorded as *"reinstated by a user, from the Repairs panel"*, and removes the issue |
+| `demo_flood` under the supervisor, pressed by a user in (A) | the press succeeds in 13 ms; cut off **0.41 s** later after exactly 100 refused connections to its undeclared host; the issue is waiting; restarted 0.10 s after confirming; its switch back, off, 0.62 s later |
+| Younes, by hand, through (A)'s interface | two floods, two cut-offs, two restarts from the Repairs panel, each cycle in the durable record exactly as above |
+| `nordpool` | 16/16; nothing cut off |
+| All suites | 26 of 26, after one harness change (§7.44.3) |
+
+The test integration, `demo_flood`, was written for this: one switch that, turned on, retries a host
+its manifest does not declare, as a buggy integration retrying a host it missed would. Starting the
+flood from the house's own interface makes the whole path — a user's command in, the flood, the
+cut-off, the issue, the restart — one a person can drive, which Younes then did.
+
+### 7.44.3 What the runs found
+
+**A benchmark of refusals is a flood.** Prediction F6, that no honest run would trip the limit, was
+wrong. `selftest_channel` times the refusal path with a subject that holds no manifest and sends
+2,000 refused requests in a tight loop, and it was cut off at 100. The mediator sees only a rate, so it
+cannot tell a measurement of refusals from a hostile loop, and the same holds for an honest
+integration that is refused more than ten times a second for ten seconds. That suite now lifts the
+limit for its one measurement, stated in its code; re-run, its median is 203.8 µs against 197.2 and
+181.5 µs in the two runs before, inside the spread between those two, so counting refusals costs
+nothing measurable. The limit itself was not changed to suit a benchmark.
+
+**A restarted integration given its old data directory was never set up.** The supervisor's first
+restart reused the first start's directory. The private instance found the integration's config
+entry already stored, the config flow aborted as `already_configured`, and the runtime's flow mode
+never sets a stored entry up, so the integration ran and published nothing. Every harness gives each
+run a fresh directory, and the runtime had silently assumed it. The supervisor now does the same, which
+means **keeping `/sandbox/data` across a restart is not supported**. That qualifies §7.42, below.
+
+**Three defects were in the new tooling, not in the mechanism.** The supervisor did not give the
+sandbox the egress shim, so the first start failed at once. The first script driving the household run
+opened its own connection as the mediator does, which took the bridge's command stream, since that
+stream has one subscriber and the newest wins, and the user's press reached the script instead of the
+sandbox. And a supervisor started in the background from a non-interactive shell inherits SIGINT as
+ignored, so `pkill -INT` left three of them running; it now stops on SIGTERM. The first `selftest_flood`
+run on the Pi also put its log in `/tmp`, which is tmpfs there, and reported the cut-off in 0.20 s; that
+is the trap §7.20 recorded and avoided, met again in a new test, and the figure above is the run on
+the SD card.
+
+**And testing by hand found what no suite could.** A browser login to (A) was sent back into the
+onboarding wizard, which `house_a` had deliberately left after its first step, and then the interface
+stayed on "Loading" because the browser's first `get_services` imports the platform's base
+components and their requirements were not installed. API clients never send that command. Both are
+fixed in `house_a`, and what (A)'s extra packages are and how they are installed is now recorded.
+
+### 7.44.4 The predictions, and what this establishes
+
+F1, F2, F3, F4, F5 and F7 held; F6 was wrong; F8, that something unlisted would be found, held with
+the two findings above.
+
+**Established.** A sandbox that floods the mediator with refused requests now costs a bounded amount,
+100 records and under a second on the Pi, and is stopped, while another sandbox keeps being answered.
+The person in the house is told in the Repairs panel, in plain words, and gets the integration back
+with one action that cannot widen its permissions. Each step, including the user's, is recorded.
+
+**Not established, and stated.** The limit sees only a rate, so an honest integration refused often
+enough is stopped too, as `selftest_channel` was. The cut-off mark is held in the mediator's memory, so
+a restart of the mediator forgets it, at a cost of at most one more `cutoff`'s worth of records per
+start. And a restart cannot reuse an integration's data directory.
+
+**T19's row.** Chapter 4 now carries this as T19, denial of service against the audit log, added
+2026-10-05 as a risk the treatment of T18 introduced (§4.9). On §7.26.3's scale it is ✅
+*Demonstrated*, and not pairable: unconfined there is no mediator whose log could be flooded. **The
+register is nineteen threats, of which fifteen are demonstrated**, five of them paired; two partial;
+two retained.
+
+**§7.42, qualified.** §7.42.4 says *"a respawn that keeps that directory stays authenticated"*. Its run
+3 carried the token run 1 left into a new config entry in a fresh directory, so what it established is
+that the stored token remains valid. Keeping the directory itself was first tried here, and the
+integration was not set up at all. The token claim stands; the persistence claim was argued, and is now
+a limitation (§8.6.3 #16, §8.7 #16).
 
 ---
 

@@ -5,7 +5,8 @@ independent list until 2026-09-04 and the two schemes collided: `[3]` was the 20
 disclosure in Chapter 1 and FlowFence in Chapter 2. Both chapters' inline markers were remapped to
 this list; neither chapter's text was otherwise touched.
 
-**Twenty-eight sources, and four of them were not in either chapter's list.** ISO 31000, STRIDE and
+**Twenty-eight sources, and four of them were not in either chapter's list.** *(Twenty-nine since
+2026-10-05: [29] was added with §7.44.)* ISO 31000, STRIDE and
 OWASP Threat Dragon are Chapter 4's own methodological foundations — the chapter follows ISO
 31000's clause structure section by section and names the clause it discharges each time — and none
 of the three had a bibliography entry anywhere in the report. RFC 1918 is normative for what
@@ -129,6 +130,14 @@ L. Kohnfelder and P. Garg, *The Threats to Our Products*, Microsoft, 1999.
 **[28]** Y. Rekhter, B. Moskowitz, D. Karrenberg, G. J. de Groot and E. Lear, "Address Allocation
 for Private Internets", BCP 5, RFC 1918, IETF, February 1996.
 https://www.rfc-editor.org/rfc/rfc1918
+
+## Audit systems
+
+**[29]** P. Jiang, R. Huang, D. Li, Y. Guo, X. Chen, J. Luan, Y. Ren and X. Hu, "Auditing Frameworks
+Need Resource Isolation: A Systematic Study on the Super Producer Threat to System Auditing and Its
+Mitigation", *32nd USENIX Security Symposium*, 2023. arXiv:2307.15895. Cited in §7.44.1 for the
+threat Chapter 4 now carries as T19. *(Added 2026-10-05; authors, title and venue checked against the
+arXiv record.)*
 
 ---
 
