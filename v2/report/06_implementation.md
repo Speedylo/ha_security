@@ -470,6 +470,22 @@ infer an emptier sandbox than exists, and it is what the self-test's `/` listing
 `/sandbox/data`, whatever they were called outside. The sandbox runner then needs no
 configuration, and an integration cannot learn where on the host it was installed.
 
+> **2026-10-05 — the last clause is false, and was found by the verification campaign (finding
+> F11, `notes/verification_plan_20261005.md`).** Fixed paths hide nothing from
+> `/proc/self/mountinfo`, which lists the host path of the source of every mount, so a sandbox can
+> read where its own component and data directories live on the host. And independently of
+> `mountinfo`, the paragraph before this one describes binding the interpreter and its libraries
+> into the sandbox *at their host paths*, as §6.4 had to for the interpreter to start; on the Pi
+> those paths are `~/r2exp/ha314` and `~/.local/share/uv/python/…`, so the user's name and part of
+> the home directory's layout are ordinary paths inside every sandbox. What is disclosed is
+> **names, not contents**: a probe with the configuration under the home directory found `/home`
+> inside the sandbox holding only the empty chain of directories to the one granted file
+> (`experiments/verify/results/phase2/probe_home_visibility.json`). The claim the design can make
+> is narrower: an integration learns the host's directory layout along the paths it is given, and
+> nothing beyond them. A deployment that installs the runtime and data under a neutral prefix
+> (`/opt/confine`, `/var/lib/confine`) would reveal no user name; that is a one-time installation
+> step and is not built or measured here (§8.6.3 #18).
+
 **The `pivot_root` syscall number is per-architecture**, and glibc does not export the call
 everywhere, so it is issued directly with a small table of numbers. This is a portability
 limit rather than an incidental detail: isolation code of this kind couples to the machine, and

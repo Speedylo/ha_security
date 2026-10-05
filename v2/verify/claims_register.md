@@ -258,7 +258,7 @@ rows of their own (CS01–CS16).
 | CS06 | Modifying, deleting or reordering any record breaks every link after it | §5.12 | `selftest_audit` (strong form); X8 | |
 | CS07 | The log is unreachable from the sandbox: outside its mount namespace, and no verb writes to it | §5.12 | independent attacks | |
 | CS08 | The MAC key is generated at start and held only in the mediator's memory | §5.12, §6.8 | code read; scan disk and logs for the key | |
-| CS09 | An integration cannot learn where on the host it was installed | §6.4 | independent attack: read `/proc/self/mountinfo` from inside | **F11: false — mountinfo shows the host paths of its component and data directories (2026-10-05)** |
+| CS09 | An integration cannot learn where on the host it was installed | §6.4 | independent attack: read `/proc/self/mountinfo` from inside | **F11: Withdrawn — mountinfo and the host-path binds reveal the layout and user name; corrected in §6.4, Ch. 4, §8.6.3 #18** |
 | CS10 | Every declared path is verified in the new root before the sandbox runs; construction fails loudly | §6.4 | mutant (skip the check); `selftest_bridge` | |
 | CS11 | Seccomp is a deny-list; a syscall not on it is allowed (a stated residual) | §6.4 | compare the list with the text; X13 | |
 | CS12 | Over-broad and unsafe declarations are rejected at parse time, not at use | §6.6 | `selftest_policy`; X17 | |
