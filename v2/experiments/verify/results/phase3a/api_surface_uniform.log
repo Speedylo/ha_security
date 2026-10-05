@@ -1,0 +1,56 @@
+API surface — corpus 'hacs-uniform40', 40 integrations, 835 files (0 unparseable)
+
+handle             integrations   share   what it confers
+  hass.data                  32    80.0%   Shared mutable store — every integration's r
+  hass.bus                    7    17.5%   Event bus — fire any event, subscribe to all
+  hass.services              15    37.5%   Service registry — call any registered servi
+  hass.states                14    35.0%   State machine — read and write every entity
+  hass.config                15    37.5%   Config, including config.path() into the con
+  hass.auth                   3     7.5%   Auth manager — users and tokens
+  hass.http                   7    17.5%   HTTP component — register routes on the runn
+  hass.config_entries         37    92.5%   Every integration's stored configuration and
+  hass.loop                  29    72.5%   Event loop / executor — schedule on the plat
+
+most-used members (share of integrations using each):
+  hass.config_entries.async_forward_entry_setups    36   90.0%
+  hass.config_entries.async_unload_platforms    30   75.0%
+  hass.data.setdefault                       27   67.5%
+  hass.loop.async_add_executor_job           21   52.5%
+  hass.data.get                              17   42.5%
+  hass.loop.async_create_task                17   42.5%
+  hass.config_entries.async_update_entry     16   40.0%
+  hass.config_entries.async_reload           16   40.0%
+  hass.services.async_register               13   32.5%
+  hass.states.get                            11   27.5%
+  hass.config_entries.async_get_entry        10   25.0%
+  hass.config_entries.async_entries           9   22.5%
+  hass.config.path                            8   20.0%
+  hass.http.async_register_static_paths       7   17.5%
+  hass.config_entries.async_forward_entry_unload     6   15.0%
+
+calls services                5   12.5%
+registers services           14   35.0%
+imports another component    20   50.0%
+
+service domains called (by literal first argument):
+  homeassistant              7
+  persistent_notification     5
+  valve                      4
+  switch                     3
+  automation                 2
+  script                     1
+  notify                     1
+
+most-imported other components:
+  http                       8
+  diagnostics                8
+  persistent_notification     5
+  lovelace                   4
+  frontend                   4
+  recorder                   3
+  bluetooth                  2
+  device_automation          2
+  homeassistant              2
+  automation                 2
+
+wrote /home/younes/r2exp/verify/v2/experiments/verify/results/phase3a/api_surface_uniform.json

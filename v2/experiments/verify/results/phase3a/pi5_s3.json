@@ -1,0 +1,306 @@
+{
+  "unconfined": {
+    "arm": "unconfined",
+    "visible": [
+      "alarm_control_panel.home_alarm",
+      "binary_sensor.bathroom_occupancy",
+      "binary_sensor.bedroom_occupancy",
+      "binary_sensor.front_door",
+      "binary_sensor.hallway_motion",
+      "binary_sensor.internet_connection",
+      "binary_sensor.living_room_motion",
+      "binary_sensor.washing_machine_running",
+      "calendar.family",
+      "climate.living_room",
+      "cover.garage_door",
+      "device_tracker.partner_phone",
+      "device_tracker.younes_phone",
+      "light.bedroom",
+      "lock.back_door",
+      "lock.front_door",
+      "media_player.living_room_tv",
+      "person.partner",
+      "person.younes",
+      "sensor.bedroom_bed_presence",
+      "sensor.boiler_pressure",
+      "sensor.electricity_price",
+      "sensor.grid_import",
+      "sensor.indoor_temperature",
+      "sensor.last_motion_time",
+      "sensor.mailbox_unread",
+      "sensor.nas_disk_free",
+      "sensor.outdoor_humidity",
+      "sensor.outdoor_temperature",
+      "sensor.pollen_count",
+      "sensor.printer_toner",
+      "sensor.router_uptime",
+      "sensor.solar_production",
+      "sun.sun",
+      "update.home_assistant_core",
+      "weather.home"
+    ],
+    "reads": {
+      "sensor.outdoor_temperature": {
+        "present_locally": true,
+        "mediator_ok": true,
+        "clause": null,
+        "value": "12.4"
+      },
+      "device_tracker.younes_phone": {
+        "present_locally": true,
+        "mediator_ok": true,
+        "clause": null,
+        "value": "home"
+      },
+      "binary_sensor.bedroom_occupancy": {
+        "present_locally": true,
+        "mediator_ok": true,
+        "clause": null,
+        "value": "on"
+      },
+      "lock.front_door": {
+        "present_locally": true,
+        "mediator_ok": true,
+        "clause": null,
+        "value": "unlocked"
+      },
+      "alarm_control_panel.home_alarm": {
+        "present_locally": true,
+        "mediator_ok": true,
+        "clause": null,
+        "value": "disarmed"
+      },
+      "calendar.family": {
+        "present_locally": true,
+        "mediator_ok": true,
+        "clause": null,
+        "value": "on"
+      },
+      "sensor.electricity_price": {
+        "present_locally": true,
+        "mediator_ok": true,
+        "clause": null,
+        "value": "0.243"
+      }
+    },
+    "churned": [
+      "device_tracker.younes_phone",
+      "binary_sensor.bedroom_occupancy",
+      "lock.front_door",
+      "alarm_control_panel.home_alarm"
+    ],
+    "events_received": [
+      "alarm_control_panel.home_alarm",
+      "binary_sensor.bedroom_occupancy",
+      "device_tracker.younes_phone",
+      "lock.front_door"
+    ]
+  },
+  "confined": {
+    "domain": "demo_weather",
+    "visible": [
+      "sensor.outdoor_temperature"
+    ],
+    "mirrored": [
+      "sensor.outdoor_temperature"
+    ],
+    "reads": {
+      "sensor.outdoor_temperature": {
+        "present_locally": true,
+        "mediator_ok": true,
+        "clause": "/permissions/entities/read/0"
+      },
+      "device_tracker.younes_phone": {
+        "present_locally": false,
+        "mediator_ok": false,
+        "clause": "/permissions/entities/read"
+      },
+      "binary_sensor.bedroom_occupancy": {
+        "present_locally": false,
+        "mediator_ok": false,
+        "clause": "/permissions/entities/read"
+      },
+      "lock.front_door": {
+        "present_locally": false,
+        "mediator_ok": false,
+        "clause": "/permissions/entities/read"
+      },
+      "alarm_control_panel.home_alarm": {
+        "present_locally": false,
+        "mediator_ok": false,
+        "clause": "/permissions/entities/read"
+      },
+      "calendar.family": {
+        "present_locally": false,
+        "mediator_ok": false,
+        "clause": "/permissions/entities/read"
+      },
+      "sensor.electricity_price": {
+        "present_locally": false,
+        "mediator_ok": false,
+        "clause": "/permissions/entities/read"
+      }
+    },
+    "subscribes": {
+      "sensor.outdoor_temperature": {
+        "mediator_ok": true,
+        "clause": "/permissions/entities/subscribe/0"
+      },
+      "device_tracker.younes_phone": {
+        "mediator_ok": false,
+        "clause": "/permissions/entities/subscribe"
+      },
+      "binary_sensor.bedroom_occupancy": {
+        "mediator_ok": false,
+        "clause": "/permissions/entities/subscribe"
+      },
+      "lock.front_door": {
+        "mediator_ok": false,
+        "clause": "/permissions/entities/subscribe"
+      },
+      "alarm_control_panel.home_alarm": {
+        "mediator_ok": false,
+        "clause": "/permissions/entities/subscribe"
+      },
+      "calendar.family": {
+        "mediator_ok": false,
+        "clause": "/permissions/entities/subscribe"
+      },
+      "sensor.electricity_price": {
+        "mediator_ok": false,
+        "clause": "/permissions/entities/subscribe"
+      }
+    },
+    "arm": "confined",
+    "durable": {
+      "records": 16,
+      "runs": 1,
+      "decisions": 15,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "decisions": [
+      {
+        "identity": "demo_weather",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "demo_weather",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "demo_weather",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/subscribe/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "demo_weather",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/read",
+        "reason": "'device_tracker.younes_phone' matches no clause at /permissions/entities/read"
+      },
+      {
+        "identity": "demo_weather",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/subscribe",
+        "reason": "'device_tracker.younes_phone' matches no clause at /permissions/entities/subscribe"
+      },
+      {
+        "identity": "demo_weather",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/read",
+        "reason": "'binary_sensor.bedroom_occupancy' matches no clause at /permissions/entities/read"
+      },
+      {
+        "identity": "demo_weather",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/subscribe",
+        "reason": "'binary_sensor.bedroom_occupancy' matches no clause at /permissions/entities/subscribe"
+      },
+      {
+        "identity": "demo_weather",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/read",
+        "reason": "'lock.front_door' matches no clause at /permissions/entities/read"
+      },
+      {
+        "identity": "demo_weather",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/subscribe",
+        "reason": "'lock.front_door' matches no clause at /permissions/entities/subscribe"
+      },
+      {
+        "identity": "demo_weather",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/read",
+        "reason": "'alarm_control_panel.home_alarm' matches no clause at /permissions/entities/read"
+      },
+      {
+        "identity": "demo_weather",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/subscribe",
+        "reason": "'alarm_control_panel.home_alarm' matches no clause at /permissions/entities/subscribe"
+      },
+      {
+        "identity": "demo_weather",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/read",
+        "reason": "'calendar.family' matches no clause at /permissions/entities/read"
+      },
+      {
+        "identity": "demo_weather",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/subscribe",
+        "reason": "'calendar.family' matches no clause at /permissions/entities/subscribe"
+      },
+      {
+        "identity": "demo_weather",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/read",
+        "reason": "'sensor.electricity_price' matches no clause at /permissions/entities/read"
+      },
+      {
+        "identity": "demo_weather",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/subscribe",
+        "reason": "'sensor.electricity_price' matches no clause at /permissions/entities/subscribe"
+      }
+    ]
+  }
+}

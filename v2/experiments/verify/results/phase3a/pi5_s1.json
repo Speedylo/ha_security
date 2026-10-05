@@ -1,0 +1,55 @@
+{
+  "unconfined": {
+    "arm": "unconfined",
+    "victim_loaded": true,
+    "gc_hits": [
+      [
+        "dict-value",
+        "CANARY-GCACCESS-7f3a1e9c4b28d60f-DO-NOT-DISCLOSE"
+      ],
+      [
+        "CloudClient.attr",
+        "CANARY-GCACCESS-7f3a1e9c4b28d60f-DO-NOT-DISCLOSE"
+      ],
+      [
+        "dict-value",
+        "Bearer CANARY-GCACCESS-7f3a1e9c4b28d60f-DO-NOT-DISCLOSE"
+      ],
+      [
+        "module.attr",
+        "CANARY-GCACCESS-7f3a1e9c4b28d60f-DO-NOT-DISCLOSE"
+      ],
+      [
+        "dict-value",
+        "CANARY-GCACCESS-7f3a1e9c4b28d60f-DO-NOT-DISCLOSE"
+      ],
+      [
+        "module.attr",
+        "CANARY-GCACCESS-7f3a1e9c4b28d60f-DO-NOT-DISCLOSE"
+      ],
+      [
+        "dict-value",
+        "CANARY-GCACCESS-7f3a1e9c4b28d60f-DO-NOT-DISCLOSE"
+      ]
+    ],
+    "gc_hit_count": 7,
+    "found_credential": true
+  },
+  "confined": {
+    "gc_hits": [],
+    "gc_hit_count": 0,
+    "found_credential": false,
+    "heap_size": 8942,
+    "arm": "confined",
+    "durable": {
+      "records": 1,
+      "runs": 1,
+      "decisions": 0,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "mediator_holds_credential": true,
+    "mediator_hit_count": 7
+  }
+}

@@ -1,0 +1,57 @@
+<unknown>:203: SyntaxWarning: "\S" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\S"? A raw string is also an option.
+API surface — corpus 'hacs', 37 integrations, 2357 files (0 unparseable)
+
+handle             integrations   share   what it confers
+  hass.data                  36    97.3%   Shared mutable store — every integration's r
+  hass.bus                   25    67.6%   Event bus — fire any event, subscribe to all
+  hass.services              29    78.4%   Service registry — call any registered servi
+  hass.states                20    54.1%   State machine — read and write every entity
+  hass.config                26    70.3%   Config, including config.path() into the con
+  hass.auth                   3     8.1%   Auth manager — users and tokens
+  hass.http                  11    29.7%   HTTP component — register routes on the runn
+  hass.config_entries         36    97.3%   Every integration's stored configuration and
+  hass.loop                  31    83.8%   Event loop / executor — schedule on the plat
+
+most-used members (share of integrations using each):
+  hass.config_entries.async_forward_entry_setups    36   97.3%
+  hass.config_entries.async_update_entry     31   83.8%
+  hass.config_entries.async_reload           28   75.7%
+  hass.config_entries.async_unload_platforms    27   73.0%
+  hass.services.async_register               25   67.6%
+  hass.data.get                              25   67.6%
+  hass.data.setdefault                       24   64.9%
+  hass.loop.async_create_task                23   62.2%
+  hass.loop.async_add_executor_job           22   59.5%
+  hass.states.get                            19   51.4%
+  hass.config_entries.async_entries          18   48.6%
+  hass.bus.async_listen_once                 17   45.9%
+  hass.config.path                           17   45.9%
+  hass.config_entries.async_get_entry        13   35.1%
+  hass.bus.async_fire                        12   32.4%
+
+calls services                9   24.3%
+registers services           27   73.0%
+imports another component    27   73.0%
+
+service domains called (by literal first argument):
+  homeassistant              4
+  persistent_notification     2
+  xiaomi_miot                2
+  frontend                   1
+  automation                 1
+  person                     1
+  recorder                   1
+
+most-imported other components:
+  http                      11
+  diagnostics                9
+  repairs                    8
+  websocket_api              6
+  mqtt                       4
+  homeassistant              4
+  lovelace                   4
+  media_source               4
+  recorder                   4
+  persistent_notification     3
+
+wrote /home/younes/r2exp/verify/v2/experiments/verify/results/phase3a/api_surface_hacs.json

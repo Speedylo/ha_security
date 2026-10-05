@@ -1,0 +1,14 @@
+c1_baseline exit=0 seconds=145
+c1_declared_core exit=0 seconds=107
+uniform_baseline exit=0 seconds=124
+uniform_confined exit=0 seconds=86
+compat_minimal exit=0 seconds=116
+compat_unstripped exit=0 seconds=144
+api_surface_hacs exit=0 seconds=8
+api_surface_uniform exit=0 seconds=5
+entity_visibility exit=0 seconds=2
+gc_attack exit=0 seconds=1
+adversary_confined exit=0 seconds=9
+adversary_unconfined exit=0 seconds=1
+egress_shape exit=0 seconds=350
+ALLDONE

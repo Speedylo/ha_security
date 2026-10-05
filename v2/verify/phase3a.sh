@@ -1,5 +1,7 @@
 #!/bin/bash
-# Phase 3a: the measurements judged exactly, on the frozen tree. One log per step, one summary line each.
+# Phase 3a: the measurements judged exactly, on the frozen tree.
+# 2026-10-05: the baseline arms take --platform-deps, as the 10-03 golden runs did
+# (notes/ch7_31_compat_rerun_prediction.md); the first run omitted it (finding F14). One log per step, one summary line each.
 cd ~/r2exp/verify/v2/framework
 OUT=~/r2exp/verify/v2/experiments/verify/results/phase3a; mkdir -p "$OUT"; S="$OUT/summary.txt"
 [ -s "$S" ] && mv "$S" "$OUT/summary_attempt$(date +%s).txt"; : > "$S"
@@ -7,9 +9,9 @@ P=~/r2exp/ha314/bin/python; C=~/r2exp/corpus; U=~/r2exp/corpus_uniform; D=~/r2ex
 run="systemd-run --user --scope -q python3 -u -m"
 step() { local name=$1; shift; local t=$(date +%s); timeout 3600 "$@" > "$OUT/$name.log" 2>&1; echo "$name exit=$? seconds=$(( $(date +%s) - t ))" >> "$S"; }
 
-step c1_baseline              $run confine.compat --corpus $C --python $P --profile baseline --json "$OUT/c1_baseline.json"
+step c1_baseline              $run confine.compat --corpus $C --python $P --profile baseline --platform-deps $D --json "$OUT/c1_baseline.json"
 step c1_declared_core         $run confine.compat --corpus $C --python $P --profile declared --platform-deps $D --json "$OUT/c1_declared_core.json"
-step uniform_baseline         $run confine.compat --corpus $U --python $P --profile baseline --json "$OUT/uniform_baseline.json"
+step uniform_baseline         $run confine.compat --corpus $U --python $P --profile baseline --platform-deps $D --json "$OUT/uniform_baseline.json"
 step uniform_confined         $run confine.compat --corpus $U --python $P --profile declared --platform-deps $D --json "$OUT/uniform_confined.json"
 step compat_minimal           $run confine.compat --corpus $C --python $P --profile minimal --json "$OUT/compat_minimal.json"
 step compat_unstripped        $run confine.compat --corpus $C --python $P --profile unstripped --platform-deps $D --json "$OUT/compat_unstripped_currentdeps.json"
