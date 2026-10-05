@@ -5,15 +5,15 @@
 **Engineering W1 and W2 are complete, and the day's work has been reviewed and retested (§7.43).**
 Everything is committed; all 25 suites pass on the Pi.
 
-**2026-10-05: the refusal flood is DECIDED and BUILT, not yet run on the Pi** (the Pi was unreachable).
-Younes chose the cut-off, surfaced in Home Assistant's Repairs panel with one safe "restart" button,
-because the household user is not assumed to be technical. Predictions: `notes/flood_cutoff_prediction.md`
-(274132f, before any code). Built: c16a151 (mediator window 100/10 s from the recorded runs, `cutoff` /
-`reinstate` records, sticky until reinstated; `selftest_flood` 22/22 locally) and 354dc5d (bridge Repairs
-issue + fix flow, `RealPlatform` routing, `supervise.py`, `experiments/flood/demo_flood`, F7 in
-`selftest_real_platform`). **Next:** on the Pi, sync, `house_a up --fresh`, all suites + `nordpool` (F6),
-`selftest_real_platform` (F7), the supervisor run, then Younes's manual test (`experiments/flood/README.md`);
-then §7.44, T19 in Chapter 4, dated pointers at §8.6.3 #14 / §8.7 #15; then the cut-off.
+**2026-10-05: the refusal flood is DONE — built, run on the Pi, tested by hand by Younes, written up (§7.44).**
+Cut-off at 100 refusals in 10 s, one record, the household told in (A)'s Repairs panel with one safe
+Restart; `confine/supervise.py` keeps one integration running; `experiments/flood/` has `demo_flood` and
+all results. F6 was wrong (a refusal benchmark is a flood; `selftest_channel` lifts the limit, stated).
+Found: a restart cannot reuse `/sandbox/data` (§8.6.3 #16, §8.7 #16) — §7.42's persistence claim was
+argued, not run, now qualified. T19 added to Chapter 4; register 19, 15 demonstrated; 26 suites.
+Testing by hand also fixed (A) for browsers: onboarding seeded, base-component requirements in
+`houseA-deps` (recorded in `house_a.py`). Verification debts: `notes/rewrite_consolidation_backlog.md` §7.
+**Next: Younes declares the engineering cut-off; then phase R.** (A) is up on the Pi.
 
 **Next session, in this order (as of 2026-10-04):**
 1. **The refusal-flood decision** (§8.6.3 #14, §8.7 #15). A sandbox looping on refused requests makes
