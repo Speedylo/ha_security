@@ -15,6 +15,13 @@ Testing by hand also fixed (A) for browsers: onboarding seeded, base-component r
 `houseA-deps` (recorded in `house_a.py`). Verification debts: `notes/rewrite_consolidation_backlog.md` §7.
 **Next: Younes declares the engineering cut-off; then phase R.** (A) is up on the Pi.
 
+**2026-10-05 (night): VERIFICATION CAMPAIGN in progress** (`notes/verification_plan_20261005.md`; register
+`verify/claims_register.md`; results `experiments/verify/results/`). Frozen at tag `verify-2026-10`
+(6aa2eb6), copied to `~/r2exp/verify/v2` on the Pi. Phases 0, 1, 2 done; findings F01–F13 in the
+plan's log (F11 resolved; F03 and F08 the open ones that matter). **Resume at Phase 3, sitting 3a**
+(exact measurements, ~1.5 h); then 3b–3d (timing passes on separate boots). The cut-off waits for the
+campaign's exit criteria.
+
 **Next session, in this order (as of 2026-10-04):**
 1. **The refusal-flood decision** (§8.6.3 #14, §8.7 #15). A sandbox looping on refused requests makes
    the mediator write a durable record for each one (463,631 records, 289 MB, in 7.5 minutes,

@@ -145,6 +145,19 @@ the run.
 | Bytecode cache | §7.39 | 2026-10-04 | the from-cache counts identical |
 | Flood | §7.44 | 2026-10-05 | 100 refusals, one cutoff, under 1 s on disk |
 
+**Split into four sittings (2026-10-05, at Younes's request), each ending with a commit:**
+
+| Sitting | Runs | Pi | Analysis |
+|---|---|---|---|
+| 3a, exact | compatibility (4 arms, both corpora, C1), API surface, entity visibility, GC attack, un-stripping, adversary pair, egress shape on a /16 | ~50 min | ~40 min |
+| 3b, timing pass 1 | mediation latency (1 and 26 clients), durability on disk, footprint, push and command latency, bytecode, flood | ~50 min | ~40 min (statistics script) |
+| 3c, timing pass 2 | reboot, then the same | ~50 min | ~10 min |
+| 3d, timing pass 3 and verdicts | reboot, then the same; statistics across the three passes; T and M verdicts | ~50 min | ~30 min |
+
+The estimate comes from the durations of the same runs on 2026-10-03 and 2026-10-05, and replaces the
+1.5–2 days written below for this phase: about half a day of work in all, or a day if a finding needs
+a fix and its regression.
+
 **Timing claims get statistics they do not have today.** Run each one three times, on different
 boots and at different times of day. Report the median, p99, and a bootstrap 95% interval across
 runs. Label every figure warm or cold. Write the tolerance into the register *before* the first
@@ -311,7 +324,7 @@ The campaign is complete, and the engineering cut-off can be declared, when:
 | 0 | Claim register | 1–1.5 days |
 | 1 | Freeze and environment | 2 hours |
 | 2 | Regression L1–L4, plus `compare.py` | 1 day (mostly Pi time) |
-| 3 | Measurement re-runs, three times for timings | 1.5–2 days (mostly Pi time, overnight runs) |
+| 3 | Measurement re-runs, three times for timings, in four sittings (§6) | ~0.5 day (was 1.5–2 days; revised from measured durations) |
 | 4.1, 4.8–4.10 | Re-derivation, evidence integrity, consistency, citations | 1 day |
 | 4.2 | Clean-checkout reproduction | half a day |
 | 4.3–4.5 | Mutants, controls, fault injection | 1.5 days |
