@@ -1,0 +1,17 @@
+  ok    an untouched tree reports no source change
+  ok    a one-line edit is caught  — modified=['__init__.py']
+  ok    and is counted in lines, not hashes  — diff_lines=2 (one removed, one added)
+  ok    and is attributed to source  — components=['source']
+  ok    two distinct trees are counted without retention  — diff_lines=1
+  ok    an uncountable change is reported unknown, not zero  — unknown=['__init__.py']
+  ok    a deleted source file is caught
+  ok    an added source file is caught
+  ok    a manifest edit is attributed to manifest, not source  — components=['manifest']
+  ok    a requirements edit moves manifest and requirements together  — components=['manifest', 'requirements']
+  ok    bytecode is not a source change
+  ok    and is still reported rather than silently dropped  — cache_added=2
+  ok    a real change is still caught through the bytecode noise
+  ok    the run-level summary counts only what it checked  — {"integrations_checked": 3, "source_changed": 1, "total_diff_lines": 0, "lines_unknown": 1, "trees_gaining_bytecode": 2, "domains_with_changes": ["dirty"]}
+  ok    and counts the trees that gained bytecode separately  — trees_gaining_bytecode=2
+
+15/15 checks passed

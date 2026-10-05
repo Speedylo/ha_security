@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/younes/r2exp/v2/framework/confine/selftest_channel.py", line 230, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/younes/r2exp/v2/framework/confine/selftest_channel.py", line 152, in main
+    sandbox.wait(timeout=60)
+    ~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/younes/r2exp/v2/framework/confine/spawn.py", line 60, in wait
+    raise TimeoutError(f"{self.domain} still running after {timeout}s")
+TimeoutError: demo_b still running after 60s

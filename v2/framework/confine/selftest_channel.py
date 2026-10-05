@@ -111,7 +111,12 @@ def main() -> int:
     become_subreaper()
 
     root = Path(tempfile.mkdtemp(prefix="confine-channel-"))
-    mediator = Mediator()
+    # demo_b holds no manifest and times the refusal path: ROUND_TRIPS refused requests in a
+    # tight loop, which is exactly what the refusal-flood cut-off exists to stop. The limit is
+    # lifted here, and only here, so the suite measures the decision path as it was measured
+    # before the cut-off existed. Found on the Pi on 2026-10-05, when demo_b was cut off at 100
+    # and this suite waited out its 60 s (`notes/flood_cutoff_prediction.md`, F6's outcome).
+    mediator = Mediator(flood_limit=10 * ROUND_TRIPS)
     audit_dir = attach(mediator, "confine-channel-audit-")
     sandboxes = []
     outputs = {}
