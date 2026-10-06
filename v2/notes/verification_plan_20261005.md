@@ -351,7 +351,7 @@ so the first day serves both.
 | F02 | 0 | A1.22 | Minor | "Within a millisecond" holds for the median (0.71 ms), not the worst (1.57 ms) | **resolved 2026-10-06** with F23: the abstract now says "in under a millisecond at the median" |
 | F03 | 0 | F3 | Potentially Major | Clause-less refusals are constructible; 0 of 467 committed records lack a clause, but those paths were never exercised durably | **resolved 2026-10-06**: fixed in code (Younes's choice), tag `verify-2026-10-f03`, regression green (`experiments/verify/results/phase4/regress_f03/`); §7.45.2, §7.5's F3 verdict and a §7.4.2 pointer |
 | F04 | 0 | CM-T7 | Minor | T19 now maps to CM-T7; the row predates it | open |
-| F05 | 0 | A1.18, S8, T14, T15 | Re-measure | Adversary pair and mediation latency last run before the October changes | Phase 3 |
+| F05 | 0 | A1.18, S8, T14, T15 | Re-measure | Adversary pair and mediation latency last run before the October changes | **resolved 2026-10-06** by Phase 3 (three passes, `experiments/verify/results/phase3_timing/verdicts.md`): the adversary pair held; latency moved and was corrected as F17 (§7.45.1) |
 | F06 | 0 | A5.2 | Minor | Contribution 2's suite tally stops at twenty-four | open |
 | F07 | 0 | Tier B | Minor | Nine results sections named by no experiment README; `durability/` has none | open |
 | F08 | 0 | CS05 | Minor to Major | Identity hashes declared, not resolved, requirements; the code comment and §8.6.3 #3 say installation is unbuilt, but it exists | open |
