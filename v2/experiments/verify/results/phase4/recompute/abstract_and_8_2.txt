@@ -1,0 +1,86 @@
+EQUAL      A1.01   active installations (Home Assistant analytics)
+           recomputed 669,743  ()
+           stated     abstract: 669,743
+EQUAL      A1.11a  integrations measured across the two corpora (37 + 40)
+           recomputed 77  (75 distinct; shared ['bermuda', 'browser_mod'])
+           stated     abstract: 77, 08_conclusions.md: 77
+EQUAL      A1.11b  share of members the two corpora have in common
+           recomputed 5%  (2 of 40)
+           stated     abstract: 5%, 07_evaluation.md: 5%
+EQUAL      A1.12   clean in both arms: head corpus, then uniform
+           recomputed 84% and 92%  (head 31/37 baseline, 31/37 confined; uniform 37/40, 37/40)
+           stated     abstract: 84% and 92%
+EQUAL      A1.12b  integrations failing confined but not unconfined, both corpora
+           recomputed none  (set differences [0, 0])
+           stated     abstract: none
+DIFFERS    A1.13   integrations executed end to end (a named set)
+           recomputed Thirteen  (13: §7.17 5; §7.27 1; §7.31 3; §7.34 1; §7.40 1; §7.41 1; §7.42 1)
+           stated     abstract: Ten
+EQUAL      A1.13b  head-corpus integrations whose configuration asks for a credential
+           recomputed 26 of 37  (whole-directory scan for credential fields; the survey script itself was never committed)
+           stated     abstract: 26 of 37
+EQUAL      A1.18   mediation latency, one client, median of the three verification passes
+           recomputed 43.2 µs  ([43.2, 43.4, 42.0] µs → median 43.2)
+           stated     abstract: 43 µs, 08_conclusions.md: 43.2 µs
+EQUAL      A1.19   durable record per decision, with fsync, median
+           recomputed 3.67 ms  (3670.7 µs)
+           stated     abstract: 3.67 ms
+EQUAL      A1.20   headroom over realistic demand, the request and the durable record both counted
+           recomputed 62×  (269/s ÷ 4.33/s = 62.1)
+           stated     abstract: 62×, 08_conclusions.md: 62×
+EQUAL      A1.21   thermal_comfort's entities in (A): registry rows, before and after a restart
+           recomputed 15 of 15  (rows after restart 15, states identical 15, entities 15)
+           stated     07_evaluation.md: 15 of 15, 07_evaluation.md: 15 of 15
+DIFFERS    A1.22   change in (A) to the mediator's push: the worst of 30, in the run behind the median
+           recomputed 2.23 ms  (real_platform/results/w1_step2_20261004/suites/selftest_real_platform.log; worst across all 15 committed runs 1.49–2.91 ms)
+           stated     07_evaluation.md: 1.57 ms
+EQUAL      A1.23   a user's command to the integration's own code
+           recomputed 16 ms  (0.016082035999716027 s)
+           stated     abstract: 16 ms
+EQUAL      A1.24   refusals before the cut-off, and its time on disk
+           recomputed 100  (100 refusals, cut-off after 0.812 s)
+           stated     abstract: 100
+EQUAL      A1.25   self-test suites
+           recomputed Twenty-six  (26 counting the base `selftest.py`; 25 counting `selftest_*.py` only)
+           stated     abstract: Twenty-six
+EQUAL      A1.29   suites that existed when §7.27 found the Zeroconf failure
+           recomputed eighteen  (18 `selftest_*.py` at 4f779ca, the commit that wrote §7.27 (19 with the base `selftest.py`))
+           stated     abstract: eighteen
+EQUAL      A1.30   suites that existed when §7.31 found three further defects
+           recomputed twenty  (20 `selftest_*.py` at 7b8f4d2, the commit that wrote §7.31 (21 with the base `selftest.py`))
+           stated     abstract: twenty
+EQUAL      A1.29b  share of the head corpus that the egress design serves (cloud iot_class)
+           recomputed 41%  (15 of 37: {'local_push': 12, 'cloud_polling': 13, 'calculated': 6, 'local_polling': 3, None: 1, 'cloud_push': 2})
+           stated     abstract: 41%
+EQUAL      8.2.1a  garbage-collector technique: ways the token was reached unconfined
+           recomputed 7  ()
+           stated     08_conclusions.md: 7
+EQUAL      8.2.1b  garbage-collector technique: objects the confined walk saw, all its own
+           recomputed 8,942  (hits 0, mediator holds it True)
+           stated     08_conclusions.md: 8,942
+EQUAL      8.2.1c  2021 file-theft canaries recovered, unconfined then confined
+           recomputed 2 of 2 | 0 of 2  (['CANARY-SECRETS', 'CANARY-TOKEN']; confined [])
+           stated     08_conclusions.md: 2 of 2, 08_conclusions.md: 0 of 2
+EQUAL      8.2.1d  file-theft attempts that worked unconfined
+           recomputed five  (5 LEAKED lines before the process probes)
+           stated     08_conclusions.md: five
+EQUAL      8.2.1e  undeclared entity states readable: all, then presence; unconfined then confined
+           recomputed 36 of 36 | 20 of 20 | 1 of 36 | 0 of 20  (sensitive marked in confine/home.py: 20)
+           stated     08_conclusions.md: 36 of 36, 08_conclusions.md: 20 of 20, 08_conclusions.md: 1 of 36, 08_conclusions.md: 0 of 20
+EQUAL      8.2.2   import-level compatibility, both arms, both corpora (the §8.2.2 table)
+           recomputed 84% | 84% | 92% | 92%  (head confined, head baseline, uniform confined, uniform baseline)
+           stated     08_conclusions.md: 84%, 08_conclusions.md: 84%, 08_conclusions.md: 92%, 08_conclusions.md: 92%
+EQUAL      8.2.3a  mean community integrations per HACS-running installation
+           recomputed 4.02  ()
+           stated     08_conclusions.md: 4.02
+EQUAL      8.2.3b  mediator capacity with the durable record and the request counted
+           recomputed 269  (§7.45.1's arithmetic)
+           stated     08_conclusions.md: 269, 08_conclusions.md: 269
+EQUAL      8.2.3c  durable record against the non-durable write
+           recomputed 59×  (59.4)
+           stated     08_conclusions.md: 59×
+EQUAL      8.2.3d  mediator cost per delivered push (§7.36's suite log)
+           recomputed 10.9 µs  (re-measured in the verification passes: [11.5, 11.5, 11.5] µs)
+           stated     08_conclusions.md: 10.9 µs
+
+DIFFERS 2, EQUAL 26

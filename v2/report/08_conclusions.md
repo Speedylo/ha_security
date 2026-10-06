@@ -173,7 +173,7 @@ platform can do.*
 | Mediator capacity, audit write included | **269 decisions/s** (§7.20.1, with the request counted by §7.45.1) | realistic demand of **4.33 req/s** at the full budget — **62× headroom** |
 | Latency at 0.009% utilisation | **43.2 µs** *(31.5 µs as first printed; the mediator changed after it was measured, §7.45.1)* | — |
 | Durability | `fsync` per decision costs **3.67 ms**, 59× the non-durable write | affordable; §5.11.3's ordering guarantee is kept *(from 2026-10-04 only: before §7.36.1 the mediator recorded after acting)* |
-| Push delivery | **10.9 µs** per delivered state change, nothing written to disk (§7.36) | the hot path below, measured: it does not draw on the 272 decisions/s |
+| Push delivery | **10.9 µs** per delivered state change, nothing written to disk (§7.36) | the hot path below, measured: it does not draw on the 269 decisions/s |
 
 **Assertion C holds, and the arithmetic behind it was corrected once inside the chapter.** §7.19.3
 first reported 11,000× headroom by excluding the audit write; §7.20.1 measured that write at a
