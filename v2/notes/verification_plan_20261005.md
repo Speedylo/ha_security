@@ -154,6 +154,8 @@ the run.
 | 3c, timing pass 2 | reboot, then the same | ~50 min | ~10 min |
 | 3d, timing pass 3 and verdicts | reboot, then the same; statistics across the three passes; T and M verdicts | ~50 min | ~30 min |
 
+*3c done 2026-10-06: the pass took ~2.5 minutes of Pi time on a fresh boot; the same 12 of 13 within criterion (F17). Marginal memory (126 → 134 MB) and powercalc's default start (2.29 → 2.92 s) moved most; pass 3 decides whether either leaves its tolerance.*
+
 The estimate comes from the durations of the same runs on 2026-10-03 and 2026-10-05, and replaces the
 1.5–2 days written below for this phase: about half a day of work in all, or a day if a finding needs
 a fix and its regression.

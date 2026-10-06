@@ -18,7 +18,7 @@ Testing by hand also fixed (A) for browsers: onboarding seeded, base-component r
 **2026-10-05 (night): VERIFICATION CAMPAIGN in progress** (`notes/verification_plan_20261005.md`; register
 `verify/claims_register.md`; results `experiments/verify/results/`). Frozen at tag `verify-2026-10`
 (6aa2eb6), copied to `~/r2exp/verify/v2` on the Pi. Phases 0, 1, 2 done; findings F01–F13 in the
-plan's log (F11 resolved; F03 and F08 the open ones that matter). **3a DONE 2026-10-05** (53/55 headlines equal, two explained; F14–F16). **3b DONE 2026-10-05**: pass 1, 12 of 13 figures within criterion; mediation latency 43 µs vs 31.5 (F17, bisected). **Resume at 3c**: reboot, then `bash ~/r2exp/verify/phase3_timing.sh 2`; then 3d (reboot, pass 3, `verify/timing_stats.py`). The cut-off waits for the
+plan's log (F11 resolved; F03 and F08 the open ones that matter). **3a DONE 2026-10-05** (53/55 headlines equal, two explained; F14–F16). **3b DONE 2026-10-05**: pass 1, 12 of 13 figures within criterion; mediation latency 43 µs vs 31.5 (F17, bisected). **3c DONE 2026-10-06**: pass 2 on a fresh boot (9 min up, (A) fresh), every step exit 0; the same 12 of 13 within criterion, latency 43.4 µs (F17 unchanged). Two figures moved more than the rest: marginal memory per sandbox 134 MB (pass 1: 126; across passes +4.9% against M ±5%) and powercalc default 2.92 s (pass 1: 2.29). Pass 3 decides both. **Resume at 3d**: reboot, `house_a up --fresh` from `~/r2exp/verify/v2/framework`, `bash ~/r2exp/verify/phase3_timing.sh 3`, rsync `pass3` back, `python3 verify/timing_stats.py`; then the T and M verdicts. The cut-off waits for the
 campaign's exit criteria.
 
 **Next session, in this order (as of 2026-10-04):**
