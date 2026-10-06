@@ -44,7 +44,9 @@ def level(data: dict, concurrency: int, key: str) -> float:
 
 #: (id, what, stated value, unit, kind, report section, extractor(pass_dir) -> value or None)
 METRICS = [
-    ("latency_1", "mediation latency, one client, median", 31.5, "µs", "T", "§7.19",
+    # 43.0, not §7.19's 31.5: §7.45.1 corrected it (F17), and the reference is what the report states
+    # now (notes/final_pass_prediction.md). Phase 3's verdict against 31.5 is in verdicts.md.
+    ("latency_1", "mediation latency, one client, median", 43.0, "µs", "T", "§7.45.1",
      lambda d: level(j(d / "latency_scale.json"), 1, "median")),
     ("latency_26_median", "mediation latency, 26 clients, median", None, "µs", "report",
      "§7.19", lambda d: level(j(d / "latency_scale.json"), 26, "median")),
@@ -83,8 +85,28 @@ def _command(d: Path) -> float | None:
     return j(path)[0]["command"]["outcome"]["seconds"] * 1000
 
 
+#: Each figure's p99, where a run records one: (id, extractor).
+P99 = {
+    "latency_1": lambda d: level(j(d / "latency_scale.json"), 1, "p99"),
+    "durability": lambda d: j(d / "durability.json")["durability"]["with fsync (as built)"]["p99"],
+}
+#: Warm or cold, only where the harness controls it (notes/final_pass_prediction.md).
+STATE = {"latency_1": "warm", "latency_26_median": "warm", "durability": "warm"}
+
+
+def bootstrap(values: list[float], rounds: int = 10_000) -> tuple[float, float]:
+    """A 95% interval of the median, resampling the runs. With a handful of runs it is near their range."""
+    import random
+    rng = random.Random(20261006)
+    medians = sorted(statistics.median(rng.choices(values, k=len(values))) for _ in range(rounds))
+    return medians[int(0.025 * rounds)], medians[int(0.975 * rounds) - 1]
+
+
 def main() -> int:
     passes = sorted(p for p in TIMING.glob("pass*") if p.is_dir())
+    final = TIMING / "final"
+    if final.is_dir():
+        passes.append(final)
     print(f"{len(passes)} pass(es): {', '.join(p.name for p in passes)}\n")
     rows = []
     for mid, what, stated, unit, kind, section, get in METRICS:
@@ -103,10 +125,30 @@ def main() -> int:
             off = (median - stated) / stated
             verdict = f"{'within' if abs(off) <= tolerance else 'OUTSIDE'} {kind} ({off:+.1%})"
         shown = ", ".join("—" if v is None else f"{v:.3g}" for v in values)
+        final_value = values[-1] if final.is_dir() else None
+        final_verdict = None
+        if final_value is not None and stated is not None:
+            off = (final_value - stated) / stated
+            final_verdict = (f"{'within' if abs(off) <= (0.20 if kind == 'T' else 0.05) else 'OUTSIDE'}"
+                             f" {kind} ({off:+.1%})")
+        interval = bootstrap(got) if len(got) >= 2 else None
+        p99s = []
+        if mid in P99:
+            for p in passes:
+                try:
+                    p99s.append(P99[mid](p))
+                except (FileNotFoundError, KeyError, StopIteration):
+                    p99s.append(None)
         rows.append({"id": mid, "stated": stated, "values": values, "median": median,
-                     "verdict": verdict, "section": section})
+                     "verdict": verdict, "section": section, "final": final_value,
+                     "final_verdict": final_verdict, "bootstrap_95": interval, "p99": p99s or None,
+                     "state": STATE.get(mid, "bytecode cache dropped" if mid == "bytecode_cold"
+                                       else "not controlled by the harness")})
         print(f"  {what:<48} {section:<7} stated {stated if stated is not None else '—':>7} {unit:<3}"
-              f" passes [{shown}]  → {verdict}")
+              f" passes [{shown}]  → {verdict}"
+              + (f"; final {final_verdict}" if final_verdict else "")
+              + (f"; 95% [{interval[0]:.3g}, {interval[1]:.3g}]" if interval else "")
+              + (f"; p99 [{', '.join('—' if v is None else f'{v:.3g}' for v in p99s)}]" if p99s else ""))
     (TIMING / "stats.json").write_text(json.dumps(rows, indent=2))
     return 0
 

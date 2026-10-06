@@ -2,8 +2,9 @@
 # Phase 3, one timing pass (3b = pass 1, 3c = pass 2, 3d = pass 3), on the frozen tree.
 # Usage: bash phase3_timing.sh <pass>. Every disk-backed figure uses ~/r2exp/disktmp (ext4), never /tmp (tmpfs).
 PASS=${1:?pass number}
-E=~/r2exp/verify/v2/experiments; F=~/r2exp/verify/v2/framework
-OUT=$E/verify/results/phase3_timing/pass$PASS; mkdir -p "$OUT"; S="$OUT/summary.txt"
+# ROOT and PASS_DIR let the final pass run the same steps on another tag's clone (verify/final_timing.sh).
+ROOT=${ROOT:-~/r2exp/verify/v2}; E=$ROOT/experiments; F=$ROOT/framework
+OUT=$E/verify/results/phase3_timing/${PASS_DIR:-pass$PASS}; mkdir -p "$OUT"; S="$OUT/summary.txt"
 [ -s "$S" ] && mv "$S" "$OUT/summary_attempt$(date +%s).txt"; : > "$S"
 P=~/r2exp/ha314/bin/python; DISK=~/r2exp/disktmp; AUG=~/r2exp/t2/platform-deps-aug
 scope="systemd-run --user --scope -q"
