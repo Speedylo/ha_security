@@ -349,7 +349,7 @@ so the first day serves both.
 |---|---|---|---|---|---|
 | F01 | 0 | A1.13–14 | Minor | Abstract says ten integrations end to end; thirteen since §7.40–§7.42 | open |
 | F02 | 0 | A1.22 | Minor | "Within a millisecond" holds for the median (0.71 ms), not the worst (1.57 ms) | open |
-| F03 | 0 | F3 | Potentially Major | Clause-less refusals are constructible; 0 of 467 committed records lack a clause, but those paths were never exercised durably | **fix chosen by Younes 2026-10-06: name a rule in code** (see the F03 fix note below the log) |
+| F03 | 0 | F3 | Potentially Major | Clause-less refusals are constructible; 0 of 467 committed records lack a clause, but those paths were never exercised durably | **resolved 2026-10-06**: fixed in code (Younes's choice), tag `verify-2026-10-f03`, regression green (`experiments/verify/results/phase4/regress_f03/`); §7.45.2, §7.5's F3 verdict and a §7.4.2 pointer |
 | F04 | 0 | CM-T7 | Minor | T19 now maps to CM-T7; the row predates it | open |
 | F05 | 0 | A1.18, S8, T14, T15 | Re-measure | Adversary pair and mediation latency last run before the October changes | Phase 3 |
 | F06 | 0 | A5.2 | Minor | Contribution 2's suite tally stops at twenty-four | open |

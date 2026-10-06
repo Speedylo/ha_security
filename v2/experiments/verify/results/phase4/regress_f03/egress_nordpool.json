@@ -1,0 +1,1205 @@
+{
+  "integration": "nordpool",
+  "egress": [
+    "dataportal-api.nordpoolgroup.com:443"
+  ],
+  "partial": null,
+  "flow_input": {
+    "region": "SE1",
+    "currency": "EUR"
+  },
+  "select_first": null,
+  "settle_seconds": 25.0,
+  "unreachable_before_run": {},
+  "reports": {
+    "unconfined": {
+      "domain": "nordpool",
+      "arm": "unconfined",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "239.255.255.250",
+          "port": 1900,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "10.126.83.113",
+          "port": 0,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "ff02::c%3",
+          "port": 1900,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "fe80::9ba0:68cd:7165:a581%3",
+          "port": 0,
+          "phase": "platform"
+        },
+        {
+          "kind": "connect",
+          "host": "104.18.0.18",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "2606:4700::6812:112",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "104.18.1.18",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "104.26.5.238",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "resolve",
+          "host": "192.168.1.128",
+          "port": null,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "10.255.255.255",
+          "port": 1,
+          "phase": "integration"
+        }
+      ],
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false,
+        "http": false
+      },
+      "setup_errors": [],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "VAT",
+              "additional_costs",
+              "currency",
+              "low_price_cutoff",
+              "precision",
+              "price_in_cents",
+              "price_type",
+              "region"
+            ]
+          }
+        ],
+        "type": "create_entry",
+        "errors": null,
+        "reason": null
+      },
+      "entries": [
+        {
+          "title": "Nordpool",
+          "state": "ConfigEntryState.LOADED",
+          "loaded": true
+        }
+      ],
+      "loaded": true,
+      "own_entities": [
+        "sensor.nordpool_kwh_se1_eur_3_10_025",
+        "sensor.sun_next_dawn",
+        "sensor.sun_next_dusk",
+        "sensor.sun_next_midnight",
+        "sensor.sun_next_noon",
+        "sensor.sun_next_rising",
+        "sensor.sun_next_setting",
+        "sun.sun",
+        "zone.home"
+      ],
+      "published": [
+        {
+          "entity": "sensor.nordpool_kwh_se1_eur_3_10_025",
+          "state": "0.002",
+          "platform": "nordpool"
+        },
+        {
+          "entity": "sensor.sun_next_dawn",
+          "state": "2026-10-07T05:37:10+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_dusk",
+          "state": "2026-10-06T18:00:39+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_midnight",
+          "state": "2026-10-06T23:48:19+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_noon",
+          "state": "2026-10-06T11:48:44+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_rising",
+          "state": "2026-10-07T06:11:10+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_setting",
+          "state": "2026-10-06T17:26:46+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sun.sun",
+          "state": "above_horizon",
+          "platform": null
+        },
+        {
+          "entity": "zone.home",
+          "state": "0",
+          "platform": null
+        }
+      ],
+      "probe": null,
+      "timed_out": false
+    },
+    "confined_declared": {
+      "domain": "nordpool",
+      "egress": {
+        "installed": true,
+        "resolved": [
+          "dataportal-api.nordpoolgroup.com"
+        ],
+        "connected": [
+          [
+            "dataportal-api.nordpoolgroup.com",
+            443
+          ],
+          [
+            "dataportal-api.nordpoolgroup.com",
+            443
+          ],
+          [
+            "dataportal-api.nordpoolgroup.com",
+            443
+          ]
+        ],
+        "datagrams_delivered": 0,
+        "refused_listens": [
+          5353
+        ]
+      },
+      "components_setup": {
+        "http": false
+      },
+      "setup_log": {
+        "http": [
+          "homeassistant.loader: We found a custom integration nordpool which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you experience issues ",
+          "aiohttp_fast_zlib: zlib_ng and isal are not available, falling back to zlib, performance will be degraded.",
+          "homeassistant.components.network: Because the system does not have any enabled IPv4 addresses, source address detection may be inaccurate"
+        ]
+      },
+      "setup_errors": [],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "VAT",
+              "additional_costs",
+              "currency",
+              "low_price_cutoff",
+              "precision",
+              "price_in_cents",
+              "price_type",
+              "region"
+            ]
+          }
+        ],
+        "type": "create_entry",
+        "errors": null,
+        "reason": null
+      },
+      "entries": [
+        {
+          "title": "Nordpool",
+          "state": "ConfigEntryState.LOADED",
+          "loaded": true
+        }
+      ],
+      "loaded": true,
+      "local_entities": [
+        "sensor.nordpool_kwh_se1_eur_3_10_025"
+      ],
+      "mirrored": [],
+      "published": [
+        {
+          "entity": "sensor.nordpool_kwh_se1_eur_3_10_025",
+          "state": "0.002",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "refused": [],
+      "push": {
+        "subscribed": [],
+        "received": [],
+        "unexpected": [],
+        "commands": []
+      },
+      "probe": null,
+      "arm": "confined_declared",
+      "timed_out": false,
+      "data_inspection": null,
+      "install": {
+        "ok": true,
+        "installed": [
+          "acme",
+          "aiodhcpwatcher",
+          "aiodiscover",
+          "aiodns",
+          "aiohappyeyeballs",
+          "aiohasupervisor",
+          "aiohttp",
+          "aiooui",
+          "aiosignal",
+          "aiousbwatcher",
+          "annotated_types",
+          "anyio",
+          "async_interrupt",
+          "async_timeout",
+          "async_upnp_client",
+          "asyncinotify",
+          "atomicwrites_homeassistant",
+          "attrs",
+          "av",
+          "awesomeversion",
+          "backoff",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "boto3",
+          "botocore",
+          "btsocket",
+          "cached_ipaddress",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "ciso8601",
+          "cronsim",
+          "cryptography",
+          "dacite",
+          "dbus_fast",
+          "defusedxml",
+          "distro",
+          "envs",
+          "file_read_backwards",
+          "fnv_hash_fast",
+          "fnvhash",
+          "frozenlist",
+          "go2rtc_client",
+          "greenlet",
+          "grpcio",
+          "h11",
+          "ha_ffmpeg",
+          "habluetooth",
+          "hass_nabucasa",
+          "hassil",
+          "home_assistant_frontend",
+          "home_assistant_intents",
+          "httpcore",
+          "httpx",
+          "icmplib",
+          "idna",
+          "ifaddr",
+          "jiter",
+          "jmespath",
+          "josepy",
+          "mashumaro",
+          "matter_ble_proxy",
+          "matter_python_client",
+          "multidict",
+          "mutagen",
+          "numpy",
+          "openai",
+          "orjson",
+          "pillow",
+          "propcache",
+          "psutil",
+          "psutil_home_assistant",
+          "pycares",
+          "pycognito",
+          "pycparser",
+          "pydantic",
+          "pydantic_core",
+          "pyjwt",
+          "pymicro_vad",
+          "pynacl",
+          "pyopenssl",
+          "pyrfc3339",
+          "pyric",
+          "pyroute2",
+          "pyspeex_noise",
+          "python_dateutil",
+          "python_didl_lite",
+          "pyturbojpeg",
+          "pyyaml",
+          "regex",
+          "requests",
+          "s3transfer",
+          "scapy",
+          "securetar",
+          "sentence_stream",
+          "serialx",
+          "six",
+          "sniffio",
+          "snitun",
+          "sqlalchemy",
+          "tqdm",
+          "typing_extensions",
+          "typing_inspection",
+          "uart_devices",
+          "unicode_rbnf",
+          "urllib3",
+          "usb_devices",
+          "voluptuous",
+          "webrtc_models",
+          "yarl",
+          "zeroconf"
+        ],
+        "resolved": [
+          "acme-5.4.0",
+          "aiodhcpwatcher-1.2.7",
+          "aiodiscover-3.3.2",
+          "aiodns-4.0.4",
+          "aiohappyeyeballs-2.7.1",
+          "aiohasupervisor-0.6.0",
+          "aiohttp-3.14.4",
+          "aiooui-0.1.11",
+          "aiosignal-1.4.0",
+          "aiousbwatcher-1.1.2",
+          "annotated_types-0.8.0",
+          "anyio-4.15.1",
+          "async_interrupt-1.2.2",
+          "async_timeout-5.0.1",
+          "async_upnp_client-0.47.1",
+          "asyncinotify-4.4.4",
+          "atomicwrites_homeassistant-1.4.1",
+          "attrs-26.1.0",
+          "av-17.0.1",
+          "awesomeversion-25.8.0",
+          "backoff-2.2.1",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "boto3-1.43.108",
+          "botocore-1.43.108",
+          "btsocket-0.3.0",
+          "cached_ipaddress-1.1.2",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.2",
+          "ciso8601-2.3.3",
+          "cronsim-2.7",
+          "cryptography-50.0.2",
+          "dacite-1.9.2",
+          "dbus_fast-5.0.22",
+          "defusedxml-0.7.1",
+          "distro-1.9.0",
+          "envs-1.4",
+          "file_read_backwards-2.0.0",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "frozenlist-1.8.0",
+          "go2rtc_client-0.4.0",
+          "greenlet-3.5.6",
+          "grpcio-1.84.0",
+          "h11-0.16.0",
+          "ha_ffmpeg-3.2.2",
+          "habluetooth-6.26.5",
+          "hass_nabucasa-2.2.0",
+          "hassil-3.11.0",
+          "home_assistant_frontend-20260729.7",
+          "home_assistant_intents-2026.7.30",
+          "httpcore-1.0.9",
+          "httpx-0.28.1",
+          "icmplib-3.0.4",
+          "idna-3.20",
+          "ifaddr-0.2.0",
+          "jiter-0.17.0",
+          "jmespath-1.1.0",
+          "josepy-2.2.0",
+          "mashumaro-3.23",
+          "matter_ble_proxy-0.7.1",
+          "matter_python_client-1.3.0",
+          "multidict-6.9.1",
+          "mutagen-1.48.1",
+          "numpy-2.3.2",
+          "openai-2.45.0",
+          "orjson-3.12.0",
+          "pillow-12.3.0",
+          "propcache-0.5.4",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pycares-5.1.0",
+          "pycognito-2024.5.1",
+          "pycparser-3.0",
+          "pydantic-2.13.5",
+          "pydantic_core-2.46.5",
+          "pyjwt-2.15.1",
+          "pymicro_vad-1.0.1",
+          "pynacl-1.6.2",
+          "pyopenssl-26.4.0",
+          "pyrfc3339-2.1.0",
+          "pyric-0.1.6.3",
+          "pyroute2-0.9.6",
+          "pyspeex_noise-1.0.2",
+          "python_dateutil-2.9.0.post0",
+          "python_didl_lite-1.5.1",
+          "pyturbojpeg-1.8.3",
+          "pyyaml-6.0.3",
+          "regex-2026.9.29",
+          "requests-2.34.2",
+          "s3transfer-0.19.2",
+          "scapy-2.8.0",
+          "securetar-2026.4.1",
+          "sentence_stream-1.3.0",
+          "serialx-1.8.2",
+          "six-1.17.0",
+          "sniffio-1.3.1",
+          "snitun-0.45.1",
+          "sqlalchemy-2.0.51",
+          "tqdm-4.70.1",
+          "typing_extensions-4.16.0",
+          "typing_inspection-0.4.4",
+          "uart_devices-0.1.1",
+          "unicode_rbnf-2.4.0",
+          "urllib3-2.8.0",
+          "usb_devices-0.5.1",
+          "voluptuous-0.16.0",
+          "webrtc_models-0.3.0",
+          "yarl-1.25.1",
+          "zeroconf-0.150.0"
+        ]
+      },
+      "audit": [
+        {
+          "identity": "nordpool",
+          "op": "discover.listen",
+          "allowed": false,
+          "clause": "/permissions/network/discover/listen"
+        },
+        {
+          "identity": "nordpool",
+          "op": "network.egress",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "identity": "nordpool",
+          "op": "network.egress",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "identity": "nordpool",
+          "op": "network.egress",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "identity": "nordpool",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "logged": [
+        {
+          "op": "discover.listen",
+          "target": "5353",
+          "allowed": false,
+          "clause": "/permissions/network/discover/listen"
+        },
+        {
+          "op": "network.egress",
+          "target": "dataportal-api.nordpoolgroup.com:443",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "op": "network.egress",
+          "target": "dataportal-api.nordpoolgroup.com:443",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "op": "network.egress",
+          "target": "dataportal-api.nordpoolgroup.com:443",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.nordpool_kwh_se1_eur_3_10_025",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "audit_breaks": [],
+      "reconcile": [],
+      "durable_raw": [
+        {
+          "hash": "67d32225ecba9adc5107229e89f825e1776cf874147b89401a8c8adf0b2f3637",
+          "identity": {
+            "composite": "cfa1a3e12c2eee07c946fea1ac9f51f4aa0d83993ed2830d3ea3dcfc83ad2d5d",
+            "domain": "nordpool",
+            "manifest": "e3d6a5603603ecfa608759654bbb45d62a59daf2d0bc3109d22cd55131d7618c",
+            "requirements": "e771a1e87fdcece0ff8c544c1e6eb40cdc78b1cd92f51183191cd0d8b7d4974d",
+            "source": "f91c95de0e45f809a27a7df66094456155d3f45e1bb6c9cb07b8c4ff2a698735"
+          },
+          "integration": "nordpool",
+          "kind": "run",
+          "mac": "1ef6e70d357e93fc33b9eb6ce03c7c692beeee4a87bd7575f1ee464d6583abc3",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "prev_mac": "0000000000000000000000000000000000000000000000000000000000000000",
+          "provenance": "author-declared",
+          "run": "374909b2c2d5d19e",
+          "seq": 0,
+          "time": 1791281847.3725893
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/discover/listen",
+          "hash": "737ae627aca2e5613809be59bc4cb89cf55b50d890730af189e7649cf702b934",
+          "integration": "nordpool",
+          "kind": "decision",
+          "mac": "b25ff55fc3b051871d3694f38872fae9f4717c4c31748cb3c3f8b3425a530774",
+          "op": "discover.listen",
+          "prev_hash": "67d32225ecba9adc5107229e89f825e1776cf874147b89401a8c8adf0b2f3637",
+          "prev_mac": "1ef6e70d357e93fc33b9eb6ce03c7c692beeee4a87bd7575f1ee464d6583abc3",
+          "reason": "nothing is declared at /permissions/network/discover/listen",
+          "requested": {
+            "port": 5353
+          },
+          "run": "374909b2c2d5d19e",
+          "seq": 1,
+          "target": "5353",
+          "time": 1791281849.9604008
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "/permissions/network/egress/0",
+          "hash": "578d588ebd627165d1b359113e7599074e6c7e5aae5d6a85c4039ab891b431ce",
+          "integration": "nordpool",
+          "kind": "decision",
+          "mac": "8e968cbc44d697dbd45dde28d4d1cb2b5839d7c88bb4be096e4fe0e2583519a4",
+          "op": "network.egress",
+          "prev_hash": "737ae627aca2e5613809be59bc4cb89cf55b50d890730af189e7649cf702b934",
+          "prev_mac": "b25ff55fc3b051871d3694f38872fae9f4717c4c31748cb3c3f8b3425a530774",
+          "reason": "declared",
+          "requested": {
+            "host": "dataportal-api.nordpoolgroup.com",
+            "port": 443
+          },
+          "run": "374909b2c2d5d19e",
+          "seq": 2,
+          "target": "dataportal-api.nordpoolgroup.com:443",
+          "time": 1791281849.9656718
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "/permissions/network/egress/0",
+          "hash": "d926c14f667115c0d8a77d0687e809798abb6969a349f41f57cb78cbda3e8ac4",
+          "integration": "nordpool",
+          "kind": "decision",
+          "mac": "a6961e6ec02f3cd65f9bab7c936cc89c0d5ea17072fa5c4528702697b058f53e",
+          "op": "network.egress",
+          "prev_hash": "578d588ebd627165d1b359113e7599074e6c7e5aae5d6a85c4039ab891b431ce",
+          "prev_mac": "8e968cbc44d697dbd45dde28d4d1cb2b5839d7c88bb4be096e4fe0e2583519a4",
+          "reason": "declared",
+          "requested": {
+            "host": "dataportal-api.nordpoolgroup.com",
+            "port": 443
+          },
+          "run": "374909b2c2d5d19e",
+          "seq": 3,
+          "target": "dataportal-api.nordpoolgroup.com:443",
+          "time": 1791281850.0125427
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "/permissions/network/egress/0",
+          "hash": "decfa7c4f44e58c3a3e1de363303c7567d070a3590a0a661f4388199cfc2d585",
+          "integration": "nordpool",
+          "kind": "decision",
+          "mac": "435169bd88b7d0597221aa1f2a59e05fc7873f8b87d99862f6d12db730044bd3",
+          "op": "network.egress",
+          "prev_hash": "d926c14f667115c0d8a77d0687e809798abb6969a349f41f57cb78cbda3e8ac4",
+          "prev_mac": "a6961e6ec02f3cd65f9bab7c936cc89c0d5ea17072fa5c4528702697b058f53e",
+          "reason": "declared",
+          "requested": {
+            "host": "dataportal-api.nordpoolgroup.com",
+            "port": 443
+          },
+          "run": "374909b2c2d5d19e",
+          "seq": 4,
+          "target": "dataportal-api.nordpoolgroup.com:443",
+          "time": 1791281850.0561597
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "6c70bab5f61970822b896143eeb5c3ef258253c800cba4706049c4d1097a31c9",
+          "integration": "nordpool",
+          "kind": "decision",
+          "mac": "d7665e66fcb0c2635cca5d65bfe742763f7af66f010f32e76bf5fceacf83b0d4",
+          "op": "entity.publish",
+          "prev_hash": "decfa7c4f44e58c3a3e1de363303c7567d070a3590a0a661f4388199cfc2d585",
+          "prev_mac": "435169bd88b7d0597221aa1f2a59e05fc7873f8b87d99862f6d12db730044bd3",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.nordpool_kwh_se1_eur_3_10_025"
+          },
+          "run": "374909b2c2d5d19e",
+          "seq": 5,
+          "target": "sensor.nordpool_kwh_se1_eur_3_10_025",
+          "time": 1791281850.4960697
+        }
+      ],
+      "oom_kill": 0
+    },
+    "confined_undeclared": {
+      "domain": "nordpool",
+      "egress": {
+        "installed": true,
+        "resolved": [
+          "dataportal-api.nordpoolgroup.com"
+        ],
+        "connected": [],
+        "datagrams_delivered": 0,
+        "refused_listens": [
+          5353
+        ]
+      },
+      "components_setup": {
+        "http": false
+      },
+      "setup_log": {
+        "http": [
+          "homeassistant.loader: We found a custom integration nordpool which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you experience issues ",
+          "aiohttp_fast_zlib: zlib_ng and isal are not available, falling back to zlib, performance will be degraded.",
+          "homeassistant.components.network: Because the system does not have any enabled IPv4 addresses, source address detection may be inaccurate"
+        ]
+      },
+      "setup_errors": [
+        "homeassistant.components.sensor: Error adding entity sensor.nordpool_kwh_se1_eur_3_10_025 for domain sensor with platform nordpool ||                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<7 lines>...\n    )\n    ^\n  File \"/sandbox/deps/aiohttp/connector.py\", line 1345, in _wrap_create_connection\n    raise client_error(req.connection_key, exc) from exc\naiohttp.client_exceptions.ClientConnectorError: Cannot connect to host dataportal-api.nordpoolgroup.com:443 ssl:default [nothing is declared at /permissions/network/egress]\n"
+      ],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "VAT",
+              "additional_costs",
+              "currency",
+              "low_price_cutoff",
+              "precision",
+              "price_in_cents",
+              "price_type",
+              "region"
+            ]
+          }
+        ],
+        "type": "create_entry",
+        "errors": null,
+        "reason": null
+      },
+      "entries": [
+        {
+          "title": "Nordpool",
+          "state": "ConfigEntryState.LOADED",
+          "loaded": true
+        }
+      ],
+      "loaded": true,
+      "local_entities": [
+        "sensor.nordpool_kwh_se1_eur_3_10_025"
+      ],
+      "mirrored": [],
+      "published": [
+        {
+          "entity": "sensor.nordpool_kwh_se1_eur_3_10_025",
+          "state": "unavailable",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "refused": [],
+      "push": {
+        "subscribed": [],
+        "received": [],
+        "unexpected": [],
+        "commands": []
+      },
+      "probe": null,
+      "arm": "confined_undeclared",
+      "timed_out": false,
+      "data_inspection": null,
+      "install": {
+        "ok": true,
+        "installed": [
+          "acme",
+          "aiodhcpwatcher",
+          "aiodiscover",
+          "aiodns",
+          "aiohappyeyeballs",
+          "aiohasupervisor",
+          "aiohttp",
+          "aiooui",
+          "aiosignal",
+          "aiousbwatcher",
+          "annotated_types",
+          "anyio",
+          "async_interrupt",
+          "async_timeout",
+          "async_upnp_client",
+          "asyncinotify",
+          "atomicwrites_homeassistant",
+          "attrs",
+          "av",
+          "awesomeversion",
+          "backoff",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "boto3",
+          "botocore",
+          "btsocket",
+          "cached_ipaddress",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "ciso8601",
+          "cronsim",
+          "cryptography",
+          "dacite",
+          "dbus_fast",
+          "defusedxml",
+          "distro",
+          "envs",
+          "file_read_backwards",
+          "fnv_hash_fast",
+          "fnvhash",
+          "frozenlist",
+          "go2rtc_client",
+          "greenlet",
+          "grpcio",
+          "h11",
+          "ha_ffmpeg",
+          "habluetooth",
+          "hass_nabucasa",
+          "hassil",
+          "home_assistant_frontend",
+          "home_assistant_intents",
+          "httpcore",
+          "httpx",
+          "icmplib",
+          "idna",
+          "ifaddr",
+          "jiter",
+          "jmespath",
+          "josepy",
+          "mashumaro",
+          "matter_ble_proxy",
+          "matter_python_client",
+          "multidict",
+          "mutagen",
+          "numpy",
+          "openai",
+          "orjson",
+          "pillow",
+          "propcache",
+          "psutil",
+          "psutil_home_assistant",
+          "pycares",
+          "pycognito",
+          "pycparser",
+          "pydantic",
+          "pydantic_core",
+          "pyjwt",
+          "pymicro_vad",
+          "pynacl",
+          "pyopenssl",
+          "pyrfc3339",
+          "pyric",
+          "pyroute2",
+          "pyspeex_noise",
+          "python_dateutil",
+          "python_didl_lite",
+          "pyturbojpeg",
+          "pyyaml",
+          "regex",
+          "requests",
+          "s3transfer",
+          "scapy",
+          "securetar",
+          "sentence_stream",
+          "serialx",
+          "six",
+          "sniffio",
+          "snitun",
+          "sqlalchemy",
+          "tqdm",
+          "typing_extensions",
+          "typing_inspection",
+          "uart_devices",
+          "unicode_rbnf",
+          "urllib3",
+          "usb_devices",
+          "voluptuous",
+          "webrtc_models",
+          "yarl",
+          "zeroconf"
+        ],
+        "resolved": [
+          "acme-5.4.0",
+          "aiodhcpwatcher-1.2.7",
+          "aiodiscover-3.3.2",
+          "aiodns-4.0.4",
+          "aiohappyeyeballs-2.7.1",
+          "aiohasupervisor-0.6.0",
+          "aiohttp-3.14.4",
+          "aiooui-0.1.11",
+          "aiosignal-1.4.0",
+          "aiousbwatcher-1.1.2",
+          "annotated_types-0.8.0",
+          "anyio-4.15.1",
+          "async_interrupt-1.2.2",
+          "async_timeout-5.0.1",
+          "async_upnp_client-0.47.1",
+          "asyncinotify-4.4.4",
+          "atomicwrites_homeassistant-1.4.1",
+          "attrs-26.1.0",
+          "av-17.0.1",
+          "awesomeversion-25.8.0",
+          "backoff-2.2.1",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "boto3-1.43.108",
+          "botocore-1.43.108",
+          "btsocket-0.3.0",
+          "cached_ipaddress-1.1.2",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.2",
+          "ciso8601-2.3.3",
+          "cronsim-2.7",
+          "cryptography-50.0.2",
+          "dacite-1.9.2",
+          "dbus_fast-5.0.22",
+          "defusedxml-0.7.1",
+          "distro-1.9.0",
+          "envs-1.4",
+          "file_read_backwards-2.0.0",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "frozenlist-1.8.0",
+          "go2rtc_client-0.4.0",
+          "greenlet-3.5.6",
+          "grpcio-1.84.0",
+          "h11-0.16.0",
+          "ha_ffmpeg-3.2.2",
+          "habluetooth-6.26.5",
+          "hass_nabucasa-2.2.0",
+          "hassil-3.11.0",
+          "home_assistant_frontend-20260729.7",
+          "home_assistant_intents-2026.7.30",
+          "httpcore-1.0.9",
+          "httpx-0.28.1",
+          "icmplib-3.0.4",
+          "idna-3.20",
+          "ifaddr-0.2.0",
+          "jiter-0.17.0",
+          "jmespath-1.1.0",
+          "josepy-2.2.0",
+          "mashumaro-3.23",
+          "matter_ble_proxy-0.7.1",
+          "matter_python_client-1.3.0",
+          "multidict-6.9.1",
+          "mutagen-1.48.1",
+          "numpy-2.3.2",
+          "openai-2.45.0",
+          "orjson-3.12.0",
+          "pillow-12.3.0",
+          "propcache-0.5.4",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pycares-5.1.0",
+          "pycognito-2024.5.1",
+          "pycparser-3.0",
+          "pydantic-2.13.5",
+          "pydantic_core-2.46.5",
+          "pyjwt-2.15.1",
+          "pymicro_vad-1.0.1",
+          "pynacl-1.6.2",
+          "pyopenssl-26.4.0",
+          "pyrfc3339-2.1.0",
+          "pyric-0.1.6.3",
+          "pyroute2-0.9.6",
+          "pyspeex_noise-1.0.2",
+          "python_dateutil-2.9.0.post0",
+          "python_didl_lite-1.5.1",
+          "pyturbojpeg-1.8.3",
+          "pyyaml-6.0.3",
+          "regex-2026.9.29",
+          "requests-2.34.2",
+          "s3transfer-0.19.2",
+          "scapy-2.8.0",
+          "securetar-2026.4.1",
+          "sentence_stream-1.3.0",
+          "serialx-1.8.2",
+          "six-1.17.0",
+          "sniffio-1.3.1",
+          "snitun-0.45.1",
+          "sqlalchemy-2.0.51",
+          "tqdm-4.70.1",
+          "typing_extensions-4.16.0",
+          "typing_inspection-0.4.4",
+          "uart_devices-0.1.1",
+          "unicode_rbnf-2.4.0",
+          "urllib3-2.8.0",
+          "usb_devices-0.5.1",
+          "voluptuous-0.16.0",
+          "webrtc_models-0.3.0",
+          "yarl-1.25.1",
+          "zeroconf-0.150.0"
+        ]
+      },
+      "audit": [
+        {
+          "identity": "nordpool",
+          "op": "discover.listen",
+          "allowed": false,
+          "clause": "/permissions/network/discover/listen"
+        },
+        {
+          "identity": "nordpool",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "nordpool",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "nordpool",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "nordpool",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "logged": [
+        {
+          "op": "discover.listen",
+          "target": "5353",
+          "allowed": false,
+          "clause": "/permissions/network/discover/listen"
+        },
+        {
+          "op": "network.egress",
+          "target": "dataportal-api.nordpoolgroup.com:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "dataportal-api.nordpoolgroup.com:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "dataportal-api.nordpoolgroup.com:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.nordpool_kwh_se1_eur_3_10_025",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "audit_breaks": [],
+      "reconcile": [],
+      "durable_raw": [
+        {
+          "hash": "a0d99220940e9a383c686bc20c0b11d3ea732f37152a043a54db88ad1cc00188",
+          "identity": {
+            "composite": "cfa1a3e12c2eee07c946fea1ac9f51f4aa0d83993ed2830d3ea3dcfc83ad2d5d",
+            "domain": "nordpool",
+            "manifest": "e3d6a5603603ecfa608759654bbb45d62a59daf2d0bc3109d22cd55131d7618c",
+            "requirements": "e771a1e87fdcece0ff8c544c1e6eb40cdc78b1cd92f51183191cd0d8b7d4974d",
+            "source": "f91c95de0e45f809a27a7df66094456155d3f45e1bb6c9cb07b8c4ff2a698735"
+          },
+          "integration": "nordpool",
+          "kind": "run",
+          "mac": "6a00a52a3160c6d37ad2c175e72e188061c7a4de852238d481f1403f0dd76e82",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "prev_mac": "0000000000000000000000000000000000000000000000000000000000000000",
+          "provenance": "author-declared",
+          "run": "72ac91f57d9d82bf",
+          "seq": 0,
+          "time": 1791281877.7936401
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/discover/listen",
+          "hash": "651c16e9e21c0c2f2176fb13a21005bcbbc29bd2bed4984cddaaad80ce6340ad",
+          "integration": "nordpool",
+          "kind": "decision",
+          "mac": "de42f323f42d14a5e1daf774deb9c72304026336e040f26468cfa0395c4c9f90",
+          "op": "discover.listen",
+          "prev_hash": "a0d99220940e9a383c686bc20c0b11d3ea732f37152a043a54db88ad1cc00188",
+          "prev_mac": "6a00a52a3160c6d37ad2c175e72e188061c7a4de852238d481f1403f0dd76e82",
+          "reason": "nothing is declared at /permissions/network/discover/listen",
+          "requested": {
+            "port": 5353
+          },
+          "run": "72ac91f57d9d82bf",
+          "seq": 1,
+          "target": "5353",
+          "time": 1791281880.274088
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "d66b0db7869221af84364016e2cbf0fe32834a7e0b7972722d24bd451a2aedda",
+          "integration": "nordpool",
+          "kind": "decision",
+          "mac": "5afea6769db27e5da7d3c867d83de920c7ca9f1b70572948f1027df5e5a11d2a",
+          "op": "network.egress",
+          "prev_hash": "651c16e9e21c0c2f2176fb13a21005bcbbc29bd2bed4984cddaaad80ce6340ad",
+          "prev_mac": "de42f323f42d14a5e1daf774deb9c72304026336e040f26468cfa0395c4c9f90",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "dataportal-api.nordpoolgroup.com",
+            "port": 443
+          },
+          "run": "72ac91f57d9d82bf",
+          "seq": 2,
+          "target": "dataportal-api.nordpoolgroup.com:443",
+          "time": 1791281880.279272
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "04aeb6c60f3f01c26f781ad3b122a92aef3aa2a9a33638c500c8274a8c2d3159",
+          "integration": "nordpool",
+          "kind": "decision",
+          "mac": "298be70f678f22aa5ed412de859b9b82072ddd92b834d3169f11a5bc8bf46bec",
+          "op": "network.egress",
+          "prev_hash": "d66b0db7869221af84364016e2cbf0fe32834a7e0b7972722d24bd451a2aedda",
+          "prev_mac": "5afea6769db27e5da7d3c867d83de920c7ca9f1b70572948f1027df5e5a11d2a",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "dataportal-api.nordpoolgroup.com",
+            "port": 443
+          },
+          "run": "72ac91f57d9d82bf",
+          "seq": 3,
+          "target": "dataportal-api.nordpoolgroup.com:443",
+          "time": 1791281880.2800128
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "baa302e5879038cb6d9ce2cea4891d1c8e834a0cd32ea1516da4ad61222a9ed5",
+          "integration": "nordpool",
+          "kind": "decision",
+          "mac": "c58e8827b2b6cfda6e2e668d062994e4b9ffa07a5203c14d5b94dee9c6931d90",
+          "op": "network.egress",
+          "prev_hash": "04aeb6c60f3f01c26f781ad3b122a92aef3aa2a9a33638c500c8274a8c2d3159",
+          "prev_mac": "298be70f678f22aa5ed412de859b9b82072ddd92b834d3169f11a5bc8bf46bec",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "dataportal-api.nordpoolgroup.com",
+            "port": 443
+          },
+          "run": "72ac91f57d9d82bf",
+          "seq": 4,
+          "target": "dataportal-api.nordpoolgroup.com:443",
+          "time": 1791281880.2805164
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "98d936632a5e2ad976d1b9009446acfe2360a6b3cd399d428844e3658f317166",
+          "integration": "nordpool",
+          "kind": "decision",
+          "mac": "8de52e10c2c26325920d22794345e95f557f4a8c940e841831f1b3b852bed2c2",
+          "op": "entity.publish",
+          "prev_hash": "baa302e5879038cb6d9ce2cea4891d1c8e834a0cd32ea1516da4ad61222a9ed5",
+          "prev_mac": "c58e8827b2b6cfda6e2e668d062994e4b9ffa07a5203c14d5b94dee9c6931d90",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.nordpool_kwh_se1_eur_3_10_025"
+          },
+          "run": "72ac91f57d9d82bf",
+          "seq": 5,
+          "target": "sensor.nordpool_kwh_se1_eur_3_10_025",
+          "time": 1791281880.2919025
+        }
+      ],
+      "oom_kill": 0
+    }
+  },
+  "checks": {
+    "passed": 16,
+    "total": 16
+  }
+}

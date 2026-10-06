@@ -278,6 +278,10 @@ three specific obligations:
 - **F3 — every enforcement decision attributable to a manifest clause.** Verified by requiring
   each decision record to carry a clause pointer (`confine/manifest.py`), and by checking that a
   decision with no attributable clause is impossible rather than merely unobserved.
+
+  > **2026-10-06 (§7.45.2):** the second check was never run until the verification campaign,
+  > and it would have failed. Seven paths in the mediator built a decision with no clause. They
+  > are fixed, and a clause-less decision now cannot be built or written.
 - **F4 — the declaration presentable before installation.** Discharged in §6.7 by
   `confine/describe.py`, which renders four states and shows denials at the same weight as grants.
   §3.4 explicitly bounds F4 to *availability* of the information; user comprehension is a
@@ -300,7 +304,7 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **C4** | Every performance figure is produced on the Raspberry Pi 5, reporting per-integration memory *and* added latency | Performance | ✅ **Met** — §7.19–§7.22 — every performance figure produced on the Pi 5, per-integration memory *and* added latency both reported |
 | **F1** | A confined integration's entities are present in Home Assistant and behave as native entities under the measures used in this chapter | Compatibility, level 2 | ✅ **Met** — §7.17.3 — `thermal_comfort`: two declared entities mirrored in, fifteen derived sensors published out, dew point physically correct. *2026-10-04, §7.37: the same fifteen are now registry entities in the house's real Home Assistant, with their unconfined names, surviving a restart, which lifts the bound below for a sensor-publishing integration.* **Bounded by §8.6.3 #2**: the mediator acts on a stand-in, not a live instance |
 | **F2** | An integration polling a **declared** remote API completes successfully while confined | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met — §7.25, and by a *real* integration in §7.27.** Two purpose-built integrations polled declared hosts concurrently in real namespaces (§7.25); `nordpool` — unmodified community source — then polled its own Nord Pool API confined and published **the same price as the unconfined arm**, with the mediator's durable record naming `dataportal-api.nordpoolgroup.com:443` (§7.27). **§7.31 (2026-10-03) adds three more real integrations across `requests`, `httpx` and `aiohttp`, each matching its unconfined output, and §7.34 one with a valid credential — an authenticated round trip whose key never reached the mediator** |
-| **F3** | Every enforcement decision in the evaluation names the manifest clause that produced it; a decision with no attributable clause is shown to be unconstructible | Security | ✅ **Met** — §7.4.2, §7.16.1 — every decision record carries a clause pointer; seven mismatched behaviours produced seven denials naming **seven distinct clauses** |
+| **F3** | Every enforcement decision in the evaluation names the manifest clause that produced it; a decision with no attributable clause is shown to be unconstructible | Security | ✅ **Met** *(since 2026-10-06, §7.45.2: until then seven mediator paths could build a decision with no clause, though none appears in any committed record)* — §7.4.2, §7.16.1 — every decision record carries a clause pointer; seven mismatched behaviours produced seven denials naming **seven distinct clauses** |
 | **F4** | The manifest of each evaluated integration renders in human-readable form, with denials shown at the same weight as grants | §6.7, re-run over the evaluated set | ✅ **Met** — §7.16.2 — `selftest_describe`, four states, denials rendered at the same weight as grants. Bounded to *availability* by §3.4; comprehension is excluded by §3.7 |
 | **S1** | The published garbage-collector technique (§2.4.1) is attempted from inside the sandbox and reaches no platform object; the mediator and its credential are not locatable from within | Security | ✅ **Met, paired** — §7.15.3 — the published `gc` technique reaches a live credential **7 ways** unconfined and **0** confined across 8,942 objects, while the same token is confirmed live in the mediator |
 | **S2** | No platform credential is recoverable from the sandbox's environment, filesystem, process table or memory | Security | ✅ **Met, paired** — §7.13, §7.15.3 — another process’s environment `LEAKED` unconfined and `EMPTY` confined; no platform credential recoverable from the sandbox |
@@ -5156,6 +5160,45 @@ was measured on.
 correct, and then the code it described changed under it while every suite kept passing, because no
 suite asserts a latency. A measurement describes a commit, and a report that quotes it about later
 code has to measure again or say which commit it describes.
+
+
+### 7.45.2 A decision with no clause could be built, and now cannot
+
+§7.5's F3 requires two things: that every decision in the evaluation names its clause, and that a
+decision with no clause is shown to be *unconstructible*. §7.4.2 said how the second would be
+checked, and it never was. Reading the mediator for the claim register showed it would have
+failed. Seven paths built a decision with no clause. One refused a request when no manifest was
+bound. Four refused a user's command: no running sandbox, an entity the integration does not own, a
+service the bridge does not forward, and a full queue. The last two were the replies to a sandbox's
+answer to a command.
+
+The first half of F3 held throughout. All 467 decision records committed before the campaign carry a
+clause, because no committed run took any of those paths with a durable log. So F3 was met as far
+as anyone had looked, and false as stated.
+
+**Younes chose to fix the code rather than narrow the claim.** `Decision` now refuses to be built
+without a clause, and `AuditLog.decision` refuses to write a record without one. Each path names the
+rule that decided it:
+
+- `/permissions` when no manifest is bound, which is what the policy and the manifest already
+  returned in the same case;
+- `(ambient: §5.10.2)` for an entity the integration does not own, which is the rule that grants a
+  command in the first place;
+- a parenthesised `(command: …)` rule for the other four.
+
+The cut-off and protocol-error records are events of their own kinds, not decisions, so F3 does not
+reach them.
+
+A new section of `selftest_audit` drives every one of those paths through a real mediator with a
+durable log and reads back what each wrote. Against the old code, with the check removed, it fails
+seven of seven. The fix was tagged `verify-2026-10-f03` and cloned fresh onto the Pi. There all 26
+suites pass, every log matches the frozen tag's apart from the new section, and `nordpool` passes
+end to end (`experiments/verify/results/phase4/regress_f03/`).
+
+**What this adds to §8.4.2.** This one was found by reading, not by running. A requirement asked
+for a property of the code, and the evaluation checked a property of the logs, which is the
+property's observable shadow. The register's discipline caught it because it asks of every claim
+what checks it. The answer for this half of F3 was nothing.
 
 ---
 
