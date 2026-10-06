@@ -65,6 +65,14 @@ def main() -> int:
     assert "server_port: 8123" in yaml
     (config / "configuration.yaml").write_text(yaml.replace("server_port: 8123",
                                                             f"server_port: {PORT}"))
+    # The port lives in `.storage/http` in this release (the YAML block was migrated there), so the
+    # copy's port is changed in both places; with only the YAML changed it bound 8123 and failed.
+    http_path = config / ".storage" / "http"
+    http = json.loads(http_path.read_text())
+    for slot in ("stable", "pending"):
+        if isinstance(http["data"].get(slot), dict) and "server_port" in http["data"][slot]:
+            http["data"][slot]["server_port"] = PORT
+    http_path.write_text(json.dumps(http))
     auth_path = config / ".storage" / "auth"
     auth = json.loads(auth_path.read_text())
     auth["data"]["groups"].append(GROUP)
