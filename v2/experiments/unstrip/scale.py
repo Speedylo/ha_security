@@ -34,6 +34,8 @@ from confine.preflight import require_ready                     # noqa: E402
 from confine.sandbox import SandboxSpec                         # noqa: E402
 from confine.selftest_bridge import interpreter_trees           # noqa: E402
 from confine.spawn import become_subreaper, start               # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "framework"))
+from confine.provenance import record_run  # noqa: E402  (F14)
 
 RUNTIME = (Path(__file__).resolve().parents[2] / "framework" / "confine"
            / "sandbox_runtime.py")
@@ -182,6 +184,7 @@ def main() -> int:
                 "sum_rss_mb": round(rss_total, 1), "sum_pss_mb": round(pss_total, 1),
                 "pss_per_sandbox_mb": round(per_sandbox, 1), "capacity": capacity,
                 "mem_total_mb": round(total_kb / 1024)}, indent=2) + "\n")
+            record_run(args.json)  # F14: how this result was produced, beside it
             print(f"\nwrote {args.json}")
     finally:
         for cgroup in cgroups:

@@ -58,6 +58,11 @@ import tempfile
 from collections import Counter
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "framework"))
+from confine.compat import RESOLVE_BEFORE  # noqa: E402  (F13: the same fixed resolution moment)
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "framework"))
+from confine.provenance import record_run  # noqa: E402  (F14)
+
 # Markers that mean datagrams and cannot mean anything else.
 UDP_NAMES = {"SOCK_DGRAM", "DatagramProtocol", "DatagramTransport"}
 UDP_CALLS = {"create_datagram_endpoint", "sendto", "recvfrom", "recvfrom_into"}
@@ -176,7 +181,7 @@ def scan_dependencies(root: Path, python: str, uv: str, timeout: float = 300.0) 
     try:
         try:
             subprocess.run([uv, "pip", "install", "--python", python, "--target", str(target),
-                            "--quiet", *requirements],
+                            "--quiet", "--exclude-newer", RESOLVE_BEFORE, *requirements],
                            capture_output=True, text=True, timeout=timeout, check=True)
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as err:
             return {"declared": len(requirements), "installed": False, "udp": [],
@@ -319,6 +324,7 @@ def main() -> int:
     if args.json:
         args.json.parent.mkdir(parents=True, exist_ok=True)
         args.json.write_text(json.dumps({"reports": reports}, indent=1))
+        record_run(args.json)  # F14: how this result was produced, beside it
         print(f"\nwrote {args.json}", file=sys.stderr)
     return 0
 

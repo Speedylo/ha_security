@@ -28,6 +28,8 @@ import logging
 import platform
 import sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "framework"))
+from confine.provenance import record_run  # noqa: E402  (F14)
 
 # In dependency order, cheapest first. `http` leads because §6.11.3 makes it the decisive one.
 DEFAULT = ["http", "websocket_api", "frontend", "lovelace", "panel_custom", "repairs",
@@ -191,6 +193,7 @@ def main() -> int:
 
     if args.json:
         args.json.write_text(json.dumps(result, indent=2) + "\n")
+        record_run(args.json)  # F14: how this result was produced, beside it
         print(f"\nwrote {args.json}")
     return 0
 

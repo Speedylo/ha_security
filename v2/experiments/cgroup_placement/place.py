@@ -42,6 +42,8 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "framework"))
+from confine.provenance import record_run  # noqa: E402  (F14)
 
 HERE = Path(__file__).resolve().parent
 CGROUP_FS = Path("/sys/fs/cgroup")
@@ -332,6 +334,7 @@ def main() -> int:
             {"host": {"machine": platform.machine(), "kernel": platform.release(),
                       "node": platform.node()},
              "positions": results}, indent=2) + "\n")
+        record_run(args.json)  # F14: how this result was produced, beside it
         print(f"wrote {args.json}")
     return 0
 

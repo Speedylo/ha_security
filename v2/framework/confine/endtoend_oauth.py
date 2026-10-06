@@ -32,6 +32,7 @@ from .cgroup import Delegation
 from .endtoend_egress import run_confined
 from .preflight import require_ready
 from .spawn import become_subreaper
+from .provenance import record_run
 
 TOKENS = Path.home() / ".config" / "capstone" / "trakt.json"
 SUBJECT = {
@@ -157,6 +158,7 @@ def main() -> int:
             print(f"      {line}", flush=True)
         if args.json:
             args.json.write_text(json.dumps(results, indent=2) + "\n")
+            record_run(args.json)  # F14: how this result was produced, beside it
         return summary
 
     run("1_expiring", original, DECLARED)

@@ -94,6 +94,7 @@ from .sandbox import SandboxSpec
 from .selftest_bridge import interpreter_trees
 from .spawn import Sandbox, SandboxFailed, become_subreaper, start
 from .udp_relay import UdpRelay
+from .provenance import record_run
 
 HERE = Path(__file__).resolve().parent
 
@@ -744,6 +745,7 @@ def evaluate(domain: str, subject: dict, declared_set: set, fetched_in, reports:
         record[key] = {"passed": passed, "total": len(results)}
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(json.dumps(record, indent=2) + "\n")
+        record_run(out)  # F14: how this result was produced, beside it
         print(f"  wrote {out}")
     return 0 if passed == len(results) else 1
 

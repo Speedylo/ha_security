@@ -34,6 +34,7 @@ from .cgroup import Delegation
 from .endtoend_egress import run_confined, run_unconfined
 from .preflight import require_ready
 from .spawn import become_subreaper
+from .provenance import record_run
 
 HERE = Path(__file__).resolve().parent
 FAKES = HERE.parent.parent / "experiments" / "local_tcp"
@@ -172,9 +173,11 @@ def main() -> int:
         # run was stopped during arm C.
         if args.json:
             args.json.write_text(json.dumps(results, indent=2, default=str) + "\n")
+            record_run(args.json)  # F14: how this result was produced, beside it
 
     if args.json:
         args.json.write_text(json.dumps(results, indent=2, default=str) + "\n")
+        record_run(args.json)  # F14: how this result was produced, beside it
         print(f"\nwrote {args.json}")
     return 0
 

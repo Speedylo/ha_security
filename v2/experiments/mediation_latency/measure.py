@@ -32,6 +32,8 @@ import struct
 import sys
 import time
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "framework"))
+from confine.provenance import record_run  # noqa: E402  (F14)
 
 # A realistic mediated request and its reply, so framing and parsing cost is included
 # rather than measured away with an empty payload.
@@ -147,6 +149,7 @@ def main() -> int:
     }
     if args.json:
         args.json.write_text(json.dumps(result, indent=2) + "\n")
+        record_run(args.json)  # F14: how this result was produced, beside it
         print(f"\nwrote {args.json}")
     return 0
 

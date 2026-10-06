@@ -62,6 +62,7 @@ from pathlib import Path
 from .compat import (component_requirements, declared_components_of, declared_requirements,
                      find_ha_components, install_requirements)
 from .endtoend import WORLD
+from .provenance import record_run
 
 HERE = Path(__file__).resolve().parent
 
@@ -294,6 +295,7 @@ def main() -> int:
     if args.json:
         args.json.parent.mkdir(parents=True, exist_ok=True)
         args.json.write_text(json.dumps(out, indent=1))
+        record_run(args.json)  # F14: how this result was produced, beside it
         print(f"\nwrote {args.json}", file=sys.stderr)
     else:
         print(json.dumps(out, indent=1))

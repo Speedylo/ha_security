@@ -38,6 +38,8 @@ from confine.channel import Channel                      # noqa: E402
 from confine.manifest import Manifest                    # noqa: E402
 from confine.mediator import Mediator                    # noqa: E402
 from confine.platform import Platform, acting_policy     # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "framework"))
+from confine.provenance import record_run  # noqa: E402  (F14)
 
 ENTITY = "sensor.outdoor_temperature"
 GRANT = {"schema_version": 1, "entities": {"read": [ENTITY]}}
@@ -178,6 +180,7 @@ def main() -> int:
         args.json.write_text(json.dumps(
             {"host": platform.machine(), "python": platform.python_version(),
              "iterations_per_client": args.iterations, "levels": results}, indent=2) + "\n")
+        record_run(args.json)  # F14: how this result was produced, beside it
         print(f"\nwrote {args.json}")
     return 0
 

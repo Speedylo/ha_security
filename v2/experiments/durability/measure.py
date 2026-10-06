@@ -35,6 +35,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "framework"))
 from confine.audit import AuditLog                        # noqa: E402
 from confine.cgroup import (Delegation, ResourceLimits, SandboxCgroup,  # noqa: E402
                             spawn_confined)
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "framework"))
+from confine.provenance import record_run  # noqa: E402  (F14)
 
 
 def percentiles(samples: list[float]) -> dict:
@@ -175,6 +177,7 @@ def main() -> int:
         args.json.write_text(json.dumps(
             {"host": platform.machine(), "python": platform.python_version(),
              "durability": durability, "page_cache": page}, indent=2) + "\n")
+        record_run(args.json)  # F14: how this result was produced, beside it
         print(f"\nwrote {args.json}")
     return 0
 

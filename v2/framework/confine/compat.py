@@ -47,6 +47,7 @@ from .manifest import Manifest
 from .mediator import Mediator
 from .platform import Platform, acting_policy
 from .preflight import require_ready
+from .provenance import RESOLVE_BEFORE, record_run
 from .sandbox import SandboxSpec
 from .integrity import TreeState, compare
 from .integrity import summarise as integrity_summary
@@ -73,6 +74,9 @@ UNSTRIPPED = ["http", "websocket_api", "frontend", "lovelace", "panel_custom", "
               "media_source", "notify", "mqtt", "stream"]
 
 
+# F13's fixed resolution moment lives in `provenance`, so installs and run records share one value.
+
+
 def install_requirements(requirements: list[str], target: Path, python: Path,
                          uv: str, timeout: int = 300, compile_bytecode: bool = False) -> dict:
     """Install an integration's declared dependencies into a directory of its own.
@@ -84,22 +88,23 @@ def install_requirements(requirements: list[str], target: Path, python: Path,
     """
     target.mkdir(parents=True, exist_ok=True)
     if not requirements:
-        return {"ok": True, "installed": [], "note": "no requirements declared"}
+        return {"ok": True, "installed": [], "note": "no requirements declared",
+                "resolved_before": RESOLVE_BEFORE}
     proc = subprocess.run(
         [uv, "pip", "install", "--quiet", "--python", str(python),
-         "--target", str(target),
+         "--target", str(target), "--exclude-newer", RESOLVE_BEFORE,
          # W2 (c): `uv` does not compile bytecode by default, and inside the sandbox this tree is
          # read-only, so without it every confined start compiles these modules again.
          *(["--compile-bytecode"] if compile_bytecode else []), *requirements],
         capture_output=True, text=True, timeout=timeout)
     installed = sorted(p.name.split("-")[0] for p in target.glob("*.dist-info"))
     if proc.returncode != 0:
-        return {"ok": False, "installed": installed,
+        return {"ok": False, "installed": installed, "resolved_before": RESOLVE_BEFORE,
                 "error": (proc.stderr or proc.stdout).strip().splitlines()[-1][:200]
                 if (proc.stderr or proc.stdout).strip() else "install failed"}
-    # The resolved set, which is what §6.8.1 says the third identity component needs and does
-    # not yet have. Recorded here so that gap can be closed from a real measurement.
-    return {"ok": True, "installed": installed,
+    # The resolved set. Since finding F08 the identity reads the same thing from the install
+    # directory itself (`audit.resolved_versions`), so the run record carries it too.
+    return {"ok": True, "installed": installed, "resolved_before": RESOLVE_BEFORE,
             "resolved": sorted(p.name.removesuffix(".dist-info")
                                for p in target.glob("*.dist-info"))}
 
@@ -652,6 +657,7 @@ def main() -> int:
     if args.json:
         args.json.write_text(json.dumps(
             {"arm_a": results, "arm_b": arm_b, "c1": c1}, indent=2) + "\n")
+        record_run(args.json)  # F14: how this result was produced, beside it
         print(f"\nwrote {args.json}")
     return 0
 

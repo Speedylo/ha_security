@@ -54,6 +54,7 @@ from .preflight import require_ready
 from .sandbox import SandboxSpec
 from .selftest_bridge import interpreter_trees
 from .spawn import Sandbox, SandboxFailed, become_subreaper, start
+from .provenance import record_run
 
 HERE = Path(__file__).resolve().parent
 
@@ -478,6 +479,7 @@ def main() -> int:
 
     if args.json:
         args.json.write_text(json.dumps(results, indent=2) + "\n")
+        record_run(args.json)  # F14: how this result was produced, beside it
         print(f"\nwrote {args.json}")
     return 0
 

@@ -37,6 +37,8 @@ import collections
 import json
 import sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "framework"))
+from confine.provenance import record_run  # noqa: E402  (F14)
 
 # The nine handles of ch5_evidence_ha_coupling.md §4, in its order, mapped to the attribute
 # that reaches each from `hass`.
@@ -244,6 +246,7 @@ def main() -> int:
             "foreign_components": dict(foreign.most_common(40)),
             "per_integration": results,
         }, indent=2) + "\n")
+        record_run(args.json)  # F14: how this result was produced, beside it
         print(f"\nwrote {args.json}")
     return 0
 

@@ -54,6 +54,8 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "r2_footprint"))
 
 from measure import build_minimal_hass, rss_kb  # noqa: E402  (path set above)
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "framework"))
+from confine.provenance import record_run  # noqa: E402  (F14)
 
 # The two probes. probe_sensor is the §5.6.3 integration, unchanged, so Q1 is asked against
 # the same subject as the measurement it revises. probe_restore is new, and exists for Q4.
@@ -391,6 +393,7 @@ def parent(count: int, out_path: Path | None, order: list[str]) -> int:
 
     if out_path:
         out_path.write_text(json.dumps(result, indent=2) + "\n")
+        record_run(out_path)  # F14: how this result was produced, beside it
         print(f"\nwrote {out_path}")
     return 0
 
