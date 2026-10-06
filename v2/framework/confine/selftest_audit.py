@@ -105,6 +105,59 @@ def main() -> int:
               len({base.composite, changed_code.composite, changed_grant.composite,
                    changed_deps.composite}) == 4, "four distinct composites", failures)
 
+        # ---- F08: resolved versions, the half of the third component that was missing ----
+        # §5.12.1 hashes the requirements "with resolved versions". Until verification 4.x
+        # (finding F08) only the declaration was hashed, so a dependency that moved between two
+        # installs (F13: aiohttp 3.14.3 → 3.14.4) left the identity unchanged.
+        print("\n§5.12.1  resolved versions (F08)\n")
+        write_component(root, permissions=PERMISSIONS)
+        unchanged = Identity.compute(component)
+        # Pinned from the code before the fix: with no install directory the identity must not
+        # move, or every approval already recorded would read as changed.
+        check("with no install directory, the identity is exactly the pre-F08 one",
+              (unchanged.requirements, unchanged.composite) == (
+                  "1061b645f6e505401934ff4aa283d34abe8f4cc4f9bda053eddedd4372f7d0f9",
+                  "8631d29c34f9c6ed905458826ceb7d7176e26b064a0a5960106774db120846d3"),
+              unchanged.composite[:16], failures)
+
+        def installed(where: Path, versions: dict[str, str]) -> Path:
+            for name, version in versions.items():
+                info = where / f"{name}-{version}.dist-info"
+                info.mkdir(parents=True)
+                (info / "METADATA").write_text(
+                    f"Metadata-Version: 2.1\nName: {name}\nVersion: {version}\n")
+            return where
+        old_deps = installed(root / "deps_a", {"aiohttp": "3.14.3", "yarl": "1.20.0"})
+        new_deps = installed(root / "deps_b", {"aiohttp": "3.14.4", "yarl": "1.20.0"})
+        try:
+            before_move = Identity.compute(component, installed=old_deps)
+            after_move = Identity.compute(component, installed=new_deps)
+            moved = after_move.changes_from(before_move)
+        except TypeError as err:
+            before_move = after_move = None
+            moved = [f"TypeError: {err}"]
+        check("one dependency moving changes the requirements component, and only it",
+              moved == ["requirements"], str(moved), failures)
+        check("...and the identity lists the resolved versions",
+              before_move is not None
+              and list(before_move.resolved or []) == ["aiohttp==3.14.3", "yarl==1.20.0"],
+              str(getattr(before_move, "resolved", None)), failures)
+
+        from .channel import Channel as MediatorChannel
+        from .mediator import Mediator
+        run_log = AuditLog(root / "f08.jsonl")
+        mediator = Mediator(log=run_log)
+        ours, _theirs = MediatorChannel.pair()
+        try:
+            mediator.register("demo", MediatorChannel(ours), component=component,
+                              installed=new_deps)
+            run_record = [r for r in run_log.records() if r["kind"] == "run"][-1]
+            listed = run_record["identity"].get("resolved")
+        except TypeError as err:
+            listed = f"TypeError: {err}"
+        check("a run record names the versions the sandbox was given",
+              listed == ["aiohttp==3.14.4", "yarl==1.20.0"], str(listed), failures)
+
         print("\n§5.12.4  the chain, and the two links that fail independently\n")
         write_component(root, permissions=PERMISSIONS)
         log = AuditLog(root / "audit.jsonl")
