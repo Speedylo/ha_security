@@ -67,6 +67,13 @@ def main() -> int:
             result = fetcher.fetch_one({k: row[k] for k in ("domain", "repo", "commit")}, final)
             if not result["ok"]:
                 sys.exit(f"{row['domain']}: {result.get('reason')}")
+    # One directory per domain: where two repositories declaring one domain were both fetched, the
+    # one fetched last is what was parsed, and the result's equality is the check on that.
+    last = {r["domain"]: i for i, r in enumerate(rows) if r["in_sample"]}
+    for i, row in enumerate(rows):
+        if row["in_sample"] and last[row["domain"]] != i:
+            row.update(in_sample=False, pinned_by="domain collision: fetched, then replaced by "
+                                                  "the repository declaring the same domain after it")
     in_sample = [r for r in rows if r["in_sample"]]
     print(f"in the sample: {len(in_sample)}, {len({r['domain'] for r in in_sample})} domains")
 
