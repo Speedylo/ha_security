@@ -86,3 +86,41 @@ FI5 and FI7 are the existing cases, passing in today's 26/26 suite runs.
 
 The MAC failures in FI4's log are not a finding: the key is generated per mediator and never stored,
 which §6.8.4 states and §8.6 lists as limitation 7. The hash chain is the part a restart breaks.
+
+## The fixes, written before the code (2026-10-06; Younes chose to fix all four)
+
+**F28 — a failed append leaves nothing behind.** `AuditLog._append` notes the file's size before
+writing; if the write, flush or `fsync` fails, it truncates the file back to that size, `fsync`s, and
+re-raises. The chain state is not advanced, as now. The mediator still stops on the error: with no
+record possible, no decision is possible, so fail-closed stays the behaviour.
+*Criteria:* (1) a new `selftest_audit` case, an append whose `fsync` fails, leaves the file as it was
+and the next record continues the chain (fails against today's code: the unsynced line stays, and the
+next record repeats its sequence number); (2) FI3 on a real full disk: the log verifies after the
+failure, and after space is freed and records are written again.
+
+**F31 — one log file per mediator start.** `supervise.py` writes `decisions-<start time>.jsonl`, so
+a file is never two chains. `drive_demo.py` reads the newest. *Criterion:* after FI4's kill and
+restart, every file in the audit directory has no sequence, link or hash break. MAC breaks for the
+killed run are expected and stated (§6.8.4).
+
+**F30 — no sandbox outlives its supervisor.** Two parts, because the first is inside the sandbox and
+so cannot be the guarantee:
+- the runtime exits when the mediator's channel closes, instead of only ceasing to read it;
+- a starting supervisor removes every `sup-<domain>-*` cgroup it finds, killing what is in it, before
+  it launches, and says how many it cleared. This is outside the sandbox's reach, so it holds even
+  against an integration that ignores the first.
+
+*Criteria:* (1) FI4: 10 s after the supervisor is `SIGKILL`ed, no sandbox is running; after the
+restart, exactly one; (2) with a process placed by hand in a stale `sup-demo_flood-*` cgroup, a starting
+supervisor kills it and removes the cgroup.
+
+**F29 — the supervisor survives (A) going away.** On `PlatformLost` it stops the sandbox (fail-closed,
+as now), says so in one plain line rather than a traceback, and tries to reconnect every 5 s. When (A)
+answers, it attaches the new connection (`Mediator.detach_platform`, new), rebuilds the acting policy
+on it, and starts the integration again if it was running when (A) went away. Nobody is asked to do
+anything, so no Repairs issue is raised. While (A) is down nothing can be shown in it, and once it is
+back the integration is running again. *Criteria:* FI1: within 60 s of (A) returning, exactly one
+supervisor and one sandbox are running, with no traceback in the supervisor's log.
+
+**Regression:** a new tag; all 25 suites and the base self-test, twice; `nordpool` end to end; FI1–FI9;
+`selftest_real_platform` and `drive_demo` (the supervisor's own path).
