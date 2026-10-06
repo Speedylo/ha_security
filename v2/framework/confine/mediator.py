@@ -65,6 +65,13 @@ class Decision:
     #: per datagram: the record is the decision that opened it.
     source: tuple | None = field(default=None, compare=False)
 
+    def __post_init__(self) -> None:
+        # F3: every decision names the clause, or the mediator's own rule, that produced it.
+        # Refused here rather than checked later, so that a decision with nothing to attribute
+        # it to cannot be built at all. Until 2026-10-06 seven paths built one (F03).
+        if not self.clause:
+            raise ValueError(f"a decision must name the clause that produced it: {self.reason!r}")
+
     def as_response(self, request_id: object) -> dict:
         response: dict = {"id": request_id, "ok": self.allowed, "reason": self.reason}
         # §5.11.3: every response carries the clause that decided it, so that attribution is
@@ -77,7 +84,7 @@ class Decision:
 
 def deny_everything(identity: str, request: dict) -> Decision:
     """S6, as a function. No manifest, therefore no grant, therefore no."""
-    return Decision(False, "no manifest is bound to this integration", clause=None)
+    return Decision(False, "no manifest is bound to this integration", clause="/permissions")
 
 
 @dataclass
@@ -181,6 +188,15 @@ class _Outbox:
 #: Commands queued for one sandbox, at most (W1 step 2b). Past this a user's command is refused at
 #: once rather than queued without limit behind a sandbox that is not reading.
 MAX_COMMANDS = 32
+
+#: The rules `Mediator.command` decides by, named so that every decision carries one (F3). A
+#: command is ambient, not declared (§5.10.2): these are the mediator's own conditions on it, and
+#: the clause names which one refused.
+COMMAND_NO_SANDBOX = "(command: the integration has a running sandbox)"
+COMMAND_SERVICES = "(command: turn_on and turn_off only, §7.38)"
+COMMAND_QUEUE = f"(command: at most {MAX_COMMANDS} queued)"
+COMMAND_ANSWER = "(command: answered only on the channel it was sent to)"
+AMBIENT = "(ambient: §5.10.2)"
 
 #: Datagrams queued for one sandbox, at most (W2 (b)). Matches the relay's `QUEUE_LIMIT`.
 MAX_DATAGRAMS = 64
@@ -411,19 +427,20 @@ class Mediator:
         owner = self._platform.owners.get(entity_id) if self._platform else None  # type: ignore
 
         if not channels:
-            decision = Decision(False, f"{identity} has no running sandbox", clause=None)
+            decision = Decision(False, f"{identity} has no running sandbox",
+                                clause=COMMAND_NO_SANDBOX)
         elif owner != identity:
             decision = Decision(False, f"{entity_id} belongs to {owner}, not {identity}",
-                                clause=None)
+                                clause=AMBIENT)
         elif service not in ("turn_on", "turn_off"):
             decision = Decision(False, f"{service} is not a command the bridge forwards",
-                                clause=None)
+                                clause=COMMAND_SERVICES)
         elif len(self._out[channels[0]].commands) >= MAX_COMMANDS:
             decision = Decision(False, f"{MAX_COMMANDS} commands are already queued for "
-                                       f"{identity}", clause=None)
+                                       f"{identity}", clause=COMMAND_QUEUE)
         else:
             decision = Decision(True, "the platform operating the integration's own entity",
-                                clause="(ambient: §5.10.2)")
+                                clause=AMBIENT)
         self._record(identity, request, decision)
         if not decision.allowed:
             self._platform.command_result(ident, False, decision.reason)  # type: ignore
@@ -446,13 +463,13 @@ class Mediator:
                                "detail": detail})
             if self.log is not None:
                 self.log.protocol_error(self._runs.get(identity, ""), identity, detail)
-            answer = Decision(False, detail)
+            answer = Decision(False, detail, clause=COMMAND_ANSWER)
         else:
             del self._sent_commands[ident]  # type: ignore[arg-type]
             self._platform.command_result(  # type: ignore[union-attr]
                 ident, bool(request.get("ok")),
                 None if request.get("ok") else str(request.get("error") or "failed")[:300])
-            answer = Decision(True, "relayed")
+            answer = Decision(True, "relayed", clause=COMMAND_ANSWER)
         self._out[fd].reply = (Channel.frame(answer.as_response(request.get("id"))), None)
         self._flush(fd)
 

@@ -370,7 +370,7 @@ so the first day serves both.
 
 ### F03 fix — written before the code (2026-10-06)
 
-**Read, not run, first.** The mediator builds six decisions with `clause=None`: `deny_everything`
+**Read, not run, first.** The mediator builds seven decisions with no clause: `deny_everything`
 (no manifest bound), and the four refusals of `Mediator.command` (no running sandbox, not the owner,
 a service the bridge does not forward, a full queue), plus the answer to a sandbox's
 `entity.command_result` (`Decision(False, detail)` and `Decision(True, "relayed")`). The cut-off and

@@ -264,6 +264,10 @@ class AuditLog:
     def decision(self, run_id: str, identity: str, request: dict, allowed: bool,
                  clause: str | None, reason: str) -> dict:
         """One record per decision. Consequences are not recorded — §5.12.3."""
+        # F3, at the durable end too: `Decision` already refuses to exist without a clause, and
+        # this refuses to write a record without one, before anything reaches the file.
+        if not clause:
+            raise ValueError(f"a decision record must name its clause: {reason!r}")
         # An egress target is `host:port`, not `host`. §7.24.3 measured that a hostname-only
         # clause can neither grant nor withhold a port and §7.25's schema added one — but this
         # record kept extracting the host alone, so the log could not distinguish a grant of

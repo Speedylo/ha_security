@@ -5,6 +5,7 @@
     §5.12.4  modifying, deleting or reordering any record breaks every link after it
     §5.12.4  the hash chain and the keyed MAC fail independently
     §5.11.3  the record is written before the action
+    F3       a decision with no clause cannot be built or written, on every path that once built one
 
 Run:  python3 -m confine.selftest_audit
 """
@@ -229,7 +230,8 @@ def main() -> int:
         print("\n  T4 — what the record names, and the check that compares it with memory")
         log3 = AuditLog(path=root / "t4.jsonl")
         decoy = log3.decision("r", "demo", {"op": "service.call", "service": "lock.unlock",
-                                            "entity": "sensor.harmless"}, False, None, "no")
+                                            "entity": "sensor.harmless"}, False,
+                            "/permissions/services/call", "no")
         check("a decoy entity does not become the recorded target of a service call",
               decoy["target"] == "lock.unlock"
               and decoy["requested"].get("entity") == "sensor.harmless",
@@ -287,6 +289,102 @@ def main() -> int:
             found = reconcile(mediator.audit, mutated)
             check(f"reconcile catches {label}", bool(found),
                   found[0] if found else "it reported nothing", failures)
+
+        # -- F3: a decision with no clause cannot be built, and none reaches the log ----------
+        # Until 2026-10-06 seven paths built one (finding F03): no manifest bound, four refusals of
+        # a user's command, and both answers to a sandbox's command result. Each is driven here
+        # through a real mediator with a durable log, and the clause it carries is read back.
+        print("\n  F3 — every decision names its clause, including the mediator's own refusals")
+        from . import mediator as mediator_module
+        from .mediator import (AMBIENT, COMMAND_ANSWER, COMMAND_NO_SANDBOX, COMMAND_QUEUE,
+                               COMMAND_SERVICES, deny_everything)
+        for label, kwargs in (("no clause", {}), ("an empty clause", {"clause": ""})):
+            try:
+                Decision(False, "x", **kwargs)
+                built = True
+            except ValueError:
+                built = False
+            check(f"a decision with {label} cannot be built", not built,
+                  "ValueError" if not built else "it was built", failures)
+        log5 = AuditLog(path=root / "f3.jsonl")
+        before = len(log5.records())
+        try:
+            log5.decision("r", "demo", {"op": "entity.read", "entity": "sensor.a"}, False, None, "x")
+            written = True
+        except ValueError:
+            written = False
+        check("the durable log refuses a decision record with no clause",
+              not written and len(log5.records()) == before,
+              f"{len(log5.records()) - before} records written", failures)
+
+        class House:
+            """Enough of a platform for `Mediator.command`: who owns what, and what it was told."""
+            def __init__(self) -> None:
+                self.owners = {"switch.mine": "demo", "switch.theirs": "other"}
+                self.results: list[tuple] = []
+
+            def command_result(self, command: int, ok: bool, error: str | None = None) -> None:
+                self.results.append((command, ok, error))
+
+        unbound = Mediator(policy=deny_everything, log=AuditLog(path=root / "f3-unbound.jsonl"))
+        mine, theirs = Channel.pair()
+        unbound.register("demo", Channel(mine), component=component)
+        peer = Channel(theirs)
+        peer.send({"id": 1, "op": "entity.read", "entity": "sensor.a"})
+        unbound._handle_ready(mine.fileno())
+        reply = peer.recv()
+        check("no manifest bound: refused, and the reply names /permissions",
+              reply.get("ok") is False and reply.get("clause") == "/permissions",
+              str(reply.get("clause")), failures)
+
+        house = House()
+        users = Mediator(policy=deny_everything, log=AuditLog(path=root / "f3-commands.jsonl"))
+        users._platform = house  # type: ignore[assignment]
+        users.command({"command": 1, "integration": "demo", "entity_id": "switch.mine",
+                       "service": "turn_on"})
+        mine, theirs = Channel.pair()
+        users.register("demo", Channel(mine), component=component)
+        peer = Channel(theirs)
+        users.command({"command": 2, "integration": "demo", "entity_id": "switch.theirs",
+                       "service": "turn_on"})
+        users.command({"command": 3, "integration": "demo", "entity_id": "switch.mine",
+                       "service": "unlock"})
+        saved = mediator_module.MAX_COMMANDS
+        mediator_module.MAX_COMMANDS = 0
+        try:
+            users.command({"command": 4, "integration": "demo", "entity_id": "switch.mine",
+                           "service": "turn_on"})
+        finally:
+            mediator_module.MAX_COMMANDS = saved
+        users.command({"command": 5, "integration": "demo", "entity_id": "switch.mine",
+                       "service": "turn_on"})
+        pushed = peer.recv()
+        commands = [r for r in users.log.records()
+                    if r.get("kind") == "decision" and r.get("op") == "entity.command"]
+        expected = [(False, COMMAND_NO_SANDBOX), (False, AMBIENT), (False, COMMAND_SERVICES),
+                    (False, COMMAND_QUEUE), (True, AMBIENT)]
+        check("each command path is recorded with the rule that decided it",
+              [(r["allowed"], r["clause"]) for r in commands] == expected,
+              str([(r["allowed"], r["clause"]) for r in commands]), failures)
+
+        peer.send({"id": 6, "op": "entity.command_result", "command": pushed.get("command"),
+                   "ok": True})
+        users._handle_ready(mine.fileno())
+        relayed = peer.recv()
+        peer.send({"id": 7, "op": "entity.command_result", "command": 99, "ok": True})
+        users._handle_ready(mine.fileno())
+        stray = peer.recv()
+        check("both answers to a command result name the rule they were decided by",
+              relayed.get("clause") == COMMAND_ANSWER and relayed.get("ok") is True
+              and stray.get("clause") == COMMAND_ANSWER and stray.get("ok") is False,
+              f"relayed={relayed.get('clause')!r} stray={stray.get('clause')!r}", failures)
+
+        every = [r for log in (unbound.log, users.log) for r in log.records()
+                 if r.get("kind") == "decision"]
+        check("no decision record on disk lacks a clause",
+              bool(every) and all(r.get("clause") for r in every),
+              f"{len(every)} decision records, "
+              f"{sum(1 for r in every if not r.get('clause'))} without a clause", failures)
 
         # -- the directory entries are durable too ------------------------------------------
         # A crash cannot be staged here, so the check is on what the code asks the kernel to
