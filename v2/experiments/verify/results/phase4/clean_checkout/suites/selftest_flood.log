@@ -1,0 +1,46 @@
+
+F1, F3 — a flood, with a neighbour, at the real limit (100)
+
+  ok    the flooder is cut off  — after 0.20 s; supervisor told ['flooder']
+  ok    exactly 100 refusals are on disk for it, and one cutoff  — 100 refusals, 1 cutoff: 100 refusals within 10 s
+  ok    the cutoff is its last record: nothing was decided for it after
+  ok    its end of the channel was closed, and it noticed  — 99 answers, then: the mediator closed the channel
+  ..    F2: flood start to cut-off 0.200 s, the neighbour's grants included (predicted under 1 s on the Pi)
+  ok    F3: the neighbour was answered throughout, every answer a grant  — 4659 answers, worst 0.6 ms
+  ok    F3: and no answer to it took 1 s or more
+  ok    the neighbour was not counted towards anything
+
+F1m — the mutation: the same flood with the limit out of reach
+
+  ok    is still running at twice the limit, with nothing cut off  — 1447 refusals and counting
+
+F4 — cut off stays cut off until reinstated
+
+  ok    a cut-off integration cannot be registered again  — flooder was cut off for flooding the mediator with refused requests, and has not been reinstated
+  ok    reinstating one that was never cut off does nothing, and writes nothing
+  ok    reinstating the flooder succeeds, and the supervisor is told
+  ok    the reinstatement is recorded before the new run record  — ['reinstate', 'run']
+  ok    the count starts again from zero, and a second flood is cut off the same way  — 99 answers before the second cut-off
+
+F5 — a user's refused commands are not the sandbox's doing
+
+  ok    twenty refused commands, each recorded and answered to the user
+  ok    and none of them counted: four times the limit, no cut-off
+
+win — refusals more thinly spread than the window
+
+  ok    three bursts of four, 0.6 s apart, against five in 0.5 s: never cut off  — 12 refusals answered
+
+note — the house cannot be told
+
+  ok    the cut-off stands, and the missing Repairs issue is reported  — ['flooder: (A) is not reachable']
+  ok    a reachable house is told which integration, and why  — [('flooder', '5 refusals within 10 s')]
+
+S7 — the durable record, events included
+
+  ok    F1/F4: chains verify, and memory matches the disk entry by entry
+  ok    F5: chains verify, and memory matches the disk entry by entry
+  ok    win: chains verify, and memory matches the disk entry by entry
+  ok    note: chains verify, and memory matches the disk entry by entry
+
+22/22 passed
