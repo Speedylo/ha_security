@@ -1,6 +1,40 @@
 # Where the rebuild stands
 
-## ▶ Resume here (last updated 2026-10-04, night)
+## ▶ Resume here — 2026-10-06, night
+
+**Engineering and the verification campaign are done. Waiting on Younes to declare the cut-off.**
+
+- **Cut-off candidate:** tag `verify-2026-10-f45` (pushed; clone on the Pi at `~/r2exp/verify-f45`).
+  On it: suites 26/26 twice; all 13 timing and memory figures within criterion on the median of
+  five runs, with p99 and bootstrap intervals (`experiments/verify/results/phase3_timing/`);
+  mutants 18/18 (run on `verify-2026-10-final`; the files they mutate are unchanged since); the
+  restart suite 54/54, `nordpool` 16/16, the flood and Repairs path, the fault cases.
+- **Claim register closed:** `verify/claims_register.md`, 153 rows: 119 Verified, 27 Qualified,
+  5 Argued, 2 Withdrawn.
+- **Findings:** F01–F46 in `notes/verification_plan_20261005.md` §11. **Only F18 is open**: follow
+  `REPRODUCE.md` on a freshly imaged SD card, when Younes has one. The report's record of the
+  campaign is §7.45.1–§7.45.11.
+- **Decided:** 4.6 (independent adversary) dropped (§7.45.10, §8.7 #17). The mediator runs as the
+  non-admin user `confine-mediator`, designated in the bridge (F45, §7.45.11); `house_a up` sets it
+  up. Diary 1 submitted. GitHub private for now.
+
+**Next session:**
+1. Ask Younes to declare the cut-off on `verify-2026-10-f45` (F18 stated open), or to wait for a
+   card. After it: no new engineering except fixes the writing turns up.
+2. Phase R, the report (~end of November, unofficial). Carried in by design: re-rate R3 in
+   Chapter 4 after F45; reword the 5 Argued claims as argument; rewrite the stale `submission/`
+   draft (31.5 µs, "77 integrations", "eighteen threats"); turn dated pointers into final text.
+3. Offered: a first-principles walkthrough of the code the campaign changed (the bridge's mediator
+   gate, `house_a keep`, the mediator's exception boundary, the sandbox's new session, resolved
+   versions in the identity), so Younes can defend it.
+4. Optional: clean the Pi's campaign scratch in `~/r2exp` (4.1 GB; `f16` holds 150 clones),
+   deleting literal paths only.
+
+**How to check it all still holds:** `python3 verify/recompute.py` (38 equal, 2 need the corpora),
+`python3 verify/consistency.py`, `python3 report/toc.py --check`, `python3 verify/readme_coverage.py`,
+`python3 verify/prereg.py`; on the Pi, `bash verify/regress_f45.sh` re-runs the last regression.
+
+## Earlier resume notes (2026-10-04 to 2026-10-06), kept as history
 
 **Engineering W1 and W2 are complete, and the day's work has been reviewed and retested (§7.43).**
 Everything is committed; all 25 suites pass on the Pi.
