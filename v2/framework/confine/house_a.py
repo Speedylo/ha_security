@@ -28,6 +28,7 @@ import argparse
 import json
 import threading
 import os
+import secrets
 import shutil
 import signal
 import subprocess
@@ -45,6 +46,12 @@ BRIDGE = HERE.parent / "ha_bridge" / "confine_bridge"
 
 DEFAULT_CONFIG = Path.home() / "r2exp" / "houseA"
 TOKEN_FILE = Path.home() / ".config" / "capstone" / "house_a.token"
+#: The mediator's own credential (finding F45): a long-lived token of an ordinary, non-admin user
+#: the bridge has been told is the mediator. The owner's admin token above is for setup only. The
+#: password is kept so the token can be minted again; both files are mode 600 and never printed.
+MEDIATOR_TOKEN_FILE = Path.home() / ".config" / "capstone" / "house_a_mediator.token"
+MEDIATOR_PASSWORD_FILE = Path.home() / ".config" / "capstone" / "house_a_mediator.password"
+MEDIATOR_NAME = "confine-mediator"
 HASS = Path.home() / "r2exp" / "ha314" / "bin" / "hass"
 #: The frontend, installed apart from `ha314` so that the environment every other experiment uses
 #: is not changed. (A) cannot run without it: bootstrap always sets up its default integrations,
@@ -356,6 +363,86 @@ def confirm_http_config(token: str) -> bool:
         ws.close()
 
 
+def _private(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.touch(mode=0o600)
+    path.chmod(0o600)
+    path.write_text(text)
+
+
+def _ws_call(token: str, message: dict) -> dict:
+    """One command over a fresh, authenticated connection; the full answer."""
+    ws = WebSocket(HOST, PORT, timeout=30)
+    try:
+        ws.receive()
+        ws.send({"type": "auth", "access_token": token})
+        if ws.receive()[0].get("type") != "auth_ok":
+            raise RuntimeError("(A) refused the token")
+        ws.send({"id": 1, **message})
+        answer: list = []
+        while not answer:
+            answer = [m for m in ws.receive() if m.get("id") == 1]
+        return answer[0]
+    finally:
+        ws.close()
+
+
+def ensure_user(admin_token: str, name: str, token_file: Path, password_file: Path) -> str:
+    """Make sure an ordinary (`system-users`, local-only) user `name` exists with a long-lived token.
+
+    Idempotent. The token and the password are written mode 600 and never printed. Returns the
+    user's id.
+    """
+    users = _ws_call(admin_token, {"type": "config/auth/list"})["result"]
+    found = [u for u in users if u.get("name") == name]
+    if found:
+        user_id = found[0]["id"]
+    else:
+        created = _ws_call(admin_token, {"type": "config/auth/create", "name": name,
+                                         "group_ids": ["system-users"], "local_only": True})
+        user_id = created["result"]["user"]["id"]
+        password = secrets.token_urlsafe(32)
+        made = _ws_call(admin_token, {"type": "config/auth_provider/homeassistant/create",
+                                      "user_id": user_id, "username": name,
+                                      "password": password})
+        if not made.get("success"):
+            raise RuntimeError(f"no credentials for {name}: {made.get('error')}")
+        _private(password_file, password)
+        token_file.unlink(missing_ok=True)
+    if not token_file.exists():
+        password = password_file.read_text().strip()
+        flow = request("POST", "/auth/login_flow", {"client_id": CLIENT_ID,
+                                                    "handler": ["homeassistant", None],
+                                                    "redirect_uri": CLIENT_ID})
+        done = request("POST", f"/auth/login_flow/{flow['flow_id']}",
+                       {"client_id": CLIENT_ID, "username": name, "password": password})
+        if done.get("type") != "create_entry":
+            raise RuntimeError(f"{name}'s login did not complete: {done.get('errors')}")
+        access = request("POST", "/auth/token", {"grant_type": "authorization_code",
+                                                 "code": done["result"],
+                                                 "client_id": CLIENT_ID}, form=True)["access_token"]
+        minted = _ws_call(access, {"type": "auth/long_lived_access_token",
+                                   "client_name": name, "lifespan": 3650})
+        if not minted.get("success"):
+            raise RuntimeError(f"no long-lived token for {name}: {minted.get('error')}")
+        _private(token_file, minted["result"])
+    return user_id
+
+
+def ensure_mediator_user(admin_token: str) -> str:
+    """The mediator's own non-admin user and token, designated in the bridge (finding F45).
+
+    The user is in the built-in `system-users` group: it controls entities, as the mediator must,
+    and is refused everything admin-only (users, integrations, configuration, restarting the house).
+    """
+    user_id = ensure_user(admin_token, MEDIATOR_NAME, MEDIATOR_TOKEN_FILE, MEDIATOR_PASSWORD_FILE)
+    designated = _ws_call(admin_token, {"type": "confine_bridge/designate_mediator",
+                                        "user_id": user_id})
+    if not designated.get("success"):
+        raise RuntimeError(f"the bridge would not designate the mediator: {designated.get('error')}")
+    return user_id
+
+
 def add_bridge_entry(token: str) -> None:
     entries = request("GET", "/api/config/config_entries/entry", token=token)
     if any(e.get("domain") == "confine_bridge" for e in entries):
@@ -389,7 +476,9 @@ def up(config: Path, fresh: bool) -> None:
     confirm_http_config(token)
     add_bridge_entry(token)
     wait_until_running()
-    print(f"(A) up on {BASE}, config {config}, bridge entry present, token in {TOKEN_FILE}")
+    ensure_mediator_user(token)
+    print(f"(A) up on {BASE}, config {config}, bridge entry present, admin token in {TOKEN_FILE}, "
+          f"the mediator's own (non-admin) token in {MEDIATOR_TOKEN_FILE}")
 
 
 class User:

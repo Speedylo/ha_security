@@ -53,7 +53,7 @@ from .house_a import User
 from .audit import AuditLog
 from .mediator import Mediator
 from .platform import ActingPolicy
-from .real_platform import PlatformStarting, RealPlatform
+from .real_platform import PlatformError, PlatformStarting, RealPlatform
 from .selftest_push import Sandbox, component
 
 results: list[bool] = []
@@ -401,6 +401,43 @@ def main() -> int:
 
         other.channel.sock.close()
         platform.close()
+
+    # F45: the mediator runs as an ordinary user, not as the house's admin. Every call above was
+    # made with its token, so those results already show it can do its job. These show what it
+    # cannot do, which is the point: a compromised mediator gets an ordinary user's power, not the
+    # house's configuration, users or integrations.
+    print("\nF45 — the mediator's token is an ordinary user's\n")
+    probe = RealPlatform()
+    me = probe.call({"type": "auth/current_user"})
+    check("the mediator's user is not an admin", isinstance(me, dict) and not me.get("is_admin"),
+          f"{(me or {}).get('name')}, is_admin={(me or {}).get('is_admin')}")
+    admin_only = [
+        ("list the house's users", {"type": "config/auth/list"}),
+        ("see integrations being added", {"type": "config_entries/flow/progress"}),
+        ("subscribe to every service call", {"type": "subscribe_events",
+                                             "event_type": "call_service"}),
+        ("call an admin-only service (check_config)",
+         {"type": "call_service", "domain": "homeassistant", "service": "check_config",
+          "service_data": {}}),
+    ]
+    for label, message in admin_only:
+        try:
+            probe.call(message)
+            refused, why = False, "allowed"
+        except PlatformError as err:
+            refused, why = True, str(err)[:70]
+        check(f"it may not {label}", refused, why)
+    probe.close()
+    other = house_a.ensure_user(house_a.TOKEN_FILE.read_text().strip(), "f45-other",
+                                house_a.MEDIATOR_TOKEN_FILE.with_name("house_a_f45_other.token"),
+                                house_a.MEDIATOR_TOKEN_FILE.with_name("house_a_f45_other.password"))
+    try:
+        RealPlatform(token_file=house_a.MEDIATOR_TOKEN_FILE.with_name("house_a_f45_other.token"))
+        gated, why = False, "the bridge let it subscribe to commands"
+    except PlatformError as err:
+        gated, why = True, str(err)[:70]
+    check("another ordinary user, not the designated one, is refused by the bridge", gated,
+          f"user {other[:8]}…: {why}")
 
     if args.restart:
         print("\nR2 — (A) restarts, and the bridged entity is still there\n")

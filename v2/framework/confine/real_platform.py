@@ -73,7 +73,9 @@ class _Owners(dict):
 class RealPlatform:
     def __init__(self, host: str = "127.0.0.1", port: int = 8123,
                  token: str | None = None, token_file: Path | None = None) -> None:
-        token = token or Path(token_file or Path.home() / ".config/capstone/house_a.token") \
+        # The mediator's own token, of an ordinary user the bridge was told is the mediator, not
+        # the owner's admin token (verification finding F45). `house_a up` creates both.
+        token = token or Path(token_file or Path.home() / ".config/capstone/house_a_mediator.token") \
             .read_text().strip()
         # Longer than any wait inside (A): the bridge waits up to 10 s for an entity to be added
         # and for a command's answer. At 10 s here the two raced, and a slow add would have made

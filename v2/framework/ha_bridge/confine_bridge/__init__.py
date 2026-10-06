@@ -10,10 +10,11 @@ publish through the path that does (§5.6.1).
 Adapted from the 2026-08 spike's `sandbox_bridge` (`00_METHOD.md` §5 permits reusing its code;
 its *finding* is re-measured in §7.37, not cited). Two changes from the spike:
 
-  - **Publishing is an admin-only WebSocket command, not a service.** A service appears in the
-    instance's service list, where any automation, script or dashboard button could call it and
-    publish as a confined integration. A WebSocket command is reachable only by a client holding
-    an administrator's token, which is the mediator (§5.15.3).
+  - **Publishing is a WebSocket command, not a service.** A service appears in the instance's
+    service list, where any automation, script or dashboard button could call it and publish as a
+    confined integration. A WebSocket command is reachable only by a client holding a token, and
+    these admit only an admin or the one user an admin designated as the mediator. Until
+    2026-10-06 they were admin-only, which forced the mediator to hold an admin token (F45).
   - **It answers with the entity id the registry actually assigned**, so the mediator knows where
     the entity landed if the integration's own id was already taken.
 
@@ -26,6 +27,7 @@ nothing, which is §5.3's reason for keeping enforcement out of the platform's p
 from __future__ import annotations
 
 import asyncio
+import functools
 import itertools
 import logging
 from typing import Any
@@ -36,7 +38,7 @@ from homeassistant.components import websocket_api
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.exceptions import HomeAssistantError, Unauthorized
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.dispatcher import async_dispatcher_send
@@ -49,6 +51,32 @@ _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.SWITCH]
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
+
+
+#: The config entry key holding the user designated as the mediator (finding F45).
+MEDIATOR_USER = "mediator_user"
+
+
+def require_mediator(func):
+    """Admit an admin, or the one user an admin designated as the mediator, and no one else.
+
+    Until 2026-10-06 every bridge command required admin, so the mediator had to hold an admin
+    token: a token that can also create users, install integrations and change the house's
+    configuration. That was this component's choice, not the platform's (finding F45). Now the
+    mediator runs as an ordinary user, and this gate lets that one user through. Naming it is an
+    admin's act (`confine_bridge/designate_mediator`), so no other non-admin user can publish as a
+    confined integration. Refused exactly as Home Assistant's own `require_admin` refuses.
+    """
+    @functools.wraps(func)
+    def with_mediator(hass: HomeAssistant, connection: websocket_api.ActiveConnection,
+                      msg: dict[str, Any]) -> None:
+        user = connection.user
+        entries = hass.config_entries.async_entries(DOMAIN)
+        designated = entries[0].data.get(MEDIATOR_USER) if entries else None
+        if user is None or not (user.is_admin or (designated and user.id == designated)):
+            raise Unauthorized
+        func(hass, connection, msg)
+    return with_mediator
 
 
 class BridgeData:
@@ -114,7 +142,29 @@ class BridgeData:
         self.store.async_delay_save(lambda: self.roster, 5)
 
 
+@websocket_api.require_admin
+@websocket_api.websocket_command({
+    vol.Required("type"): "confine_bridge/designate_mediator",
+    vol.Required("user_id"): cv.string,
+})
+@callback
+def ws_designate_mediator(hass: HomeAssistant, connection: websocket_api.ActiveConnection,
+                          msg: dict[str, Any]) -> None:
+    """An admin names the user the mediator runs as (F45). Only an admin can, by design."""
+    entries = hass.config_entries.async_entries(DOMAIN)
+    if not entries:
+        connection.send_error(msg["id"], "not_set_up", "the bridge has no config entry")
+        return
+    if hass.auth.async_get_user(msg["user_id"]) is None:
+        connection.send_error(msg["id"], "no_such_user", "no user has that id")
+        return
+    hass.config_entries.async_update_entry(
+        entries[0], data={**entries[0].data, MEDIATOR_USER: msg["user_id"]})
+    connection.send_result(msg["id"], {"designated": msg["user_id"]})
+
+
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
+    websocket_api.async_register_command(hass, ws_designate_mediator)
     websocket_api.async_register_command(hass, ws_publish)
     websocket_api.async_register_command(hass, ws_set_state)
     websocket_api.async_register_command(hass, ws_commands)
@@ -139,7 +189,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unloaded
 
 
-@websocket_api.require_admin
+@require_mediator
 @websocket_api.websocket_command({
     vol.Required("type"): "confine_bridge/publish",
     vol.Required("integration"): cv.string,
@@ -193,7 +243,7 @@ async def ws_publish(hass: HomeAssistant, connection: websocket_api.ActiveConnec
                                        "created": True})
 
 
-@websocket_api.require_admin
+@require_mediator
 @websocket_api.websocket_command({
     vol.Required("type"): "confine_bridge/set_state",
     vol.Required("entity_id"): cv.entity_id,
@@ -213,7 +263,7 @@ async def ws_set_state(hass: HomeAssistant, connection: websocket_api.ActiveConn
     connection.send_result(msg["id"], {"entity_id": msg["entity_id"]})
 
 
-@websocket_api.require_admin
+@require_mediator
 @websocket_api.websocket_command({vol.Required("type"): "confine_bridge/commands"})
 @callback
 def ws_commands(hass: HomeAssistant, connection: websocket_api.ActiveConnection,
@@ -237,7 +287,7 @@ def ws_commands(hass: HomeAssistant, connection: websocket_api.ActiveConnection,
     connection.send_result(msg["id"])
 
 
-@websocket_api.require_admin
+@require_mediator
 @websocket_api.websocket_command({
     vol.Required("type"): "confine_bridge/command_result",
     vol.Required("command"): int,
@@ -255,7 +305,7 @@ def ws_command_result(hass: HomeAssistant, connection: websocket_api.ActiveConne
     connection.send_result(msg["id"])
 
 
-@websocket_api.require_admin
+@require_mediator
 @websocket_api.websocket_command({
     vol.Required("type"): "confine_bridge/cut_off",
     vol.Required("integration"): cv.string,
