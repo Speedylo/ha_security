@@ -41,7 +41,7 @@ Script: `figures/api_surface.py`. Corpus fetcher: `figures/fetch_hacs_corpus.py`
 > integrations are exactly that — brand and translation metadata with no code. Both totals are
 > correct for what they count; the denominators differ because the questions do. Any figure
 > quoted from this file is out of 1,458.
-| `hacs-top150` | Community integrations, by install count, fetched 2026-08-24 | 144 | 4,628 |
+| `hacs-top150` | Community integrations, by install count, fetched 2026-08-24 | 144 | 4,628  *Pinned 2026-10-06 (F16): `figures/hacs_top150_manifest.json`* |
 
 The community corpus is sampled **by install count, not at random**. The argument §5.10 needs
 is about what confinement would break in practice, and breaking an integration on 40,000

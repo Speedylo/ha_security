@@ -1,0 +1,5 @@
+ok   two pinned installs resolve identical versions ({'confined_declared': 114, 'confined_undeclared': 114})
+ok   each install records the moment it resolved against: {'confined_declared': '2026-10-06T00:00:00Z', 'confined_undeclared': '2026-10-06T00:00:00Z'}
+ok   nordpool_1.json has its run record with the command line
+ok   nordpool_2.json has its run record with the command line
+note against the unpinned run of verify-2026-10-f08: 0 pinned-only, 0 unpinned-only

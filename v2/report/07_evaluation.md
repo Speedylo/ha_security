@@ -5484,6 +5484,37 @@ The regression on the tag `verify-2026-10-f08` passed: both suite runs in full, 
 with 114 resolved versions in each run record, and the supervisor's path, whose run records list
 none because it installs nothing (`experiments/verify/results/phase4/regress_f08/`).
 
+
+### 7.45.9 The minor findings, closed
+
+Nine minor findings were left after the campaign's phases. All nine were closed on 2026-10-06, each
+against a criterion committed first (`notes/minor_findings_prediction.md`). Four needed code.
+
+- **A re-run now tests what the original run tested.** Dependency installs took whatever was newest,
+  so two runs weeks apart tested different versions (F13). Every install now resolves against a
+  fixed moment, recorded in its result, and two installs of `nordpool`'s requirements resolve the
+  same 114 versions.
+- **Every result says how it was made.** The campaign once rebuilt a run's command wrongly from
+  notes (F14). Each measurement harness now writes a record beside its result: the command, the
+  commit, whether the tree had uncommitted changes, the interpreter, the host and the resolve
+  moment.
+- **The home-directory check tests a real layout.** It passed only because the test's configuration
+  lived in `/tmp` (F10). The configuration now lives under home, as an installation's does, and the
+  test asserts that home holds nothing but the path down to it. A control with one extra file fails
+  it.
+- **Contribution 1's community sample is reproducible again.** Its manifest had been overwritten
+  (F16). Rebuilt from the same analytics snapshot and pinned, the sample's parse equals the
+  committed figures field for field. For four repositories the matching commit was found by parse
+  equality, and why the original fetch got those trees is not established. The rebuild also showed
+  that "zero parse failures" holds under Python 3.14, Home Assistant's interpreter, and not under
+  3.13.
+
+The rest were corrections to the record. The external register's T7 now names T19 (F04). Every
+results section is now named by a README (F07). The `aiodns` share is given as a range, 11–17% (F15).
+One stale tally was already right (F06), and an unexplained change in a baseline's entities is
+closed as a note (F12). The regression on `verify-2026-10-minor` passed: both suite runs in full,
+and `nordpool` end to end twice (`experiments/verify/results/phase4/regress_minor/`).
+
 ---
 
 *§7.1–§7.11 written 2026-09-02, before any measurement specified here had been run. Criteria in

@@ -18,9 +18,12 @@ from pathlib import Path
 out, unpinned = Path(sys.argv[1]), Path(sys.argv[2])
 def resolved(path):
     reports = json.loads(Path(path).read_text())["reports"]
+    # Only the confined arms: the unconfined arm has no mediator, so no run record (fixed after the
+    # first run of this check crashed on it; the data were unchanged).
     lists = {arm: [r["identity"].get("resolved") for r in rep.get("durable_raw") or [] if r.get("kind") == "run"]
-             for arm, rep in reports.items()}
-    before = {arm: (rep.get("install") or {}).get("resolved_before") for arm, rep in reports.items()}
+             for arm, rep in reports.items() if arm.startswith("confined")}
+    before = {arm: (rep.get("install") or {}).get("resolved_before") for arm, rep in reports.items()
+              if arm.startswith("confined")}
     return lists, before
 ok = True
 (l1, b1), (l2, b2) = resolved(out / "nordpool_1.json"), resolved(out / "nordpool_2.json")

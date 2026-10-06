@@ -256,7 +256,7 @@ one document. That took two passes (§7.21, §7.26) and both found something.
 
 **Contribution 1 — an empirical account of the API surface community integrations depend on.**
 Delivered (`notes/ch5_evidence_api_surface.md`): 1,458 core integrations and 144 community ones
-parsed with `ast` rather than grepped, zero parse failures, every figure a stated lower bound. *(1,458 and not §5.6.1's 1,482 because the parser skips the 24 shipped integrations holding no `.py` file; §5.6.1 states the reconciliation.)* It
+parsed with `ast` rather than grepped, zero parse failures, every figure a stated lower bound. *(Pinned 2026-10-06, finding F16: the 144-integration sample's manifest had been overwritten, so it was rebuilt, and its parse reproduces the committed figures field for field. It is now `figures/hacs_top150_manifest.json`, with a commit for each repository. "Zero parse failures" holds under Python 3.14, Home Assistant's own interpreter; under 3.13, 41 of the files do not parse.)* *(1,458 and not §5.6.1's 1,482 because the parser skips the 24 shipped integrations holding no `.py` file; §5.6.1 states the reconciliation.)* It
 did the work §2.8 claimed for it — it made the retrofit problem quantitative, and §5.10's schema
 takes six specific decisions from it, including that blanket state denial is not available at 41%
 and that filesystem permission must be path-scoped because absolute denial breaks 33.3%. It also

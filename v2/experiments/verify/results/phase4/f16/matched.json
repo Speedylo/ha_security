@@ -1,0 +1,32 @@
+{
+  "chime_tts": {
+    "repo": "nimroddolev/chime_tts",
+    "commit": "47da3720c8c7175043b80c2102ebd355da9901a9",
+    "layout": "custom_components",
+    "tried": 82
+  },
+  "dwains_dashboard": {
+    "repo": "dwainscheeren/dwains-lovelace-dashboard",
+    "commit": "41f034074f66bbc0449ca32c87714cfca0e55aa2",
+    "layout": "custom_components",
+    "tried": 3
+  },
+  "f1_sensor": {
+    "repo": "Nicxe/f1_sensor",
+    "commit": "20bf37a095e421627db9d2b93107e02e8f158b3b",
+    "layout": "custom_components",
+    "tried": 2
+  },
+  "solaredge_modbus_multi": {
+    "repo": "WillCodeForCats/solaredge-modbus-multi",
+    "commit": "b154ee6b859ad151a522643405ae52971b3e3ed8",
+    "layout": "custom_components",
+    "tried": 24
+  },
+  "govee": {
+    "repo": "lasswellt/govee-homeassistant",
+    "commit": "5f34617b83b5432883359a30d35baf6ad5d5381d",
+    "layout": "custom_components",
+    "tried": 1
+  }
+}

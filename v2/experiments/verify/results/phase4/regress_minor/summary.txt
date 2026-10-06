@@ -1,0 +1,6 @@
+suites_1 exit=0 seconds=72
+suites_2 exit=0 seconds=69
+nordpool_1 exit=0 seconds=114
+nordpool_2 exit=0 seconds=108
+pinned exit=1 seconds=0
+ALLDONE
