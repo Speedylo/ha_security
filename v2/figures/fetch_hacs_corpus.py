@@ -29,12 +29,19 @@ sample.
 
 Matching the two on `domain` gives repositories ordered by how many people actually run them.
 
-**Reproducibility.** Every repository fetched is recorded in the output manifest with its
-resolved commit, so the corpus can be rebuilt exactly. The source itself is not committed:
-it is several hundred megabytes of third-party code, and the manifest plus this script is
-what makes the measurement checkable.
+**Reproducibility.** Every repository fetched is recorded in the output manifest with the
+commit it was fetched at, and `--rebuild` fetches a manifest's repositories at those commits, so
+the corpus can be rebuilt exactly. The source itself is not committed: it is several hundred
+megabytes of third-party code, and the manifest plus this script is what makes the measurement
+checkable.
+
+*Until 2026-10-06 this paragraph said the same and was false (finding F21): the manifest recorded
+`"ref": "HEAD"`, the name and not the commit it resolved to. The two corpora Chapter 7 measured were
+pinned afterwards by matching the Pi's copies against each repository's history
+(`verify/pin_corpus.py`). A fetch now resolves the commit first and downloads that commit.*
 
 Run:  python3 fetch_hacs_corpus.py --top 150 --out /path/to/corpus
+      python3 fetch_hacs_corpus.py --rebuild MANIFEST --out /path/to/corpus
 """
 
 from __future__ import annotations
@@ -45,6 +52,7 @@ import io
 import json
 import random
 import shutil
+import subprocess
 import sys
 import tarfile
 import urllib.error
@@ -93,10 +101,27 @@ def candidates(top: int, uniform_seed: int | None = None) -> list[dict]:
     return rows[:top]
 
 
+def resolve(repo: str) -> str | None:
+    """The commit the repository's default branch points at now, or None."""
+    try:
+        out = subprocess.run(["git", "ls-remote", f"https://github.com/{repo}.git", "HEAD"],
+                             check=True, capture_output=True, text=True, timeout=60).stdout
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        return None
+    return out.split()[0] if out.strip() else None
+
+
 def fetch_one(row: dict, out: Path) -> dict:
-    """Download a repository tarball and extract just its integration directory."""
+    """Download a repository tarball at one commit and extract just its integration directory.
+
+    The commit is `row["commit"]` when rebuilding, and otherwise the default branch's, resolved
+    before the download so that what is recorded is what was fetched.
+    """
     repo = row["repo"]
-    for ref in ("HEAD", "main", "master"):
+    commit = row.get("commit") or resolve(repo)
+    if commit is None:
+        return {**row, "ok": False, "reason": "could not resolve the default branch"}
+    for ref in (commit,):
         url = f"https://codeload.github.com/{repo}/tar.gz/{ref}"
         try:
             blob = get(url, timeout=120)
@@ -139,7 +164,7 @@ def fetch_one(row: dict, out: Path) -> dict:
                 continue
             target.write_bytes(extracted.read())
             py += rel.suffix == ".py"
-        return {**row, "ok": True, "ref": ref, "layout": layout, "py_files": py}
+        return {**row, "ok": True, "commit": commit, "layout": layout, "py_files": py}
     return {**row, "ok": False, "reason": "could not download any ref"}
 
 
@@ -153,9 +178,22 @@ def main() -> int:
                     help="draw uniformly from the whole HACS index with this seed, instead "
                          "of taking the top by install count (§7.23). The seed is recorded "
                          "in the manifest so the sample can be redrawn exactly")
+    ap.add_argument("--rebuild", type=Path, default=None, metavar="MANIFEST",
+                    help="fetch exactly the repositories a manifest lists, at the commits it "
+                         "records, into --out; writes no manifest")
     args = ap.parse_args()
 
     args.out.mkdir(parents=True, exist_ok=True)
+    if args.rebuild is not None:
+        listed = json.loads(args.rebuild.read_text())["repositories"]
+        rows = [r for r in listed if r.get("commit")]
+        print(f"rebuilding {len(rows)} of {len(listed)} repositories at their recorded commits")
+        failed = 0
+        for row in rows:
+            res = fetch_one({k: row[k] for k in ("domain", "repo", "commit")}, args.out)
+            failed += not res["ok"]
+            print(f"  {'ok ' if res['ok'] else 'FAIL'} {row['domain']:<28} {row['commit'][:12]}")
+        return 1 if failed else 0
     rows = candidates(args.top, args.uniform)
     if args.uniform is None:
         print(f"selected {len(rows)} community integrations by install count")

@@ -1,0 +1,563 @@
+{
+ "manifest": "hacs_corpus_manifest.json",
+ "corpus": "/home/younes/r2exp/corpus",
+ "summary": {
+  "pinned": 37,
+  "no exact match": 2
+ },
+ "results": [
+  {
+   "domain": "hacs",
+   "repo": "hacs/integration",
+   "files": 66,
+   "commits_examined": 1218,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "a8dfcb32e4d0efbb06e59591d63c21da23aa6ba7",
+     "date": "2026-07-22T22:26:56+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "sonoff",
+   "repo": "AlexxIT/SonoffLAN",
+   "files": 48,
+   "commits_examined": 909,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "5f17a0174e516e5aad17aaa4cb71da9bf0d3e79b",
+     "date": "2026-07-17T17:12:19+03:00"
+    }
+   ]
+  },
+  {
+   "domain": "localtuya",
+   "repo": "rospogrigio/localtuya",
+   "files": 24,
+   "commits_examined": 496,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "59c95cd06c2696afc98f6bc52d5fa060f3c517da",
+     "date": "2026-01-29T12:02:56+01:00"
+    }
+   ]
+  },
+  {
+   "domain": "alexa_media",
+   "repo": "alandtse/alexa_media_player",
+   "files": 39,
+   "commits_examined": 1214,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "7e9eb08831371b794652c22c25421d53ad02229a",
+     "date": "2026-07-29T20:20:45-07:00"
+    }
+   ]
+  },
+  {
+   "domain": "spook",
+   "repo": "frenck/spook",
+   "files": 356,
+   "commits_examined": 1251,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "a7e2d54b769ddc23a5b0e42b496f48d101254007",
+     "date": "2026-08-21T22:54:13+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "webrtc",
+   "repo": "AlexxIT/WebRTC",
+   "files": 15,
+   "commits_examined": 384,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "1a67cc87ef90c903dd75342fa28930cc2aace29b",
+     "date": "2025-11-25T09:56:54-03:00"
+    }
+   ]
+  },
+  {
+   "domain": "frigate",
+   "repo": "blakeblackshear/frigate-hass-integration",
+   "files": 31,
+   "commits_examined": 449,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "0f89fa657fff1e8a1f4782bf66abd54eec54dff7",
+     "date": "2026-07-16T09:03:12-06:00"
+    }
+   ]
+  },
+  {
+   "domain": "browser_mod",
+   "repo": "thomasloven/hass-browser_mod",
+   "files": 24,
+   "commits_examined": 484,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "b2887dcdb8bc2c630cd9c86d6c1e04cc5973522c",
+     "date": "2026-08-22T03:44:00Z"
+    }
+   ]
+  },
+  {
+   "domain": "alarmo",
+   "repo": "nielsfaber/alarmo",
+   "files": 102,
+   "commits_examined": 649,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "169e134f4b70d87aae36ba54a72a398ecc960afd",
+     "date": "2026-08-09T13:51:51+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "waste_collection_schedule",
+   "repo": "mampfes/hacs_waste_collection_schedule",
+   "files": 1029,
+   "commits_examined": 4241,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "174c320b757409e3ad0699b42c3190715cb616fc",
+     "date": "2026-08-24T15:55:33Z"
+    }
+   ]
+  },
+  {
+   "domain": "meross_lan",
+   "repo": "krahabb/meross_lan",
+   "files": 68,
+   "commits_examined": 1202,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "2e3b03ff5e6a9eeee55048c3c62483d8ec452dd1",
+     "date": "2026-02-03T08:10:38Z"
+    }
+   ]
+  },
+  {
+   "domain": "xiaomi_miot",
+   "repo": "al-one/hass-xiaomi-miot",
+   "files": 67,
+   "commits_examined": 2422,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "17945db6b2f1f02249be49dfda14ae650263a2ca",
+     "date": "2026-07-30T17:58:24+08:00"
+    }
+   ]
+  },
+  {
+   "domain": "scheduler",
+   "repo": "nielsfaber/scheduler-component",
+   "files": 10,
+   "commits_examined": 218,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "71cab7b7b76502b7f30b202463e3d89b7eff7ad6",
+     "date": "2026-03-01T08:27:51+01:00"
+    }
+   ]
+  },
+  {
+   "domain": "bambu_lab",
+   "repo": "greghesp/ha-bambulab",
+   "files": 105,
+   "commits_examined": 1049,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "809391e72abc0f9f25fbd3f3c15b866e67e356c5",
+     "date": "2026-07-31T18:02:29-07:00"
+    }
+   ]
+  },
+  {
+   "domain": "nodered",
+   "repo": "zachowj/hass-node-red",
+   "files": 30,
+   "commits_examined": 194,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "689fb6af7d12916c33cd8bd2caf091d7b843e08f",
+     "date": "2026-08-24T18:44:01-07:00"
+    }
+   ]
+  },
+  {
+   "domain": "xiaomi_home",
+   "repo": "XiaoMi/ha_xiaomi_home",
+   "files": 69,
+   "commits_examined": 229,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "1a5f890cbe08d14ec7252196bd925a57090e8774",
+     "date": "2026-08-18T17:48:40+08:00"
+    }
+   ]
+  },
+  {
+   "domain": "watchman",
+   "repo": "dummylabs/thewatchman",
+   "files": 25,
+   "commits_examined": 296,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "e0bf2481cb2d84022ac5124ad5dc4b731e5be526",
+     "date": "2026-03-25T21:26:45+03:00"
+    }
+   ]
+  },
+  {
+   "domain": "adaptive_lighting",
+   "repo": "basnijholt/adaptive-lighting",
+   "files": 50,
+   "commits_examined": 487,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "7afdf5bc5ca36bb17a999dba53ef84fc49c9b13e",
+     "date": "2026-07-07T09:38:26-07:00"
+    }
+   ]
+  },
+  {
+   "domain": "tapo_control",
+   "repo": "JurajNyiri/HomeAssistant-Tapo-Control",
+   "files": 28,
+   "commits_examined": 906,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "ebba91acb5adfcd35a98d2ae698f569f78121875",
+     "date": "2026-07-17T23:53:50+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "dreame_vacuum",
+   "repo": "Tasshack/dreame-vacuum",
+   "files": 31,
+   "commits_examined": 182,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "ae8422f281716ef064c8cdf14164e8c294afd476",
+     "date": "2026-06-19T14:07:35+03:00"
+    }
+   ]
+  },
+  {
+   "domain": "battery_notes",
+   "repo": "andrew-codechimp/HA-Battery-Notes",
+   "files": 51,
+   "commits_examined": 3178,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "861c1aab1920c4c0c629b79e340d664c30a4716e",
+     "date": "2026-08-15T12:07:47+01:00"
+    }
+   ]
+  },
+  {
+   "domain": "powercalc",
+   "repo": "bramstroker/homeassistant-powercalc",
+   "files": 104,
+   "commits_examined": 2500,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "0ee0f178abc66d95cec6590e36116afb16495d0f",
+     "date": "2026-08-24T07:12:32+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "midea_ac_lan",
+   "repo": "wuwentao/midea_ac_lan",
+   "files": 31,
+   "commits_examined": 604,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "544874e1cd948fca7a258ba48d0bdd397946009d",
+     "date": "2026-08-14T13:23:38+08:00"
+    }
+   ]
+  },
+  {
+   "domain": "solcast_solar",
+   "repo": "BJReplay/ha-solcast-solar",
+   "files": 47,
+   "commits_examined": 1408,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "34e1d007e9d4a9b7a783520d723fcd05adb2ff9a",
+     "date": "2026-08-10T18:55:32+10:00"
+    }
+   ]
+  },
+  {
+   "domain": "govee",
+   "repo": "LaggAt/hacs-govee",
+   "files": 54,
+   "commits_examined": 49,
+   "status": "no exact match",
+   "nearest": {
+    "commit": "8659d996add1c6c784e8b298284d7447e3838106",
+    "date": "2020-11-13T21:37:47+01:00",
+    "differences": 55,
+    "missing_on_disk": [
+     "learning_storage.py"
+    ],
+    "extra_on_disk": [
+     "api/__init__.py",
+     "api/auth.py",
+     "api/ble.py",
+     "api/ble_crypto.py",
+     "api/ble_packet.py",
+     "api/client.py",
+     "api/exceptions.py",
+     "api/lan.py",
+     "api/lan_client.py",
+     "api/lan_control.py"
+    ],
+    "changed": [
+     "__init__.py",
+     "config_flow.py",
+     "const.py",
+     "light.py",
+     "manifest.json",
+     "strings.json"
+    ]
+   }
+  },
+  {
+   "domain": "govee",
+   "repo": "lasswellt/govee-homeassistant",
+   "files": 54,
+   "commits_examined": 548,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "5f34617b83b5432883359a30d35baf6ad5d5381d",
+     "date": "2026-08-23T20:45:25-04:00"
+    }
+   ]
+  },
+  {
+   "domain": "smartthinq_sensors",
+   "repo": "ollo69/ha-smartthinq-sensors",
+   "files": 61,
+   "commits_examined": 588,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "4d73eecb24d1d9d0b503838a08dc946ffc98914e",
+     "date": "2026-05-25T21:47:47Z"
+    }
+   ]
+  },
+  {
+   "domain": "homematicip_local",
+   "repo": "SukramJ/homematicip_local",
+   "files": 73,
+   "commits_examined": 1052,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "414881e337f358647273b58753a5d265c0d33663",
+     "date": "2026-08-24T19:58:33+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "octopus_energy",
+   "repo": "BottlecapDave/HomeAssistant-OctopusEnergy",
+   "files": 190,
+   "commits_examined": 1197,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "5c4d465bc69047d565fe3c8cc59081671818d41e",
+     "date": "2026-08-23T10:50:53Z"
+    }
+   ]
+  },
+  {
+   "domain": "solarman",
+   "repo": "davidrapan/ha-solarman",
+   "files": 33,
+   "commits_examined": 1082,
+   "status": "no exact match",
+   "nearest": {
+    "commit": "8ef154407851f62d5d90dc3258c9360de71fc902",
+    "date": "2024-07-04T02:02:07+02:00",
+    "differences": 27,
+    "missing_on_disk": [
+     "api.py",
+     "common.py",
+     "coordinator.py",
+     "discovery.py",
+     "inverter_definitions/afore_BNTxxxKTL-2mppt.yaml",
+     "inverter_definitions/deye_sun-12k-sg04lp3.yaml"
+    ],
+    "extra_on_disk": [
+     "inverter_definitions/Afore_BNTxxxKTL-2mppt.yaml",
+     "scanner.py",
+     "solarman.py"
+    ],
+    "changed": [
+     "__init__.py",
+     "config_flow.py",
+     "const.py",
+     "inverter_definitions/deye_sg04lp3.yaml",
+     "inverter_definitions/sofar_g3hyd.yaml",
+     "inverter_definitions/solis_3p-4g.yaml",
+     "inverter_definitions/solis_hybrid.yaml",
+     "manifest.json",
+     "parser.py",
+     "sensor.py"
+    ]
+   }
+  },
+  {
+   "domain": "solarman",
+   "repo": "StephanJoubert/home_assistant_solarman",
+   "files": 33,
+   "commits_examined": 260,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "d4296b16415dc9187a74fbaf249bfd71417c38aa",
+     "date": "2024-07-05T16:07:04+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "eufy_security",
+   "repo": "fuatakgun/eufy_security",
+   "files": 40,
+   "commits_examined": 334,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "b4134e2af95e0ebee107e8aeaad007869abf367f",
+     "date": "2026-04-09T07:50:08Z"
+    }
+   ]
+  },
+  {
+   "domain": "dwd_weather",
+   "repo": "FL550/dwd_weather",
+   "files": 13,
+   "commits_examined": 285,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "854fbc2b1f75390cd8c5cf1f4b823e36fe8994c4",
+     "date": "2026-08-22T10:30:04Z"
+    }
+   ]
+  },
+  {
+   "domain": "bermuda",
+   "repo": "agittins/bermuda",
+   "files": 27,
+   "commits_examined": 213,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "2fa41ae13b17fcd01ff88bfb6df1e4b21bdcd6ec",
+     "date": "2026-07-18T02:02:20+10:00"
+    }
+   ]
+  },
+  {
+   "domain": "nordpool",
+   "repo": "custom-components/nordpool",
+   "files": 20,
+   "commits_examined": 220,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "537945fff73bf59054adea081254737b4a8a8f9c",
+     "date": "2025-12-30T00:08:50+01:00"
+    }
+   ]
+  },
+  {
+   "domain": "pirateweather",
+   "repo": "Pirate-Weather/pirate-weather-ha",
+   "files": 15,
+   "commits_examined": 204,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "9d807ccd7fd3926e880fb106b49fe3330da8168a",
+     "date": "2026-08-21T15:11:04-04:00"
+    }
+   ]
+  },
+  {
+   "domain": "thermal_comfort",
+   "repo": "dolezsa/thermal_comfort",
+   "files": 32,
+   "commits_examined": 227,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "b407b643b7aeb4982406b77166ae77dde1700668",
+     "date": "2026-02-22T02:28:03+01:00"
+    }
+   ]
+  },
+  {
+   "domain": "llmvision",
+   "repo": "valentinfrlch/ha-llmvision",
+   "files": 50,
+   "commits_examined": 413,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "729c5e0a8702fff73a52a133478f0c03a2a09fd0",
+     "date": "2026-08-01T08:08:24+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "ble_monitor",
+   "repo": "custom-components/ble_monitor",
+   "files": 132,
+   "commits_examined": 1471,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "aa647b0811962e4c96b1f1af89be209821225a50",
+     "date": "2026-08-22T20:01:05+02:00"
+    }
+   ]
+  }
+ ]
+}

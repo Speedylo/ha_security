@@ -14,7 +14,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 124
+      "py_files": 124,
+      "commit": "37a4337638fc58054bb3e8c2ba68f0d26e32a4fc"
     },
     {
       "domain": "skybellgen",
@@ -25,7 +26,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 17
+      "py_files": 17,
+      "commit": "293a98774805ff64396b40f327e87ecce9ecf569"
     },
     {
       "domain": "warema_wms",
@@ -36,7 +38,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 14
+      "py_files": 14,
+      "commit": "4173da92d3c4a163d57e144d055e615bdd423452"
     },
     {
       "domain": "kroki",
@@ -47,7 +50,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 8
+      "py_files": 8,
+      "commit": "4d7750a047c080a025b7a99c660822b40aff1333"
     },
     {
       "domain": "als_sundance_marin",
@@ -58,7 +62,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 11
+      "py_files": 11,
+      "commit": "8bb04fb0c4258cb7747ce4f273ddf59d6de36219"
     },
     {
       "domain": "regensburg_transport",
@@ -69,7 +74,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 5
+      "py_files": 5,
+      "commit": "4f4ad4f33963fd210b76a2e98693d21b80044199"
     },
     {
       "domain": "browser_mod",
@@ -80,7 +86,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 18
+      "py_files": 18,
+      "commit": "b2887dcdb8bc2c630cd9c86d6c1e04cc5973522c"
     },
     {
       "domain": "pronote",
@@ -91,7 +98,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 9
+      "py_files": 9,
+      "commit": "7dbb8ece8eed5c509b21d69c2aed7c7c3093c6a9"
     },
     {
       "domain": "kamstrup_403",
@@ -102,7 +110,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 9
+      "py_files": 9,
+      "commit": "15f1ce87134daa580067867d3fb26533e397588c"
     },
     {
       "domain": "alarm_clocks",
@@ -113,7 +122,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 13
+      "py_files": 13,
+      "commit": "20d02e98274c47efde458250d6db2a149817915b"
     },
     {
       "domain": "smhi_brandrisk",
@@ -124,7 +134,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 4
+      "py_files": 4,
+      "commit": "fb469fea985b6e9f44c8648775d83bfdd5c13578"
     },
     {
       "domain": "trakt_tv",
@@ -135,7 +146,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 13
+      "py_files": 13,
+      "commit": "66b7a53385cce5f7a61cefabce5776161198f455"
     },
     {
       "domain": "nature_remo",
@@ -146,7 +158,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 8
+      "py_files": 8,
+      "commit": "14a0f39b27f856b0e2bcb7d5d199f7712c4d25db"
     },
     {
       "domain": "tasmota_mielhvac",
@@ -157,7 +170,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 4
+      "py_files": 4,
+      "commit": "0b4854f7bfa55ad301dd463f84a2dbec3b447725"
     },
     {
       "domain": "ocado",
@@ -168,7 +182,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 9
+      "py_files": 9,
+      "commit": "5e4ea51dc8759a48e9d406aa04b1e290c4783d6b"
     },
     {
       "domain": "next_rocket_launch",
@@ -179,7 +194,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 2
+      "py_files": 2,
+      "commit": "abf50120f2d1c00c37bb2839289dcfbad51435d6"
     },
     {
       "domain": "trmnl_webhook_push",
@@ -190,7 +206,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 6
+      "py_files": 6,
+      "commit": "c6aedd30b3a57e8b696cebde51c547fae2d5566e"
     },
     {
       "domain": "vacation_mode",
@@ -201,7 +218,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 12
+      "py_files": 12,
+      "commit": "85d524ca6fb1da86a1c84c7da80917cfe4884508"
     },
     {
       "domain": "network_scanner",
@@ -212,7 +230,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 4
+      "py_files": 4,
+      "commit": "0833789004892d80e268311a3130d53a8cbd5a5b"
     },
     {
       "domain": "honor_x3",
@@ -223,7 +242,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 11
+      "py_files": 11,
+      "commit": "733c25add5dc61ed6350d74d1fc008675df2bb99"
     },
     {
       "domain": "qolsys_panel",
@@ -234,7 +254,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 21
+      "py_files": 21,
+      "commit": "b0f460a53db47e2c60b248851ca4e746dd3ce6f6"
     },
     {
       "domain": "enphase_ev",
@@ -245,7 +266,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 88
+      "py_files": 88,
+      "commit": "60792576b909506e086af634df940695112e6744"
     },
     {
       "domain": "nuki_otp",
@@ -256,7 +278,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 8
+      "py_files": 8,
+      "commit": "1564e73beb37ad49ca9e7c7ff052a64156527b1e"
     },
     {
       "domain": "solis_modbus",
@@ -267,7 +290,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 28
+      "py_files": 28,
+      "commit": "4381baf436e15a79ebdef473f95f3bde874e4e1c"
     },
     {
       "domain": "tvoverlay_ui",
@@ -278,7 +302,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 12
+      "py_files": 12,
+      "commit": "b8b13e979c54b70d3a7cfdb721e738e259364ffb"
     },
     {
       "domain": "saj_esolar_air",
@@ -289,7 +314,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 6
+      "py_files": 6,
+      "commit": "25fdee5c3cca3cfde40d75e197a50525b4c94b36"
     },
     {
       "domain": "ecobot",
@@ -300,7 +326,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 7
+      "py_files": 7,
+      "commit": "7accd2563816e8cabd2de4213cd504052fea4368"
     },
     {
       "domain": "polleninformation",
@@ -311,7 +338,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 8
+      "py_files": 8,
+      "commit": "ee71f1d87a3010c301836c3acd84b60312cdbe73"
     },
     {
       "domain": "circuitsetup_energy_analyzer",
@@ -322,7 +350,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 143
+      "py_files": 143,
+      "commit": "c653f4bda67711ab0a85a2290f7aa056d7e4cf5e"
     },
     {
       "domain": "bermuda",
@@ -333,7 +362,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 16
+      "py_files": 16,
+      "commit": "2fa41ae13b17fcd01ff88bfb6df1e4b21bdcd6ec"
     },
     {
       "domain": "apsystems_ecu_reader",
@@ -344,7 +374,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 11
+      "py_files": 11,
+      "commit": "c603936f6d1af382df3637cb59d2e1a5bc5847ef"
     },
     {
       "domain": "enki",
@@ -355,7 +386,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 61
+      "py_files": 61,
+      "commit": "4b0aaf94e409578337c33d6cc87e7b58996c0f26"
     },
     {
       "domain": "lifesmart",
@@ -366,7 +398,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 20
+      "py_files": 20,
+      "commit": "d66aacb7d5b8e0f3ac95ba6abd8d14793fdcc32c"
     },
     {
       "domain": "irrigationprogram",
@@ -377,7 +410,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 29
+      "py_files": 29,
+      "commit": "6f547cf33cd24540395d812744fbd655484bf239"
     },
     {
       "domain": "localtuya_rc",
@@ -388,7 +422,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 8
+      "py_files": 8,
+      "commit": "44baf657299da7683646ec69437c1af602f27d6f"
     },
     {
       "domain": "lightwave2",
@@ -399,7 +434,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 10
+      "py_files": 10,
+      "commit": "14c4edd93c95badac6df2fa209b163f95525f28c"
     },
     {
       "domain": "zendure_ha",
@@ -410,7 +446,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 26
+      "py_files": 26,
+      "commit": "aa6e93b6e74cd76732f24accd703bd0e6697b894"
     },
     {
       "domain": "oekofen_pellematic_compact",
@@ -421,7 +458,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 9
+      "py_files": 9,
+      "commit": "1a06b97e394269b1bac2e0dbcad6222898115b8a"
     },
     {
       "domain": "sonyavr",
@@ -432,7 +470,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 7
+      "py_files": 7,
+      "commit": "99312aeb128588c41d7c99c8fca7132efc1cc5e6"
     },
     {
       "domain": "sessy",
@@ -443,7 +482,9 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 16
+      "py_files": 16,
+      "commit": "4082e5e316cbac9ee32b055e607682bfc502a569"
     }
-  ]
+  ],
+  "commits_pinned": "2026-10-06 by verify/pin_corpus.py (finding F21): each commit is the one whose integration directory holds exactly the files, byte for byte, of the copy measured on the Pi; until then this manifest recorded only \"ref\": \"HEAD\""
 }

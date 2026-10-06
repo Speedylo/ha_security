@@ -13,7 +13,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 59
+      "py_files": 59,
+      "commit": "a8dfcb32e4d0efbb06e59591d63c21da23aa6ba7"
     },
     {
       "domain": "sonoff",
@@ -24,7 +25,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 26
+      "py_files": 26,
+      "commit": "5f17a0174e516e5aad17aaa4cb71da9bf0d3e79b"
     },
     {
       "domain": "localtuya",
@@ -35,7 +37,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 18
+      "py_files": 18,
+      "commit": "59c95cd06c2696afc98f6bc52d5fa060f3c517da"
     },
     {
       "domain": "alexa_media",
@@ -46,7 +49,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 19
+      "py_files": 19,
+      "commit": "7e9eb08831371b794652c22c25421d53ad02229a"
     },
     {
       "domain": "spook",
@@ -57,7 +61,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 219
+      "py_files": 219,
+      "commit": "a7e2d54b769ddc23a5b0e42b496f48d101254007"
     },
     {
       "domain": "webrtc",
@@ -68,7 +73,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 4
+      "py_files": 4,
+      "commit": "1a67cc87ef90c903dd75342fa28930cc2aace29b"
     },
     {
       "domain": "frigate",
@@ -79,7 +85,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 19
+      "py_files": 19,
+      "commit": "0f89fa657fff1e8a1f4782bf66abd54eec54dff7"
     },
     {
       "domain": "browser_mod",
@@ -90,7 +97,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 18
+      "py_files": 18,
+      "commit": "b2887dcdb8bc2c630cd9c86d6c1e04cc5973522c"
     },
     {
       "domain": "alarmo",
@@ -101,7 +109,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 13
+      "py_files": 13,
+      "commit": "169e134f4b70d87aae36ba54a72a398ecc960afd"
     },
     {
       "domain": "waste_collection_schedule",
@@ -112,7 +121,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 1015
+      "py_files": 1015,
+      "commit": "174c320b757409e3ad0699b42c3190715cb616fc"
     },
     {
       "domain": "meross_lan",
@@ -123,7 +133,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 55
+      "py_files": 55,
+      "commit": "2e3b03ff5e6a9eeee55048c3c62483d8ec452dd1"
     },
     {
       "domain": "xiaomi_miot",
@@ -134,7 +145,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 42
+      "py_files": 42,
+      "commit": "17945db6b2f1f02249be49dfda14ae650263a2ca"
     },
     {
       "domain": "scheduler",
@@ -145,7 +157,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 8
+      "py_files": 8,
+      "commit": "71cab7b7b76502b7f30b202463e3d89b7eff7ad6"
     },
     {
       "domain": "scheduler",
@@ -165,7 +178,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 34
+      "py_files": 34,
+      "commit": "809391e72abc0f9f25fbd3f3c15b866e67e356c5"
     },
     {
       "domain": "nodered",
@@ -176,7 +190,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 17
+      "py_files": 17,
+      "commit": "689fb6af7d12916c33cd8bd2caf091d7b843e08f"
     },
     {
       "domain": "xiaomi_home",
@@ -187,7 +202,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 35
+      "py_files": 35,
+      "commit": "1a5f890cbe08d14ec7252196bd925a57090e8774"
     },
     {
       "domain": "watchman",
@@ -198,7 +214,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 18
+      "py_files": 18,
+      "commit": "e0bf2481cb2d84022ac5124ad5dc4b731e5be526"
     },
     {
       "domain": "adaptive_lighting",
@@ -209,7 +226,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 10
+      "py_files": 10,
+      "commit": "7afdf5bc5ca36bb17a999dba53ef84fc49c9b13e"
     },
     {
       "domain": "tapo_control",
@@ -220,7 +238,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 16
+      "py_files": 16,
+      "commit": "ebba91acb5adfcd35a98d2ae698f569f78121875"
     },
     {
       "domain": "dreame_vacuum",
@@ -231,7 +250,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 21
+      "py_files": 21,
+      "commit": "ae8422f281716ef064c8cdf14164e8c294afd476"
     },
     {
       "domain": "battery_notes",
@@ -242,7 +262,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 19
+      "py_files": 19,
+      "commit": "861c1aab1920c4c0c629b79e340d664c30a4716e"
     },
     {
       "domain": "powercalc",
@@ -253,7 +274,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 82
+      "py_files": 82,
+      "commit": "0ee0f178abc66d95cec6590e36116afb16495d0f"
     },
     {
       "domain": "midea_ac_lan",
@@ -264,7 +286,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 19
+      "py_files": 19,
+      "commit": "544874e1cd948fca7a258ba48d0bdd397946009d"
     },
     {
       "domain": "solcast_solar",
@@ -275,7 +298,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 31
+      "py_files": 31,
+      "commit": "34e1d007e9d4a9b7a783520d723fcd05adb2ff9a"
     },
     {
       "domain": "govee",
@@ -286,7 +310,9 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 5
+      "py_files": 5,
+      "on_disk": false,
+      "note": "its domain collides with another repository's, whose copy is the one on disk"
     },
     {
       "domain": "govee",
@@ -297,7 +323,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 46
+      "py_files": 46,
+      "commit": "5f34617b83b5432883359a30d35baf6ad5d5381d"
     },
     {
       "domain": "smartthinq_sensors",
@@ -308,7 +335,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 41
+      "py_files": 41,
+      "commit": "4d73eecb24d1d9d0b503838a08dc946ffc98914e"
     },
     {
       "domain": "homematicip_local",
@@ -319,7 +347,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 62
+      "py_files": 62,
+      "commit": "414881e337f358647273b58753a5d265c0d33663"
     },
     {
       "domain": "octopus_energy",
@@ -330,7 +359,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 186
+      "py_files": 186,
+      "commit": "5c4d465bc69047d565fe3c8cc59081671818d41e"
     },
     {
       "domain": "solarman",
@@ -341,7 +371,9 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 36
+      "py_files": 36,
+      "on_disk": false,
+      "note": "its domain collides with another repository's, whose copy is the one on disk"
     },
     {
       "domain": "solarman",
@@ -352,7 +384,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 8
+      "py_files": 8,
+      "commit": "d4296b16415dc9187a74fbaf249bfd71417c38aa"
     },
     {
       "domain": "eufy_security",
@@ -363,7 +396,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 31
+      "py_files": 31,
+      "commit": "b4134e2af95e0ebee107e8aeaad007869abf367f"
     },
     {
       "domain": "dwd_weather",
@@ -374,7 +408,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 9
+      "py_files": 9,
+      "commit": "854fbc2b1f75390cd8c5cf1f4b823e36fe8994c4"
     },
     {
       "domain": "bermuda",
@@ -385,7 +420,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 16
+      "py_files": 16,
+      "commit": "2fa41ae13b17fcd01ff88bfb6df1e4b21bdcd6ec"
     },
     {
       "domain": "nordpool",
@@ -396,7 +432,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 8
+      "py_files": 8,
+      "commit": "537945fff73bf59054adea081254737b4a8a8f9c"
     },
     {
       "domain": "pirateweather",
@@ -407,7 +444,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 7
+      "py_files": 7,
+      "commit": "9d807ccd7fd3926e880fb106b49fe3330da8168a"
     },
     {
       "domain": "thermal_comfort",
@@ -418,7 +456,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 4
+      "py_files": 4,
+      "commit": "b407b643b7aeb4982406b77166ae77dde1700668"
     },
     {
       "domain": "llmvision",
@@ -429,7 +468,8 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 9
+      "py_files": 9,
+      "commit": "729c5e0a8702fff73a52a133478f0c03a2a09fd0"
     },
     {
       "domain": "ble_monitor",
@@ -440,7 +480,9 @@
       "ok": true,
       "ref": "HEAD",
       "layout": "custom_components",
-      "py_files": 113
+      "py_files": 113,
+      "commit": "aa647b0811962e4c96b1f1af89be209821225a50"
     }
-  ]
+  ],
+  "commits_pinned": "2026-10-06 by verify/pin_corpus.py (finding F21): each commit is the one whose integration directory holds exactly the files, byte for byte, of the copy measured on the Pi; until then this manifest recorded only \"ref\": \"HEAD\""
 }

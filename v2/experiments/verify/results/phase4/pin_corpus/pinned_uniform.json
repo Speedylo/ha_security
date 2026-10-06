@@ -1,0 +1,533 @@
+{
+ "manifest": "hacs_corpus_manifest_uniform.json",
+ "corpus": "/home/younes/r2exp/corpus_uniform",
+ "summary": {
+  "pinned": 40
+ },
+ "results": [
+  {
+   "domain": "ha_insights",
+   "repo": "botts7/ha-insights",
+   "files": 134,
+   "commits_examined": 363,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "37a4337638fc58054bb3e8c2ba68f0d26e32a4fc",
+     "date": "2026-07-09T23:24:54+10:00"
+    }
+   ]
+  },
+  {
+   "domain": "skybellgen",
+   "repo": "tcareyintx/skybellgen",
+   "files": 24,
+   "commits_examined": 18,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "293a98774805ff64396b40f327e87ecce9ecf569",
+     "date": "2026-08-08T11:20:07-05:00"
+    }
+   ]
+  },
+  {
+   "domain": "warema_wms",
+   "repo": "mike-goldfinger/ha-warema-wms",
+   "files": 22,
+   "commits_examined": 40,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "4173da92d3c4a163d57e144d055e615bdd423452",
+     "date": "2026-08-26T20:19:51+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "kroki",
+   "repo": "akentner/homeassistant-kroki-integration",
+   "files": 17,
+   "commits_examined": 15,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "4d7750a047c080a025b7a99c660822b40aff1333",
+     "date": "2026-05-23T01:41:08+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "als_sundance_marin",
+   "repo": "al1505/ALs-HA-SundanceMarin",
+   "files": 18,
+   "commits_examined": 25,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "8bb04fb0c4258cb7747ce4f273ddf59d6de36219",
+     "date": "2026-07-31T13:38:46+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "regensburg_transport",
+   "repo": "einFreak/ha-regensburg-transport",
+   "files": 9,
+   "commits_examined": 6,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "4f4ad4f33963fd210b76a2e98693d21b80044199",
+     "date": "2024-11-27T17:43:54+01:00"
+    }
+   ]
+  },
+  {
+   "domain": "browser_mod",
+   "repo": "thomasloven/hass-browser_mod",
+   "files": 24,
+   "commits_examined": 484,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "b2887dcdb8bc2c630cd9c86d6c1e04cc5973522c",
+     "date": "2026-08-22T03:44:00Z"
+    }
+   ]
+  },
+  {
+   "domain": "pronote",
+   "repo": "delphiki/hass-pronote",
+   "files": 15,
+   "commits_examined": 122,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "7dbb8ece8eed5c509b21d69c2aed7c7c3093c6a9",
+     "date": "2026-09-02T17:50:17+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "kamstrup_403",
+   "repo": "golles/ha-kamstrup_403",
+   "files": 13,
+   "commits_examined": 104,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "15f1ce87134daa580067867d3fb26533e397588c",
+     "date": "2026-07-10T20:44:53+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "alarm_clocks",
+   "repo": "julezdean/ha-alarm-clocks",
+   "files": 21,
+   "commits_examined": 40,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "20d02e98274c47efde458250d6db2a149817915b",
+     "date": "2026-09-02T13:53:46+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "smhi_brandrisk",
+   "repo": "wizz666/homeassistant-smhi-brandrisk",
+   "files": 14,
+   "commits_examined": 2,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "fb469fea985b6e9f44c8648775d83bfdd5c13578",
+     "date": "2026-03-20T15:24:37+01:00"
+    }
+   ]
+  },
+  {
+   "domain": "trakt_tv",
+   "repo": "dylandoamaral/trakt-integration",
+   "files": 17,
+   "commits_examined": 113,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "66b7a53385cce5f7a61cefabce5776161198f455",
+     "date": "2026-07-26T09:20:48+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "nature_remo",
+   "repo": "hannoeru/hass-nature-remo",
+   "files": 12,
+   "commits_examined": 2,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "14a0f39b27f856b0e2bcb7d5d199f7712c4d25db",
+     "date": "2026-05-26T03:00:45+09:00"
+    }
+   ]
+  },
+  {
+   "domain": "tasmota_mielhvac",
+   "repo": "aldweb/ha-tasmota-mielhvac",
+   "files": 16,
+   "commits_examined": 43,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "0b4854f7bfa55ad301dd463f84a2dbec3b447725",
+     "date": "2026-06-22T13:54:28+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "ocado",
+   "repo": "PineappleEmperor/ocado-ha",
+   "files": 18,
+   "commits_examined": 75,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "5e4ea51dc8759a48e9d406aa04b1e290c4783d6b",
+     "date": "2026-07-12T16:17:05+01:00"
+    }
+   ]
+  },
+  {
+   "domain": "next_rocket_launch",
+   "repo": "Verbalinsurection/next_rocket_launch",
+   "files": 3,
+   "commits_examined": 11,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "abf50120f2d1c00c37bb2839289dcfbad51435d6",
+     "date": "2023-12-01T17:29:27+01:00"
+    }
+   ]
+  },
+  {
+   "domain": "trmnl_webhook_push",
+   "repo": "Jef-NL/trmnl-webhook-push",
+   "files": 12,
+   "commits_examined": 6,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "c6aedd30b3a57e8b696cebde51c547fae2d5566e",
+     "date": "2026-08-22T10:28:40+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "vacation_mode",
+   "repo": "olzeug/ha-vacation-mode",
+   "files": 22,
+   "commits_examined": 16,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "85d524ca6fb1da86a1c84c7da80917cfe4884508",
+     "date": "2026-09-02T14:38:53+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "network_scanner",
+   "repo": "parvez/network_scanner",
+   "files": 5,
+   "commits_examined": 36,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "0833789004892d80e268311a3130d53a8cbd5a5b",
+     "date": "2025-08-24T20:24:39-07:00"
+    },
+    {
+     "commit": "6ac41967958ea3dd0a93c006089ebf99517b90e3",
+     "date": "2024-09-14T03:19:17-07:00"
+    }
+   ]
+  },
+  {
+   "domain": "honor_x3",
+   "repo": "juacas/honor_x3",
+   "files": 15,
+   "commits_examined": 18,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "733c25add5dc61ed6350d74d1fc008675df2bb99",
+     "date": "2025-05-27T19:59:01+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "qolsys_panel",
+   "repo": "EHylands/ha-qolsys-panel",
+   "files": 28,
+   "commits_examined": 410,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "b0f460a53db47e2c60b248851ca4e746dd3ce6f6",
+     "date": "2026-08-27T20:11:30Z"
+    }
+   ]
+  },
+  {
+   "domain": "enphase_ev",
+   "repo": "barneyonline/ha-enphase-energy",
+   "files": 126,
+   "commits_examined": 668,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "60792576b909506e086af634df940695112e6744",
+     "date": "2026-09-02T19:28:20+10:00"
+    }
+   ]
+  },
+  {
+   "domain": "nuki_otp",
+   "repo": "pickeld/nuki_integration",
+   "files": 14,
+   "commits_examined": 31,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "1564e73beb37ad49ca9e7c7ff052a64156527b1e",
+     "date": "2026-08-11T11:58:46+03:00"
+    }
+   ]
+  },
+  {
+   "domain": "solis_modbus",
+   "repo": "Pho3niX90/solis_modbus",
+   "files": 40,
+   "commits_examined": 428,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "4381baf436e15a79ebdef473f95f3bde874e4e1c",
+     "date": "2026-08-27T13:22:03Z"
+    }
+   ]
+  },
+  {
+   "domain": "tvoverlay_ui",
+   "repo": "manjotsc/ha-tvoverlay_ui",
+   "files": 16,
+   "commits_examined": 15,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "b8b13e979c54b70d3a7cfdb721e738e259364ffb",
+     "date": "2026-07-24T00:20:52-04:00"
+    }
+   ]
+  },
+  {
+   "domain": "saj_esolar_air",
+   "repo": "faanskit/ha-esolar",
+   "files": 10,
+   "commits_examined": 14,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "25fdee5c3cca3cfde40d75e197a50525b4c94b36",
+     "date": "2024-07-25T15:24:37-03:00"
+    }
+   ]
+  },
+  {
+   "domain": "ecobot",
+   "repo": "shhhrodingercat/ecobot-ha",
+   "files": 13,
+   "commits_examined": 6,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "7accd2563816e8cabd2de4213cd504052fea4368",
+     "date": "2026-04-19T19:10:49+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "polleninformation",
+   "repo": "krissen/polleninformation",
+   "files": 39,
+   "commits_examined": 189,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "ee71f1d87a3010c301836c3acd84b60312cdbe73",
+     "date": "2026-08-18T19:53:35+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "circuitsetup_energy_analyzer",
+   "repo": "CircuitSetup/CircuitSetup-Energy-Analyzer",
+   "files": 155,
+   "commits_examined": 739,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "c653f4bda67711ab0a85a2290f7aa056d7e4cf5e",
+     "date": "2026-08-30T13:13:06-04:00"
+    }
+   ]
+  },
+  {
+   "domain": "bermuda",
+   "repo": "agittins/bermuda",
+   "files": 27,
+   "commits_examined": 213,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "2fa41ae13b17fcd01ff88bfb6df1e4b21bdcd6ec",
+     "date": "2026-07-18T02:02:20+10:00"
+    }
+   ]
+  },
+  {
+   "domain": "apsystems_ecu_reader",
+   "repo": "HAEdwin/homeassistant-apsystems_ecu_reader",
+   "files": 17,
+   "commits_examined": 120,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "c603936f6d1af382df3637cb59d2e1a5bc5847ef",
+     "date": "2026-08-29T01:06:26+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "enki",
+   "repo": "cyrilcolinet/enki-integration-hass",
+   "files": 67,
+   "commits_examined": 223,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "4b0aaf94e409578337c33d6cc87e7b58996c0f26",
+     "date": "2026-08-31T15:41:18+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "lifesmart",
+   "repo": "iKaew/hass-lifesmart-addon",
+   "files": 26,
+   "commits_examined": 86,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "d66aacb7d5b8e0f3ac95ba6abd8d14793fdcc32c",
+     "date": "2026-08-18T10:11:31Z"
+    }
+   ]
+  },
+  {
+   "domain": "irrigationprogram",
+   "repo": "petergridge/Irrigation-V5",
+   "files": 48,
+   "commits_examined": 267,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "6f547cf33cd24540395d812744fbd655484bf239",
+     "date": "2026-08-11T18:35:50+10:00"
+    }
+   ]
+  },
+  {
+   "domain": "localtuya_rc",
+   "repo": "ClusterM/localtuya_rc",
+   "files": 29,
+   "commits_examined": 64,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "44baf657299da7683646ec69437c1af602f27d6f",
+     "date": "2026-08-06T14:58:17+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "lightwave2",
+   "repo": "ikb42/homeassistant-lightwave2",
+   "files": 13,
+   "commits_examined": 480,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "14c4edd93c95badac6df2fa209b163f95525f28c",
+     "date": "2024-01-09T14:03:49Z"
+    }
+   ]
+  },
+  {
+   "domain": "zendure_ha",
+   "repo": "Zendure/Zendure-HA",
+   "files": 32,
+   "commits_examined": 983,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "aa6e93b6e74cd76732f24accd703bd0e6697b894",
+     "date": "2026-08-11T12:43:18+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "oekofen_pellematic_compact",
+   "repo": "dominikamann/oekofen-pellematic-compact",
+   "files": 15,
+   "commits_examined": 238,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "1a06b97e394269b1bac2e0dbcad6222898115b8a",
+     "date": "2026-05-13T19:21:53+02:00"
+    }
+   ]
+  },
+  {
+   "domain": "sonyavr",
+   "repo": "peteS-UK/sonyavr",
+   "files": 12,
+   "commits_examined": 64,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "99312aeb128588c41d7c99c8fca7132efc1cc5e6",
+     "date": "2025-09-25T14:58:55+01:00"
+    }
+   ]
+  },
+  {
+   "domain": "sessy",
+   "repo": "PimDoos/ha-sessy",
+   "files": 20,
+   "commits_examined": 303,
+   "status": "pinned",
+   "matches": [
+    {
+     "commit": "4082e5e316cbac9ee32b055e607682bfc502a569",
+     "date": "2026-07-14T18:30:58Z"
+    }
+   ]
+  }
+ ]
+}
