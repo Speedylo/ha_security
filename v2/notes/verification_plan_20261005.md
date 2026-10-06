@@ -349,7 +349,7 @@ so the first day serves both.
 |---|---|---|---|---|---|
 | F01 | 0 | A1.13–14 | Minor | Abstract says ten integrations end to end; thirteen since §7.40–§7.42 | open |
 | F02 | 0 | A1.22 | Minor | "Within a millisecond" holds for the median (0.71 ms), not the worst (1.57 ms) | open |
-| F03 | 0 | F3 | Potentially Major | Clause-less refusals are constructible; 0 of 467 committed records lack a clause, but those paths were never exercised durably | open, test in Phase 4 |
+| F03 | 0 | F3 | Potentially Major | Clause-less refusals are constructible; 0 of 467 committed records lack a clause, but those paths were never exercised durably | **fix chosen by Younes 2026-10-06: name a rule in code** (see the F03 fix note below the log) |
 | F04 | 0 | CM-T7 | Minor | T19 now maps to CM-T7; the row predates it | open |
 | F05 | 0 | A1.18, S8, T14, T15 | Re-measure | Adversary pair and mediation latency last run before the October changes | Phase 3 |
 | F06 | 0 | A5.2 | Minor | Contribution 2's suite tally stops at twenty-four | open |
@@ -367,3 +367,21 @@ so the first day serves both.
 | F18 | 4.2 | C4, reproducibility, exit criterion 6 | **Major (the examiner's path does not exist)** | `v2/` has no README at the tag. The only setup-like document, `framework/README.md`, lists 11 suites of 26 and has no setup: nothing says how to build the Python 3.14 interpreter with Home Assistant 2026.8.3 (`~/r2exp/ha314`), fetch the corpus, install the platform packages or `houseA-deps`, enable the memory controller, or start (A). Commands throughout hard-code this Pi's `~/r2exp` paths. The code itself runs from a fresh clone (26/26, `experiments/verify/results/phase4/clean_checkout/`) | open: a reproduction guide, then the run on a freshly imaged card |
 | F19 | 4.2 | `experiments/selftests/suites_all.sh` | Minor | The runner `cd`s to `~/r2exp/v2/framework`, so run from any other checkout it tests that working tree, not the checkout, and still reports success | open |
 | F20 | 4.2 | reproducibility | Minor (Younes's decision) | `main` is 62 commits ahead of `origin` and the tag `verify-2026-10` was never pushed, so the code the report describes is not where an examiner would clone it | open: Younes to decide when to push |
+
+### F03 fix — written before the code (2026-10-06)
+
+**Read, not run, first.** The mediator builds six decisions with `clause=None`: `deny_everything`
+(no manifest bound), and the four refusals of `Mediator.command` (no running sandbox, not the owner,
+a service the bridge does not forward, a full queue), plus the answer to a sandbox's
+`entity.command_result` (`Decision(False, detail)` and `Decision(True, "relayed")`). The cut-off and
+protocol-error records are events of their own kinds, not decisions, and F3 does not cover them.
+**Change:** `Decision` refuses an empty clause at construction; `AuditLog.decision` refuses one before
+writing; each path above names the rule that decided it — `/permissions` for no manifest (what
+`ActingPolicy` and `manifest.py` already use), `(ambient: §5.10.2)` for an entity the integration does
+not own, and a parenthesised `(command: …)` rule for the rest. **Pass criteria, fixed now:**
+(1) `Decision` with no clause, or an empty one, raises; (2) `AuditLog.decision` with no clause raises
+and writes nothing; (3) driven through a real mediator with a durable log, every one of the seven paths
+writes a decision record with a non-empty clause, and every response the sandbox receives carries one;
+(4) 26/26 suites on a new tag, `nordpool` end to end, and the flood and command paths (`selftest_flood`,
+`selftest_real_platform`) unchanged in every count.
+
