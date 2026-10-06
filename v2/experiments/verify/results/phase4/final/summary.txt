@@ -1,0 +1,5 @@
+house_a_restart exit=0 seconds=6
+suites_1 exit=0 seconds=72
+suites_2 exit=0 seconds=67
+timing exit=0 seconds=221
+ALLDONE

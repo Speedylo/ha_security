@@ -49,7 +49,7 @@ requirements name, mediation costs 43 µs and the audit record is durable before
 records at 3.67 ms, 62× clear of realistic demand. Against the house's real Home Assistant, a
 confined integration's entities are registry entities with their unconfined names and survive a
 restart, real changes reach it in under a millisecond at the median, and a user's command reaches the
-integration's own code in 16 ms. A sandbox that floods the mediator with refused requests is
+integration's own code in 12 to 16 ms. A sandbox that floods the mediator with refused requests is
 stopped after 100 of them, within a second, and the household is told in Home Assistant's own
 Repairs panel and can restart it without widening what it may do. Twenty-five self-test suites and
 the base self-test pass;

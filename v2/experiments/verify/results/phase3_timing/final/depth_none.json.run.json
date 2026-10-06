@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "scale.py",
+    "--count",
+    "3",
+    "--python",
+    "/home/younes/r2exp/ha314/bin/python",
+    "--profile",
+    "minimal",
+    "--platform-deps",
+    "/home/younes/r2exp/t2/platform-deps-aug",
+    "--json",
+    "/home/younes/r2exp/verify-final/v2/experiments/verify/results/phase3_timing/final/depth_none.json"
+  ],
+  "cwd": "/home/younes/r2exp/verify-final/v2/experiments/unstrip",
+  "executable": "/usr/bin/python3",
+  "python": "3.13.5",
+  "host": "raspberrypi",
+  "machine": "aarch64",
+  "time": "2026-10-06T18:19:02+0100",
+  "commit": "c40330d56874715f986af5abba8e77e87fbf527e",
+  "uncommitted_changes": true,
+  "resolve_before": "2026-10-06T00:00:00Z"
+}

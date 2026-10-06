@@ -21,6 +21,7 @@ import argparse
 import collections
 import json
 import re
+import statistics
 import subprocess
 import sys
 from pathlib import Path
@@ -202,8 +203,11 @@ def _():
         ("08_conclusions.md", r"Latency at 0\.009% utilisation \| \*\*([\d.]+ µs)\*\*")])
 def _():
     stats = {s["id"]: s for s in j("experiments/verify/results/phase3_timing/stats.json")}
-    median = stats["latency_1"]["median"]
-    return Num(median, "µs"), f"{stats['latency_1']['values']} µs → median {median}"
+    # The claim is the three Phase 3 passes; the final tag's run (the fourth value) is checked
+    # against it by timing_stats.py, not folded into the figure the report states.
+    three = stats["latency_1"]["values"][:3]
+    median = statistics.median(three)
+    return Num(median, "µs"), f"{three} µs → median {median}"
 
 
 @claim("A1.19", "durable record per decision, with fsync, median",
@@ -251,12 +255,13 @@ def _():
                                   f"{min(w[1] for w in worst)}–{max(w[1] for w in worst)} ms")
 
 
-@claim("A1.23", "a user's command to the integration's own code",
-       [("abstract", r"integration's own code in (\d+ ms)")])
+@claim("A1.23", "a user's command to the integration's own code, the range over four runs (F44)",
+       [("abstract", r"integration's own code in (\d+ to \d+ ms)")])
 def _():
-    d = j("experiments/real_platform/results/w1_step2b_20261004/e2e_real_adaptive_command.json")[0]
-    s = d["command"]["outcome"]["seconds"]
-    return f"{round(s * 1000)} ms", f"{s} s"
+    stats = {s["id"]: s for s in j("experiments/verify/results/phase3_timing/stats.json")}
+    runs = [v for v in stats["command"]["values"] if v is not None]
+    return (f"{round(min(runs))} to {round(max(runs))} ms",
+            f"Phase 3's three passes and the final tag: {[round(v, 1) for v in runs]} ms")
 
 
 @claim("A1.24", "refusals before the cut-off, and its time on disk",

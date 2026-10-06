@@ -4238,6 +4238,11 @@ The marginal cost derived from `MemAvailable` did not reproduce: it was 132.8 MB
 had freed was still being returned to the pool while it measured. PSS is the figure to quote, as
 §5.6.3 already argued.
 
+> **Four runs, 2026-10-06 (verification finding F43).** Measured three times in Phase 3 and once on
+> the final tag, the marginal figure was 126, 134, 128 and 131 MB. That spread straddles ±5% of 124.4,
+> which is what this paragraph said: it is not a stable figure. PSS, the one to quote, held within
+> 0.2 MB across the same four runs (58.6–58.8 MB with no components, 141 MB with ten).
+
 ### 7.35.3 PSS against declaration depth, resolved, and what the old series actually was
 
 §7.20.3 measured three declaration depths at three sandboxes each. Its series ran 136.3 MB for none,
@@ -4579,6 +4584,12 @@ written by the author of the sandbox.
 | Sandbox never answers | the user's call fails at the 10 s timeout; another sandbox is answered in 1.0 ms meanwhile |
 | An answer to a command never sent | refused and recorded; the channel survives |
 | Regression | `thermal_comfort` against (A) unchanged from §7.37; all 24 suites pass on the Pi |
+
+> **A range, not one value (2026-10-06, verification finding F44).** Over four later runs on the
+> Pi, three in Phase 3 and one on the final tag, the command took 15.7, 15.7, 13.4 and 11.6 ms. The
+> final run is 27% under the 16 ms above, outside ±20%, in the faster direction. Why it has fallen
+> is not established. The figure is quoted as **12–16 ms**, and what the table shows does not
+> change.
 
 ### 7.38.3 The predictions, and what this establishes
 

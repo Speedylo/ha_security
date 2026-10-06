@@ -1,0 +1,15 @@
+4 pass(es): pass1, pass2, pass3, final
+
+  mediation latency, one client, median            §7.45.1 stated    43.0 µs  passes [43.2, 43.4, 42, 41.2]  → within T (-0.9%); final within T (-4.2%); 95% [41.2, 43.4]; p99 [62.1, 53.2, 55.5, 53.2]
+  mediation latency, 26 clients, median            §7.19   stated       — µs  passes [800, 802, 814, 794]  → reported; 95% [794, 814]
+  durable record with fsync, median                §7.20.1 stated  3670.7 µs  passes [3.66e+03, 3.67e+03, 3.62e+03, 3.67e+03]  → within T (-0.2%); final within T (-0.1%); 95% [3.62e+03, 3.67e+03]; p99 [8.03e+03, 5.07e+03, 7.18e+03, 5e+03]
+  one sandbox, RSS at running                      §7.35   stated   161.3 MB  passes [162, 161, 161, 160]  → within M (-0.3%); final within M (-0.6%); 95% [160, 162]
+  marginal memory per added sandbox                §7.35   stated   124.4 MB  passes [126, 134, 128, 131]  → within M (+4.0%); final OUTSIDE M (+5.5%); 95% [126, 134]
+  PSS per sandbox, no components                   §7.35   stated    56.5 MB  passes [58.8, 58.7, 58.7, 58.6]  → within M (+3.9%); final within M (+3.7%); 95% [58.6, 58.8]
+  PSS per sandbox, ten components                  §7.35   stated   135.6 MB  passes [141, 141, 141, 141]  → within M (+3.8%); final within M (+3.7%); 95% [141, 141]
+  one delivered push, mediator cost                §7.36   stated    10.9 µs  passes [11.5, 11.5, 11.5, 11.4]  → within T (+5.5%); final within T (+4.6%); 95% [11.4, 11.5]
+  change in (A) to the mediator's push, median     §7.37   stated    0.71 ms  passes [0.74, 0.73, 0.71, 0.74]  → within T (+3.5%); final within T (+4.2%); 95% [0.71, 0.74]
+  a user's command to the integration's code       §7.38   stated    16.0 ms  passes [15.7, 15.7, 13.4, 11.6]  → within T (-9.2%); final OUTSIDE T (-27.4%); 95% [11.6, 15.7]
+  flood start to cut-off, on disk                  §7.44   stated   0.812 s   passes [0.809, 0.818, 0.807, 0.81]  → within T (-0.3%); final within T (-0.2%); 95% [0.807, 0.818]
+  powercalc time to report, default install        §7.39   stated    2.47 s   passes [2.29, 2.92, 2.9, 2.81]  → within T (+15.6%); final within T (+13.8%); 95% [2.29, 2.92]
+  powercalc time to report, compiled install       §7.39   stated    1.87 s   passes [1.94, 1.87, 1.9, 1.88]  → within T (+1.1%); final within T (+0.5%); 95% [1.87, 1.94]

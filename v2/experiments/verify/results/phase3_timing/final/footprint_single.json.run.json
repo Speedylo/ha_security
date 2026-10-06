@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "measure.py",
+    "--builder",
+    "corrected",
+    "--json",
+    "/home/younes/r2exp/verify-final/v2/experiments/verify/results/phase3_timing/final/footprint_single.json"
+  ],
+  "cwd": "/home/younes/r2exp/verify-final/v2/experiments/r2_footprint",
+  "executable": "/home/younes/r2exp/ha314/bin/python",
+  "python": "3.14.7",
+  "host": "raspberrypi",
+  "machine": "aarch64",
+  "time": "2026-10-06T18:18:44+0100",
+  "commit": "c40330d56874715f986af5abba8e77e87fbf527e",
+  "uncommitted_changes": true,
+  "resolve_before": "2026-10-06T00:00:00Z"
+}
