@@ -6,7 +6,8 @@ disclosure in Chapter 1 and FlowFence in Chapter 2. Both chapters' inline marker
 this list; neither chapter's text was otherwise touched.
 
 **Twenty-eight sources, and four of them were not in either chapter's list.** *(Twenty-nine since
-2026-10-05: [29] was added with §7.44.)* ISO 31000, STRIDE and
+2026-10-05: [29] was added with §7.44. Thirty-one since 2026-10-06: [30] and [31], the two audit
+standards §7.44.1 described without a citation until they were checked.)* ISO 31000, STRIDE and
 OWASP Threat Dragon are Chapter 4's own methodological foundations — the chapter follows ISO
 31000's clause structure section by section and names the clause it discharges each time — and none
 of the three had a bibliography entry anywhere in the report. RFC 1918 is normative for what
@@ -52,7 +53,8 @@ https://www.home-assistant.io/blog/2021/01/22/security-disclosure/
 Awesome and others*, 23 January 2021.
 https://www.home-assistant.io/blog/2021/01/23/security-disclosure2/
 
-**[7]** elttam, *PwnAssistant — Controlling /home's via a Home Assistant RCE* (CVE-2023-27482).
+**[7]** elttam, *PwnAssistant — Controlling /home's via a Home Assistant RCE* (CVE-2023-27482),
+9 May 2023.
 https://www.elttam.com/blog/pwnassistant
 
 **[8]** *XZ Utils backdoor* (CVE-2024-3094), March 2024. Backdoor introduced by a contributor who
@@ -61,17 +63,19 @@ investigating an SSH latency regression rather than through code review.
 https://en.wikipedia.org/wiki/XZ_Utils_backdoor — see also
 https://www.rapid7.com/blog/post/2024/04/01/etr-backdoored-xz-utils-cve-2024-3094/
 
-**[22]** GitHub Security Lab, *Securing our home labs: Home Assistant code review*.
+**[22]** A. Muñoz, GitHub Security Lab, *Securing our home labs: Home Assistant code review*,
+30 November 2023 (updated 18 December 2023).
 https://github.blog/security/vulnerability-research/securing-our-home-labs-home-assistant-code-review/
 
 ## Extensible smart-home gateways — the closest prior art
 
 **[9]** F. Corno and L. Mannella, "A Threat Model for Extensible Smart Home Gateways",
 *7th International Conference on Smart and Sustainable Technologies (SpliTech)*, 2022.
-https://iris.polito.it/handle/11583/2963822
+DOI 10.23919/SpliTech55088.2022.9854235. https://iris.polito.it/handle/11583/2963822
 
 **[18]** F. Corno and L. Mannella, "A Gateway-based MUD Architecture to Enhance Smart Home
-Security", 2023.
+Security", *8th International Conference on Smart and Sustainable Technologies (SpliTech)*, 2023.
+DOI 10.23919/SpliTech58164.2023.10193747.
 
 **[20]** L. Mannella, *Securing IoT Gateways in Smart Home Environments*, PhD thesis, Politecnico
 di Torino, 2024.
@@ -99,8 +103,9 @@ Practical Data Protection for Emerging IoT Application Frameworks", *USENIX Secu
 User-Centered Authorization for the Internet of Things", *USENIX Security*, 2017.
 
 **[17]** A. Rahmati, E. Fernandes, K. Eykholt and A. Prakash, "Tyche: A Risk-Based Permission Model
-for Smart Homes", *IEEE Secure Development Conference (SecDev)*, 2018.
-DOI 10.1109/SECDEV.2018.00012. Preprint: arXiv:1801.04609.
+for Smart Homes", *IEEE Cybersecurity Development Conference (SecDev)*, 2018.
+DOI 10.1109/SECDEV.2018.00012. Preprint, under the title "Tyche: Risk-Based Permissions for
+Smart Home Platforms": arXiv:1801.04609.
 
 **[24]** Z. Li, K. Li, B. Ma, M. Xu, Y. Zhang and X. Cheng, "We Urgently Need Privilege Management
 in MCP: A Measurement of API Usage in MCP Ecosystems", arXiv:2507.06250, 2025.
@@ -120,9 +125,10 @@ Standardization, 2018. https://www.iso.org/standard/65694.html — the clause nu
 discharges section by section (§6.3.2 scope and assets, §6.3.3 context, §6.3.4 risk criteria,
 §6.4.2 risk identification) are this edition's.
 
-**[26]** A. Shostack, *Threat Modeling: Designing for Security*, Wiley, 2014. The systematic
-treatment of STRIDE this chapter applies per trust boundary. The acronym originates with
-L. Kohnfelder and P. Garg, *The Threats to Our Products*, Microsoft, 1999.
+**[26]** A. Shostack, *Threat Modeling: Designing for Security*, Wiley, 2014.
+ISBN 978-1-118-80999-0. The systematic treatment of STRIDE this chapter applies per trust
+boundary. The acronym originates with L. Kohnfelder and P. Garg, *The Threats to Our Products*,
+Microsoft *Interface* (internal), 1 April 1999.
 
 **[27]** OWASP, *Threat Dragon*. https://owasp.org/www-project-threat-dragon/ — the model format
 `figures/fig_4_1_current_state.py` emits, from which Figures 4.1 and 5.1 are generated.
@@ -139,16 +145,29 @@ Mitigation", *32nd USENIX Security Symposium*, 2023. arXiv:2307.15895. Cited in 
 threat Chapter 4 now carries as T19. *(Added 2026-10-05; authors, title and venue checked against the
 arXiv record.)*
 
+**[30]** Common Criteria Recognition Arrangement, *Common Criteria for Information Technology
+Security Evaluation, Part 2: Security functional components*, version 3.1 revision 5,
+CCMB-2017-04-002, April 2017. Component FAU_STG.4, *Prevention of audit data loss*.
+https://www.commoncriteriaportal.org/files/ccfiles/CCPART2V3.1R5.pdf *(Added 2026-10-06, read in
+the primary text.)*
+
+**[31]** Joint Task Force, *Security and Privacy Controls for Information Systems and
+Organizations*, NIST Special Publication 800-53 Revision 5, National Institute of Standards and
+Technology, September 2020. DOI 10.6028/NIST.SP.800-53r5. Control AU-5, *Response to Audit
+Logging Process Failures*, and its enhancement AU-5(4), *Shutdown on Failure*. *(Added 2026-10-06;
+read in a transcription of the catalogue and the DOI checked. NIST's own catalogue page did not
+render for the check.)*
+
 ---
 
 ## Verification status
 
+*Until 2026-10-06 this section listed [18]'s venue and DOI, [26]'s ISBN and the Kohnfelder and Garg
+attribution, and [25]'s clause numbers as not yet checked against their sources. All are now
+checked, and every entry has been checked against its source (verification 4.10,
+`experiments/verify/results/phase4/citations/README.md`). The record there gives, for each entry,
+what was checked and against what.*
+
 Four PDFs are held locally in `v2/refs/` and were read in full: [9], [18], [20] and [21].
 `00_METHOD.md` §2's evidence rule applies to what they say, and §2.4 is written from the papers
 rather than from their abstracts.
-
-**Bibliographic detail not yet verified against the source itself**, and owed to the Stage 5 pass:
-[18]'s venue and DOI (the PDF is held but the entry carries a year only), [26]'s ISBN and the
-Kohnfelder & Garg attribution, and [25]'s clause numbering against the published 2018 edition
-rather than against the chapter's use of it. Every other entry's identifiers are either a URL that
-resolves or were transcribed from the chapters that cited them.

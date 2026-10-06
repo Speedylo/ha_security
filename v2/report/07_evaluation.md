@@ -5025,6 +5025,15 @@ auditor. The cut-off takes the audit standards' side, because dropping records w
 applies it to **one sandbox** rather than to the system, which is the per-process isolation Jiang
 et al. call for, in its bluntest form.
 
+> **Corrected 2026-10-06 (verification 4.10, finding F40).** Read in their primary texts, neither
+> standard *prefers* stopping. Common Criteria's FAU_STG.4 [30] makes the security target choose,
+> when the audit trail is full, between ignoring audited events, preventing them (except those
+> taken by an authorised user with special rights) and overwriting the oldest records. NIST SP
+> 800-53's AU-5 [31] requires an alert and leaves further actions to the organisation; shutdown on
+> failure is one optional enhancement, AU-5(4). What both standards share is that stopping is a
+> recognised, legitimate answer, not a defect. That is all the cut-off needs from them: it picks
+> the "prevent" option, for the reason given above: dropping records would break S7.
+
 **The limit came from the data.** Across the 70 runs in `experiments/` whose decisions were
 recorded, the most refusals any run made in its whole life was 12, from the S3 test subject that asks
 for undeclared entities on purpose; real integrations reached 9 and 2. The flood ran at about 1,000 a

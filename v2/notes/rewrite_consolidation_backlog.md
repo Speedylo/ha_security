@@ -78,7 +78,8 @@ Two sources are described in §7.44.1 without a citation number because neither 
 its primary text: **Common Criteria Part 2, FAU_STG.4** (prevention of audit data loss; read only in
 protection profiles) and **NIST SP 800-53 Rev. 5, AU-5** (response to audit logging process failures,
 including AU-5(4) shutdown on failure; read only on secondary sites). Verify both and cite them, or
-cut the sentence. [29] (Jiang et al., USENIX Security 2023) is checked against arXiv. The threat
+cut the sentence. *(Done 2026-10-06: verified and cited as [30] and [31]; the sentence overstated both and carries
+a dated correction, finding F40.)* [29] (Jiang et al., USENIX Security 2023) is checked against arXiv. The threat
 count now changes at three dates — eighteen until 2026-10-05, thirteen then fourteen demonstrated
 (§7.26.3, §7.30.5), nineteen with fifteen (§7.44.4) — and the rewrite should state it once, as it
 now stands. §7.42's persistence claim is qualified by §7.44.4 and is a limitation (§8.6.3 #16).
