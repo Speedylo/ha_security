@@ -1,0 +1,68 @@
+# Fault injection (verification 4.5) — criteria and predictions, written before any fault is injected
+
+**2026-10-06.** Plan §7.5 lists nine faults. N3 asks that a failure have a stated mode: the framework
+fails closed and says why, and never carries on with a control silently gone. For each fault below,
+the **criterion** is what the design requires, and the **prediction** is what I expect the code to do,
+from reading it today. A criterion is judged as written. A prediction that turns out wrong is
+reported as wrong.
+
+## Inventory of what already exists
+
+| Fault | Already exercised by |
+|---|---|
+| FI5 malformed frame | `selftest_audit` (lost channel, durable `protocol_error`), `selftest_fdpass` (descriptor closed) |
+| FI7 a sandbox that never reads | `selftest_push` P7 (pushes), D7 (datagrams) |
+| FI6 oversized frame | the receive-side check (`channel.py`, before the read); **no test sends one** |
+| FI2 sandbox dies | `selftest_resources` OOM-kills one; **nothing dies mid-frame on the channel** |
+| FI1 (A) stops, FI3 audit disk full, FI4 mediator restart, FI8 network gone, FI9 clock jump | **nothing** |
+
+FI5 and FI7 are re-run as they are. The other seven get new cases in `verify/faults.py` (stand-in
+level, run locally and on the Pi) and `verify/faults_pi.sh` (FI1 and FI4, which need (A) and the
+supervisor on the Pi).
+
+## The cases
+
+**FI1 — (A) stops while the mediator is connected, then comes back.**
+*Criterion:* while (A) is down, nothing is acted on and nothing is recorded as done; the failure is
+stated. *Prediction:* `RealPlatform.pump()` raises `PlatformLost`, which leaves `Mediator.serve()`;
+`supervise.py` stops the sandbox and exits. Nothing reconnects when (A) returns, so the integration
+stays down until the supervisor is started again. Fail-closed: **holds**. Recovery: **does not exist**,
+and nothing in the report says so — expected to be a finding.
+
+**FI2 — a sandbox dies mid-frame.** *Criterion:* its channel is dropped and recorded; every other
+sandbox is still served. *Prediction:* `truncated frame` raises `ProtocolError`, the channel is
+unregistered and a `protocol_error` is recorded. **Holds.**
+
+**FI3 — the audit log's disk is full.** *Criterion (the hard one):* no act runs without its record.
+*Predictions:* (a) the act does not run: **holds**, because `_record` raises before `act()` is reached;
+(b) the `OSError` leaves `serve()`, so the mediator stops for every sandbox, not only the one asking:
+**likely**; (c) the failed append can leave a **partial line** in the log, because the text is written
+before the `fsync` that fails or the write itself is cut short; `verify()` then reports the log
+unreadable from that line, and every record appended after space is freed sits behind it. A full disk
+would then make the log permanently unverifiable: **likely, and a defect if so.**
+
+**FI4 — the mediator restarts during the push loop** (the supervisor is killed with `SIGKILL` while
+a confined integration is subscribed, then started again). *Criterion:* no sandbox runs without a
+mediator; after the restart the integration's subscriptions are re-established by a fresh sandbox.
+*Prediction:* the sandbox's channel closes, and the runtime's next request fails. Whether the
+sandbox then exits, or lingers as an orphan with no mediator until something reaps it, I cannot
+tell from reading: **uncertain**. A lingering orphan can do nothing, because every reach goes through
+the channel, but a restarted supervisor would start a second one beside it.
+
+**FI6 — a frame declaring more than `MAX_FRAME`.** *Criterion:* refused before any allocation, the
+channel dropped and recorded, others served. *Prediction:* **holds** (the check precedes the read).
+
+**FI8 — the network is gone during an egress request** (the broker runs in a network namespace with
+no route). *Criterion:* refused with a stated reason within the connect timeout, recorded, and nothing
+hangs. *Prediction:* `connect` fails at once with `ENETUNREACH`; the broker raises `EgressRefused`
+naming the address; the act's refusal is recorded after the grant. **Holds.**
+
+**FI9 — the wall clock jumps** (an hour back and an hour forward, during a flood and during audit
+writes). *Criterion:* the flood cut-off and the audit chain are unaffected. *Prediction:* the flood
+window uses `time.monotonic()` and the chain does not include time in its ordering, so **holds**. The
+records' `time` fields will run backwards across the jump, which is cosmetic and is reported.
+
+## What would change the report
+
+FI3 (c) and FI1's missing recovery, if they behave as predicted: the first is a defect in S7's
+mechanism, and the second is a stated limitation the report does not yet have.
