@@ -63,10 +63,12 @@ them paired; two are partial; two are retained by a decision §4.11 recorded in 
 T12, a malicious update through the authorised path — has no evidence at all (§7.26.5). Against the
 external register, eight of Corno and Mannella's eleven are mapped and scored, five cleanly
 (§7.26.4). **No aggregate is reported**, on §7.4.2's rule that a single "threats controlled" figure
-is the security equivalent of an unlabelled compatibility percentage. *(Restated twice since: on
+is the security equivalent of an unlabelled compatibility percentage. *(Restated three times since: on
 2026-10-01 T12 was measured and the count became fourteen, none unevaluated (§7.30.5); on 2026-10-05
 the register gained T19, denial of service against the audit log, and reads nineteen threats,
-fifteen demonstrated (§7.44.4).)*
+fifteen demonstrated (§7.44.4). On 2026-10-06 T06 was restated as demonstrated and paired, because §7.36 had
+removed the reason it was partial: nineteen threats, sixteen demonstrated, six paired, one partial (T16),
+two retained (§7.44.4, finding F38).)*
 
 ### 8.2.2 B — confinement is compatible
 

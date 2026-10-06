@@ -53,7 +53,7 @@ integration's own code in 16 ms. A sandbox that floods the mediator with refused
 stopped after 100 of them, within a second, and the household is told in Home Assistant's own
 Repairs panel and can restart it without widening what it may do. Twenty-five self-test suites and
 the base self-test pass;
-against the project's own nineteen-threat register fifteen threats are demonstrated, five of them
+against the project's own nineteen-threat register sixteen threats are demonstrated, six of them
 paired against an unconfined arm, and against the closest published model eight of eleven are mapped.
 
 **The most useful result was a failure, and it arrived last.** Running a single real community

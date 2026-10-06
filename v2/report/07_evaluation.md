@@ -2606,7 +2606,7 @@ the standard §3.5 imposed on S8 and S3, and the only standard under which a blo
 | T03 | S1 — mediator unreachable from the address space | §7.15.3, §7.13.3 | ✅ Demonstrated, **unpairable by construction** — unconfined there is no mediator to tamper with, and the suite reports `UNMEDIATED` rather than a comparison |
 | T04 | S2 — credential only in the mediator | §7.15.3: token **live in the mediator, 7 references**, at the moment the sandbox's sweep finds nothing | ✅ **Paired** |
 | T05 | F3, S5, S6 — manifest-checked calls | §7.16.1: unlock refused to a manifest declaring only `lock.lock`; `lock.*` rejected at parse | ✅ Demonstrated |
-| T06 | S3 — mediate reads *and* subscriptions | §7.14.2: **36/36 → 1/36**, and **20/20 → 0/20** presence entities | ⚠ **Partial.** Reads paired; the subscription half is a refusal without a delivered stream (§7.14.4). *2026-10-04: the subscription half is now a filtered stream, §7.36, at the stand-in platform* |
+| T06 | S3 — mediate reads *and* subscriptions | §7.14.2: **36/36 → 1/36**, and **20/20 → 0/20** presence entities | ⚠ **Partial.** Reads paired; the subscription half is a refusal without a delivered stream (§7.14.4). *2026-10-04: the subscription half is now a filtered stream, §7.36, at the stand-in platform* **Restated 2026-10-06 (verification 4.9, finding F38): ✅ Demonstrated, paired.** Reads 36/36 → 1/36; subscriptions 4 of 4 undeclared changes delivered unconfined, 0 of 3 confined, mutant M10 showing the zero is the filter's (§7.36), repeated on the house's real Home Assistant (§7.37). The reason this row gave for *partial* had been removed by §7.36, and the count had not followed |
 | T07 | F3, S6 — writes to declared entities only | §7.16.1: `/permissions/entities/write` | ✅ Demonstrated |
 | T08 | S4 — per-integration egress allow-list | §7.25.2: two concurrent sandboxes, each denied the other's host, audit `[True, False]` | ✅ Demonstrated |
 | T09 | **Retain** (R5) | §7.24.5: every TLS wrap had `check_hostname`; the mediator supplies a descriptor and sees destination, never content | ⊘ **Retained — and now measured rather than asserted** |
@@ -2638,7 +2638,7 @@ project's threat-identification work. Mapping from §4.8's `CM` column, unaltere
 
 | CM | Their threat | Maps from | Verdict |
 |---|---|---|---|
-| **T1** | Confidentiality — use of data outside scope | T04, T06, T14, T15, T17 | ✅ Demonstrated, **four of five paired**; T06's subscription half partial *(closed at the stand-in platform by §7.36, 2026-10-04)* |
+| **T1** | Confidentiality — use of data outside scope | T04, T06, T14, T15, T17 | ✅ Demonstrated, **four of five paired**; T06's subscription half partial *(closed at the stand-in platform by §7.36, 2026-10-04)* *2026-10-06: with T06 restated (F38), all five are paired.* |
 | **T2** | Spread of data outside scope | T08, T09 | ⚠ **Split, and the split is the design's honest boundary.** T08 demonstrated (§7.25); T09 retained (R5) — destination is controlled, content is not |
 | **T3** | Integrity — alter device state | T05, T10 | ✅ Demonstrated |
 | **T4** | Integrity — alter private data | T07, T17 | ✅ Demonstrated |
@@ -5129,6 +5129,11 @@ start. And a restart cannot reuse an integration's data directory.
 *Demonstrated*, and not pairable: unconfined there is no mediator whose log could be flooded. **The
 register is nineteen threats, of which fifteen are demonstrated**, five of them paired; two partial;
 two retained.
+
+> **Restated 2026-10-06 (verification 4.9, finding F38).** That count still held T06 as partial,
+> although §7.36 had removed the reason its row gave the day before. With T06 demonstrated and
+> paired, the register is **nineteen threats, sixteen demonstrated, six of them paired; one partial
+> (T16); two retained.**
 
 **§7.42, qualified.** §7.42.4 says *"a respawn that keeps that directory stays authenticated"*. Its run
 3 carried the token run 1 left into a new config entry in a fresh directory, so what it established is
