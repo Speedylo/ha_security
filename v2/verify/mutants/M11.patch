@@ -1,7 +1,7 @@
 # M11 (T19): the flood cut-off counts nothing
 --- a/framework/confine/mediator.py
 +++ b/framework/confine/mediator.py
-@@ -527,5 +527,5 @@
+@@ -576,5 +576,5 @@
          while recent and now - recent[0] > self.flood_window:
              recent.popleft()
 -        if len(recent) < self.flood_limit:

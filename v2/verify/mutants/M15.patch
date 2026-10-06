@@ -1,10 +1,10 @@
 # M15 (T15): `/proc` is the host's, bound in, not a fresh mount of the sandbox's PID namespace
 --- a/framework/confine/sandbox.py
 +++ b/framework/confine/sandbox.py
-@@ -230,5 +230,5 @@
+@@ -232,5 +232,5 @@
      # 5. /proc, which is a view of *this* PID namespace and therefore lists only the sandbox.
      Path(inside("/proc")).mkdir(parents=True, exist_ok=True)
 -    mount("proc", inside("/proc"), "proc", MS_NOSUID | MS_NODEV | MS_NOEXEC)
 +    _bind("/proc", inside("/proc"), read_only=False)
  
-     # 6. A /dev holding six device nodes and no devices. Bound from the host rather than
+     # 6. A /dev holding five device nodes and no devices. Bound from the host rather than

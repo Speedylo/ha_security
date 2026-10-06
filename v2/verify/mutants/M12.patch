@@ -1,7 +1,7 @@
 # M12 (T19): a cut-off integration may register again
 --- a/framework/confine/mediator.py
 +++ b/framework/confine/mediator.py
-@@ -296,5 +296,5 @@
+@@ -326,5 +326,5 @@
          re-binds a sandbox that is already running.
          """
 -        if identity in self.cut_off:

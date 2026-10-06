@@ -1,7 +1,7 @@
 # M07 (S7, §5.11.3): an acting decision is recorded after it acts (§7.36.1)
 --- a/framework/confine/mediator.py
 +++ b/framework/confine/mediator.py
-@@ -616,9 +616,11 @@
+@@ -677,5 +677,6 @@
          # address — that refusal is recorded too, so the log never shows a grant as the last
          # word on a request that was in fact refused.
 -        self._record(identity, request, decision)
@@ -9,8 +9,9 @@
 +            self._record(identity, request, decision)
          if not decision.allowed and self._refused(identity):
              return
-         if decision.allowed and decision.act is not None:
-             outcome = decision.act()
-+            self._record(identity, request, decision)
-             if not outcome.allowed:
-                 self._record(identity, request, outcome)
+@@ -683,4 +684,5 @@
+             try:
+                 outcome = decision.act()
++                self._record(identity, request, decision)
+             except REQUEST_ERRORS as err:
+                 outcome = Decision(False, f"acting on the request failed: "

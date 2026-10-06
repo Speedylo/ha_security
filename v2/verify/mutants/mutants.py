@@ -31,8 +31,9 @@ MUTANTS = [
      '        return Decision(True, f"{target!r} matches no clause at {pointer}", clause=pointer)'),
     ("M02", "S1, T02", "identity is taken from the request's own `integration` field, not the socket",
      "framework/confine/mediator.py",
-     "        decision = self.policy(identity, request)",
-     '        decision = self.policy(str(request.get("integration") or identity), request)'),
+     # Regenerated 2026-10-06 for the final tag: F33 put the call inside a `try`, one indent deeper.
+     "            decision = self.policy(identity, request)",
+     '            decision = self.policy(str(request.get("integration") or identity), request)'),
     ("M03", "S4, F3", "an egress clause matches on the host and ignores the port",
      "framework/confine/manifest.py",
      "            return str(clause) == target",
@@ -54,18 +55,22 @@ MUTANTS = [
      "            if False:"),
     ("M07", "S7, §5.11.3", "an acting decision is recorded after it acts (§7.36.1)",
      "framework/confine/mediator.py",
+     # Regenerated 2026-10-06 for the final tag: F33 wrapped the act in a `try`. Same mutation: an
+     # acting decision's record is written after the act instead of before it.
      "        self._record(identity, request, decision)\n"
      "        if not decision.allowed and self._refused(identity):\n"
      "            return\n"
      "        if decision.allowed and decision.act is not None:\n"
-     "            outcome = decision.act()\n",
+     "            try:\n"
+     "                outcome = decision.act()\n",
      "        if decision.act is None or not decision.allowed:\n"
      "            self._record(identity, request, decision)\n"
      "        if not decision.allowed and self._refused(identity):\n"
      "            return\n"
      "        if decision.allowed and decision.act is not None:\n"
-     "            outcome = decision.act()\n"
-     "            self._record(identity, request, decision)\n"),
+     "            try:\n"
+     "                outcome = decision.act()\n"
+     "                self._record(identity, request, decision)\n"),
     ("M08a", "S7", "the keyed MAC chain is not checked",
      "framework/confine/audit.py",
      '            if not hmac.compare_digest(computed_mac, record.get("mac", "")):',
@@ -112,8 +117,10 @@ MUTANTS = [
      '    _bind("/proc", inside("/proc"), read_only=False)'),
     ("M16", "§7.38, C7", "a command's answer is accepted from a channel it was not sent to",
      "framework/confine/mediator.py",
-     "        if self._sent_commands.get(ident) != fd:  # type: ignore[arg-type]",
-     "        if ident not in self._sent_commands:  # type: ignore[arg-type]"),
+     # Regenerated 2026-10-06 for the final tag: F33 added a type check before the lookup. Same
+     # mutation: an answer is accepted from any channel, not only the one the command went to.
+     "        if not isinstance(ident, int) or self._sent_commands.get(ident) != fd:",
+     "        if not isinstance(ident, int) or ident not in self._sent_commands:"),
     ("M17", "S5", "a wildcard in `services.call` (`lock.*`) is accepted at parse",
      "framework/confine/manifest.py",
      "    for entry in services:\n"
