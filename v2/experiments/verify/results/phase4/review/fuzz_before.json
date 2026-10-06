@@ -1,0 +1,158 @@
+[
+ {
+  "op": "discover.listen",
+  "field": "timeout",
+  "exception": "TypeError",
+  "example": "None: float() argument must be a string or a real number, not 'NoneType'"
+ },
+ {
+  "op": "discover.listen",
+  "field": "timeout",
+  "exception": "ValueError",
+  "example": "nan: cannot convert float NaN to integer"
+ },
+ {
+  "op": "discover.scan",
+  "field": "timeout",
+  "exception": "TypeError",
+  "example": "None: float() argument must be a string or a real number, not 'NoneType'"
+ },
+ {
+  "op": "discover.scan",
+  "field": "timeout",
+  "exception": "ValueError",
+  "example": "nan: cannot convert float NaN to integer"
+ },
+ {
+  "op": "entity.command_result",
+  "field": "command",
+  "exception": "TypeError",
+  "example": "[]: unhashable type: 'list'"
+ },
+ {
+  "op": "entity.publish",
+  "field": "attributes",
+  "exception": "TypeError",
+  "example": "-1: 'int' object is not iterable"
+ },
+ {
+  "op": "entity.publish",
+  "field": "attributes",
+  "exception": "ValueError",
+  "example": "'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: dictionary update sequence element #0 has length 1; 2 is required"
+ },
+ {
+  "op": "entity.publish",
+  "field": "entity",
+  "exception": "TypeError",
+  "example": "['sensor.a']: unhashable type: 'list'"
+ },
+ {
+  "op": "entity.read",
+  "field": "entity",
+  "exception": "AttributeError",
+  "example": "[]: 'list' object has no attribute 'partition'"
+ },
+ {
+  "op": "entity.subscribe",
+  "field": "entity",
+  "exception": "AttributeError",
+  "example": "[]: 'list' object has no attribute 'partition'"
+ },
+ {
+  "op": "entity.write",
+  "field": "entity",
+  "exception": "AttributeError",
+  "example": "[]: 'list' object has no attribute 'partition'"
+ },
+ {
+  "op": "network.udp.send",
+  "field": "attributes",
+  "exception": "ConnectionRefusedError",
+  "example": "None: [Errno 111] Connection refused"
+ },
+ {
+  "op": "network.udp.send",
+  "field": "command",
+  "exception": "ConnectionRefusedError",
+  "example": "None: [Errno 111] Connection refused"
+ },
+ {
+  "op": "network.udp.send",
+  "field": "domain",
+  "exception": "ConnectionRefusedError",
+  "example": "None: [Errno 111] Connection refused"
+ },
+ {
+  "op": "network.udp.send",
+  "field": "entity",
+  "exception": "ConnectionRefusedError",
+  "example": "[]: [Errno 111] Connection refused"
+ },
+ {
+  "op": "network.udp.send",
+  "field": "error",
+  "exception": "ConnectionRefusedError",
+  "example": "None: [Errno 111] Connection refused"
+ },
+ {
+  "op": "network.udp.send",
+  "field": "event",
+  "exception": "ConnectionRefusedError",
+  "example": "None: [Errno 111] Connection refused"
+ },
+ {
+  "op": "network.udp.send",
+  "field": "host",
+  "exception": "ConnectionRefusedError",
+  "example": "None: [Errno 111] Connection refused"
+ },
+ {
+  "op": "network.udp.send",
+  "field": "ok",
+  "exception": "ConnectionRefusedError",
+  "example": "None: [Errno 111] Connection refused"
+ },
+ {
+  "op": "network.udp.send",
+  "field": "service",
+  "exception": "ConnectionRefusedError",
+  "example": "[]: [Errno 111] Connection refused"
+ },
+ {
+  "op": "network.udp.send",
+  "field": "service_name",
+  "exception": "ConnectionRefusedError",
+  "example": "None: [Errno 111] Connection refused"
+ },
+ {
+  "op": "network.udp.send",
+  "field": "state",
+  "exception": "ConnectionRefusedError",
+  "example": "None: [Errno 111] Connection refused"
+ },
+ {
+  "op": "network.udp.send",
+  "field": "timeout",
+  "exception": "ConnectionRefusedError",
+  "example": "None: [Errno 111] Connection refused"
+ },
+ {
+  "op": "network.udp.send",
+  "field": "unique_id",
+  "exception": "ConnectionRefusedError",
+  "example": "None: [Errno 111] Connection refused"
+ },
+ {
+  "op": "service.call",
+  "field": "data",
+  "exception": "TypeError",
+  "example": "-1: 'int' object is not iterable"
+ },
+ {
+  "op": "service.call",
+  "field": "data",
+  "exception": "ValueError",
+  "example": "'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: dictionary update sequence element #0 has length 1; 2 is required"
+ }
+]

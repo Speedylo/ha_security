@@ -1,0 +1,27 @@
+4864 requests; 26 distinct (operation, field, exception) escapes
+  ESCAPE  discover.listen        timeout      TypeError          None: float() argument must be a string or a real number, not 'NoneType'
+  ESCAPE  discover.listen        timeout      ValueError         nan: cannot convert float NaN to integer
+  ESCAPE  discover.scan          timeout      TypeError          None: float() argument must be a string or a real number, not 'NoneType'
+  ESCAPE  discover.scan          timeout      ValueError         nan: cannot convert float NaN to integer
+  ESCAPE  entity.command_result  command      TypeError          []: unhashable type: 'list'
+  ESCAPE  entity.publish         attributes   TypeError          -1: 'int' object is not iterable
+  ESCAPE  entity.publish         attributes   ValueError         'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: dictionary update sequence element #0 has length 1; 2 is required
+  ESCAPE  entity.publish         entity       TypeError          ['sensor.a']: unhashable type: 'list'
+  ESCAPE  entity.read            entity       AttributeError     []: 'list' object has no attribute 'partition'
+  ESCAPE  entity.subscribe       entity       AttributeError     []: 'list' object has no attribute 'partition'
+  ESCAPE  entity.write           entity       AttributeError     []: 'list' object has no attribute 'partition'
+  ESCAPE  network.udp.send       attributes   ConnectionRefusedError None: [Errno 111] Connection refused
+  ESCAPE  network.udp.send       command      ConnectionRefusedError None: [Errno 111] Connection refused
+  ESCAPE  network.udp.send       domain       ConnectionRefusedError None: [Errno 111] Connection refused
+  ESCAPE  network.udp.send       entity       ConnectionRefusedError []: [Errno 111] Connection refused
+  ESCAPE  network.udp.send       error        ConnectionRefusedError None: [Errno 111] Connection refused
+  ESCAPE  network.udp.send       event        ConnectionRefusedError None: [Errno 111] Connection refused
+  ESCAPE  network.udp.send       host         ConnectionRefusedError None: [Errno 111] Connection refused
+  ESCAPE  network.udp.send       ok           ConnectionRefusedError None: [Errno 111] Connection refused
+  ESCAPE  network.udp.send       service      ConnectionRefusedError []: [Errno 111] Connection refused
+  ESCAPE  network.udp.send       service_name ConnectionRefusedError None: [Errno 111] Connection refused
+  ESCAPE  network.udp.send       state        ConnectionRefusedError None: [Errno 111] Connection refused
+  ESCAPE  network.udp.send       timeout      ConnectionRefusedError None: [Errno 111] Connection refused
+  ESCAPE  network.udp.send       unique_id    ConnectionRefusedError None: [Errno 111] Connection refused
+  ESCAPE  service.call           data         TypeError          -1: 'int' object is not iterable
+  ESCAPE  service.call           data         ValueError         'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: dictionary update sequence element #0 has length 1; 2 is required
