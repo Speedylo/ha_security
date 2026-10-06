@@ -1,0 +1,33 @@
+13:51:49  supervising demo_flood; durable log in /home/younes/r2exp/verify/faults_pi/fi1_audit; Ctrl-C to stop
+13:51:50  demo_flood started (run 1, pid 55329)
+Traceback (most recent call last):
+  File "/home/younes/r2exp/faults-tree/v2/framework/confine/real_platform.py", line 145, in pump
+    self._sort(self.ws.messages())
+               ~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/faults-tree/v2/framework/confine/ws.py", line 168, in messages
+    return ready + self._decode(self.parser.feed(data))
+                   ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/faults-tree/v2/framework/confine/ws.py", line 186, in _decode
+    raise WebSocketError(f"the server closed the connection: {payload[2:]!r}")
+confine.ws.WebSocketError: the server closed the connection: b''
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/younes/r2exp/faults-tree/v2/framework/confine/supervise.py", line 232, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/younes/r2exp/faults-tree/v2/framework/confine/supervise.py", line 225, in main
+    supervisor.run()
+    ~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/faults-tree/v2/framework/confine/supervise.py", line 183, in run
+    self.mediator.serve(timeout=0.5, until=time.monotonic() + 0.5)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/faults-tree/v2/framework/confine/mediator.py", line 377, in serve
+    self._platform.pump()  # type: ignore[union-attr]
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/faults-tree/v2/framework/confine/real_platform.py", line 147, in pump
+    raise PlatformLost(f"the connection to (A) failed: {err}") from err
+confine.real_platform.PlatformLost: the connection to (A) failed: the server closed the connection: b''

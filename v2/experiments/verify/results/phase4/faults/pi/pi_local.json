@@ -1,0 +1,93 @@
+[
+ {
+  "case": "FI2",
+  "claim": "a frame cut off by the sandbox's death drops only that channel, recorded",
+  "held": true,
+  "detail": "escaped: None; protocol_error records: ['truncated frame']"
+ },
+ {
+  "case": "FI6",
+  "claim": "a frame declaring more than MAX_FRAME is refused before any read, recorded",
+  "held": true,
+  "detail": "0.1 ms, nothing waited for; escaped: None"
+ },
+ {
+  "case": "FI2",
+  "claim": "and another sandbox is still served after both",
+  "held": true,
+  "detail": "{'id': 1, 'ok': True, 'reason': 'declared', 'clause': '/permissions/entities/read/0', 'state': '1', 'attributes': {}}"
+ },
+ {
+  "case": "FI2",
+  "claim": "the durable log still verifies",
+  "held": true,
+  "detail": "[]"
+ },
+ {
+  "case": "FI9",
+  "claim": "the cut-off comes after exactly the limit, whatever the wall clock did",
+  "held": true,
+  "detail": "6 refusals recorded, 5 answered before the cut-off"
+ },
+ {
+  "case": "FI9",
+  "claim": "and the audit chain verifies across the jumps",
+  "held": true,
+  "detail": "[]"
+ },
+ {
+  "case": "FI9",
+  "observed": "record times are not monotonic across a jump, as predicted (cosmetic)",
+  "detail": "min step -3600 s"
+ },
+ {
+  "case": "FI3",
+  "claim": "no act ran without its record durable first",
+  "held": true,
+  "detail": "25 acts, 25 complete decision records; filled after 26 requests"
+ },
+ {
+  "case": "FI3",
+  "observed": "what left the mediator when the write failed",
+  "detail": "OSError: [Errno 28] No space left on device"
+ },
+ {
+  "case": "FI3",
+  "observed": "the log's last line after the failure",
+  "detail": "a partial record, cut off mid-line"
+ },
+ {
+  "case": "FI3",
+  "claim": "the log still verifies after the failure",
+  "held": false,
+  "detail": "[(26, 'unreadable')]"
+ },
+ {
+  "case": "FI3",
+  "observed": "space freed by deleting the filler",
+  "detail": "0 \u2192 1 free blocks"
+ },
+ {
+  "case": "FI3",
+  "observed": "the next request after space is freed",
+  "detail": "{'id': 999, 'ok': True, 'reason': 'acted', 'clause': '/permissions/services/call/0'}"
+ },
+ {
+  "case": "FI3",
+  "claim": "and the log verifies once records are written again",
+  "held": false,
+  "detail": "[(26, 'unreadable', \"Expecting ',' delimiter: line 1 column 3\")]"
+ },
+ {
+  "case": "FI8",
+  "claim": "refused with a stated reason, within the connect timeout",
+  "held": true,
+  "detail": "1 ms: no permitted address for api.example.org:443 \u2014 93.184.216.34: Network is unreachable"
+ },
+ {
+  "case": "FI8",
+  "claim": "recorded as granted, then refused when acting found no route",
+  "held": true,
+  "detail": "[(True, 'declared'), (False, 'no permitted address for api.example.org:443 \u2014 93.')]"
+ }
+]

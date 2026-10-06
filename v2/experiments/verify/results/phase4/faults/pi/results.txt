@@ -1,0 +1,19 @@
+before: supervisors [] sandboxes []
+FI1 running: supervisors [55313 ] sandboxes [55329 ]
+FI1 (A) stopped at 13:51:57
+FI1 after (A) stopped: supervisors [] sandboxes []
+FI1 (A) back at 13:52:00: up
+FI1 30 s after (A) returned: supervisors [] sandboxes []
+FI1 supervisor log tail:
+    self._platform.pump()  # type: ignore[union-attr]
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/faults-tree/v2/framework/confine/real_platform.py", line 147, in pump
+    raise PlatformLost(f"the connection to (A) failed: {err}") from err
+confine.real_platform.PlatformLost: the connection to (A) failed: the server closed the connection: b''
+FI4 running: supervisors [55433 ] sandboxes [55449 ]
+FI4 supervisor SIGKILLed at 13:52:39
+FI4 10 s later: supervisors [] sandboxes [55449 ] (were [55449 ])
+FI4 after the restart: supervisors [55481 ] sandboxes [55449 55497 ]
+FI4 audit log verifies: [('decisions.jsonl', 9)]
+after cleanup: supervisors [] sandboxes []
+ALLDONE

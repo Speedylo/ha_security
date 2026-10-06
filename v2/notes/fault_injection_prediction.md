@@ -66,3 +66,23 @@ records' `time` fields will run backwards across the jump, which is cosmetic and
 
 FI3 (c) and FI1's missing recovery, if they behave as predicted: the first is a defect in S7's
 mechanism, and the second is a stated limitation the report does not yet have.
+
+## Outcomes (2026-10-06, after the runs)
+
+Run by `verify/faults.py` locally and on the Pi (identical: 9 of 11 criteria), and by
+`verify/faults_pi.sh` on the Pi with (A) and the supervisor (`experiments/verify/results/phase4/faults/`).
+FI5 and FI7 are the existing cases, passing in today's 26/26 suite runs.
+
+| Fault | Criterion | Prediction | Outcome |
+|---|---|---|---|
+| FI1 (A) stops | held: the supervisor died on an uncaught `PlatformLost` and took the sandbox with it | no recovery | **as predicted**: 30 s after (A) returned, no supervisor and no sandbox. The failure is a traceback, not a stated message, and nobody in the house is told |
+| FI2 dies mid-frame | held | holds | as predicted |
+| FI3 disk full | **(a) held**: 25 acts, 25 complete records, none without | (b) leaves `serve()` | (b) as predicted: `OSError ENOSPC` leaves the handler |
+| | | (c) partial line, log unverifiable | **(c) as predicted, and worse**: once space was freed the mediator acted and recorded again, appending onto the partial line, so every record from the failure on is unverifiable for good |
+| FI4 mediator SIGKILLed | **failed**: the sandbox survived as an orphan with no mediator | uncertain | orphan confirmed; the restarted supervisor started a second sandbox beside it. **Unpredicted:** the restarted supervisor appended a new chain (seq 0, genesis) to the same `decisions.jsonl`, so `verify()` reports sequence and link breaks that look exactly like deleted records |
+| FI6 oversized frame | held (refused in under a millisecond, recorded) | holds | as predicted |
+| FI8 network gone | held (refused in 14 ms, recorded granted then refused) | holds | as predicted |
+| FI9 clock jump | held | holds | as predicted; record times step back 3,600 s, cosmetic |
+
+The MAC failures in FI4's log are not a finding: the key is generated per mediator and never stored,
+which §6.8.4 states and §8.6 lists as limitation 7. The hash chain is the part a restart breaks.
