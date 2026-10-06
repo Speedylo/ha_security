@@ -1,0 +1,10 @@
+# M08a (S7): the keyed MAC chain is not checked
+--- a/framework/confine/audit.py
++++ b/framework/confine/audit.py
+@@ -361,5 +361,5 @@
+                 breaks.append(Break(seq, "hash", "the record's contents do not match its hash"))
+             computed_mac = hmac.new(key, last_mac.encode() + canonical, hashlib.sha256).hexdigest()
+-            if not hmac.compare_digest(computed_mac, record.get("mac", "")):
++            if False and not hmac.compare_digest(computed_mac, record.get("mac", "")):
+                 breaks.append(Break(seq, "mac", "the keyed MAC does not verify"))
+ 

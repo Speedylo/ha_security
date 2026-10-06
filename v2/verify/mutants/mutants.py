@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+"""Phase 4.3: one mutant per enforcement point, each a single exact replacement in the framework.
+
+Plan §7.3: remove or invert each security-relevant check and confirm that at least one suite fails.
+A mutant that survives is a claim with no test behind it. Each mutant below is one `old → new`
+replacement that must match exactly once, so the patch it generates is small enough to review by
+eye. `python3 verify/mutants/mutants.py` writes `Mxx.patch` beside this file (unified diffs against
+`framework/`, applied with `patch -p1` from `v2/`).
+
+**Criteria, fixed before any mutant runs (2026-10-06).** A mutant is *killed* when at least one of
+the 26 suites exits non-zero with the mutant applied, and *survives* otherwise. Every kill is then
+read: the failing check is recorded, and a kill only by a crash unrelated to the claim (the sandbox
+failing to start, say) is reported as *killed, weakly*. The unmutated tree passes 26/26
+(`experiments/verify/results/phase4/regress_f03/`). The plan listed 17; M8 is split into its two
+independent chains, so 18.
+"""
+
+from __future__ import annotations
+
+import difflib
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+V2 = HERE.parent.parent
+
+MUTANTS = [
+    ("M01", "S6", "default deny becomes allow: a request matching no clause is granted",
+     "framework/confine/manifest.py",
+     '        return Decision(False, f"{target!r} matches no clause at {pointer}", clause=pointer)',
+     '        return Decision(True, f"{target!r} matches no clause at {pointer}", clause=pointer)'),
+    ("M02", "S1, T02", "identity is taken from the request's own `integration` field, not the socket",
+     "framework/confine/mediator.py",
+     "        decision = self.policy(identity, request)",
+     '        decision = self.policy(str(request.get("integration") or identity), request)'),
+    ("M03", "S4, F3", "an egress clause matches on the host and ignores the port",
+     "framework/confine/manifest.py",
+     "            return str(clause) == target",
+     '            return str(clause).rpartition(":")[0] == str(target).rpartition(":")[0] '
+     'if ":" in str(clause) else str(clause) == target'),
+    ("M04", "T10", "`is_public` accepts RFC 1918 addresses",
+     "framework/confine/egress.py",
+     "    return not (parsed.is_private or parsed.is_loopback or parsed.is_link_local\n"
+     "                or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified)",
+     "    return not (parsed.is_loopback or parsed.is_link_local\n"
+     "                or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified)"),
+    ("M05", "T10", "`is_lan` accepts public addresses (§7.43's exfiltration)",
+     "framework/confine/egress.py",
+     "    return parsed.is_private and not (parsed.is_loopback or parsed.is_link_local",
+     "    return not (parsed.is_loopback or parsed.is_link_local"),
+    ("M06", "T11", "the address resolved at request time is not re-checked before connecting",
+     "framework/confine/egress.py",
+     "            if not allow_private and not is_public(address):",
+     "            if False:"),
+    ("M07", "S7, §5.11.3", "an acting decision is recorded after it acts (§7.36.1)",
+     "framework/confine/mediator.py",
+     "        self._record(identity, request, decision)\n"
+     "        if not decision.allowed and self._refused(identity):\n"
+     "            return\n"
+     "        if decision.allowed and decision.act is not None:\n"
+     "            outcome = decision.act()\n",
+     "        if decision.act is None or not decision.allowed:\n"
+     "            self._record(identity, request, decision)\n"
+     "        if not decision.allowed and self._refused(identity):\n"
+     "            return\n"
+     "        if decision.allowed and decision.act is not None:\n"
+     "            outcome = decision.act()\n"
+     "            self._record(identity, request, decision)\n"),
+    ("M08a", "S7", "the keyed MAC chain is not checked",
+     "framework/confine/audit.py",
+     '            if not hmac.compare_digest(computed_mac, record.get("mac", "")):',
+     '            if False and not hmac.compare_digest(computed_mac, record.get("mac", "")):'),
+    ("M08b", "S7", "the hash chain's link is not checked",
+     "framework/confine/audit.py",
+     '            if record.get("prev_hash") != last_hash:',
+     '            if False and record.get("prev_hash") != last_hash:'),
+    ("M09", "T12, §8.7 #14", "the manifest is not re-read at registration",
+     "framework/confine/mediator.py",
+     "        if bind is not None and component is not None:\n"
+     "            bind(identity, Path(component))",
+     "        if False:\n"
+     "            bind(identity, Path(component))"),
+    ("M10", "S3", "the subscription filter is bypassed: every subscriber gets every push",
+     "framework/confine/mediator.py",
+     "            if entity_id not in entities:\n"
+     "                continue",
+     "            if False:\n"
+     "                continue"),
+    ("M11", "T19", "the flood cut-off counts nothing",
+     "framework/confine/mediator.py",
+     "        if len(recent) < self.flood_limit:\n"
+     "            return False",
+     "        if True:\n"
+     "            return False"),
+    ("M12", "T19", "a cut-off integration may register again",
+     "framework/confine/mediator.py",
+     "        if identity in self.cut_off:\n"
+     "            raise CutOff(",
+     "        if False:\n"
+     "            raise CutOff("),
+    ("M13", "S8", "the seccomp filter allows the calls it lists instead of refusing them",
+     "framework/confine/seccomp.py",
+     "                                SECCOMP_RET_ERRNO | (errno.EPERM & 0xFFFF)))",
+     "                                SECCOMP_RET_ALLOW))"),
+    ("M14", "C1, S8", "the integration's own directory is mounted read-write",
+     "framework/confine/sandbox.py",
+     "    _bind(spec.own_dir, inside(SandboxSpec.COMPONENT), read_only=True)",
+     "    _bind(spec.own_dir, inside(SandboxSpec.COMPONENT), read_only=False)"),
+    ("M15", "T15", "`/proc` is the host's, bound in, not a fresh mount of the sandbox's PID namespace",
+     "framework/confine/sandbox.py",
+     '    mount("proc", inside("/proc"), "proc", MS_NOSUID | MS_NODEV | MS_NOEXEC)',
+     '    _bind("/proc", inside("/proc"), read_only=False)'),
+    ("M16", "§7.38, C7", "a command's answer is accepted from a channel it was not sent to",
+     "framework/confine/mediator.py",
+     "        if self._sent_commands.get(ident) != fd:  # type: ignore[arg-type]",
+     "        if ident not in self._sent_commands:  # type: ignore[arg-type]"),
+    ("M17", "S5", "a wildcard in `services.call` (`lock.*`) is accepted at parse",
+     "framework/confine/manifest.py",
+     "    for entry in services:\n"
+     '        if "*" in entry:',
+     "    for entry in services:\n"
+     '        if False and "*" in entry:'),
+]
+
+
+def main() -> int:
+    for ident, claim, what, path, old, new in MUTANTS:
+        source = (V2 / path).read_text()
+        count = source.count(old)
+        if count != 1:
+            print(f"{ident}: the original text occurs {count} times in {path}; expected once")
+            return 1
+        mutated = source.replace(old, new)
+        rel = path.split("/", 1)[1]           # patch -p1 from v2/: a/confine/... → framework/
+        diff = difflib.unified_diff(source.splitlines(keepends=True),
+                                    mutated.splitlines(keepends=True),
+                                    fromfile=f"a/{path}", tofile=f"b/{path}", n=2)
+        header = f"# {ident} ({claim}): {what}\n"
+        (HERE / f"{ident}.patch").write_text(header + "".join(diff))
+        print(f"{ident:<5} {claim:<14} {rel}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

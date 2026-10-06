@@ -1,0 +1,10 @@
+# M10 (S3): the subscription filter is bypassed: every subscriber gets every push
+--- a/framework/confine/mediator.py
++++ b/framework/confine/mediator.py
+@@ -399,5 +399,5 @@
+                    "attributes": dict(attributes or {})}
+         for fd, entities in list(self._subscriptions.items()):
+-            if entity_id not in entities:
++            if False:
+                 continue
+             identity = self._by_fd[fd][0]

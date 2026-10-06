@@ -1,0 +1,10 @@
+# M16 (§7.38, C7): a command's answer is accepted from a channel it was not sent to
+--- a/framework/confine/mediator.py
++++ b/framework/confine/mediator.py
+@@ -456,5 +456,5 @@
+         """A sandbox's answer to a command. Accepted only from the channel it was sent to, once."""
+         ident = request.get("command")
+-        if self._sent_commands.get(ident) != fd:  # type: ignore[arg-type]
++        if ident not in self._sent_commands:  # type: ignore[arg-type]
+             # Not a decision, and not grounds to drop the channel: recorded, and ignored. A
+             # sandbox must not be able to use the answer path to make the house do anything.

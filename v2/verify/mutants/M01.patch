@@ -1,0 +1,10 @@
+# M01 (S6): default deny becomes allow: a request matching no clause is granted
+--- a/framework/confine/manifest.py
++++ b/framework/confine/manifest.py
+@@ -388,5 +388,5 @@
+                 return Decision(True, "declared", clause=f"{pointer}/{index}")
+ 
+-        return Decision(False, f"{target!r} matches no clause at {pointer}", clause=pointer)
++        return Decision(True, f"{target!r} matches no clause at {pointer}", clause=pointer)
+ 
+     @staticmethod
