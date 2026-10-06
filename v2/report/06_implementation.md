@@ -1077,6 +1077,12 @@ write the log file can then also read the key beside it. This is not a defect to
 position on a trade-off, and it is stated here so that Chapter 7 evaluates the log it has rather
 than the one the phrase "tamper-evident" suggests.
 
+> **2026-10-06 (§7.45.5).** *Records written by an earlier run remain hash-verifiable* held for a run
+> and not for a file. The supervisor appended each restart's new chain to the same file, which
+> `verify` then read as deleted records; it now writes one file per start. Separately, a full disk
+> could leave a partial record that made everything after it unverifiable; a failed append is now
+> cut back to the last complete record.
+
 ## 6.9 The adversarial cases
 
 §5.8.2's fourth scope item is a hostile integration: "the garbage-collector technique,

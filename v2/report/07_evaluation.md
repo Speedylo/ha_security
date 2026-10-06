@@ -312,7 +312,7 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **S4** | An integration is denied a host declared only by a *different* integration | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met — §7.25.** Two confined integrations, running at once, each denied the host declared only by the other — evidenced by the mediator's own audit record |
 | **S5** | A manifest permitting `lock.lock` is shown not to permit `lock.unlock`, and the refusal is structural rather than a check | §6.10.1 — re-verified in the evaluation run | ✅ **Met** — §7.16.1 — a manifest declaring `lock.lock` does not permit `lock.unlock`, and `lock.*` is rejected at **parse** time rather than at the point of use |
 | **S6** | An integration with **no** manifest and one with an **unparseable** manifest are each denied all mediated capability, each refusal naming its rule | Security | ✅ **Met** — §7.16.2 — `selftest_policy`: absent and unparseable manifests each denied all mediated capability, each refusal naming the rule |
-| **S7** | Decisions appear in the log bearing the integration's three-part identity, and modification, deletion **and reordering** are each independently detectable by both the hash chain and the keyed MAC chain | §6.8 — re-verified | ✅ **Met** — §7.16.2 — `selftest_audit`: modification, deletion and reordering each detected, and the hash chain and keyed MAC chain fail **independently**. §8.6.3 #7 states the key’s lifetime. **Updated 2026-10-03 (§7.32):** until then the first clause held only in the suite — outside it no run record was written, so durable decisions bore no identity. Now met in every harness that decides, reconciled against the in-memory record |
+| **S7** | Decisions appear in the log bearing the integration's three-part identity, and modification, deletion **and reordering** are each independently detectable by both the hash chain and the keyed MAC chain | §6.8 — re-verified | ✅ **Met** — §7.16.2 — `selftest_audit`: modification, deletion and reordering each detected, and the hash chain and keyed MAC chain fail **independently**. §8.6.3 #7 states the key’s lifetime. **Updated 2026-10-03 (§7.32):** until then the first clause held only in the suite — outside it no run record was written, so durable decisions bore no identity. Now met in every harness that decides, reconciled against the in-memory record **Qualified 2026-10-06 (§7.45.5):** until then a full disk could leave a partial record that made the log unverifiable from that point on, and a restarted supervisor appended a second chain to the same file, which `verify` read as deleted records. Both are fixed. |
 | **S8** | The 2021 file-theft pattern **succeeds against an unconfined baseline installation** and is blocked under the framework, on the same host and release | Security — **requires the baseline arm** | ✅ **Met, paired** — §7.13.2 — the 2021 file-theft pattern recovers **2 of 2** canaries unconfined and **0 of 2** confined on the same host and release; `open("../../secrets.yaml")` raises `FileNotFoundError`, not `PermissionError` |
 | **S9** | An integration deliberately exhausting CPU, memory and disk in turn does not render the gateway unresponsive, demonstrated unprivileged, with the boot-time precondition stated | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met, against narrowed wording — §7.22.** All four bounds now come from the manifest and each is verified by a sandbox exceeding it: memory OOM-killed, forks refused at the cap, a 25% CPU cap holding at 25.1%, `ENOSPC` at `disk_mb`. **Disk means space, not I/O bandwidth** — the `io` controller is not delegated to a user manager (§7.22.2), so S9's text is narrowed on evidence and the residual is stated |
 | **N1** | Added latency, per-integration memory and maximum concurrent integrations are all reported against an unconfined baseline on the target hardware. **No threshold** — §3.6 fixed this position in advance | Performance | ✅ **Met as specified** — §7.19–§7.20 — latency to 26 sandboxes, per-sandbox memory and maximum concurrency all reported against an unconfined baseline on the C4 device. **No threshold, by §3.6’s position fixed in advance**; the figures are reported and discussed, and P4 was falsified doing it |
@@ -5274,6 +5274,57 @@ The first of these is the one that matters. A figure in the evaluation, quoted b
 no record behind it, and it made a claim in the abstract look stronger than the data. Every earlier
 check in this report compared measurements with measurements, or prose with prose. This one compared
 the prose with the records, and that is the comparison that found it.
+
+
+### 7.45.5 What happens when things around the framework fail
+
+The suites check what the framework does when an integration misbehaves. They say much less about
+what it does when the things around it fail: the disk, the house's Home Assistant, the network, the
+supervisor itself. N3 asks that a failure have a stated mode, so nine faults were injected, each with
+its criterion and a prediction written before it ran (`notes/fault_injection_prediction.md`;
+`verify/faults.py` and `verify/faults_pi.sh`).
+
+**Five held as designed, and four did not.** A sandbox dying halfway through a frame, a malformed
+frame, a frame declaring more than the limit, a sandbox that stops reading, the network vanishing
+during an egress request, and the wall clock jumping an hour each way were all handled. The
+mediator dropped only the offending channel, recorded why, and went on serving the others. The
+egress request was refused in 14 ms with its reason, and the flood cut-off and the audit chain
+ignored the clock. Four faults found defects, all fixed on 2026-10-06 and tagged
+`verify-2026-10-faults`.
+
+- **A full disk broke the audit log for good.** Record-before-act held: on a 24 KiB filesystem, 25
+  actions left 25 complete records and nothing acted without one. But the failed write left half a
+  record in the file. Once space was freed, the mediator appended its next record onto that half
+  line, so every record from then on was beyond the reach of `verify`. A failed append is now cut
+  back to the last complete record before the error is raised, and the file is written unbuffered,
+  so nothing of the failed record can be flushed after the cut. `selftest_audit` stages it; on a real
+  full disk the log verifies before the failure, after it, and once writing resumes.
+- **A sandbox outlived its supervisor.** Killed with `SIGKILL`, the supervisor could not stop its
+  sandbox, which ran on with no mediator. It could reach nothing, since every reach is through the
+  channel that had closed, but it kept running, and the restarted supervisor started a second
+  copy in the same cgroup. Now the sandbox ends its run when its channel closes. Because that
+  happens inside the sandbox, where an integration could ignore it, a starting supervisor also kills
+  whatever an earlier one left in its cgroups. Both were shown: no sandbox ten seconds after the
+  kill, and a process planted in a stale cgroup gone when the next supervisor started.
+- **A restart made the log look tampered with.** The restarted supervisor began a new chain in the
+  same file, and `verify` reported the join as missing records. §6.8.4 said earlier runs stay
+  hash-verifiable, and that held for a run, not for the file. The supervisor now writes one file
+  per start, and after a kill and a restart both files verify.
+- **Losing the house's Home Assistant stopped the integration for good.** The supervisor died on an
+  uncaught exception, which did fail closed, but nothing started the integration again when the house
+  came back, and nothing said so. It now stops the integration, waits for the house, and starts the
+  integration again on its own: four seconds after the house answered, in the test. Nobody in the
+  house has to do anything, so nothing is shown in its interface.
+
+After the fixes, both suite runs passed in full, as did `nordpool`, (A)'s restart test, and the
+refusal flood driven by a user through the Repairs panel. Every fault case met its criterion
+(`experiments/verify/results/phase4/regress_faults/`). One first attempt at `nordpool` failed for
+lack of space in `/tmp`. The cause was the mutation run of §7.45.3: its mutant without a cut-off had
+flooded a suite's temporary log to 1.2 GB before the time limit killed it, and the kill left the
+directory behind.
+
+These four share a pattern with the rest of this section. Each sat on a path that only a failure
+reaches, and no suite had ever produced that failure.
 
 ---
 

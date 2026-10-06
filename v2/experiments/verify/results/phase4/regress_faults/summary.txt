@@ -1,0 +1,8 @@
+suites_1 exit=0 seconds=63
+suites_2 exit=0 seconds=62
+egress_nordpool exit=1 seconds=16
+real_platform_restart exit=0 seconds=27
+drive_demo exit=0 seconds=1
+faults exit=0 seconds=0
+faults_pi_fixed exit=0 seconds=67
+ALLDONE

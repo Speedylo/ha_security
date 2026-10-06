@@ -1,0 +1,7 @@
+14:19:21  cleared 1 sandbox cgroup(s) an earlier supervisor left behind
+14:19:21  supervising demo_flood; durable log /home/younes/r2exp/verify/regress_faults/drive_audit/decisions-20261006T141921-56572.jsonl; Ctrl-C to stop
+14:19:21  demo_flood started (run 1, pid 56588)
+14:19:32  demo_flood cut off by the mediator; killing its sandbox
+14:19:32  demo_flood reinstated (recorded); starting it again
+14:19:32  demo_flood started (run 2, pid 56608)
+14:19:33  stopped

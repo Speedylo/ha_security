@@ -39,3 +39,8 @@ command's answer from a second sandbox's channel, and then confirms the right ch
 
 **A note on depth.** Eleven of the eighteen are killed by exactly one check. Each claim has a test, but
 most have one, so a later edit to that test could silently leave a claim untested again.
+
+**A side effect, found by the F28–F31 regression.** A suite killed by the runner's 300 s limit does not
+clean its temporary directory. Under M11 `selftest_flood` flooded its log to 1.2 GB in `/tmp` (a 2 GB
+tmpfs on the Pi) before it was killed, and the directory stayed until it made a later `nordpool` run
+fail for space. A mutation runner should give each mutant its own `TMPDIR` and remove it afterwards.

@@ -1,0 +1,30 @@
+C3 — the manifest is a claim, not a description that is believed
+
+  OVER-BROAD — everything the author could think to ask for
+    ok    an over-broad grant IS honoured (R1, and it is not a win) /permissions/entities/read/1
+    ok    but lock.unlock is still refused — it was never declarable as lock.* /permissions/services/call
+
+  THE CEILINGS — what no breadth of declaration can reach
+    ok    a wildcard service: lock.*                           rejected: 'lock.*' contains a wildcard. Every entry name
+    ok    a wildcard domain: *.temperature                     rejected: '*.temperature' wildcards the domain, which gr
+    ok    '*' alone as an entity grant                         rejected: '*' must be domain.object_id; a domain is alwa
+    ok    a path grant enclosing the configuration root        rejected: /tmp/confine-c3-noxhy3ut resolves to /tmp/conf
+    ok    a path grant reaching secrets.yaml                   rejected: /tmp/confine-c3-noxhy3ut/secrets.yaml resolves
+    ok    a path grant reaching .storage/                      rejected: /tmp/confine-c3-noxhy3ut/.storage resolves to 
+    ok    an invented capability nobody implements             rejected: unknown capabilities ['process']. An unrecogni
+
+  MISMATCHED — a modest declaration, and an integration that does none of it
+    ok    read the occupancy sensor it did not declare → denied /permissions/entities/read
+    ok    read a phone's location → denied                     /permissions/entities/read
+    ok    unlock the door it declared only locking → denied    /permissions/services/call
+    ok    disarm the alarm → denied                            /permissions/services/call
+    ok    subscribe to everything → denied                     /permissions/entities/subscribe
+    ok    write to an entity it does not own → denied          /permissions/entities/write
+    ok    claim to be another integration → denied             /permissions/entities/read
+    ok    what it DID declare still works                      /permissions/entities/read/0
+
+PASS — C3, all three shapes.
+       Absent and unparseable are covered by `selftest_policy`; over-broad is
+       honoured within ceilings it cannot raise, which is R1 stated honestly;
+       and a mismatched declaration buys its author nothing, because enforcement
+       reads behaviour and the manifest was never believed.

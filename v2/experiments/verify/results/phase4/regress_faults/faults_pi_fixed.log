@@ -1,0 +1,17 @@
+before: supervisors [] sandboxes []
+  ok    FI1 while (A) is down, no sandbox runs — sandboxes []
+  ok    FI1 and the supervisor is still there — supervisors [56644 ]
+FI1 the integration was running again 4 s after (A) answered
+  ok    FI1 within 60 s of (A) returning, one supervisor — [56644 ]
+  ok    FI1 and one sandbox — [56730 ]
+  ok    FI1 no traceback in the supervisor's log — plain lines only
+../verify/faults_pi_fixed.sh: line 47: 56775 Killed                  ( cd "$F" && exec systemd-run --user --scope -q python3 -u -m confine.supervise --component ../experiments/flood/demo_flood --python "$P" --audit-dir "$2" ) > "$1" 2>&1
+  ok    FI4 10 s after the SIGKILL, no sandbox is left — []
+  ok    FI4 after the restart, exactly one sandbox — [56833 ]
+  ok    FI4 one log file per start — files: 2
+  ok    FI4 no sequence, link or hash break in any of them — MAC breaks of the killed run are expected (§6.8.4)
+F30 planted pid 56870 in a stale sup-demo_flood-9
+  ok    F30 the starting supervisor killed the planted process — pid 56870
+  ok    F30 and said so — 14:20:37  cleared 1 sandbox cgroup(s) an earlier supervisor left behind
+after cleanup: supervisors [] sandboxes []
+ALLDONE
