@@ -254,7 +254,7 @@ rows of their own (CS01–CS16).
 | CS02 | Every response carries the clause that decided it; the pointer is built by the deciding branch, so a clause-less decision is unconstructible | §5.11, §5.12, §6.6 | exercise each refusal path with a durable log | **F03** |
 | CS03 | ~33,000 requests per second; 0.30 ms of mediation per polling cycle (Ch5), 0.36 ms (Ch6) | §5.11, §6.5 | RD from today's latency | **F09: three versions of one figure (0.30, 0.36, and ~0.32 ms from 31.5 µs)** — **Qualified** 10-06: 0.43 ms today, §7.45.1 states all three |
 | CS04 | With the mediator gone, the sandbox reaches nothing | §5.11 | FI | |
-| CS05 | Each run record carries the full identity, provenance and **resolved dependency versions** | §5.12 | read the run records; code read | **F08** |
+| CS05 | Each run record carries the full identity, provenance and **resolved dependency versions** | §5.12 | read the run records; code read | **F08 — Verified 2026-10-06** after the fix: nordpool's run records list 114 resolved versions |
 | CS06 | Modifying, deleting or reordering any record breaks every link after it | §5.12 | `selftest_audit` (strong form); X8 | |
 | CS07 | The log is unreachable from the sandbox: outside its mount namespace, and no verb writes to it | §5.12 | independent attacks | |
 | CS08 | The MAC key is generated at start and held only in the mediator's memory | §5.12, §6.8 | code read; scan disk and logs for the key | |

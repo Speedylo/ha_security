@@ -5454,6 +5454,30 @@ explained why in plain words, with one button that grants nothing new. Pressing 
 integration. And when the house's Home Assistant was restarted from its own settings, the
 integration was running again five seconds later, with nothing typed.
 
+
+### 7.45.8 Two decisions after the campaign's phases
+
+Two findings needed a decision rather than a check, and Younes took both on 2026-10-06
+(`notes/f08_t06_prediction.md`).
+
+**T06 is restated as demonstrated and paired (F38).** Its row had called it partial because the
+subscription half was a refusal with no stream behind it. §7.36 built the stream and showed 0 of 3
+undeclared changes delivered confined, against 4 of 4 unconfined, with a mutant showing the zero
+is the filter's. The verdict had not followed. The register is now nineteen threats: sixteen
+demonstrated, six of them paired, one partial (T16), two retained.
+
+**The identity now carries what the dependencies resolved to (F08).** §5.12.1 defines the third
+part of an integration's identity as its requirements "with resolved versions", because a new
+release of a dependency is where a supply-chain change lands. Only the declaration was hashed, so a
+dependency moving between two runs left the identity unchanged. The harnesses do install each
+integration's requirements before its sandbox registers, so the fix reads what was installed. A run
+record now lists every `name==version`. One dependency moving changes the `requirements` component
+alone, and the T12 approvals recorded before the fix stay comparable, because an identity computed
+with no install directory is byte for byte the old one. Each of these was a test that failed first.
+The regression on the tag `verify-2026-10-f08` passed: both suite runs in full, `nordpool` end to end
+with 114 resolved versions in each run record, and the supervisor's path, whose run records list
+none because it installs nothing (`experiments/verify/results/phase4/regress_f08/`).
+
 ---
 
 *§7.1–§7.11 written 2026-09-02, before any measurement specified here had been run. Criteria in

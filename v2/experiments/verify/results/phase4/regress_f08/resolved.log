@@ -1,0 +1,4 @@
+nordpool arm confined_declared: ok   114 resolved, e.g. ['PyJWT==2.15.1', 'PyNaCl==1.6.2', 'PyRIC==0.1.6.3']
+nordpool arm confined_undeclared: ok   114 resolved, e.g. ['PyJWT==2.15.1', 'PyNaCl==1.6.2', 'PyRIC==0.1.6.3']
+supervisor run: ok   resolved=[]
+supervisor run: ok   resolved=[]

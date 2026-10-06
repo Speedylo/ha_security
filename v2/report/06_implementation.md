@@ -998,6 +998,13 @@ and the manifest identical. **That install step is not built**, so the component
 vestigial, and the self-test asserts the dependent behaviour rather than the promised one so that
 the gap cannot be mistaken for the feature.
 
+> **Built 2026-10-06 (verification finding F08, §7.45.8).** The install step was built later, for
+> §6.11's compatibility runs: each integration's requirements are installed into a directory of its
+> own, before its sandbox registers. The identity did not use it until this date, under a comment
+> still saying installation was not built. The third component now hashes the declaration and the
+> resolved `name==version` of every distribution in that directory, and lists them in the run
+> record. A dependency that moves under an unchanged declaration now moves `requirements` alone.
+
 ### 6.8.2 Two chains, failing independently
 
 §5.12.4 describes an escalation: the chain is evident against tampering, and "a keyed MAC over
@@ -1387,7 +1394,7 @@ The bridge of §6.10 removed the largest gap. Six remain, in descending order of
 | **The egress proxy** | Scope item 2's second half, and F2 |
 | **The push loop** | §5.11.3's push shape. Declared entities are mirrored once at construction, so an integration sees the value that existed when its sandbox was built. *Built 2026-10-04, §7.36* |
 | **The real Home Assistant component** | Step 5 currently acts on a stand-in. §6.10.2 records what a real instance would add, and why it is more than realism. *Built 2026-10-04, §7.37, for publishing, push and service calls; commands into a sandbox remain* |
-| **Dependency installation** | §6.8.1's third identity component, which stays vestigial until resolved versions exist |
+| **Dependency installation** | §6.8.1's third identity component, which stays vestigial until resolved versions exist *Built 2026-10-06: resolved versions enter the identity (§6.8.1's pointer, F08)* |
 
 So the honest summary of where Chapter 6 leaves the work has moved, and it is worth stating
 precisely because it moved:

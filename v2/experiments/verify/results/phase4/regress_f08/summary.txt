@@ -1,0 +1,6 @@
+suites_1 exit=0 seconds=68
+suites_2 exit=0 seconds=67
+egress_nordpool exit=0 seconds=100
+drive_demo exit=0 seconds=1
+resolved exit=0 seconds=0
+ALLDONE
