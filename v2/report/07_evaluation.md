@@ -316,7 +316,7 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **S8** | The 2021 file-theft pattern **succeeds against an unconfined baseline installation** and is blocked under the framework, on the same host and release | Security — **requires the baseline arm** | ✅ **Met, paired** — §7.13.2 — the 2021 file-theft pattern recovers **2 of 2** canaries unconfined and **0 of 2** confined on the same host and release; `open("../../secrets.yaml")` raises `FileNotFoundError`, not `PermissionError` |
 | **S9** | An integration deliberately exhausting CPU, memory and disk in turn does not render the gateway unresponsive, demonstrated unprivileged, with the boot-time precondition stated | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met, against narrowed wording — §7.22.** All four bounds now come from the manifest and each is verified by a sandbox exceeding it: memory OOM-killed, forks refused at the cap, a 25% CPU cap holding at 25.1%, `ENOSPC` at `disk_mb`. **Disk means space, not I/O bandwidth** — the `io` controller is not delegated to a user manager (§7.22.2), so S9's text is narrowed on evidence and the residual is stated |
 | **N1** | Added latency, per-integration memory and maximum concurrent integrations are all reported against an unconfined baseline on the target hardware. **No threshold** — §3.6 fixed this position in advance | Performance | ✅ **Met as specified** — §7.19–§7.20 — latency to 26 sandboxes, per-sandbox memory and maximum concurrency all reported against an unconfined baseline on the C4 device. **No threshold, by §3.6’s position fixed in advance**; the figures are reported and discussed, and P4 was falsified doing it |
-| **N2** | This chapter reports "imports clean" and "executed end-to-end" as two separate numbers, never conflated, with the first labelled an upper bound wherever it appears | **This chapter** | ✅ **Met by reporting** — §7.12 (imports-clean, 77 integrations) and §7.17 (**executed end-to-end, a named set of five**) are reported separately and never conflated; §7.17.1 states the ceiling of 11 of 37 rather than computing a rate. §7.27, §7.31 and §7.34 add five more by name, and §7.31.6 re-runs the five on a corrected instance |
+| **N2** | This chapter reports "imports clean" and "executed end-to-end" as two separate numbers, never conflated, with the first labelled an upper bound wherever it appears | **This chapter** | ✅ **Met by reporting** — §7.12 (imports-clean, 75 integrations, 77 measurements) and §7.17 (**executed end-to-end, a named set of five**) are reported separately and never conflated; §7.17.1 states the ceiling of 11 of 37 rather than computing a rate. §7.27, §7.31 and §7.34 add five more by name, and §7.31.6 re-runs the five on a corrected instance |
 | **N3** | Behaviour on mediator unavailability is specified in advance and tested; the framework refuses rather than degrades silently, including the wrong-cgroup-position case | Security | ✅ **Met** — §7.16.2 — carried by `preflight` rather than a self-test: the framework refuses to start when the memory controller is absent (§5.7.4) or the supervisor is in the wrong cgroup position (§6.4.1). Both are stated failure modes |
 
 > **The Verdict column was added by Stage 5's read-through, 2026-09-04, and the criteria were
@@ -4483,6 +4483,11 @@ the loop that waited for it. It is timestamped where the change arrives at the m
 | Durable log | 34 decisions, chain verifies, reconciles with memory |
 | Regression | all 24 suites pass on the Pi |
 
+> **Corrected by §7.45.4 (2026-10-06).** *Worst 1.57 ms* has no committed source. The run whose
+> 0.71 ms median this row quotes had a worst case of **2.23 ms**, and across the 15 committed runs of
+> the same check the worst is 1.49–2.91 ms. The median stands. A change reaches the mediator in under
+> a millisecond typically, and within about 3 ms in every run on file.
+
 **What this changes in the report's claims.** §8.6.3's limitation 2 was that what crossed the
 boundary was real but what a live instance did with it was untested. For a sensor-publishing
 integration it is now tested: its entities are first-class in the house's Home Assistant, survive a
@@ -5191,8 +5196,8 @@ reach them.
 
 A new section of `selftest_audit` drives every one of those paths through a real mediator with a
 durable log and reads back what each wrote. Against the old code, with the check removed, it fails
-seven of seven. The fix was tagged `verify-2026-10-f03` and cloned fresh onto the Pi. There all 26
-suites pass, every log matches the frozen tag's apart from the new section, and `nordpool` passes
+seven of seven. The fix was tagged `verify-2026-10-f03` and cloned fresh onto the Pi. There all 25
+suites and the base self-test pass, every log matches the frozen tag's apart from the new section, and `nordpool` passes
 end to end (`experiments/verify/results/phase4/regress_f03/`).
 
 **What this adds to §8.4.2.** This one was found by reading, not by running. A requirement asked
@@ -5205,7 +5210,8 @@ what checks it. The answer for this half of F3 was nothing.
 
 A suite that passes shows that the code does what the suite checks. It does not show that the suite
 checks the thing the report claims. So each security-relevant check in the framework was removed or
-inverted in turn, one mutant per enforcement point, and all 26 suites were run against each. If every
+inverted in turn, one mutant per enforcement point, and all 25 suites and the base self-test were run
+against each. If every
 suite still passes with a check removed, that check has no test behind it. There were eighteen mutants,
 covering default deny, identity from the socket, the egress port, the public and home-network address
 tests, the re-check after resolution, record-before-act, both audit chains, the manifest re-read, the
@@ -5222,11 +5228,52 @@ answer is accepted only from that sandbox's channel. Weakening that to "from any
 suite. The one test of the path sent an answer naming a command that was never sent, which is refused
 either way. Under the mutant, a sandbox could answer another sandbox's command, and the house would
 take it as the result. The code was right throughout; nothing showed it. `selftest_audit` now sends a
-real command's answer from a second sandbox's channel. That test fails against the mutant, and all 26
-suites pass without it.
+real command's answer from a second sandbox's channel. That test fails against the mutant, and every
+suite passes without it.
 
 Eleven of the eighteen were killed by exactly one check. Every claim has a test, but most have only
 one.
+
+
+### 7.45.4 Every headline number, recomputed from its records
+
+A figure can be right when it is written, then be copied, rounded or restated, and drift away from
+the data behind it. Re-reading the sentence does not catch that, because the sentence is the thing
+that drifted. So `verify/recompute.py` derives each headline twice and compares the two. It
+recomputes the figure from the result files the report cites, and it reads the figure back out of
+every place the report states it. That covers the abstract, the tables of §8.2, and a headline from
+each of nine Chapter 7 sections: 39 claims, 63 stated copies
+(`experiments/verify/results/phase4/recompute/`). As a control, six figures were changed in a copy of
+the report, and all six were reported.
+
+**Thirty-seven of the thirty-nine agree with their data in every copy.** The two that do not, and
+four smaller things found while writing the checks, were corrected on 2026-10-06:
+
+- **The push path's worst case.** §7.37 gives it as 1.57 ms, and no committed log contains that
+  figure. The run its 0.71 ms median comes from had a worst case of 2.23 ms, and across the 15
+  committed runs of the same check the worst is 1.49–2.91 ms. §7.37 carries a dated correction. The
+  abstract's *"within a millisecond"* now says *"at the median"*, which is all the data supports.
+- **The number of integrations executed end to end.** The abstract said ten. §7.40–§7.42 had added
+  three more, so the named set is thirteen, and all thirteen load confined. Chapter 8's statement of
+  the claim had the older count still, five, and is corrected in place.
+- **Seventy-seven integrations are seventy-five.** The two corpora share `bermuda` and `browser_mod`,
+  as §7.23 says, so 77 is a count of measurements. The abstract, §7.5's N2 row and Chapter 8 now say
+  75 integrations, 77 measurements. The dated blocks that say 77 are left as written.
+- **The suite count.** The front matter defines a suite as a `selftest_*.py` file, with the base
+  `selftest.py` counted apart. Chapter 7's *eighteen* and *twenty* follow that rule, and the abstract's
+  *twenty-six* did not. The abstract now says twenty-five suites and the base self-test. So do §7.45's
+  own sections, and the front matter's artifact table, which still said twenty.
+- **A drift introduced by this campaign.** §7.45.1's correction made §8.2.3's capacity 269 decisions
+  a second in one row, and left 272 two rows below. The checker found it.
+- **A figure with no committed method.** *"26 of 37 need a credential"* came from a survey that was
+  never committed. Scanning every file in each integration for the credential and host fields
+  reproduces it exactly. Scanning `config_flow.py` alone, as the experiment's README described the
+  method, gives 19. The figure stands, and the README now says how it is obtained.
+
+The first of these is the one that matters. A figure in the evaluation, quoted beside a median, had
+no record behind it, and it made a claim in the abstract look stronger than the data. Every earlier
+check in this report compared measurements with measurements, or prose with prose. This one compared
+the prose with the records, and that is the comparison that found it.
 
 ---
 

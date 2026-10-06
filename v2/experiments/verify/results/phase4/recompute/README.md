@@ -35,3 +35,7 @@ control planted three others (3.67 ms, §8.2.1's 0 of 20, 92%), and all were cau
 are not checked against today's data. Verdict-type claims (an integration loads, a request is refused)
 were judged by Phase 2's L3 comparison and Phase 3a. Figures stated only in experiment READMEs are not
 read back, except where a finding names one.
+
+**After the corrections (`recompute_after_corrections.txt`): 39 of 39 EQUAL.** F01, F02, F23, F24,
+F25 and F27 corrected on 2026-10-06 and recorded in §7.45.4. Where a figure was corrected by a dated
+pointer, the claim reads the pointer, because the original line is kept as written.

@@ -1,0 +1,649 @@
+[
+ {
+  "id": "A1.01",
+  "what": "active installations (Home Assistant analytics)",
+  "recomputed": "669,743",
+  "detail": "",
+  "stated": [
+   [
+    "abstract",
+    "669,743"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.11a",
+  "what": "distinct integrations measured across the two corpora (37 + 40, two shared)",
+  "recomputed": "75",
+  "detail": "77 measurements; shared ['bermuda', 'browser_mod']",
+  "stated": [
+   [
+    "abstract",
+    "75"
+   ],
+   [
+    "08_conclusions.md",
+    "75"
+   ],
+   [
+    "08_conclusions.md",
+    "75"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.11b",
+  "what": "share of members the two corpora have in common",
+  "recomputed": "5%",
+  "detail": "2 of 40",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "5%"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.12",
+  "what": "clean in both arms: head corpus, then uniform",
+  "recomputed": "84% and 92%",
+  "detail": "head 31/37 baseline, 31/37 confined; uniform 37/40, 37/40",
+  "stated": [
+   [
+    "abstract",
+    "84% and 92%"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.12b",
+  "what": "integrations failing confined but not unconfined, both corpora",
+  "recomputed": "none",
+  "detail": "set differences [0, 0]",
+  "stated": [
+   [
+    "abstract",
+    "none"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.13",
+  "what": "integrations executed end to end (a named set)",
+  "recomputed": "Thirteen",
+  "detail": "13: \u00a77.17 5; \u00a77.27 1; \u00a77.31 3; \u00a77.34 1; \u00a77.40 1; \u00a77.41 1; \u00a77.42 1",
+  "stated": [
+   [
+    "abstract",
+    "Thirteen"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.13b",
+  "what": "head-corpus integrations whose configuration asks for a credential",
+  "recomputed": "26 of 37",
+  "detail": "whole-directory scan for credential fields; the survey script itself was never committed",
+  "stated": [
+   [
+    "abstract",
+    "26 of 37"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.18",
+  "what": "mediation latency, one client, median of the three verification passes",
+  "recomputed": "43.2 \u00b5s",
+  "detail": "[43.2, 43.4, 42.0] \u00b5s \u2192 median 43.2",
+  "stated": [
+   [
+    "abstract",
+    "43 \u00b5s"
+   ],
+   [
+    "08_conclusions.md",
+    "43.2 \u00b5s"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.19",
+  "what": "durable record per decision, with fsync, median",
+  "recomputed": "3.67 ms",
+  "detail": "3670.7 \u00b5s",
+  "stated": [
+   [
+    "abstract",
+    "3.67 ms"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.20",
+  "what": "headroom over realistic demand, the request and the durable record both counted",
+  "recomputed": "62\u00d7",
+  "detail": "269/s \u00f7 4.33/s = 62.1",
+  "stated": [
+   [
+    "abstract",
+    "62\u00d7"
+   ],
+   [
+    "08_conclusions.md",
+    "62\u00d7"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.21",
+  "what": "thermal_comfort's entities in (A): registry rows, before and after a restart",
+  "recomputed": "15 of 15",
+  "detail": "rows after restart 15, states identical 15, entities 15",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "15 of 15"
+   ],
+   [
+    "07_evaluation.md",
+    "15 of 15"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.22",
+  "what": "change in (A) to the mediator's push: the worst of 30, in the run behind the median",
+  "recomputed": "2.23 ms",
+  "detail": "real_platform/results/w1_step2_20261004/suites/selftest_real_platform.log; worst across all 15 committed runs 1.49\u20132.91 ms",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "2.23 ms"
+   ],
+   [
+    "07_evaluation.md",
+    "2.23 ms"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.23",
+  "what": "a user's command to the integration's own code",
+  "recomputed": "16 ms",
+  "detail": "0.016082035999716027 s",
+  "stated": [
+   [
+    "abstract",
+    "16 ms"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.24",
+  "what": "refusals before the cut-off, and its time on disk",
+  "recomputed": "100",
+  "detail": "100 refusals, cut-off after 0.812 s",
+  "stated": [
+   [
+    "abstract",
+    "100"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.25",
+  "what": "self-test suites",
+  "recomputed": "Twenty-five",
+  "detail": "25 `selftest_*.py`, the front matter's definition of a suite, and the base `selftest.py` apart",
+  "stated": [
+   [
+    "abstract",
+    "Twenty-five"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.29",
+  "what": "suites that existed when \u00a77.27 found the Zeroconf failure",
+  "recomputed": "eighteen",
+  "detail": "18 `selftest_*.py` at 4f779ca, the commit that wrote \u00a77.27 (19 with the base `selftest.py`)",
+  "stated": [
+   [
+    "abstract",
+    "eighteen"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.30",
+  "what": "suites that existed when \u00a77.31 found three further defects",
+  "recomputed": "twenty",
+  "detail": "20 `selftest_*.py` at 7b8f4d2, the commit that wrote \u00a77.31 (21 with the base `selftest.py`)",
+  "stated": [
+   [
+    "abstract",
+    "twenty"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "A1.29b",
+  "what": "share of the head corpus that the egress design serves (cloud iot_class)",
+  "recomputed": "41%",
+  "detail": "15 of 37: {'local_push': 12, 'cloud_polling': 13, 'calculated': 6, 'local_polling': 3, None: 1, 'cloud_push': 2}",
+  "stated": [
+   [
+    "abstract",
+    "41%"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "8.2.1a",
+  "what": "garbage-collector technique: ways the token was reached unconfined",
+  "recomputed": "7",
+  "detail": "",
+  "stated": [
+   [
+    "08_conclusions.md",
+    "7"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "8.2.1b",
+  "what": "garbage-collector technique: objects the confined walk saw, all its own",
+  "recomputed": "8,942",
+  "detail": "hits 0, mediator holds it True",
+  "stated": [
+   [
+    "08_conclusions.md",
+    "8,942"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "8.2.1c",
+  "what": "2021 file-theft canaries recovered, unconfined then confined",
+  "recomputed": "2 of 2 | 0 of 2",
+  "detail": "['CANARY-SECRETS', 'CANARY-TOKEN']; confined []",
+  "stated": [
+   [
+    "08_conclusions.md",
+    "2 of 2"
+   ],
+   [
+    "08_conclusions.md",
+    "0 of 2"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "8.2.1d",
+  "what": "file-theft attempts that worked unconfined",
+  "recomputed": "five",
+  "detail": "5 LEAKED lines before the process probes",
+  "stated": [
+   [
+    "08_conclusions.md",
+    "five"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "8.2.1e",
+  "what": "undeclared entity states readable: all, then presence; unconfined then confined",
+  "recomputed": "36 of 36 | 20 of 20 | 1 of 36 | 0 of 20",
+  "detail": "sensitive marked in confine/home.py: 20",
+  "stated": [
+   [
+    "08_conclusions.md",
+    "36 of 36"
+   ],
+   [
+    "08_conclusions.md",
+    "20 of 20"
+   ],
+   [
+    "08_conclusions.md",
+    "1 of 36"
+   ],
+   [
+    "08_conclusions.md",
+    "0 of 20"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "8.2.2",
+  "what": "import-level compatibility, both arms, both corpora (the \u00a78.2.2 table)",
+  "recomputed": "84% | 84% | 92% | 92%",
+  "detail": "head confined, head baseline, uniform confined, uniform baseline",
+  "stated": [
+   [
+    "08_conclusions.md",
+    "84%"
+   ],
+   [
+    "08_conclusions.md",
+    "84%"
+   ],
+   [
+    "08_conclusions.md",
+    "92%"
+   ],
+   [
+    "08_conclusions.md",
+    "92%"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "8.2.3a",
+  "what": "mean community integrations per HACS-running installation",
+  "recomputed": "4.02",
+  "detail": "",
+  "stated": [
+   [
+    "08_conclusions.md",
+    "4.02"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "8.2.3b",
+  "what": "mediator capacity with the durable record and the request counted",
+  "recomputed": "269",
+  "detail": "\u00a77.45.1's arithmetic",
+  "stated": [
+   [
+    "08_conclusions.md",
+    "269"
+   ],
+   [
+    "08_conclusions.md",
+    "269"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "8.2.3c",
+  "what": "durable record against the non-durable write",
+  "recomputed": "59\u00d7",
+  "detail": "59.4",
+  "stated": [
+   [
+    "08_conclusions.md",
+    "59\u00d7"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "8.2.3d",
+  "what": "mediator cost per delivered push (\u00a77.36's suite log)",
+  "recomputed": "10.9 \u00b5s",
+  "detail": "re-measured in the verification passes: [11.5, 11.5, 11.5] \u00b5s",
+  "stated": [
+   [
+    "08_conclusions.md",
+    "10.9 \u00b5s"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.13",
+  "what": "adversary outcome counts, unconfined then confined",
+  "recomputed": "BLOCKED 14 \u00b7 EMPTY 4 \u00b7 LEAKED 11 \u00b7 NOT RUN 2 \u00b7 UNMEDIATED 1 | BLOCKED 21 \u00b7 DENY 6 \u00b7 EMPTY 10 \u00b7 PERMIT 1",
+  "detail": "from each log's summary line; compared as sets of counts, the table orders them differently",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "BLOCKED 14 \u00b7 EMPTY 4 \u00b7 **LEAKED 11** \u00b7 NOT RUN 2 \u00b7 UNMEDIATED 1"
+   ],
+   [
+    "07_evaluation.md",
+    "BLOCKED 21 \u00b7 EMPTY 10 \u00b7 DENY 6 \u00b7 PERMIT 1"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.13b",
+  "what": "attacks that returned data, unconfined then confined",
+  "recomputed": "11 | 0",
+  "detail": "",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "11"
+   ],
+   [
+    "07_evaluation.md",
+    "0"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.29",
+  "what": "C1: trees hashed before and after, and with changed source, per arm",
+  "recomputed": "37 | 38 | Seventy-five",
+  "detail": "changed source and diff lines in all: 0",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "37"
+   ],
+   [
+    "07_evaluation.md",
+    "38"
+   ],
+   [
+    "07_evaluation.md",
+    "Seventy-five"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.33",
+  "what": "uniform corpus: share of integrations using services, config, bus",
+  "recomputed": "37.5% | 37.5% | 17.5%",
+  "detail": "n = 40",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "37.5%"
+   ],
+   [
+    "07_evaluation.md",
+    "37.5%"
+   ],
+   [
+    "07_evaluation.md",
+    "17.5%"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.33b",
+  "what": "head corpus (144): share using services, config, bus",
+  "recomputed": "64.6% | 61.8% | 48.6%",
+  "detail": "n = 144; recomputed from the committed per-integration results, the source sample itself is not kept (F16)",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "64.6%"
+   ],
+   [
+    "07_evaluation.md",
+    "61.8%"
+   ],
+   [
+    "07_evaluation.md",
+    "48.6%"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.39",
+  "what": "powercalc: time to report, as installed, compiled at install, empty cache",
+  "recomputed": "2.47 s | 1.87 s | 7.05 s",
+  "detail": "default: deps 0/84, component 0/80; compiled: deps 84/84, component 80/80; cold: deps 0/84, component 0/80",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "2.47 s"
+   ],
+   [
+    "07_evaluation.md",
+    "1.87 s"
+   ],
+   [
+    "07_evaluation.md",
+    "7.05 s"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.44",
+  "what": "the flood on disk: cut-off time, refusals, neighbour's answers and slowest, Repairs",
+  "recomputed": "0.81 s | 100 | 235 | 26.1 ms | 302 ms",
+  "detail": "selftest_flood_disk.log (on disk) and selftest_real_platform.log, 2026-10-05",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "0.81 s"
+   ],
+   [
+    "07_evaluation.md",
+    "100"
+   ],
+   [
+    "07_evaluation.md",
+    "235"
+   ],
+   [
+    "07_evaluation.md",
+    "26.1 ms"
+   ],
+   [
+    "07_evaluation.md",
+    "302 ms"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.22",
+  "what": "S9's CPU cap: share consumed, the run the report quotes, and the spread of every committed run",
+  "recomputed": "25.1%",
+  "detail": "15 committed runs, 24.9\u201325.7%, all within \u00b12 points of the cap: True",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "25.1%"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.31.11",
+  "what": "aiodns share of resolutions on a /16, and its counts",
+  "recomputed": "17% | 25 against 121",
+  "detail": "12 integrations; the same counting as \u00a77.24.2's 3,073 against 120",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "17%"
+   ],
+   [
+    "07_evaluation.md",
+    "25 against 121"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.14",
+  "what": "entity visibility in \u00a77.14's own table and \u00a77.26.3's T06 row, against the same data",
+  "recomputed": "36 / 36 | 1 / 36 | 20 / 20 | 0 / 20 | 36/36 \u2192 1/36 | 20/20 \u2192 0/20",
+  "detail": "",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "36 / 36"
+   ],
+   [
+    "07_evaluation.md",
+    "1 / 36"
+   ],
+   [
+    "07_evaluation.md",
+    "20 / 20"
+   ],
+   [
+    "07_evaluation.md",
+    "0 / 20"
+   ],
+   [
+    "07_evaluation.md",
+    "36/36 \u2192 1/36"
+   ],
+   [
+    "07_evaluation.md",
+    "20/20 \u2192 0/20"
+   ],
+   [
+    "07_evaluation.md",
+    "20/20 \u2192 0/20"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.36",
+  "what": "undeclared changes delivered to the confined subscriber, and with the filter bypassed",
+  "recomputed": "0 of 3",
+  "detail": "with the subscription table bypassed: 3 of 3 seen (the suite's own control)",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "0 of 3"
+   ]
+  ],
+  "status": "EQUAL"
+ }
+]

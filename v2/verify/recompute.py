@@ -122,21 +122,21 @@ def _():
     return f"{j('figures/ecosystem_scale.json')['active_installations']:,}"
 
 
-@claim("A1.11a", "integrations measured across the two corpora (37 + 40)",
+@claim("A1.11a", "distinct integrations measured across the two corpora (37 + 40, two shared)",
        [("abstract", r"Across (\d+) community integrations on two corpora"),
-        ("08_conclusions.md", r"across (\d+) integrations on two corpora")])
+        ("08_conclusions.md", r"across (\d+) integrations on two corpora"),
+        ("08_conclusions.md", r"measured at import for (\d+) integrations")])
 def _():
     head = {r["domain"] for r in j("experiments/compat/results/hacs_corpus_manifest.json")["repositories"]
             if r.get("ok") and r.get("on_disk", True)}
     uni = {r["domain"] for r in j("experiments/compat/results/hacs_corpus_manifest_uniform.json")["repositories"]
            if r.get("ok")}
     shared = sorted(head & uni)
-    return str(len(head) + len(uni)), f"{len(head | uni)} distinct; shared {shared}"
+    return str(len(head | uni)), f"{len(head) + len(uni)} measurements; shared {shared}"
 
 
 @claim("A1.11b", "share of members the two corpora have in common",
-       [("abstract", r"two corpora sharing (\d+%) of their"),
-        ("07_evaluation.md", r"The corpora share (\d+%) of")])
+       [("07_evaluation.md", r"The corpora share (\d+%) of")])
 def _():
     head = {r["domain"] for r in j("experiments/compat/results/hacs_corpus_manifest.json")["repositories"]
             if r.get("ok") and r.get("on_disk", True)}
@@ -236,8 +236,8 @@ def _():
 
 
 @claim("A1.22", "change in (A) to the mediator's push: the worst of 30, in the run behind the median",
-       [("07_evaluation.md", r"median \*\*0\.71 ms\*\*, worst ([\d.]+ ms)"),
-        ("07_evaluation.md", r"Median 0\.71 ms, worst ([\d.]+ ms)")])
+       [("07_evaluation.md", r"0\.71 ms median this row quotes had a worst case of \*\*([\d.]+ ms)\*\*"),
+        ("07_evaluation.md", r"The run its 0\.71 ms median comes from had a worst case of ([\d.]+ ms)")])
 def _():
     worst = []
     for log in sorted(EXP.glob("real_platform/results/**/*real_platform*.log")) + \
@@ -269,11 +269,11 @@ def _():
 
 
 @claim("A1.25", "self-test suites",
-       [("abstract", r"([\w-]+) self-test suites pass")])
+       [("abstract", r"([\w-]+) self-test suites and\s+the base self-test pass")])
 def _():
-    n = len(list((V2 / "framework/confine").glob("selftest*.py")))
-    return {26: "Twenty-six"}.get(n, str(n)), (f"{n} counting the base `selftest.py`; "
-                                               f"{n - 1} counting `selftest_*.py` only")
+    n = len(list((V2 / "framework/confine").glob("selftest_*.py")))
+    return {25: "Twenty-five"}.get(n, str(n)), (f"{n} `selftest_*.py`, the front matter's definition of "
+                                                f"a suite, and the base `selftest.py` apart")
 
 
 def suites_at(rev: str) -> int:

@@ -11,6 +11,12 @@ never conflated. §7.12 gave the first number over 37 integrations. This gives t
 A config entry needs data only each integration's own flow can produce. Surveying all 37 by what
 `config_flow.py` asks for:
 
+*2026-10-06 (finding F27): the survey script was never committed, and the wording above is narrower
+than the method that reproduces the table. A scan of every `.py` file in each integration's directory
+for the credential and host fields (`verify/recompute.py`, claim A1.13b) reproduces 26 of 37 exactly,
+with the same 11 left over. A scan of `config_flow.py` alone finds 19, because many integrations
+define their configuration schema in another module.*
+
 | | |
 |---|---|
 | ask for an API key, token, password, username, host or email | **26 of 37** |

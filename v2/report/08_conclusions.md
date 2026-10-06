@@ -82,8 +82,8 @@ The opposite happened, twice, on two corpora sharing 5% of their members:
 | What do most *integrations* do? | Uniform draw, 40 | 92% | **92%** | **0** |
 
 Identical failure sets, identical error strings, in four of six cases byte for byte including the
-truncated exception text. **The import-level compatibility cost of confinement, across 77
-integrations on this release, is zero.** No integration passes unconfined and fails confined, and
+truncated exception text. **The import-level compatibility cost of confinement, across 75
+integrations (77 measurements; two are in both corpora) on this release, is zero.** No integration passes unconfined and fails confined, and
 the set difference is empty in both directions.
 
 **This is the contribution nobody else has data for (§2.8, contribution 3), and stating it
@@ -277,7 +277,7 @@ corpus — and §8.7 prices it as such.
 **Contribution 2 — a confinement architecture for an extension model that cannot be changed.**
 Delivered and evaluated. Eighteen self-test suites pass on the target hardware — nineteen from
 2026-09-06, when §7.29 added `selftest_integrity`, **twenty from 2026-10-01**, when §7.30 added
-`selftest_t12`, and **twenty-one from 2026-10-04**, when §7.36 added `selftest_push`, and **twenty-three** the same day, when §7.37 added `selftest_ws` and `selftest_real_platform`, and **twenty-four** when §7.40 added `selftest_local_tcp`; C2 holds because
+`selftest_t12`, and **twenty-one from 2026-10-04**, when §7.36 added `selftest_push`, and **twenty-three** the same day, when §7.37 added `selftest_ws` and `selftest_real_platform`, and **twenty-four** when §7.40 added `selftest_local_tcp`, and **twenty-five** on 2026-10-05, when §7.44 added `selftest_flood`; C2 holds because
 every arm runs against an unmodified official release. **C1 — the word the report's title rests
 on — is the one place this chapter has to correct itself**: §8.3 said until 2026-09-04 that
 *unmodified* was "counted rather than asserted" by a mechanical diff. **That diff does not exist**
@@ -296,7 +296,7 @@ present them as though they were.
 
 | | What exists | Compared against |
 |---|---|---|
-| Compatibility half | 77 integrations, two corpora, both arms, cost **0** | the closest evaluation covers **three** integrations, two of them purpose-built |
+| Compatibility half | 75 integrations (77 measurements), two corpora, both arms, cost **0** | the closest evaluation covers **three** integrations, two of them purpose-built |
 | Security half | per-threat over two registers, five threats paired against an unconfined arm | prior work asserts confinement is desirable, or that overprivilege is prevalent, without reporting either quantity |
 
 **The security half is a decomposition and not a rate, deliberately** (§7.4.2), so it does not
@@ -662,7 +662,7 @@ form, and a measurement behind it.
 **The claim held.** Unmodified, pre-existing integrations were confined; the published attack that
 forced the architecture was reproduced and defeated against a live credential; the 2021 file-theft
 pattern that this ecosystem actually suffered succeeds unconfined and recovers nothing confined;
-and the import-level compatibility cost across 77 integrations on two corpora, measured against an
+and the import-level compatibility cost across 75 integrations on two corpora, measured against an
 unconfined baseline both times, is zero. On the hardware the requirements name, the mediator is 62×
 clear of realistic demand with durability paid for on every decision.
 
@@ -675,8 +675,9 @@ price confined as unconfined. The fix is worth a paragraph; **the fact that noth
 project could have found it is worth the chapter.**
 
 **The claim is also smaller than it sounds, and the report says so in the same voice it says the
-rest.** Compatibility is measured at import for 77 integrations and end-to-end for five, because 26
-of 37 need a credential no measurement of any confinement scheme can produce. Two of eighteen
+rest.** Compatibility is measured at import for 75 integrations and end-to-end for thirteen *(five
+until §7.31, §7.34 and §7.40–§7.42 added eight; corrected 2026-10-06, §7.45.4)*, because 26
+of 37 need a credential no measurement of any confinement scheme can produce. Two of nineteen
 threats are partial, two are retained by decisions taken before the artifact existed, and one was
 never evaluated. Three of the closest published model's eleven threats have no counterpart in this
 register at all, where §4.14 accounted for one. What the design converts is invisible authority into declared, bounded and audited authority —

@@ -34,7 +34,7 @@ The token is written to `~/.config/capstone/house_a.token` (mode 600) and appear
 | Registry rows for the confined integration | 15 of 15, with config entry and device; a bare `/api/states` post gets none |
 | After restarting (A) | 15 of 15 rows, 15 of 15 states identical |
 | Dew point after a real `input_number.set_value` to 30 °C | 9.96 → 17.81 °C |
-| Change in (A) to the mediator's push | median 0.71 ms, worst 1.57 ms |
+| Change in (A) to the mediator's push | median 0.71 ms, worst **2.23 ms** *(written 1.57 ms until 2026-10-06; no committed log contains that figure, F23)* |
 | Friendly names in (A) equal to (B)'s | 15 of 15 |
 
 ## Step 2b — commands from (A) into a sandbox (`results/w1_step2b_20261004/`)
