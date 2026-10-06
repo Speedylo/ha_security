@@ -29,7 +29,17 @@ instance fixes **4 of the 16** — the rest fail because the components they dec
 themselves set up* in a stripped instance.
 
 Raw output: `results/pi5_compat.json`. Corpus: `results/hacs_corpus_manifest.json`, rebuildable
-with `figures/fetch_hacs_corpus.py`.
+with `figures/fetch_hacs_corpus.py`:
+
+```bash
+python3 figures/fetch_hacs_corpus.py --rebuild experiments/compat/results/hacs_corpus_manifest.json --out ~/r2exp/corpus
+python3 figures/fetch_hacs_corpus.py --rebuild experiments/compat/results/hacs_corpus_manifest_uniform.json --out ~/r2exp/corpus_uniform
+```
+
+*Until 2026-10-06 "rebuildable" was not true: the manifests named `HEAD`, not a commit (finding F21).
+The commits were recovered by an exact file-content match against the copies measured on the Pi,
+and both corpora rebuilt from them are identical to those copies
+(`../verify/results/phase4/pin_corpus/README.md`).*
 
 ## What a pass/fail number would have hidden
 
