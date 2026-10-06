@@ -379,6 +379,33 @@ def main() -> int:
               and stray.get("clause") == COMMAND_ANSWER and stray.get("ok") is False,
               f"relayed={relayed.get('clause')!r} stray={stray.get('clause')!r}", failures)
 
+        # A command's answer counts only from the channel the command was sent to (§7.38). The
+        # stray answer above names a command nobody sent, which a check on the id alone would
+        # also refuse; this one names a real command, from another sandbox's channel. Added
+        # 2026-10-06 because mutant M16 (accept an answer from any channel) survived every suite.
+        users.command({"command": 8, "integration": "demo", "entity_id": "switch.mine",
+                       "service": "turn_off"})
+        sent = peer.recv()
+        theirs_fd, theirs_sock = Channel.pair()
+        users.register("other", Channel(theirs_fd), component=component)
+        intruder = Channel(theirs_sock)
+        intruder.send({"id": 9, "op": "entity.command_result", "command": sent.get("command"),
+                       "ok": True})
+        users._handle_ready(theirs_fd.fileno())
+        forged = intruder.recv()
+        told = [r for r in house.results if r[0] == sent.get("command")]
+        peer.send({"id": 10, "op": "entity.command_result", "command": sent.get("command"),
+                   "ok": True})
+        users._handle_ready(mine.fileno())
+        genuine = peer.recv()
+        check("an answer from another sandbox's channel is refused, and the house is not told",
+              forged.get("ok") is False and not told,
+              f"forged ok={forged.get('ok')}, house told {told}", failures)
+        check("...and the command's own channel can still answer it",
+              genuine.get("ok") is True
+              and [r for r in house.results if r[0] == sent.get("command")] == [(8, True, None)],
+              f"genuine ok={genuine.get('ok')}", failures)
+
         every = [r for log in (unbound.log, users.log) for r in log.records()
                  if r.get("kind") == "decision"]
         check("no decision record on disk lacks a clause",

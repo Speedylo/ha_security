@@ -7,9 +7,9 @@
 # and a mutant that removes a stopping condition (M11's cut-off) can make a suite run until killed.
 SRC=${1:?pristine v2}; OUT=${2:?outdir}; P=~/r2exp/ha314/bin/python
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-WORK=~/r2exp/mutants/work
+WORK=${MUT_WORK:-~/r2exp/mutants/work}   # MUT_WORK and MUT_ONLY re-run a subset in a fresh place
 mkdir -p "$OUT" "$WORK"
-for patch in "$HERE"/M*.patch; do
+for patch in "$HERE"/${MUT_ONLY:-M*}.patch; do
   m=$(basename "$patch" .patch); dest="$WORK/$m"
   [ -e "$dest" ] && { echo "$m: $dest exists, skipped" >> "$OUT/run.txt"; continue; }
   mkdir -p "$dest" && cp -r "$SRC/framework" "$SRC/experiments" "$dest/"
