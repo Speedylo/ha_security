@@ -149,7 +149,8 @@ class Supervisor:
             "settle_seconds": self.hours * 3600, "flow_input": {}, "menu_choice": {}}))
         mediator_end, sandbox_end = Channel.pair()
         try:
-            self.mediator.register(self.domain, Channel(mediator_end), component=self.own)
+            self.mediator.register(self.domain, Channel(mediator_end), component=self.own,
+                                   installed=self.deps)
         except CutOff as err:
             say(f"not started: {err}")
             mediator_end.close()

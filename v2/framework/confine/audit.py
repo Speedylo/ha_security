@@ -34,6 +34,7 @@ is a real limitation and it is stated here rather than discovered later.
 from __future__ import annotations
 
 import hashlib
+import importlib.metadata
 import hmac
 import json
 import os
@@ -72,14 +73,23 @@ class Identity:
     manifest: str
     requirements: str
     composite: str
+    #: The distributions installed for this run, as sorted `name==version`, or None when no
+    #: install directory was given (an approval, made before anything is installed). An empty
+    #: list means an install directory was given and held nothing.
+    resolved: list[str] | None = None
 
     @classmethod
-    def compute(cls, component_dir: Path) -> Identity:
+    def compute(cls, component_dir: Path, installed: Path | None = None) -> Identity:
         """Hash what was loaded — which is not what will execute, and §5.12.1 says so.
 
         An integration that fetches or generates code at runtime defeats this. The limitation
         is inherited rather than introduced, and it bounds T12's treatment as well as the
         identity's meaning.
+
+        `installed` is the directory the integration's requirements were installed into for
+        this run. With it, the third component hashes the resolved versions as well as the
+        declaration (§5.12.1). Without it, the hash is exactly what it was before that was
+        added, so approvals recorded earlier stay comparable.
         """
         manifest_path = component_dir / "manifest.json"
         manifest_bytes = manifest_path.read_bytes() if manifest_path.is_file() else b""
@@ -98,20 +108,25 @@ class Identity:
 
         manifest = hashlib.sha256(manifest_bytes).hexdigest()
 
-        # Declared requirements. §5.12.1 asks for these *with resolved versions*; resolution
-        # happens when dependencies are installed into the sandbox, which is not built yet, so
-        # what is hashed here is the declaration. Recorded as a gap rather than glossed.
+        # Declared requirements, and with an install directory, what they resolved to. Until
+        # verification finding F08 (2026-10-06) only the declaration was hashed, under a comment
+        # saying installation was not built. It was: the harnesses install each integration's
+        # requirements before its sandbox registers. So a dependency that moved between two
+        # runs (F13) left the identity unchanged, which is the case §5.12.1 has this part for.
         try:
             declared = json.loads(manifest_bytes or b"{}").get("requirements", [])
         except ValueError:
             declared = []
-        requirements = hashlib.sha256(
-            _canonical({"requirements": sorted(declared)})).hexdigest()
+        resolved = None if installed is None else resolved_versions(installed)
+        payload: dict = {"requirements": sorted(declared)}
+        if resolved is not None:
+            payload["resolved"] = resolved
+        requirements = hashlib.sha256(_canonical(payload)).hexdigest()
 
         composite = hashlib.sha256(
             _canonical({"domain": component_dir.name, "source": source,
                         "manifest": manifest, "requirements": requirements})).hexdigest()
-        return cls(component_dir.name, source, manifest, requirements, composite)
+        return cls(component_dir.name, source, manifest, requirements, composite, resolved)
 
     def changes_from(self, other: Identity) -> list[str]:
         """Which of the three components moved. This is what three hashes buy."""
@@ -125,8 +140,25 @@ class Identity:
         return changed
 
     def as_record(self) -> dict:
-        return {"domain": self.domain, "source": self.source, "manifest": self.manifest,
-                "requirements": self.requirements, "composite": self.composite}
+        record = {"domain": self.domain, "source": self.source, "manifest": self.manifest,
+                  "requirements": self.requirements, "composite": self.composite}
+        if self.resolved is not None:
+            record["resolved"] = list(self.resolved)
+        return record
+
+
+def resolved_versions(installed: Path) -> list[str]:
+    """Every distribution in an install directory, as sorted `name==version`.
+
+    Read from each `*.dist-info`'s own metadata, the way the interpreter in the sandbox will
+    find them, rather than from the declaration that asked for them.
+    """
+    found = set()
+    for dist in importlib.metadata.distributions(path=[str(installed)]):
+        name = dist.metadata["Name"]
+        if name:
+            found.add(f"{name}=={dist.version}")
+    return sorted(found)
 
 
 @dataclass

@@ -96,7 +96,8 @@ def main() -> int:
         # requirements *inside* manifest.json, so a declared-dependency change necessarily
         # moves the manifest hash too. The third component only becomes independent once
         # resolved versions are recorded — which is exactly the supply-chain case §5.12.1
-        # cares about, and exactly what is not built yet.
+        # cares about. *(Built 2026-10-06, finding F08: the cases under "resolved versions"
+        # below, where a dependency moving changes `requirements` alone.)*
         check("...and, as declared, it is not independent of the manifest",
               changed_deps.changes_from(base) == ["manifest", "requirements"],
               str(changed_deps.changes_from(base)), failures)

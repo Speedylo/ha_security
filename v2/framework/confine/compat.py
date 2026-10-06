@@ -296,7 +296,7 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
         manifest = Manifest.load(own, root)
         mediator.policy = acting_policy({domain: manifest}, Platform())
         mediator_end, sandbox_end = Channel.pair()
-        mediator.register(domain, Channel(mediator_end), component=own)
+        mediator.register(domain, Channel(mediator_end), component=own, installed=deps_dir)
 
         spec_file = root / "sandbox-spec.json"
         components = list(setup_components or [])

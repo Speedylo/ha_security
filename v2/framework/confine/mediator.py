@@ -305,7 +305,8 @@ class Mediator:
                 lambda identity: self.reinstate(identity, "a user, from the Repairs panel"))
 
     def register(self, identity: str, channel: Channel, run_id: str = "", *,
-                 component: Path | None = None, provenance: str = "author-declared") -> None:
+                 component: Path | None = None, provenance: str = "author-declared",
+                 installed: Path | None = None) -> None:
         """Bind one socket to one integration. The only place identity is ever established.
 
         **With a durable log attached, this is also where the run record is written** (T4).
@@ -334,7 +335,10 @@ class Mediator:
             if component is None:
                 raise ValueError(f"{identity}: a mediator with a durable log must be told which "
                                  f"component it is running, so the run can be recorded")
-            run_id = self.log.run(Identity.compute(Path(component)), provenance, identity)
+            # `installed`, where the harness put the integration's requirements, makes the run
+            # record carry the versions that were resolved (§5.12.1, finding F08).
+            run_id = self.log.run(Identity.compute(Path(component), installed=installed),
+                                  provenance, identity)
         fd = channel.fileno()
         self._by_fd[fd] = (identity, channel)
         self._runs[identity] = run_id

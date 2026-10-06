@@ -241,7 +241,7 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
         else:
             platform.listeners.append(mediator.push)
         mediator_end, sandbox_end = Channel.pair()
-        mediator.register(domain, Channel(mediator_end), component=own)
+        mediator.register(domain, Channel(mediator_end), component=own, installed=deps)
 
         declared_entities = list(
             (subject["permissions"].get("entities") or {}).get("read") or [])

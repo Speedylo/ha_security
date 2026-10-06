@@ -258,7 +258,7 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
         mediator.policy = acting_policy({domain: manifest}, platform,
                                         broker=broker, relay=relay)
         mediator_end, sandbox_end = Channel.pair()
-        mediator.register(domain, Channel(mediator_end), component=own)
+        mediator.register(domain, Channel(mediator_end), component=own, installed=deps)
 
         spec_file = root / "spec.json"
         spec_file.write_text(json.dumps({
