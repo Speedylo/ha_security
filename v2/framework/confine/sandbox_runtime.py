@@ -511,6 +511,15 @@ def bytecode_report() -> dict:
     return {"groups": groups, "seconds_since_start": round(time.time() - PROCESS_START, 2)}
 
 
+#: Set when the mediator's end of the channel has closed. A sandbox without its mediator can reach
+#: nothing, but until 2026-10-06 it went on running anyway, and a supervisor killed with SIGKILL
+#: left it behind as an orphan beside its own replacement (verification 4.5, finding F30). The
+#: run now ends: the settle period stops, the report is written, and the process exits. A
+#: starting supervisor also clears what an earlier one left (`supervise.py`), because this flag is
+#: inside the sandbox and an integration could ignore it.
+MEDIATOR_GONE = threading.Event()
+
+
 def start_push_reader(channel: Channel) -> None:
     """Read pushes whenever the channel is readable and no request is in flight.
 
@@ -522,6 +531,9 @@ def start_push_reader(channel: Channel) -> None:
     def readable() -> None:
         if not channel.poll():
             loop.remove_reader(channel.sock.fileno())
+            MEDIATOR_GONE.set()
+            print("the mediator has closed the channel; this sandbox stops", file=sys.stderr,
+                  flush=True)
     loop.add_reader(channel.sock.fileno(), readable)
 
 
@@ -1016,7 +1028,7 @@ async def run() -> dict:
         settle = float(spec.get("settle_seconds", 0))
         if settle:
             deadline = asyncio.get_running_loop().time() + settle
-            while asyncio.get_running_loop().time() < deadline:
+            while asyncio.get_running_loop().time() < deadline and not MEDIATOR_GONE.is_set():
                 await asyncio.sleep(1.0)
                 try:
                     await asyncio.wait_for(hass.async_block_till_done(), timeout=5)
@@ -1044,6 +1056,10 @@ async def run() -> dict:
         # integration whose device thread keeps retrying can hold Home Assistant's shutdown for
         # minutes, past the harness's limit — the W2 (a) control arm lost its whole report so.
         print(json.dumps(result), flush=True)
+        if MEDIATOR_GONE.is_set():
+            # Nobody is left to report to, and an integration's own threads can hold Home
+            # Assistant's shutdown for minutes (above). The report is written; leave now.
+            os._exit(0)
         await hass.async_stop()
         return result
 

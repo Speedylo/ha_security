@@ -55,5 +55,5 @@ and the supervisor that keeps one integration running and restarts it in
    from zero.
 
 7. **Ctrl-C** the supervisor. The durable record of all of it is in
-   `~/r2exp/supervise-audit/decisions.jsonl`: the refusals, one `cutoff`, one `reinstate`, and a
+   `~/r2exp/supervise-audit/decisions.jsonl` (since 2026-10-06, one `decisions-<start>-<pid>.jsonl` per supervisor start, finding F31): the refusals, one `cutoff`, one `reinstate`, and a
    `run` record per start.

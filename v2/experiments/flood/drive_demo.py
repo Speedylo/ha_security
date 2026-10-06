@@ -67,7 +67,9 @@ def wait(condition, seconds: float) -> float | None:
 
 
 def main() -> int:
-    log, audit = Path(sys.argv[1]), Path(sys.argv[2]) / "decisions.jsonl"
+    # The supervisor writes one log per start (F31); the one being written is the newest.
+    log = Path(sys.argv[1])
+    audit = max(Path(sys.argv[2]).glob("decisions*.jsonl"), key=lambda p: p.stat().st_mtime)
     token = house_a.TOKEN_FILE.read_text().strip()
     platform = Viewer(token)
 

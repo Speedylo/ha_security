@@ -260,6 +260,19 @@ class Mediator:
     #: When each integration's recent refusals happened, oldest first, within the window.
     _refusals: dict[str, collections.deque] = field(default_factory=dict)
 
+    def detach_platform(self) -> None:
+        """Take a platform whose connection is gone off the selector (verification 4.5, F29).
+
+        `attach_platform` can then put its replacement on. Until there is one, `_platform` is
+        None, so a command or a push that needs (A) cannot reach the old, dead connection.
+        """
+        if self._platform is not None:
+            try:
+                self._selector.unregister(self._platform)
+            except (KeyError, ValueError):
+                pass
+        self._platform = None
+
     def attach_platform(self, platform) -> None:
         """Put a platform that pushes — `RealPlatform`'s connection to (A) — on the selector.
 

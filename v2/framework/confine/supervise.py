@@ -43,7 +43,7 @@ from .manifest import Manifest
 from .mediator import CutOff, Mediator
 from .platform import acting_policy
 from .preflight import require_ready
-from .real_platform import RealPlatform
+from .real_platform import PlatformLost, RealPlatform
 from .sandbox import SandboxSpec
 from .selftest_bridge import interpreter_trees
 from .spawn import Sandbox, become_subreaper, start
@@ -58,6 +58,7 @@ class Supervisor:
         self.python = python
         self.hours = hours
         self.delegation = Delegation.discover()
+        self.cleared = self._clear_predecessors()
         self.root = Path(tempfile.mkdtemp(prefix=f"supervise-{self.domain}-"))
         self.own = self.root / "custom_components" / self.domain
         shutil.copytree(component, self.own, ignore=shutil.ignore_patterns("__pycache__"))
@@ -69,7 +70,11 @@ class Supervisor:
         self.platform = RealPlatform()
         audit_dir.mkdir(parents=True, exist_ok=True)
         self.audit_dir = audit_dir
-        self.mediator = Mediator(log=AuditLog(path=audit_dir / "decisions.jsonl"))
+        # One file per supervisor start (verification 4.5, finding F31). A restarted mediator
+        # begins a new chain from genesis, with a new key, and appended to the previous run's
+        # file it made `verify` report breaks that look exactly like deleted records.
+        self.log_path = audit_dir / f"decisions-{time.strftime('%Y%m%dT%H%M%S')}-{os.getpid()}.jsonl"
+        self.mediator = Mediator(log=AuditLog(path=self.log_path))
         self.manifest = Manifest.load(self.own, self.root)
         self.mediator.policy = acting_policy({self.domain: self.manifest}, self.platform)
         self.mediator.attach_platform(self.platform)
@@ -80,6 +85,28 @@ class Supervisor:
         self.cgroup: SandboxCgroup | None = None
         self.wanted = True
         self.starts = 0
+
+    def _clear_predecessors(self) -> int:
+        """Kill every sandbox an earlier supervisor of this integration left running.
+
+        A supervisor killed with SIGKILL cannot stop its sandbox, which then runs on with no
+        mediator, and this supervisor's first sandbox was placed in the same cgroup beside it
+        (verification 4.5, finding F30). The sandbox now ends its own run when its channel
+        closes, but that is inside the sandbox, so the guarantee is here: nothing named for this
+        integration is left in the delegated subtree when a new one starts.
+        """
+        if self.delegation.parent is None:
+            return 0
+        stale = sorted(self.delegation.parent.glob(f"sup-{self.domain}-*"))
+        for path in stale:
+            cgroup = SandboxCgroup(path)
+            cgroup.remove()                       # kills everything in it
+            for _ in range(50):
+                if not cgroup.pids:
+                    break
+                time.sleep(0.1)
+            cgroup.remove()                       # empty now, so the directory goes too
+        return len(stale)
 
     # ---------------------------------------------------------------- what the mediator says
 
@@ -172,21 +199,59 @@ class Supervisor:
 
     # ---------------------------------------------------------------- the loop
 
+    def platform_lost(self, err: Exception) -> None:
+        """(A) went away: stop the integration, wait for (A), then start it again.
+
+        Until 2026-10-06 the `PlatformLost` left `run` as a traceback, the supervisor exited, and
+        nothing started the integration again when (A) came back (verification 4.5, finding F29).
+        Stopping it is still the first thing done, because with (A) gone nothing the integration
+        asks for could be acted on or shown. Nobody in the house is asked to do anything: while
+        (A) is down nothing can be shown in it, and once it is back the integration is running
+        again, as it was.
+        """
+        was_running = self.sandbox is not None or self.wanted
+        say(f"the house's Home Assistant went away ({err}); {self.domain} is stopped until it "
+            f"is back")
+        self.stop()
+        self.mediator.detach_platform()
+        try:
+            self.platform.close()
+        except Exception:  # noqa: BLE001 — it is already gone
+            pass
+        while True:
+            time.sleep(5)
+            try:
+                platform = RealPlatform()
+            except Exception:  # noqa: BLE001 — not up yet, in any of the ways (A) can be down
+                continue
+            break
+        self.platform = platform
+        self.mediator.policy = acting_policy({self.domain: self.manifest}, platform)
+        self.mediator.attach_platform(platform)
+        self.wanted = was_running
+        say(f"the house's Home Assistant is back; "
+            f"{'starting ' + self.domain + ' again' if was_running else self.domain + ' was not running'}")
+
     def run(self) -> None:
-        idle = selectors.DefaultSelector()
-        idle.register(self.platform, selectors.EVENT_READ)
         try:
             while True:
-                if self.wanted and self.sandbox is None:
-                    self.launch()
-                if self.mediator.open_channels:
-                    self.mediator.serve(timeout=0.5, until=time.monotonic() + 0.5)
-                else:
-                    # Nothing to serve, but the house can still ask for a restart.
-                    if idle.select(0.5):
-                        self.platform.pump()
-                    self.platform.dispatch()
-                self.reap()
+                idle = selectors.DefaultSelector()
+                idle.register(self.platform, selectors.EVENT_READ)
+                try:
+                    while True:
+                        if self.wanted and self.sandbox is None:
+                            self.launch()
+                        if self.mediator.open_channels:
+                            self.mediator.serve(timeout=0.5, until=time.monotonic() + 0.5)
+                        else:
+                            # Nothing to serve, but the house can still ask for a restart.
+                            if idle.select(0.5):
+                                self.platform.pump()
+                            self.platform.dispatch()
+                        self.reap()
+                except PlatformLost as err:
+                    idle.close()
+                    self.platform_lost(err)
         finally:
             self.stop()
             self.platform.close()
@@ -220,7 +285,9 @@ def main() -> int:
     signal.signal(signal.SIGTERM, terminate)
     supervisor = Supervisor(args.component.resolve(), json.loads(args.permissions),
                             args.python, args.audit_dir, args.hours)
-    say(f"supervising {supervisor.domain}; durable log in {args.audit_dir}; Ctrl-C to stop")
+    if supervisor.cleared:
+        say(f"cleared {supervisor.cleared} sandbox cgroup(s) an earlier supervisor left behind")
+    say(f"supervising {supervisor.domain}; durable log {supervisor.log_path}; Ctrl-C to stop")
     try:
         supervisor.run()
     except KeyboardInterrupt:
