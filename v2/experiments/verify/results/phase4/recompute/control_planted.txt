@@ -7,9 +7,9 @@ EQUAL      A1.11a  integrations measured across the two corpora (37 + 40)
 EQUAL      A1.11b  share of members the two corpora have in common
            recomputed 5%  (2 of 40)
            stated     abstract: 5%, 07_evaluation.md: 5%
-EQUAL      A1.12   clean in both arms: head corpus, then uniform
+DIFFERS    A1.12   clean in both arms: head corpus, then uniform
            recomputed 84% and 92%  (head 31/37 baseline, 31/37 confined; uniform 37/40, 37/40)
-           stated     abstract: 84% and 92%
+           stated     abstract: 84% and 93%
 EQUAL      A1.12b  integrations failing confined but not unconfined, both corpora
            recomputed none  (set differences [0, 0])
            stated     abstract: none
@@ -82,5 +82,38 @@ EQUAL      8.2.3c  durable record against the non-durable write
 EQUAL      8.2.3d  mediator cost per delivered push (§7.36's suite log)
            recomputed 10.9 µs  (re-measured in the verification passes: [11.5, 11.5, 11.5] µs)
            stated     08_conclusions.md: 10.9 µs
+EQUAL      7.13    adversary outcome counts, unconfined then confined
+           recomputed BLOCKED 14 · EMPTY 4 · LEAKED 11 · NOT RUN 2 · UNMEDIATED 1 | BLOCKED 21 · DENY 6 · EMPTY 10 · PERMIT 1  (from each log's summary line; compared as sets of counts, the table orders them differently)
+           stated     07_evaluation.md: BLOCKED 14 · EMPTY 4 · **LEAKED 11** · NOT RUN 2 · UNMEDIATED 1, 07_evaluation.md: BLOCKED 21 · EMPTY 10 · DENY 6 · PERMIT 1
+EQUAL      7.13b   attacks that returned data, unconfined then confined
+           recomputed 11 | 0  ()
+           stated     07_evaluation.md: 11, 07_evaluation.md: 0
+EQUAL      7.29    C1: trees hashed before and after, and with changed source, per arm
+           recomputed 37 | 38 | Seventy-five  (changed source and diff lines in all: 0)
+           stated     07_evaluation.md: 37, 07_evaluation.md: 38, 07_evaluation.md: Seventy-five
+DIFFERS    7.33    uniform corpus: share of integrations using services, config, bus
+           recomputed 37.5% | 37.5% | 17.5%  (n = 40)
+           stated     07_evaluation.md: 37.5%, 07_evaluation.md: 37.5%, 07_evaluation.md: 15.7%
+EQUAL      7.33b   head corpus (144): share using services, config, bus
+           recomputed 64.6% | 61.8% | 48.6%  (n = 144; recomputed from the committed per-integration results, the source sample itself is not kept (F16))
+           stated     07_evaluation.md: 64.6%, 07_evaluation.md: 61.8%, 07_evaluation.md: 48.6%
+EQUAL      7.39    powercalc: time to report, as installed, compiled at install, empty cache
+           recomputed 2.47 s | 1.87 s | 7.05 s  (default: deps 0/84, component 0/80; compiled: deps 84/84, component 80/80; cold: deps 0/84, component 0/80)
+           stated     07_evaluation.md: 2.47 s, 07_evaluation.md: 1.87 s, 07_evaluation.md: 7.05 s
+DIFFERS    7.44    the flood on disk: cut-off time, refusals, neighbour's answers and slowest, Repairs
+           recomputed 0.81 s | 100 | 235 | 26.1 ms | 302 ms  (selftest_flood_disk.log (on disk) and selftest_real_platform.log, 2026-10-05)
+           stated     07_evaluation.md: 0.81 s, 07_evaluation.md: 100, 07_evaluation.md: 253, 07_evaluation.md: 26.1 ms, 07_evaluation.md: 302 ms
+EQUAL      7.22    S9's CPU cap: share consumed, the run the report quotes, and the spread of every committed run
+           recomputed 25.1%  (15 committed runs, 24.9–25.7%, all within ±2 points of the cap: True)
+           stated     07_evaluation.md: 25.1%
+EQUAL      7.31.11 aiodns share of resolutions on a /16, and its counts
+           recomputed 17% | 25 against 121  (12 integrations; the same counting as §7.24.2's 3,073 against 120)
+           stated     07_evaluation.md: 17%, 07_evaluation.md: 25 against 121
+EQUAL      7.14    entity visibility in §7.14's own table and §7.26.3's T06 row, against the same data
+           recomputed 36 / 36 | 1 / 36 | 20 / 20 | 0 / 20 | 36/36 → 1/36 | 20/20 → 0/20  ()
+           stated     07_evaluation.md: 36 / 36, 07_evaluation.md: 1 / 36, 07_evaluation.md: 20 / 20, 07_evaluation.md: 0 / 20, 07_evaluation.md: 36/36 → 1/36, 07_evaluation.md: 20/20 → 0/20, 07_evaluation.md: 20/20 → 0/20
+EQUAL      7.36    undeclared changes delivered to the confined subscriber, and with the filter bypassed
+           recomputed 0 of 3  (with the subscription table bypassed: 3 of 3 seen (the suite's own control))
+           stated     07_evaluation.md: 0 of 3
 
-DIFFERS 2, EQUAL 26
+DIFFERS 5, EQUAL 34

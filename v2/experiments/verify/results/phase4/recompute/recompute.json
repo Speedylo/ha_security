@@ -414,5 +414,232 @@
    ]
   ],
   "status": "EQUAL"
+ },
+ {
+  "id": "7.13",
+  "what": "adversary outcome counts, unconfined then confined",
+  "recomputed": "BLOCKED 14 \u00b7 EMPTY 4 \u00b7 LEAKED 11 \u00b7 NOT RUN 2 \u00b7 UNMEDIATED 1 | BLOCKED 21 \u00b7 DENY 6 \u00b7 EMPTY 10 \u00b7 PERMIT 1",
+  "detail": "from each log's summary line; compared as sets of counts, the table orders them differently",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "BLOCKED 14 \u00b7 EMPTY 4 \u00b7 **LEAKED 11** \u00b7 NOT RUN 2 \u00b7 UNMEDIATED 1"
+   ],
+   [
+    "07_evaluation.md",
+    "BLOCKED 21 \u00b7 EMPTY 10 \u00b7 DENY 6 \u00b7 PERMIT 1"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.13b",
+  "what": "attacks that returned data, unconfined then confined",
+  "recomputed": "11 | 0",
+  "detail": "",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "11"
+   ],
+   [
+    "07_evaluation.md",
+    "0"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.29",
+  "what": "C1: trees hashed before and after, and with changed source, per arm",
+  "recomputed": "37 | 38 | Seventy-five",
+  "detail": "changed source and diff lines in all: 0",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "37"
+   ],
+   [
+    "07_evaluation.md",
+    "38"
+   ],
+   [
+    "07_evaluation.md",
+    "Seventy-five"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.33",
+  "what": "uniform corpus: share of integrations using services, config, bus",
+  "recomputed": "37.5% | 37.5% | 17.5%",
+  "detail": "n = 40",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "37.5%"
+   ],
+   [
+    "07_evaluation.md",
+    "37.5%"
+   ],
+   [
+    "07_evaluation.md",
+    "17.5%"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.33b",
+  "what": "head corpus (144): share using services, config, bus",
+  "recomputed": "64.6% | 61.8% | 48.6%",
+  "detail": "n = 144; recomputed from the committed per-integration results, the source sample itself is not kept (F16)",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "64.6%"
+   ],
+   [
+    "07_evaluation.md",
+    "61.8%"
+   ],
+   [
+    "07_evaluation.md",
+    "48.6%"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.39",
+  "what": "powercalc: time to report, as installed, compiled at install, empty cache",
+  "recomputed": "2.47 s | 1.87 s | 7.05 s",
+  "detail": "default: deps 0/84, component 0/80; compiled: deps 84/84, component 80/80; cold: deps 0/84, component 0/80",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "2.47 s"
+   ],
+   [
+    "07_evaluation.md",
+    "1.87 s"
+   ],
+   [
+    "07_evaluation.md",
+    "7.05 s"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.44",
+  "what": "the flood on disk: cut-off time, refusals, neighbour's answers and slowest, Repairs",
+  "recomputed": "0.81 s | 100 | 235 | 26.1 ms | 302 ms",
+  "detail": "selftest_flood_disk.log (on disk) and selftest_real_platform.log, 2026-10-05",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "0.81 s"
+   ],
+   [
+    "07_evaluation.md",
+    "100"
+   ],
+   [
+    "07_evaluation.md",
+    "235"
+   ],
+   [
+    "07_evaluation.md",
+    "26.1 ms"
+   ],
+   [
+    "07_evaluation.md",
+    "302 ms"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.22",
+  "what": "S9's CPU cap: share consumed, the run the report quotes, and the spread of every committed run",
+  "recomputed": "25.1%",
+  "detail": "15 committed runs, 24.9\u201325.7%, all within \u00b12 points of the cap: True",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "25.1%"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.31.11",
+  "what": "aiodns share of resolutions on a /16, and its counts",
+  "recomputed": "17% | 25 against 121",
+  "detail": "12 integrations; the same counting as \u00a77.24.2's 3,073 against 120",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "17%"
+   ],
+   [
+    "07_evaluation.md",
+    "25 against 121"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.14",
+  "what": "entity visibility in \u00a77.14's own table and \u00a77.26.3's T06 row, against the same data",
+  "recomputed": "36 / 36 | 1 / 36 | 20 / 20 | 0 / 20 | 36/36 \u2192 1/36 | 20/20 \u2192 0/20",
+  "detail": "",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "36 / 36"
+   ],
+   [
+    "07_evaluation.md",
+    "1 / 36"
+   ],
+   [
+    "07_evaluation.md",
+    "20 / 20"
+   ],
+   [
+    "07_evaluation.md",
+    "0 / 20"
+   ],
+   [
+    "07_evaluation.md",
+    "36/36 \u2192 1/36"
+   ],
+   [
+    "07_evaluation.md",
+    "20/20 \u2192 0/20"
+   ],
+   [
+    "07_evaluation.md",
+    "20/20 \u2192 0/20"
+   ]
+  ],
+  "status": "EQUAL"
+ },
+ {
+  "id": "7.36",
+  "what": "undeclared changes delivered to the confined subscriber, and with the filter bypassed",
+  "recomputed": "0 of 3",
+  "detail": "with the subscription table bypassed: 3 of 3 seen (the suite's own control)",
+  "stated": [
+   [
+    "07_evaluation.md",
+    "0 of 3"
+   ]
+  ],
+  "status": "EQUAL"
  }
 ]

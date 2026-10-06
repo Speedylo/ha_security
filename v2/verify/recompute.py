@@ -92,6 +92,14 @@ def claim(cid: str, what: str, places: list[tuple[str, str]]):
     return register
 
 
+def norm(written: str) -> str:
+    """Bold removed, and a ` · `-separated list of counts compared as a set (its order is the writer's)."""
+    written = written.replace("**", "").strip()
+    if " · " in written:
+        return " · ".join(sorted(written.split(" · ")))
+    return written
+
+
 def stated(where: str, pattern: str) -> list[str]:
     body = abstract() if where == "abstract" else text(where)
     return [m.group(1) for m in re.finditer(pattern, body, re.S)]
@@ -412,6 +420,158 @@ def _():
     return Num(us, "µs"), f"re-measured in the verification passes: {stats['push_cost']['values']} µs"
 
 
+# -- Chapter 7, one headline per results section ------------------------------------------------
+
+def outcome_counts(name: str) -> str:
+    line = next(l for l in adversary_lines(name)
+                if re.match(r"^\s*((BLOCKED|DENY|EMPTY|LEAKED|PERMIT|NOT RUN|UNMEDIATED)\s+\d+\s*){2,}$", l))
+    return " · ".join(f"{k} {v}" for k, v in re.findall(r"(BLOCKED|DENY|EMPTY|LEAKED|PERMIT|NOT RUN|UNMEDIATED)\s+(\d+)", line))
+
+
+def bold_free(written: str) -> str:
+    return written.replace("**", "")
+
+
+@claim("7.13", "adversary outcome counts, unconfined then confined",
+       [("07_evaluation.md", r"\| Outcome counts \| ([^|]+?) \|"),
+        ("07_evaluation.md", r"\| Outcome counts \| [^|]+ \| ([^|]+?) \|")])
+def _():
+    return Pair(outcome_counts("pi5_unconfined.txt"), outcome_counts("pi5_confined.txt")), \
+        "from each log's summary line; compared as sets of counts, the table orders them differently"
+
+
+@claim("7.13b", "attacks that returned data, unconfined then confined",
+       [("07_evaluation.md", r"\| Attacks that returned data \| (\d+) \|"),
+        ("07_evaluation.md", r"\| Attacks that returned data \| \d+ \| (\d+) \|")])
+def _():
+    leaked = lambda n: sum(1 for l in adversary_lines(n) if "LEAKED" in l and not re.match(r"^\s*BLOCKED", l))
+    return Pair(str(leaked("pi5_unconfined.txt")), str(leaked("pi5_confined.txt")))
+
+
+@claim("7.29", "C1: trees hashed before and after, and with changed source, per arm",
+       [("07_evaluation.md", r"\| Trees hashed before and after \| \*\*(\d+)\*\*"),
+        ("07_evaluation.md", r"\| Trees hashed before and after \| \*\*\d+\*\* \| \*\*(\d+)\*\*"),
+        ("07_evaluation.md", r"\*\*([\w-]+) tree comparisons, zero source changes")])
+def _():
+    a = j("experiments/compat/results/c1_baseline.json")["c1"]
+    b = j("experiments/compat/results/c1_declared_core.json")["c1"]
+    total = a["integrations_checked"] + b["integrations_checked"]
+    changed = a["source_changed"] + b["source_changed"] + a["total_diff_lines"] + b["total_diff_lines"]
+    return Pair(str(a["integrations_checked"]), str(b["integrations_checked"]),
+                {75: "Seventy-five"}.get(total, str(total))), f"changed source and diff lines in all: {changed}"
+
+
+@claim("7.33", "uniform corpus: share of integrations using services, config, bus",
+       [("07_evaluation.md", r"\| `services` \| [\d.]+% \| \*\*([\d.]+%)\*\*"),
+        ("07_evaluation.md", r"\| `config` \| [\d.]+% \| \*\*([\d.]+%)\*\*"),
+        ("07_evaluation.md", r"\| `bus` \| [\d.]+% \| \*\*([\d.]+%)\*\*")])
+def _():
+    share = j("figures/api_surface_uniform.json")["handle_share"]
+    return Pair(f"{share['services']}%", f"{share['config']}%", f"{share['bus']}%"), \
+        f"n = {j('figures/api_surface_uniform.json')['n']}"
+
+
+@claim("7.33b", "head corpus (144): share using services, config, bus",
+       [("07_evaluation.md", r"\| `services` \| ([\d.]+%) \|"),
+        ("07_evaluation.md", r"\| `config` \| ([\d.]+%) \|"),
+        ("07_evaluation.md", r"\| `bus` \| ([\d.]+%) \|")])
+def _():
+    a = j("figures/api_surface_hacs.json")
+    return Pair(f"{a['handle_share']['services']}%", f"{a['handle_share']['config']}%",
+                f"{a['handle_share']['bus']}%"), \
+        f"n = {a['n']}; recomputed from the committed per-integration results, the source sample itself is not kept (F16)"
+
+
+def bytecode(mode: str) -> dict:
+    return j(f"experiments/bytecode_cache/results/w2c_20261004/matrix/powercalc_{mode}.json")
+
+
+@claim("7.39", "powercalc: time to report, as installed, compiled at install, empty cache",
+       [("07_evaluation.md", r"\| as installed today \|(?: [^|]+ \|){5} ([\d.]+ s) \|"),
+        ("07_evaluation.md", r"\| compiled at install \|(?: [^|]+ \|){5} \*\*([\d.]+ s)\*\* \|"),
+        ("07_evaluation.md", r"\| control: empty cache \|(?: [^|]+ \|){5} ([\d.]+ s) \|")])
+def _():
+    out, cache = [], []
+    for mode in ("default", "compiled", "cold"):
+        d = bytecode(mode)
+        b = (d[0] if isinstance(d, list) else d)["bytecode"]
+        out.append(f"{b['seconds_since_start']:.2f} s")
+        g = b["groups"]
+        cache.append(f"{mode}: deps {g['deps']['from_cache']}/{g['deps']['from_cache'] + g['deps']['compiled']}, "
+                     f"component {g['component']['from_cache']}/{g['component']['from_cache'] + g['component']['compiled']}")
+    return Pair(*out), "; ".join(cache)
+
+
+@claim("7.44", "the flood on disk: cut-off time, refusals, neighbour's answers and slowest, Repairs",
+       [("07_evaluation.md", r"cut off within \*\*([\d.]+ s)\*\*; exactly"),
+        ("07_evaluation.md", r"exactly \*\*(\d+)\*\* refusals on disk"),
+        ("07_evaluation.md", r"answered \*\*(\d+)\*\* times, every answer a grant"),
+        ("07_evaluation.md", r"the slowest \*\*([\d.]+ ms)\*\*"),
+        ("07_evaluation.md", r"issue in \(A\) within \*\*(\d+ ms)\*\*")])
+def _():
+    flood = (EXP / "flood/results/pi_20261005/selftest_flood_disk.log").read_text()
+    house = (EXP / "flood/results/pi_20261005/selftest_real_platform.log").read_text()
+    cut = float(re.search(r"cut off\s+—\s+after ([\d.]+) s", flood).group(1))
+    n = re.search(r"exactly (\d+) refusals are on disk", flood).group(1)
+    answers, worst = re.search(r"(\d+) answers, worst ([\d.]+) ms", flood).groups()
+    repairs = re.search(r"within 1 s of the cut-off\s+—\s+(\d+) ms", house).group(1)
+    return Pair(f"{cut:.2f} s", n, answers, f"{worst} ms", f"{repairs} ms"), \
+        "selftest_flood_disk.log (on disk) and selftest_real_platform.log, 2026-10-05"
+
+
+@claim("7.22", "S9's CPU cap: share consumed, the run the report quotes, and the spread of every committed run",
+       [("07_evaluation.md", r"\*\*([\d.]+%) consumed over [\d.]+ s, [\d.]+ s throttled\*\*")])
+def _():
+    runs = [(float(m.group(1)), log.relative_to(EXP).as_posix())
+            for log in EXP.glob("**/selftest_resources.log") if "mutants" not in log.parts
+            for m in re.finditer(r"consumed ([\d.]+)% of one processor", log.read_text())]
+    spread = (min(r[0] for r in runs), max(r[0] for r in runs))
+    if not any(r[0] == 25.1 for r in runs):
+        raise NoSource("no committed run consumed 25.1%")
+    within = all(abs(r[0] - 25) <= 2 for r in runs)
+    return "25.1%", f"{len(runs)} committed runs, {spread[0]}–{spread[1]}%, all within ±2 points of the cap: {within}"
+
+
+@claim("7.31.11", "aiodns share of resolutions on a /16, and its counts",
+       [("07_evaluation.md", r"Today the same count is \*\*(\d+%)\*\*, \d+ against \d+"),
+        ("07_evaluation.md", r"Today the same count is \*\*\d+%\*\*, (\d+ against \d+)")])
+def _():
+    d = j("experiments/egress_shape/results/rerun_20261003/pi5_egress_shape.json")
+    counts = collections.Counter()
+    for report in d["reports"]:
+        counts.update(report["netshape"].get("resolution", {}))
+    aiodns, other = counts["aiodns.getaddrinfo"], counts["getaddrinfo"]
+    return Pair(pct(aiodns, aiodns + other), f"{aiodns} against {other}"), \
+        f"{len(d['reports'])} integrations; the same counting as §7.24.2's 3,073 against 120"
+
+
+@claim("7.14", "entity visibility in §7.14's own table and §7.26.3's T06 row, against the same data",
+       [("07_evaluation.md", r"\| \*\*Entities present to it\*\* \| \*\*(\d+ / \d+)\*\*"),
+        ("07_evaluation.md", r"\| \*\*Entities present to it\*\* \| \*\*\d+ / \d+\*\* \| \*\*(\d+ / \d+)\*\*"),
+        ("07_evaluation.md", r"\| \*\*Of those, occupancy or presence\*\* \| \*\*(\d+ / \d+)\*\*"),
+        ("07_evaluation.md", r"\| \*\*Of those, occupancy or presence\*\* \| \*\*\d+ / \d+\*\* \| \*\*(\d+ / \d+)\*\*"),
+        ("07_evaluation.md", r"§7\.14\.2: \*\*(\d+/\d+ → \d+/\d+)\*\*, and"),
+        ("07_evaluation.md", r"and \*\*(\d+/\d+ → \d+/\d+)\*\* presence entities")])
+def _():
+    sys.path.insert(0, str(V2 / "framework"))
+    from confine import home
+    d = j("experiments/entity_visibility/results/rerun_20261003/pi5_s3.json")
+    sens, total = set(home.sensitive_ids()), len(home.entity_ids())
+    u, c = set(d["unconfined"]["visible"]), set(d["confined"]["visible"])
+    return Pair(f"{len(u)} / {total}", f"{len(c)} / {total}", f"{len(u & sens)} / {len(sens)}",
+                f"{len(c & sens)} / {len(sens)}", f"{len(u)}/{total} → {len(c)}/{total}",
+                f"{len(u & sens)}/{len(sens)} → {len(c & sens)}/{len(sens)}")
+
+
+@claim("7.36", "undeclared changes delivered to the confined subscriber, and with the filter bypassed",
+       [("07_evaluation.md", r"subscription half is now a delivered and filtered stream: \*\*(\d+ of \d+)\*\*")])
+def _():
+    log = (EXP / "push_loop/results/w1_step1_20261004/suites/selftest_push.log").read_text()
+    n = re.search(r"(\d+ of \d+) undeclared changes delivered", log).group(1)
+    seen = re.search(r"table bypassed.*?(\d+ of \d+) seen", log).group(1)
+    return n, f"with the subscription table bypassed: {seen} seen (the suite's own control)"
+
+
 # -----------------------------------------------------------------------------------------------
 
 def main() -> int:
@@ -424,7 +584,7 @@ def main() -> int:
     for c in CLAIMS:
         try:
             got = c["compute"]()
-            value, detail = (got, "") if isinstance(got, str) else got
+            value, detail = (got, "") if isinstance(got, (str, Pair)) else got
         except NoSource as err:
             value, detail, status = None, str(err), "NO SOURCE"
         except LookupError as err:
@@ -438,7 +598,7 @@ def main() -> int:
         if value is not None:
             if not copies or (expected is not None and len(c["places"]) != len(value)):
                 status = "NOT FOUND"
-            elif expected is not None and all(s == e for (_, s), e in zip(copies, expected)) \
+            elif expected is not None and all(norm(s) == norm(e) for (_, s), e in zip(copies, expected)) \
                     and all(stated(w, p) for w, p in c["places"]):
                 status = "EQUAL"
             elif expected is not None:
