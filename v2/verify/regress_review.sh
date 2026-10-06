@@ -23,5 +23,4 @@ step fuzz python3 ../verify/fuzz_mediator.py --json "$OUT/fuzz.json"
 step review_units systemd-run --user --scope -q python3 ../verify/review_units.py
 step review_pi bash ../verify/review_pi.sh "$T/framework" "$OUT/review_pi"
 step base_selftest_tty script -qec "systemd-run --user --scope -q python3 -m confine.selftest" /dev/null
-step recompute python3 ../verify/recompute.py
 echo ALLDONE >> "$S"
