@@ -1,0 +1,51 @@
+{
+  "results": {
+    "domains_readable": [
+      "sensor"
+    ],
+    "registry_rows_visible": 20,
+    "registry_domains_visible": [
+      "event",
+      "input_boolean",
+      "input_number",
+      "light",
+      "person",
+      "sensor",
+      "switch"
+    ],
+    "update_entity_sensor": {
+      "success": true,
+      "error": null
+    },
+    "update_entity_switch": {
+      "success": false,
+      "error": "Unauthorized"
+    },
+    "switch_turn_on": {
+      "success": false,
+      "error": "Unauthorized"
+    },
+    "no_entity_target": {
+      "success": true,
+      "error": null
+    }
+  },
+  "checks": [
+    [
+      "reads are limited to the domain the policy grants",
+      true
+    ],
+    [
+      "an entity service on a granted entity is accepted",
+      true
+    ],
+    [
+      "the same service on an ungranted entity is refused",
+      true
+    ],
+    [
+      "the ungranted domain's own service is refused",
+      true
+    ]
+  ]
+}

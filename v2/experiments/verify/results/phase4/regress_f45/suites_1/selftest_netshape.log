@@ -1,0 +1,17 @@
+Does the recorder see what it claims to see?
+==============================================================================
+[  ok  ] 1. a TCP connect is recorded with its port — 1 connect event(s), port 48851
+[  ok  ] 1b. the socket type is recorded as SOCK_STREAM — SOCK_STREAM
+[  ok  ] 2. connectionless UDP is recorded as sendto on a SOCK_DGRAM socket — SOCK_DGRAM
+[  ok  ] 2b. its destination port is recorded — 9
+[  ok  ] 3. inbound is distinguishable — bind and listen are both recorded — 1 bind, 1 listen
+[  ok  ] 4. TLS via wrap_socket records its server_hostname (the SNI a mediator would see) — example.invalid
+[  ok  ] 4b. TLS over a memory BIO is recorded — aiohttp's actual path — wrap_bio
+[  ok  ] 4c. and it carries its server_hostname too — bio.example.invalid
+[  ok  ] 5. a multicast group join is recorded even though it is not a connect — joined=True, 1 event(s)
+[  ok  ] 6. a call from the integration's own directory is charged to the integration — fake_integration/reach.py:4
+[  ok  ] 6b. and a call from outside it is not — library — confine/selftest_netshape.py:227
+[  ok  ] 7. the recorder does not interfere with the call it observes
+[  ok  ] 7b. uninstall restores the originals — socket.sendto
+==============================================================================
+13/13 checks passed

@@ -75,3 +75,21 @@ not make it supported: there is no screen for it.
 
 A new tag; suites twice; `selftest_real_platform --restart`; `drive_demo`; `faults_pi_fixed.sh`;
 `review_pi.sh`; `nordpool` end to end (the stand-in path, as a control that nothing else moved).
+
+## Outcomes (2026-10-06)
+
+- **Arm R, as predicted.** With the old admin token the mediator could do all four admin-only
+  probes (`f45_before.txt`); with its own token it is refused all four, and another ordinary user is
+  refused by the bridge in both (`f45_after.txt`). Two of the registered checks were changed before
+  the failing-first run, because with an admin token they would have acted on the house:
+  `homeassistant.check_config` replaced `homeassistant.restart`, and "create a user" was dropped.
+- **Regression on `verify-2026-10-f45`** (`experiments/verify/results/phase4/regress_f45/`): (A) up
+  from the clone; suites 26/26 twice; restart suite 54/54; `nordpool` 16/16; `drive_demo`; FI1, FI4
+  and the backstop; `review_pi` P1–P4; arm P.
+- **Arm P, as predicted.** Reads limited to `sensor`; an entity service accepted on a sensor and
+  refused on a switch; the switch's own service refused; a notification (no entity target) went
+  through; the registry listed every domain. The first two attempts failed to start the scratch
+  copy, because the port is in `.storage/http` in this release; fixed in the script.
+- **Timings.** All within criterion on the median of five runs. On the F45 run alone, the push from
+  (A) took 0.93 ms (+31%, F46) and the command 11.1 ms (−30%, F44). Six alternating runs of (A)'s
+  suite, new token against old, gave 0.50–0.66 ms for both, so the change costs nothing measurable.

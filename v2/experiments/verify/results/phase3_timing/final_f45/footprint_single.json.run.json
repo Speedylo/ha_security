@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "measure.py",
+    "--builder",
+    "corrected",
+    "--json",
+    "/home/younes/r2exp/verify-f45/v2/experiments/verify/results/phase3_timing/final_f45/footprint_single.json"
+  ],
+  "cwd": "/home/younes/r2exp/verify-f45/v2/experiments/r2_footprint",
+  "executable": "/home/younes/r2exp/ha314/bin/python",
+  "python": "3.14.7",
+  "host": "raspberrypi",
+  "machine": "aarch64",
+  "time": "2026-10-06T21:51:06+0100",
+  "commit": "d476babb7f7b0cceb1271cf2489f1d00fadb2530",
+  "uncommitted_changes": false,
+  "resolve_before": "2026-10-06T00:00:00Z"
+}

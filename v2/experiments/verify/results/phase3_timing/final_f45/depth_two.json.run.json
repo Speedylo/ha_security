@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "scale.py",
+    "--count",
+    "3",
+    "--python",
+    "/home/younes/r2exp/ha314/bin/python",
+    "--components",
+    "http,websocket_api",
+    "--platform-deps",
+    "/home/younes/r2exp/t2/platform-deps-aug",
+    "--json",
+    "/home/younes/r2exp/verify-f45/v2/experiments/verify/results/phase3_timing/final_f45/depth_two.json"
+  ],
+  "cwd": "/home/younes/r2exp/verify-f45/v2/experiments/unstrip",
+  "executable": "/usr/bin/python3",
+  "python": "3.13.5",
+  "host": "raspberrypi",
+  "machine": "aarch64",
+  "time": "2026-10-06T21:51:48+0100",
+  "commit": "d476babb7f7b0cceb1271cf2489f1d00fadb2530",
+  "uncommitted_changes": false,
+  "resolve_before": "2026-10-06T00:00:00Z"
+}

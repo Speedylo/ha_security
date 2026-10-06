@@ -399,6 +399,15 @@ cannot be fixed without changing Home Assistant (C2). **Residual: High.** It sho
 reported to the platform as the single change that would most improve any confinement
 scheme.
 
+> **Corrected 2026-10-06 (verification finding F45, §7.45.11).** The platform fact is wrong as
+> stated: a long-lived token carries its user's permissions, Home Assistant has a read-only group,
+> and an entity policy by domain is enforced. What is true is narrower: such a policy can only be
+> written by hand, and it does not cover services without an entity target or the entity registry.
+> The mediator held full authority because this project's bridge admitted only admins. It now runs as
+> an ordinary user, so its compromise gives control of every entity, not of the house's users,
+> integrations and configuration. The residual rating is revisited in phase R. This pointer covers
+> the R3 rows in Chapter 5's tables as well.
+
 **R4 — A local audit log cannot be authoritative against whoever controls the machine.**
 *From T18's treatment.* Hash-chaining provides tamper-*evidence*, not tamper-proofing, and an
 unkeyed chain can be rebuilt wholesale by an adversary with write access. It also says

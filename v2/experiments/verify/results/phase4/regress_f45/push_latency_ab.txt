@@ -1,0 +1,6 @@
+f45 run1 median 0.52 ms
+f45old run1 median 0.50 ms
+f45 run2 median 0.66 ms
+f45old run2 median 0.50 ms
+f45 run3 median 0.50 ms
+f45old run3 median 0.66 ms

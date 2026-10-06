@@ -1799,6 +1799,13 @@ upstream change that would most improve any confinement scheme for this platform
 included — and the design is already shaped to take one: the mediator acquires its credential
 in one place and uses it at step 5 of §5.11.3, so a scoped token would be a substitution
 rather than a redesign. §4.11 says it should be reported to the platform, and it should.
+> **Corrected 2026-10-06 (verification finding F45).** "No read-only and no per-domain variant" is
+> wrong about the platform: tokens carry their user's permissions, a read-only group exists, and an
+> entity policy by domain is enforced. It cannot be configured from any supported screen. The
+> mediator held an admin token because the bridge this project wrote admitted only admins; it now
+> runs as an ordinary user an admin designates. The design was indeed shaped to take a narrower
+> credential, as this paragraph says: the change touched the bridge's gate and where the token comes
+> from, and nothing in the mediator. §8.8 states what remains to ask of the platform.
 
 **The kernel is the boundary (§5.7.5).** The fix is a stronger isolation primitive — I3 or I4,
 both rejected on C4 in §5.7.2 — and §5.7.5 has already established that the architecture does

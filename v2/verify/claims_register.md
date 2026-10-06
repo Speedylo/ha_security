@@ -1,7 +1,7 @@
 # Claim register
 
 The claim inventory the verification plan rests on (`notes/verification_plan_20261005.md` §3).
-> **Closed 2026-10-06 (exit criterion 1).** Every one of the 153 rows now has a status: **118 Verified, 28 Qualified, 5 Argued, 2 Withdrawn**, none pending. Each is backed by an entry in `verify/register_statuses_20261006.py` (written into this file by `verify/register_status.py`) and by the campaign's results under `experiments/verify/results/`. The register's own wording below is kept as it was written on 2026-10-05.
+> **Closed 2026-10-06 (exit criterion 1).** Every one of the 153 rows now has a status: **119 Verified, 27 Qualified, 5 Argued, 2 Withdrawn** *(after F45, 2026-10-06; 118 and 28 before)*, none pending. Each is backed by an entry in `verify/register_statuses_20261006.py` (written into this file by `verify/register_status.py`) and by the campaign's results under `experiments/verify/results/`. The register's own wording below is kept as it was written on 2026-10-05.
 
 **Started 2026-10-05.** Nothing in this file has been tested yet: every status is *pending* until
 the campaign runs on the frozen tag.
@@ -56,7 +56,7 @@ same result or record dated history. So the register works in three tiers:
 | A1.20 | 63× clear of realistic demand | M | §7.20.1, §7.18 | 09-02 | RD | **Qualified** 2026-10-06: 62×, not 63× (F17, §7.45.1); RD |  |
 | A1.21 | Entities in (A) are registry entities with unconfined names and survive a restart | M | §7.37 | 10-04 | R (L2, `--restart`) | **Verified** 2026-10-06: restart suite 48/48 (regress_review, and again after F42 on the keeper) |  |
 | A1.22 | Real changes reach it **within a millisecond** | M | §7.37 | 10-04 | RM ×3 | **Qualified** 2026-10-06: true of the median (F02, F23); abstract says so | **F02: median 0.71 ms, worst 1.57 ms** |
-| A1.23 | A user's command reaches the integration's own code in 16 ms | M | §7.38 | 10-04 | RM ×3 | **Qualified** 2026-10-06: 12–16 ms over four runs (F44); abstract corrected |  |
+| A1.23 | A user's command reaches the integration's own code in 16 ms | M | §7.38 | 10-04 | RM ×3 | **Qualified** 2026-10-06: 11–16 ms over five runs (F44); abstract corrected |  |
 | A1.24 | A flood is stopped after 100 refusals, within a second; the household is told in Repairs and can restart without widening permissions | M | §7.44 | 10-05 | R, RM, X11, X12, H | **Verified** 2026-10-06: 0.81 s in all four runs; the Repairs path end to end (drive_demo, the hand run) |  |
 | A1.25 | Twenty-six self-test suites pass | T | suite logs | 10-05 | R (L1 ×2) | **Qualified** 2026-10-06: 25 suites and the base self-test (F25 wording); 26/26 twice on the final tag |  |
 | A1.26 | Nineteen threats, fifteen demonstrated, five paired | M/A | §7.26.3, §7.30.5, §7.44.4 | mixed | see A3 | **Qualified** 2026-10-06: sixteen demonstrated, six paired (F38); abstract corrected |  |
@@ -190,8 +190,8 @@ not re-read to fit a result. Paths are under `experiments/` unless they start wi
 | 7.34 | `pirateweather` with a valid key; key absent from every record | `end_to_end/results/t3_20261003/` | 5773839, 10-03 | V, L, E | loads and fetches; a scan of every output finds the key 0 times | **Verified**: Phase 2 L3, key 0 times |
 | 7.35 | Audit directory fsync; footprint series monotonic and exact | `r2_footprint/results/item12_20261003/`, `unstrip/results/item12_20261003/` | e9ec2b1, 10-03 | M, E | monotonic; within M | **Qualified**: the marginal `MemAvailable` figure varies 126–134 MB (F43); PSS within criterion |
 | 7.36 | Push loop: 0 of 3 undeclared changes delivered (4 of 4 unconfined); 10.9 µs per delivery; record before act | `push_loop/results/w1_step1_20261004/`, `prefix_20261004/` | 4222ab0, 10-04 | E, T | 0 of 3 exactly, with the mutation; 10.9 µs within T | **Verified**: 0 of 3; X10 killed; 11.4–11.5 µs |
-| 7.37 | Against (A): 15 of 15 registry rows, survive a restart; push 0.71 ms median, 1.57 ms worst | `real_platform/results/w1_step2_20261004/`, `w1_final_20261004/` | 0187f5e, 10-04 | E, T | 15 of 15 before and after a restart; median within T | **Qualified**: worst case 2.23 ms, not 1.57 (F23); median within |
-| 7.38 | A user's command reaches the integration in 16 ms; no sandbox fails in 2 ms | `real_platform/results/w1_step2b_20261004/` | 0187f5e, 10-04 | T, V | within T; the refusal cases unchanged | **Qualified**: 12–16 ms (F44); refusal cases unchanged |
+| 7.37 | Against (A): 15 of 15 registry rows, survive a restart; push 0.71 ms median, 1.57 ms worst | `real_platform/results/w1_step2_20261004/`, `w1_final_20261004/` | 0187f5e, 10-04 | E, T | 15 of 15 before and after a restart; median within T | **Qualified**: worst case 2.23 ms, not 1.57 (F23); the median varies 0.5–0.9 ms across runs (F46) |
+| 7.38 | A user's command reaches the integration in 16 ms; no sandbox fails in 2 ms | `real_platform/results/w1_step2b_20261004/` | 0187f5e, 10-04 | T, V | within T; the refusal cases unchanged | **Qualified**: 11–16 ms (F44); refusal cases unchanged |
 | 7.39 | Bytecode: `powercalc`'s deps 0/84 and component 0/80 from cache; with compiled bytecode its time to report 2.47 → 1.87 s | `bytecode_cache/results/w2c_20261004/` | 4bb3f12, 10-04 | E, T | the from-cache counts exactly; times within T | **Verified**: within T in four runs |
 | 7.40 | `midea_ac_lan` via local TCP: loads confined; device sees only the host; nothing undeclared reaches it | `local_tcp/results/w2a_20261004/` | 3a05e8f, 10-04 | V, E | three arms' verdicts and the device's log | **Verified**: Phase 2 L3 |
 | 7.41 | `localtuya` asyncio discovery confined equals unconfined; 2 decisions | `local_tcp/results/w2b_20261004/` | cd26992, 10-04 | V, E | the same devices discovered; 2 listens | **Verified**: Phase 2 L3 |
@@ -238,14 +238,14 @@ rows of their own (CS01–CS16).
 | C05 | Identity and the audit record (§5.12, §6.8) | 27 | `selftest_audit`, `_integrity`; X7, X8; FI (disk full) | as stated | **Verified**: suites; X7, X8 killed; FI3; F08, F28, F31 |
 | C06 | Defence in depth and the adversarial cases (§5.13, §6.9) | 49 | `selftest_adversary` paired; independent attacks | every layer's claim holds or is argued | **Qualified**: adversary suite paired and the security review; no independent attacker (§7.45.10) |
 | C07 | The design drawn and the controls checked (§5.14) | 37 | figures regenerated from the model; DC | figure equals model; mapping consistent | **Verified**: both figures regenerate byte-identical from their models (2026-10-06) |
-| C08 | What the design does not do (§5.15) | 30 | DC against current state | still true, or dated | **Qualified**: R3 overstated (F45, open); the rest still true |
+| C08 | What the design does not do (§5.15) | 30 | DC against current state | still true, or dated | **Verified**: R3 corrected (F45, §7.45.11); the rest still true |
 | C09 | The bridge (§6.10) | 20 | `selftest_bridge`, `selftest_real_platform` | as stated | **Verified**: `selftest_bridge`, restart 48/48 |
 | C10 | Un-stripping and its cost (§6.12) | 37 | `unstrip` re-run (B 7.31, 7.35) | M | **Verified**: Phase 3a (17/37, 26/37); PSS series within M |
 | C11 | The declared profile and the core package set (§6.13, §6.14) | 77 | `compat` declared-core arm re-run (B 7.12) | E | **Verified**: Phase 3a |
 | C12 | Chapter 7's method: axes, criteria, schedule, validity, obligations (§7.1–§7.11, except §7.5–§7.7) | 48 | DC; obligations register reconciled | every obligation discharged or stated open | **Verified**: §7.8 reconciled by §7.21.3; every obligation discharged |
 | C13 | Status claims: "not built" (§6.11), limitations (§8.6), future work (§8.7) | 46 | DC against today's code | each still true, or dated | **Verified**: §6.11 and §8.6 read against today's code; #3 closed by F08 |
 | C14 | §8.5: the baseline loads a median of 52 components where a sandbox sets up 2 (head) and 0 (uniform) | 4 | RD from the compat results | the medians exactly | **Verified**: RD, `recompute.py` 8.5 (52 / 2, 53 / 0) |
-| C15 | §8.8: R3, no scoped credential exists; the mediator's token reachable seven ways | 4 | CI against HA 2026.8.3's auth source; B 7.15 | still true of the pinned release | **Qualified**: the token reachable seven ways holds (§7.15); 'no scoped credential' is overstated (F45, open) |
+| C15 | §8.8: R3, no scoped credential exists; the mediator's token reachable seven ways | 4 | CI against HA 2026.8.3's auth source; B 7.15 | still true of the pinned release | **Qualified**: the token reachable seven ways holds (§7.15); 'no scoped credential' corrected (F45): the mediator now runs as an ordinary user, and a per-domain policy is enforced but configurable only by hand |
 | C16 | "The artifact": what the repository contains and how to run it | 4 | clean-checkout reproduction (plan §7.2) | every step works as written | **Qualified**: fresh clone 26/26 and the guide; the blank-card run open (F18) |
 
 ### CS01–CS16 — single claims

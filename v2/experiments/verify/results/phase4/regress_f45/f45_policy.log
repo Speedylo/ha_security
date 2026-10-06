@@ -1,0 +1,6 @@
+  ok    reads are limited to the domain the policy grants  — ['sensor']
+  ok    an entity service on a granted entity is accepted  — {'success': True, 'error': None}
+  ok    the same service on an ungranted entity is refused  — {'success': False, 'error': 'Unauthorized'}
+  ok    the ungranted domain's own service is refused  — {'success': False, 'error': 'Unauthorized'}
+  note  a service with no entity target is not covered by the entity policy  — {'success': True, 'error': None}
+  note  the entity registry is not filtered by the policy  — 20 rows, domains ['event', 'input_boolean', 'input_number', 'light', 'person', 'sensor', 'switch']

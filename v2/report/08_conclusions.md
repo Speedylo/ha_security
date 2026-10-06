@@ -649,6 +649,22 @@ per-domain variant of a long-lived access token, so the mediator must hold full 
 to mediate at all, and compromise of the mediator is total compromise. §5.15.3 named this as the
 single change that would most improve any confinement scheme for this platform, and §7.11 records
 that this evaluation cannot assess it because it is upstream.
+> **Corrected 2026-10-06 (verification finding F45, §7.45.11).** The first sentence of R3 is wrong
+> about the platform, and the second followed from it. In Home Assistant 2026.8.3 a long-lived token
+> carries its user's permissions, and users need not be admins. A built-in *read-only* group
+> exists, and an entity policy (read, control and edit, by entity, domain, device or area) is
+> enforced in state reads and entity service calls. The mediator held an admin token because this
+> project's own bridge admitted only admins. It now runs as an ordinary user that an admin
+> designates. That user is refused the house's users, integrations and configuration, and every
+> suite and the flood's Repairs path still pass. A compromised mediator therefore gets an ordinary
+> user's power, which is control of every entity, not the whole house. Narrowing it further, to the
+> domains the confined integrations declare, is enforced by the platform's own policy engine (shown
+> on a scratch copy of the house: reads and entity calls outside the granted domain were refused).
+> But no supported way exists to create such a group, and the policy does not cover services without
+> an entity target, or the entity registry. **So the ask is narrower than this section first said, and
+> more exact:** a supported, configurable per-domain policy for a user or token, extended to the
+> services and registry views it does not yet cover. §4.11 rates R3 High on the earlier reading; its
+> rating is revisited in phase R rather than changed here.
 
 **What Chapter 7 adds is that the consequence is now measured rather than reasoned about.** §7.15.3
 confirms the platform credential live in the mediator's process, reachable seven ways by the same

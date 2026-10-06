@@ -1,0 +1,12 @@
+F45 — the mediator's token is an ordinary user's
+54/54 checks passed
+F45 — the mediator's token is an ordinary user's
+
+  ok    the mediator's user is not an admin  — confine-mediator, is_admin=False
+  ok    it may not list the house's users  — config/auth/list: {'code': 'unauthorized', 'message': 'Unauthorized'}
+  ok    it may not see integrations being added  — config_entries/flow/progress: {'code': 'unauthorized', 'message': 'Una
+  ok    it may not subscribe to every service call  — subscribe_events: {'code': 'unauthorized', 'message': 'Unauthorized'}
+  ok    it may not call an admin-only service (check_config)  — call_service: {'code': 'home_assistant_error', 'message': 'Unauthorize
+  ok    another ordinary user, not the designated one, is refused by the bridge  — user 458f1e77…: confine_bridge/commands: {'code': 'unauthorized', 'message': 'Unauthor
+
+R2 — (A) restarts, and the bridged entity is still there

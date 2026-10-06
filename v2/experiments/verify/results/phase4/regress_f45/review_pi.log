@@ -1,0 +1,9 @@
+before: supervisors [] sandboxes []
+  ok    P1 a declared 192 MB is the sandbox's memory.max — memory.max 201326592
+  ok    P2 the first supervisor's sandbox is still running — pid 86485 
+  ok    P2 and the first supervisor did not report it exited — 
+../verify/review_pi.sh: line 54: 86548 Killed                  ( cd "$F" && exec systemd-run --user --scope -q python3 -u -m confine.supervise --component ../experiments/flood/demo_flood --python "$P" --audit-dir "$2" --permissions "${3:-$NOTHING}" ) > "$1" 2>&1
+  ok    P3 two report files, one per start — decisions-20261006T215002-86548.jsonl decisions-20261006T215018-86586.jsonl demo_flood-20261006T215002-86548-run1.json demo_flood-20261006T215002-86548-run1.log demo_flood-20261006T215018-86586-run1.json demo_flood-20261006T215018-86586-run1.log 
+  ok    P4 (A) reports itself RUNNING to the mediator's connection — 
+after cleanup: supervisors [] sandboxes []
+ALLDONE

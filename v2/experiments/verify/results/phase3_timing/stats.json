@@ -6,13 +6,14 @@
       43.2,
       43.4,
       42.0,
-      41.2
+      41.2,
+      41.7
     ],
-    "median": 42.6,
-    "verdict": "within T (-0.9%)",
+    "median": 42.0,
+    "verdict": "within T (-2.3%)",
     "section": "\u00a77.45.1",
-    "final": 41.2,
-    "final_verdict": "within T (-4.2%)",
+    "final": 41.7,
+    "final_verdict": "within T (-3.0%)",
     "bootstrap_95": [
       41.2,
       43.4
@@ -21,7 +22,8 @@
       62.1,
       53.2,
       55.5,
-      53.2
+      53.2,
+      53.5
     ],
     "state": "warm"
   },
@@ -32,12 +34,13 @@
       799.7,
       802.5,
       814.2,
-      794.4
+      794.4,
+      810.5
     ],
-    "median": 801.1,
+    "median": 802.5,
     "verdict": "reported",
     "section": "\u00a77.19",
-    "final": 794.4,
+    "final": 810.5,
     "final_verdict": null,
     "bootstrap_95": [
       794.4,
@@ -53,22 +56,24 @@
       3660.2,
       3665.9,
       3617.7,
-      3665.8
+      3665.8,
+      3689.9
     ],
-    "median": 3663.0,
-    "verdict": "within T (-0.2%)",
+    "median": 3665.8,
+    "verdict": "within T (-0.1%)",
     "section": "\u00a77.20.1",
-    "final": 3665.8,
-    "final_verdict": "within T (-0.1%)",
+    "final": 3689.9,
+    "final_verdict": "within T (+0.5%)",
     "bootstrap_95": [
       3617.7,
-      3665.9
+      3689.9
     ],
     "p99": [
       8034.1,
       5068.0,
       7177.1,
-      4999.6
+      4999.6,
+      4877.3
     ],
     "state": "warm"
   },
@@ -79,13 +84,14 @@
       161.6,
       160.9,
       160.8,
-      160.3
+      160.3,
+      160.7
     ],
-    "median": 160.85000000000002,
+    "median": 160.8,
     "verdict": "within M (-0.3%)",
     "section": "\u00a77.35",
-    "final": 160.3,
-    "final_verdict": "within M (-0.6%)",
+    "final": 160.7,
+    "final_verdict": "within M (-0.4%)",
     "bootstrap_95": [
       160.3,
       161.6
@@ -100,15 +106,16 @@
       126.5,
       134.4,
       127.5,
-      131.2
+      131.2,
+      122.2
     ],
-    "median": 129.35,
-    "verdict": "within M (+4.0%)",
+    "median": 127.5,
+    "verdict": "within M (+2.5%)",
     "section": "\u00a77.35",
-    "final": 131.2,
-    "final_verdict": "OUTSIDE M (+5.5%)",
+    "final": 122.2,
+    "final_verdict": "within M (-1.8%)",
     "bootstrap_95": [
-      126.5,
+      122.2,
       134.4
     ],
     "p99": null,
@@ -121,6 +128,7 @@
       58.8,
       58.7,
       58.7,
+      58.6,
       58.6
     ],
     "median": 58.7,
@@ -142,13 +150,14 @@
       141.2,
       140.7,
       140.7,
-      140.6
+      140.6,
+      141.1
     ],
     "median": 140.7,
     "verdict": "within M (+3.8%)",
     "section": "\u00a77.35",
-    "final": 140.6,
-    "final_verdict": "within M (+3.7%)",
+    "final": 141.1,
+    "final_verdict": "within M (+4.1%)",
     "bootstrap_95": [
       140.6,
       141.2
@@ -163,15 +172,16 @@
       11.5,
       11.5,
       11.5,
-      11.4
+      11.4,
+      11.3
     ],
     "median": 11.5,
     "verdict": "within T (+5.5%)",
     "section": "\u00a77.36",
-    "final": 11.4,
-    "final_verdict": "within T (+4.6%)",
+    "final": 11.3,
+    "final_verdict": "within T (+3.7%)",
     "bootstrap_95": [
-      11.4,
+      11.3,
       11.5
     ],
     "p99": null,
@@ -184,16 +194,17 @@
       0.74,
       0.73,
       0.71,
-      0.74
+      0.74,
+      0.93
     ],
-    "median": 0.735,
-    "verdict": "within T (+3.5%)",
+    "median": 0.74,
+    "verdict": "within T (+4.2%)",
     "section": "\u00a77.37",
-    "final": 0.74,
-    "final_verdict": "within T (+4.2%)",
+    "final": 0.93,
+    "final_verdict": "OUTSIDE T (+31.0%)",
     "bootstrap_95": [
       0.71,
-      0.74
+      0.93
     ],
     "p99": null,
     "state": "not controlled by the harness"
@@ -205,15 +216,16 @@
       15.701792000015757,
       15.73085200004698,
       13.364547999998422,
-      11.622237001574831
-    ],
-    "median": 14.53317000000709,
-    "verdict": "within T (-9.2%)",
-    "section": "\u00a77.38",
-    "final": 11.622237001574831,
-    "final_verdict": "OUTSIDE T (-27.4%)",
-    "bootstrap_95": [
       11.622237001574831,
+      11.13882299978286
+    ],
+    "median": 13.364547999998422,
+    "verdict": "within T (-16.5%)",
+    "section": "\u00a77.38",
+    "final": 11.13882299978286,
+    "final_verdict": "OUTSIDE T (-30.4%)",
+    "bootstrap_95": [
+      11.13882299978286,
       15.73085200004698
     ],
     "p99": null,
@@ -226,13 +238,14 @@
       0.809,
       0.818,
       0.807,
-      0.81
+      0.81,
+      0.807
     ],
-    "median": 0.8095000000000001,
-    "verdict": "within T (-0.3%)",
+    "median": 0.809,
+    "verdict": "within T (-0.4%)",
     "section": "\u00a77.44",
-    "final": 0.81,
-    "final_verdict": "within T (-0.2%)",
+    "final": 0.807,
+    "final_verdict": "within T (-0.6%)",
     "bootstrap_95": [
       0.807,
       0.818
@@ -247,13 +260,14 @@
       2.29,
       2.92,
       2.9,
-      2.81
+      2.81,
+      2.53
     ],
-    "median": 2.855,
-    "verdict": "within T (+15.6%)",
+    "median": 2.81,
+    "verdict": "within T (+13.8%)",
     "section": "\u00a77.39",
-    "final": 2.81,
-    "final_verdict": "within T (+13.8%)",
+    "final": 2.53,
+    "final_verdict": "within T (+2.4%)",
     "bootstrap_95": [
       2.29,
       2.92
@@ -268,10 +282,11 @@
       1.94,
       1.87,
       1.9,
+      1.88,
       1.88
     ],
-    "median": 1.89,
-    "verdict": "within T (+1.1%)",
+    "median": 1.88,
+    "verdict": "within T (+0.5%)",
     "section": "\u00a77.39",
     "final": 1.88,
     "final_verdict": "within T (+0.5%)",

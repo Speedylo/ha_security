@@ -1,0 +1,10 @@
+F45 — the mediator's token is an ordinary user's
+
+  FAIL  the mediator's user is not an admin  — Capstone, is_admin=True
+  FAIL  it may not list the house's users  — allowed
+  FAIL  it may not see integrations being added  — allowed
+  FAIL  it may not subscribe to every service call  — allowed
+  FAIL  it may not call an admin-only service (check_config)  — allowed
+  ok    another ordinary user, not the designated one, is refused by the bridge  — user 458f1e77…: confine_bridge/commands: {'code': 'unauthorized', 'message': 'Unauthor
+
+46/51 checks passed

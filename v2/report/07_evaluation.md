@@ -512,6 +512,9 @@ Four things, named now rather than conceded later.
    limitation: Home Assistant issues no read-only or per-domain token, so the mediator holds full
    authority in order to mediate at all. This is reported, not solved, and §4.12 names scoped
    tokens as the trigger that would change it.
+   *Corrected 2026-10-06 (F45, §7.45.11): the platform does have a read-only group and an enforced
+   per-domain entity policy, configurable only by hand. The mediator now runs as an ordinary user,
+   and the scope it can hold was evaluated after all.*
 4. **It cannot claim generality beyond what it measured.** One platform, one release, one host,
    two corpora of 37. Chapter 8 states the boundary; this chapter's job is to make sure every
    number inside it carries its own qualification. *(The uniform draw came in at 40 of 40 rather
@@ -4516,6 +4519,13 @@ the loop that waited for it. It is timestamped where the change arrives at the m
 > the same check the worst is 1.49–2.91 ms. The median stands. A change reaches the mediator in under
 > a millisecond typically, and within about 3 ms in every run on file.
 
+> **And the median is a range (2026-10-06, verification finding F46).** Over the campaign's runs the
+> median was 0.71–0.74 ms in Phase 3, 0.74 ms on the final tag, and 0.93 ms on the run after F45. Six
+> runs the same evening, alternating the mediator's new non-admin token with the old admin one, gave
+> 0.50–0.66 ms for each, with no difference between them. So F45's change does not cost anything
+> measurable here, and the figure moves between runs by more than ±20%. It is read as **0.5–0.9 ms**:
+> under a millisecond in every run.
+
 **What this changes in the report's claims.** §8.6.3's limitation 2 was that what crossed the
 boundary was real but what a live instance did with it was untested. For a sensor-publishing
 integration it is now tested: its entities are first-class in the house's Home Assistant, survive a
@@ -4585,10 +4595,10 @@ written by the author of the sandbox.
 | An answer to a command never sent | refused and recorded; the channel survives |
 | Regression | `thermal_comfort` against (A) unchanged from §7.37; all 24 suites pass on the Pi |
 
-> **A range, not one value (2026-10-06, verification finding F44).** Over four later runs on the
-> Pi, three in Phase 3 and one on the final tag, the command took 15.7, 15.7, 13.4 and 11.6 ms. The
-> final run is 27% under the 16 ms above, outside ±20%, in the faster direction. Why it has fallen
-> is not established. The figure is quoted as **12–16 ms**, and what the table shows does not
+> **A range, not one value (2026-10-06, verification finding F44).** Over five later runs on the
+> Pi, three in Phase 3 and two on the final tags, the command took 15.7, 15.7, 13.4, 11.6 and 11.1 ms.
+> The final runs are 27–30% under the 16 ms above, outside ±20%, in the faster direction. Why it has
+> fallen is not established. The figure is quoted as **11–16 ms**, and what the table shows does not
 > change.
 
 ### 7.38.3 The predictions, and what this establishes
@@ -5542,6 +5552,40 @@ operation and field, and the security review of §7.45.6. None of these replaces
 attacker. The review found a way out of the sandbox (F34) that 26 suites and every earlier attack
 had missed. That is the strongest evidence in this chapter that attacks the builders did not think
 of exist, and an independent attempt is the first thing further work should add (§8.7).
+
+
+### 7.45.11 The mediator no longer needs to be the house's administrator
+
+R3, the first of the inherited limits, said Home Assistant issues no read-only and no per-domain
+token, so the mediator must hold full authority. Checked against the release itself (finding F45),
+that is wrong. A long-lived token carries its user's permissions. A read-only group exists. And an
+entity policy (read, control and edit, by entity, domain, device or area) is enforced when states
+are read and when services are called on entities. The mediator held an admin token for a reason
+that was this project's own: the bridge it installs in the house admitted only administrators.
+
+**The change** (`notes/f45_prediction.md`). The bridge now admits an administrator or the one user an
+administrator has designated as the mediator. `house_a` creates that user, `confine-mediator`, as an
+ordinary local user, and the mediator connects with its token. Nothing in the mediator changed, which
+is what §5.15.3 claimed for a narrower credential.
+
+**What it shows.** With the old admin token, the mediator could list the house's users, watch
+integrations being added, subscribe to every service call and run admin-only services. With its own
+token it is refused all four, and every other user is refused by the bridge. Both suite runs, (A)'s
+restart suite (54/54), the refusal flood and its Repairs path, the fault cases and `nordpool` end to
+end pass unchanged on the tag `verify-2026-10-f45`. The latencies measured against the house's real
+Home Assistant are no different with the new token: six alternating runs gave 0.50–0.66 ms for
+each, with the admin and the non-admin token alike (F46 records the spread).
+
+**How far it goes.** An ordinary user still controls every entity, so a compromised mediator can
+still operate the whole house's devices. What it can no longer do is create users, change the
+configuration, install integrations or restart the house. Narrowing control to the domains the
+confined integrations declare is what Home Assistant's own policy engine does when given such a
+group. On a scratch copy of the house, a user in a hand-written group granting only `sensor` read
+only sensor states, and was refused a service call on a switch while the same call on a sensor was
+accepted (`verify/f45_policy.py`). But no supported screen creates such a group. The policy does
+not cover services with no entity target (a notification went through), and the entity registry
+is not filtered by it. So §8.8's ask of the platform becomes exact: make the per-domain policy
+configurable, and extend it to the calls it does not cover.
 
 ---
 
