@@ -239,6 +239,8 @@ add the missing ones (the full disk, and the clock).
 
 ### 7.6 Independent adversary
 
+*Dropped 2026-10-06 (Younes's decision): no one independent of the framework was available. Recorded in §7.45.10; exit criterion 8 is therefore unmet, and stated as such.*
+
 Someone who did not write the framework writes attacks from Chapter 4's register alone. **Younes is
 the right person**, and doing it is also viva preparation: for each threat, try to defeat the
 control from inside a sandbox, starting from a blank file. Examples: reading another sandbox's

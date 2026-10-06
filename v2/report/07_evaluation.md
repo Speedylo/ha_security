@@ -5515,6 +5515,23 @@ One stale tally was already right (F06), and an unexplained change in a baseline
 closed as a note (F12). The regression on `verify-2026-10-minor` passed: both suite runs in full,
 and `nordpool` end to end twice (`experiments/verify/results/phase4/regress_minor/`).
 
+
+### 7.45.10 What the campaign did not do
+
+The plan had one phase that was not run: an independent adversary (verification plan §7.6). Someone
+who did not write the framework would attack it from Chapter 4's threat register alone, starting from
+a blank file, and every attempt would be recorded. It was dropped on 2026-10-06. The framework was
+built with AI assistance, so neither of the two people available, the author or the assistant that
+helped write it, would be independent of it. An attack written by either would have tested the
+design with the same assumptions that built it.
+
+So the security results in this chapter rest on the attacks the project wrote itself. Those are the
+adversary suite's 38 attempts, the paired unconfined arms, the 18 mutants, the fuzzing of every
+operation and field, and the security review of §7.45.6. None of these replaces an outside
+attacker. The review found a way out of the sandbox (F34) that 26 suites and every earlier attack
+had missed. That is the strongest evidence in this chapter that attacks the builders did not think
+of exist, and an independent attempt is the first thing further work should add (§8.7).
+
 ---
 
 *§7.1–§7.11 written 2026-09-02, before any measurement specified here had been run. Criteria in
