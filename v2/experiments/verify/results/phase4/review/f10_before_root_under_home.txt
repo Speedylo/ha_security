@@ -1,0 +1,40 @@
+sandbox self-test — what one integration can see
+
+  uid inside              0  (outside: 1000)
+  hostname                raspberrypi
+  pid                     1
+  processes visible       1  ['1']
+  network interfaces      ['lo']
+  entries at /            ['bin', 'dev', 'etc', 'home', 'lib', 'proc', 'sandbox', 'sbin', 'tmp', 'usr']
+
+  ok    its own directory          present, read-only
+  ok    its own data directory     present, writable
+  ok    the declared file          present, read-only
+  ok    secrets.yaml               ABSENT
+  ok    the .storage directory     ABSENT
+  ok    another integration        ABSENT
+  ok    the configuration root     present
+  FAIL  the user's home directory  present
+  ok    …and it holds only         ['shared']
+
+  ok    chroot(2)                  Operation not permitted
+  ok    ptrace(2)                  Operation not permitted
+  ok    unshare(2)                 Operation not permitted
+
+  ok    the default TLS context has CA certificates to trust  303 readable in /usr/lib/ssl/certs
+  ok    …and cannot add one        read-only
+  ok    /etc holds ssl/certs and nothing else  /etc=['ssl'] /etc/ssl=['certs']
+  ok    /etc/ssl/private is absent  absent
+
+  ok    /dev holds no terminal     ['full', 'null', 'random', 'urandom', 'zero']
+  ok    no controlling terminal    none
+  note                             no terminal attached to this run, so the second row cannot fail
+
+FAILED: the user's home directory
+
+# F10, read 2026-10-06. Above: the base self-test before the fix, with its scratch under home
+# (TMPDIR=~/r2exp/disktmp), where a real installation keeps its configuration: "the user's home
+# directory: present" fails the old expectation (ABSENT), which only held because /tmp is outside
+# home. After the fix the configuration root is under ~/.cache always, home is expected present,
+# and every directory from home to the root must hold only the next link. That passes. A control
+# granting one more file beside the root fails it: "confine-selftest:['another-file', ...]".

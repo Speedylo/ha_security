@@ -78,6 +78,11 @@ report = {
         for line in Path("/proc/net/dev").read_text().splitlines()[2:] if ":" in line
     ),
     "paths": {p: probe(p) for p in PATHS},
+    # F10: every directory from the user's home down to the configuration root, and what each
+    # holds. A bind mount creates the directories above its target, so this chain exists; the
+    # question is whether anything but the next link is in it.
+    "home_chain": [(d, sorted(os.listdir(d)) if os.path.isdir(d) else None)
+                   for d in CHAIN],
     # What the configuration root looks like from in here. It exists — binding a declared
     # path necessarily creates the directories above it — so the question worth asking is
     # not whether it is there but whether anything is in it.
@@ -149,7 +154,12 @@ def main() -> int:
     require_ready(deep=False)
     become_subreaper()
 
-    root = Path(tempfile.mkdtemp(prefix="confine-selftest-"))
+    # Under the user's home, where a real installation keeps its configuration (verification
+    # finding F10). In /tmp, "the user's home directory: absent" held for a reason no real
+    # installation shares.
+    scratch = Path.home() / ".cache" / "confine-selftest"
+    scratch.mkdir(parents=True, exist_ok=True)
+    root = Path(tempfile.mkdtemp(prefix="confine-selftest-", dir=scratch))
     try:
         layout = build_config(root)
         watched = {
@@ -162,8 +172,11 @@ def main() -> int:
             "the configuration root": str(root),
             "the user's home directory": os.path.expanduser("~"),
         }
+        home = Path.home()
+        chain = [str(home), *(str(p) for p in reversed(root.parents) if home in p.parents)]
         script = (f"PATHS = {json.dumps(list(watched.values()))}\n"
-                  f"CONFIG_ROOT = {json.dumps(str(root))}\n" + INSIDE)
+                  f"CONFIG_ROOT = {json.dumps(str(root))}\n"
+                  f"CHAIN = {json.dumps(chain)}\n" + INSIDE)
         spec = SandboxSpec(
             domain="demo_a",
             own_dir=str(layout["own"]),
@@ -204,7 +217,9 @@ def render(report: dict, watched: dict[str, str]) -> int:
         # target, so granting one path inside the configuration directory makes the
         # directory itself exist. What matters is that it is a skeleton — see below.
         ("the configuration root",    True,  None),
-        ("the user's home directory", False, None),
+        # Present for the same reason, now that the configuration lives under home as a real
+        # installation's does (F10). The chain check below is what matters.
+        ("the user's home directory", True,  None),
     ]
     failures = []
     width = max(len(label) for label, _, _ in expectations)
@@ -219,6 +234,16 @@ def render(report: dict, watched: dict[str, str]) -> int:
         if not ok:
             failures.append(label)
         print(f"  {'ok  ' if ok else 'FAIL'}  {label:<{width}}  {detail}")
+
+    # F10: home, and every directory between it and the configuration root, holds exactly the
+    # next link of the chain and nothing else: no dotfiles, no keys, no other project.
+    chain = report["home_chain"] + [(str(watched["the configuration root"]), None)]
+    skeleton = all(listing == [Path(chain[i + 1][0]).name]
+                   for i, (_d, listing) in enumerate(chain[:-1]))
+    shown = " / ".join(f"{Path(d).name or d}:{listing}" for d, listing in report["home_chain"])
+    print(f"  {'ok  ' if skeleton else 'FAIL'}  {'…home holds only the chain':<{width}}  {shown}")
+    if not skeleton:
+        failures.append(f"home holds more than the chain to the configuration root: {shown}")
 
     listing = report["config_root_listing"]
     granted_only = listing == ["shared"]
