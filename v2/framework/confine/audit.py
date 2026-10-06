@@ -218,13 +218,28 @@ class AuditLog:
         record["mac"] = hmac.new(self.key, self._last_mac.encode() + canonical,
                                  hashlib.sha256).hexdigest()
         created = not self.path.exists()
-        with self.path.open("a", encoding="utf-8") as handle:
-            handle.write(json.dumps(record, sort_keys=True) + "\n")
-            handle.flush()
-            # A record that is only in a buffer is not a record. §5.11.3 puts the write before
-            # the action so that an action which succeeds and then crashes the mediator is
-            # still attributable, and that ordering is worth nothing if the write is lazy.
-            os.fsync(handle.fileno())
+        # Unbuffered and binary, so that nothing of a failed record can wait in a buffer and be
+        # written when the file is closed, after the truncation below has undone it.
+        with self.path.open("ab", buffering=0) as handle:
+            # Where the file ends before this record, so a failed append can be undone. A full
+            # disk (verification 4.5, finding F28) left half a record behind, and every record
+            # written after space was freed sat beyond it where `verify` could never reach.
+            size = handle.seek(0, os.SEEK_END)
+            try:
+                line = (json.dumps(record, sort_keys=True) + "\n").encode("utf-8")
+                while line:
+                    line = line[handle.write(line):]
+                # A record that is only in a buffer is not a record. §5.11.3 puts the write
+                # before the action so that an action which succeeds and then crashes the
+                # mediator is still attributable, and that ordering is worth nothing if the
+                # write is lazy.
+                os.fsync(handle.fileno())
+            except BaseException:
+                # The record did not happen. Leave the file as the last complete record left it,
+                # then fail as before: the chain is not advanced, and the caller does not act.
+                os.ftruncate(handle.fileno(), size)
+                os.fsync(handle.fileno())
+                raise
         if created:
             # The file's fsync makes its contents durable, not its name. Until the directory is
             # fsynced too, a crash can leave the first record written to a file nothing points

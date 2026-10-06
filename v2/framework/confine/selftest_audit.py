@@ -413,6 +413,40 @@ def main() -> int:
               f"{len(every)} decision records, "
               f"{sum(1 for r in every if not r.get('clause'))} without a clause", failures)
 
+        # -- F28: a failed append leaves nothing behind ------------------------------------
+        # A full disk (verification 4.5, FI3) left half a record in the file, and every record
+        # appended after space was freed sat behind it, unverifiable for good. Staged here
+        # without a full disk: the record's fsync fails, which is the last step that can.
+        print("\n  F28 — an append that fails leaves the log as it was")
+        from . import audit as audit_f28
+        log6 = AuditLog(path=root / "f28.jsonl")
+        for i in range(3):
+            log6.decision("r", "demo", {"op": "entity.read", "entity": f"sensor.s{i}"},
+                          True, "/permissions/entities/read/0", "declared")
+        before = log6.path.read_bytes()
+        real = audit_f28.os.fsync
+
+        def full(fd: int) -> None:
+            raise OSError(28, "No space left on device")
+        audit_f28.os.fsync = full
+        try:
+            log6.decision("r", "demo", {"op": "entity.read", "entity": "sensor.lost"},
+                          True, "/permissions/entities/read/0", "declared")
+            failed = False
+        except OSError:
+            failed = True
+        finally:
+            audit_f28.os.fsync = real
+        check("the failed append raises, and the file is exactly as it was before it",
+              failed and log6.path.read_bytes() == before,
+              f"raised={failed}, {len(log6.path.read_bytes()) - len(before)} bytes left behind",
+              failures)
+        log6.decision("r", "demo", {"op": "entity.read", "entity": "sensor.next"},
+                      True, "/permissions/entities/read/0", "declared")
+        check("...and the next record continues the chain, which verifies",
+              log6.verify() == [] and [r["seq"] for r in log6.records()] == [0, 1, 2, 3],
+              str([(b.seq, b.kind) for b in log6.verify()][:3]), failures)
+
         # -- the directory entries are durable too ------------------------------------------
         # A crash cannot be staged here, so the check is on what the code asks the kernel to
         # make durable: every fsync is recorded with whether its descriptor was a directory, and
