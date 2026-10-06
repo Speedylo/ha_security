@@ -5409,6 +5409,46 @@ passed in full, as did `nordpool` end to end, (A)'s restart test, the refusal fl
 the Repairs panel, every fault case of §7.45.5, and every test above. The fuzzer found nothing,
 and every headline number in the report re-derived unchanged (39 of 39).
 
+
+### 7.45.7 The record itself, the controls, and a person at the screen
+
+The last phases checked the record rather than the code, and ended with a person using the system.
+Each phase's criteria were committed before it ran (`notes/integrity_consistency_prediction.md`,
+`notes/acceptance_4_11.md`).
+
+**The predictions came before their results, with one exception the record cannot settle.** All
+19 prediction notes were committed before the first result they predict, and no prediction line
+was edited afterwards (`verify/prereg.py`). For the tightest gaps, the Pi's own file times confirm
+the order. The exception is Chapter 7's first measurement. The baseline finished 18 minutes before
+§7.1–§7.11 were committed, so git cannot show the criteria were written first, and §7.12.3 now
+says so (F36). The history holds no credential, and every result the report cites is in it. The
+raw snapshot behind Chapter 1's figures was not, and now is (F37).
+
+**Every positive security verdict has a control:** an unconfined pair, a mutant whose removal of
+the protection makes the verdict's own check fail, or a counter the kernel keeps for the
+mechanism. One was missing. No test would have noticed the manifest's write check being removed,
+because every write refusal in the suites was also refused for another reason. A test now does
+(F39). The process and disk bounds gained control runs: the same work succeeds once the bound is
+raised.
+
+**The report agrees with itself and with its sources.** All 2,442 section references and every
+citation resolve. All 29 references were checked against their sources, and the bibliographic
+gaps were filled (F41). One sentence misstated two audit standards as preferring to stop the
+audited activity, where both only allow it. It is corrected, and both are now cited (F40, [30],
+[31]). One verdict lags its own evidence: T06 still counts as partial after §7.36 removed its stated
+reason (F38). Raising it is a decision about a security claim, so it is left open for that decision
+rather than made here.
+
+**A person ran the whole path in a browser, and before that a check of the checklist found a
+failure.** Restarting the house's Home Assistant from its own interface stopped it for good: this
+release expects a process manager to start it again, and the harness provided none. That would
+have failed in front of an examiner. It is fixed (F42). In the run itself, on 2026-10-06, a
+household member's view held at every step (`experiments/verify/results/phase4/acceptance/`).
+They saw the confined integration's switch. Turning it on cut the integration off. Repairs
+explained why in plain words, with one button that grants nothing new. Pressing it restarted the
+integration. And when the house's Home Assistant was restarted from its own settings, the
+integration was running again five seconds later, with nothing typed.
+
 ---
 
 *§7.1–§7.11 written 2026-09-02, before any measurement specified here had been run. Criteria in
