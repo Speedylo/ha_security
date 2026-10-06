@@ -75,7 +75,7 @@ def check_memory(delegation: Delegation) -> tuple[str, bool, str]:
             f"exit {proc.returncode}, oom_kill={oom}")
 
 
-def check_processes(delegation: Delegation) -> tuple[str, bool, str]:
+def check_processes(delegation: Delegation, cap: int = 16) -> tuple[str, bool, str]:
     """A sandbox forking past `max_processes` is refused by the kernel, not by a check here."""
     script = ("import os, sys\n"
               "n = 0\n"
@@ -87,13 +87,16 @@ def check_processes(delegation: Delegation) -> tuple[str, bool, str]:
               "except OSError: pass\n"
               "sys.stdout.write(str(n))\n")
     with SandboxCgroup.create(delegation, "res-pids",
-                              ResourceLimits(memory_mb=256, max_processes=16)) as cgroup:
+                              ResourceLimits(memory_mb=256, max_processes=cap)) as cgroup:
         proc = _child(script, cgroup)
         out, _ = proc.communicate(timeout=60)
     forked = int(out.decode().strip() or -1)
     # The cap counts every task in the cgroup including the parent, so the number of successful
     # forks is bounded by the cap and not equal to it. What matters is that 200 did not happen.
-    return ("max_processes: 200 forks attempted against a cap of 16",
+    if cap > 200:
+        return (f"control: the same 200 forks against a cap of {cap} all succeed",
+                forked == 200, f"{forked} forks succeeded")
+    return (f"max_processes: 200 forks attempted against a cap of {cap}",
             0 <= forked < 200,
             f"{forked} forks succeeded before the kernel refused")
 
@@ -122,7 +125,7 @@ def check_cpu(delegation: Delegation) -> tuple[str, bool, str]:
             f"throttled {throttled / 1e6:.2f}s")
 
 
-def check_disk_space(delegation: Delegation) -> tuple[str, bool, str]:
+def check_disk_space(delegation: Delegation, cap: int = DISK_CAP_MB) -> tuple[str, bool, str]:
     """A sandbox writing past `disk_mb` into its private /tmp gets ENOSPC.
 
     Run against a tmpfs mounted the way `build_root` mounts the sandbox's own, in a private
@@ -145,7 +148,7 @@ def check_disk_space(delegation: Delegation) -> tuple[str, bool, str]:
         f"open('/proc/self/gid_map', 'w').write(f'0 {os.getgid()} 1')\n"
         f"if libc.unshare(0x00020000) != 0: sys.exit('unshare mountns failed')\n"
         f"d = tempfile.mkdtemp()\n"
-        f"mount('tmpfs', d, 'tmpfs', MS_NOSUID | MS_NODEV, 'mode=1777,size={DISK_CAP_MB}m')\n"
+        f"mount('tmpfs', d, 'tmpfs', MS_NOSUID | MS_NODEV, 'mode=1777,size={cap}m')\n"
         f"written = 0\n"
         f"try:\n"
         f"    with open(os.path.join(d, 'fill'), 'wb') as fh:\n"
@@ -155,14 +158,17 @@ def check_disk_space(delegation: Delegation) -> tuple[str, bool, str]:
         f"    sys.stdout.write(f'{{written}} {{err.errno}}'); sys.exit(0)\n"
         f"sys.stdout.write(f'{{written}} 0')\n")
     with SandboxCgroup.create(delegation, "res-disk",
-                              ResourceLimits(memory_mb=256, disk_mb=DISK_CAP_MB)) as cgroup:
+                              ResourceLimits(memory_mb=256, disk_mb=cap)) as cgroup:
         proc = _child(script, cgroup)
         out, err = proc.communicate(timeout=60)
     fields = out.decode().strip().split()
     written, errno = (int(fields[0]), int(fields[1])) if len(fields) == 2 else (-1, 0)
     import errno as errno_mod
-    return (f"disk_mb: 64 MB written into a {DISK_CAP_MB} MB private /tmp",
-            errno == errno_mod.ENOSPC and 0 < written <= DISK_CAP_MB + 1,
+    if cap > 64:
+        return (f"control: the same 64 MB into a {cap} MB private /tmp is all written",
+                written == 64 and errno == 0, f"{written} MB written, errno {errno}")
+    return (f"disk_mb: 64 MB written into a {cap} MB private /tmp",
+            errno == errno_mod.ENOSPC and 0 < written <= cap + 1,
             f"{written} MB written, then errno {errno} "
             f"({os.strerror(errno) if errno else 'no error'})"
             + (f"; {err.decode().strip()}" if errno == 0 and err else ""))
@@ -274,7 +280,12 @@ def main() -> int:
     if not delegation.available:
         print(f"  cgroup cases skipped: {delegation.unavailable}\n")
     else:
-        for check in (check_memory, check_processes, check_cpu, check_disk_space,
+        # The two controls (verification 4.4): the same work with the bound raised succeeds,
+        # so the refusal above is the bound and not some other limit of the host. Memory and
+        # CPU carry their own attribution, the cgroup's `oom_kill` and `throttled_usec`.
+        for check in (check_memory, check_processes,
+                      lambda d: check_processes(d, cap=512), check_cpu, check_disk_space,
+                      lambda d: check_disk_space(d, cap=128),
                       check_io_not_delegated, check_refuses_unenforceable):
             try:
                 results.append(check(delegation))

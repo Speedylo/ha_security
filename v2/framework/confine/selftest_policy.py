@@ -99,6 +99,22 @@ def main() -> int:
         check("lock.unlock is DENIED by the same manifest", not refused.allowed,
               f"{refused.reason}", failures)
 
+        # ---- T07: a write is matched against its clause, not only against its absence ----
+        # Every other write refusal in the suites is denial by absence (nothing declared under
+        # entities.write), or the platform's ownership rule refusing it too. So with the
+        # clause match removed (mutant M01) they all still passed, and nothing showed the
+        # manifest's own check (verification 4.4, finding F39).
+        print("\nT07  writes reach the declared entities only")
+        component = write_component(root, "demo_writer", {
+            "schema_version": 1, "entities": {"write": ["sensor.own_status"]}})
+        writer = Manifest.load(component, root)
+        own = writer.decide({"op": "entity.write", "entity": "sensor.own_status"})
+        other = writer.decide({"op": "entity.write", "entity": "sensor.other_status"})
+        check("entity.write to the declared entity is permitted", own.allowed,
+              own.clause or "?", failures)
+        check("entity.write to an undeclared entity of the same domain is DENIED",
+              not other.allowed, f"{other.reason}", failures)
+
         # ---- rejections, all at parse time ------------------------------------------
         print("\n§5.10.4, §5.10.5, §5.10.1  what is refused when the manifest is read")
         rejections = [

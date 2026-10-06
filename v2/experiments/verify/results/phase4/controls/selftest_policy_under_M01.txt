@@ -1,0 +1,42 @@
+manifest self-test — the rules §5.10 said it would enforce
+
+§5.10.7  the worked example, and the nine capabilities it never mentions
+  ok    provenance is author-declared                         author-declared
+  ok    network.egress to the declared host and port          permit · /permissions/network/egress/0
+  FAIL  network.egress to the declared host on another port   permit · /permissions/network/egress
+  FAIL  network.egress to any other host                      permit · /permissions/network/egress
+  ok    entity.read of the declared sensor                    permit · /permissions/entities/read/0
+  FAIL  entity.read of an undeclared sensor                   permit · /permissions/entities/read
+  ok    entity.write, never declared                          deny · /permissions/entities/write
+  ok    service.call, never declared                          deny · /permissions/services/call
+  ok    config_entries.list, never declared                   deny · /permissions/config_entries/read_all
+
+§5.10.4 / S5  a grant of lock.lock is not a grant of lock.unlock
+  ok    lock.lock is permitted                                /permissions/services/call/0
+  FAIL  lock.unlock is DENIED by the same manifest            'lock.unlock' matches no clause at /permissions/services/call
+
+T07  writes reach the declared entities only
+  ok    entity.write to the declared entity is permitted      /permissions/entities/write/0
+  FAIL  entity.write to an undeclared entity of the same domain is DENIED  'sensor.other_status' matches no clause at /permissions/entities/write
+
+§5.10.4, §5.10.5, §5.10.1  what is refused when the manifest is read
+  ok    a wildcard in services.call                           rejected: 'lock.*' contains a wildcard. Every entry names one doma
+  ok    an entity pattern with no domain                      rejected: '*' must be domain.object_id; a domain is always require
+  ok    a wildcarded entity domain                            rejected: '*.temperature' wildcards the domain, which grants acros
+  ok    a wildcard in events.subscribe                        rejected: '*' contains a wildcard. The bus carries every state cha
+  ok    an unknown capability                                 rejected: unknown capabilities ['telepathy']. An unrecognised capa
+  ok    an unknown member of a known capability               rejected: unknown members ['obliterate'] in /permissions/entities
+  ok    the wrong schema version                              rejected: schema_version is 99, expected 1
+  ok    a files grant reaching .storage                       rejected: /tmp/confine-policy-8ygdpo7c/.storage/x resolves to /tmp
+  ok    a files grant reaching the configuration root         rejected: /tmp/confine-policy-8ygdpo7c resolves to /tmp/confine-po
+  ok    a files grant reaching secrets.yaml via ..            rejected: /tmp/confine-policy-8ygdpo7c/shared/../secrets.yaml reso
+
+§5.9.4 / S6  no manifest, and a manifest that is not a manifest
+  ok    no permissions key means provenance NONE              none
+  ok    entity.read denied with a clause pointer              /permissions/entities/read
+  ok    service.call denied with a clause pointer             /permissions/services/call
+  ok    network.egress denied with a clause pointer           /permissions/network/egress
+  ok    an unparseable manifest is refused                    not valid JSON: Expecting property name enclosed in doub
+
+FAILED: 5 — network.egress to the declared host on another port; network.egress to any other host; entity.read of an undeclared sensor; lock.unlock is DENIED by the same manifest
+exit 1
