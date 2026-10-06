@@ -170,8 +170,8 @@ platform can do.*
 | | Measured | Against |
 |---|---|---|
 | Per-sandbox memory budget on the C4 device | **26 sandboxes** (§6.3.2) | a measured mean of **4.02** integrations per HACS-running installation |
-| Mediator capacity, audit write included | **272 decisions/s** (§7.20.1) | realistic demand of **4.33 req/s** at the full budget — **63× headroom** |
-| Latency at 0.009% utilisation | **31.5 µs** | — |
+| Mediator capacity, audit write included | **269 decisions/s** (§7.20.1, with the request counted by §7.45.1) | realistic demand of **4.33 req/s** at the full budget — **62× headroom** |
+| Latency at 0.009% utilisation | **43.2 µs** *(31.5 µs as first printed; the mediator changed after it was measured, §7.45.1)* | — |
 | Durability | `fsync` per decision costs **3.67 ms**, 59× the non-durable write | affordable; §5.11.3's ordering guarantee is kept *(from 2026-10-04 only: before §7.36.1 the mediator recorded after acting)* |
 | Push delivery | **10.9 µs** per delivered state change, nothing written to disk (§7.36) | the hot path below, measured: it does not draw on the 272 decisions/s |
 
@@ -179,7 +179,9 @@ platform can do.*
 first reported 11,000× headroom by excluding the audit write; §7.20.1 measured that write at a
 hundred times the mediated request itself and the honest figure is 63×. The conclusion survives and
 the number does not, so the corrected one is the one quoted — the mediator is *comfortably but
-finitely* clear of demand, not four orders of magnitude clear.
+finitely* clear of demand, not four orders of magnitude clear. *(Corrected a second time on
+2026-10-06 by §7.45.1: the request itself costs 43.2 µs on the current mediator, not 31.5, and
+counting it alongside the audit write the headroom is 62×.)*
 
 **Two limits carried with C rather than discovered after it.** §7.7 itself recorded that **the mean
 is the wrong statistic** — the telemetry gives per-integration install counts but not the spread
@@ -441,6 +443,16 @@ future work is ordered the way it is.
 > was a cold start, so the base component's share is 52.5 MB rather than 60 (§7.35.2). Neither
 > touches a conclusion. What they add to this section is narrow: a measurement is only as good as its
 > record of what was measured. `scale.py` now writes the components it set up into its own output.
+>
+> **2026-10-06: a fifth moved figure, by a route none of the others took.** §7.19's 31.5 µs was
+> measured correctly, by a harness nobody has found at fault, and it stopped being true the next day.
+> Descriptor passing on 09-03 and the push loop on 10-04 each made a mediated request about 15%
+> slower, every suite kept passing because none asserts a latency, and the figure went on being
+> quoted for five weeks about a mediator that no longer existed. The verification campaign found it
+> by re-running every measurement on one frozen commit before the cut-off (§7.45.1). The
+> mediator now costs 43.2 µs, and N1's conclusion does not move, because the audit write is 85 times
+> larger. It adds a seventh mechanism to this section's list, and the cheapest: **a measurement
+> describes a commit**, so re-measure on the commit the report describes before quoting it.
 
 
 ## 8.5 The finding nobody was looking for
@@ -651,7 +663,7 @@ form, and a measurement behind it.
 forced the architecture was reproduced and defeated against a live credential; the 2021 file-theft
 pattern that this ecosystem actually suffered succeeds unconfined and recovers nothing confined;
 and the import-level compatibility cost across 77 integrations on two corpora, measured against an
-unconfined baseline both times, is zero. On the hardware the requirements name, the mediator is 63×
+unconfined baseline both times, is zero. On the hardware the requirements name, the mediator is 62×
 clear of realistic demand with durability paid for on every decision.
 
 **The last measurement taken was the one that mattered most, and it failed first.** Running a

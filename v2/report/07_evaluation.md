@@ -1372,6 +1372,11 @@ included; §6.8.3 flags that as the open question and §7.10 schedules it separa
 | 16 | 302.4 | 602.4 | 619.9 | 16,967 | 48,462 |
 | **26** | **512.2** | 568.9 | **1,039.0** | 28,124 | 47,693 |
 
+> **Corrected by §7.45.1 (2026-10-06).** This table describes the mediator of 2026-09-02. On
+> the code the report describes, re-run three times on the Pi, one client's median is **43.2 µs** and
+> twenty-six clients' is 802.5 µs; the mediator changed on 09-03 and 10-04 and this figure was not
+> re-measured. The shape of the curve, and §7.19.2's reading of it, survive.
+
 ### 7.19.2 P4 was wrong, and its shape was wrong in an informative way
 
 §7.6 predicted *"median within 2× of the single-client figure, p99 an order of magnitude worse"* —
@@ -1424,6 +1429,10 @@ observed latency is the one-client figure, **31.5 µs**.
 > 47,693**, and the headroom over realistic load is **63×, not 11,000×**. The conclusion for N1
 > survives and the arithmetic behind it does not, so the corrected numbers are the ones to
 > quote.
+>
+> **And corrected again by §7.45.1 (2026-10-06):** the one-client figure is **43.2 µs** on the
+> current mediator, not 31.5. Counting it alongside the audit write, capacity is 269 decisions a
+> second and the headroom 62×.
 
 §3.6 fixed in advance that no threshold would be asserted and the figures would be reported and
 discussed. The discussion is this: the design's per-request cost does not change what a user can
@@ -1470,6 +1479,10 @@ but what is being paid. On ext4 on the SD card:
 **Durability costs 3.6 ms per decision — 59× the non-durable write, and roughly a hundred times
 the mediated request it accompanies (§7.19.1's 31.5 µs).** §6.8.3 predicted it would cost "far
 more than the 2.4 µs decision" and that is a considerable understatement.
+
+> **Corrected by §7.45.1 (2026-10-06).** The mediated request is 43.2 µs on the current
+> mediator, so the durable record is about 85 times it rather than a hundred. The 272 decisions a
+> second below omit the request; counting it gives 269 and 62×. The conclusion is unchanged.
 
 **It is nonetheless affordable, and §7.19.3's conclusion survives with different arithmetic:**
 
@@ -2751,7 +2764,8 @@ it stopped being current the moment §7.22 ran.
 
 **No result in this chapter contradicts another.** Every figure quoted twice is quoted the same way:
 84% and the zero cost in §7.12 against §7.23's 92% and zero; 31.5 µs in §7.19 against §7.20.1's
-correction to 272 decisions per second, which §7.19.3 carries in place; 36-to-1 entities in §7.14;
+correction to 272 decisions per second, which §7.19.3 carries in place *(31.5 µs is corrected to
+43.2 µs by §7.45.1 on 2026-10-06: the mediator changed after it was measured)*; 36-to-1 entities in §7.14;
 2-of-2 canaries in §7.13; 96% of resolutions via `aiodns` in §7.24 *(a figure §7.31.11 corrects
 on 2026-10-03: it was the platform's `dhcp` discovery sweeping the LAN, and without it the share is
 17%)*. The four corrections in §7.26.6
@@ -5086,6 +5100,62 @@ two retained.
 that the stored token remains valid. Keeping the directory itself was first tried here, and the
 integration was not set up at all. The token claim stands; the persistence claim was argued, and is now
 a limitation (§8.6.3 #16, §8.7 #16).
+
+
+## 7.45 The verification campaign
+
+**Begun 2026-10-05, before the engineering cut-off, and still in progress.** Most of the figures in
+this chapter were measured on code that has changed since, and §7.27, §7.31, §7.43 and §7.44 each
+found defects behind suites that all passed. So before declaring the cut-off, every claim the report
+makes was entered in a register with the evidence behind it, the commit it was measured on and a
+pass criterion fixed before any re-run. Then everything was re-run on one frozen tag,
+`verify-2026-10`. The plan, the register and the findings log are in `notes/verification_plan_20261005.md`
+and `verify/claims_register.md`. This section records what the campaign changes in the report, one
+subsection per correction, and is completed when the campaign is.
+
+### 7.45.1 Mediation costs 43 µs, not 31.5
+
+**Re-run 2026-10-05 and 2026-10-06** on the frozen tag, three passes, each on its own boot of the Pi
+with the house's Home Assistant started fresh (`experiments/verify/results/phase3_timing/`). The
+register's criterion, fixed before the first pass, was a median across passes within ±20% of the
+figure §7.19 states. Twelve of the thirteen timing and memory figures the report states met their
+criterion (`verdicts.md`). This one did not:
+
+| Sandboxes | Median µs | p95 | p99 | Aggregate req/s | §7.19.1, 2026-09-02 |
+|---|---|---|---|---|---|
+| 1 | **43.2** | 47.1 | 55.5 | 22,337 | 31.5 µs, 25,739 req/s |
+| 2 | 66.0 | 71.2 | 76.8 | 29,561 | 43.1 µs, 44,736 req/s |
+| 26 | **802.5** | 845.1 | 1,620.4 | 30,328 | 512.2 µs, 47,693 req/s |
+
+*Each cell is the median of the three passes; the one-client medians were 43.2, 43.4 and 42.0 µs.*
+
+**The machine did not change; the mediator did.** The code §7.19 measured, run on the same Pi in the
+same minute as the frozen code, still gives 30–32 µs, against 42 µs for the frozen code. Running the
+same benchmark at every commit that touched the request path finds two steps of about 15% each.
+The first came on 2026-09-03, when the channel began passing file descriptors (§7.25's egress needs
+them), and the second on 2026-10-04 with the push loop's outbox and per-reply selector updates
+(§7.36). Both are costs of features the report depends on, so the mediator was not changed back.
+The figure is corrected instead, and it has been wrong since the day after it was measured
+(`experiments/verify/results/phase3_timing/latency_bisect.md`).
+
+**The reading of the scaling curve survives.** Aggregate throughput is flat from two clients to
+twenty-six, now at about 30,000 requests a second rather than 47,000, so §7.19.2's saturated serial
+server is still what the table shows. The median grows 18.6× from one client to twenty-six, where
+§7.19.2 had 16.3×, and p99 at twenty-six is still about twice the median.
+
+**N1's conclusion survives, and its arithmetic barely moves, because the audit write dominates.**
+§7.20.1's capacity, 1 / 3.67 ms = 272 decisions a second, never counted the mediated request itself.
+Counted, it is 1 / (3.67 ms + 43 µs) = 269 a second, and the headroom over §7.19.3's realistic
+demand of 4.33 requests a second is 62×, where it would have been 63× with the old figure. The durable
+record is about 85 times the request, not "roughly a hundred". A polling integration reading ten
+entities every thirty seconds spends about 0.43 ms of each cycle in mediation, against the 0.30 ms
+of §5.11.4's floor and the 0.36 ms Chapter 6 measured; each of those three was true of the code it
+was measured on.
+
+**What this adds to §8.4.2.** The figure was not misread, miscounted or mis-instrumented. It was
+correct, and then the code it described changed under it while every suite kept passing, because no
+suite asserts a latency. A measurement describes a commit, and a report that quotes it about later
+code has to measure again or say which commit it describes.
 
 ---
 

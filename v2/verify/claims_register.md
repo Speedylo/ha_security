@@ -49,7 +49,7 @@ same result or record dated history. So the register works in three tiers:
 | A1.15 | Five that poll an API match unconfined output: three exactly, two within a live value's movement | M | §7.31 | 10-03 | RM, RD | pending | |
 | A1.16 | Through mediated connections logged to a named host and port, over three network stacks | M | §7.31 | 10-03 | RM, RD | pending | |
 | A1.17 | One with a valid account credential that never reached the mediator | M | §7.34 | 10-03 | RM, RD (scan of records) | pending | |
-| A1.18 | Mediation costs 31.5 µs on the Pi 5 | M | §7.19 | **09-02** | RM ×3 | pending | stale code |
+| A1.18 | Mediation costs 31.5 µs on the Pi 5 | M | §7.19 | **09-02** | RM ×3 | **Qualified** 10-06: corrected to 43 µs, 62× (§7.45.1, F17) | stale code |
 | A1.19 | Audit record durable before its action, 3.67 ms | M | §7.20.1, §7.36.1 | 10-03 | RM on disk ×3, X7 | pending | |
 | A1.20 | 63× clear of realistic demand | M | §7.20.1, §7.18 | 09-02 | RD | pending | |
 | A1.21 | Entities in (A) are registry entities with unconfined names and survive a restart | M | §7.37 | 10-04 | R (L2, `--restart`) | pending | |
@@ -88,7 +88,7 @@ same result or record dated history. So the register works in three tiers:
 | S7 | Three-part identity; modification, deletion, reordering each detected, chains independent | Met | `selftest_audit`, §7.32 | 10-05 | R, X8, FI (disk full) | pending | |
 | S8 | 2021 file theft succeeds unconfined, blocked confined, same host and release | Met, paired | §7.13.2 | **09-02** | RM, CT, X13, X14 | pending | stale code |
 | S9 | CPU, memory, disk exhaustion does not hang the gateway, unprivileged | Met, narrowed | §7.22 | 09 | RM | pending | |
-| N1 | Latency, memory, concurrency reported against a baseline | Met as specified | §7.19–§7.20 | **09-02** / 10-03 | RM ×3 | pending | |
+| N1 | Latency, memory, concurrency reported against a baseline | Met as specified | §7.19–§7.20 | **09-02** / 10-03 | RM ×3 | **Verified** 10-06 (verdict holds; latency figure corrected, §7.45.1) | |
 | N2 | Imports-clean and end-to-end reported separately, never conflated | Met | §7.12, §7.17 | — | DC | pending | |
 | N3 | Mediator unavailability specified and tested; refuses rather than degrades | Met | `preflight`, §7.16.2 | 10-05 | FI | pending | |
 
@@ -173,7 +173,7 @@ not re-read to fit a result. Paths are under `experiments/` unless they start wi
 | 7.16 | C3, F3, F4, S5, S6, S7 by suite | suite logs: `selftest_c3`, `_policy`, `_audit`, `_describe`, `_channel` (`flood/results/pi_20261005/suites/`) | 10-05 | E | each suite's internal count equal to its last log; F03 judged separately |
 | 7.17 | End to end on the stand-in: 5 subjects; the denominator is 11 of 37 | `end_to_end/results/pi5_e2e.json`, `rerun_20261003/` | e4d63e2, 10-03 | V, E | `scheduler`, `adaptive_lighting`, `thermal_comfort`, `powercalc`, `watchman`: same load and publish verdicts, same decisions |
 | 7.18 | 15 integrations (41%) need egress; none at import; demand ≈ 4/s | `egress_demand/results/pi5_import_phase.json`, `pi5_endtoend_phase.json` | 87f9a65, **09-02** | E, RD | 15 and 0 exactly; the 63× headroom recomputed from 7.18 and 7.20 |
-| 7.19 | Mediation latency: 31.5 µs median with one client; p99 +85% at 26 | `mediation_latency/results/pi5.json`, `pi5_scale.json` | 00dccc8, **09-02** | T | median within T of 31.5 µs on the tag (the mediator has changed since) |
+| 7.19 | Mediation latency: 31.5 µs median with one client; p99 +85% at 26 | `mediation_latency/results/pi5.json`, `pi5_scale.json` | 00dccc8, **09-02** | T | median within T of 31.5 µs on the tag (the mediator has changed since) — **failed** (43.2 µs, F17); **Qualified** 10-06 by §7.45.1 |
 | 7.20 | Durable record 3,670.7 µs (3.67 ms) with `fsync`, on real storage; PSS curve | `durability/results/pi5.json`, `t4_20261003/`; `r2_footprint/results/pi5_scale.json` | 9775592 / 04a31db, 09-02 / 10-03 | T, M | 3.67 ms within T, scratch confirmed not tmpfs; memory within M |
 | 7.22 | S9 bounds: OOM, forks capped, CPU 25.1% at a 25% cap, `ENOSPC` at the disk cap; 13 of 13 | `framework/confine/selftest_resources.py` log | 10-05 suites | E, T | all four trip; CPU within ±2 points of the cap |
 | 7.23 | Uniform corpus (seed 20260902): 37/40 (92%) clean in both arms | `compat/results/uniform_baseline.json`, `uniform_con*`, `figures/hacs_corpus_manifest_uniform.json` | 54e97e4, 10-03 | E | the same 37; the same 3 failing, same reasons |
@@ -252,7 +252,7 @@ rows of their own (CS01–CS16).
 |---|---|---|---|---|
 | CS01 | Nothing but the socket crosses the boundary: no route, a private IPC namespace, no path to any other socket | §5.11 | independent attacks; X13, X15 | |
 | CS02 | Every response carries the clause that decided it; the pointer is built by the deciding branch, so a clause-less decision is unconstructible | §5.11, §5.12, §6.6 | exercise each refusal path with a durable log | **F03** |
-| CS03 | ~33,000 requests per second; 0.30 ms of mediation per polling cycle (Ch5), 0.36 ms (Ch6) | §5.11, §6.5 | RD from today's latency | **F09: three versions of one figure (0.30, 0.36, and ~0.32 ms from 31.5 µs)** |
+| CS03 | ~33,000 requests per second; 0.30 ms of mediation per polling cycle (Ch5), 0.36 ms (Ch6) | §5.11, §6.5 | RD from today's latency | **F09: three versions of one figure (0.30, 0.36, and ~0.32 ms from 31.5 µs)** — **Qualified** 10-06: 0.43 ms today, §7.45.1 states all three |
 | CS04 | With the mediator gone, the sandbox reaches nothing | §5.11 | FI | |
 | CS05 | Each run record carries the full identity, provenance and **resolved dependency versions** | §5.12 | read the run records; code read | **F08** |
 | CS06 | Modifying, deleting or reordering any record breaks every link after it | §5.12 | `selftest_audit` (strong form); X8 | |
