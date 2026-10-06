@@ -1,0 +1,38 @@
+host isolation probe — 2026-10-06T18:55:08+01:00
+kernel                                 Linux 6.12.47+rpt-rpi-2712 aarch64
+distribution                           Debian GNU/Linux 13 (trixie)
+board                                  Raspberry Pi 5 Model B Rev 1.0
+memory total                           4050 MB
+
+── namespaces (S1, S8 — the sandbox boundary) ──────────────────────────────
+max user namespaces                    15866
+unprivileged user+net+pid ns           YES  (uid=0 pid=1 ifaces=1)
+  mnt          present
+  uts          present
+  ipc          present
+  pid          present
+  net          present
+  user         present
+  cgroup       present
+
+── seccomp (S8 — syscall surface) ──────────────────────────────
+actions available                      kill_process kill_thread trap errno user_notif trace log allow
+  user_notif                           YES — supervisor can decide syscalls, not only kill/deny
+
+── cgroup v2 (S9 — resource limits) ──────────────────────────────
+mount type                             cgroup2fs
+controllers at root                    cpuset cpu io memory pids
+  memory       AVAILABLE
+  pids         AVAILABLE
+  cpu          AVAILABLE
+  io           AVAILABLE
+  cpuset       AVAILABLE
+
+── S9 enforcement (does the cap bite?) ──────────────────────────────
+./probe.sh: line 114: 83381 Killed                  systemd-run --user --scope -q -p MemoryMax=64M -p MemorySwapMax=0 python3 -c 'bytearray(192*1024*1024)' > /dev/null 2>&1
+192 MB against a 64 MB cap             KILLED — cap enforced
+same allocation, uncapped              succeeds (so the kill above was the cap)
+ran as                                 younes, uid 1000
+
+── verdict ──────────────────────────────
+all primitives §5.7 relies on are present

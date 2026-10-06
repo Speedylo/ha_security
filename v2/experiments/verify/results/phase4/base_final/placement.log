@@ -1,0 +1,25 @@
+cgroup placement — aarch64, kernel 6.12.47+rpt-rpi-2712, uid 1000
+
+--- as launched ---------------------------------------------
+  own cgroup        user.slice/user-1000.slice/session-256.scope
+  delegated root    user.slice/user-1000.slice/user@1000.service
+  inside it         False
+  common ancestor   user.slice/user-1000.slice (owned by root)
+    mkdir                OK    controllers: cpu memory pids
+    migrate_other        FAIL  EACCES — Permission denied
+    migrate_self         FAIL  EACCES — Permission denied
+    clone3_into_cgroup   FAIL  clone3 — Permission denied
+    cap_enforced         FAIL  UNTESTED — the child could not enter the cgroup, so nothing was tested
+
+--- systemd-run --user --scope ------------------------------
+  own cgroup        user.slice/user-1000.slice/user@1000.service/app.slice/run-p83560-i83860.scope
+  delegated root    user.slice/user-1000.slice/user@1000.service
+  inside it         True
+  common ancestor   user.slice/user-1000.slice/user@1000.service/app.slice (owned by younes)
+    mkdir                OK    controllers: cpu memory pids
+    migrate_other        OK    child now in /user.slice/user-1000.slice/user@1000.service/app.slice/capstone-place-83560
+    migrate_self         OK    self now in /user.slice/user-1000.slice/user@1000.service/app.slice/capstone-place-83560
+    clone3_into_cgroup   OK    /user.slice/user-1000.slice/user@1000.service/app.slice/capstone-place-83560
+    cap_enforced         OK    killed (rc=-9) — cap enforced
+
+wrote /home/younes/r2exp/verify/base_final/placement.json

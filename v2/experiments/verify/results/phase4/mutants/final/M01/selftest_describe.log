@@ -1,0 +1,71 @@
+Example Weather  1.4.2
+====================
+
+These permissions were declared by whoever wrote this integration.
+
+If you install this, it will be allowed to:
+  - read the state of:
+    sensor.outdoor_temperature
+  - contact these addresses on the internet:
+    api.example-weather.invalid:443
+
+It will NOT be allowed to:
+  - control anything — it cannot ask any other integration to do anything
+  - change the state of any of your devices
+  - be told when anything in your home changes
+  - contact anything on your home network
+  - look for devices on your home network
+  - read any file outside its own folder
+  - change any file outside its own folder
+  - announce anything to the rest of Home Assistant
+  - listen to what other parts of Home Assistant are doing
+  - see any other integration's settings or saved passwords
+  - add anything to Home Assistant's web interface
+
+It is limited to 192 MB of memory, 8 processes.
+
+------------------------------------------------------------------------
+
+Silent Demo
+====================
+
+This integration declares nothing.
+
+It will be run with no permissions at all. It can execute its own code, in its
+own folder, and nothing else: no network, no access to your devices, no access
+to any other integration's data, and no access to any file of yours.
+
+Nothing it asks for will be granted, because it has asked for nothing.
+
+------------------------------------------------------------------------
+
+Broken Demo
+====================
+
+This integration's declaration could not be read, so it will be given no
+permissions at all. It can execute its own code and nothing else.
+
+What was wrong with it:
+  /home/younes/r2exp/mutants/final-tmp/confine-describe-796byd7e/custom_components/demo_broken/manifest.json: not valid JSON: Expecting property name enclosed in double quotes: line 1 column 3 (char 2)
+
+------------------------------------------------------------------------
+
+F4 — the declaration is presentable before installation
+
+  ok    names the one host it may contact
+  ok    names the one entity it may read
+  ok    says it cannot control anything
+  ok    says it cannot see other integrations' passwords
+  ok    says who declared it
+  ok    shows the resource limits
+  ok    shows no content hash
+  ok    lists more denials than grants
+  ok    an undeclared integration renders as no permissions at all
+  ok    an unreadable declaration says so, and says why
+  ok    a changed integration says the code changed
+  ok    ...and says the permissions did not
+  ok    a derived manifest says it was not the author's
+  ok    ...and asks the user to check it
+
+PASS — every state an integration can be in has a rendering, the denials are
+       shown at the same weight as the grants, and no digest is presented.

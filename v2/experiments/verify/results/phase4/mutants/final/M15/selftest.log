@@ -1,0 +1,34 @@
+sandbox self-test — what one integration can see
+
+  uid inside              0  (outside: 1000)
+  hostname                raspberrypi
+  pid                     1
+  processes visible       236  ['1', '100', '103', '104', '105', '1070', '1072', '1092', '1093', '112', '1231', '1234', '1247', '1250', '1267', '1288', '13', '1305', '1306', '1308', '1330', '1331', '1334', '1366', '1367', '1368', '1369', '1370', '1399', '14', '1401', '1402', '1403', '1405', '1406', '1416', '1459', '15', '1507', '1515', '1516', '1517', '1562', '1567', '1573', '1581', '1582', '1583', '16', '1616', '1626', '1641', '1651', '1652', '1657', '1666', '167', '1672', '1674', '168', '1684', '1689', '169', '1697', '17', '170', '1707', '1708', '171', '172', '18', '1816', '1842', '1843', '1856', '19', '2', '20', '200', '201', '21', '22', '221', '222', '2255', '23', '24', '2423', '25', '28', '29', '3', '30', '329', '33', '34', '35', '382', '389', '4', '42', '43', '44', '45', '46', '48', '480', '483', '49', '5', '50', '51', '52', '53', '54', '55', '55167', '552', '56', '57', '59', '591', '592', '593', '594', '6', '60', '602', '60260', '613', '614', '62', '62032', '62039', '62040', '62100', '62107', '62108', '62286', '625', '626', '628', '634', '635', '636', '63861', '646', '647', '648', '649', '65', '66', '66436', '67119', '68', '69', '69889', '69921', '69926', '7', '70', '70148', '70149', '70231', '70342', '71', '72', '72136', '72170', '72177', '72178', '72180', '73', '733', '74', '74180', '75', '75385', '76', '76467', '76607', '77', '77085', '77666', '77678', '77681', '77858', '78216', '78261', '78499', '78979', '79046', '79064', '79068', '79110', '79145', '79166', '79188', '79195', '79249', '79617', '79710', '79723', '8', '80213', '80796', '81266', '81281', '81282', '81290', '81295', '813', '85', '86', '87', '88', '89', '90', '91', '93', '933', '934', '936', '937', '939', '94', '940', '943', '944', '949', '95', '953', '956', '96', '97', '99']
+  network interfaces      ['lo']
+  entries at /            ['bin', 'dev', 'etc', 'home', 'lib', 'proc', 'sandbox', 'sbin', 'tmp', 'usr']
+
+  ok    its own directory          present, read-only
+  ok    its own data directory     present, writable
+  ok    the declared file          present, read-only
+  ok    secrets.yaml               ABSENT
+  ok    the .storage directory     ABSENT
+  ok    another integration        ABSENT
+  ok    the configuration root     present
+  ok    the user's home directory  present
+  ok    …home holds only the chain  younes:['.cache'] / .cache:['confine-selftest'] / confine-selftest:['confine-selftest-zfwo_w67']
+  ok    …and it holds only         ['shared']
+
+  ok    chroot(2)                  Operation not permitted
+  ok    ptrace(2)                  Operation not permitted
+  ok    unshare(2)                 Operation not permitted
+
+  ok    the default TLS context has CA certificates to trust  303 readable in /usr/lib/ssl/certs
+  ok    …and cannot add one        read-only
+  ok    /etc holds ssl/certs and nothing else  /etc=['ssl'] /etc/ssl=['certs']
+  ok    /etc/ssl/private is absent  absent
+
+  ok    /dev holds no terminal     ['full', 'null', 'random', 'urandom', 'zero']
+  ok    no controlling terminal    none
+  note                             no terminal attached to this run, so the second row cannot fail
+
+FAILED: the PID namespace shows more than the sandbox itself

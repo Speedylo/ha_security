@@ -1,0 +1,42 @@
+Base component — aarch64, Python 3.14.7, 4050 MB, 6 sandboxes per arm, order with_base/without_base
+
+--- with_base ---------------------------------------------------
+  bare interpreter                                   24.6 MB
+  + import helper layer + sensor platform           108.5 MB
+  + minimal hass constructed                        108.6 MB
+  + base 'homeassistant' component                  160.4 MB
+  + probe integrations set up                       160.6 MB
+  + hass.async_start() — fires EVENT_HOMEASSISTANT_START    160.6 MB
+  entries: {'probe_sensor': 'ConfigEntryState.LOADED', 'probe_restore': 'ConfigEntryState.LOADED'}
+  entities: ['sensor.generation', 'sensor.ticks']
+  at 6 sandboxes: PSS/sandbox 136.0 MB -> 17 sandboxes in 60% of RAM
+    (MemAvailable marginal 117.7 MB — reported, not quoted; see scale_arm)
+  restore, corrected    generations ('1', '2')  RESTORED
+  restore, legacy_5_6_3 generations ('1', '1')  NOT RESTORED
+
+--- without_base ------------------------------------------------
+  bare interpreter                                   24.6 MB
+  + import helper layer + sensor platform           108.5 MB
+  + minimal hass constructed                        108.6 MB
+    (base component skipped)                        108.6 MB
+  + probe integrations set up                       109.0 MB
+  + hass.async_start() — fires EVENT_HOMEASSISTANT_START    109.0 MB
+  entries: {'probe_sensor': 'ConfigEntryState.LOADED', 'probe_restore': 'ConfigEntryState.LOADED'}
+  entities: ['sensor.generation', 'sensor.ticks']
+  at 6 sandboxes: PSS/sandbox 89.5 MB -> 27 sandboxes in 60% of RAM
+    (MemAvailable marginal 80.8 MB — reported, not quoted; see scale_arm)
+  restore, corrected    generations ('1', '2')  RESTORED
+  restore, legacy_5_6_3 generations ('1', '1')  NOT RESTORED
+
+==========================================================================
+Q1  integration still loads without it : YES
+Q2  saved on one sandbox (RSS)         : 51.6 MB
+    saved per sandbox at scale (PSS)   : 46.5 MB   <- the figure that moves the budget
+    capacity  17 -> 27 sandboxes (1.59x)
+Q3  services lost                      : 13 across ['homeassistant']
+    components lost                    : ['homeassistant']
+    entities lost                      : none
+Q4  restoration, corrected recipe      : {'with_base': True, 'without_base': True}
+    restoration, §5.6.3 recipe as published : {'with_base': False, 'without_base': False}
+
+wrote /home/younes/r2exp/verify/base_final/base_component.json

@@ -299,7 +299,7 @@ present them as though they were.
 | | What exists | Compared against |
 |---|---|---|
 | Compatibility half | 75 integrations (77 measurements), two corpora, both arms, cost **0** | the closest evaluation covers **three** integrations, two of them purpose-built |
-| Security half | per-threat over two registers, five threats paired against an unconfined arm | prior work asserts confinement is desirable, or that overprivilege is prevalent, without reporting either quantity |
+| Security half | per-threat over two registers, six threats paired against an unconfined arm *(five until T06 was restated, 2026-10-06, F38)* | prior work asserts confinement is desirable, or that overprivilege is prevalent, without reporting either quantity |
 
 **The security half is a decomposition and not a rate, deliberately** (§7.4.2), so it does not
 reduce to a number the way the compatibility half does. An attempt that *"succeeded and found

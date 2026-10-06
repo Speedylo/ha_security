@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/younes/r2exp/mutants/final/M13/framework/confine/selftest.py", line 318, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/younes/r2exp/mutants/final/M13/framework/confine/selftest.py", line 154, in main
+    require_ready(deep=False)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/younes/r2exp/mutants/final/M13/framework/confine/preflight.py", line 242, in require_ready
+    raise NotConfinable(
+        f"cannot confine: {failure.name} — {failure.detail}"
+        + (f"\n  {failure.remedy}" if failure.remedy else ""))
+confine.preflight.NotConfinable: cannot confine: seccomp filter — chroot denied, keyctl invalid, ptrace allowed, unshare allowed
+  these were not denied: unshare, ptrace, keyctl — check the syscall numbers for this architecture

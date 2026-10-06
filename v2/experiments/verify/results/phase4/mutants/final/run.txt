@@ -1,0 +1,19 @@
+M01 failed_suites=10
+M02 failed_suites=1
+M03 failed_suites=1
+M04 failed_suites=1
+M05 failed_suites=2
+M06 failed_suites=1
+M07 failed_suites=1
+M08a failed_suites=1
+M08b failed_suites=1
+M09 failed_suites=5
+M10 failed_suites=1
+M11 failed_suites=2
+M12 failed_suites=1
+M13 failed_suites=7
+M14 failed_suites=1
+M15 failed_suites=2
+M16 failed_suites=1
+M17 failed_suites=2
+ALLDONE

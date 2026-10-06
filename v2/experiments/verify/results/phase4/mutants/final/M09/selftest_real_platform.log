@@ -1,0 +1,45 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/younes/r2exp/mutants/final/M09/framework/confine/selftest_real_platform.py", line 433, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/younes/r2exp/mutants/final/M09/framework/confine/selftest_real_platform.py", line 232, in main
+    a_switch = platform.published[("selftest", SWITCH)]
+               ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+KeyError: ('selftest', 'switch.selftest_sleep_mode')
+
+R1 — identity: a registry row, against a bare state
+
+  FAIL  the publish is allowed as the integration's own entity  — /permissions
+  FAIL  it has an entity-registry row in (A)  — entity_id=None
+  FAIL  with the bridge as platform and a unique_id naming the integration  — None
+  FAIL  and a config entry and a device
+  FAIL  and (A) holds its state, with its unit  — None {}
+  ok    the same state posted to /api/states exists in (A)
+  ok    but has no registry row at all — the spike's finding, re-measured
+
+ownership — against what (A) already has
+
+  FAIL  publishing an entity id (A) already has is refused without entities.write  — no manifest is bound to selftest (S6)
+  ok    and (A)'s own entity is untouched  — sensor.living_room_temperature=26.9
+
+R6 — service calls execute in (A), refusals never arrive
+
+  FAIL  a permitted call executes: (A)'s humidity is now 55  — 60.0
+  FAIL  a refused call never reaches (A): still 55
+  FAIL  and (A) executed exactly one call on the mediator's behalf  — []
+
+R4 — what (A) is asked to send, and what reaches the sandbox
+
+  FAIL  the subscription is granted
+  FAIL  (A) is asked for exactly the subscribed entities  — watched=[]
+  FAIL  the subscribed entity's real change arrives  — set()
+  ok    the humidity change, unsubscribed, does not
+  FAIL  R5: a real change reaches the mediator's push in milliseconds  — median inf ms, max 0.00 ms over 0 changes
+  FAIL  and each of the 30 changes reached the sandbox
+  ok    no delivery wrote a record; the log holds decisions only  — 5 decisions
+  ok    every chain verifies
+
+W1 step 2b — commands from (A) into a sandbox
+

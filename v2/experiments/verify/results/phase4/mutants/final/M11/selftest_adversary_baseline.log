@@ -1,0 +1,59 @@
+S8 paired baseline — the same hostile integration, with no sandbox
+
+  2021 traversal
+    LEAK  LEAKED     ../../secrets.yaml                     api_key: CANARY-SECRETS-9d41c7b2e8f04a16-DO-NO
+          BLOCKED    ../../../secrets.yaml                  FileNotFoundError: [Errno 2] No such file or d
+          BLOCKED    ../../../../secrets.yaml               FileNotFoundError: [Errno 2] No such file or d
+          BLOCKED    /config/secrets.yaml                   FileNotFoundError: [Errno 2] No such file or d
+          BLOCKED    secrets.yaml                           FileNotFoundError: [Errno 2] No such file or d
+          BLOCKED    ../secrets.yaml                        FileNotFoundError: [Errno 2] No such file or d
+    LEAK  LEAKED     ../../.storage/core.config_entries     {"entries": [{"token": "CANARY-TOKEN-5b8e0a3f7
+          BLOCKED    /config/.storage/core.config_entries   FileNotFoundError: [Errno 2] No such file or d
+          BLOCKED    /sandbox/../secrets.yaml               FileNotFoundError: [Errno 2] No such file or d
+          BLOCKED    /sandbox/component/../../secrets.yaml  FileNotFoundError: [Errno 2] No such file or d
+    LEAK  LEAKED     /home/younes/r2exp/mutants/final-tmp/confine-adversary-baseline-j_mov19m/secrets.yaml api_key: CANARY-SECRETS-9d41c7b2e8f04a16-DO-NO
+    LEAK  LEAKED     /home/younes/r2exp/mutants/final-tmp/confine-adversary-baseline-j_mov19m/.storage/core.config_entries {"entries": [{"token": "CANARY-TOKEN-5b8e0a3f7
+          BLOCKED    walk every reachable file              JSONDecodeError: Unterminated string starting 
+
+  resource limit
+          NOT RUN    read every file with no bound at all   skipped unconfined: nothing would bound it, an
+          NOT RUN    allocate memory until stopped          skipped unconfined: nothing would bound it, an
+
+  credential recovery
+    LEAK  LEAKED     read another process's environ         ['1', '2', '3', '4', '5', '6', '7', '8', '13',
+          EMPTY      read /proc/self/environ for a token    
+          BLOCKED    read /etc/shadow                       PermissionError: [Errno 13] Permission denied:
+    LEAK  LEAKED     list the host's home directory         ['.dotnet', 'Downloads', '.sudo_as_admin_succe
+
+  gc technique
+          EMPTY      gc.get_objects() heap sweep            
+          EMPTY      objects reachable in this heap         
+          EMPTY      heap size                              11497 objects, all its own
+
+  escape
+          BLOCKED    chroot(/)                              PermissionError: [Errno 1] Operation not permi
+    LEAK  LEAKED     unshare(CLONE_NEWUSER)                 True
+          BLOCKED    mount a tmpfs over /sandbox            FileNotFoundError: [Errno 2] No such file or d
+          BLOCKED    setuid(0)                              OSError: [Errno 22] Invalid argument
+    LEAK  LEAKED     ptrace(PTRACE_TRACEME)                 True
+
+  reach another
+    LEAK  LEAKED     connect to a TCP service on the host   connected
+          BLOCKED    resolve a name on the internet         gaierror: [Errno -2] Name or service not known
+    LEAK  LEAKED     list open unix sockets                 ['0000000035e4f9ed: 00000002 00000000 00010000
+
+  audit log
+    LEAK  LEAKED     find any .jsonl on the filesystem      ['/home/younes/capstone/spike/audit/andrews_ar
+
+  mediated
+          UNMEDIATED ask the mediator for anything at all   no mediator exists; this process acts directly
+
+  BLOCKED 14   EMPTY 4   LEAKED 11   NOT RUN 2   UNMEDIATED 1
+
+  canaries recovered           2/2
+  attacks that returned data   11
+  2021 traversals that worked  4
+
+PASS — the 2021 file-theft pattern reproduces against an unconfined installation.
+       Both canaries recovered. S8's baseline half is established, and the
+       confined arm's block is now a comparison rather than an assertion.

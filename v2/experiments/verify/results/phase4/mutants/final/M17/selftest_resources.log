@@ -1,0 +1,38 @@
+S9 — the resources clause, enforced
+====================================================================
+  supervisor in user.slice/user-1000.slice/user@1000.service/app.slice/run-p82836-i83136.scope; delegated subtree user.slice/user-1000.slice/user@1000.service
+
+  ok    rejects a non-integer memory_mb
+        'lots' is not an integer
+  ok    rejects cpu_percent below its floor
+        0 is outside 1–1600
+  ok    rejects disk_mb above its ceiling
+        99999 is outside 1–4096
+  ok    rejects a boolean where an integer belongs
+        True is not an integer
+  ok    rejects an unknown member of a known capability
+        unknown members ['gpu_percent'] in /permissions/resources
+  ok    a well-formed clause reaches ResourceLimits intact
+        192 MB, 50%, 8 procs, 32 MB disk
+  ok    a clause asking for more than the default gets the default (F32)
+        asked 8192 MB, 4096 procs, 4096 MB disk; got 640 MB, 64 procs, 64 MB disk
+  ok    a manifest declaring no resources gets the default, not no limit
+        640 MB, 64 procs, 64 MB disk, cpu unset
+  ok    memory_mb: 512 MB asked against a 64 MB cap
+        exit -9, oom_kill=1
+  ok    max_processes: 200 forks attempted against a cap of 16
+        15 forks succeeded before the kernel refused
+  ok    control: the same 200 forks against a cap of 512 all succeed
+        200 forks succeeded
+  ok    cpu_percent: a busy loop capped at 25% of one processor
+        consumed 25.0% of one processor over 2.12s, throttled 1.54s
+  ok    disk_mb: 64 MB written into a 8 MB private /tmp
+        8 MB written, then errno 28 (No space left on device)
+  ok    control: the same 64 MB into a 128 MB private /tmp is all written
+        64 MB written, errno 0
+  note  io.max: the disk-bandwidth half of S9, and why §7.22 narrows it
+        host root delegates ['cpu', 'cpuset', 'io', 'memory', 'pids']; this user's subtree has ['cpu', 'memory', 'pids'] — io is present and not delegated
+  ok    an unenforceable declared limit refuses rather than no-ops
+        PlacementUnavailable: cannot enable memory pids cpu in does-not-exist: No such file or directory. The controller
+
+  16/16 — S9 bounds memory, processes, CPU and disk space; I/O bandwidth is not bounded (§7.22)

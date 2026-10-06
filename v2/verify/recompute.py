@@ -393,6 +393,24 @@ def _():
     return Many(*out), "head confined, head baseline, uniform confined, uniform baseline"
 
 
+@claim("8.5", "components: the baseline's median available, the sandbox's median set up, head then uniform (Tier C C14)",
+       [("08_conclusions.md", r"baseline loads a median of (\d+) components"),
+        ("08_conclusions.md", r"baseline loads a median of \d+ components\s+sandbox sets up\s+(\d+)"),
+        ("08_conclusions.md", r"baseline has\s+(\d+) available"),
+        ("08_conclusions.md", r"baseline has\s+\d+ available\s+sandbox sets up\s+(\d+)")])
+def _():
+    def median_len(path, arm, key):
+        rows = j(f"experiments/compat/results/{path}")[arm]
+        return statistics.median(len(r[key]) if isinstance(r[key], list) else r[key]
+                                 for r in rows if r.get(key) is not None)
+    head = (round(median_len("compat_baseline.json", "arm_a", "components_available")),
+            round(median_len("compat_declared_core.json", "arm_a", "setup_components")))
+    uniform = (round(median_len("uniform_baseline.json", "arm_a", "components_available")),
+               round(median_len("uniform_confined.json", "arm_a", "setup_components")))
+    return (Pair(str(head[0]), str(head[1]), str(uniform[0]), str(uniform[1])),
+            "compat_baseline / compat_declared_core arm_a; uniform_baseline / uniform_confined arm_a")
+
+
 @claim("8.2.3a", "mean community integrations per HACS-running installation",
        [("08_conclusions.md", r"a measured mean of \*\*([\d.]+)\*\* integrations")])
 def _():
