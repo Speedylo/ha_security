@@ -2,6 +2,12 @@
 
 **Started:** 2026-08-25 · **Described by:** `report/06_implementation.md`
 
+> **2026-10-06.** The tables and commands below describe the framework as of early September: eleven of
+> today's 26 suites, and commands that assume an interpreter at `~/r2exp/ha314`. To build that
+> environment and run every suite, follow `../REPRODUCE.md`. The module list is still the map to
+> Chapter 6; modules added since (egress, the UDP relay, the push loop, (A)) are described in their
+> own docstrings and in Chapter 7's sections that introduced them.
+
 This is the artifact Chapter 6 builds. It is new code written against the design Chapter 5
 produced; the earlier feasibility spike in `~/capstone/spike/` is prior work, cited in §6.2 and
 not imported here.
