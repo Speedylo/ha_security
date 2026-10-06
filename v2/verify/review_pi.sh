@@ -21,7 +21,7 @@ say() { echo "$*" | tee -a "$R"; }
 judge() { if [ "$2" = "$3" ]; then say "  ok    $1 — $4"; else say "  FAIL  $1 — $4 (expected $3, got $2)"; fi; }
 stop_all() { for pid in $(supervisors); do kill -TERM "$pid"; done; sleep 5
              for pid in $(sandboxes); do kill -TERM "$pid" 2>/dev/null; done; sleep 2; }
-parent=$(cd "$F" && python3 -c "from confine.cgroup import Delegation; print(Delegation.discover().parent)")
+parent=$(cd "$F" && systemd-run --user --scope -q python3 -c "from confine.cgroup import Delegation; print(Delegation.discover().parent)")
 
 cd "$F" || exit 2
 say "before: supervisors [$(supervisors)] sandboxes [$(sandboxes)]"

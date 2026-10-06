@@ -18,7 +18,7 @@ A=$HOME/r2exp/verify-supervise-audit
 systemd-run --user --scope -q python3 -u -m confine.supervise --component ../experiments/flood/demo_flood --python $P --audit-dir $A > "$OUT/supervise.log" 2>&1 &
 SUP=$!; sleep 25
 step drive_demo env PYTHONPATH=. python3 ../experiments/flood/drive_demo.py "$OUT/supervise.log" $A
-kill -TERM $SUP; sleep 5; cp $A/decisions.jsonl "$OUT/supervise_decisions.jsonl" 2>/dev/null
+kill -TERM $SUP; sleep 5; cp "$A"/decisions-*.jsonl "$OUT/"  # one file per supervisor start since F31 (F35 R6)
 fi
 
 # L3, stand-in and (A)

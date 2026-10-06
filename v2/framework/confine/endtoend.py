@@ -35,7 +35,6 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from dataclasses import replace
 from pathlib import Path
 
 import os
@@ -276,7 +275,7 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
 
         out = tempfile.NamedTemporaryFile(suffix=".json", delete=False)
         err = tempfile.NamedTemporaryFile(suffix=".txt", delete=False)
-        limits = replace(manifest.resources, memory_mb=max(manifest.resources.memory_mb, 640))
+        limits = manifest.resources
         spec.tmp_size_mb = limits.disk_mb
         with SandboxCgroup.create(delegation, f"e2e-{domain}"[:60], limits) as cgroup:
             with open(out.name, "wb") as stdout, open(err.name, "wb") as stderr:

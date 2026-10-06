@@ -32,7 +32,6 @@ import signal
 import sys
 import tempfile
 import time
-from dataclasses import replace
 from pathlib import Path
 
 from .audit import AuditLog
@@ -73,7 +72,8 @@ class Supervisor:
         # One file per supervisor start (verification 4.5, finding F31). A restarted mediator
         # begins a new chain from genesis, with a new key, and appended to the previous run's
         # file it made `verify` report breaks that look exactly like deleted records.
-        self.log_path = audit_dir / f"decisions-{time.strftime('%Y%m%dT%H%M%S')}-{os.getpid()}.jsonl"
+        self.stem = f"{time.strftime('%Y%m%dT%H%M%S')}-{os.getpid()}"
+        self.log_path = audit_dir / f"decisions-{self.stem}.jsonl"
         self.mediator = Mediator(log=AuditLog(path=self.log_path))
         self.manifest = Manifest.load(self.own, self.root)
         self.mediator.policy = acting_policy({self.domain: self.manifest}, self.platform)
@@ -94,19 +94,30 @@ class Supervisor:
         (verification 4.5, finding F30). The sandbox now ends its own run when its channel
         closes, but that is inside the sandbox, so the guarantee is here: nothing named for this
         integration is left in the delegated subtree when a new one starts.
+
+        Three corrections from the review of that fix (verification 4.7, F35). A cgroup is
+        counted as cleared only once it is gone, and one that will not go stops this supervisor
+        from starting, since its next sandbox would otherwise run beside what is left (R3). The
+        kill is the kernel's `cgroup.kill`, which a fork cannot outrun (R4). And each
+        supervisor's cgroups carry its pid, so a supervisor that is still running is left alone
+        rather than having its sandbox killed under it (R10).
         """
         if self.delegation.parent is None:
             return 0
-        stale = sorted(self.delegation.parent.glob(f"sup-{self.domain}-*"))
-        for path in stale:
-            cgroup = SandboxCgroup(path)
-            cgroup.remove()                       # kills everything in it
-            for _ in range(50):
-                if not cgroup.pids:
-                    break
-                time.sleep(0.1)
-            cgroup.remove()                       # empty now, so the directory goes too
-        return len(stale)
+        cleared, stuck = 0, []
+        for path in sorted(self.delegation.parent.glob(f"sup-{self.domain}-*")):
+            owner = _owner(path.name, self.domain)
+            if owner is not None and _is_supervisor(owner):
+                continue
+            if SandboxCgroup(path).gone():
+                cleared += 1
+            else:
+                stuck.append(path.name)
+        if stuck:
+            raise PredecessorsRemain(
+                f"an earlier supervisor's sandbox could not be removed ({', '.join(stuck)}); "
+                f"not starting {self.domain} beside it")
+        return cleared
 
     # ---------------------------------------------------------------- what the mediator says
 
@@ -159,15 +170,16 @@ class Supervisor:
         for tree in (*interpreter_trees(self.python), sys.base_prefix):
             if tree and tree not in spec.runtime_paths:
                 spec.runtime_paths.append(tree)
-        limits = replace(self.manifest.resources,
-                         memory_mb=max(self.manifest.resources.memory_mb, 640))
+        limits = self.manifest.resources
         spec.tmp_size_mb = limits.disk_mb
         self.starts += 1
-        self.cgroup = SandboxCgroup.create(self.delegation, f"sup-{self.domain}-{self.starts}",
-                                           limits)
+        self.cgroup = SandboxCgroup.create(
+            self.delegation, f"sup-{self.domain}-{os.getpid()}-{self.starts}", limits)
         # The sandbox's report (stdout, JSON) and its Home Assistant log (stderr), one pair per
         # start, beside the audit log. A setup failure is reported on stdout, as `"fatal"`.
-        base = self.audit_dir / f"{self.domain}-run{self.starts}"
+        # Named for this supervisor's start, like the audit log, so that a restarted supervisor
+        # does not overwrite what the previous one's sandbox reported (F35 R2).
+        base = self.audit_dir / f"{self.domain}-{self.stem}-run{self.starts}"
         with open(f"{base}.json", "wb") as stdout, open(f"{base}.log", "wb") as stderr:
             self.sandbox = start(spec, self.cgroup, stdout=stdout.fileno(),
                                  stderr=stderr.fileno(), channel_end=sandbox_end.fileno())
@@ -178,6 +190,9 @@ class Supervisor:
         if self.sandbox is None:
             return
         assert self.cgroup is not None
+        # Its channel goes now, not when the selector next notices it closed: a user's command
+        # in between went down the dead channel and failed (F35 R5).
+        self.mediator.drop(self.domain)
         self.cgroup.remove()                      # kills everything in it
         try:
             os.waitpid(self.sandbox.pid, 0)
@@ -218,11 +233,19 @@ class Supervisor:
             self.platform.close()
         except Exception:  # noqa: BLE001 — it is already gone
             pass
+        # Retried every 5 s, whatever the reason, because each can clear: (A) finishes starting,
+        # a token is replaced. But each new reason is said once, in a plain line, so a refused
+        # token is not a supervisor waiting forever in silence (F35 R8).
+        last = ""
         while True:
             time.sleep(5)
             try:
                 platform = RealPlatform()
-            except Exception:  # noqa: BLE001 — not up yet, in any of the ways (A) can be down
+            except Exception as failure:  # noqa: BLE001 — not up yet, in any of the ways (A) can be down
+                reason = _plain(failure)
+                if reason != last:
+                    say(f"still waiting for the house's Home Assistant: {reason}")
+                    last = reason
                 continue
             break
         self.platform = platform
@@ -258,6 +281,35 @@ class Supervisor:
             shutil.rmtree(self.root, ignore_errors=True)
 
 
+class PredecessorsRemain(RuntimeError):
+    """An earlier supervisor's cgroup would not go, so this one does not start beside it."""
+
+
+def _owner(name: str, domain: str) -> int | None:
+    """The supervisor pid in `sup-<domain>-<pid>-<n>`; None for the older `sup-<domain>-<n>`."""
+    parts = name.removeprefix(f"sup-{domain}-").split("-")
+    return int(parts[0]) if len(parts) == 2 and all(p.isdigit() for p in parts) else None
+
+
+def _is_supervisor(pid: int) -> bool:
+    """Whether `pid` is a running supervisor other than this one (its cgroups are its own)."""
+    if pid == os.getpid():
+        return False
+    try:
+        return b"confine.supervise" in Path(f"/proc/{pid}/cmdline").read_bytes()
+    except OSError:
+        return False
+
+
+def _plain(failure: Exception) -> str:
+    """Why (A) could not be reached, in one line, without a traceback."""
+    if isinstance(failure, FileNotFoundError):
+        return f"the mediator's token file is missing ({failure.filename or failure})"
+    if isinstance(failure, ConnectionRefusedError):
+        return "nothing is answering on its port"
+    return str(failure) or type(failure).__name__
+
+
 def say(text: str) -> None:
     print(f"{time.strftime('%H:%M:%S')}  {text}", flush=True)
 
@@ -283,8 +335,12 @@ def main() -> int:
     def terminate(_signum, _frame) -> None:
         raise KeyboardInterrupt
     signal.signal(signal.SIGTERM, terminate)
-    supervisor = Supervisor(args.component.resolve(), json.loads(args.permissions),
-                            args.python, args.audit_dir, args.hours)
+    try:
+        supervisor = Supervisor(args.component.resolve(), json.loads(args.permissions),
+                                args.python, args.audit_dir, args.hours)
+    except PredecessorsRemain as err:
+        say(str(err))
+        return 1
     if supervisor.cleared:
         say(f"cleared {supervisor.cleared} sandbox cgroup(s) an earlier supervisor left behind")
     say(f"supervising {supervisor.domain}; durable log {supervisor.log_path}; Ctrl-C to stop")

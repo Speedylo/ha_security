@@ -290,7 +290,7 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
 
         out = tempfile.NamedTemporaryFile(suffix=".json", delete=False)
         err = tempfile.NamedTemporaryFile(suffix=".txt", delete=False)
-        limits = replace(manifest.resources, memory_mb=max(manifest.resources.memory_mb, 640))
+        limits = manifest.resources
         spec.tmp_size_mb = limits.disk_mb
         # Explicit lifetime rather than `with`, per §7.25.3: the cgroup must outlive the call
         # that starts the sandbox and be read for `oom_kill` before it is removed.

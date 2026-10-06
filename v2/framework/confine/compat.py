@@ -335,7 +335,7 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
         # declares one, and the framework's default where it does not. Until §7.21.1 this was
         # a literal, so every figure in §6.11–§6.14 was measured against the harness's limit
         # rather than the declaration — which is what made S9 unverifiable from the outside.
-        limits = replace(manifest.resources, memory_mb=max(manifest.resources.memory_mb, 640))
+        limits = manifest.resources
         spec.tmp_size_mb = limits.disk_mb
         with SandboxCgroup.create(delegation, f"compat-{domain}"[:60], limits) as cgroup:
             with open(out.name, "wb") as stdout, open(err.name, "wb") as stderr:

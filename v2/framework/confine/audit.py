@@ -197,6 +197,9 @@ class AuditLog:
     _last_hash: str = GENESIS
     _last_mac: str = GENESIS
     _seq: int = 0
+    #: Whether the file's name is known durable: it existed when this log was opened, or its
+    #: directory has been fsynced since. Set only after that fsync succeeds (F35 R9).
+    _named: bool = False
 
     def __post_init__(self) -> None:
         # Every directory this creates is a new entry in its parent, and an entry is durable only
@@ -206,6 +209,7 @@ class AuditLog:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         for directory in reversed(missing):
             _fsync_directory(directory.parent)
+        self._named = self.path.exists()
 
     # -- writing ------------------------------------------------------------------------
 
@@ -217,7 +221,6 @@ class AuditLog:
         record["hash"] = hashlib.sha256(self._last_hash.encode() + canonical).hexdigest()
         record["mac"] = hmac.new(self.key, self._last_mac.encode() + canonical,
                                  hashlib.sha256).hexdigest()
-        created = not self.path.exists()
         # Unbuffered and binary, so that nothing of a failed record can wait in a buffer and be
         # written when the file is closed, after the truncation below has undone it.
         with self.path.open("ab", buffering=0) as handle:
@@ -240,11 +243,14 @@ class AuditLog:
                 os.ftruncate(handle.fileno(), size)
                 os.fsync(handle.fileno())
                 raise
-        if created:
+        if not self._named:
             # The file's fsync makes its contents durable, not its name. Until the directory is
             # fsynced too, a crash can leave the first record written to a file nothing points
-            # at (fsync(2), NOTES). Once per log, since appends do not change the directory.
+            # at (fsync(2), NOTES). Once per log, since appends do not change the directory, and
+            # not decided by whether the file exists: a first record that failed leaves an empty
+            # file behind, and the next record must still sync its name (verification 4.7, R9).
             _fsync_directory(self.path.parent)
+            self._named = True
         self._last_hash, self._last_mac = record["hash"], record["mac"]
         self._seq += 1
         return record

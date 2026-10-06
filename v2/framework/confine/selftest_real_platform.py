@@ -53,7 +53,7 @@ from .house_a import User
 from .audit import AuditLog
 from .mediator import Mediator
 from .platform import ActingPolicy
-from .real_platform import RealPlatform
+from .real_platform import PlatformStarting, RealPlatform
 from .selftest_push import Sandbox, component
 
 results: list[bool] = []
@@ -407,7 +407,15 @@ def main() -> int:
         house_a.stop(house_a.DEFAULT_CONFIG)
         house_a.start(house_a.DEFAULT_CONFIG)
         time.sleep(5)
-        after = RealPlatform()
+        # (A) answers before it has finished starting, and RealPlatform waits for it (F35 R7).
+        for _ in range(60):
+            try:
+                after = RealPlatform()
+                break
+            except PlatformStarting:
+                time.sleep(2)
+        else:
+            after = RealPlatform()
         row = registry(after).get(landed or "", {})
         check("after a restart the entity is still registered to the bridge",
               row.get("unique_id") == f"selftest:{PUBLISHED}")

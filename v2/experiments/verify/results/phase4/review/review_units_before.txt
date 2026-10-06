@@ -1,0 +1,19 @@
+
+U1 (R3, R4) — a predecessor's process in a nested cgroup
+  FAIL  the process is killed  — pid 57453; cleared → 1
+  FAIL  and the cgroup is gone  — sup-review_probe-1
+
+U2 (R3) — a predecessor's cgroup that will not go
+  FAIL  the supervisor refuses to start, and says which cgroup  — int: 1
+
+U3 (R10) — a cgroup belonging to a supervisor that is still running
+  FAIL  its sandbox is still running  — cleared → 1
+  FAIL  and its cgroup is still there  — sup-review_probe-57454-1
+
+U4 (R8) — (A) answers but refuses the token, then accepts it
+  FAIL  the refused token is named  — 15:17:42  the house's Home Assistant went away (gone); review_probe is stopped until it is back
+15:17:42  the house's Home Assistant is back; starting review_probe again
+  FAIL  once, though it was refused twice
+  FAIL  the missing token file is named
+
+0/8 passed

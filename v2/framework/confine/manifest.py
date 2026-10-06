@@ -340,8 +340,17 @@ class Manifest:
         inverts default-deny for the one requirement whose threat, T16, is an integration
         consuming everything. So absence means the framework's own bound rather than the
         integration's, and §7.22 records that as the one place where absence is not denial.
+
+        **And a declaration can only tighten that bound** (§7.22.3). Until verification 4.7
+        (finding F32) the declared figure replaced the default, so a manifest could raise its
+        own bound to the parse-time ceilings, 8,192 MB and 4,096 processes. `cpu_percent` has no
+        default, so a declared one always tightens.
         """
-        return replace(ResourceLimits(), **self.permissions.get("resources", {}))
+        bound = ResourceLimits()
+        declared = self.permissions.get("resources", {})
+        return replace(bound, **{member: value if getattr(bound, member) is None
+                                 else min(value, getattr(bound, member))
+                                 for member, value in declared.items()})
 
     # -- deciding ----------------------------------------------------------------------
 

@@ -53,6 +53,10 @@ class PlatformLost(RuntimeError):
     """The connection to (A) failed. Not a refusal: the mediator cannot act at all, and stops."""
 
 
+class PlatformStarting(RuntimeError):
+    """(A) accepted the login but has not finished starting. Tried again later, not used now."""
+
+
 class _Owners(dict):
     """`owners[entity_id] = integration` as on the stand-in, with (A)'s existing entities behind it."""
 
@@ -100,6 +104,15 @@ class RealPlatform:
         self._watched: set[str] = set()
         self._subscription: int | None = None
         self._cache: dict[str, tuple[str, dict]] = {}
+
+        # (A) accepts a login while it is still starting, before its own integrations have
+        # created their entities. The snapshot below decides which entity ids belong to the
+        # house, so it is taken only from an (A) that says it is running (verification 4.7,
+        # F35 R7): the supervisor's reconnect treats this as "not back yet".
+        state = (self.call({"type": "get_config"}) or {}).get("state")  # type: ignore[union-attr]
+        if state != "RUNNING":
+            self.ws.close()
+            raise PlatformStarting(f"(A) is still starting (state {state})")
 
         existing: dict[str, str] = {}
         for entry in self.call({"type": "config/entity_registry/list"}):

@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -311,17 +312,57 @@ class SandboxCgroup:
                 return int(value)
         return 0
 
-    def remove(self) -> None:
-        """Delete the cgroup. Only an empty cgroup can be removed, so it is emptied first."""
+    def kill(self) -> None:
+        """Kill everything in the cgroup and in every cgroup beneath it.
+
+        `cgroup.kill` (Linux 5.14) does it in the kernel, all at once, so a process that forks
+        while this runs cannot leave a child behind. Reading `cgroup.procs` and killing each pid,
+        the fallback where the file is absent, races with `fork` and misses nested cgroups
+        (verification 4.7, F35 R4).
+        """
+        if not self.path.exists():
+            return
+        try:
+            (self.path / "cgroup.kill").write_text("1")
+            return
+        except OSError:
+            pass
+        for child in self.path.iterdir():
+            if child.is_dir():
+                SandboxCgroup(child).kill()
         for pid in self.pids:
             try:
                 os.kill(pid, 9)
             except ProcessLookupError:
                 pass
+
+    def remove(self) -> None:
+        """Delete the cgroup. Only an empty cgroup can be removed, so it is emptied first."""
+        self.kill()
+        self._rmdir_tree()
+
+    def _rmdir_tree(self) -> None:
+        if not self.path.exists():
+            return
+        for child in self.path.iterdir():
+            if child.is_dir():
+                SandboxCgroup(child)._rmdir_tree()
         try:
             self.path.rmdir()
         except OSError:
             pass  # a cgroup that will not go away is the supervisor's problem, not a crash
+
+    def gone(self, wait: float = 5.0) -> bool:
+        """Kill, wait for the cgroup to empty, remove it, and say whether it is gone."""
+        self.kill()
+        deadline = time.monotonic() + wait
+        while self.path.exists() and time.monotonic() < deadline:
+            if _text(self.path / "cgroup.events").find("populated 0") >= 0:
+                self._rmdir_tree()
+            if self.path.exists():
+                time.sleep(0.1)
+        self._rmdir_tree()
+        return not self.path.exists()
 
     def __enter__(self) -> SandboxCgroup:
         return self

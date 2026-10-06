@@ -1,0 +1,8 @@
+before: supervisors [] sandboxes []
+  FAIL  P1 a declared 192 MB is the sandbox's memory.max — memory.max 671088640 (expected 201326592, got 671088640)
+  FAIL  P2 the first supervisor's sandbox is still running — pid 57795  (expected alive, got gone)
+  FAIL  P2 and the first supervisor did not report it exited — 15:19:15  demo_flood exited by itself (status 9); not restarting it (expected 0, got 1)
+  FAIL  P3 two report files, one per start — decisions-20261006T151928-57851.jsonl decisions-20261006T151944-57882.jsonl demo_flood-run1.json demo_flood-run1.log  (expected 2, got 1)
+  ok    P4 (A) reports itself RUNNING to the mediator's connection — 
+after cleanup: supervisors [] sandboxes []
+ALLDONE

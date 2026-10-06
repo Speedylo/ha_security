@@ -141,7 +141,10 @@ def describe(manifest: Manifest, *, name: str | None = None, version: str | None
     lines += ["", "It will NOT be allowed to:"]
     lines += [f"  - {entry}" for entry in denied]
 
-    resources = manifest.permissions.get("resources", {})
+    # The figures that will be applied, not the ones asked for: a declaration above the
+    # framework's default gets the default (§7.22.3, verification 4.7 finding F32).
+    declared = manifest.permissions.get("resources", {})
+    resources = {member: getattr(manifest.resources, member) for member in declared}
     if resources:
         limits = []
         if "memory_mb" in resources:

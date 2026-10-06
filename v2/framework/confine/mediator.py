@@ -197,6 +197,17 @@ COMMAND_SERVICES = "(command: turn_on and turn_off only, §7.38)"
 COMMAND_QUEUE = f"(command: at most {MAX_COMMANDS} queued)"
 COMMAND_ANSWER = "(command: answered only on the channel it was sent to)"
 AMBIENT = "(ambient: §5.10.2)"
+#: A request the policy or its act could not handle: a field of the wrong type, a peer that answered
+#: a datagram with "port unreachable". Refused under this rule, and counted like any other refusal
+#: (verification 4.7, finding F33).
+MALFORMED = "(request: each field of the type its operation reads)"
+
+#: What bad data and the network raise. One of these from the policy or an act is the requesting
+#: sandbox's refusal. Anything else still stops the mediator: an audit write that fails is outside
+#: this boundary on purpose (no record, no decision, F28), and `PlatformLost` is a RuntimeError the
+#: supervisor handles (F29).
+REQUEST_ERRORS = (TypeError, ValueError, AttributeError, KeyError, IndexError, OverflowError,
+                  OSError)
 
 #: Datagrams queued for one sandbox, at most (W2 (b)). Matches the relay's `QUEUE_LIMIT`.
 MAX_DATAGRAMS = 64
@@ -257,6 +268,9 @@ class Mediator:
     #: Cut-offs the house could not be told about, because (A) was unreachable. The cut-off
     #: itself stands; only the Repairs issue is missing, and this says so.
     undelivered: list[str] = field(default_factory=list)
+    #: The same cut-offs, by integration, still to be delivered: each is told to the next house
+    #: attached, so a cut-off while (A) was down still reaches Repairs when it is back (F35 R1).
+    _untold: dict[str, str] = field(default_factory=dict)
     #: When each integration's recent refusals happened, oldest first, within the window.
     _refusals: dict[str, collections.deque] = field(default_factory=dict)
 
@@ -282,6 +296,8 @@ class Mediator:
         self._platform = platform
         self._selector.register(platform, selectors.EVENT_READ)
         platform.listeners.append(self.push)
+        for identity, detail in list(self._untold.items()):
+            self._tell_cut_off(identity, detail)
         if hasattr(platform, "command_handlers"):
             platform.command_handlers.append(self.command)
         if hasattr(platform, "restart_handlers"):
@@ -332,8 +348,13 @@ class Mediator:
         for command, sent_to in list(self._sent_commands.items()):
             if sent_to == fd:
                 del self._sent_commands[command]
-                self._platform.command_result(  # type: ignore[union-attr]
-                    command, False, "the confined integration's sandbox exited")
+                if self._platform is None:
+                    continue
+                try:
+                    self._platform.command_result(  # type: ignore[union-attr]
+                        command, False, "the confined integration's sandbox exited")
+                except Exception:  # noqa: BLE001 — (A) gone: the bridge's own timeout answers
+                    pass
         for sock, (owner, _route) in list(self._sources.items()):
             if owner == fd:
                 del self._sources[sock]
@@ -353,6 +374,17 @@ class Mediator:
             except (KeyError, ValueError):
                 pass
             channel.close()
+
+    def drop(self, identity: str) -> None:
+        """Close every channel `identity` holds: its sandbox was stopped, or cut off.
+
+        The supervisor calls this when it stops a sandbox (F35 R5). Until then the stopped
+        sandbox's channel stayed registered until the selector saw it close, and a user's command
+        in that window went down it and failed although the new sandbox was running.
+        """
+        for fd, (who, _channel) in list(self._by_fd.items()):
+            if who == identity:
+                self.unregister(fd)
 
     @property
     def open_channels(self) -> int:
@@ -458,7 +490,7 @@ class Mediator:
         if not decision.allowed:
             self._platform.command_result(ident, False, decision.reason)  # type: ignore
             return
-        fd = channels[0]
+        fd = channels[-1]   # the newest: an older one can only be a sandbox not yet seen to end
         self._sent_commands[ident] = fd
         self._out[fd].commands.append({"push": "entity.command", "command": ident,
                                        "entity": entity_id, "service": service,
@@ -468,7 +500,7 @@ class Mediator:
     def _answer_command(self, fd: int, identity: str, request: dict) -> None:
         """A sandbox's answer to a command. Accepted only from the channel it was sent to, once."""
         ident = request.get("command")
-        if self._sent_commands.get(ident) != fd:  # type: ignore[arg-type]
+        if not isinstance(ident, int) or self._sent_commands.get(ident) != fd:
             # Not a decision, and not grounds to drop the channel: recorded, and ignored. A
             # sandbox must not be able to use the answer path to make the house do anything.
             detail = f"answer to command {ident!r}, which was not sent to this channel"
@@ -556,17 +588,24 @@ class Mediator:
         self.audit.append({"identity": identity, "event": "cutoff", "detail": detail})
         if self.log is not None:
             self.log.cutoff(self._runs.get(identity, ""), identity, refusals, self.flood_window)
-        for fd, (who, _channel) in list(self._by_fd.items()):
-            if who == identity:
-                self.unregister(fd)
-        notify = getattr(self._platform, "cut_off", None)
-        if notify is not None:
-            try:
-                notify(identity, detail)
-            except Exception as err:  # noqa: BLE001 — the house being down must not undo a cut-off
-                self.undelivered.append(f"{identity}: {err}")
+        self.drop(identity)
+        self._untold[identity] = detail
+        self._tell_cut_off(identity, detail)
         for callback in self.on_cut_off:
             callback(identity)
+
+    def _tell_cut_off(self, identity: str, detail: str) -> None:
+        """Raise the Repairs issue in (A), or keep it for the next (A) attached (F35 R1)."""
+        notify = getattr(self._platform, "cut_off", None)
+        if notify is None:
+            self.undelivered.append(f"{identity}: no house attached")
+            return
+        try:
+            notify(identity, detail)
+        except Exception as err:  # noqa: BLE001 — the house being down must not undo a cut-off
+            self.undelivered.append(f"{identity}: {err}")
+            return
+        self._untold.pop(identity, None)
 
     def reinstate(self, identity: str, by: str) -> bool:
         """Let a cut-off integration be registered again. Recorded before it can be. False if it was not cut off."""
@@ -577,6 +616,7 @@ class Mediator:
         if self.log is not None:
             self.log.reinstate(identity, by)
         self.cut_off.discard(identity)
+        self._untold.pop(identity, None)
         for callback in self.on_reinstate:
             callback(identity)
         return True
@@ -621,7 +661,11 @@ class Mediator:
 
         # Steps 1–3. Identity comes from `identity`, which came from the socket. Whatever the
         # request claims about itself is data, and is recorded as a claim rather than believed.
-        decision = self.policy(identity, request)
+        try:
+            decision = self.policy(identity, request)
+        except REQUEST_ERRORS as err:
+            decision = Decision(False, f"the request could not be read: "
+                                       f"{type(err).__name__}: {str(err)[:200]}", MALFORMED)
 
         # Step 4, then step 5. The record is durable before the policy's act runs, so an act
         # that succeeds and then crashes the mediator is still attributable. If acting turns up
@@ -632,7 +676,12 @@ class Mediator:
         if not decision.allowed and self._refused(identity):
             return
         if decision.allowed and decision.act is not None:
-            outcome = decision.act()
+            try:
+                outcome = decision.act()
+            except REQUEST_ERRORS as err:
+                outcome = Decision(False, f"acting on the request failed: "
+                                          f"{type(err).__name__}: {str(err)[:200]}",
+                                   decision.clause)
             if not outcome.allowed:
                 self._record(identity, request, outcome)
                 if self._refused(identity):
