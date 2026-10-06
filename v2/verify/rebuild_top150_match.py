@@ -80,7 +80,11 @@ def main() -> int:
                 tried += 1
                 blob = git(clone, "archive", "--format=tar", commit, prefix, binary=True)
                 with tempfile.TemporaryDirectory() as tmp:
-                    tarfile.open(fileobj=io.BytesIO(blob)).extractall(tmp, filter="data")
+                    # Regular files only, as `fetch_hacs_corpus.fetch_one` kept, so a link in the
+                    # repository is neither followed nor extracted.
+                    archive = tarfile.open(fileobj=io.BytesIO(blob))
+                    archive.extractall(tmp, members=[m for m in archive.getmembers()
+                                                     if m.isfile()], filter="data")
                     entry = parse(parser, Path(tmp) / prefix, domain)
                 if entry == committed[domain]:
                     found[domain] = {"repo": repo, "commit": commit, "layout": (
