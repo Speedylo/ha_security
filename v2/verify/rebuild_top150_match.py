@@ -56,6 +56,8 @@ def parse(parser: Path, directory: Path, domain: str) -> dict | None:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--work", type=Path, required=True)
+    ap.add_argument("--only", nargs="*", help="search these domains only")
+    ap.add_argument("--limit", type=int, default=60, help="commits tried per repository")
     args = ap.parse_args()
     parser = args.work / "api_surface_671795d.py"
     committed = {e["domain"]: e for e in json.loads(subprocess.run(
@@ -63,6 +65,8 @@ def main() -> int:
         check=True, capture_output=True, text=True).stdout)["per_integration"]}
     found = {}
     for domain, repos in CANDIDATES.items():
+        if args.only and domain not in args.only:
+            continue
         found[domain] = None
         for repo in repos:
             clone = args.work / "clones" / repo.replace("/", "__")
@@ -76,7 +80,7 @@ def main() -> int:
                 if commits:
                     break
             tried = 0
-            for commit in commits[:60]:
+            for commit in commits[:args.limit]:
                 tried += 1
                 blob = git(clone, "archive", "--format=tar", commit, prefix, binary=True)
                 with tempfile.TemporaryDirectory() as tmp:
@@ -96,7 +100,10 @@ def main() -> int:
                   f"after {tried} of {len(commits)} commits")
             if found[domain]:
                 break
-    (args.work / "matched.json").write_text(json.dumps(found, indent=2) + "\n")
+    path = args.work / "matched.json"
+    previous = json.loads(path.read_text()) if path.exists() else {}
+    path.write_text(json.dumps({**previous, **{d: f for d, f in found.items()
+                                                if f or d not in previous}}, indent=2) + "\n")
     missing = [d for d, f in found.items() if not f]
     print(f"{len(found) - len(missing)} of {len(found)} matched; unmatched: {missing}")
     return 0 if not missing else 1
