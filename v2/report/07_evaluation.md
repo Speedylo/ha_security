@@ -2644,7 +2644,7 @@ project's threat-identification work. Mapping from §4.8's `CM` column, unaltere
 | **T4** | Integrity — alter private data | T07, T17 | ✅ Demonstrated |
 | **T5** | Availability — delay | **nothing** | — **Unmapped** |
 | **T6** | Availability — partial loss | **nothing** | — **Unmapped** |
-| **T7** | Availability — complete loss, incl. *"resource saturation up to a frozen state"* | T16 | ⚠ Partial — space bounded, I/O bandwidth not (§7.22.2) |
+| **T7** | Availability — complete loss, incl. *"resource saturation up to a frozen state"* | T16 | ⚠ Partial — space bounded, I/O bandwidth not (§7.22.2) *2026-10-06 (finding F04): T19, added 2026-10-05, maps here too: a flood of refused requests saturating the audit log is resource saturation, and T19 is ✅ demonstrated (§7.44). The row stays ⚠ because T16 does.* |
 | **T8** | Availability — physical damage | **nothing**, and §4.14 says so | ⊘ Out of reach; retained immediately |
 | **T9** | Authentication — impersonation | T02, T11 | ✅ Demonstrated |
 | **T10** | Authorisation — escalation | T01, T03, T05, T13 | ✅ Demonstrated except T13, which is retained (R1, R2) |
@@ -3825,6 +3825,12 @@ since moved to a `/16` network, and `aiodiscover` declines to sweep anything lar
 addresses, so today's run has no sweep to count. Recomputing the *original* run with the sweep
 excluded gives 25 against 120: **17%, the same as today's**. The re-run and the re-analysis agree,
 and neither depends on the corrected instance.
+
+> **A range, not one value (2026-10-06, verification finding F15).** Re-run in Phase 3a on
+> 2026-10-05, the share was **11%**, 14 against 118. One integration accounts for nearly all of
+> the move: `frigate` resolved through `aiodns` 11 times on 2026-10-03 and once on 2026-10-05. Why
+> it did is not established. So the share is read as **11–17%** across the two runs. The conclusion does not move: both resolution seams carry API names,
+> so the shim interposes at both (`experiments/verify/results/phase3a/TRIAGE.md`).
 
 So §7.24.2's figure was a measurement of the platform's device discovery on a `/24` LAN, and its
 explanation for the uniformity — that every client session's `AsyncDualMDNSResolver` routes

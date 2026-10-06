@@ -377,3 +377,12 @@ python3 -m confine.compat --corpus ~/r2exp/corpus --python ~/r2exp/ha314/bin/pyt
     --profile baseline --platform-deps ~/r2exp/platform-deps \
     --json results/compat_baseline.json
 ```
+
+## C1, counted — §7.29
+
+*Added 2026-10-06 (verification finding F07).* §7.29's 75 tree comparisons (zero changes) are in
+`results/c1_baseline.json` (37) and `results/c1_declared_core.json` (38), under each integration's
+`integrity` key. `compat.py` hashes each integration's copy before and after it runs, with
+`confine/integrity.py`. The other result files here predate the check and carry no comparison.
+`selftest_integrity` (`../selftests/`) is the suite that checks the mechanism.
+

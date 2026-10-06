@@ -126,7 +126,7 @@ same result or record dated history. So the register works in three tiers:
 | CM-T4 | Demonstrated | T07, T17 | via A3 | pending | |
 | CM-T5 | Unmapped | — | DC | pending | |
 | CM-T6 | Unmapped | — | DC | pending | |
-| CM-T7 | Partial | T16 | via A3 | pending | **F04: T19 now also maps here (§4.8); the row predates it** |
+| CM-T7 | Partial | T16, T19 | via A3 | Verified 2026-10-06 | F04 resolved: §7.26.4's row names T19 (dated); still ⚠ because T16 is |
 | CM-T8 | Out of reach, retained | — | DC | pending | |
 | CM-T9 | Demonstrated | T02, T11 | via A3 | pending | |
 | CM-T10 | Demonstrated except T13 (retained) | T01, T03, T05, T13 | via A3 | pending | |

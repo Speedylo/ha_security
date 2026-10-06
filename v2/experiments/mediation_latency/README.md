@@ -51,3 +51,17 @@ python3 measure.py --iterations 20000 --json results/pi5.json
 ```
 
 Needs only the standard library.
+
+## `scale.py` and `results/pi5_scale.json` — §7.19
+
+*Added 2026-10-06 (verification finding F07): §7.19 is built on this second measurement, and until
+this date no README named it.* `scale.py` times the real mediator, not the socket floor: every
+request goes through `confine.Mediator` with a real manifest bound and `acting_policy` deciding it.
+It runs at the budget of 26 sandboxes, which tests §7.6's prediction P4. Its output is
+`results/pi5_scale.json`, and §7.19 reports it. The latency figure was corrected in the
+verification campaign, to about 43 µs on the frozen tag (§7.45.1, finding F17), with three passes'
+results in `../verify/results/phase3_timing/`.
+
+```bash
+systemd-run --user --scope -q python3 scale.py --json results/pi5_scale.json
+```
