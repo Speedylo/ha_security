@@ -104,9 +104,11 @@ def bootstrap(values: list[float], rounds: int = 10_000) -> tuple[float, float]:
 
 def main() -> int:
     passes = sorted(p for p in TIMING.glob("pass*") if p.is_dir())
-    final = TIMING / "final"
-    if final.is_dir():
-        passes.append(final)
+    # The final tag's runs: `final` (verify-2026-10-final), then `final_f45` (after F45's change to
+    # the mediator's token). The last one is judged on its own; all count in the median.
+    finals = [TIMING / name for name in ("final", "final_f45") if (TIMING / name).is_dir()]
+    passes += finals
+    final = finals[-1] if finals else TIMING / "final"
     print(f"{len(passes)} pass(es): {', '.join(p.name for p in passes)}\n")
     rows = []
     for mid, what, stated, unit, kind, section, get in METRICS:
