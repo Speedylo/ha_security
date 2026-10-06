@@ -602,6 +602,16 @@ reporting is the difference, and the difference is zero.
 
 §7.6 was fixed before the run. Two of its three compatibility predictions were wrong.
 
+> **Qualified 2026-10-06 (verification 4.8, finding F36).** The record does not show this order.
+> The baseline's results were written on the Pi at 13:42 on 2 September. §7.1–§7.11 were committed
+> at 14:01 the same day, together with the baseline harness and §7.12, so git cannot tell whether
+> §7.6 was written before the run. Two things make fitting unlikely. Two of the three predictions are
+> wrong, and nobody who knew the result would write a wrong prediction. And no line of §7.6 has
+> changed since that commit. That is evidence the predictions were not fitted to the result. It is
+> not proof that they came first. Every prediction from 3 September onwards was committed in a note
+> before its first result (`verify/prereg.py`: 19 of 19), and for the tightest gaps the Pi's own file
+> times confirm the order.
+
 | | Prediction | Actual | |
 |---|---|---|---|
 | **P1** | Baseline 34/37 | **31/37** | ✗ wrong |
@@ -5396,3 +5406,6 @@ and every headline number in the report re-derived unchanged (39 of 39).
 §7.5 and predictions in §7.6 are frozen at that date and were not revised in light of results —
 §7.12.3 scores two of them as wrong rather than adjusting them. §7.12 is the first results
 section; the remaining measurements are scheduled in §7.10.*
+
+*Qualified 2026-10-06: "before any measurement" is stated rather than shown for the first one.
+§7.12.3 explains why.*

@@ -31,6 +31,10 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 CACHE = HERE / "custom_integrations.json"
+#: The date the snapshot in CACHE was downloaded. Kept beside it, because a run from the cache
+#: once stamped the derived figures with the day it ran, re-dating an August snapshot to whatever
+#: day the script was next run (verification 4.8, finding F37).
+RETRIEVED = HERE / "custom_integrations.retrieved"
 OUT = HERE / "ecosystem_scale.json"
 
 SOURCE = "https://analytics.home-assistant.io/custom_integrations.json"
@@ -46,6 +50,7 @@ def load(refresh: bool) -> dict:
     if refresh or not CACHE.exists():
         with urllib.request.urlopen(SOURCE, timeout=60) as response:
             CACHE.write_bytes(response.read())
+        RETRIEVED.write_text(dt.date.today().isoformat() + "\n")
     return json.loads(CACHE.read_text())
 
 
@@ -59,7 +64,7 @@ def derive(data: dict) -> dict:
 
     return {
         "source": SOURCE,
-        "retrieved": dt.date.today().isoformat(),
+        "retrieved": RETRIEVED.read_text().strip(),
         "active_installations": ACTIVE_INSTALLATIONS,
         "active_installations_as_of": ACTIVE_INSTALLATIONS_AS_OF,
         "distinct_custom_integrations": len(installs),

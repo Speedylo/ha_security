@@ -25,7 +25,8 @@ spike/.ha_config/
 spike/.ha_token
 
 # v2: cached telemetry snapshot (regenerable via figures/ecosystem_scale.py)
-v2/figures/custom_integrations.json
+# (v2/figures/custom_integrations.json was ignored here until 2026-10-06: it is the raw input of
+# Chapter 1's figures, and the live source has moved since, so it is committed — finding F37)
 
 # Windows download markers (WSL)
 *:Zone.Identifier
