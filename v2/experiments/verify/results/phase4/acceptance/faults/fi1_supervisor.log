@@ -1,0 +1,7 @@
+16:36:43  supervising demo_flood; durable log /home/younes/r2exp/review/f42/faults/fi1_audit/decisions-20261006T163643-61488.jsonl; Ctrl-C to stop
+16:36:43  demo_flood started (run 1, pid 61504)
+16:36:49  the house's Home Assistant went away (the connection to (A) failed: the server closed the connection: b''); demo_flood is stopped until it is back
+16:36:54  still waiting for the house's Home Assistant: nothing is answering on its port
+16:36:59  the house's Home Assistant is back; starting demo_flood again
+16:36:59  demo_flood started (run 2, pid 61572)
+16:37:05  stopped

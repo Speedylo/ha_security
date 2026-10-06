@@ -176,16 +176,82 @@ def wait_until_up(seconds: float = 180) -> None:
     raise TimeoutError(f"(A) did not answer on {BASE} within {seconds:.0f} s")
 
 
+#: What `hass` exits with when asked to restart, from its own Settings → System → Restart or a
+#: SIGHUP. It does not start itself again: it expects a process manager to, as Docker or systemd
+#: does in a real installation (`homeassistant/__main__.py`, `const.RESTART_EXIT_CODE`).
+RESTART_EXIT_CODE = 100
+
+
+def wait_until_running(seconds: float = 180) -> None:
+    """Wait until (A) says it has finished starting, not only that its API answers.
+
+    The API answers while (A) is still setting up its integrations, and since verification 4.7
+    (F35 R7) the mediator refuses to connect to it until then. So `up` waits for this too, and
+    whatever is started after `up` returns can connect at once.
+    """
+    token = TOKEN_FILE.read_text().strip()
+    deadline = time.monotonic() + seconds
+    state = None
+    while time.monotonic() < deadline:
+        ws = WebSocket(HOST, PORT)
+        try:
+            ws.receive()
+            ws.send({"type": "auth", "access_token": token})
+            if ws.receive()[0].get("type") == "auth_ok":
+                ws.send({"id": 1, "type": "get_config"})
+                reply = [m for m in ws.receive() if m.get("id") == 1]
+                state = (reply[0].get("result") or {}).get("state") if reply else None
+                if state == "RUNNING":
+                    return
+        finally:
+            ws.close()
+        time.sleep(1)
+    raise TimeoutError(f"(A) did not finish starting within {seconds:.0f} s (state {state})")
+
+
 def start(config: Path) -> int:
-    """Start `hass` detached, with its own log file. Returns its pid."""
+    """Start `hass` detached, under `keep`, with its own log file. Returns the keeper's pid.
+
+    Until 2026-10-06 this started `hass` itself, with nothing to start it again, so restarting the
+    house's Home Assistant from its own interface stopped it for good (verification 4.11, finding
+    F42). The pid file holds the keeper's pid, so `stop` ends both.
+    """
     log = open(config / "hass.stdout", "ab")
-    env = {**os.environ, "PYTHONPATH": str(DEPS)}
-    proc = subprocess.Popen([str(HASS), "-c", str(config), "--skip-pip", "--log-no-color"],
+    env = {**os.environ, "PYTHONPATH": str(HERE.parent)}
+    proc = subprocess.Popen([sys.executable, "-m", "confine.house_a", "keep",
+                             "--config", str(config)],
                             stdout=log, stderr=subprocess.STDOUT, start_new_session=True,
-                            env=env)
+                            env=env, cwd=str(HERE.parent))
     (config / "hass.pid").write_text(str(proc.pid))
     wait_until_up()
     return proc.pid
+
+
+def keep(config: Path) -> int:
+    """Run `hass`, and run it again each time it exits asking to be restarted.
+
+    A SIGTERM is passed on to `hass`, and once it has exited this returns instead of starting it
+    again, so `stop` still means stop.
+    """
+    env = {**os.environ, "PYTHONPATH": str(DEPS)}
+    stopping = False
+    child: subprocess.Popen | None = None
+
+    def forward(signum, _frame) -> None:
+        nonlocal stopping
+        stopping = True
+        if child is not None and child.poll() is None:
+            child.send_signal(signum)
+    signal.signal(signal.SIGTERM, forward)
+    signal.signal(signal.SIGINT, forward)
+    while True:
+        child = subprocess.Popen([str(HASS), "-c", str(config), "--skip-pip", "--log-no-color"],
+                                 env=env)
+        code = child.wait()
+        if stopping or code != RESTART_EXIT_CODE:
+            return code
+        print(f"{time.strftime('%Y-%m-%d %H:%M:%S')} house_a keep: hass asked to be restarted; "
+              f"starting it again", flush=True)
 
 
 def stop(config: Path, seconds: float = 60) -> None:
@@ -322,6 +388,7 @@ def up(config: Path, fresh: bool) -> None:
     token = TOKEN_FILE.read_text().strip()
     confirm_http_config(token)
     add_bridge_entry(token)
+    wait_until_running()
     print(f"(A) up on {BASE}, config {config}, bridge entry present, token in {TOKEN_FILE}")
 
 
@@ -359,11 +426,14 @@ class User:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("action", choices=["up", "down", "restart", "status"])
+    # `keep` is internal: what `start` runs, which keeps `hass` running across its own restarts.
+    ap.add_argument("action", choices=["up", "down", "restart", "status", "keep"])
     ap.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     ap.add_argument("--fresh", action="store_true",
                     help="delete the config directory first and onboard from nothing")
     args = ap.parse_args()
+    if args.action == "keep":
+        return keep(args.config)
     if args.action == "up":
         up(args.config, args.fresh)
     elif args.action == "down":
@@ -372,6 +442,7 @@ def main() -> int:
     elif args.action == "restart":
         stop(args.config)
         start(args.config)
+        wait_until_running()
         print("(A) restarted")
     else:
         print("up" if running() else "down")
