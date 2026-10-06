@@ -18,6 +18,11 @@ What each case checks:
     F5   a user's refused commands are recorded but not counted
     win  refusals spread more thinly than the window are never cut off
     note a house that cannot be told does not undo the cut-off, and says so
+    bad  a malformed request is a refusal of that sandbox, not a crash of the mediator
+         (verification 4.7, F33): recorded, counted, and the neighbour still served
+    late a cut-off while no house is attached is delivered when one is (F35 R1)
+    cmd  a user's command reaches the integration's newest channel, not one left over from
+         a sandbox that was stopped (F35 R5)
     S7   the durable log's chains verify and match the in-memory record, events included
 
 **Layer.** No sandbox is spawned, as in `selftest_push`: identity comes from the socket, and the
@@ -30,6 +35,7 @@ Run:  python3 -m confine.selftest_flood
 from __future__ import annotations
 
 import json
+import socket
 import sys
 import tempfile
 import threading
@@ -114,6 +120,30 @@ class House:
         if self.fail:
             raise ConnectionError("(A) is not reachable")
         self.told.append((identity, detail))
+
+
+class Attached(House):
+    """A house that can be attached to the mediator's selector, as `RealPlatform` is."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._ours, self._theirs = socket.socketpair()
+        self.listeners: list = []
+
+    def fileno(self) -> int:
+        return self._ours.fileno()
+
+
+def malformed(channel: SandboxChannel, outcome: dict) -> None:
+    """Send a request whose entity is a list, until the mediator stops answering."""
+    answers = []
+    try:
+        while True:
+            answers.append(channel.request({"op": "entity.read", "entity": []}))
+    except (ConnectionError, OSError) as err:
+        outcome["stopped"] = str(err)
+    finally:
+        outcome["answers"] = answers
 
 
 def mediator_for(root: Path, name: str, **knobs) -> tuple[Mediator, AuditLog, Platform]:
@@ -287,9 +317,89 @@ def main() -> int:
         check("a reachable house is told which integration, and why",
               told.told == [("flooder", "5 refusals within 10 s")], f"{told.told}")
 
+        print("\nbad — a malformed request (F33)\n")
+        broken, log_b, _ = mediator_for(root, "bad", flood_limit=5)
+        # A sender with a grant, so the request gets past "nothing is declared" to the code that
+        # reads the entity's name: with no grant it is refused before the list is touched.
+        sender = connect(broken, "flooder", component(root / "bad", "flooder", [DECLARED]))
+        reader = connect(broken, "reader", reader_dir)
+        sent_bad, read, stop = {}, {}, threading.Event()
+        threads = [threading.Thread(target=malformed, args=(sender, sent_bad), daemon=True),
+                   threading.Thread(target=neighbour, args=(reader, stop, read), daemon=True)]
+        for thread in threads:
+            thread.start()
+        try:
+            broken.serve(timeout=0.5, until=time.monotonic() + 3)
+            crashed = None
+        except Exception as err:  # noqa: BLE001 — the finding, before the fix
+            crashed = f"{type(err).__name__}: {err}"
+        stop.set()
+        if crashed is None:
+            broken.serve(timeout=0.3, until=time.monotonic() + 1)
+        for fd in list(broken._by_fd):
+            broken.unregister(fd)
+        for thread in threads:
+            thread.join(timeout=5)
+        check("the mediator is still running", crashed is None, crashed or "")
+        bad = [r for r in log_b.records() if r.get("integration") == "flooder"
+               and r["kind"] == "decision"]
+        check("each malformed request is a recorded refusal with a clause",
+              len(bad) == 5 and all(not r["allowed"] and r["clause"] for r in bad),
+              f"{len(bad)} records: {bad[0]['clause'] + ' / ' + bad[0]['reason'] if bad else '-'}")
+        check("answered to the sandbox as refusals, and counted: cut off at the limit",
+              "flooder" in broken.cut_off and len(sent_bad.get("answers", [])) == 4
+              and not any(a.get("ok") for a in sent_bad.get("answers", [])),
+              f"{len(sent_bad.get('answers', []))} answers, then {sent_bad.get('stopped')}")
+        check("the neighbour was answered throughout",
+              bool(read.get("answers")) and all(a.get("ok") for a in read["answers"])
+              and "error" not in read, f"{len(read.get('answers') or [])} answers")
+
+        print("\nlate — a cut-off while no house is attached (F35 R1)\n")
+        late, log_l, _ = mediator_for(root, "late", flood_limit=5)
+        channel = connect(late, "flooder", flooder_dir)
+        thread = threading.Thread(target=flood, args=(channel, {}))
+        thread.start()
+        late.serve(timeout=0.5, until=time.monotonic() + 5)
+        thread.join(timeout=5)
+        house = Attached()
+        late.attach_platform(house)
+        check("the cut-off is delivered once a house is attached",
+              "flooder" in late.cut_off and house.told == [("flooder", "5 refusals within 10 s")],
+              f"told {house.told}")
+        failing = Attached()
+        failing.fail = True
+        quiet.attach_platform(failing)
+        quiet.detach_platform()
+        reachable = Attached()
+        quiet.attach_platform(reachable)
+        check("one that failed to reach the house is delivered by the next house that answers",
+              reachable.told == [("flooder", "5 refusals within 10 s")], f"told {reachable.told}")
+
+        print("\ncmd — a command after the sandbox was replaced (F35 R5)\n")
+        replaced, log_c, _ = mediator_for(root, "cmd")
+        house = House()
+        house.owners["switch.misbehave"] = "flooder"
+        replaced._platform = house
+        old = connect(replaced, "flooder", flooder_dir)
+        old.sock.close()                         # the stopped sandbox, not yet noticed
+        new = connect(replaced, "flooder", flooder_dir)
+        replaced.command({"command": 1, "integration": "flooder",
+                          "entity_id": "switch.misbehave", "service": "turn_on"})
+        new.sock.settimeout(2)
+        try:
+            pushed = new._read_frame()[0]
+        except (OSError, ConnectionError) as err:
+            pushed = {"error": str(err)}
+        check("the command reaches the running sandbox, and the user sees no error",
+              pushed.get("push") == "entity.command" and not house.results,
+              f"sandbox got {pushed}; user told {house.results}")
+        for fd in list(replaced._by_fd):
+            replaced.unregister(fd)
+
         print("\nS7 — the durable record, events included\n")
         for name, m, lg in (("F1/F4", mediator, log), ("F5", users, log_u), ("win", thin, log_t),
-                            ("note", quiet, log_q)):
+                            ("note", quiet, log_q), ("bad", broken, log_b),
+                            ("late", late, log_l), ("cmd", replaced, log_c)):
             problems = reconcile(m.audit, lg.records())
             breaks = lg.verify()
             check(f"{name}: chains verify, and memory matches the disk entry by entry",

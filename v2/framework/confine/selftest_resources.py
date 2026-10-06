@@ -240,6 +240,18 @@ def check_parse_time_validation() -> list[tuple[str, bool, str]]:
                          limits.disk_mb) == (192, 50, 8, 32),
                         f"{limits.memory_mb} MB, {limits.cpu_percent}%, "
                         f"{limits.max_processes} procs, {limits.disk_mb} MB disk"))
+        # A declaration can only tighten the framework's bound, never loosen it (§7.22.3).
+        # Until verification 4.7 (finding F32) these were applied as declared.
+        (component / "manifest.json").write_text(json.dumps(
+            {"domain": "probe", "permissions": {"schema_version": 1,
+             "resources": {"memory_mb": 8192, "max_processes": 4096, "disk_mb": 4096}}}))
+        loose = Manifest.load(component, root).resources
+        floor = ResourceLimits()
+        results.append(("a clause asking for more than the default gets the default (F32)",
+                        (loose.memory_mb, loose.max_processes, loose.disk_mb)
+                        == (floor.memory_mb, floor.max_processes, floor.disk_mb),
+                        f"asked 8192 MB, 4096 procs, 4096 MB disk; got {loose.memory_mb} MB, "
+                        f"{loose.max_processes} procs, {loose.disk_mb} MB disk"))
         # Absence is the framework's default, not the absence of a limit (§7.22).
         (component / "manifest.json").write_text(json.dumps(
             {"domain": "probe", "permissions": {"schema_version": 1}}))

@@ -480,6 +480,35 @@ def main() -> int:
               str(first), failures)
         check("...and a later record fsyncs only the file",
               second == [("file", inode(nested))], str(second), failures)
+
+        # Verification 4.7, F35 R9: if the first record of a new file fails, the file is left
+        # there empty, so the next record found it existing and never fsynced its directory.
+        failing_once = root / "r9" / "audit.jsonl"
+        log7 = AuditLog(failing_once)
+        state = {"failed": False}
+
+        def fail_first_file(fd: int) -> None:
+            info = os.fstat(fd)
+            if not stat.S_ISDIR(info.st_mode) and not state["failed"]:
+                state["failed"] = True
+                raise OSError(28, "No space left on device")
+            recording_fsync(fd)
+
+        synced.clear()
+        audit_module.os.fsync = fail_first_file
+        try:
+            try:
+                log7.approval(base, "author-declared")
+            except OSError:
+                pass
+            synced.clear()
+            log7.approval(base, "author-declared")
+            after = list(synced)
+        finally:
+            audit_module.os.fsync = real_fsync
+        check("a first record that failed: the next one still fsyncs the directory (R9)",
+              after == [("file", inode(failing_once)), ("dir", inode(failing_once.parent))],
+              str(after), failures)
     finally:
         shutil.rmtree(root, ignore_errors=True)
 
