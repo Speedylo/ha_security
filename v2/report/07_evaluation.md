@@ -5200,6 +5200,34 @@ for a property of the code, and the evaluation checked a property of the logs, w
 property's observable shadow. The register's discipline caught it because it asks of every claim
 what checks it. The answer for this half of F3 was nothing.
 
+
+### 7.45.3 Every enforcement point has a test that fails without it, after one was added
+
+A suite that passes shows that the code does what the suite checks. It does not show that the suite
+checks the thing the report claims. So each security-relevant check in the framework was removed or
+inverted in turn, one mutant per enforcement point, and all 26 suites were run against each. If every
+suite still passes with a check removed, that check has no test behind it. There were eighteen mutants,
+covering default deny, identity from the socket, the egress port, the public and home-network address
+tests, the re-check after resolution, record-before-act, both audit chains, the manifest re-read, the
+subscription filter, the flood cut-off and re-registration, seccomp, the read-only component, `/proc`,
+command answers, and wildcards in `services.call` (`experiments/verify/results/phase4/mutants/`).
+
+**Seventeen were killed on the first run, and each by the check that guards the point it changed.**
+Some were killed in a way worth noting. With seccomp made to allow what it lists, nothing was confined
+at all, because the preflight exercises the filter, finds the calls allowed, and refuses to start.
+With record-before-act reversed, the test that kills the action mid-way finds no record on disk.
+
+**One survived.** A user's command is answered by the sandbox it was sent to, and §7.38 says the
+answer is accepted only from that sandbox's channel. Weakening that to "from any channel" passed every
+suite. The one test of the path sent an answer naming a command that was never sent, which is refused
+either way. Under the mutant, a sandbox could answer another sandbox's command, and the house would
+take it as the result. The code was right throughout; nothing showed it. `selftest_audit` now sends a
+real command's answer from a second sandbox's channel. That test fails against the mutant, and all 26
+suites pass without it.
+
+Eleven of the eighteen were killed by exactly one check. Every claim has a test, but most have only
+one.
+
 ---
 
 *§7.1–§7.11 written 2026-09-02, before any measurement specified here had been run. Criteria in

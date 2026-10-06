@@ -1,0 +1,61 @@
+adversarial self-test — a hostile integration, inside a sandbox
+
+  2021 traversal
+    ok    BLOCKED  ../../secrets.yaml                     FileNotFoundError: [Errno 2] No such file or directo
+    ok    BLOCKED  ../../../secrets.yaml                  FileNotFoundError: [Errno 2] No such file or directo
+    ok    BLOCKED  ../../../../secrets.yaml               FileNotFoundError: [Errno 2] No such file or directo
+    ok    BLOCKED  /config/secrets.yaml                   FileNotFoundError: [Errno 2] No such file or directo
+    ok    BLOCKED  secrets.yaml                           FileNotFoundError: [Errno 2] No such file or directo
+    ok    BLOCKED  ../secrets.yaml                        FileNotFoundError: [Errno 2] No such file or directo
+    ok    BLOCKED  ../../.storage/core.config_entries     FileNotFoundError: [Errno 2] No such file or directo
+    ok    BLOCKED  /config/.storage/core.config_entries   FileNotFoundError: [Errno 2] No such file or directo
+    ok    BLOCKED  /sandbox/../secrets.yaml               FileNotFoundError: [Errno 2] No such file or directo
+    ok    BLOCKED  /sandbox/component/../../secrets.yaml  FileNotFoundError: [Errno 2] No such file or directo
+    ok    BLOCKED  /tmp/confine-adversary-ilafj47b/secrets.yaml FileNotFoundError: [Errno 2] No such file or directo
+    ok    BLOCKED  /tmp/confine-adversary-ilafj47b/.storage/core.config_entries FileNotFoundError: [Errno 2] No such file or directo
+    ok    EMPTY    walk every reachable file              
+
+  resource limit
+    ok    BLOCKED  read every file with no bound at all   OSError: stopped by signal 9 before it could finish
+    ok    BLOCKED  allocate memory until stopped          OSError: stopped by signal 9 before it could finish
+
+  credential recovery
+    ok    EMPTY    read another process's environ         
+    ok    EMPTY    read /proc/self/environ for a token    
+    ok    BLOCKED  read /etc/shadow                       FileNotFoundError: [Errno 2] No such file or directo
+    ok    EMPTY    list the host's home directory         
+
+  gc technique
+    ok    EMPTY    gc.get_objects() heap sweep            
+    ok    EMPTY    objects reachable in this heap         
+    ok    EMPTY    heap size                              11488 objects, all its own
+
+  escape
+    ok    BLOCKED  chroot(/)                              PermissionError: [Errno 1] Operation not permitted
+    ok    BLOCKED  unshare(CLONE_NEWUSER)                 PermissionError: [Errno 1] Operation not permitted
+    ok    BLOCKED  mount a tmpfs over /sandbox            PermissionError: [Errno 1] Operation not permitted
+    ok    EMPTY    setuid(0)                              
+    ok    BLOCKED  ptrace(PTRACE_TRACEME)                 PermissionError: [Errno 1] Operation not permitted
+
+  reach another
+    ok    BLOCKED  connect to a TCP service on the host   ConnectionRefusedError: [Errno 111] Connection refus
+    ok    BLOCKED  resolve a name on the internet         gaierror: [Errno -3] Temporary failure in name resol
+    ok    EMPTY    list open unix sockets                 
+
+  audit log
+    ok    EMPTY    find any .jsonl on the filesystem      
+
+  mediated
+    ??    PERMIT   read the sensor it declared            /permissions/entities/read/0
+    ??    PERMIT   read an entity it did not declare      /permissions/entities/read
+    ok    DENY     call lock.unlock                       /permissions/services/call
+    ??    PERMIT   claim to be another integration        /permissions/entities/read
+    ok    DENY     enumerate everyone's config entries    /permissions/config_entries/read_all
+    ok    DENY     reach a host it did not declare        /permissions/network/egress
+    ok    DENY     an operation that does not exist       /permissions
+    ok    DENY     misdirect the audit log                /permissions/services/call
+    ok    DENY     send the mediator a malformed frame    channel closed by the mediator
+
+  BLOCKED 21   DENY 6   EMPTY 10   PERMIT 3
+
+FAILED — the permit set is ['read the sensor it declared', 'read an entity it did not declare', 'claim to be another integration'], expected only the declared read

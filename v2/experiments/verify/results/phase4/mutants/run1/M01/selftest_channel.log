@@ -1,0 +1,26 @@
+channel self-test — identity is the socket, not a field
+
+  both sandboxes sent {"integration": "demo_a"}. demo_a holds a manifest
+  granting one sensor read; demo_b holds none.
+
+    true identity  claimed    request                    verdict  clause
+    demo_a         demo_a     entity.read                PERMIT   /permissions/entities/read/0
+    demo_a         demo_a     service.call               deny     /permissions/services/call
+    demo_b         demo_a     entity.read                deny     /permissions/entities/read
+    demo_b         demo_a     service.call               deny     /permissions/services/call
+
+  ok    demo_a read its declared sensor — the permit path works
+  ok    demo_a was refused lock.unlock — denied by absence, S6
+  ok    demo_b claimed to be demo_a and was refused the same read
+  ok    every decision, permit or deny, named a clause — F3 / §5.10.8
+
+  round trip on the real channel, measured from inside the sandbox:
+    demo_a           median  203.7 µs   p99  237.1 µs   n=2000
+    demo_b           median  203.5 µs   p99  375.6 µs   n=2000
+
+  audit entries: 4004  (2 sandboxes x 2002 requests = 4004)
+
+PASS — the mediator attributed every request to the socket it arrived on.
+       demo_b claimed to be an integration that holds a grant, and the claim
+       bought it nothing, because there was nothing in the protocol to check.
+  ok    the durable record (T4): 2 run, 4004 decisions, chains verify and match the in-memory record

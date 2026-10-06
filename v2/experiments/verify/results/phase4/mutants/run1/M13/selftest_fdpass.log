@@ -1,0 +1,16 @@
+Descriptor passing across the sandbox boundary, and what a hostile sender cannot do with it.
+==============================================================================
+[  ok  ] 1. the message arrives alongside the descriptor — {'ok': True, 'clause': '/permissions/network/egress/0'}
+[  ok  ] 1b. a descriptor arrived — fd=7
+[  ok  ] 2. the received descriptor is the live connection the mediator made — hello-from-the-far-end
+[  ok  ] 3. the message still arrives on the plain recv path
+[  ok  ] 3b. an unexpected descriptor is closed, not retained — 9 descriptors before, 7 after
+[  ok  ] 4. more than MAX_FDS=1 descriptors in one frame is refused
+[  ok  ] 4b. and every one of them is closed rather than kept — 10 before, 10 after
+[  ok  ] 5. a frame whose payload is not JSON is refused even carrying a descriptor
+[  ok  ] 5b. and the descriptor it carried is closed before the error propagates — 9 before, 7 after
+[  ok  ] 6. an ordinary frame with no descriptor is unchanged — {'op': 'service.call', 'service': 'lock.lock', 'id': 7}
+[  ok  ] 6b. a frame spanning several reads still reassembles
+[  ok  ] 6c. a closed far end still reads as None, not an error
+==============================================================================
+12/12 checks passed

@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/younes/r2exp/mutants/work/M09/framework/confine/selftest_push.py", line 309, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/younes/r2exp/mutants/work/M09/framework/confine/selftest_push.py", line 143, in main
+    reader.received[-1]["attributes"] == {"unit_of_measurement": "°C"})
+    ~~~~~~~~~~~~~~~^^^^
+IndexError: list index out of range
+
+A — a subscription is a recorded decision
+
+  FAIL  a declared subscription is granted with a clause pointer  — clause=/permissions
+  ok    every undeclared subscription is refused
+  ok    an integration that declares no subscriptions is refused the same entity  — no manifest is bound to weather (S6)
+  FAIL  all five decisions are on disk, the grant and the four refusals  — 5 records, 0 allowed
+
+P5 — what crosses, and what does not
+
+  FAIL  the subscribed entity's changes arrive, in order  — []
+  ok    no change to an undeclared entity arrives  — 0 of 3 undeclared changes delivered
+  ok    and the integration with no grant receives nothing at all  — 0 received

@@ -1,0 +1,29 @@
+sandbox self-test — what one integration can see
+
+  uid inside              0  (outside: 1000)
+  hostname                raspberrypi
+  pid                     1
+  processes visible       1  ['1']
+  network interfaces      ['lo']
+  entries at /            ['bin', 'dev', 'etc', 'lib', 'proc', 'sandbox', 'sbin', 'tmp', 'usr']
+
+  FAIL  its own directory          present, writable
+  ok    its own data directory     present, writable
+  ok    the declared file          present, read-only
+  ok    secrets.yaml               ABSENT
+  ok    the .storage directory     ABSENT
+  ok    another integration        ABSENT
+  ok    the configuration root     present
+  ok    the user's home directory  ABSENT
+  ok    …and it holds only         ['shared']
+
+  ok    chroot(2)                  Operation not permitted
+  ok    ptrace(2)                  Operation not permitted
+  ok    unshare(2)                 Operation not permitted
+
+  ok    the default TLS context has CA certificates to trust  303 readable in /usr/lib/ssl/certs
+  ok    …and cannot add one        read-only
+  ok    /etc holds ssl/certs and nothing else  /etc=['ssl'] /etc/ssl=['certs']
+  ok    /etc/ssl/private is absent  absent
+
+FAILED: its own directory
