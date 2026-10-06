@@ -80,15 +80,17 @@ def main() -> int:
     token = TOKEN.read_text().strip()
     results: dict = {}
     try:
+        last: object = None
         for _ in range(120):
             try:
-                if (call(token, {"type": "get_config"}).get("result") or {}).get("state") == "RUNNING":
+                last = call(token, {"type": "get_config"})
+                if (last.get("result") or {}).get("state") == "RUNNING":
                     break
-            except OSError:
-                pass
+            except OSError as err:
+                last = f"{type(err).__name__}: {err}"
             time.sleep(2)
         else:
-            raise SystemExit("the scratch copy did not start")
+            raise SystemExit(f"the scratch copy did not start; last answer: {str(last)[:300]}")
 
         states = call(token, {"type": "get_states"}).get("result") or []
         results["domains_readable"] = sorted({s["entity_id"].split(".")[0] for s in states})
@@ -113,6 +115,8 @@ def main() -> int:
         os.killpg(proc.pid, signal.SIGTERM)
         proc.wait(timeout=60)
         log.close()
+        # The log leaves with the copy unless kept: a copy that fails to start is diagnosed from it.
+        shutil.copy2(SCRATCH / "hass.stdout", args.json.with_suffix(".hass.log"))
         shutil.rmtree(SCRATCH)
 
     checks = [
