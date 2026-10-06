@@ -1,0 +1,12 @@
+suites_1 exit=0 seconds=71
+suites_2 exit=0 seconds=67
+egress_nordpool exit=0 seconds=97
+real_platform_restart exit=0 seconds=27
+drive_demo exit=0 seconds=1
+faults exit=0 seconds=0
+faults_pi_fixed exit=0 seconds=67
+fuzz exit=0 seconds=27
+review_units exit=0 seconds=7
+review_pi exit=0 seconds=53
+base_selftest_tty exit=0 seconds=0
+ALLDONE

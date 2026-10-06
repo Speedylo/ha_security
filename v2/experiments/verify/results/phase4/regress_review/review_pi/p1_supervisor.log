@@ -1,0 +1,3 @@
+16:06:53  supervising demo_flood; durable log /home/younes/r2exp/verify/regress_review/review_pi/p1_audit/decisions-20261006T160653-59844.jsonl; Ctrl-C to stop
+16:06:53  demo_flood started (run 1, pid 59861)
+16:06:54  stopped

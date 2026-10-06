@@ -1,0 +1,20 @@
+
+U1 (R3, R4) — a predecessor's process in a nested cgroup
+  ok    the process is killed  — pid 59823; cleared → 1
+  ok    and the cgroup is gone  — sup-review_probe-1
+
+U2 (R3) — a predecessor's cgroup that will not go
+  ok    the supervisor refuses to start, and says which cgroup  — PredecessorsRemain: an earlier supervisor's sandbox could not be removed (sup-review_probe-2); not starting review_probe beside it
+
+U3 (R10) — a cgroup belonging to a supervisor that is still running
+  ok    its sandbox is still running  — cleared → 0
+  ok    and its cgroup is still there  — sup-review_probe-59828-1
+
+U4 (R8) — (A) answers but refuses the token, then accepts it
+  ok    the refused token is named  — 3  still waiting for the house's Home Assistant: (A) refused the mediator's token: auth_invalid
+16:06:53  still waiting for the house's Home Assistant: the mediator's token file is missing ([Errno 2] No such file or directory)
+16:06:53  the house's Home Assistant is back; starting review_probe again
+  ok    once, though it was refused twice
+  ok    the missing token file is named
+
+8/8 passed

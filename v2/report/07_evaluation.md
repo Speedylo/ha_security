@@ -313,7 +313,7 @@ requirement cannot be verified with the artifact as it stands, and the reason is
 | **S5** | A manifest permitting `lock.lock` is shown not to permit `lock.unlock`, and the refusal is structural rather than a check | §6.10.1 — re-verified in the evaluation run | ✅ **Met** — §7.16.1 — a manifest declaring `lock.lock` does not permit `lock.unlock`, and `lock.*` is rejected at **parse** time rather than at the point of use |
 | **S6** | An integration with **no** manifest and one with an **unparseable** manifest are each denied all mediated capability, each refusal naming its rule | Security | ✅ **Met** — §7.16.2 — `selftest_policy`: absent and unparseable manifests each denied all mediated capability, each refusal naming the rule |
 | **S7** | Decisions appear in the log bearing the integration's three-part identity, and modification, deletion **and reordering** are each independently detectable by both the hash chain and the keyed MAC chain | §6.8 — re-verified | ✅ **Met** — §7.16.2 — `selftest_audit`: modification, deletion and reordering each detected, and the hash chain and keyed MAC chain fail **independently**. §8.6.3 #7 states the key’s lifetime. **Updated 2026-10-03 (§7.32):** until then the first clause held only in the suite — outside it no run record was written, so durable decisions bore no identity. Now met in every harness that decides, reconciled against the in-memory record **Qualified 2026-10-06 (§7.45.5):** until then a full disk could leave a partial record that made the log unverifiable from that point on, and a restarted supervisor appended a second chain to the same file, which `verify` read as deleted records. Both are fixed. |
-| **S8** | The 2021 file-theft pattern **succeeds against an unconfined baseline installation** and is blocked under the framework, on the same host and release | Security — **requires the baseline arm** | ✅ **Met, paired** — §7.13.2 — the 2021 file-theft pattern recovers **2 of 2** canaries unconfined and **0 of 2** confined on the same host and release; `open("../../secrets.yaml")` raises `FileNotFoundError`, not `PermissionError` |
+| **S8** | The 2021 file-theft pattern **succeeds against an unconfined baseline installation** and is blocked under the framework, on the same host and release | Security — **requires the baseline arm** | ✅ **Met, paired** — §7.13.2 — the 2021 file-theft pattern recovers **2 of 2** canaries unconfined and **0 of 2** confined on the same host and release; `open("../../secrets.yaml")` raises `FileNotFoundError`, not `PermissionError`. **Qualified 2026-10-06 (§7.45.6):** the criterion held throughout, but until then a sandbox started from a terminal shared that terminal with the supervisor. That is a route out that no file-theft test exercises. Fixed. |
 | **S9** | An integration deliberately exhausting CPU, memory and disk in turn does not render the gateway unresponsive, demonstrated unprivileged, with the boot-time precondition stated | *(updated in place 2026-09-03 — see the note below)* | ✅ **Met, against narrowed wording — §7.22.** All four bounds now come from the manifest and each is verified by a sandbox exceeding it: memory OOM-killed, forks refused at the cap, a 25% CPU cap holding at 25.1%, `ENOSPC` at `disk_mb`. **Disk means space, not I/O bandwidth** — the `io` controller is not delegated to a user manager (§7.22.2), so S9's text is narrowed on evidence and the residual is stated |
 | **N1** | Added latency, per-integration memory and maximum concurrent integrations are all reported against an unconfined baseline on the target hardware. **No threshold** — §3.6 fixed this position in advance | Performance | ✅ **Met as specified** — §7.19–§7.20 — latency to 26 sandboxes, per-sandbox memory and maximum concurrency all reported against an unconfined baseline on the C4 device. **No threshold, by §3.6’s position fixed in advance**; the figures are reported and discussed, and P4 was falsified doing it |
 | **N2** | This chapter reports "imports clean" and "executed end-to-end" as two separate numbers, never conflated, with the first labelled an upper bound wherever it appears | **This chapter** | ✅ **Met by reporting** — §7.12 (imports-clean, 75 integrations, 77 measurements) and §7.17 (**executed end-to-end, a named set of five**) are reported separately and never conflated; §7.17.1 states the ceiling of 11 of 37 rather than computing a rate. §7.27, §7.31 and §7.34 add five more by name, and §7.31.6 re-runs the five on a corrected instance |
@@ -1913,6 +1913,13 @@ would run unbounded** — inverting default-deny for the single requirement whos
 an integration consuming everything. Absence therefore means *the framework's* bound rather than
 *the integration's*: 640 MB, 64 processes, 64 MB of scratch, CPU unset. A declaration can only
 be read as a request to be bound **more** tightly than the default, never less.
+
+> **Corrected 2026-10-06 (§7.45.6, finding F32).** That is what the clause was meant to do, and
+> until this date the code did not do it. A declaration replaced the default, so a manifest could
+> raise its own bound to the parse-time ceilings (8,192 MB, 4,096 processes). The supervisor and
+> the harnesses applied `max(declared, 640)` to memory, which ignored a tighter declaration. The
+> code now does what this paragraph says. No corpus integration declares `resources`, so no
+> measured figure moves.
 
 That is the general rule the clause obeys, and it explains why `resources` sits in a permissions
 manifest at all despite granting nothing: **it is the one capability whose declaration is a
@@ -5325,6 +5332,63 @@ directory behind.
 
 These four share a pattern with the rest of this section. Each sat on a path that only a failure
 reaches, and no suite had ever produced that failure.
+
+### 7.45.6 What a security review of the enforcement code found
+
+The suites test the attacks the design anticipated. A review asks a different question: what
+the code does with inputs and situations nobody wrote a test for. Three methods were used. The five
+enforcement files were read line by line. A fuzzer sent the mediator every operation with every
+field it reads set to every awkward JSON value (`verify/fuzz_mediator.py`, 4,864 requests). And an
+independent code review read the fixes of §7.45.5. Together they found four things. Each was fixed
+with a test that failed before the fix and passes after it, as registered in
+`notes/review_fixes_prediction.md` before any code changed.
+
+- **A sandbox could share the supervisor's terminal** (F34, the most serious). Every sandbox's
+  `/dev` held `/dev/tty`, and the sandbox did not get a session of its own. A supervisor started
+  from an interactive shell therefore passed that shell's terminal to the integration as its
+  controlling terminal. A process can push input into its controlling terminal where the kernel
+  still allows it, and the Pi's kernel does. That would be a route out of every layer at once, and
+  no test looked for it, because S8's tests are about files. It was found by reading, and it was not
+  exploited. The sandbox now starts in a new session and `/dev/tty` is gone. The base self-test
+  checks both from inside the sandbox, under a terminal: before the fix it saw the terminal, and
+  now it sees none. A supervisor run as a service, with no terminal, was never exposed.
+- **One integration's malformed request could stop the mediator for all of them** (F33). The fuzzer
+  found 26 ways, among them an entity name sent as a list, a timeout sent as `null`, and a UDP
+  device that answered a datagram with "port unreachable". Each raised an exception that left the
+  mediator's loop, ending every sandbox it served. Exceptions of the kinds bad data and the network
+  produce are now caught at one boundary, around the policy and around the act. There they become
+  a refusal of that request, recorded and counted toward the refusal-flood limit like any other.
+  Two kinds still stop the mediator on purpose: a failed audit write (no record, no decision) and
+  losing the house's Home Assistant, which the supervisor handles. The fuzzer now finds nothing,
+  and `selftest_flood` shows a sandbox sending malformed requests refused, cut off at the limit,
+  and its neighbour served throughout.
+- **A manifest could loosen its own resource bound** (F32). §7.22.3 says a declaration can only
+  tighten the framework's bound. The code let it raise memory to 8 GB and processes to 4,096, and
+  the supervisor overrode a tighter memory declaration with 640 MB. Shown on the Pi: a manifest
+  declaring 192 MB ran with 640 MB. It now runs with 192 MB, and one asking for 8 GB gets 640 MB.
+- **The fixes of §7.45.5 had ten flaws of their own** (F35). The two that mattered most were
+  these. A cut-off made while the house's Home Assistant was down never reached its Repairs
+  panel, so nobody had a button to restart the integration. And a starting supervisor killed the
+  sandbox of another supervisor that was still running. The remaining eight are smaller. A restarted supervisor
+  overwrote the killed run's report. The clean-up counted a cgroup cleared without checking it was
+  gone, and missed processes in nested cgroups. A user's command could go to a stopped sandbox's
+  channel. The supervisor reconnected to a Home Assistant that had not finished starting, and
+  retried a refused token forever in silence. One verification script copied a file that no
+  longer exists. And the audit log skipped one directory sync after a failed first write. Eight
+  were shown failing on the Pi or in a suite and pass after their fixes. Two could not be staged
+  that way. The script's fault is fixed by running the script. The early reconnect needs (A)
+  caught in the middle of starting, so its check is the house's restart in FI1: the integration
+  still starts again once the house is back.
+
+None of the four had been reached by 26 suites, 18 mutants or nine injected faults. F33 is the
+clearest case. Its inputs are ones no honest integration sends, and the only way to know what
+the mediator does with them was to send them.
+
+All four were fixed on 2026-10-06 and tagged `verify-2026-10-review`, and the regression ran on a
+fresh copy of that tag (`experiments/verify/results/phase4/regress_review/`). Both suite runs
+passed in full, as did `nordpool` end to end, (A)'s restart test, the refusal flood driven through
+the Repairs panel, every fault case of §7.45.5, and every test above. The fuzzer found nothing,
+and every headline number in the report re-derived unchanged (39 of 39).
 
 ---
 

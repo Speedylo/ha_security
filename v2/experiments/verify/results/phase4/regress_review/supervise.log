@@ -1,0 +1,6 @@
+16:04:55  supervising demo_flood; durable log /home/younes/r2exp/verify/regress_review/drive_audit/decisions-20261006T160455-59423.jsonl; Ctrl-C to stop
+16:04:55  demo_flood started (run 1, pid 59439)
+16:05:06  demo_flood cut off by the mediator; killing its sandbox
+16:05:06  demo_flood reinstated (recorded); starting it again
+16:05:06  demo_flood started (run 2, pid 59463)
+16:05:07  stopped

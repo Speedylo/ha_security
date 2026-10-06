@@ -1,0 +1,15 @@
+15:59:29  cleared 1 sandbox cgroup(s) an earlier supervisor left behind
+  ok    memory_mb: 512 MB asked against a 64 MB cap
+        exit -9, oom_kill=1
+  ok    max_processes: 200 forks attempted against a cap of 16
+        15 forks succeeded before the kernel refused
+  ok    cpu_percent: a busy loop capped at 25% of one processor
+        consumed 25.7% of one processor over 2.07s, throttled 1.53s
+  ok    disk_mb: 64 MB written into a 8 MB private /tmp
+        8 MB written, then errno 28 (No space left on device)
+  note  io.max: the disk-bandwidth half of S9, and why §7.22 narrows it
+        host root delegates ['cpu', 'cpuset', 'io', 'memory', 'pids']; this user's subtree has ['cpu', 'memory', 'pids'] — io is present and not delegated
+  ok    an unenforceable declared limit refuses rather than no-ops
+        PlacementUnavailable: cannot enable memory pids cpu in does-not-exist: No such file or directory. The controller
+
+  14/14 — S9 bounds memory, processes, CPU and disk space; I/O bandwidth is not bounded (§7.22)

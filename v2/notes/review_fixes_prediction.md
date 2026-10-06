@@ -107,3 +107,23 @@ A new tag after the fixes. All 25 suites and the base self-test, twice; `nordpoo
 partly. Each gets a dated pointer beside the original text and a §7.45.6 write-up. F33 qualifies
 §5.15's single-loop availability argument until it is fixed. F35 changes nothing the report claims,
 except that R7 and R1 complete what §7.45.5 says F29 does.
+
+## Outcomes (2026-10-06)
+
+Every test registered above failed against the old code where it could be made to, and passes
+now. Before the fixes: base self-test under a terminal, `/dev/tty` present and `tty_nr` 34816;
+`selftest_flood` 25/32; `selftest_audit` R9 failing; `selftest_resources` F32 failing;
+`review_units` 0/8; `review_pi` P1 640 MB applied for 192 MB declared, P2 the first supervisor's
+sandbox killed, P3 one report where two were expected. After: all pass. Results are in
+`experiments/verify/results/phase4/review/`. R7 could not be made to fail first: its check is FI1,
+where the integration was running again 4 s after (A) answered. R6 was checked by running the
+script.
+
+The regression on `verify-2026-10-review` (`experiments/verify/results/phase4/regress_review/`)
+held throughout: suites 26/26 twice, `nordpool` 16/16, (A)'s restart 48/48, `drive_demo`,
+`faults.py` 11/11, FI1/FI4/backstop, fuzz 0 escapes, `review_units` 8/8, `review_pi` P1–P4.
+`recompute.py` gave 39/39 on the Pi, with both corpora.
+
+The manual read of `manifest.py` and `mediator.py`, the two files not read before, found nothing
+new. One note: an entity pattern such as `sensor.foo*` is accepted and then matched literally, so
+it grants nothing. That fails closed and is not a finding.
