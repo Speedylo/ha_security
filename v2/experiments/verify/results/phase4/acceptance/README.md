@@ -1,9 +1,35 @@
 # Verification 4.11 — acceptance, the human path
 
-The run itself is Younes's, by hand, with the checklist in `notes/acceptance_4_11.md`; its results go
-here when it is done.
+## The run (2026-10-06, Younes, by hand in a browser): passed
 
-## What a check of the checklist found before the run (2026-10-06): finding F42
+Run on `verify-2026-10-accept` with the checklist in `notes/acceptance_4_11.md`. Every step passed,
+and the only terminal use was step 1 (starting things) and reading the supervisor's lines.
+
+| Step | Evidence (`Test Screenshots/`) | Result |
+|---|---|---|
+| 1 start (A) under the keeper, then the supervisor | `Screenshot (222).png`: `(A) restarted`, `demo_flood started (run 1, pid 62092)` | pass |
+| 2 log in | (no screenshot) | pass |
+| 3 see the confined integration's entity | `(199)`: the `demo_flood` device, "Runs in a sandbox, under its manifest", *Demo Flood Misbehave* | pass |
+| 4 operate it | `(199)` switched on; `(222)`: cut off at 16:51:23 | pass |
+| 5 read the Repairs issue | `(200)`: "demo_flood was stopped"; `(201)`: what happened and why in plain words, one **Submit**, "Restarting does not give it any new permissions" | pass |
+| 6 act on it | `(202)`: "The issue is repaired!"; `(222)`: reinstated (recorded), run 2 at 16:51:48 | pass |
+| 7 restart (A) from its own interface | `(203)`, `(221)`: System → Restart Home Assistant; `(222)`: went away 16:52:17, back and run 3 at 16:52:22, with nothing typed | pass. Before F42's fix this step would have stopped (A) for good |
+| 8 stop | `(222)`: `stopped` | pass |
+
+**The durable record** (`decisions-20261006T165043-62079.jsonl`, copied from the Pi): 110 records,
+3 `run`, 105 decisions, 1 `cutoff`, 1 `reinstate`. The hash chain verifies with no sequence, link or
+hash break. Every MAC fails to verify here, as it must: the key lives only in the mediator that wrote
+the log (§6.8.4). The run reports are named per start (`…-62079-run1` to `run3`), F35 R2's fix.
+
+**An observation, not a failure.** Repairs listed two other issues that come from (A)'s own setup
+and not from the framework: *Unsupported installation method* (Home Assistant Core installed in a
+plain virtual environment) and *HTTP YAML configuration is ignored after migration*. Someone in the
+house sees three repairs, one of them the framework's. That is worth clearing before the defence
+demo, so that the only issue on screen is the one the demo is about.
+
+## Before the run
+
+### What checking the checklist found (2026-10-06): finding F42
 
 Step 7 restarts the house's Home Assistant from its own interface. Tried first through the same
 service the Restart button calls (`homeassistant.restart`), it **stopped (A) for good**. In this
