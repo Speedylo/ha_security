@@ -87,7 +87,9 @@ def pivot_root(new_root: str, put_old: str) -> None:
 
 # Everything a Unix program assumes exists. `/dev/full` is included because writing to it is
 # how well-behaved code discovers it has run out of space; the rest are the usual four.
-DEV_NODES = ("null", "zero", "full", "random", "urandom", "tty")
+# `/dev/tty` was a sixth until 2026-10-06: it is the process's controlling terminal, which for
+# a supervisor started from a shell was that shell's (verification 4.7, finding F34).
+DEV_NODES = ("null", "zero", "full", "random", "urandom")
 
 # The interpreter and its libraries. Bound read-only, and enumerated rather than inherited so
 # that adding to the list is a visible decision.
@@ -231,7 +233,7 @@ def build_root(spec: SandboxSpec, scratch: str = "/tmp/.confine-root") -> None:
     Path(inside("/proc")).mkdir(parents=True, exist_ok=True)
     mount("proc", inside("/proc"), "proc", MS_NOSUID | MS_NODEV | MS_NOEXEC)
 
-    # 6. A /dev holding six device nodes and no devices. Bound from the host rather than
+    # 6. A /dev holding five device nodes and no devices. Bound from the host rather than
     #    created, because creating a device node needs privilege the sandbox must not have.
     dev = inside("/dev")
     Path(dev).mkdir(parents=True, exist_ok=True)

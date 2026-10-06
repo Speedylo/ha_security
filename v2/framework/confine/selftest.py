@@ -68,6 +68,11 @@ report = {
     "pid": os.getpid(),
     "processes": sorted(p for p in os.listdir("/proc") if p.isdigit()),
     "root_entries": sorted(os.listdir("/")),
+    # Verification 4.7, F34: what /dev holds, and whether this process has a controlling
+    # terminal. `tty_nr` is field 7 of /proc/self/stat, counted after the parenthesised name;
+    # 0 means none.
+    "dev": sorted(os.listdir("/dev")),
+    "tty_nr": int(Path("/proc/self/stat").read_text().rpartition(")")[2].split()[4]),
     "interfaces": sorted(
         line.split(":")[0].strip()
         for line in Path("/proc/net/dev").read_text().splitlines()[2:] if ":" in line
@@ -250,6 +255,24 @@ def render(report: dict, watched: dict[str, str]) -> int:
         print(f"  {'ok  ' if ok else 'FAIL'}  {label:<{width}}  {detail}")
         if not ok:
             failures.append(label)
+
+    # F34: a sandbox that shares the supervisor's terminal can write into it, and a terminal is
+    # not something the mediator sees. No terminal device in /dev, and no controlling terminal.
+    # Run from a terminal to make the second check mean anything (`script -qc` supplies one).
+    terminal = [
+        ("tty" not in report["dev"], "/dev holds no terminal", f"{report['dev']}"),
+        (report["tty_nr"] == 0, "no controlling terminal",
+         "none" if report["tty_nr"] == 0 else f"tty_nr {report['tty_nr']}"
+         + ("" if sys.stdin.isatty() else " (this run has no terminal: proves nothing)")),
+    ]
+    print()
+    for ok, label, detail in terminal:
+        print(f"  {'ok  ' if ok else 'FAIL'}  {label:<{width}}  {detail}")
+        if not ok:
+            failures.append(label)
+    if not sys.stdin.isatty():
+        print(f"  note  {'':<{width}}  no terminal attached to this run, so the second row "
+              f"cannot fail")
 
     if len(report["processes"]) != 1:
         failures.append("the PID namespace shows more than the sandbox itself")

@@ -100,10 +100,15 @@ def start(spec: SandboxSpec, cgroup: SandboxCgroup, *,
     child_env = {**os.environ, "CONFINE_STATUS_FD": str(status_w),
                  "PYTHONPATH": f"{package_parent}:{existing}" if existing else package_parent}
 
+    # A session of its own, so the sandbox has no controlling terminal. Without it, a supervisor
+    # started from a terminal shared that terminal with the integration, and a process can push
+    # input into its controlling terminal where the kernel still allows it (verification 4.7,
+    # finding F34). `/dev/tty` is gone from the sandbox's `/dev` as well, so this is not the
+    # only layer.
     proc = spawn_confined(
         [sys.executable, "-m", "confine.enter"], cgroup,
         stdin=subprocess.PIPE, stdout=stdout, stderr=stderr,
-        pass_fds=passed, env=child_env,
+        pass_fds=passed, env=child_env, start_new_session=True,
     )
     os.close(status_w)
     try:
