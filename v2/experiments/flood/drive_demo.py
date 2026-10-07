@@ -121,7 +121,24 @@ def main() -> int:
     user.close()
     platform.close()
     print(json.dumps(summary, indent=2))
-    return 0
+    # Until 2026-10-07 this returned 0 whatever the summary said, and the regressions recorded
+    # that 0 as a pass (verification 4.12, F48). It now fails unless every value is the one the
+    # demo exists to show.
+    expected = {
+        "the press was accepted": (summary["press"] or {}).get("success") is True,
+        "it was cut off": summary["cut_off_after_s"] is not None,
+        "the house was told": summary["issue_after_s"] is not None,
+        "the fix flow completed": summary["fix_flow"] == ["confirm", "create_entry"],
+        "it was started again": summary["restarted_after_s"] is not None,
+        "the issue is gone": summary["issue_gone"] is True,
+        "its switch is back": summary["switch_back_off_after_s"] is not None,
+        "one cut-off and one reinstatement recorded":
+            summary["records_total"].get("cutoff") == 1
+            and summary["records_total"].get("reinstate") == 1,
+    }
+    for claim, held in expected.items():
+        print(f"{'  ok  ' if held else '  FAIL'}  {claim}")
+    return 0 if all(expected.values()) else 1
 
 
 if __name__ == "__main__":

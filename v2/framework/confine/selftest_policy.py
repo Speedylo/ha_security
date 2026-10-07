@@ -21,7 +21,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from .manifest import Manifest, ManifestRejected, Provenance
+from .manifest import Manifest, ManifestRejected, Provenance, policy_for
 
 # §5.10.7's worked example, verbatim: a weather integration polling one API and reading one
 # sensor for local calibration.
@@ -114,6 +114,34 @@ def main() -> int:
               own.clause or "?", failures)
         check("entity.write to an undeclared entity of the same domain is DENIED",
               not other.allowed, f"{other.reason}", failures)
+
+        # ---- declared grants of the capabilities no other case declares ------------------
+        # Branch coverage found these decisions run by no suite (verification 4.12, F49): every
+        # earlier case left `config_entries` and `events` undeclared, so only denial by absence
+        # was ever exercised. Each check below fails under its mutant (M19, M20, M21).
+        print("\nF49  declared config_entries and events, and an identity with no manifest")
+        component = write_component(root, "demo_entries", {
+            "schema_version": 1, "config_entries": {"read_all": True},
+            "events": {"fire": ["my_event"]}})
+        declared = Manifest.load(component, root)
+        listed = declared.decide({"op": "config_entries.list"})
+        check("config_entries.list with read_all: true is permitted", listed.allowed,
+              listed.clause or "?", failures)
+        component = write_component(root, "demo_entries_off", {
+            "schema_version": 1, "config_entries": {"read_all": False}})
+        off = Manifest.load(component, root).decide({"op": "config_entries.list"})
+        check("config_entries.list with read_all: false is DENIED", not off.allowed,
+              off.reason, failures)
+        mine = declared.decide({"op": "event.fire", "event": "my_event"})
+        theirs = declared.decide({"op": "event.fire", "event": "other_event"})
+        check("event.fire of the declared event is permitted", mine.allowed,
+              mine.clause or "?", failures)
+        check("event.fire of another event is DENIED by the same manifest", not theirs.allowed,
+              theirs.reason, failures)
+        unbound = policy_for({"demo_entries": declared})(
+            "demo_ghost", {"op": "entity.read", "entity": "sensor.x"})
+        check("an identity with no manifest bound is DENIED, with a clause pointer (S6)",
+              not unbound.allowed and unbound.clause is not None, unbound.reason, failures)
 
         # ---- rejections, all at parse time ------------------------------------------
         print("\n§5.10.4, §5.10.5, §5.10.1  what is refused when the manifest is read")

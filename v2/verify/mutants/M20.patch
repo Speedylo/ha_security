@@ -1,0 +1,10 @@
+# M20 (F49, S6): an events clause matches every event
+--- a/framework/confine/manifest.py
++++ b/framework/confine/manifest.py
+@@ -422,5 +422,5 @@
+             # — there is no pattern form for either.
+             return str(clause) == target
+-        return clause == target
++        return True
+ 
+ 

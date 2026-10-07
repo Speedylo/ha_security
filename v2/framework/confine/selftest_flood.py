@@ -44,7 +44,7 @@ from pathlib import Path
 
 from .audit import AuditLog, reconcile
 from .channel import Channel
-from .mediator import FLOOD_LIMIT, CutOff, Mediator
+from .mediator import FLOOD_LIMIT, CutOff, Decision, Mediator
 from .platform import ActingPolicy, Platform
 from .sandbox_runtime import Channel as SandboxChannel
 
@@ -140,6 +140,25 @@ def malformed(channel: SandboxChannel, outcome: dict) -> None:
     try:
         while True:
             answers.append(channel.request({"op": "entity.read", "entity": []}))
+    except (ConnectionError, OSError) as err:
+        outcome["stopped"] = str(err)
+    finally:
+        outcome["answers"] = answers
+
+
+def failing_policy(identity: str, request: dict) -> Decision:
+    """A grant whose act fails, as an action on a device that has gone away does."""
+    def act() -> Decision:
+        raise OSError("the device went away")
+    return Decision(True, "declared", clause="/permissions/entities/write/0", act=act)
+
+
+def asker(channel: SandboxChannel, request: dict, outcome: dict) -> None:
+    """Send the same request until the mediator stops answering."""
+    answers = []
+    try:
+        while True:
+            answers.append(channel.request(request))
     except (ConnectionError, OSError) as err:
         outcome["stopped"] = str(err)
     finally:
@@ -396,10 +415,40 @@ def main() -> int:
         for fd in list(replaced._by_fd):
             replaced.unregister(fd)
 
+        print("\nact — a permitted act that fails (F49)\n")
+        # Branch coverage found no suite in which a permitted act raised (verification 4.12):
+        # the refusal it becomes, and its count toward the cut-off, ran nowhere. Mutants M22 and
+        # M23 each fail one of the checks below.
+        log_x = AuditLog(path=root / "act" / "decisions.jsonl")
+        flaky_m = Mediator(policy=failing_policy, log=log_x, flood_limit=3)
+        flaky = connect(flaky_m, "flaky", component(root / "act", "flaky", []))
+        asked: dict = {}
+        thread = threading.Thread(target=asker, args=(
+            flaky, {"op": "entity.write", "entity": "switch.gone", "state": "on"}, asked),
+            daemon=True)
+        thread.start()
+        flaky_m.serve(timeout=0.5, until=time.monotonic() + 3)
+        for fd in list(flaky_m._by_fd):
+            flaky_m.unregister(fd)
+        thread.join(timeout=5)
+        answers = asked.get("answers", [])
+        check("the sandbox is told it was refused, not that it was granted",
+              bool(answers) and not any(a.get("ok") for a in answers)
+              and all("acting on the request failed" in str(a.get("reason")) for a in answers),
+              f"{len(answers)} answers: {answers[0].get('reason') if answers else '-'}")
+        failed = [r for r in log_x.records() if r["kind"] == "decision" and not r["allowed"]]
+        check("each failed act is a durable refusal naming why",
+              len(failed) == 3 and all("OSError" in r["reason"] for r in failed),
+              f"{len(failed)} refusals")
+        check("and failed acts count toward the cut-off: the third cuts it off",
+              "flaky" in flaky_m.cut_off and len(answers) == 2,
+              f"cut off: {'flaky' in flaky_m.cut_off}, {len(answers)} answers")
+
         print("\nS7 — the durable record, events included\n")
         for name, m, lg in (("F1/F4", mediator, log), ("F5", users, log_u), ("win", thin, log_t),
                             ("note", quiet, log_q), ("bad", broken, log_b),
-                            ("late", late, log_l), ("cmd", replaced, log_c)):
+                            ("late", late, log_l), ("cmd", replaced, log_c),
+                            ("act", flaky_m, log_x)):
             problems = reconcile(m.audit, lg.records())
             breaks = lg.verify()
             check(f"{name}: chains verify, and memory matches the disk entry by entry",

@@ -1,0 +1,10 @@
+# M33 (F48, F29): after (A) returns, the supervisor forgets the integration was running
+--- a/framework/confine/supervise.py
++++ b/framework/confine/supervise.py
+@@ -253,5 +253,5 @@
+         self.mediator.policy = acting_policy({self.domain: self.manifest}, platform)
+         self.mediator.attach_platform(platform)
+-        self.wanted = was_running
++        self.wanted = False
+         say(f"the house's Home Assistant is back; "
+             f"{'starting ' + self.domain + ' again' if was_running else self.domain + ' was not running'}")

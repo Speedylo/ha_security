@@ -74,3 +74,6 @@ for pid in $(supervisors); do kill -TERM "$pid"; done; sleep 5
 for pid in $(sandboxes); do kill -TERM "$pid" 2>/dev/null; done; sleep 2
 say "after cleanup: supervisors [$(supervisors)] sandboxes [$(sandboxes)]"
 say ALLDONE
+# Exit 1 when any judged line failed, so a runner that reads exit codes sees it (4.12, F48).
+grep -q "^  FAIL" "$R" && exit 1
+exit 0

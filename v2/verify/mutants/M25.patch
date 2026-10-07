@@ -1,0 +1,10 @@
+# M25 (F49, T10): is_lan does not unwrap IPv4-mapped IPv6 (predicted equivalent)
+--- a/framework/confine/egress.py
++++ b/framework/confine/egress.py
+@@ -101,5 +101,5 @@
+         return False
+     if isinstance(parsed, ipaddress.IPv6Address) and parsed.ipv4_mapped is not None:
+-        parsed = parsed.ipv4_mapped
++        pass
+     return parsed.is_private and not (parsed.is_loopback or parsed.is_link_local
+                                       or parsed.is_multicast or parsed.is_reserved

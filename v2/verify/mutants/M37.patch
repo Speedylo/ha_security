@@ -1,0 +1,10 @@
+# M37 (F49, channel): a frame shorter than its declared length is accepted
+--- a/framework/confine/channel.py
++++ b/framework/confine/channel.py
+@@ -205,5 +205,5 @@
+                 raise ProtocolError(f"declared frame of {length} bytes exceeds {MAX_FRAME}")
+             payload = self._read_exactly(length) if length else b""
+-            if payload is None or len(payload) < length:
++            if payload is None:
+                 raise ProtocolError("truncated frame")
+             try:

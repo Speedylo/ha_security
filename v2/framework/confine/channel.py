@@ -165,8 +165,11 @@ class Channel:
             remaining -= len(data)
 
         if len(fds) > MAX_FDS:
+            # Counted before closing: `_close_all` empties the list, and until 2026-10-07 this
+            # message said "0 descriptors" in the durable record (verification 4.12, F52).
+            count = len(fds)
             _close_all(fds)
-            raise ProtocolError(f"{len(fds)} descriptors in one frame exceeds {MAX_FDS}")
+            raise ProtocolError(f"{count} descriptors in one frame exceeds {MAX_FDS}")
         return b"".join(chunks), fds
 
     def recv(self) -> dict | None:

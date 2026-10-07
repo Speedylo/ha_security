@@ -1,0 +1,10 @@
+# M21 (F49, S6): policy_for permits an identity with no manifest bound
+--- a/framework/confine/manifest.py
++++ b/framework/confine/manifest.py
+@@ -435,5 +435,5 @@
+         manifest = manifests.get(identity)
+         if manifest is None:
+-            return Decision(False, f"no manifest is bound to {identity} (S6)",
++            return Decision(True, f"no manifest is bound to {identity} (S6)",
+                             clause="/permissions")
+         return manifest.decide(request)

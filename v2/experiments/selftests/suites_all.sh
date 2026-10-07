@@ -14,7 +14,7 @@ cd "$here/../../framework" || exit 2
 : > "$out/summary.txt"
 echo "framework: $(pwd)" >> "$out/summary.txt"
 for f in confine/selftest.py confine/selftest_*.py; do m=$(basename $f .py)
-  case $m in selftest_bridge|selftest_egress_sandboxed|selftest_gc|selftest_reads) extra="--python $P" ;; *) extra="" ;; esac
+  case $m in selftest_bridge|selftest_egress_sandboxed|selftest_gc|selftest_reads|selftest_supervise) extra="--python $P" ;; *) extra="" ;; esac
   timeout 1500 systemd-run --user --scope -q python3 -m confine.$m $extra > "$out/$m.log" 2>&1
   echo "$m exit=$?" >> "$out/summary.txt"
 done; echo ALLDONE >> "$out/summary.txt"

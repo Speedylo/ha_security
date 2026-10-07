@@ -40,7 +40,7 @@ from pathlib import Path
 from .audit import AuditLog
 from .channel import Channel
 from .manifest import Manifest
-from .mediator import Mediator
+from .mediator import Decision, Mediator
 from .platform import ActingPolicy, Platform
 from .sandbox_runtime import Channel as SandboxChannel
 
@@ -297,6 +297,35 @@ def main() -> int:
         quiet.channel.sock.close()
         mediator.serve(timeout=0.1)
         check("and the relay socket is closed when that channel goes", source.fileno() == -1)
+
+        print("\nD8 (F49) — a granted datagram decision hands its socket to the mediator\n")
+        # D7 calls `watch_source` directly. Branch coverage found that no suite had a decision
+        # carry its relay socket through `_handle_ready` to it (verification 4.12, F49), which is
+        # the only way a real grant reaches it; mutant M24 drops that step.
+        relay_sock = _socket.socket(_socket.AF_INET, _socket.SOCK_DGRAM)
+        relay_sock.bind(("127.0.0.1", 0))
+        relay_sock.setblocking(False)
+        route = {"kind": "listen", "port": relay_sock.getsockname()[1]}
+        udp_clause = "/permissions/network/local/udp/0"
+
+        def granting(identity: str, request: dict) -> Decision:
+            return Decision(True, "declared", clause=udp_clause, act=lambda: Decision(
+                True, "declared", udp_clause, data={}, source=(relay_sock, route)))
+        handing = Mediator(policy=granting)
+        listener = Sandbox(handing, "listener", component(root, "listener", []))
+        answer = listener.ask({"op": "network.udp.recv", "port": route["port"]})
+        check("the grant is answered", answer.get("ok") is True, f"{answer}")
+        check("and the relay socket it opened is watched by the mediator",
+              relay_sock in handing._sources)
+        sender = _socket.socket(_socket.AF_INET, _socket.SOCK_DGRAM)
+        sender.sendto(b"hello", relay_sock.getsockname())
+        sender.close()
+        handing.serve(timeout=0.3, until=time.monotonic() + 0.5)
+        check("a datagram arriving on it is pushed to that sandbox",
+              handing.datagrams_pushed.get("listener", 0) >= 1,
+              f"{handing.datagrams_pushed.get('listener', 0)} pushed")
+        listener.channel.sock.close()
+        handing.serve(timeout=0.1)
 
         check("every chain verifies", log.verify() == [])
 

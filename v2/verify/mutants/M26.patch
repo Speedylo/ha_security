@@ -1,0 +1,10 @@
+# M26 (F49, T10): open_local ignores a refused decision
+--- a/framework/confine/egress.py
++++ b/framework/confine/egress.py
+@@ -209,5 +209,5 @@
+         `opened` and the durable record carry.
+         """
+-        if not decision.allowed:
++        if False:
+             raise EgressRefused(decision.reason, decision.clause)
+         address, port = request.get("address"), request.get("port")

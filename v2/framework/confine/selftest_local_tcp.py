@@ -28,9 +28,9 @@ import tempfile
 from pathlib import Path
 
 from .audit import AuditLog
-from .egress import EgressBroker, is_lan
+from .egress import EgressBroker, EgressRefused, is_lan
 from .egress_shim import EgressShim
-from .mediator import Mediator
+from .mediator import Decision, Mediator
 from .platform import ActingPolicy, Platform
 from .selftest_push import Sandbox, component
 
@@ -169,6 +169,28 @@ def main() -> int:
         check("the sandbox's own loopback is not", all(a != "127.0.0.1" for a, _ in routed))
         sandbox.channel.sock.close()
     device.close()
+
+    print("\nF49 — the broker's own checks, below the mediator\n")
+    # Branch coverage found neither of these run by any suite (verification 4.12, F49).
+    #
+    # IPv4-mapped IPv6 is unwrapped before the address is judged. On Python 3.13 and 3.14 the
+    # `ipaddress` module already answers these from the mapped IPv4 address, so removing the
+    # unwrap (mutant M25) changes nothing on this interpreter: these checks pin the behaviour,
+    # and the unwrap is kept for interpreters that answer otherwise.
+    for address, expected in (("::ffff:192.168.1.5", True), ("::ffff:8.8.8.8", False),
+                              ("::ffff:127.0.0.1", False), ("::ffff:169.254.1.1", False)):
+        check(f"is_lan({address}) is {expected}", is_lan(address) is expected)
+    # A refused decision is refused here too, with its own reason, and nothing is connected:
+    # the broker does not rely on its caller to have checked (mutant M26).
+    broker = EgressBroker(connect_timeout=0.5)
+    refused = Decision(False, "port 9 is not declared", "/permissions/network/local/tcp")
+    try:
+        broker.open_local("localdev", {"address": "192.168.255.254", "port": 9}, refused)
+        why = "it went ahead"
+    except EgressRefused as err:
+        why = err.reason
+    check("open_local given a refused decision refuses with that decision's reason",
+          why == refused.reason and not broker.opened, why)
 
     print(f"\n{sum(results)}/{len(results)} checks passed")
     return 0 if all(results) else 1

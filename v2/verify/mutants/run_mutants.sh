@@ -14,10 +14,10 @@ for patch in "$HERE"/${MUT_ONLY:-M*}.patch; do
   [ -e "$dest" ] && { echo "$m: $dest exists, skipped" >> "$OUT/run.txt"; continue; }
   mkdir -p "$dest" && cp -r "$SRC/framework" "$SRC/experiments" "$dest/"
   ( cd "$dest" && patch -s -p1 < "$patch" ) || { echo "$m: patch failed" >> "$OUT/run.txt"; continue; }
-  o="$OUT/$m"; mkdir -p "$o"; : > "$o/summary.txt"
+  o="$OUT/$m"; mkdir -p "$o" "$dest/tmp"; : > "$o/summary.txt"; export TMPDIR="$dest/tmp"  # each mutant its own (4.3's note)
   cd "$dest/framework"
   for f in confine/selftest.py confine/selftest_*.py; do s=$(basename $f .py)
-    case $s in selftest_bridge|selftest_egress_sandboxed|selftest_gc|selftest_reads) extra="--python $P" ;; *) extra="" ;; esac
+    case $s in selftest_bridge|selftest_egress_sandboxed|selftest_gc|selftest_reads|selftest_supervise) extra="--python $P" ;; *) extra="" ;; esac
     timeout 300 systemd-run --user --scope -q python3 -m confine.$s $extra > "$o/$s.log" 2>&1
     echo "$s exit=$?" >> "$o/summary.txt"
   done

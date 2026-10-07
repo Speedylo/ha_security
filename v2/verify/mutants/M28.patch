@@ -1,0 +1,10 @@
+# M28 (F49, channel): more than MAX_FDS descriptors in one frame are accepted
+--- a/framework/confine/channel.py
++++ b/framework/confine/channel.py
+@@ -165,5 +165,5 @@
+             remaining -= len(data)
+ 
+-        if len(fds) > MAX_FDS:
++        if False:
+             # Counted before closing: `_close_all` empties the list, and until 2026-10-07 this
+             # message said "0 descriptors" in the durable record (verification 4.12, F52).

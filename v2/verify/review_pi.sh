@@ -67,3 +67,6 @@ p = RealPlatform(); print(p.call({'type': 'get_config'}).get('state')); p.close(
 
 say "after cleanup: supervisors [$(supervisors)] sandboxes [$(sandboxes)]"
 say ALLDONE
+# Exit 1 when any judged line failed, so a runner that reads exit codes sees it (4.12, F48).
+grep -q "^  FAIL" "$R" && exit 1
+exit 0

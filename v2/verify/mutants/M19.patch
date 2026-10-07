@@ -1,0 +1,10 @@
+# M19 (F49, S6): a declared config_entries clause grants whatever its value
+--- a/framework/confine/manifest.py
++++ b/framework/confine/manifest.py
+@@ -388,5 +388,5 @@
+ 
+         if capability == "config_entries":
+-            allowed = clauses is True
++            allowed = True
+             return Decision(allowed,
+                             "declared" if allowed else f"{pointer} is not enabled",

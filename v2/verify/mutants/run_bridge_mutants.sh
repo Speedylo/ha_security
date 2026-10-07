@@ -14,7 +14,7 @@ mkdir -p "$OUT" "$WORK"; OUT=$(cd "$OUT" && pwd)
 suites() {  # $1 framework dir, $2 log dir
   mkdir -p "$2"; : > "$2/summary.txt"
   ( cd "$1" && for f in confine/selftest.py confine/selftest_*.py; do s=$(basename $f .py)
-      case $s in selftest_bridge|selftest_egress_sandboxed|selftest_gc|selftest_reads) extra="--python $P" ;; *) extra="" ;; esac
+      case $s in selftest_bridge|selftest_egress_sandboxed|selftest_gc|selftest_reads|selftest_supervise) extra="--python $P" ;; *) extra="" ;; esac
       timeout 300 systemd-run --user --scope -q python3 -m confine.$s $extra > "$2/$s.log" 2>&1
       echo "$s exit=$?" >> "$2/summary.txt"
     done )

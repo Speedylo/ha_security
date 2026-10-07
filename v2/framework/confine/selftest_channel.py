@@ -18,13 +18,17 @@ Run:  systemd-run --user --scope -q python3 -m confine.selftest_channel
 from __future__ import annotations
 
 import json
+import os
 import shutil
+import socket
+import struct
 import subprocess
 import sys
 import tempfile
+import threading
 from pathlib import Path
 
-from .channel import Channel
+from .channel import MAX_FRAME, Channel, ProtocolError
 from .audit import attach, report_durable
 from .audit import summarise as durable_summary
 from .cgroup import Delegation, ResourceLimits, SandboxCgroup
@@ -106,7 +110,93 @@ def make_component(root: Path, domain: str, permissions: dict | None) -> tuple[P
     return component, data
 
 
+def hostile_frames() -> list[str]:
+    """What the mediator's end of a channel refuses, sent as raw bytes by a hostile far end.
+
+    The sandbox is the adversary and these bounds are the input boundary. Branch coverage found
+    no suite that sent any of these (verification 4.12, F49), and `fuzz_mediator.py` sends only
+    well-formed frames. Each case fails under its mutant (M27–M30, M36, M37). No sandbox is
+    needed: identity is not in question here, only what the reader believes.
+    """
+    failures: list[str] = []
+
+    def say(label: str, ok: bool, detail: str) -> None:
+        print(f"  {'ok  ' if ok else 'FAIL'}  {label}  — {detail}")
+        if not ok:
+            failures.append(label)
+
+    def received(raw: bytes, fds: list[int] | None = None, hang_up: bool = True) -> str:
+        """What `recv` made of `raw`: the refusal's text, or what it wrongly accepted."""
+        ours, theirs = Channel.pair()
+        ours.settimeout(5)
+        reader = Channel(ours)
+
+        def send() -> None:
+            try:
+                if fds:
+                    socket.send_fds(theirs, [raw], fds)
+                else:
+                    theirs.sendall(raw)
+                if hang_up:
+                    theirs.shutdown(socket.SHUT_WR)
+            except OSError:
+                pass            # the reader refused and closed before the rest was sent
+        sender = threading.Thread(target=send, daemon=True)
+        sender.start()
+        try:
+            message = reader.recv()
+            outcome = f"ACCEPTED {str(message)[:40]}"
+        except ProtocolError as err:
+            outcome = f"refused: {err}"
+        except Exception as err:  # noqa: BLE001 — anything else is not the bound working
+            outcome = f"{type(err).__name__}: {err}"
+        reader.close()
+        theirs.close()
+        sender.join(timeout=5)
+        return outcome
+
+    def framed(payload: bytes, declared: int | None = None) -> bytes:
+        return struct.pack(">I", len(payload) if declared is None else declared) + payload
+
+    print("\nF49  hostile frames, refused at the mediator's end\n")
+    try:
+        Channel.frame({"x": "a" * MAX_FRAME})
+        sent = "framed it"
+    except ProtocolError as err:
+        sent = f"refused: {err}"
+    say("a message over MAX_FRAME is not framed for sending", sent.startswith("refused"), sent)
+
+    big = json.dumps({"x": "a" * MAX_FRAME}).encode()
+    got = received(framed(big))
+    say("a valid object of more than MAX_FRAME bytes is refused before it is read",
+        got.startswith("refused") and "exceeds" in got, got[:80])
+
+    before = len(os.listdir("/proc/self/fd"))
+    r1, w1 = os.pipe()
+    got = received(framed(b'{"op": "entity.read"}'), fds=[r1, w1])
+    os.close(r1)
+    os.close(w1)
+    after = len(os.listdir("/proc/self/fd"))
+    # The refusal is a durable record's detail, so it must say what arrived: until 2026-10-07 it
+    # said "0 descriptors", counted after they were closed (verification 4.12, F52).
+    say("a frame carrying two descriptors is refused, saying two, and neither is kept",
+        got.startswith("refused") and "2 descriptors" in got and after == before,
+        f"{got[:60]}; fds {before} -> {after}")
+
+    got = received(framed(b"[1, 2]"))
+    say("a frame that is not a JSON object is refused", got.startswith("refused"), got[:80])
+
+    got = received(b"\x00\x00")
+    say("a length prefix cut short by a hang-up is refused", got.startswith("refused"), got[:80])
+
+    got = received(framed(b'{"a": 1}', declared=64))
+    say("a frame shorter than its declared length is refused, even when what came is valid",
+        got.startswith("refused"), got[:80])
+    return failures
+
+
 def main() -> int:
+    frame_failures = hostile_frames()
     require_ready(deep=False)
     become_subreaper()
 
@@ -164,7 +254,11 @@ def main() -> int:
         shutil.rmtree(root, ignore_errors=True)
         durable = durable_summary(mediator, audit_dir)
 
-    return render(mediator, reports) or report_durable(durable)
+    status = render(mediator, reports) or report_durable(durable)
+    if frame_failures:
+        print(f"FAILED (hostile frames): {'; '.join(frame_failures)}")
+        return 1
+    return status
 
 
 def render(mediator: Mediator, reports: dict[str, dict]) -> int:
