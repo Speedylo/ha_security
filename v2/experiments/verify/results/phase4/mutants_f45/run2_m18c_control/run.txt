@@ -1,0 +1,6 @@
+M18c house_a_up exit=0
+M18c bridge_in_A=mutated
+M18c failed_suites=0
+control house_a_up exit=0
+control failed_suites=0
+ALLDONE

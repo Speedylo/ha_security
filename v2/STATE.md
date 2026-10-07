@@ -1,17 +1,25 @@
 # Where the rebuild stands
 
-## ▶ 2026-10-07 — the Pi's SD card failed mid-run
+## ▶ 2026-10-07 — do the tests catch mistakes? (4.12 (a) + (b) DONE, findings F47–F51)
 
-Younes asked whether the tests catch mistakes. Agreed: (a) mutants M18a–c of F45's bridge gate, (b) branch
-coverage of the 26 suites; predictions committed first (`notes/tests_bite_prediction_20261007.md`, 90055f9),
-tooling in `verify/mutants/run_bridge_mutants.sh` and `verify/coverage/`. **During M18c's suites the Pi's
-root filesystem began returning `Input/output error` on every read, and sshd now resets connections.**
-Seen before it failed: M18a killed by exactly the predicted check (`selftest_real_platform`, "another
-ordinary user ... is refused by the bridge", 50/51); M18b killed (1 suite failed; the check not yet
-read). M18c and the unmutated control: unknown. Coverage (b): not started.
-**Next:** Younes power-cycles the Pi; if it boots, copy `~/.config/capstone/` and `~/r2exp/tb/results_mut/`
-off it first, then check the card (`dmesg | grep -i mmc`). If not, a new card: F18's run becomes the
-rebuild. Code and results through `verify-2026-10-f45` are on GitHub.
+Younes asked whether the suites only confirm. Predictions first (`notes/tests_bite_prediction_20261007.md`).
+- **(a) Mutants of F45's gate:** M18a, M18b killed by the one check that guards them; **M18c survived**
+  (any user could designate itself the mediator, F47); check added (62d8b92), now killed; 26/26.
+  `experiments/verify/results/phase4/mutants_f45/`.
+- **(b) Branch coverage of the 26 suites:** enforcement files 74% of branches (predicted 75–90%).
+  **F48:** `supervise.py` runs in no suite (0%), nor `cgroup.py`'s kill/remove; only in `drive_demo.py`
+  (which exits 0 whatever happens — the regressions' "green" for it could not fail; its values on
+  `regress_f45` read today and right) and the fault scripts. **F49:** nine security-relevant branches
+  with no test (declared config_entries/events, no-manifest S6 path, a failing act's refusal and
+  cut-off count, the datagram relay hand-off, `is_lan`'s IPv4-mapped unwrap, the channel's hostile-frame
+  bounds). **F50:** declared `event.*` / `config_entries.list` answer `ok` and do nothing. F51: notes.
+  `experiments/verify/results/phase4/coverage/`.
+- **The Pi's SD card dropped out** mid-run (I/O errors until a reboot); full read afterwards clean,
+  ext4 errors 0; journal now persistent. Credentials backed up to the laptop
+  (`~/.config/capstone-pi-backup-20261007/`, mode 700).
+**Waiting on Younes:** fix F48/F49 (tests: a supervisor suite and drive_demo that fails; the F49 cases,
+each shown to fail under a mutant), F50 (build or reword), then decide on (c) automated mutation. Then
+a new tag and regression, §7.45.12, and the cut-off.
 
 ## ▶ Resume here — 2026-10-06, night
 

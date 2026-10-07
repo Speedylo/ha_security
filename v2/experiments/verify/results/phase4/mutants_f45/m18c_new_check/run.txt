@@ -1,0 +1,4 @@
+M18c with the check: exit=1
+unmutated with the check: exit=0
+unmutated 26 suites: failed=0
+ALLDONE

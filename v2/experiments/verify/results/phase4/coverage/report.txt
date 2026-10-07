@@ -1,0 +1,77 @@
+Name                                                                               Stmts   Miss Branch BrPart  Cover   Missing
+------------------------------------------------------------------------------------------------------------------------------
+/home/younes/r2exp/houseA/custom_components/confine_bridge/__init__.py               166     27     28      9    80%   104, 106, 132, 156-157, 159-160, 186-189, 211-212, 232-242, 262-263, 278-279, 284->exit
+/home/younes/r2exp/houseA/custom_components/confine_bridge/binary_sensor.py           12      3      0      0    75%   15, 18, 21
+/home/younes/r2exp/houseA/custom_components/confine_bridge/config_flow.py             10      3      0      0    70%   19-21
+/home/younes/r2exp/houseA/custom_components/confine_bridge/const.py                    8      0      0      0   100%
+/home/younes/r2exp/houseA/custom_components/confine_bridge/entity.py                  66     11     10      3    79%   73, 78->exit, 85, 87, 90, 93, 96, 112-116
+/home/younes/r2exp/houseA/custom_components/confine_bridge/repairs.py                 20      1      4      1    92%   38
+/home/younes/r2exp/houseA/custom_components/confine_bridge/sensor.py                  15      1      0      0    93%   25
+/home/younes/r2exp/houseA/custom_components/confine_bridge/switch.py                  16      1      0      0    94%   27
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/audit.py                           258     19     88     11    91%   118-119, 159->157, 189, 192, 391, 395, 398-400, 455, 469, 516-517, 542, 546, 549-550, 554->544, 560-564
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/baseline_runtime.py                 47     47      6      0     0%   37-111
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/cgroup.py                          187     44     58     16    70%   53->52, 55, 73->70, 75-77, 82-86, 107, 112, 116, 122, 205, 247-248, 262-263, 275, 281, 289, 303->301, 305, 313, 324, 328-337, 346, 349, 357-365
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/channel.py                         115     14     36      9    85%   67, 79, 106, 116, 147, 168-169, 192-193, 202, 205, 211, 234-235
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/compat.py                          356    356    104      0     0%   28-666
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/describe.py                         95     41     36      8    58%   123->126, 133, 150->152, 152->154, 155, 157, 158->160, 182-244, 248
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/egress.py                           87     18     18      4    79%   75-76, 100-101, 103, 152, 159-160, 181-184, 212, 215, 226-228, 244
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/egress_shape.py                    135    135     40      0     0%   50-306
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/egress_shim.py                     298     50     76      7    82%   89-90, 126-127, 129, 236-237, 269->exit, 299, 322-327, 332, 347-348, 364-366, 374, 381, 390-393, 432-433, 465, 502-504, 530-552, 558-559
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/endtoend.py                        252    252     72      0     0%   30-488
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/endtoend_egress.py                 348    348     94      0     0%   66-754
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/endtoend_local.py                   89     89     18      0     0%   22-186
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/endtoend_oauth.py                   88     88     14      0     0%   22-172
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/endtoend_unconfined.py              73     73     14      0     0%   20-143
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/enter.py                            61     36      8      2    39%   62-63, 88-90, 100-138, 141->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/gc_probe.py                         12      5      2      0    50%   105-109
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/gc_unconfined.py                    39     39      2      0     0%   15-75
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/home.py                              9      0      0      0   100%
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/house_a.py                         280     90     76     22    62%   154, 160->162, 174, 183, 207->214, 211->214, 215-216, 243-260, 267, 271-273, 282, 302-303, 310-334, 352, 357-361, 367-370, 380, 401-411, 413-428, 442, 450-453, 458, 460, 464->466, 471-474, 525, 531-537
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/integrity.py                        83      4     26      2    94%   87->85, 149->158, 182-183, 191-192
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/manifest.py                        194     14    114     14    91%   105, 132, 145, 189, 203, 206, 210->exit, 211->210, 240->249, 253-254, 265, 281, 390-391, 424, 437
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/mediator.py                        400     26    144     15    92%   181-184, 283->288, 286-287, 356, 360-361, 363->362, 367-368, 373->375, 375->exit, 378-379, 422, 513->515, 528, 535, 543-544, 593->595, 620->622, 654->656, 686, 692, 698, 702-707
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/namespaces.py                       84      7      6      2    90%   41-42, 217-220, 229
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/netshape.py                        201     55     50      8    69%   84-85, 104, 110, 135->142, 154->167, 163-164, 187->196, 192-193, 204-205, 211, 214->225, 221-222, 251-275, 281-282, 289-303, 355, 361-362, 368-369, 373-376
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/netshape_runtime.py                 84     84     16      0     0%   22-152
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/platform.py                        134     23     30      6    81%   102, 150, 178-181, 219, 225-226, 234, 249-267, 282
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/preflight.py                       122     50     32     11    54%   61-67, 91, 101, 113, 125, 129, 132-134, 143, 159, 190-198, 209-228, 242, 249-267, 271
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/provenance.py                       22     22      0      0     0%   12-61
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/reads_unconfined.py                 42     42      8      0     0%   19-86
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/real_platform.py                   150     14     58     11    88%   86, 90, 116-117, 148-149, 161-162, 170->exit, 179->174, 206, 207->201, 211, 226, 236, 256, 259
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/sandbox.py                         123     66     34      3    38%   59-60, 72, 76-84, 168->exit, 169->168, 177-190, 203-292
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/sandbox_runtime.py                 629    524    190      8    16%   87-89, 107, 118, 123-124, 126, 127->120, 149->148, 160, 169, 185-243, 252-265, 275-282, 292-297, 308-312, 315-331, 341-355, 367-371, 375-387, 393-412, 423-429, 439-440, 451-459, 472-511, 529-537, 542-543, 556-560, 577-589, 604-635, 662-726, 739-742, 761-793, 806-865, 882-921, 925-1166, 1170-1176, 1180
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/seccomp.py                          87     11     14      5    84%   126, 159-160, 165-166, 209-212, 220, 222
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest.py                        123     11     36     12    86%   149, 235, 246, 253, 260, 282, 297, 298->302, 303, 305, 309-310, 317->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_adversary.py              123     17     28      7    83%   537, 543-547, 573-574, 605-606, 608-610, 615-616, 618-620
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_adversary_baseline.py      66     11     18      4    80%   71-74, 113-117, 119-120, 128->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_audit.py                  333     12     22      4    95%   39->41, 48, 137-139, 157-158, 307, 358, 367, 489, 571-572, 578->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_bridge.py                 137     13     28      7    87%   152->exit, 156->169, 267-273, 276-278, 289, 292, 336-337
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_c3.py                      81      6     16      5    89%   102->104, 111, 143, 164-165, 175-176, 185->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_channel.py                120      8     40      7    91%   188, 196, 201, 211-212, 221, 226-227, 234->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_describe.py                69      4     12      3    91%   83, 113, 119-120, 126->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_egress.py                 170      6      8      3    95%   39-41, 98, 215-216, 322->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_egress_sandboxed.py       162     15     28      8    88%   282-283, 307-309, 331, 353-356, 399-400, 402-403, 417->426, 448->439, 475-476, 483->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_egress_shim.py            151     28      6      3    80%   45-48, 138, 147, 187-188, 206-233, 276->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_fdpass.py                 128      4     16      2    96%   39-40, 56-57, 102->110, 249->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_flood.py                  266      7     32      2    97%   102-103, 234, 334-335, 337->339, 391-392, 413->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_gc.py                     136     17     26      9    84%   64-65, 133-134, 140-141, 153-154, 163->166, 177-179, 181-183, 185-186, 210, 215->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_integrity.py               93      0      2      1    99%   182->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_local_tcp.py              111      9     10      3    90%   52-53, 62-63, 108, 110-111, 155-156, 177->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_netshape.py               163     12      6      2    92%   34-35, 58-61, 63-64, 143-144, 189-190, 288->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_policy.py                  82      6     16      4    90%   49, 89, 146, 168, 177-178, 184->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_push.py                   187      2     26      0    99%   286-287
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_reads.py                  170     21     34     10    85%   72-73, 133-134, 140-141, 155-156, 190, 218-220, 222-224, 226-228, 230-232, 262, 267->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_real_platform.py          261     22     30      6    90%   96, 105-106, 211->204, 426, 436, 448, 453-473, 479->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_resources.py              118      5     14      2    95%   210, 234, 281, 292-293, 310->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_socket_pinning.py          97      8     12      2    91%   62-63, 83-85, 138-140, 176->179, 182->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_t12.py                    141      0      2      1    99%   378->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_udp.py                    350     21     20      6    93%   45-49, 95-96, 134->exit, 143-144, 148-149, 150->145, 172-174, 185-187, 260, 304, 476->480, 506-507, 535->539, 572->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/selftest_ws.py                      45      1      2      1    96%   61, 88->exit
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/spawn.py                            69     10     18      5    83%   36-37, 53, 60, 72, 126, 128-130, 133
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/supervise.py                       218    218     40      0     0%   24-356
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/udp_relay.py                       156     35     40     11    74%   108, 127->132, 136-145, 160->166, 185, 188, 220, 226-240, 253, 259-261, 280-281, 299->314, 309-312, 326
+/home/younes/r2exp/tb/covsrc/v2/framework/confine/ws.py                              135     20     58     19    80%   68, 95, 101, 105, 108, 137, 140, 144, 148, 163, 166-167, 174->172, 183, 185-186, 189, 192, 193->179, 198, 202->207, 205-206
+------------------------------------------------------------------------------------------------------------------------------
+TOTAL                                                                               9958   3282   2172    326    64%
+
+1 empty file skipped.

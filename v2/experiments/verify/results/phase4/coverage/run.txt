@@ -1,0 +1,5 @@
+20:38:49 house_a up exit=0 seconds=3
+20:40:32 suites failed=1 seconds=103
+20:40:34 houseA-deps CHANGED
+20:40:34 data files=0
+20:40:38 ALLDONE

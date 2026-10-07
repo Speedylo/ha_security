@@ -1,0 +1,8 @@
+M18a house_a_up exit=0
+M18a bridge_in_A=mutated
+M18a failed_suites=1
+M18b house_a_up exit=0
+M18b bridge_in_A=mutated
+M18b failed_suites=1
+M18c house_a_up exit=0
+M18c bridge_in_A=mutated
