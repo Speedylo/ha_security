@@ -106,6 +106,17 @@ class Run:
         newest = max(self.audit.glob("decisions-*.jsonl"), key=lambda p: p.stat().st_mtime)
         return AuditLog(path=newest).records()
 
+    def published(self, times: int, seconds: float = 90) -> bool:
+        """Wait until the integration has published its switch `times` times in this log.
+
+        The switch's registry entry outlives every run, so finding it in (A) says nothing about
+        whether the integration inside the sandbox is up. Its own `entity.publish` decision does.
+        Found on the first run of this suite (2026-10-07): a press 0.2 s after the start was
+        recorded and then had no effect, because the integration published its switch at 0.9 s.
+        """
+        return wait(lambda: sum(1 for r in self.records() if r.get("op") == "entity.publish"
+                                and r.get("allowed")) >= times, seconds)
+
     def end(self, sig: int) -> None:
         if self.proc.poll() is None:
             self.proc.send_signal(sig)
@@ -143,6 +154,7 @@ def steps(python: Path, work: Path, runs: list[Run]) -> None:
                        or [] if e.get("unique_id") == SWITCH_UNIQUE), None)
         return switch is not None
     check("its switch is in (A)", wait(find_switch, 60), str(switch))
+    check("and the integration inside has published it", first.published(1))
 
     print("\n2 — the mediator cuts it off, and the sandbox is killed (M31)\n")
     user = house_a.User()
