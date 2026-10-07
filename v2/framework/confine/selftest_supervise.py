@@ -36,9 +36,9 @@ from .cgroup import Delegation
 HERE = Path(__file__).resolve().parent
 FRAMEWORK = HERE.parent
 DEMO = FRAMEWORK.parent / "experiments" / "flood" / "demo_flood"
+#: `demo_flood` that blocks its own event loop, so it cannot stop itself after a cut-off (M31).
+STUBBORN = DEMO.with_name("demo_stubborn")
 DOMAIN = "demo_flood"
-SWITCH_UNIQUE = f"{DOMAIN}:switch.demo_flood_misbehave"
-ISSUE = f"cut_off_{DOMAIN}"
 
 results: list[bool] = []
 
@@ -76,11 +76,11 @@ def alive(pid: int) -> bool:
 class Run:
     """One supervisor process, its printed lines and its audit directory."""
 
-    def __init__(self, python: Path, audit: Path, log: Path) -> None:
-        self.log, self.audit = log, audit
+    def __init__(self, python: Path, audit: Path, log: Path, component: Path = DEMO) -> None:
+        self.log, self.audit, self.domain = log, audit, component.name
         self.out = open(log, "wb")
         self.proc = subprocess.Popen(
-            [sys.executable, "-u", "-m", "confine.supervise", "--component", str(DEMO),
+            [sys.executable, "-u", "-m", "confine.supervise", "--component", str(component),
              "--python", str(python), "--audit-dir", str(audit)],
             cwd=FRAMEWORK, stdout=self.out, stderr=subprocess.STDOUT)
 
@@ -92,7 +92,7 @@ class Run:
 
     def sandbox(self, run: int, seconds: float = 60) -> int | None:
         """The pid the supervisor printed for its `run`th sandbox."""
-        pattern = re.compile(rf"{DOMAIN} started \(run {run}, pid (\d+)\)")
+        pattern = re.compile(rf"{self.domain} started \(run {run}, pid (\d+)\)")
         found: list[int] = []
         wait(lambda: bool(found or found.extend(int(m) for m in pattern.findall(self.text()))),
              seconds)
@@ -100,7 +100,7 @@ class Run:
 
     def cgroup(self, run: int) -> Path | None:
         parent = Delegation.discover().parent
-        return None if parent is None else parent / f"sup-{DOMAIN}-{self.proc.pid}-{run}"
+        return None if parent is None else parent / f"sup-{self.domain}-{self.proc.pid}-{run}"
 
     def records(self) -> list[dict]:
         newest = max(self.audit.glob("decisions-*.jsonl"), key=lambda p: p.stat().st_mtime)
@@ -132,10 +132,26 @@ def admin(message: dict) -> object:
     return house_a._ws_call(house_a.TOKEN_FILE.read_text().strip(), message).get("result")
 
 
-def issue() -> dict:
+def issue(domain: str = DOMAIN) -> dict:
     listed = admin({"type": "repairs/list_issues"}) or {}
     return next((i for i in listed.get("issues", [])
-                 if i["domain"] == "confine_bridge" and i["issue_id"] == ISSUE), {})
+                 if i["domain"] == "confine_bridge" and i["issue_id"] == f"cut_off_{domain}"), {})
+
+
+def switch_of(domain: str) -> str | None:
+    """The entity id (A) gave the integration's switch, from its registry."""
+    unique = f"{domain}:switch.{domain}_misbehave"
+    return next((e["entity_id"] for e in admin({"type": "config/entity_registry/list"}) or []
+                 if e.get("unique_id") == unique), None)
+
+
+def repair(domain: str) -> dict:
+    """Submit the integration's Repairs issue as the panel does; the flow's last answer."""
+    token = house_a.TOKEN_FILE.read_text().strip()
+    flow = house_a.request("POST", "/api/repairs/issues/fix",
+                           {"handler": "confine_bridge", "issue_id": f"cut_off_{domain}"},
+                           token=token)
+    return house_a.request("POST", f"/api/repairs/issues/fix/{flow['flow_id']}", {}, token=token)
 
 
 def steps(python: Path, work: Path, runs: list[Run]) -> None:
@@ -146,14 +162,8 @@ def steps(python: Path, work: Path, runs: list[Run]) -> None:
     check("run 1's sandbox started", pid1 is not None and alive(pid1), f"pid {pid1}")
     group1 = first.cgroup(1)
     check("in its own cgroup", group1 is not None and group1.is_dir(), str(group1))
-    switch = None
-
-    def find_switch() -> bool:
-        nonlocal switch
-        switch = next((e["entity_id"] for e in admin({"type": "config/entity_registry/list"})
-                       or [] if e.get("unique_id") == SWITCH_UNIQUE), None)
-        return switch is not None
-    check("its switch is in (A)", wait(find_switch, 60), str(switch))
+    check("its switch is in (A)", wait(lambda: switch_of(DOMAIN) is not None, 60))
+    switch = switch_of(DOMAIN)
     check("and the integration inside has published it", first.published(1))
 
     print("\n2 — the mediator cuts it off, and the sandbox is killed (M31)\n")
@@ -166,10 +176,7 @@ def steps(python: Path, work: Path, runs: list[Run]) -> None:
     check("the house sees a Repairs issue", wait(lambda: bool(issue()), 10))
 
     print("\n3 — a person submits the Repairs issue, and it runs again (M32)\n")
-    token = house_a.TOKEN_FILE.read_text().strip()
-    flow = house_a.request("POST", "/api/repairs/issues/fix",
-                           {"handler": "confine_bridge", "issue_id": ISSUE}, token=token)
-    done = house_a.request("POST", f"/api/repairs/issues/fix/{flow['flow_id']}", {}, token=token)
+    done = repair(DOMAIN)
     check("the fix flow completes", done.get("type") == "create_entry", str(done.get("type")))
     pid2 = first.sandbox(2, 30)
     check("run 2 started, a new process", pid2 is not None and pid2 != pid1 and alive(pid2),
@@ -216,6 +223,31 @@ def steps(python: Path, work: Path, runs: list[Run]) -> None:
     parent = Delegation.discover().parent
     remaining = sorted(p.name for p in parent.glob(f"sup-{DOMAIN}-*")) if parent else []
     check("no demo_flood cgroup is left", not remaining, ", ".join(remaining))
+
+    print("\n8 — an integration that will not stop by itself is killed (M31)\n")
+    # `demo_flood` stops by itself once the mediator closes its channel, so steps 2 and 3 pass
+    # whether or not the supervisor kills anything: mutant M31 survived them (2026-10-07). This
+    # integration blocks its own event loop, so only the kill through its cgroup can end it.
+    third = Run(python, work / "audit_c", work / "supervisor_c.log", STUBBORN)
+    runs.append(third)
+    pid_c = third.sandbox(1)
+    check("demo_stubborn's sandbox started", pid_c is not None and alive(pid_c), f"pid {pid_c}")
+    check("its switch is in (A)", wait(lambda: switch_of(STUBBORN.name) is not None, 60))
+    check("and the integration inside has published it", third.published(1))
+    user = house_a.User()
+    user.press(switch_of(STUBBORN.name), "turn_on").join(timeout=15)
+    user.close()
+    check("it is cut off", third.says("cut off by the mediator", 30))
+    group_c = third.cgroup(1)
+    check("its sandbox's process is gone", wait(lambda: not alive(pid_c), 15), f"pid {pid_c}")
+    check("and so is its cgroup", wait(lambda: not group_c.exists(), 15), str(group_c))
+    check("not by stopping itself", "exited by itself" not in third.text())
+    # Leave (A) as it was found: the Repairs issue submitted, then this supervisor stopped.
+    check("its Repairs issue is cleared", wait(lambda: bool(issue(STUBBORN.name)), 10)
+          and repair(STUBBORN.name).get("type") == "create_entry")
+    third.end(signal.SIGTERM)
+    left_c = sorted(p.name for p in parent.glob(f"sup-{STUBBORN.name}-*")) if parent else []
+    check("no demo_stubborn cgroup is left", not left_c, ", ".join(left_c))
     for run in runs:
         for path in sorted(run.audit.glob("decisions-*.jsonl")):
             # Read from outside the mediator, so without its key: every MAC "fails", as it must
