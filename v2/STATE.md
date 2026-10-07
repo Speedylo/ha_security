@@ -1,5 +1,18 @@
 # Where the rebuild stands
 
+## ▶ 2026-10-07 — the Pi's SD card failed mid-run
+
+Younes asked whether the tests catch mistakes. Agreed: (a) mutants M18a–c of F45's bridge gate, (b) branch
+coverage of the 26 suites; predictions committed first (`notes/tests_bite_prediction_20261007.md`, 90055f9),
+tooling in `verify/mutants/run_bridge_mutants.sh` and `verify/coverage/`. **During M18c's suites the Pi's
+root filesystem began returning `Input/output error` on every read, and sshd now resets connections.**
+Seen before it failed: M18a killed by exactly the predicted check (`selftest_real_platform`, "another
+ordinary user ... is refused by the bridge", 50/51); M18b killed (1 suite failed; the check not yet
+read). M18c and the unmutated control: unknown. Coverage (b): not started.
+**Next:** Younes power-cycles the Pi; if it boots, copy `~/.config/capstone/` and `~/r2exp/tb/results_mut/`
+off it first, then check the card (`dmesg | grep -i mmc`). If not, a new card: F18's run becomes the
+rebuild. Code and results through `verify-2026-10-f45` are on GitHub.
+
 ## ▶ Resume here — 2026-10-06, night
 
 **Engineering and the verification campaign are done. Waiting on Younes to declare the cut-off.**
