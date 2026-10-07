@@ -438,6 +438,16 @@ def main() -> int:
         gated, why = True, str(err)[:70]
     check("another ordinary user, not the designated one, is refused by the bridge", gated,
           f"user {other[:8]}…: {why}")
+    # Naming the mediator is an admin's act. Without this check, a bridge that let any user
+    # designate itself passed every suite (mutant M18c, 2026-10-07): the user above would be
+    # refused only until it named itself the mediator.
+    other_token = house_a.MEDIATOR_TOKEN_FILE.with_name("house_a_f45_other.token").read_text().strip()
+    seized = house_a._ws_call(other_token, {"type": "confine_bridge/designate_mediator",
+                                            "user_id": other})
+    if seized.get("success"):  # put the real mediator back, so the checks after this one still run
+        house_a.ensure_mediator_user(house_a.TOKEN_FILE.read_text().strip())
+    check("and it may not designate itself as the mediator", not seized.get("success"),
+          (seized.get("error") or {}).get("code", "it was accepted"))
 
     if args.restart:
         print("\nR2 — (A) restarts, and the bridged entity is still there\n")
