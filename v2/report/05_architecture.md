@@ -1219,6 +1219,14 @@ channel is bidirectional and carries two shapes:
 | **Request / response** | sandbox → mediator → sandbox | `entity.read`, `entity.write`, `service.call`, `events.fire`, `config_entries.list` |
 | **Push** | mediator → sandbox | A declared entity's state changing; a subscribed event firing |
 
+> **2026-10-07 (§7.45.12).** Three of the operations in this table were designed and not built.
+> A manifest may declare `events.fire`, `events.subscribe` and `config_entries.read_all`, and a
+> request under any of them is decided and recorded like every other, with its clause. But nothing
+> acts on a permitted one: the integration is answered `ok` and nothing happens, and no event is
+> ever pushed. A grant of any of the three therefore gives nothing. That is safe, since it can only
+> withhold, but it is not what the table says. Branch coverage of the suites found it (verification
+> 4.12, finding F50).
+
 Push is what makes §5.6.2's empty state machine work. The sandbox's local state machine holds
 only what the mediator has mirrored into it, and the mediator mirrors only what the manifest
 declares. An integration reading a declared entity therefore reads its *own local* state

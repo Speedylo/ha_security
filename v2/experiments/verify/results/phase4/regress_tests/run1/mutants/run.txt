@@ -1,0 +1,74 @@
+M19 failed_suites=1
+ALLDONE
+M20 failed_suites=1
+ALLDONE
+M21 failed_suites=1
+ALLDONE
+M22 failed_suites=1
+ALLDONE
+M23 failed_suites=1
+ALLDONE
+M24 failed_suites=1
+ALLDONE
+M25 failed_suites=0
+ALLDONE
+M26 failed_suites=1
+ALLDONE
+M27 failed_suites=1
+ALLDONE
+M28 failed_suites=1
+ALLDONE
+M29 failed_suites=1
+ALLDONE
+M30 failed_suites=1
+ALLDONE
+M31 failed_suites=0
+ALLDONE
+M32 failed_suites=1
+ALLDONE
+M33 failed_suites=1
+ALLDONE
+M34 failed_suites=1
+ALLDONE
+M35 failed_suites=1
+ALLDONE
+M36 failed_suites=1
+ALLDONE
+M37 failed_suites=1
+ALLDONE
+M01 failed_suites=10
+ALLDONE
+M02 failed_suites=1
+ALLDONE
+M03 failed_suites=1
+ALLDONE
+M04 failed_suites=1
+ALLDONE
+M05 failed_suites=2
+ALLDONE
+M06 failed_suites=1
+ALLDONE
+M07 failed_suites=1
+ALLDONE
+M08a failed_suites=1
+ALLDONE
+M08b failed_suites=1
+ALLDONE
+M09 failed_suites=5
+ALLDONE
+M10 failed_suites=1
+ALLDONE
+M11 failed_suites=3
+ALLDONE
+M12 failed_suites=1
+ALLDONE
+M13 failed_suites=8
+ALLDONE
+M14 failed_suites=1
+ALLDONE
+M15 failed_suites=2
+ALLDONE
+M16 failed_suites=1
+ALLDONE
+M17 failed_suites=2
+ALLDONE

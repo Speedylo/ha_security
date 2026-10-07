@@ -5587,6 +5587,61 @@ not cover services with no entity target (a notification went through), and the 
 is not filtered by it. So §8.8's ask of the platform becomes exact: make the per-domain policy
 configurable, and extend it to the calls it does not cover.
 
+### 7.45.12 Do the tests catch mistakes?
+
+Mutation testing (§7.45.3) answered this question for eighteen points chosen by hand: break the check
+there, and some suite fails. It could not answer it for code that no mutant touched, and it could not
+cover the bridge's gate, which F45 added after it ran. Two measurements on 2026-10-07 looked at both,
+with their predictions committed first (`notes/tests_bite_prediction_20261007.md`).
+
+**F45's gate.** Three mutants broke it. The two that loosened the gate itself were caught by the one
+check written for it. The third let any user designate itself as the mediator, and every suite passed
+(finding F47). A check that an ordinary user is refused that command was added, was shown to fail
+against the mutant, and now catches it.
+
+**Which code the suites never run.** Branch coverage of the 26 suites, with the bridge measured inside
+the running house, found 74% of the branches in the enforcement code executed. Most of the rest is
+error handling, or code that runs inside the sandbox where coverage cannot see it and which the
+adversary suite tests by behaviour. Two gaps were not. The supervisor, which turns a cut-off into a
+killed sandbox and a Repairs submission into a restart, ran in no suite at all (F48). It ran only in
+`drive_demo.py`, which exited 0 whatever happened, so every regression since §7.44 recorded a pass that
+could not have been a failure; its values, read afterwards, were right. And nine branches on security
+paths had no test: among them the default denial of an integration with no manifest, a failed action
+being recorded as a refusal and counted toward the cut-off, and the channel's limits on hostile frames
+(F49). Reading them found the code right. Coverage also showed that three declared operations,
+`events.fire`, `events.subscribe` and `config_entries.read_all`, are decided and recorded and then do
+nothing (F50). They can only withhold, so nothing is exposed, and §5.11.3 now says so.
+
+**The fixes, each shown to catch a mistake.** A 27th suite, `selftest_supervise`, runs the supervisor
+as an installation does and acts as a person in the house would. `drive_demo.py` and the fault scripts
+now fail on a wrong value. The nine branches each have a check. Every new check was paired with a
+mutant of the code it guards, nineteen in all (`notes/f48_f49_prediction_20261007.md`), and seventeen
+were caught on the first run, as predicted. One survivor was predicted: removing `is_lan`'s unwrapping
+of IPv4-mapped addresses changes nothing on Python 3.13 and 3.14, which already judge such an address
+by its IPv4 form, so no test can catch it there. The unwrap stays because on 3.12 the same address
+counts as reserved and a device on the home network would be refused.
+
+The other survivor was not predicted, and it is the most useful result of the day. With the
+supervisor's kill removed, the cut-off test still passed, because `demo_flood` stops by itself as soon
+as the mediator closes its channel. The kill was being tested only where something else had already
+done its job. It exists for an integration that does not stop, so a second test integration,
+`demo_stubborn`, blocks its own event loop after starting its flood, and the suite now checks that the
+supervisor kills it. With that step, the mutant is caught. Writing the channel's checks also found a
+small defect: a frame carrying too many descriptors was refused with a record saying it carried none,
+because the count was taken after they were closed (F52, fixed).
+
+**On the new tag** (`verify-2026-10-tests`): the 27 suites passed twice before the last step was added
+and twice after it, (A)'s restart suite 55/55, `nordpool` end to end 16/16, `drive_demo.py` all eight
+values, the fault scripts 16 judgements with no failure. Of forty mutants (the original eighteen, the
+three of the gate and the nineteen new), thirty-nine are caught, each by the check written for it, and
+one is equivalent on this interpreter. The timing figures were not measured again: the one change to
+the framework is F52's message, on a refusal path that no timed path takes.
+
+**What this still does not show.** Coverage measured the suites only, and the code inside the sandbox
+is outside it. The mutants are still chosen by hand: they show that each tested point is guarded, not
+that every point is. An automated mutation run over the mediator and the policy, which generates every
+small change rather than chosen ones, would measure that, and is not part of this section.
+
 ---
 
 *§7.1–§7.11 written 2026-09-02, before any measurement specified here had been run. Criteria in

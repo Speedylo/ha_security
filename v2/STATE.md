@@ -1,27 +1,29 @@
 # Where the rebuild stands
 
-## ▶ 2026-10-07 — do the tests catch mistakes? (4.12 (a) + (b) DONE, findings F47–F51)
+## ▶ Resume here — 2026-10-07, night
 
-Younes asked whether the suites only confirm. Predictions first (`notes/tests_bite_prediction_20261007.md`).
-- **(a) Mutants of F45's gate:** M18a, M18b killed by the one check that guards them; **M18c survived**
-  (any user could designate itself the mediator, F47); check added (62d8b92), now killed; 26/26.
-  `experiments/verify/results/phase4/mutants_f45/`.
-- **(b) Branch coverage of the 26 suites:** enforcement files 74% of branches (predicted 75–90%).
-  **F48:** `supervise.py` runs in no suite (0%), nor `cgroup.py`'s kill/remove; only in `drive_demo.py`
-  (which exits 0 whatever happens — the regressions' "green" for it could not fail; its values on
-  `regress_f45` read today and right) and the fault scripts. **F49:** nine security-relevant branches
-  with no test (declared config_entries/events, no-manifest S6 path, a failing act's refusal and
-  cut-off count, the datagram relay hand-off, `is_lan`'s IPv4-mapped unwrap, the channel's hostile-frame
-  bounds). **F50:** declared `event.*` / `config_entries.list` answer `ok` and do nothing. F51: notes.
-  `experiments/verify/results/phase4/coverage/`.
-- **The Pi's SD card dropped out** mid-run (I/O errors until a reboot); full read afterwards clean,
-  ext4 errors 0; journal now persistent. Credentials backed up to the laptop
-  (`~/.config/capstone-pi-backup-20261007/`, mode 700).
-**Waiting on Younes:** fix F48/F49 (tests: a supervisor suite and drive_demo that fails; the F49 cases,
-each shown to fail under a mutant), F50 (build or reword), then decide on (c) automated mutation. Then
-a new tag and regression, §7.45.12, and the cut-off.
+**4.12 is done: F47–F52 resolved, F53 a note. Waiting on Younes: decide 4.12 (c), then declare the cut-off.**
 
-## ▶ Resume here — 2026-10-06, night
+- **Cut-off candidate is now `verify-2026-10-tests`** (local tag, not pushed; clone on the Pi at
+  `~/r2exp/verify-tests`). On it: 27 suites twice before and twice after the last test was added;
+  (A)'s restart suite 55/55; `nordpool` 16/16; `drive_demo.py` (now judged) 8/8; fault scripts 16 ok.
+  **Mutants: 40, 39 killed each by its own check, 1 equivalent (M25 on Python 3.13).** Timing not re-run:
+  the one framework change (F52) is a refusal-path message. Results `experiments/verify/results/phase4/
+  {mutants_f45,coverage,regress_tests}/`; report §7.45.12; F50's dated note in §5.11.3.
+- **What changed:** `selftest_supervise` (27th suite, 8 steps); `experiments/flood/demo_stubborn` (blocks
+  its event loop — M31 survived until it existed, because demo_flood stops itself); checks for the nine
+  F49 branches; `channel.py` F52 (the too-many-fds refusal said "0"); drive_demo + fault scripts can fail;
+  each mutant its own TMPDIR.
+- **The Pi's SD card dropped out once today** (clean on a full read; journal now persistent; credentials
+  backed up to `~/.config/capstone-pi-backup-20261007/`).
+- **F53 (note, for phase R):** a press in a confined integration's first second is recorded and has no effect.
+
+**Next session:**
+1. Younes decides 4.12 (c): automated mutation of `mediator.py` and `manifest.py` (about a day).
+2. Push `main` + `verify-2026-10-tests` after a credential scan; declare the cut-off (F18 still open).
+3. Phase R as before.
+
+## Resume note — 2026-10-06, night (history)
 
 **Engineering and the verification campaign are done. Waiting on Younes to declare the cut-off.**
 

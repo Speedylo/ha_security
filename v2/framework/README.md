@@ -3,7 +3,7 @@
 **Started:** 2026-08-25 · **Described by:** `report/06_implementation.md`
 
 > **2026-10-06.** The tables and commands below describe the framework as of early September: eleven of
-> today's 26 suites, and commands that assume an interpreter at `~/r2exp/ha314`. To build that
+> today's 27 suites (27 since 2026-10-07, with `selftest_supervise`), and commands that assume an interpreter at `~/r2exp/ha314`. To build that
 > environment and run every suite, follow `../REPRODUCE.md`. The module list is still the map to
 > Chapter 6; modules added since (egress, the UDP relay, the push loop, (A)) are described in their
 > own docstrings and in Chapter 7's sections that introduced them.

@@ -1,0 +1,35 @@
+
+F49  hostile frames, refused at the mediator's end
+
+  ok    a message over MAX_FRAME is not framed for sending  — refused: message of 1048584 bytes exceeds 1048576
+  ok    a valid object of more than MAX_FRAME bytes is refused before it is read  — refused: declared frame of 1048585 bytes exceeds 1048576
+  ok    a frame carrying two descriptors is refused, saying two, and neither is kept  — refused: 2 descriptors in one frame exceeds 1; fds 4 -> 4
+  ok    a frame that is not a JSON object is refused  — refused: frame is list, expected an object
+  ok    a length prefix cut short by a hang-up is refused  — refused: truncated length prefix
+  ok    a frame shorter than its declared length is refused, even when what came is valid  — refused: truncated frame
+channel self-test — identity is the socket, not a field
+
+  both sandboxes sent {"integration": "demo_a"}. demo_a holds a manifest
+  granting one sensor read; demo_b holds none.
+
+    true identity  claimed    request                    verdict  clause
+    demo_a         demo_a     entity.read                PERMIT   /permissions/entities/read/0
+    demo_a         demo_a     service.call               deny     /permissions/services/call
+    demo_b         demo_a     entity.read                deny     /permissions/entities/read
+    demo_b         demo_a     service.call               deny     /permissions/services/call
+
+  ok    demo_a read its declared sensor — the permit path works
+  ok    demo_a was refused lock.unlock — denied by absence, S6
+  ok    demo_b claimed to be demo_a and was refused the same read
+  ok    every decision, permit or deny, named a clause — F3 / §5.10.8
+
+  round trip on the real channel, measured from inside the sandbox:
+    demo_a           median 7708.7 µs   p99 16662.2 µs   n=2000
+    demo_b           median 7708.8 µs   p99 15997.5 µs   n=2000
+
+  audit entries: 4004  (2 sandboxes x 2002 requests = 4004)
+
+PASS — the mediator attributed every request to the socket it arrived on.
+       demo_b claimed to be an integration that holds a grant, and the claim
+       bought it nothing, because there was nothing in the protocol to check.
+  ok    the durable record (T4): 2 run, 4004 decisions, chains verify and match the in-memory record

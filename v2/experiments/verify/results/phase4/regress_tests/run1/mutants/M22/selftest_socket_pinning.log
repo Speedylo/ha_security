@@ -1,0 +1,13 @@
+Is a connected socket's peer actually pinned by the kernel? Asked, not assumed.
+==============================================================================
+[  ok  ] TCP — data reaches the peer the mediator connected to — to-the-pinned-peer
+[  ok  ] TCP — sendto() to another address does NOT deliver there — not delivered; sendto() accepted the call; connect() → EISCONN (Transport endpoint is already connected)
+[  ok  ] TCP — the descriptor cannot be re-pointed at a second destination — sendto() accepted the call; connect() → EISCONN (Transport endpoint is already connected)
+[  ok  ] UDP — data reaches the connected peer
+[  ok  ] UDP — sendto() to another address DOES deliver: descriptor passing is unsafe — delivered — this is why every UDP path is relayed, not handed over
+[  ok  ] UDP — inbound from a non-peer is dropped, so the receive half is pinned
+==============================================================================
+6/6 checks passed
+
+Descriptor passing is safe for TCP and unsafe for UDP on this host, which is what
+`notes/decision_network_capability.md` §5.1 is built on.

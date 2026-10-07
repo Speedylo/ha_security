@@ -1,0 +1,51 @@
+
+1 — it starts
+
+  ok    run 1's sandbox started  — pid 27851
+  ok    in its own cgroup  — /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/sup-demo_flood-27838-1
+  ok    its switch is in (A)  — switch.demo_flood_misbehave
+  ok    and the integration inside has published it
+
+2 — the mediator cuts it off, and the sandbox is killed (M31)
+
+  ok    the supervisor is told
+  ok    the sandbox's process is gone  — pid 27851
+  ok    and so is its cgroup  — /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/sup-demo_flood-27838-1
+  ok    the house sees a Repairs issue
+
+3 — a person submits the Repairs issue, and it runs again (M32)
+
+  ok    the fix flow completes  — create_entry
+  ok    run 2 started, a new process  — pid 27865
+  ok    the durable log holds one cut-off and one reinstatement  — cutoff 1, reinstate 1
+  ok    and the issue is gone
+
+4 — (A) restarts, and the integration comes back (F29, M33)
+
+  ok    the supervisor saw (A) go
+  ok    and come back
+  ok    run 3 started  — pid 27891
+
+5 — a supervisor killed outright; the next one clears what it left (F30, M34)
+
+  ok    the first supervisor is gone
+  ok    the second reports clearing what the first left  — cleared 1 sandbox cgroup(s)
+  ok    run 3 of the first is not running  — pid 27891
+  ok    and none of the first's cgroups remains
+  ok    the second's own sandbox started  — pid 27908
+
+6 — a sandbox that exits by itself is not restarted (M35)
+
+  ok    the supervisor reports it
+  ok    and starts nothing in its place
+
+7 — it stops cleanly
+
+  ok    it says it stopped
+  ok    no demo_flood cgroup is left
+  ok    decisions-20261007T220230-27838.jsonl: no sequence, link or hash break
+  ok    decisions-20261007T220239-27892.jsonl: no sequence, link or hash break
+
+  logs: /home/younes/r2exp/tb/work_tests/M08b/tmp/selftest-supervise-ic5_dinp
+
+26/26 checks passed

@@ -1,0 +1,37 @@
+
+L2 — a device at 10.126.83.113:46444, port declared
+
+  ok    granted with the clause naming the declared port  — /permissions/network/local/tcp/0
+  ok    and a descriptor crossed the channel
+  ok    which is connected to the device: what the sandbox sends, the device receives  — b'query'
+
+L4 — an undeclared port
+
+  ok    refused, naming the clause that held nothing matching  — '46445' matches no clause at /permissions/network/local/tcp
+
+L5 — the declared port, on addresses that are not the home network
+
+  ok    loopback: the mediator's own host (127.0.0.1) is refused by the mediator  — 127.0.0.1 is not an address on the home network
+  ok    link-local (169.254.10.10) is refused by the mediator  — 169.254.10.10 is not an address on the home network
+  ok    public (8.8.8.8) is refused by the mediator  — 8.8.8.8 is not an address on the home network
+
+L6 — the record
+
+  ok    the grant's durable record names the address and the port  — {'address': '10.126.83.113', 'port': 46444}
+  ok    a refused address shows the grant and then the refusal, the refusal last  — [True, False]
+  ok    every chain verifies
+
+shim — what the sandbox routes to the mediator
+
+  ok    a home-network address is routed to the mediator  — [('10.126.83.113', 46444)]
+  ok    the sandbox's own loopback is not
+
+F49 — the broker's own checks, below the mediator
+
+  ok    is_lan(::ffff:192.168.1.5) is True
+  ok    is_lan(::ffff:8.8.8.8) is False
+  ok    is_lan(::ffff:127.0.0.1) is False
+  ok    is_lan(::ffff:169.254.1.1) is False
+  ok    open_local given a refused decision refuses with that decision's reason  — port 9 is not declared
+
+17/17 checks passed

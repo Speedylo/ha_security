@@ -1,0 +1,17 @@
+
+1 — it starts
+
+  ok    run 1's sandbox started  — pid 30020
+  ok    in its own cgroup  — /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/sup-demo_flood-30007-1
+  ok    its switch is in (A)  — switch.demo_flood_misbehave
+  ok    and the integration inside has published it
+
+2 — the mediator cuts it off, and the sandbox is killed (M31)
+
+  FAIL  the supervisor is told
+
+  stopped at: the supervisor is told
+
+  logs: /home/younes/r2exp/tb/work_tests/M11/tmp/selftest-supervise-rnww5t8_
+
+4/5 checks passed

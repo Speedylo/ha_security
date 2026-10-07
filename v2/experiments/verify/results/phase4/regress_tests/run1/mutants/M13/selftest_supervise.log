@@ -1,0 +1,10 @@
+
+1 — it starts
+
+  FAIL  run 1's sandbox started  — pid None
+
+  stopped at: run 1's sandbox started
+
+  logs: /home/younes/r2exp/tb/work_tests/M13/tmp/selftest-supervise-mu8nymls
+
+0/1 checks passed

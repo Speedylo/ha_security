@@ -1,0 +1,12 @@
+The whole egress loop, driven by unmodified HTTP clients.
+==============================================================================
+[  ok  ] 1. **F2** — urllib reaches a declared host and gets its body back — {"temperature": 12.5}
+[  ok  ] 1b. and the connection was permitted by a named clause (F3) — /permissions/network/egress/0
+[  ok  ] 2. the sandbox is given a placeholder, never a routable address — 240.0.0.1 ∈ 240.0.0.0/4
+[  ok  ] 2b. and only the shim can map it back to the name
+[  ok  ] 3. an undeclared host fails as a network error, not a framework exception — URLError
+[ skip ] 4. aiohttp reaches a declared host — aiohttp is not installed here
+[  ok  ] 5. a connection to a real address is not intercepted and consults no manifest — 0 decisions made
+[  ok  ] 5b. and the mediator opened nothing on its behalf — security is the namespace; the shim is compatibility
+==============================================================================
+7/7 checks passed

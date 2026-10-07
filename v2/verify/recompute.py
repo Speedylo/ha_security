@@ -277,7 +277,7 @@ def _():
        [("abstract", r"([\w-]+) self-test suites and\s+the base self-test pass")])
 def _():
     n = len(list((V2 / "framework/confine").glob("selftest_*.py")))
-    return {25: "Twenty-five"}.get(n, str(n)), (f"{n} `selftest_*.py`, the front matter's definition of "
+    return {25: "Twenty-five", 26: "Twenty-six"}.get(n, str(n)), (f"{n} `selftest_*.py`, the front matter's definition of "
                                                 f"a suite, and the base `selftest.py` apart")
 
 

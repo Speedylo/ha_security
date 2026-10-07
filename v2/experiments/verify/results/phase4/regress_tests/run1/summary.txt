@@ -1,0 +1,13 @@
+house_a_down exit=0 seconds=1
+house_a_up exit=0 seconds=3
+suites_1 exit=0 seconds=85
+suites_2 exit=0 seconds=85
+suites_1 failed=0 of 27
+suites_2 failed=0 of 27
+real_platform_restart exit=0 seconds=26
+egress_nordpool exit=0 seconds=116
+drive_demo exit=0 seconds=1
+faults_pi_fixed exit=0 seconds=67
+review_pi exit=0 seconds=52
+REGRESSION_DONE
+ALLDONE

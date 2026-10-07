@@ -1,0 +1,27 @@
+Mediated egress: the manifest gates a destination, and the check cannot be raced.
+==============================================================================
+[  ok  ] 1. the declared host:port is permitted — clause /permissions/network/egress/0
+[  ok  ] 1b. and the descriptor handed back is a live connection to it — weather-api
+[  ok  ] 2. an undeclared host is denied
+[  ok  ] 2b. and the denial names the capability that held no matching clause (F3) — /permissions/network/egress
+[  ok  ] 2c. the broker refuses to act on a denial rather than connecting anyway — 'tracker.invalid:37067' matches no clause at /permissions/network/egress
+[  ok  ] 3. demo_a reaches the host demo_a declared
+[  ok  ] 3b. **S4** — demo_a is denied a host declared only by demo_b — 'b.invalid:46801' matches no clause at /permissions/network/egress
+[  ok  ] 3c. and demo_b reaches that same host, so 3b is attribution not a block — demo_b /permissions/network/egress/0; demo_a denied at /permissions/network/egress
+[  ok  ] 3d. and claiming to be demo_b in the request body does not help — 'b.invalid:46801' matches no clause at /permissions/network/egress
+[  ok  ] 3e. both integrations run against their own destinations concurrently
+[  ok  ] 4. a routable address is public
+[  ok  ] 4b. loopback, private, link-local and IPv4-mapped are all non-public — including ::ffff:192.168.1.1, which the §7.24 run actually produced
+[  ok  ] 4c. the manifest permits the name, because a manifest can only speak of names
+[  ok  ] 4d. **T11** — and the connection is refused on the resolved address — no permitted address for innocent.invalid:34493 — 127.0.0.1 is not a public address
+[  ok  ] 4e. the manifest still permits the declared name
+[  ok  ] 4e. **fixed** — a request-supplied allow_private is ignored; T10 still refuses — no permitted address for innocent.invalid:56397 — 127.0.0.1 is not a public address
+[  ok  ] 5. a host with no port is rejected at parse time — a host alone grants all 65,535 of its ports
+[  ok  ] 5b. a wildcard host is rejected
+[  ok  ] 5c. port 0 is rejected
+[  ok  ] 5d. a port above 65535 is rejected
+[  ok  ] 5e. host:port is accepted
+[  ok  ] 5f. a bracketed IPv6 literal is accepted, its colons not mistaken for the port
+[  ok  ] 5g. a request naming no port is denied rather than defaulted — network.egress names no target
+==============================================================================
+23/23 checks passed

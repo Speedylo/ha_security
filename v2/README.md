@@ -27,7 +27,7 @@ before acting on it, and then acts on the house's real Home Assistant.
 | Directory | What it holds |
 |---|---|
 | `report/` | the report, one file per chapter; `toc.py --check` verifies the contents page and its counts |
-| `framework/confine/` | the framework: sandbox, mediator, manifest, audit log, and the 26 self-test suites |
+| `framework/confine/` | the framework: sandbox, mediator, manifest, audit log, and the 27 self-test suites |
 | `framework/ha_bridge/` | the bridge integration installed in the house's Home Assistant |
 | `experiments/` | one directory per measurement: its script, README and committed results |
 | `figures/` | figure sources, the corpus fetcher and the API-surface measurement |

@@ -1,0 +1,62 @@
+§5.12.1  identity is three components, so the log says what changed
+
+  ok    a source change moves only the source hash                ['source']
+  ok    a permission change moves the manifest hash with no code change  ['manifest']
+  ok    a dependency change is visible                            ['manifest', 'requirements']
+  ok    ...and, as declared, it is not independent of the manifest  ['manifest', 'requirements']
+  ok    the composite differs whenever any component does         four distinct composites
+
+§5.12.1  resolved versions (F08)
+
+  ok    with no install directory, the identity is exactly the pre-F08 one  8631d29c34f9c6ed
+  ok    one dependency moving changes the requirements component, and only it  ['requirements']
+  ok    ...and the identity lists the resolved versions           ['aiohttp==3.14.3', 'yarl==1.20.0']
+  ok    a run record names the versions the sandbox was given     ['aiohttp==3.14.4', 'yarl==1.20.0']
+
+§5.12.4  the chain, and the two links that fail independently
+
+  ok    a clean chain verifies                                    6 records, no breaks
+  ok    flipping a denial into a permit breaks every link after it  seq [2, 3, 4, 5], ['hash', 'link', 'mac']
+  ok    repairing its own hash does not help the attacker         seq [2, 3, 4, 5], 3 link breaks
+  ok    deleting a record is detected                             ['hash', 'link', 'mac', 'sequence']
+  ok    reordering two records is detected                        ['hash', 'link', 'mac', 'sequence']
+  ok    an attacker without the key can rebuild the whole hash chain  every sha256 link recomputes cleanly
+  ok    ...and cannot rebuild one link of the MAC chain           MAC breaks at seq [2, 3, 4, 5]
+
+§5.11.3  the record is written before the action
+
+  ok    an action that dies after the record leaves the record    2 records on disk
+  ok    ...and the record says what was permitted                 service.call lock.lock
+  ok    through the mediator, an action that dies leaves its record on disk  1 decision records on disk
+
+  T4 — what the record names, and the check that compares it with memory
+  ok    a decoy entity does not become the recorded target of a service call  target='lock.unlock' requested={'entity': 'sensor.harmless', 'service': 'lock.unlock'}
+  ok    ...and a refused request still records what it asked for  {'host': 'evil.invalid'}
+  ok    a mediator with a log refuses to register a sandbox it cannot name the code of  ValueError raised
+  ok    register() writes the run record, and every decision names it  4 records, 0 disagreements
+  ok    ...and a malformed frame reaches the durable record       ['run', 'decision', 'decision', 'protocol_error']
+  ok    reconcile catches a durable decision missing              3 in memory against 2 durable
+  ok    reconcile catches a verdict that differs                  #1 service.call: allowed False in memory, True durably
+  ok    reconcile catches a decision naming a run nobody recorded  #0 entity.read: names run 'ffff', which no run record carries
+
+  F3 — every decision names its clause, including the mediator's own refusals
+  ok    a decision with no clause cannot be built                 ValueError
+  ok    a decision with an empty clause cannot be built           ValueError
+  ok    the durable log refuses a decision record with no clause  0 records written
+  ok    no manifest bound: refused, and the reply names /permissions  /permissions
+  ok    each command path is recorded with the rule that decided it  [(False, '(command: the integration has a running sandbox)'), (False, '(ambient: §5.10.2)'), (False, '(command: turn_on and turn_off only, §7.38)'), (False, '(command: at most 32 queued)'), (True, '(ambient: §5.10.2)')]
+  ok    both answers to a command result name the rule they were decided by  relayed='(command: answered only on the channel it was sent to)' stray='(command: answered only on the channel it was sent to)'
+  ok    an answer from another sandbox's channel is refused, and the house is not told  forged ok=False, house told []
+  ok    ...and the command's own channel can still answer it      genuine ok=True
+  ok    no decision record on disk lacks a clause                 7 decision records, 0 without a clause
+
+  F28 — an append that fails leaves the log as it was
+  ok    the failed append raises, and the file is exactly as it was before it  raised=True, 0 bytes left behind
+  ok    ...and the next record continues the chain, which verifies  []
+  ok    creating the log's directories fsyncs the parent of each one it made  [('dir', 1523372), ('dir', 1523479)]
+  ok    the first record fsyncs the file and then its directory   [('file', 1523481), ('dir', 1523480)]
+  ok    ...and a later record fsyncs only the file                [('file', 1523481)]
+  ok    a first record that failed: the next one still fsyncs the directory (R9)  [('file', 1523483), ('dir', 1523482)]
+
+PASS — the three components move independently where they can, every form of
+       tampering is detected, and the two chains fail independently.

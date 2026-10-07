@@ -1,0 +1,24 @@
+egress, sandboxed — F2 and S4 with real namespaces and a real host
+
+[  ok  ] A did not exceed its memory limit — oom_kill=0
+[  ok  ] A's config entry reached LOADED — [{'title': 'demo', 'state': 'ConfigEntryState.LOADED', 'loaded': True}]
+[  ok  ] F2 — A published a sensor from the coordinator's own poll — ['sensor.poll_result']
+[  ok  ] F2 — A's published value is a real HTTP status from its own host — state='200'
+[  ok  ] A resolved its own declared name (through the shim, to a placeholder) — ['example.com', 'example.net']
+[  ok  ] and connected to it — the mediator's own record of what A opened — [['example.com', 80], ['example.net', 80]]
+[  ok  ] B did not exceed its memory limit — oom_kill=0
+[  ok  ] B's config entry reached LOADED — [{'title': 'demo', 'state': 'ConfigEntryState.LOADED', 'loaded': True}]
+[  ok  ] F2 — B published a sensor from the coordinator's own poll — ['sensor.poll_result']
+[  ok  ] F2 — B's published value is a real HTTP status from its own host — state='200'
+[  ok  ] B resolved its own declared name (through the shim, to a placeholder) — ['example.net', 'example.com']
+[  ok  ] and connected to it — the mediator's own record of what B opened — [['example.net', 80], ['example.com', 80]]
+[ FAIL ] S4 — demo_egress-a's own request was permitted, its probe of the sibling's host was not — 2 decisions, allowed=[True, True]
+[  ok  ] S4 — demo_egress-a's denial names the capability with no matching clause (F3) — /permissions/network/egress
+[ FAIL ] S4 — demo_egress-b's own request was permitted, its probe of the sibling's host was not — 2 decisions, allowed=[True, True]
+[  ok  ] S4 — demo_egress-b's denial names the capability with no matching clause (F3) — /permissions/network/egress
+[  ok  ] every egress decision in the run is attributed to exactly one of the two sandboxes — ['demo_egress-a', 'demo_egress-b']
+
+[  ok  ] S7 — the durable record holds two runs, verifies, and matches the in-memory record decision by decision (T4) — runs=2
+16/18 checks passed
+
+FAILED

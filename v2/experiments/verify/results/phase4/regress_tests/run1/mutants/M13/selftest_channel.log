@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/younes/r2exp/tb/work_tests/M13/framework/confine/selftest_channel.py", line 329, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/younes/r2exp/tb/work_tests/M13/framework/confine/selftest_channel.py", line 200, in main
+    require_ready(deep=False)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/younes/r2exp/tb/work_tests/M13/framework/confine/preflight.py", line 242, in require_ready
+    raise NotConfinable(
+        f"cannot confine: {failure.name} — {failure.detail}"
+        + (f"\n  {failure.remedy}" if failure.remedy else ""))
+confine.preflight.NotConfinable: cannot confine: seccomp filter — chroot denied, keyctl invalid, ptrace allowed, unshare allowed
+  these were not denied: unshare, ptrace, keyctl — check the syscall numbers for this architecture
+
+F49  hostile frames, refused at the mediator's end
+
+  ok    a message over MAX_FRAME is not framed for sending  — refused: message of 1048584 bytes exceeds 1048576
+  ok    a valid object of more than MAX_FRAME bytes is refused before it is read  — refused: declared frame of 1048585 bytes exceeds 1048576
+  ok    a frame carrying two descriptors is refused, saying two, and neither is kept  — refused: 2 descriptors in one frame exceeds 1; fds 4 -> 4
+  ok    a frame that is not a JSON object is refused  — refused: frame is list, expected an object
+  ok    a length prefix cut short by a hang-up is refused  — refused: truncated length prefix
+  ok    a frame shorter than its declared length is refused, even when what came is valid  — refused: truncated frame
