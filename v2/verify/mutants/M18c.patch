@@ -1,0 +1,9 @@
+# M18c (F45, R3): any user may designate the mediator, not only an admin
+--- a/framework/ha_bridge/confine_bridge/__init__.py
++++ b/framework/ha_bridge/confine_bridge/__init__.py
+@@ -143,5 +143,4 @@
+ 
+ 
+-@websocket_api.require_admin
+ @websocket_api.websocket_command({
+     vol.Required("type"): "confine_bridge/designate_mediator",

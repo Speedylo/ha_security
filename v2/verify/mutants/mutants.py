@@ -127,6 +127,23 @@ MUTANTS = [
      '        if "*" in entry:',
      "    for entry in services:\n"
      '        if False and "*" in entry:'),
+    # Added 2026-10-07 (notes/tests_bite_prediction_20261007.md): F45's gate, added after 4.3 ran.
+    # The bridge runs inside (A), so these need (A) brought up from the mutated tree.
+    ("M18a", "F45, R3", "the bridge's gate admits every authenticated user",
+     "framework/ha_bridge/confine_bridge/__init__.py",
+     "        if user is None or not (user.is_admin or (designated and user.id == designated)):",
+     "        if user is None:"),
+    ("M18b", "F45, R3", "the bridge's gate admits every user once some mediator is designated",
+     "framework/ha_bridge/confine_bridge/__init__.py",
+     "        if user is None or not (user.is_admin or (designated and user.id == designated)):",
+     "        if user is None or not (user.is_admin or designated):"),
+    ("M18c", "F45, R3", "any user may designate the mediator, not only an admin",
+     "framework/ha_bridge/confine_bridge/__init__.py",
+     "@websocket_api.require_admin\n"
+     "@websocket_api.websocket_command({\n"
+     '    vol.Required("type"): "confine_bridge/designate_mediator",',
+     "@websocket_api.websocket_command({\n"
+     '    vol.Required("type"): "confine_bridge/designate_mediator",'),
 ]
 
 
