@@ -1,84 +1,90 @@
 # 12. Simulations, Results and Interpretation
 
-The claim under test was stated before any measurement existed:
+The central claim of this project is that unmodified, pre-existing integrations can be confined at a
+cost worth paying. Section 11 divided that claim into three assertions that can be tested separately:
+confinement is effective, it is compatible, and it is affordable. Before any measurement was made, a
+falsifier was recorded for each assertion, naming the observation that would show it to be false, and
+a fourth falsifier was recorded for the evaluation itself. This section reports the results against
+those four falsifiers in turn. Every security and compatibility result is reported as a difference
+between two arms run on the same host and the same platform release: a confined arm, in which the
+integration runs inside the framework, and an unconfined arm, in which the same integration runs as
+Home Assistant runs it today. The first assertion is examined first, because the architecture was
+designed around it.
 
-> **Unmodified, pre-existing integrations can be confined at a cost worth paying.**
+## 12.1 Assertion A: confinement is effective
 
-It was separated into three assertions — confinement is **effective**, **compatible** and
-**affordable** — and a falsifier was written for each, in advance. This chapter answers them
-against those falsifiers rather than against a restatement of them.
+The falsifier for this assertion was fixed in advance. Assertion A fails if the garbage-collector
+technique reaches a platform object from inside the sandbox, if a platform credential can be recovered
+from the sandbox, or if the attack pattern disclosed in 2021 [6] succeeds under the framework. Any one
+of these outcomes would defeat the architecture itself, not merely its implementation. None of the
+three occurred, and Table 12.1 sets out the four attacks that test them in both arms.
 
-## 12.1 Assertion A — confinement is effective
+**Table 12.1 — Four attacks, unconfined and confined, on the same host and platform release**
 
-**Falsifier:** *the garbage-collector technique reaches a platform object, or a platform credential
-is recoverable from the sandbox, or the 2021 pattern succeeds under the framework. Any one is fatal
-to the architecture, not merely to the implementation.*
-
-None of the three occurred, and — the part that matters — **each was measured against an unconfined
-arm on the same host and release**, so each block is a difference rather than an assertion.
-
-**Table 12.1 — The paired security result**
-
-| | Unconfined | Confined |
+| Attack | Unconfined | Confined |
 |---|---|---|
-| The published `gc` technique reaching a live credential | **reached it 7 ways** | 8,942 objects, **all its own** — while the same token is confirmed live in the mediator's process, 7 references deep |
-| The 2021 file-theft canaries | **2 of 2 recovered**; five traversals worked | **0 of 2**; `open("../../secrets.yaml")` raises `FileNotFoundError` |
-| Another process's environment | `LEAKED` | `EMPTY` |
-| Undeclared entity states | **36 of 36**, and **20 of 20** disclosing occupancy or presence | **1 of 36**, **0 of 20** |
+| Heap walk with the garbage collector [9] to another integration's live credential | Credential reached through 7 live objects | 8,942 objects enumerated, all the attacker's own; the same credential live in the mediator, held by 7 references |
+| The 2021 path-traversal pattern [6] against two planted canary secrets | 2 of 2 recovered; 5 traversals succeeded | 0 of 2; the path does not exist (`FileNotFoundError`) |
+| Reading another process's environment | Contents leaked | Nothing to read |
+| Reading undeclared entity states (of which reveal occupancy or presence) | 36 of 36 (20 of 20) | 1 of 36, the one declared (0 of 20) |
 
-### 12.1.1 The garbage-collector result is the one that matters
+Confinement removed every capability these attacks rely on, and each removal is a measured difference
+rather than an assertion. An absence carries no information on its own, since a broken test also
+returns nothing; in each row, the unconfined arm shows the attack working on this host and release. The
+pairing also cut against the framework. Three further attacks failed in both arms for reasons
+unrelated to confinement, such as `/etc/shadow` being readable only by root, and they are therefore
+excluded from the framework's results. Of the four rows that remain, the first carries the most weight.
 
-The published attack [9] is what eliminated every in-process design. Run against this framework:
+The garbage-collector technique is the result the architecture was designed to defeat. Corno and
+Mannella [9] showed that an integration can call `gc.get_objects()`, a supported Python interface that
+returns every live object in the process, to reach another integration's object and read its secret.
+Because all integrations share one process, no in-process permission layer can prevent this: the layer
+would itself be an object on the heap the attack enumerates. Unconfined, the technique reached a victim
+integration's cloud token through seven live objects. Confined, the same code ran without error over
+8,942 objects, all its own, while the token was confirmed live in the mediator's process. The attack
+did not fail; it succeeded and found nothing, because the credential was in another process. This
+outcome is stronger than a refusal, as there is no check for an attacker to evade, and the measurement
+in the mediator shows that the secret existed and was as reachable as the attack requires. The
+remaining rows show the same structure for files, processes and household data.
 
-**it works.** It is not blocked, not filtered, not detected. It enumerates the heap without error,
-exactly as published, **and finds nothing** — because every object in that heap belongs to the
-integration running it. The other integrations are in other processes.
+The 2021 disclosure [6] described integrations that read files outside their own directory by path
+traversal. Unconfined, five traversals succeeded and both canary secrets were recovered. Confined, the
+same path raises `FileNotFoundError` rather than `PermissionError`, because the file is absent from the
+sandbox's view of the file system and no rule had to refuse it. The entity result matters most to a
+household. Unconfined, a single call returned all 36 entity states on the test instance, including all
+20 that reveal occupancy or presence. Confined, the integration saw only the one entity its manifest
+declared, and each other read was refused with a record naming the clause that refused it. Access to
+household data thus becomes a declaration that a user can read before installing, rather than a
+property of the platform. These four attacks are, however, only part of the threat register.
 
-That is the difference between a design that *answers* this attack and one that *survives* it. An
-in-process defence would have to catch the sweep, which means being an object in the heap the
-sweep enumerates. **Here there is nothing to catch, and the attack's own success is the evidence.**
+Against the project's threat register, sixteen of nineteen threats are demonstrated, six of them
+against an unconfined arm. One threat is partial: the resource limits (T16) bound memory, processor
+time and disk space, but not I/O bandwidth, which the test device's kernel does not delegate to an
+unprivileged user, nor the size of an integration's persistent data directory. Two threats are retained
+by decisions made before the evaluation: the framework controls where an integration connects but not
+what it sends (T09), and it honours an over-broad grant that a user has approved (T13). The register
+was also scored against the eleven threats of Corno and Mannella's model [9], so that the result can be
+checked against criteria this project did not write. Eight of the eleven map onto the framework's
+controls, five without qualification, while the three availability threats of delay, partial loss and
+physical damage have none. No single figure of threats controlled is reported, as Section 11 sets out,
+because such a figure would merge refused attempts, impossible ones and retained risks into one
+number. Appendix C gives the full register.
 
-The same shape appears twice more. `/proc` lists one process, so reading another process's
-environment returns an empty list rather than a refusal — the threat rated as requiring *no
-attacker skill* has nothing left to read. And `setuid(0)` **succeeds**, which is worth stating
-rather than omitting: the sandbox is already uid 0 inside its own user namespace, and that uid maps
-to an unprivileged user outside. The call does exactly what it says and means nothing.
+The security result is bounded by who attacked the framework. Every attack was written within the
+project: the adversary suite's 38 attempts, the unconfined arms, deliberate defects introduced to test
+the test suites, a fuzzer run against the mediator, and a line-by-line review of the enforcement code.
+An independent adversary was planned and then dropped, because the framework was built with AI
+assistance and neither the author nor the assistant would have been independent of its design. The
+limitation is real. The code review found that a sandbox could inherit the supervisor's terminal as its
+controlling terminal, a route across every isolation layer at once that no test suite had detected. It
+was removed and is now tested from inside the sandbox. Assertion A is therefore demonstrated against
+the published techniques that motivated the design, and none of its falsifier's three conditions was
+met. The review's finding nevertheless suggests that attacks the builders did not anticipate may
+remain. Whether this protection costs integrations their ability to run is the question of Assertion B.
 
-### 12.1.2 Why the unconfined arm is what turns an absence into a result
-
-An absence produced by a defect is indistinguishable from an absence produced by the framework
-working. The confined-only version of the credential test was very nearly a tautology.
-
-The third column of Table 12.1's first row is the fix: **the credential exists, it is exactly as
-reachable as the published attack requires, and the sandbox boundary is what the adversary cannot
-cross.** Seven reference paths to a live token, in the mediator's own process, in the same session.
-
-### 12.1.3 What the pairing cost the framework, and why that matters
-
-The unconfined arm did not only confirm the design. **It cut against it three times**, and each
-correction removed a control the framework does not provide:
-
-- Three attacks fail in **both** arms — `/etc/shadow` is root-only, nothing was listening on the
-  platform's port, and a test hostname does not resolve. Reported alone, the confined run would
-  have credited this framework with three controls it does not have.
-- One compatibility finding was **withdrawn** when the baseline showed the integration broken
-  either way, on this release, confined or not.
-- One opaque import failure that looked exactly like a confinement failure turned out to be the
-  integration's own defect.
-
-**Every one of those would have charged the design *less* than it deserved in the direction an
-author's own attributions tend to err.**
-
-### 12.1.4 What A does not extend to
-
-**Thirteen of eighteen threats are demonstrated, five of them paired; two are partial; two are
-retained by decisions taken in advance; and one — a malicious update through the authorised path —
-has no evidence at all.** Against the closest published register, eight of eleven threats are
-mapped and five scored cleanly.
-
-**No aggregate is reported.** A single "threats controlled" figure is the security equivalent of an
-unlabelled compatibility percentage, and it would erase the distinction between an attempt that was
-*refused* and one that *succeeded and found nothing* — where the second is the stronger outcome.
+<!-- ================================================================================== -->
+<!-- Below this line: the 2026-09-08 draft, not yet rebuilt (notes/s12_results_plan.md). -->
+<!-- ================================================================================== -->
 
 ## 12.2 Assertion B — confinement is compatible
 

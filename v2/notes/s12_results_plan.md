@@ -186,3 +186,13 @@ adversary; the mean as the only demand statistic) and hands the limits to §14.
    `async_get_clientsession`. Assigned when the IEEE list is rebuilt.
 3. Table 12.2's thirteen names, and whether all thirteen ran in both arms.
 4. Appendix F's contents follow Table 12.4 and Figure 12.4, so it is written in the same week.
+
+## Progress
+
+- **2026-10-08: §12 opening and §12.1 written** (`submission/12_results.md`; the old draft's §12.2–12.10
+  stay below a marker until rebuilt). §12.1 is about 1,070 words of prose plus Table 12.1, over the
+  850 budgeted; the overrun is recovered from §12.5 or by a cut at the read-through.
+  Facts checked against §7.13.2–3, §7.14.2, §7.15.3, §7.26.3–4, §7.44.4 (F38's restatement),
+  §7.45.6 and §7.45.10; Corno and Mannella's technique against §2.4.1's quotation of [9].
+- **Owed by §11, because §12 relies on it:** the three assertions and their falsifiers, the paired
+  design, and the rule that no aggregate "threats controlled" figure is reported.
