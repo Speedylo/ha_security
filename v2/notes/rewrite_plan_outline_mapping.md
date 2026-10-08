@@ -40,6 +40,16 @@ read-through with every number checked against `verify/recompute.py`; week 7, bu
 
 §5 below (what must survive the compression) still holds in full.
 
+**Style (Younes, 2026-10-08).** The submission is written in the third person, with no "I", "we" or
+contractions, following the writing guidelines of the `academic-research-writer` skill. Each paragraph
+opens with a topic sentence, gives its evidence (a number, table, figure or citation), says what that
+evidence means, and links to the next paragraph. Every external claim carries an IEEE numeric citation
+integrated into the sentence, and the reference list becomes a plain IEEE list in order of first
+citation, with the current annotations moved into the text. Hedging follows the claim register:
+Verified claims "show", Qualified ones "suggest", Argued ones are presented as argument. Where the skill
+conflicts with this plan, the programme template decides the structure, and primary technical sources
+remain the evidence for facts about the platform.
+
 **Written 2026-09-08**, against the two capstone outlines in `.claude/Outlines.txt` (Blokbustr, 49
 body pages; LucidLink, 61). **Both follow one template**, so that template is the programme's
 structure even though the handbook has not arrived. Younes's guidance: no hard page requirement,
