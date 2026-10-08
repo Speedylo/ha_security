@@ -1,23 +1,10 @@
 # 12. Simulations, Results and Interpretation
 
-The central claim of this project is that unmodified, pre-existing integrations can be confined at a
-cost worth paying. Section 11 divided that claim into three assertions that can be tested separately:
-confinement is effective, it is compatible, and it is affordable. Before any measurement was made, a
-falsifier was recorded for each assertion, naming the observation that would show it to be false, and
-a fourth falsifier was recorded for the evaluation itself. This section reports the results against
-those four falsifiers in turn. Every security and compatibility result is reported as a difference
-between two arms run on the same host and the same platform release: a confined arm, in which the
-integration runs inside the framework, and an unconfined arm, in which the same integration runs as
-Home Assistant runs it today. The first assertion is examined first, because the architecture was
-designed around it.
+The central claim of this project is that unmodified, pre-existing integrations can be confined at a cost worth paying. Section 11 divided that claim into three assertions that can be tested separately: confinement is effective, it is compatible, and it is affordable. Before any measurement was made, a falsifier was recorded for each assertion, naming the observation that would show it to be false, and a fourth falsifier was recorded for the evaluation itself. This section reports the results against those four falsifiers in turn. Every security and compatibility result is reported as a difference between two arms run on the same host and the same platform release: a confined arm, in which the integration runs inside the framework, and an unconfined arm, in which the same integration runs as Home Assistant runs it today. The first assertion is examined first, because the architecture was designed around it.
 
 ## 12.1 Assertion A: confinement is effective
 
-The falsifier for this assertion was fixed in advance. Assertion A fails if the garbage-collector
-technique reaches a platform object from inside the sandbox, if a platform credential can be recovered
-from the sandbox, or if the attack pattern disclosed in 2021 [6] succeeds under the framework. Any one
-of these outcomes would defeat the architecture itself, not merely its implementation. None of the
-three occurred, and Table 12.1 sets out the four attacks that test them in both arms.
+The falsifier for this assertion was fixed in advance. Assertion A fails if the garbage-collector technique reaches a platform object from inside the sandbox, if a platform credential can be recovered from the sandbox, or if the attack pattern disclosed in 2021 [6] succeeds under the framework. Any one of these outcomes would defeat the architecture itself, not merely its implementation. None of the three occurred, and Table 12.1 sets out the four attacks that test them in both arms.
 
 **Table 12.1 — Four attacks, unconfined and confined, on the same host and platform release**
 
@@ -28,59 +15,15 @@ three occurred, and Table 12.1 sets out the four attacks that test them in both 
 | Reading another process's environment | Contents leaked | Nothing to read |
 | Reading undeclared entity states (of which reveal occupancy or presence) | 36 of 36 (20 of 20) | 1 of 36, the one declared (0 of 20) |
 
-Confinement removed every capability these attacks rely on, and each removal is a measured difference
-rather than an assertion. An absence carries no information on its own, since a broken test also
-returns nothing; in each row, the unconfined arm shows the attack working on this host and release. The
-pairing also cut against the framework. Three further attacks failed in both arms for reasons
-unrelated to confinement, such as `/etc/shadow` being readable only by root, and they are therefore
-excluded from the framework's results. Of the four rows that remain, the first carries the most weight.
+Confinement removed every capability these attacks rely on, and each removal is a measured difference rather than an assertion. An absence carries no information on its own, since a broken test also returns nothing; in each row, the unconfined arm shows the attack working on this host and release. The pairing also cut against the framework. Three further attacks failed in both arms for reasons unrelated to confinement, such as `/etc/shadow` being readable only by root, and they are therefore excluded from the framework's results. Of the four rows that remain, the first carries the most weight.
 
-The garbage-collector technique is the result the architecture was designed to defeat. Corno and
-Mannella [9] showed that an integration can call `gc.get_objects()`, a supported Python interface that
-returns every live object in the process, to reach another integration's object and read its secret.
-Because all integrations share one process, no in-process permission layer can prevent this: the layer
-would itself be an object on the heap the attack enumerates. Unconfined, the technique reached a victim
-integration's cloud token through seven live objects. Confined, the same code ran without error over
-8,942 objects, all its own, while the token was confirmed live in the mediator's process. The attack
-did not fail; it succeeded and found nothing, because the credential was in another process. This
-outcome is stronger than a refusal, as there is no check for an attacker to evade, and the measurement
-in the mediator shows that the secret existed and was as reachable as the attack requires. The
-remaining rows show the same structure for files, processes and household data.
+The garbage-collector technique is the result the architecture was designed to defeat. Corno and Mannella [9] showed that an integration can call `gc.get_objects()`, a supported Python interface that returns every live object in the process, to reach another integration's object and read its secret. Because all integrations share one process, no in-process permission layer can prevent this: the layer would itself be an object on the heap the attack enumerates. Unconfined, the technique reached a victim integration's cloud token through seven live objects. Confined, the same code ran without error over 8,942 objects, all its own, while the token was confirmed live in the mediator's process. The attack did not fail; it succeeded and found nothing, because the credential was in another process. This outcome is stronger than a refusal, as there is no check for an attacker to evade, and the measurement in the mediator shows that the secret existed and was as reachable as the attack requires. The remaining rows show the same structure for files, processes and household data.
 
-The 2021 disclosure [6] described integrations that read files outside their own directory by path
-traversal. Unconfined, five traversals succeeded and both canary secrets were recovered. Confined, the
-same path raises `FileNotFoundError` rather than `PermissionError`, because the file is absent from the
-sandbox's view of the file system and no rule had to refuse it. The entity result matters most to a
-household. Unconfined, a single call returned all 36 entity states on the test instance, including all
-20 that reveal occupancy or presence. Confined, the integration saw only the one entity its manifest
-declared, and each other read was refused with a record naming the clause that refused it. Access to
-household data thus becomes a declaration that a user can read before installing, rather than a
-property of the platform. These four attacks are, however, only part of the threat register.
+The 2021 disclosure [6] described integrations that read files outside their own directory by path traversal. Unconfined, five traversals succeeded and both canary secrets were recovered. Confined, the same path raises `FileNotFoundError` rather than `PermissionError`, because the file is absent from the sandbox's view of the file system and no rule had to refuse it. The entity result matters most to a household. Unconfined, a single call returned all 36 entity states on the test instance, including all 20 that reveal occupancy or presence. Confined, the integration saw only the one entity its manifest declared, and each other read was refused with a record naming the clause that refused it. Access to household data thus becomes a declaration that a user can read before installing, rather than a property of the platform. These four attacks are, however, only part of the threat register.
 
-Against the project's threat register, sixteen of nineteen threats are demonstrated, six of them
-against an unconfined arm. One threat is partial: the resource limits (T16) bound memory, processor
-time and disk space, but not I/O bandwidth, which the test device's kernel does not delegate to an
-unprivileged user, nor the size of an integration's persistent data directory. Two threats are retained
-by decisions made before the evaluation: the framework controls where an integration connects but not
-what it sends (T09), and it honours an over-broad grant that a user has approved (T13). The register
-was also scored against the eleven threats of Corno and Mannella's model [9], so that the result can be
-checked against criteria this project did not write. Eight of the eleven map onto the framework's
-controls, five without qualification, while the three availability threats of delay, partial loss and
-physical damage have none. No single figure of threats controlled is reported, as Section 11 sets out,
-because such a figure would merge refused attempts, impossible ones and retained risks into one
-number. Appendix C gives the full register.
+Against the project's threat register, sixteen of nineteen threats are demonstrated, six of them against an unconfined arm. One threat is partial: the resource limits (T16) bound memory, processor time and disk space, but not I/O bandwidth, which the test device's kernel does not delegate to an unprivileged user, nor the size of an integration's persistent data directory. Two threats are retained by decisions made before the evaluation: the framework controls where an integration connects but not what it sends (T09), and it honours an over-broad grant that a user has approved (T13). The register was also scored against the eleven threats of Corno and Mannella's model [9], so that the result can be checked against criteria this project did not write. Eight of the eleven map onto the framework's controls, five without qualification, while the three availability threats of delay, partial loss and physical damage have none. No single figure of threats controlled is reported, as Section 11 sets out, because such a figure would merge refused attempts, impossible ones and retained risks into one number. Appendix C gives the full register.
 
-The security result is bounded by who attacked the framework. Every attack was written within the
-project: the adversary suite's 38 attempts, the unconfined arms, deliberate defects introduced to test
-the test suites, a fuzzer run against the mediator, and a line-by-line review of the enforcement code.
-An independent adversary was planned and then dropped, because the framework was built with AI
-assistance and neither the author nor the assistant would have been independent of its design. The
-limitation is real. The code review found that a sandbox could inherit the supervisor's terminal as its
-controlling terminal, a route across every isolation layer at once that no test suite had detected. It
-was removed and is now tested from inside the sandbox. Assertion A is therefore demonstrated against
-the published techniques that motivated the design, and none of its falsifier's three conditions was
-met. The review's finding nevertheless suggests that attacks the builders did not anticipate may
-remain. Whether this protection costs integrations their ability to run is the question of Assertion B.
+The security result is bounded by who attacked the framework. Every attack was written within the project: the adversary suite's 38 attempts, the unconfined arms, deliberate defects introduced to test the test suites, a fuzzer run against the mediator, and a line-by-line review of the enforcement code. An independent adversary was planned and then dropped, because the framework was built with AI assistance and neither the author nor the assistant would have been independent of its design. The limitation is real. The code review found that a sandbox could inherit the supervisor's terminal as its controlling terminal, a route across every isolation layer at once that no test suite had detected. It was removed and is now tested from inside the sandbox. Assertion A is therefore demonstrated against the published techniques that motivated the design, and none of its falsifier's three conditions was met. The review's finding nevertheless suggests that attacks the builders did not anticipate may remain. Whether this protection costs integrations their ability to run is the question of Assertion B.
 
 <!-- ================================================================================== -->
 <!-- Below this line: the 2026-09-08 draft, not yet rebuilt (notes/s12_results_plan.md). -->
