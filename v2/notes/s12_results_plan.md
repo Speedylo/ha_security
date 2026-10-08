@@ -217,3 +217,8 @@ adversary; the mean as the only demand statistic) and hands the limits to §14.
   exactly), not the single 26 in the plan. Five-pass ranges from `final_f45_stats.txt`. Figures 12.2 and
   12.3 not drawn (Younes: no figures now). Facts checked against §5.6.3, §5.8.1, §6.3.2, §7.19.3, §7.35,
   §7.36, §7.44.4, §7.45.1, F43, F44.
+- **2026-10-08: §12.4 written** (about 690 words of prose, Table 12.5). Findings recounted from the log:
+  53 = 1 Critical (F34), 12 Major (F11 F17 F18 F21 F23 F28 F30 F32 F33 F36 F42 F45: six report statements,
+  four failure behaviours, two reproducibility), 4 Minor-to-Major (F03 F08 F31 F35), 32 Minor, 3 Notes
+  (F12 F51 F53), 1 Re-measure (F05). §8.4.2's "never a measurement" restated in the text (F17, F23), which
+  closes check item 1. Figure 12.4 (register bar) not drawn: the counts are in prose.
