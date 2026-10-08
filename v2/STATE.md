@@ -1,6 +1,27 @@
 # Where the rebuild stands
 
-## ▶ Resume here — 2026-10-07, night
+## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
+
+**Younes declared the engineering cut-off on 2026-10-08 at tag `verify-2026-10-tests`.** From here, no
+new engineering except fixes the writing turns up; each such fix gets its own tag and a dated note.
+
+- **4.12 (c), automated mutation of `mediator.py` and `manifest.py`: skipped** (Younes, 2026-10-08).
+  The hand-picked mutants (40: 39 killed, M25 equivalent) stand as the mutation evidence; say in
+  Chapter 8 that automated mutation was not run.
+- **F18 stays open at the cut-off:** `REPRODUCE.md` has been followed from a fresh clone, not on a
+  freshly imaged SD card (no spare card). Close it when a card arrives; it is a check, not engineering.
+- **Pushed 2026-10-08:** `main` and `verify-2026-10-tests`, after a credential scan of every unpushed
+  patch and the tag (24 values from the Pi's `~/.config/capstone/`, each matched separately; patches
+  clean). The tree-wide scan matched a token *segment* in `../FINDINGS_2026-08-14_token_leak.md:47`,
+  pushed since August; probably the public JWT header, **not confirmed. Younes to check that line.**
+
+**Next: phase R, the report (~end of November).** First, agree an outline and a word budget per
+chapter (the report is ~141k words; Chapter 7 ~65k in 172 subsections). Carried in: re-rate R3 in
+Ch4 after F45; reword the 5 Argued claims; rewrite the stale `submission/` draft; dated pointers →
+final text; F53 as a limitation; automated mutation not run (above). Offered: a first-principles
+walkthrough of the code the campaign changed, now including `supervise.py` and its suite.
+
+## Resume note — 2026-10-07, night (history)
 
 **4.12 is done: F47–F52 resolved, F53 a note. Waiting on Younes: decide 4.12 (c), then declare the cut-off.**
 
