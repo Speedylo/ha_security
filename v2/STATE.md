@@ -18,7 +18,9 @@ new engineering except fixes the writing turns up; each such fix gets its own ta
 
 **Phase R started 2026-10-08. Outline and budget agreed:** `notes/rewrite_plan_outline_mapping.md` §0 (~65 pp,
 ~18k body words, working report stays in the repo and is cited, each section rebuilt from it). **Week 1: §12 Results
-+ Appendix F.** Previously planned: agree an outline and a word budget per
++ Appendix F.** **Owed (Younes, 2026-10-08): a functional retest of §7.17's five platform-only integrations
+(`thermal_comfort`, `watchman`, `adaptive_lighting`, `powercalc`, `scheduler`): only `thermal_comfort` checks a value today;
+retest each against an expected behaviour in both arms, predictions first, then update §12.2's Table 12.3.** Previously planned: agree an outline and a word budget per
 chapter (the report is ~141k words; Chapter 7 ~65k in 172 subsections). Carried in: re-rate R3 in
 Ch4 after F45; reword the 5 Argued claims; rewrite the stale `submission/` draft; dated pointers →
 final text; F53 as a limitation; automated mutation not run (above). Offered: a first-principles
