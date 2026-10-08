@@ -70,6 +70,36 @@ The corpus's need for the network divides into two halves that require different
 
 Assertion B holds in a precise form. Confinement caused no import-level failure across 75 integrations on two corpora and no failure among the thirteen executed end to end, nine of which produced checkable values, and the falsifier did not fire. This is a narrower statement than "confinement is free": it rests on two corpora and a named set, and on one platform release, and the defects found along the way show that such measurements keep finding faults that passing suites conceal. Whether the protection of Section 12.1 and the compatibility shown here can be afforded on the reference device is the question of Assertion C.
 
+## 12.3 Assertion C: confinement is affordable
+
+The falsifier for this assertion concerns the reference device, a Raspberry Pi 5 with 4 GB of memory. Assertion C fails if the cost of each sandbox reduces the number the device can hold below the mean number of community integrations an installation runs, 4.02 according to the platform's public telemetry, or if mediation at realistic numbers of sandboxes changes what the platform can do. Table 12.4 gives the costs that decide both conditions. Each figure was measured during development and then re-measured in five passes during the verification campaign, on frozen code.
+
+**Table 12.4 — The cost of confinement on the reference device**
+
+| Quantity | Figure | Range across five verification passes |
+|---|---|---|
+| Memory per sandbox (proportional set size), no platform components | 56.5 MB | 58.6–58.8 MB |
+| Memory per sandbox, two components (`http`, `websocket_api`) | 92.3 MB | not re-measured |
+| Memory per sandbox, all ten components | 135.6 MB | 141 MB in every pass |
+| Mediation latency, one sandbox (median) | 43 µs | 41.2–43.4 µs |
+| Mediation latency, 26 sandboxes saturating the mediator (median) | 800 µs | 794–814 µs |
+| Durable audit record, written to disk before the action | 3.67 ms | 3.62–3.69 ms |
+| Mediator cost of one state change pushed to a sandbox | 10.9 µs | 11.3–11.5 µs |
+| A change in Home Assistant reaching the sandbox (median) | 0.71 ms | 0.71–0.93 ms |
+| A user's command reaching the integration's code | 11–16 ms | 11.1–15.7 ms |
+| A flooding sandbox, from first request to cut-off | 0.81 s | 0.807–0.818 s |
+| Start-up to first report, `powercalc`, with bytecode compiled at installation | 1.87 s | 1.87–1.94 s |
+
+Memory is the cost that decides how many integrations can be confined, and the device holds several times the number a typical installation needs. Memory is measured as proportional set size, which divides each shared page among the processes that map it, because most of a sandbox consists of interpreter and library pages that the kernel shares between sandboxes; resident size counts those pages once per process, and in the first measurement it overstated the cost of six sandboxes by 126 MB. Taking 60% of the device's 4 GB as the share available to sandboxes, the budget ranges from 43 sandboxes when a sandbox sets up no platform components (41 on the verification passes' figure) to 17 when it sets up all ten, with 26 for a sandbox that sets up the two web components `http` and `websocket_api`. Even the heaviest profile holds four times the mean of 4.02. This margin is comfortable but bounded in two ways: the telemetry publishes a mean, not the spread across installations, so some installations certainly run more than four integrations and the data cannot say how many exceed the budget; and the sandboxes were measured at rest. The mediator is the second resource every sandbox shares.
+
+The mediator handles about sixty times the realistic demand, and the durable audit record, not the mediation itself, sets that limit. Writing a record to disk before each action takes 3.67 ms, roughly 85 times the 43 µs the mediated request costs, so the mediator can decide about 269 requests per second. A generous estimate of realistic demand, 26 sandboxes each making five mediated requests per thirty-second polling interval, is 4.33 requests per second, which leaves a headroom of 62 times. An earlier estimate that left out the audit write put the headroom at about 11,000 times; the figure quoted here includes it. The mediator is therefore comfortably, not unboundedly, clear of demand. Its latency under load shows why the remaining margin is enough.
+
+Mediation latency grows with the number of sandboxes because the mediator serves them in turn, and it stays below a millisecond at the full budget. With 26 sandboxes sending requests back to back, the median rises to about 800 µs while aggregate throughput stays near 30,000 requests per second from 2 sandboxes to 26, the signature of a saturated serial server rather than of a design that degrades with scale. Real integrations poll instead of sending back to back, so at realistic load the queue is empty and each request costs the one-sandbox figure. That figure was first published as 31.5 µs. Re-measured during verification it was 43 µs, and measuring every intermediate version of the code traced the increase to two features the design depends on: passing connected sockets to sandboxes for egress, and the push loop that delivers state changes. The figure was corrected rather than the features removed. The remaining rows of Table 12.4 concern the paths a household experiences directly.
+
+The paths a household experiences are measured in milliseconds, and the push path draws almost nothing from the mediator's capacity. A subscription to state changes is decided and recorded once, after which each delivered change costs the mediator 10.9 µs and writes nothing to disk. A change in Home Assistant reaches a confined integration in 0.71 ms at the median, and a user's command reaches the integration's code in 11 to 16 ms. A sandbox that floods the mediator with refused requests is cut off within a second, while its neighbours continue to be served, and a confined `powercalc` starts and reports in 1.9 s when its bytecode is compiled at installation. These results extend Assertion C from polling to push delivery, although the rate of change in a busy home, and a sandbox's own cost of applying each change, remain unmeasured.
+
+Assertion C holds, and neither condition of its falsifier was met: the device holds at least 17 sandboxes against a mean need of about four, and mediation at realistic load costs tens of microseconds per request. The assertion is bounded by the statistic available, a mean rather than a distribution, and by measurement at rest. The three assertions about the framework have now been answered; the fourth falsifier asks whether the evaluation that answered them can be trusted.
+
 <!-- ================================================================================== -->
 <!-- Below this line: the 2026-09-08 draft, not yet rebuilt (notes/s12_results_plan.md). -->
 <!-- ================================================================================== -->

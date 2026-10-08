@@ -211,3 +211,9 @@ adversary; the mean as the only demand statistic) and hands the limits to §14.
   import-level evidence. Stated in the text: nine of thirteen produced a checkable value; `watchman`,
   `adaptive_lighting`, `powercalc` show setup and publication only; `scheduler` setup only (§7.17.2–3,
   §7.31.6). Rule for the rest of §12: an end-to-end claim says what was exercised, not only that it loaded.
+- **2026-10-08: §12.3 written** (about 825 words of prose, Table 12.4). The budget is a range by
+  component count (§7.35.3: 43 / 26 / 17 sandboxes for none / `http`+`websocket_api` / all ten in 60% of
+  the device's memory; capacities use the Pi's actual MemTotal, so 0.6 × 4,096 MB does not reproduce them
+  exactly), not the single 26 in the plan. Five-pass ranges from `final_f45_stats.txt`. Figures 12.2 and
+  12.3 not drawn (Younes: no figures now). Facts checked against §5.6.3, §5.8.1, §6.3.2, §7.19.3, §7.35,
+  §7.36, §7.44.4, §7.45.1, F43, F44.
