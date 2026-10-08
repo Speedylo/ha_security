@@ -16,7 +16,9 @@ new engineering except fixes the writing turns up; each such fix gets its own ta
   pushed since August. **Resolved 2026-10-08:** Younes compared each piece of the file's two
   tokens with the three current ones: only the public header matches, payload and signature differ for all.
 
-**Next: phase R, the report (~end of November).** First, agree an outline and a word budget per
+**Phase R started 2026-10-08. Outline and budget agreed:** `notes/rewrite_plan_outline_mapping.md` §0 (~65 pp,
+~18k body words, working report stays in the repo and is cited, each section rebuilt from it). **Week 1: §12 Results
++ Appendix F.** Previously planned: agree an outline and a word budget per
 chapter (the report is ~141k words; Chapter 7 ~65k in 172 subsections). Carried in: re-rate R3 in
 Ch4 after F45; reword the 5 Argued claims; rewrite the stale `submission/` draft; dated pointers →
 final text; F53 as a limitation; automated mutation not run (above). Offered: a first-principles

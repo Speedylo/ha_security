@@ -1,5 +1,45 @@
 # The submission rewrite — outline mapping
 
+## 0. Agreed 2026-10-08, after the engineering cut-off — this section supersedes §1's arithmetic and §6's order
+
+Younes approved three decisions. **The target is about 65 pages:** roughly 18,000 words of body, about
+12 pages of appendices, and about 12 figures generated from source. **The working report (`report/`,
+~141k words) stays in the repo** as the full technical record, and Appendix A cites it at tag
+`verify-2026-10-tests`; the submission must read on its own, with no pointer to a file the examiner does
+not have. **Each section is rebuilt from the current working report**, using the 2026-09-08 draft only
+as a skeleton, because the draft's numbers are stale and it never had a read-through.
+
+The template is unchanged. What changed is that the verification campaign (§7.36–§7.45 of the working
+report) has to fit inside the same budget, so it displaces older material rather than adding pages.
+
+| § | Section | Words | pp | Change from the 2026-09-08 plan |
+|---|---|---|---|---|
+| — | Front matter, abstract | ~600 | 8 | Abstract to current figures |
+| 1 | Introduction | 600 | 2 | — |
+| 2 | Problem statement | 700 | 2 | — |
+| 3 | Project specification | 1,000 | 3 | Verdicts as they stand; R3 re-rated after F45 |
+| 4 | STEEPLE | 700 | 2 | Draft (1,346) cut |
+| 5 | Engineering standards | 900 | 3 | Adds CC Part 2 FAU_STG.4 [30] and NIST SP 800-53 AU-5 [31] |
+| 6 | Logic model | 900 | 3 | Assumptions = every pre-registered prediction (`verify/prereg.py`), not eight |
+| 7 | Literature review | 1,400 | 4 | — |
+| 8 | Methodology and design | 2,000 | 7 | Adds the verification method: predictions committed before runs, claim register, mutants, fault injection |
+| 9 | Architecture | 2,600 | 9 | Adds the refusal-flood cut-off, the supervisor and Repairs restart, the non-admin mediator |
+| 10 | Feasibility | 700 | 2 | — |
+| 11 | Data presentation | 1,100 | 4 | Medians of five runs, p99, bootstrap intervals |
+| 12 | Results | 3,500 | 10 | Four axes: compatibility, security, performance, and what verification found and corrected (F01–F53) |
+| 13 | Learning strategies | 800 | 2 | Adds "a test that cannot fail proves nothing" (4.12) |
+| 14 | Future work | 700 | 2 | Adds F18, F53, automated mutation not run |
+| 15 | Conclusion | 600 | 2 | — |
+| — | References | — | 3 | — |
+| A–F | Appendices | tables | ~12 | Adds F: findings log one line each, claim register counts (153: 119 V, 27 Q, 5 Argued, 2 W) |
+
+**Order (about seven weeks, ending ~2026-11-26):** week 1, §12 and Appendix F, because §12 carries the
+claim and the campaign changed it most; week 2, §9 with its figures, then §8; week 3, §11, §10, §3 and
+Appendices B–E lifted; week 4, §1, §2, §4–§7; week 5, §13–§15, abstract, front matter; week 6, a full
+read-through with every number checked against `verify/recompute.py`; week 7, buffer.
+
+§5 below (what must survive the compression) still holds in full.
+
 **Written 2026-09-08**, against the two capstone outlines in `.claude/Outlines.txt` (Blokbustr, 49
 body pages; LucidLink, 61). **Both follow one template**, so that template is the programme's
 structure even though the handbook has not arrived. Younes's guidance: no hard page requirement,
