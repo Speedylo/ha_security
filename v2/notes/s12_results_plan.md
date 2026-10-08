@@ -222,3 +222,8 @@ adversary; the mean as the only demand statistic) and hands the limits to §14.
   four failure behaviours, two reproducibility), 4 Minor-to-Major (F03 F08 F31 F35), 32 Minor, 3 Notes
   (F12 F51 F53), 1 Re-measure (F05). §8.4.2's "never a measurement" restated in the text (F17, F23), which
   closes check item 1. Figure 12.4 (register bar) not drawn: the counts are in prose.
+- **2026-10-08: §12.5 written; §12 complete in draft.** About 3,950 words of prose against 3,500, plus
+  Tables 12.1–12.5; the ~450-word overrun is cut at the week-6 read-through. §12.5 states that the
+  evaluation's falsifier fired twice during development and that the campaign found six further wrong or
+  unsupported statements (consistent with §12.4). The old 2026-09-08 draft stays below the marker as a
+  record until §3, §6 and §14 have absorbed what it held; then it is deleted.

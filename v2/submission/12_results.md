@@ -123,6 +123,14 @@ A test suite that cannot fail provides no evidence, and deliberate defects showe
 
 The fourth falsifier fired twice before the campaign, and the campaign is the evidence that the evaluation can now detect such failures by method. Its results bound what it shows. The deliberate defects were chosen by hand, so they show that each tested point is guarded, not that every point is; an automated mutation run that would measure the rest was not performed. No independent adversary attacked the framework, as Section 12.1 records. And the reproduction guide has been followed from a fresh copy of the code but not yet on a freshly installed device.
 
+## 12.5 Interpretation
+
+The central claim holds within stated bounds. Confinement defeats the published attack techniques that motivated the design, causes no import-level failure across 75 integrations on two corpora and no failure among the thirteen executed end to end, and leaves the mediator about sixty times clear of realistic demand on a device with 4 GB of memory. The falsifiers for Assertions A, B and C did not fire. The evaluation's own falsifier fired twice during development, and the verification campaign found six further statements in the report that were wrong or unsupported; all were corrected before the cut-off, and all are reported rather than absorbed. What the framework changes is the nature of an integration's authority: authority that was previously total and invisible becomes declared before installation, bounded while the integration runs, and recorded each time it is exercised.
+
+Each assertion carries a bound that the results do not remove. The security result is demonstrated against published techniques and attacks written within the project, and no independent adversary has tested it. The compatibility result is complete at import level but functionally checked for nine integrations, a named set limited by the credentials that most integrations require. The affordability result rests on a mean number of integrations per installation, because the public telemetry offers no distribution, and on memory measured at rest. All three were measured on a single release of Home Assistant, 2026.8.3, and an integration ecosystem that changes with every release may move any of them.
+
+These bounds mark the edges of what was measured rather than defects in what was found, and each corresponds to work that would extend it. Section 14 sets out that work and its cost, beginning with an independent adversary and a functional retest of the integrations whose runs showed setup only.
+
 <!-- ================================================================================== -->
 <!-- Below this line: the 2026-09-08 draft, not yet rebuilt (notes/s12_results_plan.md). -->
 <!-- ================================================================================== -->
