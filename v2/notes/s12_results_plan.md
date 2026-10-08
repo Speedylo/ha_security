@@ -205,3 +205,9 @@ adversary; the mean as the only demand statistic) and hands the limits to §14.
   (opened 2026-10-08; recommends `async_get_clientsession(hass)`). Add it when the IEEE list is rebuilt.
   Plan's "all thirteen behave the same in both arms" was too strong and is not used: all thirteen load
   confined; cloud outputs matched (three identical, two within a live value's movement).
+- **2026-10-08, Younes's review of §12.2:** the date for the home-network TCP path removed ("built later
+  in the project"). Table 12.3 rebuilt one row per integration (what it does, what the run exercised,
+  result), because the first version reported the five platform-only integrations as "load", which is
+  import-level evidence. Stated in the text: nine of thirteen produced a checkable value; `watchman`,
+  `adaptive_lighting`, `powercalc` show setup and publication only; `scheduler` setup only (§7.17.2–3,
+  §7.31.6). Rule for the rest of §12: an end-to-end claim says what was exercised, not only that it loaded.
