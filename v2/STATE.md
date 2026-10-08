@@ -13,7 +13,8 @@ new engineering except fixes the writing turns up; each such fix gets its own ta
 - **Pushed 2026-10-08:** `main` and `verify-2026-10-tests`, after a credential scan of every unpushed
   patch and the tag (24 values from the Pi's `~/.config/capstone/`, each matched separately; patches
   clean). The tree-wide scan matched a token *segment* in `../FINDINGS_2026-08-14_token_leak.md:47`,
-  pushed since August; probably the public JWT header, **not confirmed. Younes to check that line.**
+  pushed since August. **Resolved 2026-10-08:** Younes compared each piece of the file's two
+  tokens with the three current ones: only the public header matches, payload and signature differ for all.
 
 **Next: phase R, the report (~end of November).** First, agree an outline and a word budget per
 chapter (the report is ~141k words; Chapter 7 ~65k in 172 subsections). Carried in: re-rate R3 in
