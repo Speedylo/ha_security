@@ -196,3 +196,12 @@ adversary; the mean as the only demand statistic) and hands the limits to §14.
   §7.45.6 and §7.45.10; Corno and Mannella's technique against §2.4.1's quotation of [9].
 - **Owed by §11, because §12 relies on it:** the three assertions and their falsifiers, the paired
   design, and the rule that no aggregate "threats controlled" figure is reported.
+- **2026-10-08: §12.2 written** (about 1,000 words of prose, Tables 12.2 and 12.3). Table numbers shift
+  by one from the plan: 12.2 is the headline compatibility table, 12.3 the thirteen, so §12.3's cost
+  table is 12.4 and §12.4's methods table 12.5. Facts checked against §7.12.2, §7.23.2, §7.27,
+  §7.31.5–6, §7.34.1, §7.40.3, §7.41.4, §7.42.2, §8.2.2 and the abstract. **New reference [32]:**
+  Home Assistant Developer Docs, Integration Quality Scale rule "The integration dependency supports
+  passing in a websession", https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/inject-websession
+  (opened 2026-10-08; recommends `async_get_clientsession(hass)`). Add it when the IEEE list is rebuilt.
+  Plan's "all thirteen behave the same in both arms" was too strong and is not used: all thirteen load
+  confined; cloud outputs matched (three identical, two within a live value's movement).
