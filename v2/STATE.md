@@ -2,6 +2,16 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**Session end 2026-10-08 (night): §12 Results complete in draft** in `submission/12_results.md` (opening, 12.1–12.5,
+Tables 12.1–12.5, ~3,950 words of prose against 3,500; cut the ~450 at the week-6 read-through, not before).
+Plan and progress log: `notes/s12_results_plan.md`. Facts checked against Ch7/Ch8; findings recounted from the
+log (1 Critical / 12 Major / 4 Minor–Major / 32 Minor / 3 Notes / 1 Re-measure). **Next: Appendix F** (findings
+log one line each + claim-register counts), the rest of week 1; then week 2 (§9, §8). Still owed: the five-integration
+retest (below); reference [32] (HA inject-websession rule) to add when the IEEE list is rebuilt; replace the Wikipedia
+source in [8]; delete the old 2026-09-08 draft below the marker in `12_results.md` once §3, §6, §14 have absorbed it;
+§11 must state the three assertions + falsifiers, the paired design and the no-aggregate rule that §12 relies on.
+Commits since the cut-off push are local only: credential scan before pushing.
+
 **Younes declared the engineering cut-off on 2026-10-08 at tag `verify-2026-10-tests`.** From here, no
 new engineering except fixes the writing turns up; each such fix gets its own tag and a dated note.
 
