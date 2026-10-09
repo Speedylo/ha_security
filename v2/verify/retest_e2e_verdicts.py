@@ -138,7 +138,8 @@ def p4(r: dict) -> list[bool]:
     out = [check(f"{label}: a switch.schedule_* published, 'on' after add",
                  "on" in seen, f"{sorted(schedules)} seen {seen[:4]}")]
     calls = [c for c in r.get("calls") or [] if c["service"] == "light.turn_on"]
-    if r["variant"].endswith("no-service"):
+    if r["variant"].endswith(("no-service", "no-read")):
+        # `no-read` is observed (amendment 2), not predicted; checked for the same absence.
         out.append(check(f"{label}: zero calls reach the platform", not calls, f"{len(calls)}"))
         out.append(check(f"{label}: zero service decisions recorded",
                          not service_decisions(r), f"{len(service_decisions(r))}"))
