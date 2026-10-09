@@ -25,7 +25,8 @@ import sys
 import traceback
 from pathlib import Path
 
-from sandbox_runtime import CURRENT_PHASE, build_hass, drive_flow, record_egress_attempts
+from sandbox_runtime import (CURRENT_PHASE, build_hass, drive_flow, record_egress_attempts,
+                             run_steps)
 
 
 async def run(spec: dict) -> dict:
@@ -65,6 +66,40 @@ async def run(spec: dict) -> dict:
         hass.states.async_set(entity_id, state, attributes)
     await hass.async_block_till_done()
 
+    # The 2026-10-09 retest: a service the world's device would answer (`light.turn_on`), which
+    # nothing in this instance provides, so a call has somewhere to land. It records and does
+    # nothing else, as the confined arm's stand-in platform does (`Platform.call_service`).
+    calls: list[dict] = []
+    for clause in spec.get("record_services") or []:
+        service_domain, _, service_name = clause.partition(".")
+        if hass.services.has_service(service_domain, service_name):
+            continue
+
+        async def record(call, calls=calls) -> None:
+            from homeassistant.util import dt as dt_util
+            calls.append({"service": f"{call.domain}.{call.service}", "utc":
+                          dt_util.utcnow().isoformat(),
+                          "data": {k: v for k, v in call.data.items()
+                                   if isinstance(v, (str, int, float, list))}})
+        hass.services.async_register(service_domain, service_name, record)
+    if spec.get("record_services"):
+        result["calls"] = calls
+
+    # Every state change after the world is set, in order, the world's own included, so a value
+    # can be read before and after each `world` step (the confined arm's host keeps the same list).
+    if spec.get("report_history"):
+        from homeassistant.const import EVENT_STATE_CHANGED
+        from homeassistant.core import callback
+        history: list[list] = []
+
+        @callback  # on the event loop, in order; a plain function would go to an executor
+        def changed(event) -> None:
+            new = event.data.get("new_state")
+            if new is not None:
+                history.append([event.data.get("entity_id"), new.state])
+        hass.bus.async_listen(EVENT_STATE_CHANGED, changed)
+        result["history"] = history
+
     # Attribution, per §7.18.2: everything recorded before this line is the platform's own
     # (`network` probing 8.8.8.8, zeroconf joining mDNS), not the integration's.
     CURRENT_PHASE[0] = "integration"
@@ -80,7 +115,9 @@ async def run(spec: dict) -> dict:
     # compared against it must settle for the same period or the comparison varies in two
     # things. Defaults to 0, so every existing caller is unaffected.
     settle = float(spec.get("settle_seconds", 0))
-    if settle:
+    if spec.get("steps"):
+        result["steps"] = await run_steps(hass, domain, spec["steps"], settle, world_here=True)
+    elif settle:
         deadline = asyncio.get_running_loop().time() + settle
         while asyncio.get_running_loop().time() < deadline:
             await asyncio.sleep(1.0)
@@ -112,7 +149,10 @@ async def run(spec: dict) -> dict:
         return entry.platform if entry else None
 
     result["published"] = sorted(
-        ({"entity": s.entity_id, "state": s.state, "platform": platform_of(s.entity_id)}
+        ({"entity": s.entity_id, "state": s.state, "platform": platform_of(s.entity_id),
+          **({"attributes": {k: v for k, v in s.attributes.items()
+                             if isinstance(v, (str, int, float, bool))}}
+             if spec.get("report_attributes") else {})}
          for s in own),
         key=lambda item: item["entity"])
 

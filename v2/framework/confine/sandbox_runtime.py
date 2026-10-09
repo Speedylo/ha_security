@@ -263,6 +263,7 @@ class Bridge:
         self.unexpected: list[str] = []
         self.published_ids: set[str] = set()
         self.commands: list[dict] = []
+        self.report_attributes = bool(spec.get("report_attributes"))
 
     # -- inbound ---------------------------------------------------------------------
 
@@ -406,6 +407,11 @@ class Bridge:
             self.published.append({"entity": entity_id, "state": new.state,
                                    "accepted": bool(answer.get("ok")),
                                    "clause": answer.get("clause")})
+            if self.report_attributes:
+                # The 2026-10-09 retest: some integrations' output is an attribute
+                # (`adaptive_lighting`'s brightness). Opt-in, so earlier runs' records are unchanged.
+                self.published[-1]["attributes"] = {k: v for k, v in new.attributes.items()
+                                                    if _plain(v)}
             if answer.get("ok"):
                 self.published_ids.add(entity_id)
 
@@ -921,6 +927,74 @@ async def inspect(hass, domain: str, component_dir: str = COMPONENT) -> dict:
     return result
 
 
+async def run_steps(hass, domain: str, steps: list, seconds: float, world_here: bool,
+                    gone: threading.Event | None = None) -> list[dict]:
+    """Settle for `seconds`, running each step once its offset has passed (the 2026-10-09 retest).
+
+    Shared by both arms of `endtoend_function` for `drive_flow`'s reason: the arms must differ in
+    confinement and in nothing else. A `world` step changes an entity the integration does not
+    own, so only the unconfined arm applies it here (`world_here`); confined, the platform changes
+    it on the far side and the mediator pushes it in, which is the path under test.
+    """
+    loop = asyncio.get_running_loop()
+    began = loop.time()
+    pending = sorted(steps, key=lambda step: float(step.get("at", 0)))
+    done: list[dict] = []
+    while loop.time() - began < seconds and not (gone is not None and gone.is_set()):
+        while pending and float(pending[0].get("at", 0)) <= loop.time() - began:
+            done.append(await _run_step(hass, domain, pending.pop(0), world_here))
+        await asyncio.sleep(1.0)
+        try:
+            await asyncio.wait_for(hass.async_block_till_done(), timeout=5)
+        except (TimeoutError, asyncio.TimeoutError):
+            pass
+    return done
+
+
+async def _run_step(hass, domain: str, step: dict, world_here: bool) -> dict:
+    import datetime
+
+    from homeassistant.data_entry_flow import FlowResultType
+    from homeassistant.util import dt as dt_util
+
+    kind = step.get("kind")
+    record: dict = {"kind": kind, "at": step.get("at", 0), "utc": dt_util.utcnow().isoformat()}
+    try:
+        if kind == "world":
+            record["entity"] = step["entity"]
+            if world_here:
+                hass.states.async_set(step["entity"], step["state"], step.get("attributes") or {})
+            else:
+                record["applied"] = "by the platform"
+        elif kind == "options_flow":
+            entry = hass.config_entries.async_entries(domain)[0]
+            outcome = await hass.config_entries.options.async_init(entry.entry_id)
+            for _ in range(5):
+                if outcome.get("type") != FlowResultType.FORM:
+                    break
+                outcome = await hass.config_entries.options.async_configure(
+                    outcome["flow_id"],
+                    fill_schema(outcome.get("data_schema"), step.get("input") or {}))
+            record["type"] = str(outcome.get("type"))
+            record["errors"] = outcome.get("errors")
+        elif kind == "service":
+            # `$START`: the whole minute after the next one, so a timeslot is 60-120 s ahead and
+            # the run can see it fire. Fixed here, at the moment of the call, in the instance's
+            # own time zone, and reported so the check knows when the action was due.
+            text = json.dumps(step.get("data") or {})
+            if "$START" in text:
+                now = dt_util.now()
+                start = now.replace(second=0, microsecond=0) + datetime.timedelta(minutes=2)
+                record["start"] = start.isoformat()
+                text = text.replace("$START", start.strftime("%H:%M:%S"))
+            await hass.services.async_call(step["domain"], step["service"], json.loads(text),
+                                           blocking=True)
+            record["ok"] = True
+    except Exception as err:  # noqa: BLE001 — a failed step is a result
+        record["error"] = f"{type(err).__name__}: {err}"[:300]
+    return record
+
+
 async def run() -> dict:
     spec = json.loads(Path(SPEC_PATH).read_text())
     channel = Channel(int(os.environ["CONFINE_CHANNEL_FD"]))
@@ -1026,7 +1100,10 @@ async def run() -> dict:
         # Mirrors `netshape_runtime._settle`, polled rather than slept in one block so a run
         # whose work finishes early does not pay the whole budget on every integration.
         settle = float(spec.get("settle_seconds", 0))
-        if settle:
+        if spec.get("steps"):
+            result["steps"] = await run_steps(hass, spec["domain"], spec["steps"], settle,
+                                              world_here=False, gone=MEDIATOR_GONE)
+        elif settle:
             deadline = asyncio.get_running_loop().time() + settle
             while asyncio.get_running_loop().time() < deadline and not MEDIATOR_GONE.is_set():
                 await asyncio.sleep(1.0)
