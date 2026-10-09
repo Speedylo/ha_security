@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "/home/younes/r2exp/retest/clone/v2/framework/confine/endtoend_function.py",
+    "--corpus",
+    "/home/younes/r2exp/corpus",
+    "--python",
+    "/home/younes/r2exp/ha314/bin/python",
+    "--json",
+    "/home/younes/r2exp/retest/out/retest_20261009.json"
+  ],
+  "cwd": "/home/younes/r2exp/retest/clone/v2/framework",
+  "executable": "/usr/bin/python3",
+  "python": "3.13.5",
+  "host": "raspberrypi",
+  "machine": "aarch64",
+  "time": "2026-10-09T22:33:50+0100",
+  "commit": "f8b50560d76b2a7832339144c2db200eaaf5a4ec",
+  "uncommitted_changes": false,
+  "resolve_before": "2026-10-06T00:00:00Z"
+}
