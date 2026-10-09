@@ -117,8 +117,14 @@ VARIANTS: dict[str, dict] = {
         "entities": READ_LIGHT, "services": {"call": ["light.turn_on"]}}},
     "adaptive_lighting-no-service": {**ADAPTIVE, "arms": ["confined"],
                                      "permissions": {"entities": READ_LIGHT}},
-    "scheduler": {**SCHEDULER, "permissions": {"services": {"call": ["light.turn_on"]}}},
-    "scheduler-no-service": {**SCHEDULER, "arms": ["confined"], "permissions": {}},
+    # An integration that acts on a device must see it: `scheduler` checks that its target exists
+    # before acting (amendment 2, 2026-10-09). Without the read it fires and declines.
+    "scheduler": {**SCHEDULER, "permissions": {"entities": {"read": [LIGHT]},
+                                               "services": {"call": ["light.turn_on"]}}},
+    "scheduler-no-read": {**SCHEDULER, "arms": ["confined"],
+                          "permissions": {"services": {"call": ["light.turn_on"]}}},
+    "scheduler-no-service": {**SCHEDULER, "arms": ["confined"],
+                             "permissions": {"entities": {"read": [LIGHT]}}},
     "thermal_comfort": {**THERMAL, "permissions": {
         "entities": {"read": [TEMPERATURE, HUMIDITY]}}},
 }

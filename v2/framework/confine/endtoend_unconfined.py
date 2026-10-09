@@ -66,22 +66,35 @@ async def run(spec: dict) -> dict:
         hass.states.async_set(entity_id, state, attributes)
     await hass.async_block_till_done()
 
-    # The 2026-10-09 retest: a service the world's device would answer (`light.turn_on`), which
-    # nothing in this instance provides, so a call has somewhere to land. It records and does
-    # nothing else, as the confined arm's stand-in platform does (`Platform.call_service`).
+    # The 2026-10-09 retest: every call to a named service (`light.turn_on`), recorded from the
+    # bus's own `call_service` event, which fires whoever handles the call. Where nothing in this
+    # instance provides the service, a double that does nothing is registered so the call has
+    # somewhere to land, as the confined arm's stand-in platform does (`Platform.call_service`).
+    # The first version recorded only in the double, and `light` set up as a component here
+    # registers its own `light.turn_on`, so `adaptive_lighting`'s call went unrecorded.
     calls: list[dict] = []
-    for clause in spec.get("record_services") or []:
-        service_domain, _, service_name = clause.partition(".")
-        if hass.services.has_service(service_domain, service_name):
-            continue
+    wanted = set(spec.get("record_services") or [])
+    if wanted:
+        from homeassistant.const import EVENT_CALL_SERVICE
+        from homeassistant.core import callback
+        from homeassistant.util import dt as dt_util
 
-        async def record(call, calls=calls) -> None:
-            from homeassistant.util import dt as dt_util
-            calls.append({"service": f"{call.domain}.{call.service}", "utc":
-                          dt_util.utcnow().isoformat(),
-                          "data": {k: v for k, v in call.data.items()
-                                   if isinstance(v, (str, int, float, list))}})
-        hass.services.async_register(service_domain, service_name, record)
+        @callback
+        def called(event) -> None:
+            name = f"{event.data.get('domain')}.{event.data.get('service')}"
+            if name in wanted:
+                calls.append({"service": name, "utc": dt_util.utcnow().isoformat(),
+                              "data": {k: v for k, v in
+                                       (event.data.get("service_data") or {}).items()
+                                       if isinstance(v, (str, int, float, list))}})
+        hass.bus.async_listen(EVENT_CALL_SERVICE, called)
+
+        async def nothing(call) -> None:
+            return None
+        for clause in wanted:
+            service_domain, _, service_name = clause.partition(".")
+            if not hass.services.has_service(service_domain, service_name):
+                hass.services.async_register(service_domain, service_name, nothing)
     if spec.get("record_services"):
         result["calls"] = calls
 

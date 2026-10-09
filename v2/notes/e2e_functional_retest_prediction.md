@@ -148,3 +148,36 @@ On the Pi, from a clean clone of `main` at the commit that adds the harness chan
    27 suites run once after it to show the framework's behaviour is unchanged.
 2. **Stand-in or (A).** Proposed: the stand-in, for comparability with 10-03. (A) is the stronger
    test for P3 and P4 (a real light, a real call), and could follow.
+
+## 7. Amendment — 2026-10-09, after a smoke run, before the recorded run
+
+A smoke run of every variant from an uncommitted copy on the Pi (`~/r2exp/retest`, not a result)
+gave 30 of 34 checks as predicted. Three misses are recorded here as they fell, and the harness and
+one variant change before the recorded run. **No predicted value in §3 is edited.**
+
+1. **`adaptive_lighting` unconfined: 0 calls recorded — a harness fault.** `light` is set up as a
+   component in that arm and registers its own `light.turn_on`, so the recording double stepped
+   aside and the call went unrecorded. Fixed: the unconfined arm records every call from the bus's
+   `call_service` event. (Confined, the call was recorded 11 ms after the options flow: brightness
+   47 from 18.55%, entity named, no colour, no transition, as P3 predicted. It adapts when its
+   options reload, not only on its 90 s interval: P3's "adapts on setup" was right for that reason.)
+2. **`scheduler` confined: fired (`triggered`), and no call reached the platform — a fault in this
+   note's variant, not the framework.** `scheduler` checks that each target entity exists before
+   acting (`actions.py`, `is_available`), and the variant declared `services.call` without a read of
+   `light.living_room`, so inside the sandbox the lamp did not exist and it declined, logging nothing
+   above debug. The variant now declares the read; the old one is kept as `scheduler-no-read`, whose
+   outcome (fires, no call, no decision) is **observed in the smoke run, not predicted**. A
+   manifest for an integration that acts on a device must let it see the device: a point for §9.
+3. **`scheduler` ends `triggered`, not `off`, in both arms.** The least certain prediction, wrong in
+   both arms; it stays wrong in the record.
+
+**New prediction, written before the recorded run.** Unconfined, `scheduler` passes the target as a
+list (`"entity_id": ["light.living_room"]`). The bridge forwards only `str`, `int` and `float`
+values of a service call's data (`sandbox_runtime.Bridge._forward_service_call`), so **confined,
+with the read declared, the call reaches the platform with `brightness: 200` and without
+`entity_id`**: a command that has lost its target. If so, it is a framework defect against Assertion
+B, logged as F54. (`adaptive_lighting` passes a single string and is unaffected.) The verdict script
+checks for the target and will fail this row; that failure is the prediction.
+
+The recorded run is from a clone of the tag `retest-2026-10-e2e`, taken from a bundle of this
+repository (not from GitHub, so nothing is pushed for it).
