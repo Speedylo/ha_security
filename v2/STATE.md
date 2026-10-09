@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-09: week 1 of phase R DONE.** Appendix F written (`submission/17_appendices.md`: Table F.1 register by tier, Table F.2 F01–F53 one line each; manifest schema moved to Appendix G). §12.4 now states F18 open, F11 retained, F53 a limitation. Pushed `main` after an exact-value credential scan on the Pi (30 values, 7 files, 0 hits). The Pi was unreachable for part of the session and came back after a reboot. **Next: week 2, §9 Architecture with its figures, then §8.** The five-integration retest is still owed.
+
 **Session end 2026-10-08 (night): §12 Results complete in draft** in `submission/12_results.md` (opening, 12.1–12.5,
 Tables 12.1–12.5, ~3,950 words of prose against 3,500; cut the ~450 at the week-6 read-through, not before).
 Plan and progress log: `notes/s12_results_plan.md`. Facts checked against Ch7/Ch8; findings recounted from the
