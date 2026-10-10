@@ -36,6 +36,8 @@ RESULTS = {
     # search took for its own (a result five days before the note). Its first result is the
     # recorded run at retest-2026-10-e2e.
     "e2e_functional_retest": "bd81f9c",
+    # The same: it cites F54's regression as the run that found it.
+    "f56_port": "a7943de",
 }
 #: The checks registered without results of their own yet, or registered for this campaign.
 SKIP = {"integrity_consistency"}
