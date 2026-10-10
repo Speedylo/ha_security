@@ -10,9 +10,12 @@ Everything is held fixed but confinement: same corpus, same release, same interp
 world of entities, and the **same flow driver** — `drive_flow` is imported from
 `sandbox_runtime`, not reimplemented, for the reason §7.12.1 gives.
 
-The instance is deliberately generous, as §7.12's baseline is: the base `homeassistant`
+The instance is meant to be generous, as §7.12's baseline is: the base `homeassistant`
 component, `default_config`, the integration's declared components, and the platform's core
-packages. A stingy baseline understates what confinement costs.
+packages. A stingy baseline understates what confinement costs. **`default_config` itself fails
+here** (F55, 2026-10-10): its `recorder` dependency raises `KeyError: 'recorder'`, and only 5 of
+its 21 dependencies load first (`file`, `media_source`, `sun`, `webhook`, `zeroconf`, which
+brings `network`). The baseline is generous by those, not by `default_config` as a whole.
 
 Run through `endtoend`, not directly.
 """

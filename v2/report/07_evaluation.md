@@ -3689,6 +3689,15 @@ in a way that only the confined arm exposed, because the unconfined arm set up `
 got `network` from it. A paired baseline controls for everything the two arms do not share. It
 cannot control for what they share, and here they shared the thing that was broken.
 
+> **Corrected 2026-10-10 (finding F55).** The unconfined arm did not set up `default_config`: it
+> returns `False` in every unconfined end-to-end run on record (2026-09-02, 10-03, 10-09), because its
+> `recorder` dependency raises `KeyError: 'recorder'`. Checked on the Pi with the arm's own
+> `build_hass`, 5 of `default_config`'s 21 dependencies load before it fails (`file`, `media_source`,
+> `sun`, `webhook`, `zeroconf`), and `network` loads as a dependency of `zeroconf`
+> (`experiments/verify/results/f55/components.json`). The attribution therefore stands with
+> different words: the unconfined arm got `network` from its attempt at `default_config`, not
+> from `default_config` set up.
+
 What survives is the component-closure argument of §7.17.4, as an argument without its example. It
 is still true that a static analysis of a derived manifest should resolve
 `homeassistant.components.*` imports, and that this is computable exactly. `powercalc` is no longer

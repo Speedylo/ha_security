@@ -1,0 +1,55 @@
+{
+ "setup": {
+  "homeassistant": true,
+  "default_config": false
+ },
+ "default_config_dependencies": [
+  "assist_pipeline",
+  "bluetooth",
+  "cloud",
+  "conversation",
+  "dhcp",
+  "energy",
+  "file",
+  "go2rtc",
+  "history",
+  "homeassistant_alerts",
+  "logbook",
+  "media_source",
+  "mobile_app",
+  "my",
+  "ssdp",
+  "stream",
+  "sun",
+  "usage_prediction",
+  "usb",
+  "webhook",
+  "zeroconf"
+ ],
+ "loaded": [
+  "file",
+  "media_source",
+  "sun",
+  "webhook",
+  "zeroconf"
+ ],
+ "not_loaded": [
+  "assist_pipeline",
+  "bluetooth",
+  "cloud",
+  "conversation",
+  "dhcp",
+  "energy",
+  "go2rtc",
+  "history",
+  "homeassistant_alerts",
+  "logbook",
+  "mobile_app",
+  "my",
+  "ssdp",
+  "stream",
+  "usage_prediction",
+  "usb"
+ ],
+ "network_loaded": true
+}
