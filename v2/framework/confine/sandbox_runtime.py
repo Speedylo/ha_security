@@ -1228,10 +1228,14 @@ async def run() -> dict:
     result["reads"] = {e: (hass.states.get(e).state if hass.states.get(e) else None)
                        for e in probes}
     calls = {}
+    # F54: a probe may carry data (`probe_service_data`, by clause), so that a target given as a
+    # list is tested end to end. Opt-in, so every other user's calls stay empty.
+    probe_data = spec.get("probe_service_data") or {}
     for clause in spec.get("probe_services", []):
         service_domain, _, service_name = clause.partition(".")
         try:
-            await hass.services.async_call(service_domain, service_name, {}, blocking=True)
+            await hass.services.async_call(service_domain, service_name,
+                                           probe_data.get(clause, {}), blocking=True)
             calls[clause] = "called"
         except Exception as err:  # noqa: BLE001
             calls[clause] = f"{type(err).__name__}"

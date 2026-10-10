@@ -135,6 +135,10 @@ PERMISSIONS = {
     "services": {"call": ["lock.lock"]},
 }
 
+# F54: a target as a list, which the bridge dropped, and as a string, which it did not, though
+# the record named neither.
+LOCK_DATA = {"entity_id": ["lock.front_door", "lock.back_door"], "area_id": "hall"}
+
 
 def interpreter_trees(python: Path) -> list[str]:
     """Every directory that must exist inside the sandbox for this interpreter to start.
@@ -226,6 +230,7 @@ def main() -> int:
             # Asked from inside, so the answers are the integration's own view.
             "probe_entities": ["sensor.outdoor_temperature", "sensor.bedroom_occupancy"],
             "probe_services": ["lock.lock", "lock.unlock"],
+            "probe_service_data": {"lock.lock": LOCK_DATA},
         }))
 
         spec = SandboxSpec(
@@ -261,7 +266,7 @@ def main() -> int:
         Path(err.name).unlink(missing_ok=True)
     finally:
         shutil.rmtree(root, ignore_errors=True)
-        durable = durable_summary(mediator, audit_dir)
+        durable = durable_summary(mediator, audit_dir, keep_records=True)
 
     if not text:
         import os as _os
@@ -276,10 +281,10 @@ def main() -> int:
         print("the sandbox failed before it could report:\n")
         print(report["fatal"])
         return 1
-    return render(report, platform, mediator) or report_durable(durable)
+    return render(report, platform, mediator, durable) or report_durable(durable)
 
 
-def render(report: dict, platform: Platform, mediator: Mediator) -> int:
+def render(report: dict, platform: Platform, mediator: Mediator, durable: dict) -> int:
     print("bridge self-test — an unmodified integration, inside a sandbox\n")
     failures: list[str] = []
 
@@ -325,6 +330,17 @@ def render(report: dict, platform: Platform, mediator: Mediator) -> int:
           f"lock.unlock -> {calls.get('lock.unlock')}")
     check("S5  ...and the platform saw only the permitted call",
           [c[:2] for c in platform.calls] == [("lock", "lock")], str(platform.calls))
+    # F54 (notes/f54_list_target_prediction.md): the call's target crosses the boundary whole,
+    # and the record says what it was. `target` stays the service: it is what was decided on (T4).
+    data = platform.calls[0][2] if platform.calls else None
+    check("F54a  the call reached the platform with its target", data == LOCK_DATA, str(data))
+    decided = [r for r in durable.get("log") or []
+               if r.get("kind") == "decision" and r.get("op") == "service.call"]
+    requested = decided[0].get("requested", {}) if decided else {}
+    check("F54b  ...and the record names that target",
+          len(decided) == 1 and decided[0].get("target") == "lock.lock"
+          and all(requested.get(k) == v for k, v in LOCK_DATA.items()),
+          f"target {decided[0].get('target') if decided else None!r}, requested {requested}")
 
     denials = [e for e in mediator.audit if not e["allowed"]]
     check("every mediated decision named a clause",
