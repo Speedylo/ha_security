@@ -32,6 +32,10 @@ RESULTS = {
     # note on purpose: that is the evidence the note is about, not a result it predicts. The
     # first result it predicts is F34's failing-first run.
     "review_fixes": "1733e0c",
+    # Its §0 cites the 2026-10-03 rerun's results as the evidence it starts from, which the path
+    # search took for its own (a result five days before the note). Its first result is the
+    # recorded run at retest-2026-10-e2e.
+    "e2e_functional_retest": "bd81f9c",
 }
 #: The checks registered without results of their own yet, or registered for this campaign.
 SKIP = {"integrity_consistency"}
