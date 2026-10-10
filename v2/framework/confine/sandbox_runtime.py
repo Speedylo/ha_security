@@ -375,7 +375,9 @@ class Bridge:
     async def _forward_service_call(self, call) -> None:
         answer = self.channel.request({
             "op": "service.call", "service": f"{call.domain}.{call.service}",
-            "data": {k: v for k, v in call.data.items() if isinstance(v, (str, int, float))},
+            # `_plain`, the rule attributes leave by. Scalars alone dropped a target given as a
+            # list, so the call reached the platform aimed at nothing (F54).
+            "data": {k: v for k, v in call.data.items() if _plain(v)},
         })
         if not answer.get("ok"):
             # The mediator's decision is the authority; the local registration is only what

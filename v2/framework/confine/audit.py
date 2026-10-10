@@ -170,6 +170,11 @@ class Break:
     detail: str
 
 
+#: The fields Home Assistant reads a service call's targets from (`helpers/target.py`,
+#: `TargetSelection`, at 2026.8.3). Each may be a string or a list.
+SERVICE_TARGETS = ("entity_id", "device_id", "area_id", "floor_id", "label_id")
+
+
 def target_of(operation: str | None, request: dict) -> str | None:
     """What a request is *about*, read from the field its operation is decided on.
 
@@ -339,6 +344,12 @@ class AuditLog:
         # address it pins must be in the record too, or the log could not say which device.
         requested = {k: request[k] for k in ("entity", "service", "domain", "service_name",
                                              "host", "address", "port", "event") if k in request}
+        # A service call's devices are in its data, not at the top level, so until F54 no record
+        # said which device a granted service was used on. The decision is still made on the
+        # service, and `target` stays that; these are the sandbox's claims, beside the others.
+        data = request.get("data")
+        if request.get("op") == "service.call" and isinstance(data, dict):
+            requested.update({k: data[k] for k in SERVICE_TARGETS if k in data})
         return self._append({
             "kind": "decision", "run": run_id, "integration": identity,
             "op": request.get("op"), "target": target, "requested": requested,
