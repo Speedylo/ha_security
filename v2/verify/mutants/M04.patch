@@ -1,10 +1,10 @@
 # M04 (T10): `is_public` accepts RFC 1918 addresses
 --- a/framework/confine/egress.py
 +++ b/framework/confine/egress.py
-@@ -77,5 +77,5 @@
+@@ -84,5 +84,5 @@
      if isinstance(parsed, ipaddress.IPv6Address) and parsed.ipv4_mapped is not None:
          parsed = parsed.ipv4_mapped
 -    return not (parsed.is_private or parsed.is_loopback or parsed.is_link_local
 +    return not (parsed.is_loopback or parsed.is_link_local
-                 or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified)
- 
+                 or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified
+                 or parsed in SHARED_ADDRESS_SPACE)

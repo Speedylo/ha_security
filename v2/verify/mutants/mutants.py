@@ -41,10 +41,13 @@ MUTANTS = [
      'if ":" in str(clause) else str(clause) == target'),
     ("M04", "T10", "`is_public` accepts RFC 1918 addresses",
      "framework/confine/egress.py",
+     # F58 (2026-10-10) added a third line; the mutation is unchanged.
      "    return not (parsed.is_private or parsed.is_loopback or parsed.is_link_local\n"
-     "                or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified)",
+     "                or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified\n"
+     "                or parsed in SHARED_ADDRESS_SPACE)",
      "    return not (parsed.is_loopback or parsed.is_link_local\n"
-     "                or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified)"),
+     "                or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified\n"
+     "                or parsed in SHARED_ADDRESS_SPACE)"),
     ("M05", "T10", "`is_lan` accepts public addresses (§7.43's exfiltration)",
      "framework/confine/egress.py",
      "    return parsed.is_private and not (parsed.is_loopback or parsed.is_link_local",
@@ -231,6 +234,11 @@ MUTANTS = [
      "framework/confine/channel.py",
      "            if payload is None or len(payload) < length:",
      "            if payload is None:"),
+    ("M38", "F58, T10", "`is_public` accepts the shared address space, 100.64.0.0/10",
+     "framework/confine/egress.py",
+     "                or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified\n"
+     "                or parsed in SHARED_ADDRESS_SPACE)",
+     "                or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified)"),
 ]
 
 

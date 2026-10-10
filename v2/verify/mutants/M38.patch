@@ -1,0 +1,11 @@
+# M38 (F58, T10): `is_public` accepts the shared address space, 100.64.0.0/10
+--- a/framework/confine/egress.py
++++ b/framework/confine/egress.py
+@@ -85,6 +85,5 @@
+         parsed = parsed.ipv4_mapped
+     return not (parsed.is_private or parsed.is_loopback or parsed.is_link_local
+-                or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified
+-                or parsed in SHARED_ADDRESS_SPACE)
++                or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified)
+ 
+ 

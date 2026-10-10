@@ -1,7 +1,7 @@
 # M05 (T10): `is_lan` accepts public addresses (§7.43's exfiltration)
 --- a/framework/confine/egress.py
 +++ b/framework/confine/egress.py
-@@ -102,5 +102,5 @@
+@@ -110,5 +110,5 @@
      if isinstance(parsed, ipaddress.IPv6Address) and parsed.ipv4_mapped is not None:
          parsed = parsed.ipv4_mapped
 -    return parsed.is_private and not (parsed.is_loopback or parsed.is_link_local

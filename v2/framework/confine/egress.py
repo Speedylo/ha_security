@@ -57,13 +57,20 @@ class EgressRefused(Exception):
         self.clause = clause
 
 
+#: RFC 6598's shared address space: carrier-grade NAT between a household and its provider, and
+#: the range Tailscale numbers its devices from. Python counts it neither private nor global, so
+#: none of `is_public`'s other tests refuses it, and until F58 (2026-10-10) a granted name that
+#: resolved into it was connected to, the Pi's own Tailscale address included.
+SHARED_ADDRESS_SPACE = ipaddress.ip_network("100.64.0.0/10")
+
+
 def is_public(address: str) -> bool:
     """Is this an address the internet routes to?
 
     T10 is *"integration reaches other devices on the home LAN, or loopback services on the
     gateway"*, and this is the predicate that decides it. Everything the `ipaddress` module
     knows to be special is refused: private ranges, loopback, link-local, multicast, reserved,
-    and the unspecified address.
+    and the unspecified address, and so is the shared address space, which it does not (F58).
 
     IPv4-mapped IPv6 is unwrapped first. `::ffff:192.168.1.1` is a private address wearing an
     IPv6 costume, and a check that looked only at the outer form would pass it — the §7.24 run
@@ -77,7 +84,8 @@ def is_public(address: str) -> bool:
     if isinstance(parsed, ipaddress.IPv6Address) and parsed.ipv4_mapped is not None:
         parsed = parsed.ipv4_mapped
     return not (parsed.is_private or parsed.is_loopback or parsed.is_link_local
-                or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified)
+                or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified
+                or parsed in SHARED_ADDRESS_SPACE)
 
 
 def is_lan(address: str) -> bool:
