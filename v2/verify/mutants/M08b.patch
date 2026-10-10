@@ -1,7 +1,7 @@
 # M08b (S7): the hash chain's link is not checked
 --- a/framework/confine/audit.py
 +++ b/framework/confine/audit.py
-@@ -418,5 +418,5 @@
+@@ -435,5 +435,5 @@
                  breaks.append(Break(seq, "sequence",
                                      f"record {seq} where {expected_seq} was expected"))
 -            if record.get("prev_hash") != last_hash:

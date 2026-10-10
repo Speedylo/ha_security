@@ -1,7 +1,7 @@
 # M31 (F48, T19): a cut-off does not stop the sandbox
 --- a/framework/confine/supervise.py
 +++ b/framework/confine/supervise.py
-@@ -124,5 +124,5 @@
+@@ -129,5 +129,5 @@
      def cut_off(self, identity: str) -> None:
          say(f"{identity} cut off by the mediator; killing its sandbox")
 -        self.stop()

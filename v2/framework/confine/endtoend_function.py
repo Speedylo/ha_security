@@ -31,6 +31,7 @@ from .audit import attach
 from .audit import summarise as durable_summary
 from .cgroup import Delegation, SandboxCgroup
 from .channel import Channel
+from .describe import approve_as_experimenter
 from .compat import (DEPS, PLATFORM_DEPS, component_requirements, declared_components_of,
                      declared_requirements, find_ha_components, install_requirements)
 from .endtoend import WORLD
@@ -190,6 +191,7 @@ def run_confined(name: str, variant: dict, component: Path, python: Path,
         platform.call_service = call_service  # type: ignore[method-assign]
 
         manifest = Manifest.load(own, root)
+        approve_as_experimenter(own, root)  # F57: in an experiment, the experimenter approves
         mediator.policy = acting_policy({domain: manifest}, platform)
         platform.listeners.append(mediator.push)
         mediator_end, sandbox_end = Channel.pair()

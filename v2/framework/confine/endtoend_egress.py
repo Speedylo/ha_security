@@ -86,6 +86,7 @@ from .compat import (DEPS, PLATFORM_DEPS, component_requirements, core_requireme
                      declared_components_of, declared_requirements, find_ha_components,
                      install_requirements)
 from .egress import EgressBroker
+from .describe import approve_as_experimenter
 from .manifest import Manifest
 from .mediator import Mediator
 from .platform import Platform, acting_policy
@@ -256,6 +257,7 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
         broker = EgressBroker(connect_timeout=20.0)
         relay = UdpRelay()
         manifest = Manifest.load(own, root)
+        approve_as_experimenter(own, root)  # F57: in an experiment, the experimenter approves
         mediator.policy = acting_policy({domain: manifest}, platform,
                                         broker=broker, relay=relay)
         mediator_end, sandbox_end = Channel.pair()

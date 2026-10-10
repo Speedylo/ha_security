@@ -43,6 +43,7 @@ from .audit import attach
 from .audit import summarise as durable_summary
 from .cgroup import Delegation, SandboxCgroup
 from .channel import Channel
+from .describe import approve_as_experimenter
 from .manifest import Manifest
 from .mediator import Mediator
 from .platform import Platform, acting_policy
@@ -299,6 +300,7 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
         deps_dir.mkdir(parents=True, exist_ok=True)
 
         manifest = Manifest.load(own, root)
+        approve_as_experimenter(own, root)  # F57: in an experiment, the experimenter approves
         mediator.policy = acting_policy({domain: manifest}, Platform())
         mediator_end, sandbox_end = Channel.pair()
         mediator.register(domain, Channel(mediator_end), component=own, installed=deps_dir)

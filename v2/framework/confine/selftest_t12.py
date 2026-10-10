@@ -140,6 +140,10 @@ def long_lived_mediator(root: Path) -> None:
         (component / "manifest.json").write_text(json.dumps(
             {"domain": "reader", "name": "Reader", "version": version, "requirements": [],
              "permissions": {"schema_version": 1, "entities": {"read": [entity]}}}))
+        # F57: each version is approved before it can register. What this case tests is that
+        # the respawn decides by v2's declaration, not v1's, so v2 must be admitted at all.
+        from .describe import approve_as_experimenter
+        approve_as_experimenter(component)
 
     def ask(mediator: Mediator, sandbox, entity: str) -> dict:
         sandbox.send({"op": "entity.read", "entity": entity})

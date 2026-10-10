@@ -34,7 +34,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
 
-from .manifest import Manifest
+from .audit import DEFAULT_LOG
+from .manifest import Manifest, require_approval
 from .egress import EgressRefused as _EgressRefused
 from .mediator import Decision
 
@@ -126,12 +127,15 @@ class ActingPolicy:
 
     def __init__(self, manifests: dict[str, Manifest], platform: Platform,
                  broker: object | None = None, relay: object | None = None,
-                 config_root: Path | None = None) -> None:
+                 config_root: Path | None = None, approvals: Path | None = None) -> None:
         self.manifests = manifests
         self.platform = platform
         self.broker = broker
         self.relay = relay
         self.config_root = config_root
+        #: Where `describe --approve` wrote its approvals. None means `DEFAULT_LOG` under the
+        #: configuration root, which is where `describe` writes by default.
+        self.approvals = approvals
 
     def bind(self, identity: str, component: Path) -> None:
         """Re-read the declaration for one integration. Called per spawn, never per request.
@@ -139,9 +143,15 @@ class ActingPolicy:
         `config_root` defaults to the directory above `custom_components`, which is Home
         Assistant's own layout and every harness's. A manifest that no longer parses raises
         `ManifestRejected` here, so the spawn fails instead of running under the old grant.
+
+        **And a manifest no one approved raises `NotApproved`, a `ManifestRejected`** (F57). This
+        is the one place a grant is bound to a channel, so it is where the approval is checked:
+        before F57 a derived grant was used unconfirmed and an author-declared one unseen.
         """
         root = self.config_root or component.parent.parent
-        self.manifests[identity] = Manifest.load(component, root)
+        manifest = Manifest.load(component, root)
+        require_approval(manifest, component, self.approvals or root / DEFAULT_LOG)
+        self.manifests[identity] = manifest
 
     def __call__(self, identity: str, request: dict) -> Decision:
         platform = self.platform
@@ -283,6 +293,7 @@ class ActingPolicy:
 
 
 def acting_policy(manifests: dict[str, Manifest], platform: Platform,
-                  broker: object | None = None, relay: object | None = None) -> ActingPolicy:
+                  broker: object | None = None, relay: object | None = None,
+                  approvals: Path | None = None) -> ActingPolicy:
     """The name every harness already calls. Kept so that none of them has to change."""
-    return ActingPolicy(manifests, platform, broker, relay)
+    return ActingPolicy(manifests, platform, broker, relay, approvals=approvals)

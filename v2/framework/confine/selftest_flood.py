@@ -44,6 +44,7 @@ from pathlib import Path
 
 from .audit import AuditLog, reconcile
 from .channel import Channel
+from .describe import approve_as_experimenter
 from .mediator import FLOOD_LIMIT, CutOff, Decision, Mediator
 from .platform import ActingPolicy, Platform
 from .sandbox_runtime import Channel as SandboxChannel
@@ -69,6 +70,7 @@ def component(root: Path, domain: str, read: list[str]) -> Path:
         {"domain": domain, "name": domain, "version": "1.0.0", "requirements": [],
          "permissions": {"schema_version": 1,
                          "entities": {"read": read} if read else {}}}))
+    approve_as_experimenter(directory)  # F57: in an experiment, the experimenter approves
     return directory
 
 

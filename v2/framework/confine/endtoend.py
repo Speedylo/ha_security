@@ -45,6 +45,7 @@ from .cgroup import Delegation, SandboxCgroup
 from .channel import Channel
 from .compat import (DEPS, PLATFORM_DEPS, component_requirements, declared_components_of,
                      declared_requirements, find_ha_components, install_requirements)
+from .describe import approve_as_experimenter
 from .manifest import Manifest
 from .mediator import Mediator
 from .platform import Platform, acting_policy
@@ -236,6 +237,7 @@ def run_one(domain: str, component: Path, subject: dict, python: Path,
             platform.listeners.append(observe)
 
         manifest = Manifest.load(own, root)
+        approve_as_experimenter(own, root)  # F57: in an experiment, the experimenter approves
         mediator.policy = acting_policy({domain: manifest}, platform)
         if real:
             mediator.attach_platform(platform)

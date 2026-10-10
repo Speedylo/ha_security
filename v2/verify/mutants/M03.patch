@@ -1,7 +1,7 @@
 # M03 (S4, F3): an egress clause matches on the host and ignores the port
 --- a/framework/confine/manifest.py
 +++ b/framework/confine/manifest.py
-@@ -421,5 +421,5 @@
+@@ -463,5 +463,5 @@
              # numbers. Both are compared as text so one branch serves both, and both are exact
              # — there is no pattern form for either.
 -            return str(clause) == target

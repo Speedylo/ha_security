@@ -34,11 +34,11 @@ import tempfile
 import time
 from pathlib import Path
 
-from .audit import AuditLog
+from .audit import DEFAULT_LOG, AuditLog
 from .cgroup import Delegation, SandboxCgroup
 from .channel import Channel
 from .compat import DEPS, PLATFORM_DEPS
-from .manifest import Manifest
+from .manifest import Manifest, NotApproved
 from .mediator import CutOff, Mediator
 from .platform import acting_policy
 from .preflight import require_ready
@@ -52,8 +52,12 @@ HERE = Path(__file__).resolve().parent
 
 class Supervisor:
     def __init__(self, component: Path, permissions: dict, python: Path, audit_dir: Path,
-                 hours: float) -> None:
+                 hours: float, approvals: Path | None = None) -> None:
         self.domain = component.name
+        # F57: the integration runs from a copy in a temporary directory, whose own configuration
+        # root holds no approvals, so the approvals are read from the original's root, where
+        # `describe --approve` writes them, unless another file is named.
+        self.approvals = approvals or component.parent.parent / DEFAULT_LOG
         self.python = python
         self.hours = hours
         self.delegation = Delegation.discover()
@@ -76,7 +80,8 @@ class Supervisor:
         self.log_path = audit_dir / f"decisions-{self.stem}.jsonl"
         self.mediator = Mediator(log=AuditLog(path=self.log_path))
         self.manifest = Manifest.load(self.own, self.root)
-        self.mediator.policy = acting_policy({self.domain: self.manifest}, self.platform)
+        self.mediator.policy = acting_policy({self.domain: self.manifest}, self.platform,
+                                             approvals=self.approvals)
         self.mediator.attach_platform(self.platform)
         self.mediator.on_cut_off.append(self.cut_off)
         self.mediator.on_reinstate.append(self.reinstated)
@@ -151,7 +156,9 @@ class Supervisor:
         try:
             self.mediator.register(self.domain, Channel(mediator_end), component=self.own,
                                    installed=self.deps)
-        except CutOff as err:
+        except (CutOff, NotApproved) as err:
+            # Not approved (F57) is answered as a cut-off is: the supervisor stays up and says
+            # why, and the integration runs only once someone approves it and restarts it.
             say(f"not started: {err}")
             mediator_end.close()
             sandbox_end.close()
@@ -250,7 +257,8 @@ class Supervisor:
                 continue
             break
         self.platform = platform
-        self.mediator.policy = acting_policy({self.domain: self.manifest}, platform)
+        self.mediator.policy = acting_policy({self.domain: self.manifest}, platform,
+                                             approvals=self.approvals)
         self.mediator.attach_platform(platform)
         self.wanted = was_running
         say(f"the house's Home Assistant is back; "
@@ -325,6 +333,9 @@ def main() -> int:
     ap.add_argument("--audit-dir", type=Path,
                     default=Path.home() / "r2exp" / "supervise-audit")
     ap.add_argument("--hours", type=float, default=8.0, help="how long one sandbox may run")
+    ap.add_argument("--approvals", type=Path,
+                    help=f"where `describe --approve` recorded approvals (default: "
+                         f"<the component's config root>/{DEFAULT_LOG})")
     args = ap.parse_args()
 
     require_ready(deep=False)
@@ -338,7 +349,7 @@ def main() -> int:
     signal.signal(signal.SIGTERM, terminate)
     try:
         supervisor = Supervisor(args.component.resolve(), json.loads(args.permissions),
-                                args.python, args.audit_dir, args.hours)
+                                args.python, args.audit_dir, args.hours, args.approvals)
     except PredecessorsRemain as err:
         say(str(err))
         return 1

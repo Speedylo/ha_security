@@ -31,7 +31,7 @@ from enum import Enum
 from pathlib import Path
 
 from .cgroup import ResourceLimits
-from .audit import target_of
+from .audit import Identity, grant_digest, last_record, target_of
 from .mediator import Decision
 from .sandbox import GrantRefused, reject_forbidden
 
@@ -48,6 +48,48 @@ class Provenance(Enum):
 
 class ManifestRejected(ValueError):
     """The manifest is not well-formed. The integration gets nothing, and the user gets why."""
+
+
+class NotApproved(ManifestRejected):
+    """The manifest is well-formed, but no one has approved it for this code (F57).
+
+    A subclass, so that every caller that already stops on an unreadable manifest stops on an
+    unapproved one, and says why, without being changed.
+    """
+
+
+def require_approval(manifest: Manifest, component: Path, approvals: Path) -> None:
+    """Refuse a grant that no person approved for this exact code and these exact permissions.
+
+    §5.9.4 required confirmation of a derived manifest; F57 found that nothing enforced it, and
+    that an author-declared manifest, the author being the party the threat model constrains,
+    was used with no human look at all. Younes decided on 2026-10-10 to gate both. The most
+    recent approval for the domain must match the integration's current identity (its code, its
+    manifest.json and its requirements) and the grant actually loaded (`grant_digest`), which
+    the identity does not cover when the grant is derived.
+
+    An integration with no manifest is not gated: it receives nothing mediated, so there is
+    nothing to approve. Approvals are read without verification, as `last_identity` states.
+    """
+    if manifest.provenance is Provenance.NONE:
+        return
+    domain = component.name
+    how = (f"read it with `python3 -m confine.describe {component}` and approve it with "
+           f"`--approve`")
+    record = last_record(approvals, domain)
+    if record is None:
+        raise NotApproved(f"{domain}: no approval is on record for its permissions; {how}")
+    current = Identity.compute(component)
+    try:
+        approved = Identity(**record["identity"])
+    except TypeError:
+        raise NotApproved(f"{domain}: its last approval cannot be read; {how}") from None
+    if approved.composite != current.composite:
+        changed = ", ".join(current.changes_from(approved)) or "identity"
+        raise NotApproved(f"{domain}: its {changed} changed since its permissions were "
+                          f"approved; {how}")
+    if record.get("grant") != grant_digest(manifest.provenance.value, manifest.permissions):
+        raise NotApproved(f"{domain}: its permissions differ from the ones approved; {how}")
 
 
 # Capability -> the request operations it governs. A request whose operation is not here has

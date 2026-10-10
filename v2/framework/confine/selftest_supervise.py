@@ -29,6 +29,8 @@ import tempfile
 import time
 from pathlib import Path
 
+from .describe import record_approval
+from .manifest import Manifest, Provenance
 from . import house_a
 from .audit import AuditLog
 from .cgroup import Delegation
@@ -78,10 +80,16 @@ class Run:
 
     def __init__(self, python: Path, audit: Path, log: Path, component: Path = DEMO) -> None:
         self.log, self.audit, self.domain = log, audit, component.name
+        # F57: the supervisor registers nothing unapproved. The test approves the grant the
+        # supervisor will load, its default, a derived manifest that declares nothing, and keeps
+        # the approval beside its own logs rather than in the repository.
+        approvals = audit.parent / f"approvals-{audit.name}.jsonl"
+        record_approval(component, approvals,
+                        Manifest(component.name, Provenance.DERIVED, {"schema_version": 1}))
         self.out = open(log, "wb")
         self.proc = subprocess.Popen(
             [sys.executable, "-u", "-m", "confine.supervise", "--component", str(component),
-             "--python", str(python), "--audit-dir", str(audit)],
+             "--python", str(python), "--audit-dir", str(audit), "--approvals", str(approvals)],
             cwd=FRAMEWORK, stdout=self.out, stderr=subprocess.STDOUT)
 
     def text(self) -> str:

@@ -51,6 +51,7 @@ from .audit import summarise as durable_summary
 from .cgroup import Delegation, ResourceLimits, SandboxCgroup
 from .channel import Channel
 from .egress import EgressBroker
+from .describe import approve_as_experimenter
 from .manifest import Manifest
 from .mediator import Mediator
 from .platform import Platform, acting_policy
@@ -244,6 +245,7 @@ def prepare(own_host: str, own_port: int, probe_host: str, probe_port: int,
     root = Path(tempfile.mkdtemp(prefix=f"confine-egress-{label}-"))
     layout = build_config(root, own_host, own_port, probe_host, probe_port)
     manifest = Manifest.load(layout["component"], root)
+    approve_as_experimenter(layout["component"], root)  # F57: in an experiment, the experimenter approves
     return root, layout, manifest
 
 

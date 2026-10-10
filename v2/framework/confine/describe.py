@@ -31,7 +31,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from .audit import DEFAULT_LOG, AuditLog, Identity, last_identity
+from .audit import DEFAULT_LOG, AuditLog, Identity, grant_digest, last_identity
 from .manifest import Manifest, ManifestRejected, Provenance
 
 # One row per declarable capability of §5.10.3. `granted` is completed with the declared
@@ -178,6 +178,31 @@ def describe_refusal(error: ManifestRejected, domain: str) -> str:
     ])
 
 
+def record_approval(component: Path, path: Path, manifest: Manifest) -> Identity:
+    """Record that a person was shown this integration's grant and accepted it (§5.9.6, F57).
+
+    Behind `--approve`. Harnesses call it too, because in an experiment the experimenter is the
+    user who approves, and since F57 the mediator registers nothing that no one approved. The
+    record carries the identity and, separately, the grant (`grant_digest`), because the
+    identity does not cover a derived manifest's file.
+    """
+    current = Identity.compute(component)
+    AuditLog(path=path).approval(current, manifest.provenance.value,
+                                 grant_digest(manifest.provenance.value, manifest.permissions))
+    return current
+
+
+def approve_as_experimenter(component: Path, config_root: Path | None = None) -> None:
+    """`record_approval` for a harness: the experimenter is the user, and approves what is on disk.
+
+    Called just before a harness registers a component, so the approval matches exactly the
+    code and grant the mediator is about to load (F57). Written where `describe` and the
+    mediator's policy both look by default, `<config-root>/` + `DEFAULT_LOG`.
+    """
+    root = config_root or component.parent.parent
+    record_approval(component, root / DEFAULT_LOG, Manifest.load(component, root))
+
+
 def main() -> int:
     import argparse
 
@@ -237,8 +262,7 @@ def main() -> int:
               "comparison.\n Run again with --approve once you have read it.)")
 
     if args.approve:
-        log = AuditLog(path=audit_path)
-        log.approval(current, manifest.provenance.value)
+        record_approval(component, audit_path, manifest)
         print()
         print(f"Recorded. {component.name} is approved at {current.composite[:12]}…")
     return 0

@@ -40,6 +40,7 @@ from pathlib import Path
 from .audit import AuditLog
 from .channel import Channel
 from .manifest import Manifest
+from .describe import approve_as_experimenter
 from .mediator import Decision, Mediator
 from .platform import ActingPolicy, Platform
 from .sandbox_runtime import Channel as SandboxChannel
@@ -65,6 +66,7 @@ def component(root: Path, domain: str, subscribe: list[str]) -> Path:
          "permissions": {"schema_version": 1,
                          "entities": {"read": subscribe, "subscribe": subscribe}
                          if subscribe else {}}}))
+    approve_as_experimenter(directory)  # F57: in an experiment, the experimenter approves
     return directory
 
 

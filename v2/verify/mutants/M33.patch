@@ -1,8 +1,8 @@
 # M33 (F48, F29): after (A) returns, the supervisor forgets the integration was running
 --- a/framework/confine/supervise.py
 +++ b/framework/confine/supervise.py
-@@ -253,5 +253,5 @@
-         self.mediator.policy = acting_policy({self.domain: self.manifest}, platform)
+@@ -261,5 +261,5 @@
+                                              approvals=self.approvals)
          self.mediator.attach_platform(platform)
 -        self.wanted = was_running
 +        self.wanted = False

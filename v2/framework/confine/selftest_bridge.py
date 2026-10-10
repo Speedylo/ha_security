@@ -31,6 +31,7 @@ from .audit import attach, report_durable
 from .audit import summarise as durable_summary
 from .cgroup import Delegation, ResourceLimits, SandboxCgroup
 from .channel import Channel
+from .describe import approve_as_experimenter
 from .manifest import Manifest
 from .mediator import Mediator
 from .platform import Platform, acting_policy
@@ -217,6 +218,7 @@ def main() -> int:
     try:
         layout = build_config(root)
         manifest = Manifest.load(layout["component"], root)
+        approve_as_experimenter(layout["component"], root)  # F57: in an experiment, the experimenter approves
         mediator.policy = acting_policy({"demo_weather": manifest}, platform)
         mediator_end, sandbox_end = Channel.pair()
         mediator.register("demo_weather", Channel(mediator_end), component=layout["component"])

@@ -1,7 +1,7 @@
 # M17 (S5): a wildcard in `services.call` (`lock.*`) is accepted at parse
 --- a/framework/confine/manifest.py
 +++ b/framework/confine/manifest.py
-@@ -123,5 +123,5 @@
+@@ -165,5 +165,5 @@
      """§5.10.4, the rule S5 exists to produce: no wildcard, ever, in `services.call`."""
      for entry in services:
 -        if "*" in entry:

@@ -239,6 +239,14 @@ MUTANTS = [
      "                or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified\n"
      "                or parsed in SHARED_ADDRESS_SPACE)",
      "                or parsed.is_multicast or parsed.is_reserved or parsed.is_unspecified)"),
+    ("M39", "F57, §5.9.4", "a manifest no one approved is registered",
+     "framework/confine/manifest.py",
+     "    if manifest.provenance is Provenance.NONE:\n        return\n    domain = component.name",
+     "    if True:\n        return\n    domain = component.name"),
+    ("M40", "F57, T12", "an approval admits a grant other than the one approved",
+     "framework/confine/manifest.py",
+     '    if record.get("grant") != grant_digest(',
+     '    if False and record.get("grant") != grant_digest('),
 ]
 
 

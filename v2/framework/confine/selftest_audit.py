@@ -265,6 +265,8 @@ def main() -> int:
 
         log3 = AuditLog(root / "ordering-mediated.jsonl")
         dying = Platform(states=_DyingStates())
+        from .describe import approve_as_experimenter
+        approve_as_experimenter(component, root)  # F57: in an experiment, the experimenter approves
         mediator = Mediator(policy=acting_policy(
             {"demo": Manifest.load(component, root)}, dying), log=log3)
         ours, theirs = Channel.pair()
