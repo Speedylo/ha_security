@@ -103,3 +103,31 @@ F54 moves to resolved in the findings log (`notes/verification_plan_20261005.md`
 Appendix F's Table F.2, with the tag. In §12.2, Table 12.3 gives `scheduler` as acting confined.
 §12 also says that a confined service call's targets are now in the record, and that dict-valued data
 is still dropped.
+
+## 7. Outcome (added 2026-10-10, after the runs)
+
+All four predictions held for what they predicted. One row failed that no prediction covered.
+
+**P1 held.** At `966fcac`, F54a and F54b failed and every earlier check passed. The platform's call
+carried `{"area_id": "hall"}` with the list dropped, `requested` held `service` alone, and the suite
+exited 1 (`experiments/verify/results/f54/p1_selftest_bridge.log`).
+
+**P2 held.** At `fix-2026-10-f54`, from a fresh clone, the platform received exactly
+`LOCK_DATA`, the record had `target` `lock.lock` and both target fields in `requested`, and the suite
+exited 0 (`regress/p2_selftest_bridge.log`).
+
+**P3 held.** 27 of 27 suites passed on both passes, `nordpool` passed 16/16, and M08a and M08b still
+applied (offset 11 lines) and were each killed by `selftest_audit` (`regress/summary.txt`).
+
+**P4 held for the confined rows**, and they are the rows it predicted. `scheduler` confined made
+exactly one `light.turn_on` with `brightness` 200 and `entity_id` `["light.living_room"]` at +0.0 s,
+the row that failed on 2026-10-09. `scheduler-no-read` and `scheduler-no-service` again made zero
+calls and recorded zero service decisions, and the switch ended `triggered`.
+
+**Not predicted: the unconfined `scheduler` arm did not load** (`regress/p4_scheduler.json`).
+`http` and `websocket_api` failed to set up, so `scheduler`, which depends on both, never did. The
+regression had brought (A) up before P4, and (A) holds port 8123, which the unconfined arm's `http`
+also binds. Rerun alone with (A) stopped, the unconfined arm loaded and passed 3 of 4, as on
+2026-10-09, the switch again ending `triggered` (`diag_unconfined_A_down/`). The fault lies in this
+note's run order and the harness, not in F54's fix, which the unconfined arm does not run. It is
+logged as F56.

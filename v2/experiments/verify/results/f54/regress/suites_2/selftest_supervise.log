@@ -1,0 +1,64 @@
+
+1 — it starts
+
+  ok    run 1's sandbox started  — pid 4068
+  ok    in its own cgroup  — /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/sup-demo_flood-4055-1
+  ok    its switch is in (A)
+  ok    and the integration inside has published it
+
+2 — the mediator cuts it off, and the sandbox is killed (M31)
+
+  ok    the supervisor is told
+  ok    the sandbox's process is gone  — pid 4068
+  ok    and so is its cgroup  — /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/sup-demo_flood-4055-1
+  ok    the house sees a Repairs issue
+
+3 — a person submits the Repairs issue, and it runs again (M32)
+
+  ok    the fix flow completes  — create_entry
+  ok    run 2 started, a new process  — pid 4082
+  ok    the durable log holds one cut-off and one reinstatement  — cutoff 1, reinstate 1
+  ok    and the issue is gone
+
+4 — (A) restarts, and the integration comes back (F29, M33)
+
+  ok    the supervisor saw (A) go
+  ok    and come back
+  ok    run 3 started  — pid 4129
+
+5 — a supervisor killed outright; the next one clears what it left (F30, M34)
+
+  ok    the first supervisor is gone
+  ok    the second reports clearing what the first left  — cleared 1 sandbox cgroup(s)
+  ok    run 3 of the first is not running  — pid 4129
+  ok    and none of the first's cgroups remains
+  ok    the second's own sandbox started  — pid 4147
+
+6 — a sandbox that exits by itself is not restarted (M35)
+
+  ok    the supervisor reports it
+  ok    and starts nothing in its place
+
+7 — it stops cleanly
+
+  ok    it says it stopped
+  ok    no demo_flood cgroup is left
+
+8 — an integration that will not stop by itself is killed (M31)
+
+  ok    demo_stubborn's sandbox started  — pid 4161
+  ok    its switch is in (A)
+  ok    and the integration inside has published it
+  ok    it is cut off
+  ok    its sandbox's process is gone  — pid 4161
+  ok    and so is its cgroup  — /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/sup-demo_stubborn-4148-1
+  ok    not by stopping itself
+  ok    its Repairs issue is cleared
+  ok    no demo_stubborn cgroup is left
+  ok    decisions-20261010T162744-4055.jsonl: no sequence, link or hash break
+  ok    decisions-20261010T162751-4130.jsonl: no sequence, link or hash break
+  ok    decisions-20261010T162801-4148.jsonl: no sequence, link or hash break
+
+  logs: /tmp/selftest-supervise-pp0ave4z
+
+36/36 checks passed

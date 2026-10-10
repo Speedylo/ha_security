@@ -1,0 +1,6 @@
+  scheduler                      unconfined not loaded
+  scheduler                      confined   loaded
+  scheduler-no-read              confined   loaded
+  scheduler-no-service           confined   loaded
+
+wrote /home/younes/r2exp/f54/out/regress/p4_scheduler.json

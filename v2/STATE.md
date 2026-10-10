@@ -2,6 +2,18 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-10: F54 FIXED at tag `fix-2026-10-f54`** (local, not pushed; `notes/f54_list_target_prediction.md`
+§7; results `experiments/verify/results/f54/`). The bridge now forwards service data by `_plain` (scalars and
+lists of scalars, the attributes' rule; dicts still dropped). The record's `requested` now names HA's five target
+fields, while `target` stays the service (T4). The record gap was wider than `scheduler`: no service call had ever
+named its device. Test first: `selftest_bridge` F54a/F54b failed as predicted, then passed. 27 suites ×2,
+`nordpool` 16/16, M08a/b killed, and `scheduler` confined now turns on its light. **New F56 (Minor, instrument,
+open):** the unconfined e2e arm fails to load `scheduler` when (A) is up, because both bind port 8123. Rerun with
+(A) down, it passed as on 10-09. `verify/prereg.py` flags `e2e_functional_retest` as CHECK (negative time gap,
+from 10-09): look at it. **Next: Table 12.3 / §12.2** (scheduler acts confined, "nine of thirteen" changes;
+Appendix F's Table F.2 gains F54–F56), **then week 2 (§9, §8).** Unpushed: everything since `9b707a2` plus tags
+`retest-2026-10-e2e` and `fix-2026-10-f54`. Run the credential scan first.
+
 **2026-10-09 (later): the owed functional retest is DONE** (`notes/e2e_functional_retest_prediction.md`, §7 amendment; tag `retest-2026-10-e2e`, local; results `experiments/end_to_end/results/retest_20261009/`, `verify/retest_e2e_verdicts.py`): **42 of 45 held**. powercalc 8.06→3.00→0.00 W both arms; watchman 1 missing unconfined vs 2 confined (undeclared = absent), 1 with both declared; adaptive_lighting sends the brightness it computes (38/39, arms within 0.1 pt); scheduler fires at +0.0 s. Misses: scheduler ends `triggered` not `off` (both arms); **F54 (Major, open — Younes to decide fix or limitation): a confined service call loses a list-valued `entity_id` and the decision record names no target.** F55 (Minor, open): `default_config` never set up in the unconfined e2e arm. 27 suites pass at the tag ((A) restarted). **Younes decided 2026-10-09: FIX F54** (tomorrow). Plan: prediction note first; a failing test first (a confined call with a list `entity_id` must reach the platform with its target, and the decision record must name it); fix in `Bridge._forward_service_call` (forward lists of strings) and the mediator's record; own tag; 27 suites + rerun `scheduler` variants of the retest. Then Table 12.3/§12.2, then §9. **Unpushed:** commits since `65501ec`'s parent chain and tag `retest-2026-10-e2e` — credential scan first.
 
 **2026-10-09: week 1 of phase R DONE.** Appendix F written (`submission/17_appendices.md`: Table F.1 register by tier, Table F.2 F01–F53 one line each; manifest schema moved to Appendix G). §12.4 now states F18 open, F11 retained, F53 a limitation. Pushed `main` after an exact-value credential scan on the Pi (30 values, 7 files, 0 hits). The Pi was unreachable for part of the session and came back after a reboot. **Next: week 2, §9 Architecture with its figures, then §8.** The five-integration retest is still owed.

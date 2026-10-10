@@ -1,0 +1,11 @@
+p2_selftest_bridge exit=0 seconds=2
+house_a_down exit=0 seconds=0
+house_a_up exit=0 seconds=5
+suites_1 exit=0 seconds=92
+suites_2 exit=0 seconds=86
+suites_1 failed=0 of 27
+suites_2 failed=0 of 27
+egress_nordpool exit=0 seconds=112
+p4_scheduler exit=0 seconds=650
+mutants: M08a failed_suites=1 M08b failed_suites=1 ALLDONE 
+ALLDONE
