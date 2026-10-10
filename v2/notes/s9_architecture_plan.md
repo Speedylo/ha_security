@@ -162,3 +162,19 @@ as the carried-in item "re-rate R3 after F45" already says.
 2. **Five new figures.** Is that the right set, or would you rather swap one (for example, a
    deployment view of the Pi with (A), the mediator and the sandboxes as processes and users, in place
    of Figure 9.2)?
+
+## Progress
+
+**2026-10-10: prose drafted** (`submission/09_system_architecture.md`; the 2026-09-08 draft is replaced
+and recoverable from git). 2,826 words of prose against 2,600; over in 9.2 (566 vs 400) and 9.4 (609 vs
+450), to trim after Younes's review, not before. Checked against source while drafting: seven
+namespaces, not six (`namespaces.py`: cgroup too); default limits 640 MB / 64 processes / 64 MB
+(`cgroup.py`); seccomp deny-list groups (`seccomp.py`); egress order (`egress.py`); F50's three
+operations are `event.fire`, `event.subscribe`, `config_entries.list` (`entities.write` is performed);
+flood limit 100 in 10 s (`mediator.py`); the non-admin mediator still controls every entity (§7.45.11).
+
+**References owed** (provisional numbers; the list is rebuilt in week 5): [33] namespaces(7), [34]
+seccomp(2), [35] the Linux kernel's cgroup v2 documentation, [36] unix(7) (socket pairs, `SCM_RIGHTS`).
+[29]–[31] (Jiang et al.; CC FAU_STG.4; NIST SP 800-53 AU-5) are the working report's numbers.
+
+**Next:** the five figures as scripts in `figures/` (`fig_9_1` … `fig_9_5`), then Younes's review.

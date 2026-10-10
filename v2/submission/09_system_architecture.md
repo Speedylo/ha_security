@@ -1,295 +1,129 @@
 # 9. System Architecture and Technology Integration
 
-Four decisions determine the architecture. Each was taken against named candidates, and two of the
-four **diverged** from the project's first pass when re-examined against evidence.
+The framework moves each third-party integration out of Home Assistant's process into a sandbox of its own, and places a mediator between the two that decides, records and performs every request that crosses. This section describes that system as it was built and follows a single request through it. Section 9.1 presents the whole system and the four decisions that fixed its shape. The remaining subsections take each component in the order a request meets it: the sandbox in which the integration runs (9.2), the manifest that states what it may ask for (9.3), the mediator that decides (9.4), the paths to the network (9.5), the record that makes each decision attributable (9.6), and the behaviour of the system when a part of it fails (9.7). Section 9.8 states what the architecture does not do. The reasoning behind each decision belongs to the method and is given in Section 8; this section describes the result.
 
-## 9.1 Decision 1 — where enforcement lives
+## 9.1 The system at a glance
 
-**The design problem, stated precisely:** the untrusted code, the platform's authority and any
-proposed permission check currently occupy the same address space.
+Three kinds of process make up a confined installation, and only one of them holds any authority over the house. Figure 9.1 shows them. The house's own Home Assistant instance, referred to here as (A), runs as it always has, with one addition: a bridge integration through which confined integrations publish their entities and receive commands. Each third-party integration runs in its own sandbox, inside a private and minimal Home Assistant runtime referred to as (B), which a supervisor constructs. Between them sits the mediator, a single process that holds (A)'s access token and is the only component able to act on (A) on an integration's behalf. Each sandbox is connected to the mediator by one channel and has no other route out.
 
-Three locations are available. **L1 — in-process** (wrap the API the integration calls). **L2 —
-inside the platform's own loader** (a capability check in Home Assistant itself). **L3 — outside
-the process** (run the integration elsewhere and mediate).
+**[Figure 9.1 — The system.** (A) with its bridge integration; the mediator, running as the non-admin user `confine-mediator` and holding (A)'s token; the supervisor; several sandboxes, each holding a runtime (B), the bridge's sandbox half and one unmodified integration; one channel per sandbox; the egress broker inside the mediator; the durable audit log. The token is drawn where it lives, in the mediator, and in no sandbox.**]**
 
-**L1 is eliminated by evidence, not by preference.** The garbage-collector result [9] shows an
-integration enumerating the heap and reaching another integration's live objects. A permission
-layer implemented in-process is an object in that heap, and so is any credential it holds. It is
-reachable and defeatable by the code it purports to constrain.
+Four decisions fixed this shape, and Table 9.1 records them with the alternatives each displaced.
 
-**L2 is the better design on every axis except one.** It is where enforcement belongs, it costs
-nothing per request, and it is what the platform should eventually do. It is unavailable to this
-project because it requires modifying Home Assistant, which C2 forbids — not because it is wrong.
-§15.3 states that this project's most durable contribution to L2 may be the evidence such a
-proposal would need.
+**Table 9.1 — The four decisions that fix the architecture**
 
-**The decision is L3**, and the report is explicit that it is chosen for deployability rather than
-elegance.
-
-## 9.2 Decision 2 — what runs inside the sandbox
-
-Two candidates. **R1 — the proxy object:** run the integration against a stand-in for `hass` that
-forwards every attribute access to the mediator, making mediation total by construction. **R2 — a
-real, minimal platform:** run a *stripped* Home Assistant inside the sandbox, so the integration
-imports the genuine helper layer and receives a genuine `hass` object — but a **local** one whose
-state machine, service registry and event bus are private to the sandbox and **start empty**.
-
-**The decision is R2, and the first argument for it is a measurement.** R1's premise is that
-`hass` is the compatibility surface. It is not; it is the entrance to it.
-
-**Table 9.1 — What integrations are actually written against**
-
-| What the integration touches | Shipped (n=1,482) | Community (n=144) |
-|---|---|---|
-| `homeassistant.helpers` — the helper layer | 91% | **100%** |
-| `async_add_entities` — helper-layer entity registration | 63% | **83%** |
-| `DataUpdateCoordinator` — helper-layer polling | 38% | 58% |
-| `hass.states.async_set` — setting state directly on `hass` | **0.1%** | 6.9% |
-
-**Every community integration measured imports the helper layer.** Substituting `hass` therefore
-substitutes the thing almost nothing uses directly, and leaves the 91–100% case resting on how
-faithfully that layer's expectations are reproduced — a surface that is large, undocumented
-because it was never intended as a public contract, and free to change every release. **R1 does
-not remove the compatibility problem; it relocates it to the least documented place available.**
-
-**The second argument is that R2 makes default denial structural rather than procedural.** Under
-R1, every read is a request that must be checked, and S6 holds exactly as long as no path is left
-unchecked. Under R2, **the sandbox's state machine starts empty**. An integration reading an
-undeclared entity is not refused by a check — there is nothing there to read. Only what the
-manifest declares is mirrored in, and a registry holding nothing offers `lock.unlock` to no one.
-
-> A design whose safe behaviour is its *default state* is stronger than one whose safe behaviour is
-> a check that must never be forgotten.
-
-## 9.3 Decision 3 — the isolation primitive
-
-Six candidates were considered. **Language-level confinement** and **WebAssembly** are eliminated
-before cost: the first puts the restriction in the same interpreter as the code it restricts;
-the second cannot run CPython integrations with native extensions unmodified, so it fails C1 at
-the first compiled dependency. **gVisor** and **microVMs** are eliminated on cost — each adds a
-per-sandbox kernel to a device where the marginal sandbox already costs 136 MB against 4 GB total,
-and C4 is a constraint rather than a preference. **OCI containers** are not a competitor: Docker
-and Podman are management layers over precisely the primitives chosen, and Home Assistant is
-itself frequently deployed in a container, which makes nesting an operational problem.
-
-**The decision is Linux namespaces + seccomp-BPF + cgroup v2, driven by an unprivileged
-supervisor.**
-
-**Table 9.2 — What each primitive does**
-
-| Mechanism | Requirement | Effect |
-|---|---|---|
-| **user** namespace | S2, S8 | The sandbox's root is an unprivileged uid outside it |
-| **mount** namespace | S8, T14 | A private filesystem view. `secrets.yaml` is not merely unreadable — **it is absent** |
-| **pid** namespace | S8, T15 | The sandbox sees only its own processes, closing the `/proc/<pid>/environ` read |
-| **network** namespace | **S4**, T10 | Its own network stack with no route anywhere. All egress leaves through the mediator |
-| **ipc**, **uts** | S8 | Removes shared memory and hostname as side channels |
-| **seccomp-BPF** | S8 | **29 syscalls denied**, returning `EPERM` rather than killing, so a refusal stays legible |
-| **cgroup v2** | **S9** | Bounds memory, CPU, process count and disk space |
-
-**The network namespace is the part that matters most.** Per-integration egress attribution is not
-achieved by inspecting traffic and inferring its source — which is what a gateway-level firewall
-must do, and why the closest prior work [18] cannot attribute. It is achieved by giving each
-integration a network stack whose only exit is the mediator. **Attribution becomes a property of
-the topology rather than a deduction from it.**
-
-**The primitives were verified on the target rather than assumed**, and the probe found two things
-a specification would not have: cgroup v2's `memory` controller is **absent** on a stock Raspberry
-Pi OS installation and must be enabled at boot, and the `io` controller is present but **not
-delegated** to a user manager — which is R7.
-
-> **Figure 9.1 — [TO DRAW]** One sandbox: the six namespaces, the seccomp filter, the cgroup slice,
-> the single inherited socket, and what is on each side of the boundary.
-
-## 9.4 The manifest
-
-**The declaration goes in the `manifest.json` the integration already ships**, under a
-`permissions` key. This is the design's central economy: **the ecosystem already declares
-something authority-shaped** — `iot_class`, `dependencies`, `requirements` — and that declaration
-is currently spent on a log line and a discovery heuristic.
-
-**Table 9.3 — The declarable capabilities**, with the measured community use of each
-
-| Clause | Grants | Community use | Granularity |
+| Decision | Chosen | Rejected | Deciding evidence |
 |---|---|---|---|
-| `entities.read` | Reading other entities' state | 38.9% | Entity-ID patterns, **domain required** |
-| `entities.subscribe` | State-change subscription | — | Same patterns; polling and watching are the same disclosure |
-| `entities.write` | Setting state on entities it does not own | 6.9% | Patterns, domain required |
-| `services.call` | Calling a service belonging to something else | 22.2% | **`domain.service`, exact, no wildcards** |
-| `events.subscribe` / `events.fire` | Event bus access | 48.6% touch the bus | Explicit event types; `*` is not accepted |
-| `network.egress` | Outbound network | — | **`host:port`**, resolved and pinned by the mediator. Non-public destinations require a separate flag |
-| `files` | Paths outside its own directory | 33.3% | Individual paths with `read`/`write` |
-| `config_entries.read_all` | Enumerating *everyone's* config entries | 41.0% | Separate from the ambient own-entry lifecycle |
-| `http.register` | Registering routes on the running server | 19.4% | Explicit path prefixes |
+| Where enforcement lives | Outside Home Assistant's process | Checks inside the platform's process | A garbage-collector walk reaches the platform's credential from any code in the same process [9] (Section 12.1) |
+| What runs inside the sandbox | A minimal Home Assistant runtime per integration, whose state starts empty | A proxy object presenting the platform's attributes and forwarding each access to the mediator | Integrations are written against the platform's internal objects, not a narrow interface; an empty runtime makes an undeclared entity absent rather than refused |
+| The isolation primitive | Linux namespaces, a seccomp filter and a cgroup v2 slice per integration | Language-level confinement; WebAssembly; gVisor; microVMs; containers | Language-level confinement shares the interpreter it restricts, and WebAssembly cannot run integrations with compiled dependencies; gVisor and microVMs cost memory the reference device does not have; containers package the same primitives and add no boundary |
+| Scope | Every third-party integration, and none of the platform's own | Confining selected integrations, or the platform itself | The platform's own components are the platform; third-party code is the code outside its security programme [10] |
 
-**`hass.auth` — 5.6% of integrations — has no clause and cannot be declared.** Users and tokens
-are the platform's authentication state, and a design whose whole purpose is to keep credentials
-away from third-party code should not offer a permission that hands them over. Those integrations
-are unsupported under this framework, and §12 reports them as such rather than quietly permitting
-it.
+The second decision carries most of the architecture's security, because it turns a policy into a property of the system's shape. An integration inside the sandbox reads and writes a real Home Assistant state machine, exactly as it would unconfined, but that state machine holds only the entities its manifest declares. An entity it was not granted is therefore not refused when it asks; it does not exist where the integration can look. The sandbox is where this begins.
 
-### 9.4.1 The asymmetry rule
+## 9.2 The sandbox
 
-**No wildcard is accepted in `services.call`. Every entry names one `domain.service`.** This is
-the single rule S5 exists to produce, and it comes from Tyche [17]: `lock.unlock` is not the
-inverse of `lock.lock` in risk terms, and a `lock.*` grant hands over the unlock with the lock.
-T05 — an integration calling `lock.unlock` — is the register's joint-highest risk.
+Each sandbox is built so that what an integration must not reach is absent from its view rather than forbidden to it. The supervisor creates seven Linux namespaces for every integration [33], applies a seccomp filter to its system calls [34], and places it in a cgroup v2 slice that bounds its memory, processes and temporary storage [35]. Figure 9.2 shows how these layers enclose one integration.
 
-**The same rule is not applied to entity patterns**, and the asymmetry is deliberate: an
-integration usually cannot know the entity IDs it will need at authoring time, because they depend
-on the user's devices, whereas **it always knows which services it calls**, because those are
-written into its code. Requiring exactness where it is knowable and permitting patterns where it
-is not is what keeps the manifest writable.
+**[Figure 9.2 — One sandbox.** Nested boundaries for the user, mount, pid, network, ipc, uts and cgroup namespaces; the seccomp filter on the system-call edge; the cgroup slice with its default bounds (640 MB of memory, 64 processes, 64 MB of private `/tmp`); the filesystem view (the integration's own directory read-only, its data directory writable); a network stack with loopback only; and the one descriptor that leaves the sandbox, the channel.**]**
 
-### 9.4.2 What no grant may reach
+The namespaces remove the host from the integration's view, and each removal answers a named threat. The user namespace maps the sandbox's root to an unprivileged user outside it, so nothing the integration does is privileged on the host. The mount namespace gives it a filesystem assembled from bind mounts and entered with `pivot_root` rather than `chroot`, which a process holding capabilities in its own user namespace can escape. Inside that view, the platform's `secrets.yaml` and its stored configuration entries are not unreadable but absent, which closes the file-theft technique used in the 2021 disclosures [4]. The pid namespace shows the integration only its own processes, so the environment of another process cannot be read; the network namespace gives it a loopback interface and no route; and the ipc, uts and cgroup namespaces remove shared memory, the hostname and the sandbox's position in the control-group tree as channels of information. The project's own self-test confirms the result from inside: the integration sees itself as user 0 and one process, a loopback interface, its own directory read-only and its data directory writable, and neither the secrets file nor the configuration store.
 
-**The configuration root is not grantable, and neither is `.storage/`.** A grant of the
-configuration directory would include `secrets.yaml` and the config-entry store — precisely the
-capability exercised in the 2021 disclosures. A declared path enclosing either location is
-**rejected when the manifest is parsed**, not when it is first used.
+The seccomp filter is narrower than the design first specified, and the narrowing is deliberate. The design called for an allow-list of the system calls an integration needs, but for a full Python interpreter running Home Assistant that list runs to several hundred entries and changes with each interpreter release. The implemented filter is a deny-list of the calls that are dangerous whatever namespace they are made from, such as loading kernel modules, `ptrace`, mounting, and creating further namespaces. A deny-list is defensible in this position only because the namespaces have already removed almost everything a system call could reach.
 
-**Path grants are checked after resolution**, so `..` traversal and symbolic links cannot escape a
-grant. This is the same principle as the network's resolve-then-pin, applied to the filesystem:
-**a name is not the thing it names, and checking the name is not checking the thing.**
+The supervisor that builds this boundary must run inside the part of the control-group tree that systemd delegates to the user, and it checks the host before it confines anything. An unprivileged process may move another process between control groups only where it owns their common ancestor, which is true inside the delegated subtree and false in an ordinary login session. The supervisor's preflight therefore exercises each operation it depends on, creating a group, setting a memory limit and placing a process, and refuses to start, with a stated reason, if any of them fails. A framework that started anyway on a host without the memory controller would imply a protection it could not give.
 
-### 9.4.3 A worked example
+Inside the boundary, the platform runtime is constructed rather than booted. Home Assistant's own start-up imports the web frontend and the recorder, which is the weight a sandbox exists to avoid, so the sandbox builds a `HomeAssistant` object directly, wires the registries that integrations reach for, and sets up only the platform components the integration declares. The cost of this arrangement, between 56 and 136 MB of memory per sandbox depending on those components, is reported in Section 12.3. What the integration may ask for beyond its own sandbox is set by its manifest.
+
+## 9.3 The manifest
+
+An integration's authority is exactly what its manifest declares, and no declaration can be broader than the clause that names it. The manifest is a `permissions` block in the integration's existing `manifest.json`, with eight top-level capabilities whose full schema is given in Appendix G. Table 9.2 lists the clauses the evaluated integrations used.
+
+**Table 9.2 — The declarable clauses, and what each governs**
+
+| Clause | Governs | Example |
+|---|---|---|
+| `entities.read`, `entities.subscribe` | Mirroring an entity's state into the sandbox, once or on every change | `light.living_room` |
+| `entities.write` | Setting the state of an entity the integration does not own | — |
+| `services.call` | Calling one named service; no wildcard is accepted | `light.turn_on` |
+| `network.egress` | A connection to one host and port on the internet | `dataportal-api.nordpoolgroup.com:443` (`nordpool`) |
+| `network.local.tcp`, `network.local.udp`, `network.discover` | A port on the home network, or discovery by broadcast | UDP port 6445 (`midea_ac_lan`) |
+| `resources` | The sandbox's memory, processor and process limits | `memory_mb: 192` |
+
+The service clause is the one place where the schema refuses a convenience, and the reason is that physical operations are not symmetric in risk. A grant of `lock.lock` must not imply `lock.unlock`, yet a wildcard such as `lock.*` would hand over both, and an integration calling `lock.unlock` is among the highest-rated threats in the project's register (Appendix C). Every service is therefore named individually. Entity clauses accept patterns within a domain, because an integration cannot know at authoring time which devices a user owns, but it always knows which services its own code calls. Two further limits are absolute: no file grant may enclose the configuration directory or its `.storage` store, and every path is resolved before it is compared with the grant, so that neither `..` nor a symbolic link can leave it.
+
+A real manifest shows how little an ordinary integration needs. The functional retest gave `adaptive_lighting` the clauses below, and the integration computed a brightness from the sun's position and set the declared light to it.
 
 ```json
-{
-  "domain": "example_weather",
-  "name": "Example Weather",
-  "iot_class": "cloud_polling",
-  "permissions": {
-    "schema_version": 1,
-    "network": { "egress": ["api.example-weather.invalid:443"] },
-    "entities": { "read": ["sensor.outdoor_temperature"] },
-    "resources": { "memory_mb": 192, "max_processes": 8 }
-  }
+"permissions": {
+  "schema_version": 1,
+  "entities": { "read": ["light.living_room"], "subscribe": ["light.living_room"] },
+  "services": { "call": ["light.turn_on"] }
 }
 ```
 
-What this integration **cannot** do, without any of it being written down: call any service, write
-any entity, subscribe to any event, read any file outside its own directory, enumerate anyone's
-config entries, register an HTTP route, or reach any host but the one named. **Eight of the ten
-declarable clauses are denied by their absence**, which is S6.
+The manifest can come from two sources, and enforcement does not depend on which. A manifest shipped by the integration's author is used as written; a manifest supplied with the installation, derived by analysis or by hand, is used only after the user confirms it; and an integration with neither receives no mediated capability at all. A declaration, however, is only as strong as the point that enforces it, which is the mediator.
 
-Note what the declaration *reveals*. This manifest is legible to a user who cannot read Python —
-one host, one sensor — and a weather integration requesting `lock.unlock` would be equally
-legible. **F4 does its work through the schema's shape rather than through a presentation layer.**
+## 9.4 The mediated request
 
-### 9.4.4 One capability that inverts the rule, and why
+Every request that crosses the boundary is identified by the channel on which it arrived, decided against the manifest, recorded durably, and only then performed. Figure 9.3 traces one request from the integration to the house.
 
-Every capability in this design denies by absence. **`resources` cannot.** If an absent `resources`
-clause meant "no limit", the integration that declares nothing would run unbounded — inverting
-default-deny for the single requirement whose threat is an integration consuming everything.
-Absence therefore means *the framework's* bound, and a declaration can only be read as a request to
-be bound **more** tightly than the default, never less. `resources` sits in a permissions manifest
-despite granting nothing because **it is the one capability whose declaration is a constraint on
-its declarer.**
+**[Figure 9.3 — The life of a request.** A sequence diagram. The integration calls a service in its runtime (B); the bridge's sandbox half forwards it over the channel; the mediator (1) identifies the sender from the channel, (2) takes the manifest bound to that identity, (3) decides against its clauses, (4) writes the decision durably to the audit log, (5) performs the call on (A) with its own token, and answers. Below it, the two other directions: a change in (A) pushed into a subscribed sandbox, and a household's command sent from (A) into the integration that owns the entity.**]**
 
-## 9.5 The mediator and the channel
+Most of what an integration does never reaches the mediator, and that is the reason mediation is affordable. Three mechanisms enforce the manifest, and only one of them costs anything per request. Structural enforcement, by the kernel at sandbox creation, covers the filesystem, process visibility and resource limits; an integration cannot ask to read the secrets file, because there is nothing to ask. Mediated enforcement covers entity reads, writes and subscriptions, service calls and events, at one round trip each. Proxied enforcement covers network connections, at one decision per connection (Section 9.5). Even a declared entity is read from the sandbox's own state machine at full speed once it has been mirrored in, so the mediator sees a read once rather than at every access.
 
-### 9.5.1 Not everything is mediated, and that is the performance argument
+The channel itself carries the integration's identity, which is why identity cannot be forged. Each channel is one end of a Unix socket pair that the supervisor creates when it builds the sandbox [36], so the mediator knows which integration is speaking from the socket a request arrived on, and never from a field in the message. A request that names another integration is decided and recorded against the sender's identity; the name it claimed is kept beside it as a claim. Messages are framed as a four-byte length followed by a JSON object, a format chosen because the message rate is modest and a readable wire format is worth more during evaluation than the bytes it costs.
 
-| Mechanism | Enforced by | Capabilities | Per-request cost |
-|---|---|---|---|
-| **Structural** | The kernel, at sandbox creation | Filesystem, process visibility, resource limits, everything scoped to "its own" | **None** — the sandbox cannot express the request |
-| **Mediated** | The mediator, per request | Entity reads, writes, subscriptions; service calls; events; config-entry enumeration | One round trip |
-| **Proxied** | The mediator, per connection | Network egress | One connection setup |
+The order of the five steps is the property on which attribution rests: the record is written before the action, so that an action which succeeds and then crashes the mediator remains attributable. Every response carries the clause that decided it, as a pointer into the manifest, and since a correction made after the cut-off the record of a service call also names the devices it targeted, as the sandbox stated them (finding F54). The decision itself is still made on the service, so that the record's main target is always the field the decision was taken on.
 
-**Structural enforcement is the majority of the manifest.** An integration cannot ask to read
-`secrets.yaml` and be refused; the file is not in its mount namespace, so there is nothing to ask.
+The same channel also carries traffic towards the integration, in two forms that keep a confined integration responsive. When a subscribed entity changes in (A), the mediator pushes the new state into the sandbox; the subscription is decided and recorded once, and each delivery then costs the mediator about 11 µs and writes nothing. When a member of the household operates an entity that a confined integration owns, the command travels from the bridge in (A) through the mediator, which records it before passing it on, to the same entity in (B), where the integration's own handler runs. The user's action then succeeds or fails in (A) as it would for a native entity.
 
-### 9.5.2 Identity is a property of the channel, not a field in the message
+The mediator's authority over the house is narrower than an integration's was before confinement, but it is not scoped to the integration's needs. An integration loaded in Home Assistant's process holds the platform object itself and can do anything the platform can. The mediator instead connects to (A) as `confine-mediator`, an ordinary user that an administrator designates in the bridge, and Home Assistant refuses it every administrative operation, such as listing the house's users or subscribing to every service call. An ordinary user can still control every entity, however, so a compromised mediator could operate any device in the house. The confined integration itself holds no token at all. Network access follows a separate path through the mediator.
 
-Each sandbox is created with **one connected Unix domain socket, inherited as a file descriptor**.
-The supervisor creates the socket pair before the sandbox exists, keeps one end for the mediator,
-and passes the other into the child. Nothing else crosses the boundary.
+## 9.5 Reaching the network
 
-**The mediator knows which integration is speaking because it created that socket for that
-sandbox.** There is no identity field to forge, no token to steal, and no authentication step that
-could be bypassed: the question "who is asking?" is answered by *which file descriptor the request
-arrived on*. The alternative is worth stating in order to reject it — a protocol in which the
-sandbox names itself asks the adversary to self-report the one fact the decision turns on, and
-would be defeated by a one-line change to the integration.
+The sandbox's network namespace provides no route anywhere, so every connection an integration makes is one the mediator opened on its behalf. A small shim inside the sandbox turns the integration's ordinary socket calls into requests on the channel, and the mediator's egress broker serves them in five steps, which Figure 9.4 shows.
 
-### 9.5.3 The protocol, and the order of the five steps
+**[Figure 9.4 — Egress, resolved and pinned.** The integration connects to a declared host; inside the sandbox the name resolves only to a placeholder. The broker (1) decides against the host and port, (2) resolves the name itself, (3) re-checks the resolved address against the rule that internet egress may not reach a private, loopback, link-local or reserved address, (4) connects to exactly that address, and (5) passes the connected socket back over the channel. A name that resolves to an internal address when checked is refused at step 3, and no interval exists between check and use.**]**
 
-Length-prefixed JSON over the socket, carrying request/response in one direction and push in the
-other. **Every response carries the clause that decided it**, so attribution is a property of the
-protocol rather than something reconstructed from logs afterwards.
+The broker's order defeats the classic attack on a name-based rule, in which a name resolves to something harmless when it is checked and to something internal when it is used. Resolution and connection happen at one call site in the mediator, with no gap between them, and the sandbox never holds a routable address at all. The re-check uses the private address ranges of RFC 1918 [28] together with the other non-public ranges. Only TCP travels as a connected socket, because a connected TCP socket cannot be pointed elsewhere; a UDP socket can, which the project tested and confirmed, so datagrams are relayed by the mediator instead of handed over.
 
-The mediator's handling of one request is five steps, in this order:
+The home network is reachable only behind a separate and more explicit permission, because reaching it also means reaching the router and every other device in the house. A local clause names a port, since a port is a constant in the integration's code while a device's address is a lease the author cannot know. The mediator accepts only private home-network addresses for these clauses and records the address it pinned, and discovery by broadcast is served by datagrams the mediator pushes into the sandbox. What this does not limit is stated in Section 9.8.
 
-1. **Identity** — from the socket the request arrived on.
-2. **Manifest** — the manifest bound to that integration's content hash.
-3. **Decision** — match against the clauses; absent a match, **deny**.
-4. **Record** — write the decision, its clause and the identity to the audit log.
-5. **Act** — only now, and only using the mediator's own platform credential.
+Two consequences of the shape matter for ordinary integrations. The platform's shared HTTP client starts a multicast resolver, and a new network namespace gives its loopback interface no multicast, so the sandbox enables multicast on loopback alone, with no route out; without it, no integration using the platform's recommended client could make a request at all (Section 12.2). An integration that refreshes an OAuth token does so inside its sandbox, so the new token is written to the sandbox's data directory and never passes through the mediator. Each connection the broker opens, like every other decision, enters the record.
 
-**The order matters and is not an implementation detail: the record is written *before* the
-action**, so an action that succeeds and then crashes the mediator is still attributable.
+## 9.6 Identity and the record
 
-> **Figure 9.2 — [TO DRAW]** The mediated request path, five steps, showing the credential on the
-> mediator's side of the boundary and never crossing it.
+A decision is attributable only if the record names which code made the request and cannot be changed afterwards without detection. An integration's identity is therefore not its name, which is the same in every release, but a hash over three separately hashed components: its source tree, its manifest, and its declared requirements with the versions actually installed. A manifest changed without a source change is an authority change, and dependencies are where supply-chain changes arrive, so an identity blind to either would miss the attack most likely to reach the platform through its normal update path. The identity is computed once, when the sandbox is constructed, and written in a run record to which every later decision refers.
 
-## 9.6 Mediated egress
+**[Figure 9.5 — The audit record.** A run record followed by decision records. Each record carries the hash of the one before it and, separately, a keyed MAC whose key exists only in the mediator's memory. The hash chain detects modification, deletion and reordering; the MAC detects a rewritten chain made by someone who can write the file but not read the mediator's memory. Annotations mark what each record carries: run id, operation, target, permit or deny, the deciding clause.**]**
 
-The egress broker is the one capability that cannot be enforced structurally, because the
-integration must genuinely reach the internet for 41% of the corpus to work at all.
+The record holds decisions and not their consequences, and it is out of reach of the integrations it describes. A subscription is one decision, and the state updates it delivers are not recorded, because a log buried in traffic is as useless as no log. Each decision record carries its run, its operation and target, its verdict and the clause that produced it, so the log answers both halves of attribution together: which code acted, and which clause allowed it. No sandbox can alter the log, because the log lies outside every sandbox's filesystem and no message on the channel writes to it. Against an attacker with write access to the host, the chain and the MAC provide evidence rather than protection, and the two fail independently. The record also has to survive the framework's own failures.
 
-**The broker resolves the declared hostname itself and pins the connection to the resolved
-address**, then passes the connected socket into the sandbox by `SCM_RIGHTS`. The sandbox never
-holds a route and never performs the resolution, so a hostname that resolves to an internal
-address at request time — DNS rebinding, T11 — is refused by the broker on the address rather than
-permitted on the name. **Resolve-then-pin is structural by construction**, not a check that could
-be skipped.
+## 9.7 When something fails
 
-Two implementation findings are recorded because they changed the design:
+The framework fails closed, and when it stops an integration it tells the household in plain language and offers one action that cannot widen anything. If the mediator stops, every channel closes, and each sandbox can reach nothing, because the channel was its only route out; no code path turns an unavailable mediator into an unmediated action.
 
-- **The name does not survive to the connection.** Measured against twelve running integrations,
-  **96% of resolutions go through `aiodns`** rather than `getaddrinfo`, because the platform gives
-  every client session an async resolver. Resolution and connection happen in different libraries,
-  so the shim must patch **both seams**.
-- **A grant of a host is a grant of every port on it.** The clause therefore carries a port. The
-  measured sample reached 8123, 6445 and 20086 as well as 443.
+A sandbox that floods the mediator with refused requests is stopped rather than allowed to drown the record. Recording every refusal is required, and dropping records under load would break that requirement, so the mediator takes the option that audit standards recognise of preventing further audited activity [30], [31], applied to one sandbox rather than to the whole system. The limit is 100 refusals within any 10 seconds, eight times the most any honest run in the project's experiments produced. At the limit the mediator writes one record, closes the integration's channels and marks it so that a respawn cannot reset the count, and the supervisor kills the sandbox through its cgroup. The bridge then raises a Repairs issue in (A) saying that the integration "kept trying to do things it does not have permission to do", that this is usually a bug, and that restarting gives it no new permissions. Its one action, Restart, registers the integration again under the same manifest, so a user who confirms without reading cannot make the house less safe.
 
-A **UDP relay** serves the datagram integrations the measurement found; the quarter of them using
-asyncio `DatagramProtocol` transports is named as unserved rather than assumed handled.
+The supervisor keeps each integration running against (A) and restarts it when the household asks. One limit applies to that restart: the runtime sets an integration up through its own configuration flow, which aborts when the data directory already holds the integration's entry, so a restarted integration cannot yet reuse its stored state. This and the architecture's other limits are stated next.
 
-## 9.7 Identity and the audit record
+## 9.8 What the architecture does not do
 
-**An integration's identity is its domain name plus a content hash of what was loaded.** A name
-alone cannot support attribution, because the name is stable across every version an integration
-ever ships — and a malicious update through the authorised path is exactly threat T12.
+The architecture inherits some limits and carries others of its own, and each is stated so that the guarantees above are read at their actual strength. Table 9.3 lists them; Section 14 prices the ones that future work could remove.
 
-What is hashed is a **tuple of three components, hashed separately and then together**: the source
-tree (the code that ran), the manifest including the permissions block (**the manifest *is* the
-grant** — a manifest swapped without a source change is an authority change), and the declared
-requirements with resolved versions (where supply-chain change actually lands).
+**Table 9.3 — Limits of the architecture**
 
-**Keeping the three separate is the decision worth defending.** A single composite hash says
-*something changed*. Three component hashes say *what* changed — and a source change, a permission
-change and a dependency change are different events warranting different responses.
+| Limit | Kind | Consequence |
+|---|---|---|
+| The kernel is the boundary | Inherited | A kernel exploit escapes every sandbox; a stronger primitive is the deployer's choice and the architecture does not prevent one |
+| The memory controller is off by default on the reference device | Inherited | A precondition on deployment; the framework refuses to start without it |
+| The mediator's user still controls every entity | Inherited, narrowed | A compromised mediator can operate any device, though no administrative function |
+| The supervisor is trusted and checked by nothing in the design | Structural | It runs once per sandbox, off the request path and unprivileged, which bounds it without removing it |
+| A local network clause reaches any home-network host on its port | Design | An integration granted a port can reach every device that answers on it |
+| Service data given as a dictionary is not forwarded | Implementation | Calls that pass structured data reach the platform without it (finding F54) |
+| Three declarable operations are recorded but not performed | Implementation | `event.fire`, `event.subscribe` and `config_entries.list` are permitted and answered, and nothing acts (finding F50) |
+| A command in a sandbox's first second has no effect | Implementation | It is recorded as permitted and is lost (finding F53) |
+| A restarted integration cannot reuse its data directory | Implementation | It sets up afresh (Section 9.7) |
 
-Identity is computed **once per sandbox construction**, which makes "re-check the declaration per
-version" automatic rather than a rule someone must remember: a changed integration is a changed
-identity before it has run a line.
-
-**Two chains, failing independently.** Each record carries the hash of the record before it, so
-modification, deletion or reordering breaks every subsequent link; a keyed MAC over the same
-records detects an adversary who rebuilds the chain wholesale. **Decisions are recorded; their
-consequences are not** — a subscription is one decision, and logging every state update it then
-delivers would bury the record that matters under traffic.
-
-> **Figure 9.3 — [TO DRAW]** The audit record: the three-component identity, the run record, the
-> decision records, and the two chains — what each detects and what neither does.
-
-## 9.8 What the design does not do
-
-Stated here rather than conceded later. The **push loop is not built**: declared entities are
-mirrored once at sandbox construction, so an integration sees the value that existed when it was
-built. This is why S3's subscription half is partial. The **mediator acts on an in-memory stand-in
-rather than a live Home Assistant**, so what crossed the boundary is real and carries its clause,
-but what a live instance would do with it is untested. **Dependency installation is unresolved**,
-so the third component of the identity stays vestigial. Each is priced in §14.
+These limits bound the architecture rather than undermine it. None of them gives a confined integration a capability its manifest withholds, and the evaluation in Section 12 measures the architecture at exactly this strength.
