@@ -155,6 +155,8 @@ as the carried-in item "re-rate R3 after F45" already says.
 
 ## Decisions for Younes
 
+**Decided 2026-10-10: organise by the life of a request.** Figures: the five proposed, unless Younes swaps one.
+
 1. **Organise by the life of a request (proposed), or keep the four-decision structure of the
    draft?** The proposal moves the decisions into Table 9.1 and gives the space to what was built.
 2. **Five new figures.** Is that the right set, or would you rather swap one (for example, a
