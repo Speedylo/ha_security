@@ -2,7 +2,7 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
-**F58 found (open, unrated): `egress.is_public` accepts 100.64.0.0/10 (CGNAT/Tailscale, incl. the Pi's own 100.86.243.57).** Candidate fix `is_global`; deferred with F57 until Younes's §9 feedback is complete.
+**F58 found (open, unrated): `egress.is_public` accepts 100.64.0.0/10 (CGNAT/Tailscale, incl. the Pi's own 100.86.243.57).** Candidate fix `is_global`; **Younes: waits with F57** until his §9 feedback is complete. **Restart with a stored entry** (fresh data dir per start, OAuth token lost): future work in §9.7/Table 9.2 for now, but Younes expects we will have to solve it ourselves — raise after F57/F58.
 
 **2026-10-10 (night): F57 found — Major, open.** No approval is required before a sandbox starts: a derived manifest skips §5.9.4's confirmation, and an author-declared one (including an update that widens itself) gets no human look. **Younes decided: gate BOTH provenances on an approval matching the current identity. Do NOT fix until Younes has finished reading §9 and given all his feedback.** Details and the fix plan: `notes/verification_plan_20261005.md` F57. §9 also gained (at his request) four decision paragraphs in place of Table 9.1 and a chroot/pivot_root + control-group-tree explanation in 9.2.
 

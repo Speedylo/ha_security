@@ -187,6 +187,8 @@ seccomp(2), [35] the Linux kernel's cgroup v2 documentation, [36] unix(7) (socke
 
 **Owed to §14 (2026-10-10):** future work — a supported per-entity policy for `confine-mediator`, limited to the union of the installed manifests' entities (HA's policy engine and `auth_store.py` can hold one; no interface creates it). Table 9.2 already names it. Also note for §14/§12: a non-admin user can call any non-admin service that targets no entity (no per-entity check applies).
 
+**Owed to §14 (2026-10-10): restart with a stored entry.** Runtime (B) has no boot step that sets up stored config entries, so a reused `/sandbox/data` makes the flow abort `already_configured` and the integration runs unset-up; the supervisor gives each start a fresh directory (`supervise.py:136`), so stored state (e.g. a refreshed OAuth token, §7.42) is lost. Fix: when the directory holds the entry, set it up (`hass.config_entries.async_setup`) instead of driving the flow. **Younes 2026-10-10: future work for now, but he expects we will have to solve it ourselves** — raise it when planning post-§9 engineering, after F57/F58.
+
 **Reference owed:** [40] C. Jackson, A. Barth, A. Bortz, W. Shao and D. Boneh, "Protecting browsers from DNS rebinding attacks", ACM CCS 2007 — verify the bibliographic details at the week-5 rebuild.
 
 **Next:** Younes's review of §9 and the five figures (collect all feedback), then F57 and F58, then trim.
