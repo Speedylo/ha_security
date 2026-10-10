@@ -2,7 +2,7 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
-**2026-10-10 (evening): §9 drafted with its five figures.** Prose in `submission/09_system_architecture.md` (life of a request, 2,826 words vs 2,600; trim after review). Figures 9.1–9.5 are scripts in `figures/` (`fig_9_1_system.py` … `fig_9_5_record.py`, shared renderer `svg9.py`, greyscale, labels in words), each fact checked against the code it names; embedded in §9 with captions. **Next: Younes reviews §9 and its figures against the sources, then trim, then §8** (Figure 5.1's TB2 is stale after F45).
+**2026-10-10 (evening): §9 drafted with its five figures.** Prose in `submission/09_system_architecture.md` (life of a request, 2,826 words vs 2,600; trim after review). Figures 9.1–9.5 are scripts in `figures/` (`fig_9_1_system.py` … `fig_9_5_record.py`, shared renderer `svg9.py`, greyscale, labels in words), each fact checked against the code it names; embedded in §9 with captions. Table 9.1 (four decisions) rewritten as four paragraphs at Younes's request; prose now ~3,470 words. **Next: Younes reviews §9 and its figures against the sources, then trim, then §8** (Figure 5.1's TB2 is stale after F45).
 
 **2026-10-10, decided (Younes): write the whole report first, then ONE full rerun at the final tag** (end of week 5, predictions first: timings, all mutants, suites, faults, retest, recompute). Until then each fix gets its tag + cheap regression, and a line in the ledger in `notes/rewrite_plan_outline_mapping.md` (after §0's order). The report needs a "changes after the cut-off" paragraph from that ledger.
 

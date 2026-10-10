@@ -10,18 +10,15 @@ Three kinds of process make up a confined installation, and only one of them hol
 
 **Figure 9.1 — The system.** The house's instance (A) with its bridge integration; the framework's one unprivileged host process, in which the supervisor builds the sandboxes and the mediator connects to (A) as the non-admin Home Assistant user `confine-mediator`; and one sandbox per third-party integration, joined to the mediator by its own channel. The only credential to the house is the mediator's token, and no sandbox holds one.
 
-Four decisions fixed this shape, and Table 9.1 records them with the alternatives each displaced.
+Four decisions fixed this shape, and each is easiest to understand through the alternative it displaced. The full comparison of candidates belongs to the method and is given in Section 8; the paragraphs below state each decision, what it rejected, and the evidence that settled it.
 
-**Table 9.1 — The four decisions that fix the architecture**
+The first decision places enforcement outside Home Assistant's process, because no check inside that process can be relied on. Home Assistant loads every integration into one Python interpreter, and Python offers no memory protection between pieces of code that share an interpreter. Corno and Mannella show that an integration can walk the garbage collector's list of live objects and reach anything the platform holds, including its credentials [9], and Section 12.1 reproduces this on the reference device. A permission check written inside the platform would sit in the same memory as the code it was meant to restrict, and that code could simply bypass or rewrite it. Enforcement therefore has to live in a separate process, where the operating system, rather than Python, keeps the two apart.
 
-| Decision | Chosen | Rejected | Deciding evidence |
-|---|---|---|---|
-| Where enforcement lives | Outside Home Assistant's process | Checks inside the platform's process | A garbage-collector walk reaches the platform's credential from any code in the same process [9] (Section 12.1) |
-| What runs inside the sandbox | A minimal Home Assistant runtime per integration, whose state starts empty | A proxy object presenting the platform's attributes and forwarding each access to the mediator | Integrations are written against the platform's internal objects, not a narrow interface; an empty runtime makes an undeclared entity absent rather than refused |
-| The isolation primitive | Linux namespaces, a seccomp filter and a cgroup v2 slice per integration | Language-level confinement; WebAssembly; gVisor; microVMs; containers | Language-level confinement shares the interpreter it restricts, and WebAssembly cannot run integrations with compiled dependencies; gVisor and microVMs cost memory the reference device does not have; containers package the same primitives and add no boundary |
-| Scope | Every third-party integration, and none of the platform's own | Confining selected integrations, or the platform itself | The platform's own components are the platform; third-party code is the code outside its security programme [10] |
+The second decision gives each sandbox a real but minimal Home Assistant runtime instead of an imitation of one. The alternative was a proxy object: a stand-in for the platform object that integrations receive, presenting the same attributes and forwarding every access to the mediator. A proxy makes mediation total by construction, but it rests on the assumption that integrations are written against that one object, and they are not. Of the 1,482 integrations shipped with Home Assistant 2026.8.3, 91% import the platform's helper layer (its entity base classes, polling coordinator and registration functions), and only two set state directly on the platform object. The helper layer expects genuine platform internals beneath it, so a proxy would have to reproduce a large and undocumented surface faithfully. A real runtime satisfies those expectations by being the real code, with one difference: its state machine starts empty and holds only the entities the manifest declares. This decision carries most of the architecture's security, because it turns a policy into a property of the system's shape. An entity the integration was not granted is not refused when it asks; it does not exist where the integration can look.
 
-The second decision carries most of the architecture's security, because it turns a policy into a property of the system's shape. An integration inside the sandbox reads and writes a real Home Assistant state machine, exactly as it would unconfined, but that state machine holds only the entities its manifest declares. An entity it was not granted is therefore not refused when it asks; it does not exist where the integration can look. The sandbox is where this begins.
+The third decision builds each sandbox from Linux's own isolation primitives: namespaces, a seccomp filter and a cgroup v2 slice. Five alternatives were rejected, for three different reasons. Language-level confinement, such as a restricted Python interpreter, fails for the same reason as the first decision, because the restriction shares an interpreter with the code it restricts. WebAssembly cannot run an unmodified integration that imports a compiled dependency, and the framework's premise is that integrations run unmodified. gVisor and microVMs would add a genuine second boundary, a kernel in user space or a guest kernel behind a hypervisor, but each costs memory per sandbox that the reference device cannot spare when several integrations run at once. Containers such as Docker and Podman were not rejected on cost, because they are not a different kind of isolation. A container is an ordinary process configured with the same namespaces, cgroups and seccomp filter, wrapped in an image format and a management daemon. Adopting one would change how the sandbox is packaged without placing any further barrier between the integration and the kernel. Home Assistant is also commonly deployed inside a container itself, so a container per integration would mean nesting one inside another. The namespaces are the boundary in either case, and the framework drives them directly.
+
+The fourth decision confines every third-party integration and none of the integrations that ship with Home Assistant. The line follows the platform's own security boundary. Integrations merged into Home Assistant's repository are reviewed by its maintainers and covered by its vulnerability disclosure process, whereas the project's security policy explicitly excludes "attacks that require the user to install a malicious other software, like a third-party integration" [10]. Third-party code is therefore exactly the code that no one else checks, and it is where the 2021 disclosures found the vulnerabilities that exposed a house's files, its secrets among them [4]. Some shipped components could not be confined in any case: the web server, the WebSocket API and the authentication system are the interface through which the mediator itself acts on (A), and confining them would leave nothing outside the sandbox to mediate. The sandbox in which a third-party integration runs is where a request begins.
 
 ## 9.2 The sandbox
 
@@ -41,9 +38,9 @@ Inside the boundary, the platform runtime is constructed rather than booted. Hom
 
 ## 9.3 The manifest
 
-An integration's authority is exactly what its manifest declares, and no declaration can be broader than the clause that names it. The manifest is a `permissions` block in the integration's existing `manifest.json`, with eight top-level capabilities whose full schema is given in Appendix G. Table 9.2 lists the clauses the evaluated integrations used.
+An integration's authority is exactly what its manifest declares, and no declaration can be broader than the clause that names it. The manifest is a `permissions` block in the integration's existing `manifest.json`, with eight top-level capabilities whose full schema is given in Appendix G. Table 9.1 lists the clauses the evaluated integrations used.
 
-**Table 9.2 — The declarable clauses, and what each governs**
+**Table 9.1 — The declarable clauses, and what each governs**
 
 | Clause | Governs | Example |
 |---|---|---|
@@ -120,9 +117,9 @@ The supervisor keeps each integration running against (A) and restarts it when t
 
 ## 9.8 What the architecture does not do
 
-The architecture inherits some limits and carries others of its own, and each is stated so that the guarantees above are read at their actual strength. Table 9.3 lists them; Section 14 prices the ones that future work could remove.
+The architecture inherits some limits and carries others of its own, and each is stated so that the guarantees above are read at their actual strength. Table 9.2 lists them; Section 14 prices the ones that future work could remove.
 
-**Table 9.3 — Limits of the architecture**
+**Table 9.2 — Limits of the architecture**
 
 | Limit | Kind | Consequence |
 |---|---|---|
