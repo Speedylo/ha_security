@@ -1,0 +1,38 @@
+
+1 — it starts
+
+  ok    run 1's sandbox started  — pid 22806
+  ok    in its own cgroup  — /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/sup-demo_flood-22793-1
+  ok    its switch is in (A)
+  ok    and the integration inside has published it
+
+2 — the mediator cuts it off, and the sandbox is killed (M31)
+
+  ok    the supervisor is told
+  ok    the sandbox's process is gone  — pid 22806
+  ok    and so is its cgroup  — /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/sup-demo_flood-22793-1
+  ok    the house sees a Repairs issue
+
+3 — a person submits the Repairs issue, and it runs again (M32)
+
+  ok    the fix flow completes  — create_entry
+  ok    run 2 started, a new process  — pid 22821
+  ok    the durable log holds one cut-off and one reinstatement  — cutoff 1, reinstate 1
+  ok    and the issue is gone
+
+4 — (A) restarts, and the integration comes back (F29, M33)
+
+  ok    the supervisor saw (A) go
+  ok    and come back
+  ok    run 3 started  — pid 22848
+
+5 — a supervisor killed outright; the next one clears what it left (F30, M34)
+
+  ok    the first supervisor is gone
+  FAIL  the second reports clearing what the first left  — nothing cleared
+
+  stopped at: the second reports clearing what the first left
+
+  logs: /home/younes/r2exp/f57/mut/M34/tmp/selftest-supervise-slwjy45i
+
+16/17 checks passed

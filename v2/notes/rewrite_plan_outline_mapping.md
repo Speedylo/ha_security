@@ -59,6 +59,8 @@ evidence currently sits on two tags: timings, memory, the 40 mutants and the reg
 | 2026-10-09 | `retest-2026-10-e2e` | `endtoend_function.py` (new), `endtoend_unconfined.py`, opt-in hooks in `sandbox_runtime.py` | test harness; hooks off unless asked for, but in code that runs confined | 27 suites |
 | 2026-10-10 | `fix-2026-10-f54` | `sandbox_runtime.py` (`_forward_service_call`), `audit.py` (`decision`), `selftest_bridge.py` | **framework fix** (F54) + its test | 27 suites ×2, `nordpool`, M08a/b, scheduler variants |
 | 2026-10-10 | `fix-2026-10-f56` | `endtoend_unconfined.py`, `endtoend_function.py` | instrument (F56) | Q1/Q2 only (no suite runs this arm) |
+| 2026-10-10 | `fix-2026-10-f58` | `egress.py` (`is_public`), `selftest_egress.py`, `verify/mutants/` (M04's text, M38 new) | **framework fix** (F58) + its test | R1–R5: egress suite, predicate on 3.13/3.14, M04–M06/M25/M38, `nordpool`; R6 by F57's suites |
+| 2026-10-10 | `fix-2026-10-f57`, then `fix-2026-10-f57b` | `audit.py`, `manifest.py`, `platform.py`, `describe.py`, `supervise.py`; `selftest_approval.py` (new); approvals in 12 harnesses and suites; `verify/mutants/` (M39, M40 new) | **framework fix** (F57) + its test; `-f57b` fixes two suites' approvals (A3 failed at `-f57`) | `selftest_approval`; suites ×2 (26/28 at `-f57`, **28/28 ×2 at `-f57b`**); `nordpool`; 15 mutants |
 
 §5 below (what must survive the compression) still holds in full.
 

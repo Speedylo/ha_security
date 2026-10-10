@@ -107,3 +107,35 @@ F58's R6.
 
 Ledger lines for both tags, Appendix F rows F57 and F58, §9.3's sentence on confirmation reworded to
 the built behaviour, and F57/F58 closed in the findings table if A1–A5 hold.
+
+## 6. Outcome (added 2026-10-10, after the runs)
+
+**A1 held.** At the test commit `8f9749f`, `selftest_approval` passed 4/10 and failed exactly checks
+1, 3, 5, 6, 8 and 9, exit 1, on the laptop and on the Pi (`experiments/verify/results/f57/a1/`).
+
+**A2 held.** At `fix-2026-10-f57` (`80daf82`), 10/10 on both. Each refusal names its reason:
+no approval on record, the source or the manifest changed, or the permissions differ.
+
+**A3 failed at `fix-2026-10-f57`, and the fault was in the harnesses, not the gate.** Both suite runs
+gave 26 of 28: `selftest_local_tcp` and `selftest_real_platform` were refused at registration with
+"its manifest changed since its permissions were approved". Both build their component through
+`selftest_push.component`, which this change made approve what it wrote, and then rewrite
+`manifest.json` with their own permissions. The gate refused a manifest changed after its approval,
+which is what it is for. The survey of call sites in §2 had looked for `register` and missed two suites
+that register through `selftest_push.Sandbox`. Fixed by approving after the rewrite, at its own tag,
+**`fix-2026-10-f57b`** (`4583a56`), the first tag kept as it was. **At `fix-2026-10-f57b`, every
+suite passed twice, 28/28** (`results/f57/regress_f57b/`), (A) up before and after.
+
+**A4 held:** `nordpool` 16/16 at `fix-2026-10-f57`. The two harness files changed at `-f57b` are
+not on its path.
+
+**A5 held,** read with the two broken suites set aside. All 15 mutants ran at `fix-2026-10-f57`,
+where those two suites failed regardless, so each mutant's failing suites were reread without them
+(`results/f57/regress/mutants/*/summary.txt`). Every mutant is still killed by another suite:
+M01 by nine; M03, M19, M20 and M21 by `selftest_policy`; M08a and M08b by `selftest_audit`; M17 by
+`selftest_c3` and `selftest_policy`; M31–M35 by `selftest_supervise`; **M39 and M40 by
+`selftest_approval`**. Under M39 the two broken suites passed, as they should with no gate, so M39's
+kill is `selftest_approval`'s alone. No mutant had to be rerun at `-f57b`.
+
+**A6 held:** the suites at `-f57b` contain F58's fix, so F58's R6 is discharged. F57 is resolved, at
+`fix-2026-10-f57b`.

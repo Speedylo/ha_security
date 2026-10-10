@@ -1,0 +1,17 @@
+A derived manifest, written beside the integration:
+  ok    1. with no approval on record, it is refused  — demo_approval: no approval is on record for its permissions; read it with `python3 -m confine.describe /tmp/selftest-approval-hxnh7zhj/custom_components/demo_approval` and approve it with `--approve`
+  ok    2. after `describe --approve`, it registers  — None
+  ok    3. widened to lock.unlock, it is refused, and the reason names the permissions  — demo_approval: its permissions differ from the ones approved; read it with `python3 -m confine.describe /tmp/selftest-approval-hxnh7zhj/custom_components/demo_approval` and approve it with `--approve`
+  ok    4. approved again, it registers  — None
+  ok    5. its code changed, it is refused, and the reason names the source  — demo_approval: its source changed since its permissions were approved; read it with `python3 -m confine.describe /tmp/selftest-approval-hxnh7zhj/custom_components/demo_approval` and approve it with `--approve`
+
+The same grant, declared by the author in manifest.json:
+  ok    6. with no approval of this exact declaration, it is refused  — demo_approval: its manifest changed since its permissions were approved; read it with `python3 -m confine.describe /tmp/selftest-approval-hxnh7zhj/custom_components/demo_approval` and approve it with `--approve`
+  ok    7. after `describe --approve`, it registers  — None
+  ok    8. an update that widens its own permissions block is refused  — demo_approval: its manifest changed since its permissions were approved; read it with `python3 -m confine.describe /tmp/selftest-approval-hxnh7zhj/custom_components/demo_approval` and approve it with `--approve`
+
+What an approval is not:
+  ok    9. another integration's approval does not admit this one  — demo_other: no approval is on record for its permissions; read it with `python3 -m confine.describe /tmp/selftest-approval-hxnh7zhj/custom_components/demo_other` and approve it with `--approve`
+  ok    10. with no manifest at all it registers ungated, and is granted nothing (S6)  — no manifest is bound to this integration (S6)
+
+10/10 checks passed

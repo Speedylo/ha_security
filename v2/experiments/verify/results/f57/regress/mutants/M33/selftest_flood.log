@@ -1,0 +1,72 @@
+
+F1, F3 — a flood, with a neighbour, at the real limit (100)
+
+  ok    the flooder is cut off  — after 0.81 s; supervisor told ['flooder']
+  ok    exactly 100 refusals are on disk for it, and one cutoff  — 100 refusals, 1 cutoff: 100 refusals within 10 s
+  ok    the cutoff is its last record: nothing was decided for it after
+  ok    its end of the channel was closed, and it noticed  — 99 answers, then: the mediator closed the channel
+  ..    F2: flood start to cut-off 0.810 s, the neighbour's grants included (predicted under 1 s on the Pi)
+  ok    F3: the neighbour was answered throughout, every answer a grant  — 236 answers, worst 21.4 ms
+  ok    F3: and no answer to it took 1 s or more
+  ok    the neighbour was not counted towards anything
+
+F1m — the mutation: the same flood with the limit out of reach
+
+  ok    is still running at twice the limit, with nothing cut off  — 213 refusals and counting
+
+F4 — cut off stays cut off until reinstated
+
+  ok    a cut-off integration cannot be registered again  — flooder was cut off for flooding the mediator with refused requests, and has not been reinstated
+  ok    reinstating one that was never cut off does nothing, and writes nothing
+  ok    reinstating the flooder succeeds, and the supervisor is told
+  ok    the reinstatement is recorded before the new run record  — ['reinstate', 'run']
+  ok    the count starts again from zero, and a second flood is cut off the same way  — 99 answers before the second cut-off
+
+F5 — a user's refused commands are not the sandbox's doing
+
+  ok    twenty refused commands, each recorded and answered to the user
+  ok    and none of them counted: four times the limit, no cut-off
+
+win — refusals more thinly spread than the window
+
+  ok    three bursts of four, 0.6 s apart, against five in 0.5 s: never cut off  — 12 refusals answered
+
+note — the house cannot be told
+
+  ok    the cut-off stands, and the missing Repairs issue is reported  — ['flooder: (A) is not reachable']
+  ok    a reachable house is told which integration, and why  — [('flooder', '5 refusals within 10 s')]
+
+bad — a malformed request (F33)
+
+  ok    the mediator is still running
+  ok    each malformed request is a recorded refusal with a clause  — 5 records: (request: each field of the type its operation reads) / the request could not be read: AttributeError: 'list' object has no attribute 'partition'
+  ok    answered to the sandbox as refusals, and counted: cut off at the limit  — 4 answers, then the mediator closed the channel
+  ok    the neighbour was answered throughout  — 725 answers
+
+late — a cut-off while no house is attached (F35 R1)
+
+  ok    the cut-off is delivered once a house is attached  — told [('flooder', '5 refusals within 10 s')]
+  ok    one that failed to reach the house is delivered by the next house that answers  — told [('flooder', '5 refusals within 10 s')]
+
+cmd — a command after the sandbox was replaced (F35 R5)
+
+  ok    the command reaches the running sandbox, and the user sees no error  — sandbox got {'push': 'entity.command', 'command': 1, 'entity': 'switch.misbehave', 'service': 'turn_on', 'data': {}}; user told []
+
+act — a permitted act that fails (F49)
+
+  ok    the sandbox is told it was refused, not that it was granted  — 2 answers: acting on the request failed: OSError: the device went away
+  ok    each failed act is a durable refusal naming why  — 3 refusals
+  ok    and failed acts count toward the cut-off: the third cuts it off  — cut off: True, 2 answers
+
+S7 — the durable record, events included
+
+  ok    F1/F4: chains verify, and memory matches the disk entry by entry
+  ok    F5: chains verify, and memory matches the disk entry by entry
+  ok    win: chains verify, and memory matches the disk entry by entry
+  ok    note: chains verify, and memory matches the disk entry by entry
+  ok    bad: chains verify, and memory matches the disk entry by entry
+  ok    late: chains verify, and memory matches the disk entry by entry
+  ok    cmd: chains verify, and memory matches the disk entry by entry
+  ok    act: chains verify, and memory matches the disk entry by entry
+
+36/36 passed

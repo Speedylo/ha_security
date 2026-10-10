@@ -1,0 +1,39 @@
+running the unconfined arm ...
+running the confined arm ...
+S3 paired baseline — what an integration can see of the home
+
+  the home: 36 entities, of which 20 disclose occupancy, presence or routine
+  declared: sensor.outdoor_temperature
+
+                                        unconfined    confined
+  entities present to it                    36/36        1/36 
+  of those, occupancy or presence           20/20        0/20 
+  changes by others delivered to it        4/4   none, see below
+
+  probe                                   unconfined  confined
+  sensor.outdoor_temperature              read        present; read + subscribe permitted
+  device_tracker.younes_phone *           read        absent; denied /permissions/entities/read
+  binary_sensor.bedroom_occupancy *       read        absent; denied /permissions/entities/read
+  lock.front_door *                       read        absent; denied /permissions/entities/read
+  alarm_control_panel.home_alarm *        read        absent; denied /permissions/entities/read
+  calendar.family *                       read        absent; denied /permissions/entities/read
+  sensor.electricity_price                read        absent; denied /permissions/entities/read
+
+  * discloses occupancy, presence or routine
+
+  On the delivery of other integrations' changes: unconfined, all 4 of 4 arrive
+  through EVENT_STATE_CHANGED, unasked and unfiltered. Confined, none arrive — but
+  **in this run that is an absent feature, not a demonstrated filter**: this harness
+  does not subscribe, so declared entities are mirrored once at construction and
+  no state change has a path in. The filter itself is measured by selftest_push
+  (§7.36, since 2026-10-04): declared changes delivered, undeclared ones not.
+PASS — S3, both halves.
+       Unconfined, the integration holds all 36 entities including every one of the
+       20 that disclose presence, and is told about every change to entities it
+       does not own.
+       Confined, 6 of 6 undeclared probes are not in its state machine at all,
+       every mediated read and subscription is refused with a clause, and the one
+       entity it declared is readable.
+       In this run the subscription half is a decision, not a delivered stream; the delivered,
+       filtered stream is selftest_push's (§7.36) — see the note above.
+  ok    the durable record (T4): 1 run, 15 decisions, chains verify and match the in-memory record

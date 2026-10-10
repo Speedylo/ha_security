@@ -1,0 +1,30 @@
+M01 failed_suites=11
+ALLDONE
+M03 failed_suites=3
+ALLDONE
+M08a failed_suites=3
+ALLDONE
+M08b failed_suites=3
+ALLDONE
+M17 failed_suites=4
+ALLDONE
+M19 failed_suites=3
+ALLDONE
+M20 failed_suites=3
+ALLDONE
+M21 failed_suites=3
+ALLDONE
+M31 failed_suites=3
+ALLDONE
+M32 failed_suites=3
+ALLDONE
+M33 failed_suites=3
+ALLDONE
+M34 failed_suites=3
+ALLDONE
+M35 failed_suites=3
+ALLDONE
+M39 failed_suites=1
+ALLDONE
+M40 failed_suites=3
+ALLDONE

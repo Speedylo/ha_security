@@ -1,0 +1,8 @@
+M04 failed_suites=1
+M05 failed_suites=2
+M06 failed_suites=1
+ALLDONE
+M25 failed_suites=0
+ALLDONE
+M38 failed_suites=1
+ALLDONE

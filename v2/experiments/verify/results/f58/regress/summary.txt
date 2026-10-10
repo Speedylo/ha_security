@@ -1,0 +1,6 @@
+r2_selftest_egress exit=0 seconds=1
+r3_python3 exit=0 seconds=0
+r3_ha314 exit=0 seconds=0
+r5_egress_nordpool exit=0 seconds=115
+mutants: M04 failed_suites=1 M05 failed_suites=2 M06 failed_suites=1 M25 failed_suites=0 M38 failed_suites=1 
+ALLDONE

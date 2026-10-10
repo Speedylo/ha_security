@@ -1,0 +1,17 @@
+A derived manifest, written beside the integration:
+  FAIL  1. with no approval on record, it is refused  — None
+  ok    2. after `describe --approve`, it registers  — None
+  FAIL  3. widened to lock.unlock, it is refused, and the reason names the permissions  — None
+  ok    4. approved again, it registers  — None
+  FAIL  5. its code changed, it is refused, and the reason names the source  — None
+
+The same grant, declared by the author in manifest.json:
+  FAIL  6. with no approval of this exact declaration, it is refused  — None
+  ok    7. after `describe --approve`, it registers  — None
+  FAIL  8. an update that widens its own permissions block is refused  — None
+
+What an approval is not:
+  FAIL  9. another integration's approval does not admit this one  — None
+  ok    10. with no manifest at all it registers ungated, and is granted nothing (S6)  — no manifest is bound to this integration (S6)
+
+4/10 checks passed

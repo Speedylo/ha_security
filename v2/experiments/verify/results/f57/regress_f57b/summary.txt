@@ -1,0 +1,3 @@
+suites_1 failed=0 of 28
+suites_2 failed=0 of 28
+ALLDONE

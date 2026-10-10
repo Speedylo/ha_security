@@ -1,0 +1,11 @@
+  ok    §4.2.2: the accept value for the RFC's sample key
+  ok    §5.7: 'Hello' masked with the RFC's key is the RFC's eleven bytes
+  ok    §5.7: an unmasked server frame parses to 'Hello'
+  ok    §5.7: the fragmented form arrives as two frames, FIN only on the second
+  ok    bytes arriving one at a time still make one frame, and only at the end
+  ok    §5.7: the 16-bit and 64-bit extended lengths
+  ok    §5.1: a masked frame from the server is refused
+  ok    §5.5.2: a ping is answered with a masked pong carrying its payload  — b'beat'
+  ok    and the message after the ping arrives as JSON  — [{'a': 1}]
+
+9/9 checks passed

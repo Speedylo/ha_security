@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/younes/r2exp/f57/mut/M17/framework/confine/selftest_real_platform.py", line 480, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/younes/r2exp/f57/mut/M17/framework/confine/selftest_real_platform.py", line 115, in main
+    reader = Sandbox(mediator, "selftest", manifest(root, "selftest", {
+        "entities": {"read": [TEMP], "subscribe": [TEMP]},
+        "services": {"call": ["input_number.set_value"]}}))
+  File "/home/younes/r2exp/f57/mut/M17/framework/confine/selftest_push.py", line 78, in __init__
+    mediator.register(domain, Channel(ours), component=directory)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/f57/mut/M17/framework/confine/mediator.py", line 333, in register
+    bind(identity, Path(component))
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/f57/mut/M17/framework/confine/platform.py", line 153, in bind
+    require_approval(manifest, component, self.approvals or root / DEFAULT_LOG)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/f57/mut/M17/framework/confine/manifest.py", line 89, in require_approval
+    raise NotApproved(f"{domain}: its {changed} changed since its permissions were "
+                      f"approved; {how}")
+confine.manifest.NotApproved: selftest: its manifest changed since its permissions were approved; read it with `python3 -m confine.describe /home/younes/r2exp/f57/mut/M17/tmp/tmp5tw5u53h/custom_components/selftest` and approve it with `--approve`

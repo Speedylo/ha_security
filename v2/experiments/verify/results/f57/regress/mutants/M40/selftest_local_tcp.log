@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/younes/r2exp/f57/mut/M40/framework/confine/selftest_local_tcp.py", line 200, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/younes/r2exp/f57/mut/M40/framework/confine/selftest_local_tcp.py", line 80, in main
+    sandbox = Sandbox(mediator, "localdev", directory)
+  File "/home/younes/r2exp/f57/mut/M40/framework/confine/selftest_push.py", line 78, in __init__
+    mediator.register(domain, Channel(ours), component=directory)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/f57/mut/M40/framework/confine/mediator.py", line 333, in register
+    bind(identity, Path(component))
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/f57/mut/M40/framework/confine/platform.py", line 153, in bind
+    require_approval(manifest, component, self.approvals or root / DEFAULT_LOG)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/f57/mut/M40/framework/confine/manifest.py", line 89, in require_approval
+    raise NotApproved(f"{domain}: its {changed} changed since its permissions were "
+                      f"approved; {how}")
+confine.manifest.NotApproved: localdev: its manifest changed since its permissions were approved; read it with `python3 -m confine.describe /home/younes/r2exp/f57/mut/M40/tmp/tmptmig8t_z/custom_components/localdev` and approve it with `--approve`

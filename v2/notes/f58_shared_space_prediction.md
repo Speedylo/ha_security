@@ -67,3 +67,17 @@ both. If F57's fix were abandoned, the suites would be run at this tag instead.
 One line in `notes/rewrite_plan_outline_mapping.md`: `fix-2026-10-f58`, `egress.py`,
 `selftest_egress.py`, `verify/mutants/mutants.py` (M04's text, M38 new), framework fix (F58), with
 what was run. Appendix F gains F58's row.
+
+## 6. Outcome (added 2026-10-10, after the runs)
+
+**R1 held.** At the test commit `e39c548`, `selftest_egress` failed one check, 4b, naming `100.64.0.1`,
+22/23, exit 1, on the laptop (Python 3.12.3) and on the Pi (`experiments/verify/results/f58/r1/`).
+**One setup detail in this note was wrong:** the Pi's suites run under its system Python, **3.13.5**,
+not ha314's 3.14. R3 was therefore run under both.
+
+**R2 held.** At `fix-2026-10-f58` (`a4059ac`), 23/23 on both. **R3 held** on 3.13.5 and 3.14.7:
+the thirteen addresses give exactly the values predicted (`results/f58/regress/r3_*.log`). **R4
+held:** M04 (its text regenerated) killed, by one suite; M38 killed, by one (`selftest_egress`); M05
+killed (two suites), M06 killed (one), M25 survived, as on 2026-10-06. **R5 held:** `nordpool` 16/16.
+**R6** was discharged by F57's regression at `fix-2026-10-f57b`, which contains this fix: 28/28 twice.
+F58 is resolved.

@@ -141,8 +141,10 @@ A claim is *Verified* when it held as stated on the frozen code, *Qualified* whe
 | F54 | Functional retest | Major | A confined service call lost a target given as a list, so the command reached the platform aimed at nothing, and no decision record named the device of any service call | Fixed in code after the cut-off, with a test that failed first |
 | F55 | Functional retest | Minor | The unconfined arm was said to set up `default_config`, which fails there; the component the claim relied on loads through one of its dependencies | Wording corrected; the attribution stands |
 | F56 | Functional retest | Minor | The unconfined arm could not start its web server beside the test instance (A), and reported only that the integration had not loaded | The arm now names the cause; unconfined runs are made with (A) stopped |
+| F57 | Writing Section 9 | Major | No approval was required before a sandbox started: a derived manifest was used unconfirmed, an author-declared one unseen, and an update that widened its own grant received it | Fixed in code after the cut-off, with a test that failed first: a sandbox registers only if an approval matches its current code and its loaded grant |
+| F58 | Writing Section 9 | Minor–Major | Internet egress accepted the shared address space 100.64.0.0/10, used by carrier-grade NAT and Tailscale, so a granted name resolving into it would have been connected to | Fixed in code after the cut-off, with a test that failed first |
 
-Of the 56 findings, one is Critical, 13 Major, 4 between Minor and Major, 34 Minor, 3 notes and 1 a request to re-measure. F01–F53 come from the verification campaign and F54–F56 from the functional retest made after the cut-off. One remains open (F18), one is retained as a residual risk (F11), and one is carried as a stated limitation (F53).
+Of the 58 findings, one is Critical, 14 Major, 5 between Minor and Major, 34 Minor, 3 notes and 1 a request to re-measure. F01–F53 come from the verification campaign, F54–F56 from the functional retest made after the cut-off, and F57–F58 from checking Section 9 against the code. One remains open (F18), one is retained as a residual risk (F11), and one is carried as a stated limitation (F53).
 
 ---
 
