@@ -167,6 +167,25 @@ python3 -m confine.house_a up --fresh
 `ssh -L 8123:127.0.0.1:8123 <pi>`, then log in as `capstone` / `capstone-house-a` (a test owner on a
 loopback-only instance, written in `house_a.py`).
 
+**Stop (A) before any unconfined run.** The unconfined (baseline) arm of `endtoend`,
+`endtoend_egress` and `endtoend_function` starts a second, ordinary Home Assistant on the Pi. When it
+sets up `http`, that binds port 8123, which (A) holds while it is up. Only one of them can have the
+port, so with (A) up the baseline loses `http`, `websocket_api` and every integration that depends on
+them, such as `scheduler` (finding F56). Subjects that need no `http` (`nordpool`) are unaffected, but
+the rule is simpler kept for all. The confined arm is not affected: its Home Assistant runs in the sandbox's
+own network namespace. Bring (A) down for the unconfined run and up again afterwards:
+
+```bash
+cd ~/ha_security/v2/framework
+python3 -m confine.house_a down
+# ... the unconfined run ...
+python3 -m confine.house_a up
+```
+
+A baseline run made beside (A) says so. Its report carries `instance_fault` ("port 8123 in use …
+(F56)"), and the harness prints that in place of `loaded`. Such a run is not a result. Repeat it
+with (A) down.
+
 ## 10. The preflight, then every suite
 
 Sandboxes can only be placed from inside the cgroup subtree systemd delegates to your user, so every
