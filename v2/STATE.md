@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**Resume 2026-10-11: §8 next. §9 trim left for now (Younes: leave it; ~4,000 prose words vs 2,600 accepted for the moment).**
+
 **2026-10-10 (late): F57 and F58 FIXED, Younes having approved §9 ("section 9 is fine. make the fixes").** F58 at `fix-2026-10-f58`: `is_public` refuses 100.64.0.0/10; R1–R5 held (Pi suites run on Python 3.13.5, not 3.14). F57 at `fix-2026-10-f57b`: registration needs an approval matching identity + loaded grant (`require_approval` in `ActingPolicy.bind`, `describe --approve`, `supervise --approvals`, `approve_as_experimenter` in harnesses), new suite `selftest_approval` (28 suites now), M38–M40 new. **A3 failed at `fix-2026-10-f57`** (two suites rewrote an approved manifest; harness fault, gate right), fixed at `-f57b`: **28/28 twice**; all 15 touched mutants still killed; `nordpool` 16/16 at both tags. Appendix F: 58 findings. §9.3/§9.5 describe the built behaviour. Still owed: a Repairs issue when an approval is missing (F57 not done); the restart-with-stored-entry limit (Younes expects to fix). Stale suite counts ("19 suites") in old sections come from the final rerun. **Unpushed:** everything since `b12cb7e`; credential scan before any push.
 
 **F58 found (open, unrated): `egress.is_public` accepts 100.64.0.0/10 (CGNAT/Tailscale, incl. the Pi's own 100.86.243.57).** Candidate fix `is_global`; **Younes: waits with F57** until his §9 feedback is complete. **Restart with a stored entry** (fresh data dir per start, OAuth token lost): future work in §9.7/Table 9.2 for now, but Younes expects we will have to solve it ourselves — raise after F57/F58.
