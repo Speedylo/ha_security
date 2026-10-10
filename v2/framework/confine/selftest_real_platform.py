@@ -54,6 +54,7 @@ from .audit import AuditLog
 from .mediator import Mediator
 from .platform import ActingPolicy
 from .real_platform import PlatformError, PlatformStarting, RealPlatform
+from .describe import approve_as_experimenter
 from .selftest_push import Sandbox, component
 
 results: list[bool] = []
@@ -71,6 +72,8 @@ def manifest(root: Path, domain: str, permissions: dict) -> Path:
     (directory / "manifest.json").write_text(json.dumps(
         {"domain": domain, "name": domain, "version": "1.0.0", "requirements": [],
          "permissions": {"schema_version": 1, **permissions}}))
+    # F57: approved after the rewrite, because `component` approved the manifest it wrote.
+    approve_as_experimenter(directory)
     return directory
 
 

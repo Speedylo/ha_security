@@ -32,6 +32,7 @@ from .egress import EgressBroker, EgressRefused, is_lan
 from .egress_shim import EgressShim
 from .mediator import Decision, Mediator
 from .platform import ActingPolicy, Platform
+from .describe import approve_as_experimenter
 from .selftest_push import Sandbox, component
 
 results: list[bool] = []
@@ -74,6 +75,8 @@ def main() -> int:
             {"domain": "localdev", "name": "localdev", "version": "1", "requirements": [],
              "permissions": {"schema_version": 1,
                              "network": {"local": {"tcp": [PORT_DECLARED]}}}}))
+        # F57: approved after the rewrite, because `component` approved the manifest it wrote.
+        approve_as_experimenter(directory)
         log = AuditLog(path=root / "audit" / "decisions.jsonl")
         mediator = Mediator(policy=ActingPolicy({}, Platform(), broker=EgressBroker(
             connect_timeout=2)), log=log)
