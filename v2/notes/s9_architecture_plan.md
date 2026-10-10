@@ -191,4 +191,6 @@ seccomp(2), [35] the Linux kernel's cgroup v2 documentation, [36] unix(7) (socke
 
 **Reference owed:** [40] C. Jackson, A. Barth, A. Bortz, W. Shao and D. Boneh, "Protecting browsers from DNS rebinding attacks", ACM CCS 2007 — verify the bibliographic details at the week-5 rebuild.
 
+**Reference owed:** [41] RFC 6598, *IANA-Reserved IPv4 Prefix for Shared Address Space* (2012).
+
 **Next:** Younes's review of §9 and the five figures (collect all feedback), then F57 and F58, then trim.
