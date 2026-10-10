@@ -183,4 +183,6 @@ seccomp(2), [35] the Linux kernel's cgroup v2 documentation, [36] unix(7) (socke
 
 **2026-10-10: §9.2 explained, at Younes's request.** `pivot_root` versus `chroot` now has its own paragraph (what each changes, the escape, why the sandbox holds the capability, the detached old root); the control-group tree is defined where the slice first appears, and the delegation paragraph explains systemd's ownership, delegation and the common-ancestor rule. Each claim checked against the man pages. Prose grows by roughly 400 words.
 
-**Next:** Younes's review of §9 and the five figures, then trim.
+**F57 (2026-10-10):** §9.3's "used only after the user confirms it" overstates the code (no approval gate). Younes chose to gate both provenances; the fix waits until his §9 review is complete. Reword 9.3 to the built behaviour after the fix, and add F57 to Table 9.2 only if it is not fixed.
+
+**Next:** Younes's review of §9 and the five figures (collect all feedback), then F57, then trim.

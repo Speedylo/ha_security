@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-10 (night): F57 found — Major, open.** No approval is required before a sandbox starts: a derived manifest skips §5.9.4's confirmation, and an author-declared one (including an update that widens itself) gets no human look. **Younes decided: gate BOTH provenances on an approval matching the current identity. Do NOT fix until Younes has finished reading §9 and given all his feedback.** Details and the fix plan: `notes/verification_plan_20261005.md` F57. §9 also gained (at his request) four decision paragraphs in place of Table 9.1 and a chroot/pivot_root + control-group-tree explanation in 9.2.
+
 **2026-10-10 (evening): §9 drafted with its five figures.** Prose in `submission/09_system_architecture.md` (life of a request, 2,826 words vs 2,600; trim after review). Figures 9.1–9.5 are scripts in `figures/` (`fig_9_1_system.py` … `fig_9_5_record.py`, shared renderer `svg9.py`, greyscale, labels in words), each fact checked against the code it names; embedded in §9 with captions. Table 9.1 (four decisions) rewritten as four paragraphs at Younes's request; prose now ~3,470 words. **Next: Younes reviews §9 and its figures against the sources, then trim, then §8** (Figure 5.1's TB2 is stale after F45).
 
 **2026-10-10, decided (Younes): write the whole report first, then ONE full rerun at the final tag** (end of week 5, predictions first: timings, all mutants, suites, faults, retest, recompute). Until then each fix gets its tag + cheap regression, and a line in the ledger in `notes/rewrite_plan_outline_mapping.md` (after §0's order). The report needs a "changes after the cut-off" paragraph from that ledger.
