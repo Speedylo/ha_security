@@ -177,4 +177,6 @@ flood limit 100 in 10 s (`mediator.py`); the non-admin mediator still controls e
 seccomp(2), [35] the Linux kernel's cgroup v2 documentation, [36] unix(7) (socket pairs, `SCM_RIGHTS`).
 [29]–[31] (Jiang et al.; CC FAU_STG.4; NIST SP 800-53 AU-5) are the working report's numbers.
 
-**Next:** the five figures as scripts in `figures/` (`fig_9_1` … `fig_9_5`), then Younes's review.
+**2026-10-10: figures drawn.** `figures/fig_9_1_system.py` … `fig_9_5_record.py` write the SVGs, through one shared renderer (`figures/svg9.py`). Checked against code while drawing: the supervisor is in the mediator's process (`supervise.py` builds the `Mediator`), so Figure 9.1 draws one framework process; `confine-mediator` is a Home Assistant user, not a Linux user, and the 9.1 caption now says so; the seccomp deny-list includes `bpf`, `unshare` and `setns` and fails with `EPERM`; the egress placeholder is from 240.0.0.0/4; the broker also refuses multicast and unspecified addresses; an egress decision is recorded before step 2 and a refusal at step 3 is recorded too; clauses are JSON pointers (`/permissions/services/call/0`). Previewed with a scratch rasteriser (no cairosvg here, so no PNGs are committed).
+
+**Next:** Younes's review of §9 and the five figures, then trim.
