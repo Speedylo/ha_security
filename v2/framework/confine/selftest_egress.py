@@ -209,13 +209,18 @@ def case_t10_t11(root: Path) -> None:
     broker = EgressBroker()
 
     check(is_public("93.184.216.34"), "4. a routable address is public")
-    for address in ("127.0.0.1", "192.168.1.50", "10.0.0.1", "169.254.1.1",
+    # F58: 100.64.0.0/10, RFC 6598's shared address space (carrier-grade NAT, and Tailscale),
+    # is neither private nor global, and passed as public until 2026-10-10. Listed first so
+    # that the loop, which stops at the first public address, names it.
+    for address in ("100.64.0.1", "100.127.255.254", "::ffff:100.64.0.1",
+                    "127.0.0.1", "192.168.1.50", "10.0.0.1", "169.254.1.1",
                     "::1", "fe80::1", "::ffff:192.168.1.1", "0.0.0.0"):
         if is_public(address):
             check(False, f"4b. {address} must not count as public")
             break
     else:
-        check(True, "4b. loopback, private, link-local and IPv4-mapped are all non-public",
+        check(True, "4b. loopback, private, link-local, shared address space and IPv4-mapped "
+                    "are all non-public",
               "including ::ffff:192.168.1.1, which the §7.24 run actually produced")
 
     # The manifest grants the *name*. The name resolves inward. Nothing about the grant changes.
