@@ -187,4 +187,6 @@ seccomp(2), [35] the Linux kernel's cgroup v2 documentation, [36] unix(7) (socke
 
 **Owed to §14 (2026-10-10):** future work — a supported per-entity policy for `confine-mediator`, limited to the union of the installed manifests' entities (HA's policy engine and `auth_store.py` can hold one; no interface creates it). Table 9.2 already names it. Also note for §14/§12: a non-admin user can call any non-admin service that targets no entity (no per-entity check applies).
 
-**Next:** Younes's review of §9 and the five figures (collect all feedback), then F57, then trim.
+**Reference owed:** [40] C. Jackson, A. Barth, A. Bortz, W. Shao and D. Boneh, "Protecting browsers from DNS rebinding attacks", ACM CCS 2007 — verify the bibliographic details at the week-5 rebuild.
+
+**Next:** Younes's review of §9 and the five figures (collect all feedback), then F57 and F58, then trim.
