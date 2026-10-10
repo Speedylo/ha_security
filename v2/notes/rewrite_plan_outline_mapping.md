@@ -38,6 +38,28 @@ claim and the campaign changed it most; week 2, §9 with its figures, then §8; 
 Appendices B–E lifted; week 4, §1, §2, §4–§7; week 5, §13–§15, abstract, front matter; week 6, a full
 read-through with every number checked against `verify/recompute.py`; week 7, buffer.
 
+**Added 2026-10-10 (Younes): write the whole report first, then one full rerun.** Code changed after the
+cut-off (F54's fix in `sandbox_runtime.py` and `audit.py`; the retest harness; F56's port check), so the
+evidence currently sits on two tags: timings, memory, the 40 mutants and the register at
+`verify-2026-10-tests`, function at `fix-2026-10-f54`/`fix-2026-10-f56`. Rather than re-time after every fix:
+
+- **While writing**, a fix the writing turns up still gets a prediction note, its own tag and the cheap
+  regression (27 suites, `nordpool`, the mutants that patch the changed file). Timings and the full
+  mutant set wait.
+- **The ledger of post-cut-off changes** is kept below, one line each, as they land.
+- **End of week 5, after the last fix:** one full rerun from a fresh clone at the final tag, with predictions
+  committed first: the 13 timing and memory figures (five runs, p99, bootstrap), all mutants, the suites,
+  the fault scripts, the functional retest (unconfined arms with (A) down), `recompute.py`.
+- **Week 6's read-through** checks every number in the text against that rerun; week 7 absorbs what moves.
+
+**Post-cut-off changes (ledger):**
+
+| Date | Tag | Files | Kind | Regression run then |
+|---|---|---|---|---|
+| 2026-10-09 | `retest-2026-10-e2e` | `endtoend_function.py` (new), `endtoend_unconfined.py`, opt-in hooks in `sandbox_runtime.py` | test harness; hooks off unless asked for, but in code that runs confined | 27 suites |
+| 2026-10-10 | `fix-2026-10-f54` | `sandbox_runtime.py` (`_forward_service_call`), `audit.py` (`decision`), `selftest_bridge.py` | **framework fix** (F54) + its test | 27 suites ×2, `nordpool`, M08a/b, scheduler variants |
+| 2026-10-10 | `fix-2026-10-f56` | `endtoend_unconfined.py`, `endtoend_function.py` | instrument (F56) | Q1/Q2 only (no suite runs this arm) |
+
 §5 below (what must survive the compression) still holds in full.
 
 **Style (Younes, 2026-10-08).** The submission is written in the third person, with no "I", "we" or
