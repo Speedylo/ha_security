@@ -174,11 +174,13 @@ operations are `event.fire`, `event.subscribe`, `config_entries.list` (`entities
 flood limit 100 in 10 s (`mediator.py`); the non-admin mediator still controls every entity (§7.45.11).
 
 **References owed** (provisional numbers; the list is rebuilt in week 5): [33] namespaces(7), [34]
-seccomp(2), [35] the Linux kernel's cgroup v2 documentation, [36] unix(7) (socket pairs, `SCM_RIGHTS`).
+seccomp(2), [35] the Linux kernel's cgroup v2 documentation, [36] unix(7) (socket pairs, `SCM_RIGHTS`). Added 2026-10-10 with §9.2's mount explanation: [37] chroot(2) (not for security; the `mkdir foo; chroot foo; cd ..` escape), [38] pivot_root(2), [39] user_namespaces(7) (full capabilities in a new user namespace). [35] also carries the cgroup common-ancestor rule (cgroups(7) states it too).
 [29]–[31] (Jiang et al.; CC FAU_STG.4; NIST SP 800-53 AU-5) are the working report's numbers.
 
 **2026-10-10: figures drawn.** `figures/fig_9_1_system.py` … `fig_9_5_record.py` write the SVGs, through one shared renderer (`figures/svg9.py`). Checked against code while drawing: the supervisor is in the mediator's process (`supervise.py` builds the `Mediator`), so Figure 9.1 draws one framework process; `confine-mediator` is a Home Assistant user, not a Linux user, and the 9.1 caption now says so; the seccomp deny-list includes `bpf`, `unshare` and `setns` and fails with `EPERM`; the egress placeholder is from 240.0.0.0/4; the broker also refuses multicast and unspecified addresses; an egress decision is recorded before step 2 and a refusal at step 3 is recorded too; clauses are JSON pointers (`/permissions/services/call/0`). Previewed with a scratch rasteriser (no cairosvg here, so no PNGs are committed).
 
 **2026-10-10: Table 9.1 became four paragraphs** (Younes asked, so readers get the reasoning with its context). The containers argument now says what a container is; the scope argument rests on the platform's own boundary: [10] excludes "attacks that require the user to install a malicious other software, like a third-party integration" (checked on the live page 2026-10-10), plus the components the mediator acts through. Old Tables 9.2/9.3 are now 9.1/9.2. Prose is about 3,470 words by a line count that excludes tables, captions and headings, so the trim after review must be larger, about 850 words.
+
+**2026-10-10: §9.2 explained, at Younes's request.** `pivot_root` versus `chroot` now has its own paragraph (what each changes, the escape, why the sandbox holds the capability, the detached old root); the control-group tree is defined where the slice first appears, and the delegation paragraph explains systemd's ownership, delegation and the common-ancestor rule. Each claim checked against the man pages. Prose grows by roughly 400 words.
 
 **Next:** Younes's review of §9 and the five figures, then trim.
