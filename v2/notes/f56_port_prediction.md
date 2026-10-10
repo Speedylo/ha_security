@@ -29,3 +29,14 @@ where the switch ends `triggered`.
 
 **Q3:** `selftest_*` do not run this arm, so they are not re-run for this change. Of the harnesses
 that do, `endtoend` and `endtoend_egress` gain the field only, and nothing they judge reads it.
+
+## Outcome (added 2026-10-10, after the runs)
+
+**Q1 held.** At `abe3789` with (A) up, the report's `instance_fault` reads "port 8123 in use
+([Errno 98] Address already in use): this arm's http cannot start (F56)". `http` and `websocket_api`
+are `False`, `scheduler` did not load, and the printed line names the port
+(`experiments/verify/results/f56/q1_A_up.*`).
+
+**Q2 held.** With (A) down, there is no `instance_fault`, `http` and `websocket_api` are `True`,
+`scheduler` loads, and the verdict script gives 3 of 4, the switch again ending `triggered`
+(`q2_A_down.*`). (A) was brought up again afterwards. **Q3:** nothing was re-run, as predicted.
