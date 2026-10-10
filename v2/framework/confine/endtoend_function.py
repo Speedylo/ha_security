@@ -360,7 +360,8 @@ def main() -> int:
             else:
                 report = run_unconfined(name, variant, component, python, uv, platform_deps)
             results.append(report)
-            print("loaded" if report.get("loaded") else report.get("level", "not loaded"))
+            print("loaded" if report.get("loaded") else
+                  report.get("instance_fault") or report.get("level", "not loaded"))
             args.json.write_text(json.dumps(results, indent=2) + "\n")
     record_run(args.json)  # F14
     print(f"\nwrote {args.json}")

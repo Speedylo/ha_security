@@ -32,6 +32,19 @@ from sandbox_runtime import (CURRENT_PHASE, build_hass, drive_flow, record_egres
                              run_steps)
 
 
+def _port_in_use(port: int) -> str | None:
+    """Bind `port` as `http` does (every address, address reuse on); the error if that fails."""
+    import socket
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            probe.bind(("0.0.0.0", port))
+        except OSError as err:
+            return str(err)
+    return None
+
+
 async def run(spec: dict) -> dict:
     from homeassistant.config_entries import ConfigEntryState
     from homeassistant.setup import async_setup_component
@@ -39,6 +52,12 @@ async def run(spec: dict) -> dict:
     domain = spec["domain"]
     config_dir = spec["config_dir"]
     result: dict = {"domain": domain, "arm": "unconfined"}
+    # F56: this arm's `http` binds port 8123, which (A) holds while it is up. A run beside (A)
+    # lost `http` and all that depends on it, and reported only "not loaded". The arm is not
+    # changed, so that it stays the instance every earlier run used; the condition is named.
+    busy = _port_in_use(8123)
+    if busy:
+        result["instance_fault"] = f"port 8123 in use ({busy}): this arm's http cannot start (F56)"
 
     # `endtoend_egress` has always sent `record_egress: True` and nothing read it, so §7.27's
     # arm A never recorded where it went. Honoured from §7.31, where a subject with several
