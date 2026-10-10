@@ -185,4 +185,6 @@ seccomp(2), [35] the Linux kernel's cgroup v2 documentation, [36] unix(7) (socke
 
 **F57 (2026-10-10):** §9.3's "used only after the user confirms it" overstates the code (no approval gate). Younes chose to gate both provenances; the fix waits until his §9 review is complete. Reword 9.3 to the built behaviour after the fix, and add F57 to Table 9.2 only if it is not fixed.
 
+**Owed to §14 (2026-10-10):** future work — a supported per-entity policy for `confine-mediator`, limited to the union of the installed manifests' entities (HA's policy engine and `auth_store.py` can hold one; no interface creates it). Table 9.2 already names it. Also note for §14/§12: a non-admin user can call any non-admin service that targets no entity (no per-entity check applies).
+
 **Next:** Younes's review of §9 and the five figures (collect all feedback), then F57, then trim.
