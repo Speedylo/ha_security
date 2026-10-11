@@ -1,0 +1,31 @@
+
+1 — the first start logs in, and the kept folder holds its entry
+
+  ok    1. the sensor reads refresh-1  — refresh-1
+  ok    2. the integration planted code in place of its link, so step 6 means something  — done
+  ok    3. the kept folder holds its configuration entry  — ['core.config_entries', 'core.restore_state']
+
+2 — a new supervisor: the entry is set up, not asked for again (M45, M47)
+
+  ok    4. the sensor reads refresh-2: the stored token was read back  — refresh-2
+  ok    5. the run's log says it set up 1 stored entry, and ran no setup dialog  — demo_keep-20261011T204428-23985-run1.log
+  ok    6. the planted code was not loaded  — refresh-2
+
+3 — too much stored: not started, and Try again grants nothing (M46)
+
+  ok    7. the supervisor says it did not start it, and no sandbox started
+  ok    8. (A) shows a `not_started` issue: too much data, fixable  — {'translation_key': 'too_much_data', 'is_fixable': True}
+  ok    9. Try again with it still there: still not started, and the issue is back
+  ok    10. the file removed, Try again: it starts, and the sensor reads refresh-3  — refresh-3
+  ok    11. and the issue is gone
+
+4 — a restart inside one supervisor: the throwaway folder goes, the entry stays (M48, M49)
+
+  ok        the supervisor saw (A) go and come back
+  FAIL  12. while it still runs, run 1's throwaway folder is gone, its locked directory with it, and the kept folder still holds the entry  — folder /home/younes/r2exp/f59/mut/M48/tmp/supervise-demo_keep-u5ayxozl/.confine/demo_keep-start1 exists=True, locked done
+
+  stopped at: 12. while it still runs, run 1's throwaway folder is gone, its locked directory with it, and the kept folder still holds the entry
+
+  logs: /home/younes/r2exp/f59/mut/M48/tmp/selftest-keep-smn0w7bo
+
+12/13 checks passed

@@ -49,3 +49,12 @@ The full suites run at F59's tag, which follows and contains this one.
 ## 5. After the runs
 
 Ledger line; Appendix F row F60; the findings table.
+
+## 6. Outcome (added 2026-10-11, after the runs)
+
+**D1 held.** At the test commit `ca84522`, run on the laptop from a clean checkout of it (the working
+tree held F59's uncommitted change): every check passed but the new one, exit 1
+(`experiments/verify/results/f60/d1/`). **D2 held** at `fix-2026-10-f60` on the laptop and the Pi
+(`d2_laptop/`, `d2_pi/`). **D3 held:** `selftest_approval` 14/14 on both. **D4 held:** M50 killed by
+`selftest_describe` and also by `selftest_supervise` (`results/f59/regress/mutants/M50/`), at
+`fix-2026-10-f59`, which contains this fix; the full suites ran there, 29/29 twice.

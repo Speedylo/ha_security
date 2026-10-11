@@ -165,3 +165,27 @@ directory is left).
 Ledger line; Appendix F row F59 (59 findings); the findings table; §9's limit paragraph (the restart
 limit becomes the three limits in §1's "What this does not do"), Table 9.2 and §14; `REPRODUCE.md`
 names the kept folder; `.gitignore` gains `confine/kept/`.
+
+## 6. Outcome (added 2026-10-11, after the runs)
+
+**K1 held.** At the test commit `55f3b8c`, on the Pi with (A) restarted from it: steps 1 and 2 passed
+(`refresh-1`; the plant `done`), and the suite stopped at **step 3**, the kept folder not existing,
+exit 1 (`experiments/verify/results/f59/k1/`).
+
+**K2 held.** At `fix-2026-10-f59` (`88ff410`), (A) restarted from the tag: `selftest_keep` **14/14**.
+The token went `refresh-1` → `refresh-2` across supervisors, the run log said it set up 1 stored entry,
+the planted code was not loaded, the size check refused and Try again refused again until the file was
+removed (`refresh-3`), and after (A) restarted inside one supervisor run 1's folder was gone, its `000`
+directory with it, while the entry stayed (`refresh-4`) (`regress/k2_selftest_keep.log`).
+
+**K3 held: 29/29 twice.** **K4 held:** `nordpool` 16/16.
+
+**K5 held.** All 15 mutants killed (`regress/mutants/`): M14, M15, M31–M35, M41, M42 as before;
+**M45** at step 4, the sensor reading **`planted`**, so the design §0 rejects does load planted code;
+**M46** at step 7; **M47** at step 4 (`refresh-1`: the dialog ran and aborted); **M48** and **M49** at
+step 12; and F60's **M50** by `selftest_describe` and by `selftest_supervise` (F57c's step 7).
+
+**Two corrections made to this note before any run**, both committed before K1: step 5 reads the run's
+log, because the report on standard output is never printed when the supervisor kills the sandbox;
+step 3 finds the entry anywhere in the kept folder, so that M45 is caught by the plant rather than by a
+path.

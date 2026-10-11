@@ -1,0 +1,10 @@
+house_a_down exit=0 seconds=2
+house_a_up exit=0 seconds=4
+k2_selftest_keep exit=0 seconds=27
+suites_1 exit=0 seconds=115
+suites_2 exit=0 seconds=115
+suites_1 failed=0 of 29
+suites_2 failed=0 of 29
+k4_egress_nordpool exit=0 seconds=121
+mutants: M14 failed_suites=1 M15 failed_suites=2 M31 failed_suites=1 M32 failed_suites=1 M33 failed_suites=2 M34 failed_suites=1 M35 failed_suites=1 M41 failed_suites=1 M42 failed_suites=1 M45 failed_suites=1 M46 failed_suites=1 M47 failed_suites=1 M48 failed_suites=1 M49 failed_suites=1 M50 failed_suites=2 
+ALLDONE

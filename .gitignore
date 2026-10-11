@@ -30,3 +30,6 @@ spike/.ha_token
 
 # Windows download markers (WSL)
 *:Zone.Identifier
+
+# F59: an integration's kept .storage, by default under its config root (supervise.py --keep-dir)
+v2/experiments/**/confine/kept/

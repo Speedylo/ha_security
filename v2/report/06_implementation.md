@@ -959,6 +959,16 @@ support:
 - **A consent flow.** Buttons, prompts, a wizard. §3.7 puts the interaction out of scope, and
   what §5.14.4 recorded as owed is a surface.
 
+  > **Corrected 2026-10-11 (finding F57, its Repairs half, F57c).** A consent flow now exists, because F57's approval gate made
+  > one necessary: without it, a household could not start an integration the gate had stopped.
+  > A refused start appears in Home Assistant's Repairs panel, and its screen shows this rendering,
+  > as Markdown, with one action, *Allow and start*, which records an approval of exactly the
+  > identity and grant shown (`describe.approve_shown`, `notes/f57c_not_started_issue_prediction.md`).
+  > The rest of this section stands: §3.7 still excludes comprehension, nothing tests whether a
+  > household understands the list, and F4 is still rated on availability alone. The same work found
+  > F60: the banner above did not fire when a derived grant widened, and now compares the grant
+  > digest too (`notes/f60_banner_prediction.md`).
+
 *Strength of claim: it runs, and its output is checked.* Fourteen assertions over the four
 states — that the grants and denials are both named, that the provenance is stated, that no
 digest appears, and that an unreadable declaration reports why. **This is not evidence that a

@@ -1,0 +1,16 @@
+
+1 — the first start logs in, and the kept folder holds its entry
+
+  ok    1. the sensor reads refresh-1  — refresh-1
+  ok    2. the integration planted code in place of its link, so step 6 means something  — done
+  ok    3. the kept folder holds its configuration entry  — ['core.config_entries', 'core.restore_state']
+
+2 — a new supervisor: the entry is set up, not asked for again (M45, M47)
+
+  FAIL  4. the sensor reads refresh-2: the stored token was read back  — refresh-1
+
+  stopped at: 4. the sensor reads refresh-2: the stored token was read back
+
+  logs: /home/younes/r2exp/f59/mut/M47/tmp/selftest-keep-bisz4gv2
+
+3/4 checks passed
