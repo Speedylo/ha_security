@@ -194,3 +194,13 @@ seccomp(2), [35] the Linux kernel's cgroup v2 documentation, [36] unix(7) (socke
 **Reference owed:** [41] RFC 6598, *IANA-Reserved IPv4 Prefix for Shared Address Space* (2012).
 
 **Next:** Younes's review of §9 and the five figures (collect all feedback), then F57 and F58, then trim.
+
+**2026-10-11: §9.3, §9.7 and Table 9.2 rewritten for F57c, F59 and F60** (Younes approved the wording, with
+"Try again" spelled out as what it does). **References owed** (provisional; checked 2026-10-11):
+[42] Home Assistant Developer Docs, "Config entries," https://developers.home-assistant.io/docs/config_entries_index
+(entries "persistently stored"; set up during startup); [43] Home Assistant Developer Docs, "Repairs,"
+https://developers.home-assistant.io/docs/core/platform/repairs (issues "brought to the user's attention";
+`RepairsFlow`); [44] Home Assistant Core 2026.8.3, `homeassistant/components/repairs/websocket_api.py`
+(`require_admin(permission=POLICY_EDIT)` on both fix endpoints; the docs say nothing about admins, so the source
+is the evidence); [45] D. Hardt, Ed., "The OAuth 2.0 Authorization Framework," RFC 6749, IETF, Oct. 2012 (§4.1 (A):
+the client directs the resource owner's user-agent to the authorization endpoint).
