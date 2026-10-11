@@ -68,9 +68,11 @@ with SIGKILL cannot delete its folders; they stay in `/tmp` until the Pi restart
   read-write onto it. Every harness that does not set it is unchanged.
 - **`sandbox_runtime.py`, flow mode.** If `hass.config_entries` holds an entry for the domain after
   `async_initialize`, the stored entries are set up through `async_setup_component(hass, domain, {})`
-  and the report says `"flow": {"stored": <count>}`; otherwise `drive_flow` runs as now.
+  and the report says `"flow": {"stored": <count>}`, with one line on standard error saying so
+  (the run's log); otherwise `drive_flow` runs as now.
 - **`supervise.py`.** `--keep-dir`; the folder created `0700` if missing; `kept_size` (the walk);
-  `launch` checks the size, then registers, then starts with `kept_dir` set. The fresh directory per
+  `launch` checks the size, then registers, then starts with `kept_dir` set, and prints each
+  start's throwaway folder (`<domain> run <n> folder <path>`), which step 12 reads. The fresh directory per
   start and its comment stay, reworded. `remove_start_dir` (rule 5), called from `stop()` and
   `reap()`. A retry request from (A) for its own integration, while it is not running, calls `launch`
   (F57c's `retry_handlers`).
@@ -115,7 +117,9 @@ that in the sensor's `locked` attribute: the case rule 5's retry exists for.
 3. The kept folder holds `core.config_entries` naming `demo_keep`.
 4. A ended (SIGTERM) at least 3 s after the sensor read `refresh-1`; supervisor B started with the same
    kept folder: the sensor reads **`refresh-2`**: the stored entry was set up and its data read back.
-5. B's sandbox report says `stored: 1`: the setup dialog did not run.
+5. B's run log (its Home Assistant log, in the audit directory) says it set up 1 stored entry
+   and ran no setup dialog. The report on standard output is no use here: it is printed when a
+   run ends by itself, and the supervisor kills the sandbox.
 6. The sensor does not read `planted`: the planted code was not loaded.
 7. B ended; a sparse file of `disk_mb` + 1 MB written into the kept folder, as an integration that
    stored too much would leave it; supervisor C: it says "not started", no sandbox starts.

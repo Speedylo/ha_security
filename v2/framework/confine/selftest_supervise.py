@@ -82,7 +82,7 @@ class Run:
 
     def __init__(self, python: Path, audit: Path, log: Path, component: Path = DEMO, *,
                  approve: bool = True, permissions: dict | None = None,
-                 approvals: Path | None = None) -> None:
+                 approvals: Path | None = None, keep: Path | None = None) -> None:
         self.log, self.audit, self.domain = log, audit, component.name
         # F57: the supervisor registers nothing unapproved. The test approves the grant the
         # supervisor will load, by default a derived manifest that declares nothing, and keeps
@@ -90,6 +90,10 @@ class Run:
         # some supervisors unapproved, and some with a wider grant.
         self.permissions = permissions or {"schema_version": 1}
         self.approvals = approvals or audit.parent / f"approvals-{audit.name}.jsonl"
+        # F59: what an integration stores is kept between starts, by default under the
+        # component's configuration root, which here is the repository. Each supervisor in a
+        # suite keeps it in the suite's own directory instead, its own unless one is given.
+        self.keep = keep or audit.parent / f"kept-{audit.name}"
         if approve:
             record_approval(component, self.approvals,
                             Manifest(component.name, Provenance.DERIVED, self.permissions))
@@ -97,7 +101,8 @@ class Run:
         self.proc = subprocess.Popen(
             [sys.executable, "-u", "-m", "confine.supervise", "--component", str(component),
              "--python", str(python), "--audit-dir", str(audit),
-             "--approvals", str(self.approvals), "--permissions", json.dumps(self.permissions)],
+             "--approvals", str(self.approvals), "--permissions", json.dumps(self.permissions),
+             "--keep-dir", str(self.keep)],
             cwd=FRAMEWORK, stdout=self.out, stderr=subprocess.STDOUT)
 
     def text(self) -> str:

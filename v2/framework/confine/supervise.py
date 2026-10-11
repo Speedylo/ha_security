@@ -399,6 +399,9 @@ def main() -> int:
     ap.add_argument("--approvals", type=Path,
                     help=f"where `describe --approve` recorded approvals (default: "
                          f"<the component's config root>/{DEFAULT_LOG})")
+    ap.add_argument("--keep-dir", type=Path,
+                    help="where what the integration stores is kept between starts (F59; "
+                         "accepted, not yet used)")
     args = ap.parse_args()
 
     require_ready(deep=False)

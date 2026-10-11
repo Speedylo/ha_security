@@ -1,0 +1,10 @@
+{
+  "domain": "demo_keep",
+  "name": "Demo Keep",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://example.invalid/capstone",
+  "iot_class": "cloud_polling",
+  "requirements": [],
+  "version": "1.0.0"
+}
