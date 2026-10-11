@@ -37,7 +37,20 @@ loaded as code**, and nothing else.
 4. **The kept folder is held to the manifest's `disk_mb`** (default 64 MB), the limit `/tmp` already
    has, counted separately. Before each start the supervisor adds up the apparent size of every file in
    it, without following links. Above the limit, the integration is not started; the supervisor says
-   so, and the house sees F57c's `not_started` issue with the reason `too_much_data`, no button.
+   so, and the house sees F57c's `not_started` issue with the reason `too_much_data`. Its one button
+   is **Try again**, which asks the supervisor to check again and grants nothing.
+5. **Each start's throwaway folder is deleted as soon as its sandbox is gone** (Younes, 2026-10-11).
+   On the Pi `/tmp` is a 2 GB tmpfs, held in memory, and until now every start's folder stayed there
+   until the supervisor exited. The deletion is in `stop()` and `reap()`, **after** the cgroup is
+   killed and the sandbox's process waited for, so nothing still running can write into it. It uses
+   `shutil.rmtree`, which on Linux removes a link without following it
+   (`rmtree.avoids_symlink_attacks`), so a link the integration planted towards the host's files
+   removes only the link. The kept `.storage` is not reachable through it: the bind mount exists only
+   in the sandbox's mount namespace, and on the host the throwaway folder's `.storage` is an empty
+   directory. A directory the integration made unreadable (mode `000`) would make `rmtree` give up
+   on it, so each failure restores the owner's permissions and retries once; whatever still cannot be
+   removed is said in a line. What is lost is what the integration wrote there: the sandbox's report and
+   Home Assistant's log are kept in the audit directory, as now.
 
 **What this does not do.** The check is at start: within one run the folder can grow past the limit,
 and the next start refuses. A change stored in the last second before the sandbox is killed can be
@@ -45,7 +58,8 @@ lost, because the supervisor kills the sandbox rather than stopping Home Assista
 Assistant writes its entries one second after a change (`SAVE_DELAY`). And an OAuth integration
 still cannot be set up under the supervisor in the first place: the supervisor answers the setup
 dialog with nothing, and an OAuth login needs a person's browser. This fix keeps an entry once one
-exists; how the first login is done under the supervisor stays future work.
+exists; how the first login is done under the supervisor stays future work. A supervisor killed
+with SIGKILL cannot delete its folders; they stay in `/tmp` until the Pi restarts, which empties it.
 
 ## 2. The change
 
@@ -57,16 +71,26 @@ exists; how the first login is done under the supervisor stays future work.
   and the report says `"flow": {"stored": <count>}`; otherwise `drive_flow` runs as now.
 - **`supervise.py`.** `--keep-dir`; the folder created `0700` if missing; `kept_size` (the walk);
   `launch` checks the size, then registers, then starts with `kept_dir` set. The fresh directory per
-  start and its comment stay, reworded.
-- **`ha_bridge/confine_bridge`.** `not_started` also accepts `too_much_data`, with its words:
+  start and its comment stay, reworded. `remove_start_dir` (rule 5), called from `stop()` and
+  `reap()`. A retry request from (A) for its own integration, while it is not running, calls `launch`
+  (F57c's `retry_handlers`).
+- **`ha_bridge/confine_bridge`.** `not_started` also accepts `too_much_data`; its fix flow sends
+  `{"retry": ...}`. Its words, the summary:
 
 > **{name} was not started**
 >
 > **{name}** was not started because it has stored more information than it is allowed to keep.
+
+And the screen behind it:
+
+> **Try {name} again?**
 >
-> This protects your system from running out of storage space. Ask the person who looks after this
-> system to look at it. Once the problem is dealt with and it is restarted, this message goes away by
-> itself.
+> This limit protects your system from running out of storage space. It is usually caused by a bug
+> in the integration, and it is worth checking whether an update is available for it. The person who
+> looks after this system can clear what it stored.
+>
+> Select **Try again** to check again. Trying again does not give it any new permissions or any more
+> space; if it still has too much stored, it will stay stopped.
 
 - **`selftest_supervise.py`.** Its supervisors get a `--keep-dir` in the suite's temporary directory,
   so no test writes into the repository.
@@ -80,9 +104,12 @@ A new suite, `selftest_keep` (29 suites), against (A), with a new test integrati
 refresh, and publishes a sensor whose state is that token. It then **plants code**: it replaces its
 `custom_components/demo_keep` link with a copy of its own code plus a file `PLANTED`, and reports
 whether that worked in the sensor's `plant` attribute. A copy that finds `PLANTED` beside itself
-publishes the state `planted` instead of a token.
+publishes the state `planted` instead of a token. Last, it makes a directory in its configuration
+folder holding one file, then sets the directory's mode to `000`, so nobody may read it, and reports
+that in the sensor's `locked` attribute: the case rule 5's retry exists for.
 
-1. Supervisor A, with a new empty kept folder: the integration starts, and its sensor reads
+1. Supervisor A, with a new empty kept folder and `demo_keep` approved first (F57), as `selftest_supervise`
+   approves `demo_flood`: the integration starts, and its sensor reads
    `refresh-1`.
 2. The plant succeeded (`plant` attribute `done`), so the test of rule 1 is not vacuous.
 3. The kept folder holds `core.config_entries` naming `demo_keep`.
@@ -92,9 +119,17 @@ publishes the state `planted` instead of a token.
 6. The sensor does not read `planted`: the planted code was not loaded.
 7. B ended; a sparse file of `disk_mb` + 1 MB written into the kept folder, as an integration that
    stored too much would leave it; supervisor C: it says "not started", no sandbox starts.
-8. (A) shows `not_started_demo_keep` with the key `too_much_data`, not fixable.
-9. C ended, the file removed, supervisor D: the sensor reads `refresh-3`.
-10. And the issue is gone.
+8. (A) shows `not_started_demo_keep` with the key `too_much_data`, fixable.
+9. **Try again** submitted with the file still there: still not started, and the issue is back.
+10. The file removed, **Try again** submitted: C starts the integration (run 1), and the sensor reads
+    `refresh-3`.
+11. And the issue is gone.
+12. (A) restarted, as `selftest_supervise` does: C stops run 1 and, once (A) is back, starts run 2.
+    **While C is still running**, run 1's throwaway folder is gone, its `000` directory included
+    (`locked` was `done`), and the kept folder still holds `core.config_entries` (rule 5; the
+    supervisor prints each folder's path). The check is made while C runs because a supervisor that
+    exits deletes its whole root anyway, so only a restart inside one supervisor shows rule 5.
+13. Run 2's sensor reads `refresh-4`: a restart inside one supervisor keeps the entry too.
 
 ## 4. Predictions
 
@@ -113,10 +148,12 @@ which has no (A).
 flow mode takes the dialog path as before.
 
 **K5, mutants** at the tag: every mutant patching `sandbox.py`, `sandbox_runtime.py` or `supervise.py`
-stays killed, M41 and M42 (F57c) too, plus three new ones:
-**M43**, the kept folder is mounted as the whole data directory (the design §0 rejects), killed by
-step 6 (`planted`); **M44**, the size check always passes, killed by step 7; **M45**, flow mode always
-runs the dialog, killed by step 4.
+stays killed, M41–M44 (F57c) too, plus five new ones:
+**M45**, the kept folder is mounted as the whole data directory (the design §0 rejects), killed by
+step 6 (`planted`); **M46**, the size check always passes, killed by step 7; **M47**, flow mode always
+runs the dialog, killed by step 4; **M48**, the throwaway folder is not deleted, killed by step 12;
+**M49**, the deletion does not restore permissions before retrying, killed by step 12 (the `000`
+directory is left).
 
 ## 5. After the runs
 
