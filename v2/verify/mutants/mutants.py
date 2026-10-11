@@ -247,6 +247,22 @@ MUTANTS = [
      "framework/confine/manifest.py",
      '    if record.get("grant") != grant_digest(',
      '    if False and record.get("grant") != grant_digest('),
+    ("M41", "F57c rule 1", "a refused start is not told to the house",
+     "framework/confine/supervise.py",
+     "            if isinstance(err, NotApproved):\n                self._not_approved()",
+     "            if False:\n                self._not_approved()"),
+    ("M42", "F57c rule 6", "a start does not remove the not-started issue",
+     "framework/confine/supervise.py",
+     '        self._tell("started", self.domain)',
+     "        pass"),
+    ("M43", "F57c rule 3", "Allow approves a grant other than the one the screen showed",
+     "framework/confine/describe.py",
+     "    if grant_digest(manifest.provenance.value, manifest.permissions) != shown_grant:",
+     "    if False:"),
+    ("M44", "F57c rule 3", "Allow approves code other than the code the screen was shown for",
+     "framework/confine/describe.py",
+     "    if current.composite != shown_identity:",
+     "    if False:"),
 ]
 
 

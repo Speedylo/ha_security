@@ -44,7 +44,8 @@ from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.storage import Store
 
-from .const import (COMMAND_TIMEOUT, DOMAIN, ISSUE_CUT_OFF, MAX_PENDING_COMMANDS,
+from .const import (COMMAND_TIMEOUT, DOMAIN, ISSUE_CUT_OFF, ISSUE_NOT_STARTED,
+                    MAX_PENDING_COMMANDS, NOT_STARTED_REASONS,
                     SIGNAL_NEW_ENTITY, STORAGE_KEY, STORAGE_VERSION, SUPPORTED)
 
 _LOGGER = logging.getLogger(__name__)
@@ -128,11 +129,18 @@ class BridgeData:
         Sent down the command stream, the one channel the mediator already holds open to this
         component. The mediator decides what a restart means; this only says a user asked.
         """
+        return self.tell_supervisor({"restart": integration})
+
+    def tell_supervisor(self, message: dict[str, Any]) -> bool:
+        """Send a user's request down the command stream (F57c's Allow and Try again too).
+
+        False if nothing is listening. The far end decides what the request means; this only
+        says a user asked.
+        """
         if self.commander is None:
             return False
         connection, subscription = self.commander
-        connection.send_message(websocket_api.event_message(subscription,
-                                                            {"restart": integration}))
+        connection.send_message(websocket_api.event_message(subscription, message))
         return True
 
     def save_soon(self) -> None:
@@ -170,6 +178,8 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     websocket_api.async_register_command(hass, ws_commands)
     websocket_api.async_register_command(hass, ws_command_result)
     websocket_api.async_register_command(hass, ws_cut_off)
+    websocket_api.async_register_command(hass, ws_not_started)
+    websocket_api.async_register_command(hass, ws_started)
     return True
 
 
@@ -333,4 +343,52 @@ def ws_cut_off(hass: HomeAssistant, connection: websocket_api.ActiveConnection,
         translation_placeholders={"name": integration})
     _LOGGER.warning("confine_bridge: %s was cut off by the mediator (%s)", integration,
                     msg["detail"])
+    connection.send_result(msg["id"])
+
+
+@require_mediator
+@websocket_api.websocket_command({
+    vol.Required("type"): "confine_bridge/not_started",
+    vol.Required("integration"): cv.string,
+    vol.Required("reason"): vol.In(NOT_STARTED_REASONS),
+    vol.Optional("details", default=""): str,
+    vol.Optional("identity", default=""): str,
+    vol.Optional("grant", default=""): str,
+    vol.Optional("detail", default=""): str,
+})
+@callback
+def ws_not_started(hass: HomeAssistant, connection: websocket_api.ActiveConnection,
+                   msg: dict) -> None:
+    """The supervisor did not start an integration: tell the household, in Repairs (F57c).
+
+    Fixable. For `not_approved`, the screen behind the issue is what the integration asks for,
+    rendered by `describe` (`details`), and its one button allows exactly that: the identity and
+    grant digest the screen was rendered from go back with it, so an approval cannot outlive a
+    change to what was shown. For `too_much_data`, the button only asks to try again. Persistent,
+    like the cut-off, so a restart of the house's instance does not lose it.
+    """
+    integration = msg["integration"]
+    ir.async_create_issue(
+        hass, DOMAIN, ISSUE_NOT_STARTED.format(integration),
+        data={"integration": integration, "reason": msg["reason"],
+              "identity": msg["identity"], "grant": msg["grant"], "details": msg["details"]},
+        is_fixable=True, is_persistent=True,
+        severity=ir.IssueSeverity.ERROR,
+        translation_key=msg["reason"],
+        translation_placeholders={"name": integration})
+    _LOGGER.warning("confine_bridge: %s was not started (%s) %s", integration, msg["reason"],
+                    msg["detail"])
+    connection.send_result(msg["id"])
+
+
+@require_mediator
+@websocket_api.websocket_command({
+    vol.Required("type"): "confine_bridge/started",
+    vol.Required("integration"): cv.string,
+})
+@callback
+def ws_started(hass: HomeAssistant, connection: websocket_api.ActiveConnection,
+               msg: dict) -> None:
+    """The integration is running: whatever said it was not started no longer applies."""
+    ir.async_delete_issue(hass, DOMAIN, ISSUE_NOT_STARTED.format(msg["integration"]))
     connection.send_result(msg["id"])

@@ -304,7 +304,8 @@ class AuditLog:
         self._seq += 1
         return record
 
-    def approval(self, identity: Identity, provenance: str, grant: str | None = None) -> dict:
+    def approval(self, identity: Identity, provenance: str, grant: str | None = None,
+                 by: str | None = None) -> dict:
         """§5.9.6's *re-confirmed*: the user was shown this exact identity and accepted it.
 
         Written as its own record kind rather than inferred from the run records, because the
@@ -320,6 +321,10 @@ class AuditLog:
         # approval written before F57 is, admits nothing.
         if grant is not None:
             record["grant"] = grant
+        # F57c: who approved, when it was not the operator at the terminal. The Repairs panel
+        # does not tell a flow which administrator opened it, so this names the role.
+        if by is not None:
+            record["by"] = by
         return self._append(record)
 
     def run(self, identity: Identity, provenance: str, integration: str | None = None) -> str:

@@ -1,7 +1,7 @@
 # M34 (F48, F30): a dead supervisor's sandboxes are not cleared
 --- a/framework/confine/supervise.py
 +++ b/framework/confine/supervise.py
-@@ -108,5 +108,5 @@
+@@ -113,5 +113,5 @@
          rather than having its sandbox killed under it (R10).
          """
 -        if self.delegation.parent is None:

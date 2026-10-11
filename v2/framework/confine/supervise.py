@@ -34,11 +34,12 @@ import tempfile
 import time
 from pathlib import Path
 
-from .audit import DEFAULT_LOG, AuditLog
+from .audit import DEFAULT_LOG, AuditLog, Identity, grant_digest
 from .cgroup import Delegation, SandboxCgroup
 from .channel import Channel
 from .compat import DEPS, PLATFORM_DEPS
-from .manifest import Manifest, NotApproved
+from .describe import approve_shown, changes_since_approval, describe_markdown
+from .manifest import Manifest, ManifestRejected, NotApproved
 from .mediator import CutOff, Mediator
 from .platform import acting_policy
 from .preflight import require_ready
@@ -48,6 +49,9 @@ from .selftest_bridge import interpreter_trees
 from .spawn import Sandbox, become_subreaper, start
 
 HERE = Path(__file__).resolve().parent
+#: Who an approval from the Repairs screen is recorded as given by. Home Assistant does not tell
+#: a Repairs flow which administrator opened it (F57c §1, rule 4).
+ALLOWED_BY = "an administrator, from the Repairs panel"
 
 
 class Supervisor:
@@ -85,6 +89,7 @@ class Supervisor:
         self.mediator.attach_platform(self.platform)
         self.mediator.on_cut_off.append(self.cut_off)
         self.mediator.on_reinstate.append(self.reinstated)
+        self._listen(self.platform)
 
         self.sandbox: Sandbox | None = None
         self.cgroup: SandboxCgroup | None = None
@@ -134,6 +139,55 @@ class Supervisor:
         say(f"{identity} reinstated (recorded); starting it again")
         self.wanted = True
 
+    # ---------------------------------------------------------------- what the house says (F57c)
+
+    def _listen(self, platform: RealPlatform) -> None:
+        platform.approve_handlers.append(self.allowed)
+        platform.retry_handlers.append(self.retry)
+
+    def allowed(self, request: dict) -> None:
+        """An administrator chose Allow and start on the Repairs screen.
+
+        Recorded only if the screen showed what is on disk now (`approve_shown`). Either way the
+        integration is then started, which registers it through the gate: approved, it runs and
+        its issue goes; not, it stays stopped and the house is shown the current screen.
+        """
+        if request.get("approve") != self.domain or self.sandbox is not None:
+            return
+        try:
+            approve_shown(self.own, self.approvals, Manifest.load(self.own, self.root),
+                          str(request.get("identity", "")), str(request.get("grant", "")),
+                          by=ALLOWED_BY)
+            say(f"{self.domain} allowed by an administrator, from the Repairs panel")
+        except ManifestRejected as err:
+            say(f"not allowed: {err}")
+        self.wanted = True
+
+    def retry(self, identity: str) -> None:
+        """Someone asked to try a not-started integration again. Nothing is granted by asking."""
+        if identity == self.domain and self.sandbox is None:
+            say(f"{self.domain}: asked to try again")
+            self.wanted = True
+
+    def _tell(self, what: str, *args, **kwargs) -> None:
+        """Tell (A); if it cannot be told, say so, and change nothing else (F57c rule 7)."""
+        try:
+            getattr(self.platform, what)(*args, **kwargs)
+        except PlatformLost:
+            raise
+        except Exception as err:  # noqa: BLE001 — the house not hearing it stops nothing
+            say(f"could not tell the house's Home Assistant ({what}): {err}")
+
+    def _not_approved(self) -> None:
+        """The `not_started` issue, with the screen an administrator decides from."""
+        manifest = Manifest.load(self.own, self.root)
+        _, code, permissions = changes_since_approval(self.own, manifest, self.approvals)
+        self._tell("not_started", self.domain, "not_approved",
+                   details=describe_markdown(manifest, code_changed=code,
+                                             permissions_changed=permissions),
+                   shown_identity=Identity.compute(self.own).composite,
+                   grant=grant_digest(manifest.provenance.value, manifest.permissions))
+
     # ---------------------------------------------------------------- sandboxes
 
     def launch(self) -> None:
@@ -158,10 +212,13 @@ class Supervisor:
                                    installed=self.deps)
         except (CutOff, NotApproved) as err:
             # Not approved (F57) is answered as a cut-off is: the supervisor stays up and says
-            # why, and the integration runs only once someone approves it and restarts it.
+            # why. Since F57c the house is told too, and an administrator can allow it there; a
+            # cut-off has its own issue already.
             say(f"not started: {err}")
             mediator_end.close()
             sandbox_end.close()
+            if isinstance(err, NotApproved):
+                self._not_approved()
             return
         spec = SandboxSpec(
             domain=self.domain, own_dir=str(self.own), data_dir=str(data),
@@ -193,6 +250,7 @@ class Supervisor:
                                  stderr=stderr.fileno(), channel_end=sandbox_end.fileno())
         sandbox_end.detach()
         say(f"{self.domain} started (run {self.starts}, pid {self.sandbox.pid})")
+        self._tell("started", self.domain)
 
     def stop(self) -> None:
         if self.sandbox is None:
@@ -260,6 +318,7 @@ class Supervisor:
         self.mediator.policy = acting_policy({self.domain: self.manifest}, platform,
                                              approvals=self.approvals)
         self.mediator.attach_platform(platform)
+        self._listen(platform)
         self.wanted = was_running
         say(f"the house's Home Assistant is back; "
             f"{'starting ' + self.domain + ' again' if was_running else self.domain + ' was not running'}")

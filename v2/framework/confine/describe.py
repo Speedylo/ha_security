@@ -31,8 +31,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from .audit import DEFAULT_LOG, AuditLog, Identity, grant_digest, last_identity
-from .manifest import Manifest, ManifestRejected, Provenance
+from .audit import DEFAULT_LOG, AuditLog, Identity, grant_digest, last_identity, last_record
+from .manifest import Manifest, ManifestRejected, NotApproved, Provenance
 
 # One row per declarable capability of §5.10.3. `granted` is completed with the declared
 # values; `denied` stands alone, because absence has no values to list.
@@ -84,12 +84,9 @@ def _values(manifest: Manifest, capability: str, member: str) -> list[str] | boo
     return manifest.permissions.get(capability, {}).get(member)
 
 
-def describe(manifest: Manifest, *, name: str | None = None, version: str | None = None,
-             code_changed: bool = False, permissions_changed: bool = False) -> str:
-    """Render one manifest as plain text. Never raises: every state has a rendering."""
-    title = name or manifest.domain
-    lines = [title + (f"  {version}" if version else ""), "=" * max(len(title), 20), ""]
-
+def _banner(code_changed: bool, permissions_changed: bool) -> list[str]:
+    """The changed-since-approval warning, as lines; empty when nothing changed."""
+    lines: list[str] = []
     # §5.12.5: the identity is machine-facing, its delta is user-facing. This is the
     # user-facing half of T12, and the three cases are kept apart because the original single
     # message asserted "what it is allowed to do has not changed" — which is a statement about
@@ -106,58 +103,143 @@ def describe(manifest: Manifest, *, name: str | None = None, version: str | None
     elif permissions_changed:
         lines += ["!! What this integration is allowed to do has changed since you",
                   "   approved it. Its code has not changed. Read the list below.", ""]
+    return lines
 
-    if manifest.provenance is Provenance.NONE:
-        lines += [
-            "This integration declares nothing.",
-            "",
-            "It will be run with no permissions at all. It can execute its own code, in its",
-            "own folder, and nothing else: no network, no access to your devices, no access",
-            "to any other integration's data, and no access to any file of yours.",
-            "",
-            "Nothing it asks for will be granted, because it has asked for nothing.",
-        ]
-        return "\n".join(lines)
 
-    note = PROVENANCE_NOTE[manifest.provenance]
-    if note:
-        lines += [note, ""]
+NOTHING_DECLARED = [
+    "This integration declares nothing.",
+    "",
+    "It will be run with no permissions at all. It can execute its own code, in its",
+    "own folder, and nothing else: no network, no access to your devices, no access",
+    "to any other integration's data, and no access to any file of yours.",
+    "",
+    "Nothing it asks for will be granted, because it has asked for nothing.",
+]
+ALLOWED_HEADING = "If you install this, it will be allowed to:"
+DENIED_HEADING = "It will NOT be allowed to:"
 
-    allowed: list[str] = []
+
+def _grants(manifest: Manifest) -> tuple[list[tuple[str, list[str]]], list[str]]:
+    """What it may do, each phrase with its values, and what it may not, in `CAPABILITIES` order."""
+    allowed: list[tuple[str, list[str]]] = []
     denied: list[str] = []
     for (capability, member), granted_phrase, denied_phrase in CAPABILITIES:
         values = _values(manifest, capability, member)
         if values is None or values is False or values == []:
             denied.append(denied_phrase)
         elif values is True:
-            allowed.append(granted_phrase)
+            allowed.append((granted_phrase, []))
         else:
-            allowed.append(f"{granted_phrase}:")
-            allowed += [f"    {value}" for value in values]
+            allowed.append((f"{granted_phrase}:", [str(value) for value in values]))
+    return allowed, denied
 
-    lines.append("If you install this, it will be allowed to:")
-    lines += [f"  - {entry}" if not entry.startswith("    ") else entry for entry in allowed] \
-        or ["  - nothing at all"]
-    lines += ["", "It will NOT be allowed to:"]
-    lines += [f"  - {entry}" for entry in denied]
 
+def _limits(manifest: Manifest) -> str | None:
+    """The resource sentence, or None when nothing is declared."""
     # The figures that will be applied, not the ones asked for: a declaration above the
     # framework's default gets the default (§7.22.3, verification 4.7 finding F32).
     declared = manifest.permissions.get("resources", {})
     resources = {member: getattr(manifest.resources, member) for member in declared}
-    if resources:
-        limits = []
-        if "memory_mb" in resources:
-            limits.append(f"{resources['memory_mb']} MB of memory")
-        if "max_processes" in resources:
-            limits.append(f"{resources['max_processes']} processes")
-        if "cpu_percent" in resources:
-            limits.append(f"{resources['cpu_percent']}% of one processor")
-        if "disk_mb" in resources:
-            limits.append(f"{resources['disk_mb']} MB of temporary disk space")
-        if limits:
-            lines += ["", "It is limited to " + ", ".join(limits) + "."]
+    limits = []
+    if "memory_mb" in resources:
+        limits.append(f"{resources['memory_mb']} MB of memory")
+    if "max_processes" in resources:
+        limits.append(f"{resources['max_processes']} processes")
+    if "cpu_percent" in resources:
+        limits.append(f"{resources['cpu_percent']}% of one processor")
+    if "disk_mb" in resources:
+        limits.append(f"{resources['disk_mb']} MB of temporary disk space")
+    return "It is limited to " + ", ".join(limits) + "." if limits else None
+
+
+def describe(manifest: Manifest, *, name: str | None = None, version: str | None = None,
+             code_changed: bool = False, permissions_changed: bool = False) -> str:
+    """Render one manifest as plain text. Never raises: every state has a rendering."""
+    title = name or manifest.domain
+    lines = [title + (f"  {version}" if version else ""), "=" * max(len(title), 20), ""]
+    lines += _banner(code_changed, permissions_changed)
+
+    if manifest.provenance is Provenance.NONE:
+        return "\n".join(lines + NOTHING_DECLARED)
+
+    note = PROVENANCE_NOTE[manifest.provenance]
+    if note:
+        lines += [note, ""]
+
+    allowed, denied = _grants(manifest)
+    lines.append(ALLOWED_HEADING)
+    for phrase, values in allowed:
+        lines.append(f"  - {phrase}")
+        lines += [f"    {value}" for value in values]
+    if not allowed:
+        lines.append("  - nothing at all")
+    lines += ["", DENIED_HEADING]
+    lines += [f"  - {entry}" for entry in denied]
+
+    limits = _limits(manifest)
+    if limits:
+        lines += ["", limits]
     return "\n".join(lines)
+
+
+def _md(text: str) -> str:
+    """A value from the manifest, safe to place in Markdown: one line, no markup of its own.
+
+    Entity ids, hosts and paths are the author's strings. Escaped, a value cannot start a new
+    line, a heading or a link on the screen an administrator reads before allowing (F57c §1).
+    """
+    flat = " ".join(text.split())
+    return "".join(f"\\{c}" if c in "\\`*_{}[]()<>#+-.!|~" else c for c in flat)
+
+
+def describe_markdown(manifest: Manifest, *, code_changed: bool = False,
+                      permissions_changed: bool = False) -> str:
+    """`describe`, for the Repairs screen (F57c): the same sentences, as Markdown.
+
+    No title, because the screen has its own; the banner joined into one paragraph, because the
+    terminal's line breaks mean nothing in a window; every value from the manifest escaped.
+    """
+    parts: list[str] = []
+    banner = " ".join(line.strip(" !") for line in _banner(code_changed, permissions_changed)
+                      if line.strip())
+    if banner:
+        parts.append(f"**{banner}**")
+    if manifest.provenance is Provenance.NONE:
+        paragraphs = "\n".join(NOTHING_DECLARED).split("\n\n")
+        return "\n\n".join(parts + [" ".join(p.split()) for p in paragraphs])
+    note = PROVENANCE_NOTE[manifest.provenance]
+    if note:
+        parts.append(" ".join(note.split()))
+    allowed, denied = _grants(manifest)
+    items = []
+    for phrase, values in allowed:
+        items.append(f"- {phrase}" + "".join(f"\n  - {_md(value)}" for value in values))
+    parts.append(ALLOWED_HEADING + "\n\n" + ("\n".join(items) or "- nothing at all"))
+    parts.append(DENIED_HEADING + "\n\n" + "\n".join(f"- {entry}" for entry in denied))
+    limits = _limits(manifest)
+    if limits:
+        parts.append(limits)
+    return "\n\n".join(parts)
+
+
+def changes_since_approval(component: Path, manifest: Manifest,
+                           approvals: Path) -> tuple[bool, bool, bool]:
+    """(approved before, code changed, permissions changed), against the last approval.
+
+    The permissions count as changed when the identity's manifest or requirements moved, as
+    `main` says, **or when the grant digest differs**: a derived grant lives in a file the
+    identity does not hash, so only the digest sees it widen (F57).
+    """
+    record = last_record(approvals, component.name)
+    if record is None:
+        return False, False, False
+    try:
+        moved = Identity.compute(component).changes_from(Identity(**record["identity"]))
+    except TypeError:
+        return True, True, True
+    grant = grant_digest(manifest.provenance.value, manifest.permissions)
+    return (True, "source" in moved,
+            "manifest" in moved or "requirements" in moved or record.get("grant") != grant)
 
 
 def describe_refusal(error: ManifestRejected, domain: str) -> str:
@@ -178,7 +260,8 @@ def describe_refusal(error: ManifestRejected, domain: str) -> str:
     ])
 
 
-def record_approval(component: Path, path: Path, manifest: Manifest) -> Identity:
+def record_approval(component: Path, path: Path, manifest: Manifest,
+                    by: str | None = None) -> Identity:
     """Record that a person was shown this integration's grant and accepted it (§5.9.6, F57).
 
     Behind `--approve`. Harnesses call it too, because in an experiment the experimenter is the
@@ -188,8 +271,28 @@ def record_approval(component: Path, path: Path, manifest: Manifest) -> Identity
     """
     current = Identity.compute(component)
     AuditLog(path=path).approval(current, manifest.provenance.value,
-                                 grant_digest(manifest.provenance.value, manifest.permissions))
+                                 grant_digest(manifest.provenance.value, manifest.permissions),
+                                 by=by)
     return current
+
+
+def approve_shown(component: Path, path: Path, manifest: Manifest, shown_identity: str,
+                  shown_grant: str, by: str) -> Identity:
+    """Record an approval of what a screen showed, only if it is still what is on disk (F57c).
+
+    The Repairs screen is rendered from one identity and one grant and carries both; Allow
+    sends them back. Between the two, the integration may have been updated or its derived grant
+    rewritten, and an approval of the new state by someone who read the old one is not an
+    approval. So both are recomputed here, and a difference records nothing and raises.
+    """
+    current = Identity.compute(component)
+    if current.composite != shown_identity:
+        raise NotApproved(f"{component.name}: its code changed after its permissions were shown; "
+                          "nothing was approved")
+    if grant_digest(manifest.provenance.value, manifest.permissions) != shown_grant:
+        raise NotApproved(f"{component.name}: its permissions changed after they were shown; "
+                          "nothing was approved")
+    return record_approval(component, path, manifest, by=by)
 
 
 def approve_as_experimenter(component: Path, config_root: Path | None = None) -> None:

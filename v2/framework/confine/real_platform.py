@@ -96,6 +96,12 @@ class RealPlatform:
         #: Called with an integration's name when a user confirms its Repairs issue, asking for
         #: a cut-off integration to be started again (the refusal flood). Same stream as commands.
         self.restart_handlers: list[Callable[[str], None]] = []
+        #: F57c. Called with the request when an administrator allows a not-started integration
+        #: from its Repairs screen (`integration`, `identity`, `grant`: what the screen showed),
+        #: and with the integration's name when someone asks to try one again. The supervisor
+        #: handles both; the mediator has no part in approving.
+        self.approve_handlers: list[Callable[[dict], None]] = []
+        self.retry_handlers: list[Callable[[str], None]] = []
         self._commands: deque = deque()
         self.calls: list[tuple[str, str, dict]] = []      # what (A) executed, for reports
         self.published: dict[tuple[str, str], str] = {}   # (integration, its id) -> id in (A)
@@ -190,6 +196,14 @@ class RealPlatform:
                 for restart in list(self.restart_handlers):
                     restart(str(command["restart"]))
                 continue
+            if "approve" in command:
+                for approve in list(self.approve_handlers):
+                    approve(command)
+                continue
+            if "retry" in command:
+                for retry in list(self.retry_handlers):
+                    retry(str(command["retry"]))
+                continue
             for handler in list(self.command_handlers):
                 handler(command)
         while self._events:
@@ -249,6 +263,22 @@ class RealPlatform:
     def cut_off(self, identity: str, detail: str) -> None:
         """Tell the household: the bridge raises a Repairs issue for `identity`, in plain language."""
         self.call({"type": "confine_bridge/cut_off", "integration": identity, "detail": detail})
+
+    def not_started(self, identity: str, reason: str, *, details: str = "", shown_identity: str = "",
+                    grant: str = "", detail: str = "") -> None:
+        """Tell the household an integration was not started, and why (F57c).
+
+        `reason` is the issue's translation key. For `not_approved`, `details` is what the screen
+        shows (`describe_markdown`), and `shown_identity` and `grant` are what it was rendered
+        from, which Allow sends back.
+        """
+        self.call({"type": "confine_bridge/not_started", "integration": identity,
+                   "reason": reason, "details": details, "identity": shown_identity,
+                   "grant": grant, "detail": detail})
+
+    def started(self, identity: str) -> None:
+        """The integration is running: its `not_started` issue, if any, is removed (F57c)."""
+        self.call({"type": "confine_bridge/started", "integration": identity})
 
     def watch(self, entity_id: str) -> None:
         """Widen (A)'s subscription to include `entity_id`. Only subscribed entities are asked for."""

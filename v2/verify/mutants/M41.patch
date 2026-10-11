@@ -1,0 +1,10 @@
+# M41 (F57c rule 1): a refused start is not told to the house
+--- a/framework/confine/supervise.py
++++ b/framework/confine/supervise.py
+@@ -218,5 +218,5 @@
+             mediator_end.close()
+             sandbox_end.close()
+-            if isinstance(err, NotApproved):
++            if False:
+                 self._not_approved()
+             return

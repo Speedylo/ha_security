@@ -18,6 +18,38 @@
           "not_connected": "The service that runs confined integrations is not running at the moment, so nothing can be restarted. Try again later."
         }
       }
+    },
+    "not_approved": {
+      "title": "{name} was not started",
+      "description": "**{name}** was not started because the permissions it asks for have not been approved, or because it has changed since they were approved, for example after an update. Open this to see what it asks for.",
+      "fix_flow": {
+        "step": {
+          "allow": {
+            "title": "Allow {name}?",
+            "description": "{details}\n\nSelect **Allow and start** to let it do the things listed above, and nothing else. If you do not recognise it or do not want it to have these permissions, close this window: it will stay stopped.",
+            "submit": "Allow and start"
+          }
+        },
+        "abort": {
+          "not_connected": "The service that runs confined integrations is not running at the moment, so nothing can be done. Try again later."
+        }
+      }
+    },
+    "too_much_data": {
+      "title": "{name} was not started",
+      "description": "**{name}** was not started because it has stored more information than it is allowed to keep.",
+      "fix_flow": {
+        "step": {
+          "retry": {
+            "title": "Try {name} again?",
+            "description": "This limit protects your system from running out of storage space. It is usually caused by a bug in the integration, and it is worth checking whether an update is available for it. The person who looks after this system can clear what it stored.\n\nSelect **Try again** to check again. Trying again does not give it any new permissions or any more space; if it still has too much stored, it will stay stopped.",
+            "submit": "Try again"
+          }
+        },
+        "abort": {
+          "not_connected": "The service that runs confined integrations is not running at the moment, so nothing can be done. Try again later."
+        }
+      }
     }
   }
 }

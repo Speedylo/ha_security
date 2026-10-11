@@ -21,3 +21,8 @@ MAX_PENDING_COMMANDS = 32
 
 #: The Repairs issue raised when the mediator cuts an integration off (the refusal flood).
 ISSUE_CUT_OFF = "cut_off_{}"
+
+#: The Repairs issue raised when the supervisor does not start an integration (F57c). Its
+#: translation key is the reason: `not_approved`, or `too_much_data` (F59).
+ISSUE_NOT_STARTED = "not_started_{}"
+NOT_STARTED_REASONS = ("not_approved", "too_much_data")

@@ -1,7 +1,7 @@
 # M35 (F48): a sandbox that exits by itself is restarted
 --- a/framework/confine/supervise.py
 +++ b/framework/confine/supervise.py
-@@ -217,4 +217,5 @@
+@@ -275,4 +275,5 @@
          if pid:
              say(f"{self.domain} exited by itself (status {status}); not restarting it")
 +            self.wanted = True

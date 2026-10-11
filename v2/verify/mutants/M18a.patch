@@ -1,7 +1,7 @@
 # M18a (F45, R3): the bridge's gate admits every authenticated user
 --- a/framework/ha_bridge/confine_bridge/__init__.py
 +++ b/framework/ha_bridge/confine_bridge/__init__.py
-@@ -74,5 +74,5 @@
+@@ -75,5 +75,5 @@
          entries = hass.config_entries.async_entries(DOMAIN)
          designated = entries[0].data.get(MEDIATOR_USER) if entries else None
 -        if user is None or not (user.is_admin or (designated and user.id == designated)):
