@@ -65,3 +65,5 @@ paragraph with its own topic sentence; P14 and P19 open on their claim; P7, P9, 
 a link or the missing analysis; P3 names S9 instead of pointing at a section. **2,281 words of prose,
 281 over the 2,000 budget** (the links and topic sentences cost ~240, of which ~50 were trimmed back);
 cut at the week-6 read-through with §9 and §12.
+
+**2026-10-11: Younes read §8 — "overall fine".** Approved as drafted (2,281 words; trim with §9/§12 at week 6).
