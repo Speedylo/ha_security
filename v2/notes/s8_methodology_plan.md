@@ -34,3 +34,26 @@ before: replace [8]'s Wikipedia source for XZ Utils (CVE-2024-3094).
 
 **Numbers that move at the final rerun:** the mutant count and kill statement, the note count, and the
 fault outcomes; the week-6 read-through checks them against the rerun.
+
+**2026-10-11 (later): checklist pass with the academic-research-writer skill** (Younes asked; the first
+draft was written with the skill's guidelines in context but not checked against its list). Fixed:
+- 8.1 rule 2: "a recognised failure" (uncited) became the project's reasoning, anchored on ISO 31000's
+  order, assessment before treatment [25].
+- 8.2: ISO 31000 "does not prescribe a technique for identifying risks" [25]; **to verify against the
+  2018 text (clause 6.4.2) at the week-5 rebuild** — the standard is paywalled and was not fetched.
+  The first paragraph now links to the next.
+- **[8] replaced** (no Wikipedia): P. Przymus and T. Durieux, "Wolves in the Repository: A Software
+  Engineering Analysis of the XZ Utils Supply Chain Attack," in *Proc. 2025 IEEE/ACM 22nd Int. Conf.
+  Mining Software Repositories (MSR)*, Ottawa, ON, Canada, 2025, pp. 91–102, doi:
+  10.1109/MSR66628.2025.00026 (Crossref). Their §III-B: involved "from 2021.10.29 to 2024.03.28,
+  spanning 2.6 years"; AC2's cell now says 2.6 years, not "two years".
+- 8.4: the ecosystem's existing control cited as [5] (checked: HACS runs automated checks of structure
+  and metadata; the page says nothing of reviewing behaviour).
+- R1: [12] now carries a checked figure — "76% of these extensions use unnecessarily powerful APIs"
+  (read from the PDF, p. 1 abstract). Felt et al., CCS 2011, was considered and **not** cited: its
+  abstract could not be fetched to verify the over-privilege figure.
+- R5: **[47]** E. Rescorla, "The Transport Layer Security (TLS) Protocol Version 1.3," RFC 8446, IETF,
+  Aug. 2018 (§1: "Data sent over the channel after establishment is only visible to the endpoints").
+- R7: **[48]** systemd, `units/user@.service.in`, https://github.com/systemd/systemd (line
+  `Delegate=pids memory cpu`; checked 2026-10-11). The project's own measurement on the Pi is §7.22.
+- 8.6: "closes that gap" → "narrows that gap"; the fault paragraph now links to the post-cut-off rule.
