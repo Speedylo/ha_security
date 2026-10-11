@@ -27,8 +27,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+from .audit import DEFAULT_LOG, Identity, grant_digest, last_record
 from .channel import Channel
-from .manifest import ManifestRejected
+from .manifest import Manifest, ManifestRejected
 from .mediator import Mediator
 from .platform import ActingPolicy, Platform
 
@@ -93,6 +94,72 @@ def refused(reason: str | None, *words: str) -> bool:
             and all(w in reason.lower() for w in words))
 
 
+def shown_steps(root: Path, mediator: Mediator, demo: Path) -> None:
+    """Checks 11–14 (`notes/f57c_not_started_issue_prediction.md` §3).
+
+    The screen carries the identity and the grant digest it was rendered from, and Allow sends
+    them back. `approve_shown` records an approval only if both still describe what is on disk,
+    so a screen read before the code or the permissions moved approves nothing.
+    """
+    try:
+        from .describe import approve_shown
+    except ImportError as err:
+        check("11–13. `approve_shown` exists", False, str(err))
+        return
+    approvals = root / DEFAULT_LOG
+    by = "an administrator, from the Repairs panel"
+
+    def shown() -> tuple[str, str]:
+        manifest = Manifest.load(demo, root)
+        return (Identity.compute(demo).composite,
+                grant_digest(manifest.provenance.value, manifest.permissions))
+
+    def allow(identity: str, grant: str) -> str | None:
+        """None if recorded, or why not."""
+        try:
+            approve_shown(demo, approvals, Manifest.load(demo, root), identity, grant, by)
+        except ManifestRejected as err:
+            return str(err)
+        return None
+
+    def approvals_on_record() -> int:
+        return sum(1 for line in approvals.read_text().splitlines() if '"approval"' in line)
+
+    # Check 8 left an author-declared update that widened itself, refused.
+    reason = allow(*shown())
+    record = last_record(approvals, DOMAIN) or {}
+    registered = register(mediator, demo)
+    check("11. Allow with the screen's identity and grant records an approval, with who gave it, "
+          "and it then registers", reason is None and record.get("by") == by and registered is None,
+          str(reason or registered or record.get("by")))
+
+    component(root, DOMAIN)                 # back to a derived grant, approved as shown
+    derive(demo, READ)
+    allow(*shown())
+    screen = shown()
+    derive(demo, WIDER)                     # widened after the screen was read
+    before = approvals_on_record()
+    reason = allow(*screen)
+    check("12. a screen read before the permissions were widened approves nothing",
+          reason is not None and approvals_on_record() == before
+          and refused(register(mediator, demo), "permission"), str(reason))
+
+    derive(demo, READ)
+    allow(*shown())
+    screen = shown()
+    (demo / "__init__.py").write_text("async def async_setup(hass, config):\n"
+                                      "    return True  # 1.0.2\n")
+    before = approvals_on_record()
+    reason = allow(*screen)
+    check("13. a screen read before the code changed approves nothing",
+          reason is not None and approvals_on_record() == before
+          and refused(register(mediator, demo), "source"), str(reason))
+
+    decision = mediator.policy(DOMAIN, {"op": "approve", "integration": DOMAIN})
+    check("14. a sandbox cannot approve itself: `approve` is no operation, denied (S6)",
+          not decision.allowed, decision.reason)
+
+
 def main() -> int:
     root = Path(tempfile.mkdtemp(prefix="selftest-approval-"))
     try:
@@ -144,6 +211,9 @@ def main() -> int:
         decision = mediator.policy("demo_bare", {"op": "entity.read", "entity": "sensor.outside"})
         check("10. with no manifest at all it registers ungated, and is granted nothing (S6)",
               reason is None and not decision.allowed, str(reason or decision.reason))
+
+        print("\nAllowed from the Repairs panel (F57c): an approval of exactly what was shown:")
+        shown_steps(root, mediator, demo)
     finally:
         shutil.rmtree(root, ignore_errors=True)
 

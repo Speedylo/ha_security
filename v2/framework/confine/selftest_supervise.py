@@ -20,6 +20,7 @@ Run:  systemd-run --user --scope -q python3 -m confine.selftest_supervise [--pyt
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import signal
@@ -27,12 +28,13 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.error
 from pathlib import Path
 
 from .describe import record_approval
 from .manifest import Manifest, Provenance
 from . import house_a
-from .audit import AuditLog
+from .audit import AuditLog, last_record
 from .cgroup import Delegation
 
 HERE = Path(__file__).resolve().parent
@@ -78,18 +80,24 @@ def alive(pid: int) -> bool:
 class Run:
     """One supervisor process, its printed lines and its audit directory."""
 
-    def __init__(self, python: Path, audit: Path, log: Path, component: Path = DEMO) -> None:
+    def __init__(self, python: Path, audit: Path, log: Path, component: Path = DEMO, *,
+                 approve: bool = True, permissions: dict | None = None,
+                 approvals: Path | None = None) -> None:
         self.log, self.audit, self.domain = log, audit, component.name
         # F57: the supervisor registers nothing unapproved. The test approves the grant the
-        # supervisor will load, its default, a derived manifest that declares nothing, and keeps
-        # the approval beside its own logs rather than in the repository.
-        approvals = audit.parent / f"approvals-{audit.name}.jsonl"
-        record_approval(component, approvals,
-                        Manifest(component.name, Provenance.DERIVED, {"schema_version": 1}))
+        # supervisor will load, by default a derived manifest that declares nothing, and keeps
+        # the approval beside its own logs rather than in the repository. F57c's steps start
+        # some supervisors unapproved, and some with a wider grant.
+        self.permissions = permissions or {"schema_version": 1}
+        self.approvals = approvals or audit.parent / f"approvals-{audit.name}.jsonl"
+        if approve:
+            record_approval(component, self.approvals,
+                            Manifest(component.name, Provenance.DERIVED, self.permissions))
         self.out = open(log, "wb")
         self.proc = subprocess.Popen(
             [sys.executable, "-u", "-m", "confine.supervise", "--component", str(component),
-             "--python", str(python), "--audit-dir", str(audit), "--approvals", str(approvals)],
+             "--python", str(python), "--audit-dir", str(audit),
+             "--approvals", str(self.approvals), "--permissions", json.dumps(self.permissions)],
             cwd=FRAMEWORK, stdout=self.out, stderr=subprocess.STDOUT)
 
     def text(self) -> str:
@@ -151,6 +159,25 @@ def switch_of(domain: str) -> str | None:
     unique = f"{domain}:switch.{domain}_misbehave"
     return next((e["entity_id"] for e in admin({"type": "config/entity_registry/list"}) or []
                  if e.get("unique_id") == unique), None)
+
+
+def not_started(domain: str = DOMAIN) -> dict:
+    """The integration's `not_started` Repairs issue in (A), or {} (F57c)."""
+    listed = admin({"type": "repairs/list_issues"}) or {}
+    return next((i for i in listed.get("issues", [])
+                 if i["domain"] == "confine_bridge"
+                 and i["issue_id"] == f"not_started_{domain}"), {})
+
+
+def open_screen(issue_id: str, token: str | None = None) -> dict:
+    """Open a Repairs issue's screen as the panel does: the flow's first answer."""
+    token = token or house_a.TOKEN_FILE.read_text().strip()
+    return house_a.request("POST", "/api/repairs/issues/fix",
+                           {"handler": "confine_bridge", "issue_id": issue_id}, token=token)
+
+
+def screen_text(screen: dict) -> str:
+    return " ".join(str(v) for v in (screen.get("description_placeholders") or {}).values())
 
 
 def repair(domain: str) -> dict:
@@ -256,6 +283,7 @@ def steps(python: Path, work: Path, runs: list[Run]) -> None:
     third.end(signal.SIGTERM)
     left_c = sorted(p.name for p in parent.glob(f"sup-{STUBBORN.name}-*")) if parent else []
     check("no demo_stubborn cgroup is left", not left_c, ", ".join(left_c))
+    not_approved_steps(python, work, runs)
     for run in runs:
         for path in sorted(run.audit.glob("decisions-*.jsonl")):
             # Read from outside the mediator, so without its key: every MAC "fails", as it must
@@ -263,6 +291,65 @@ def steps(python: Path, work: Path, runs: list[Run]) -> None:
             breaks = [b for b in AuditLog(path=path).verify(key=b"") if b.kind != "mac"]
             check(f"{path.name}: no sequence, link or hash break", not breaks,
                   "; ".join(str(b) for b in breaks[:2]))
+
+
+def not_approved_steps(python: Path, work: Path, runs: list[Run]) -> None:
+    """F57c: the house is told, and an administrator can allow it, when an integration is not
+    approved (`notes/f57c_not_started_issue_prediction.md` §3, steps 1–8)."""
+    print("\n9 — not approved: the house is told, and can allow it (F57c, M41–M42)\n")
+    fourth = Run(python, work / "audit_d", work / "supervisor_d.log", approve=False)
+    runs.append(fourth)
+    check("1. with no approval on record, the supervisor says it did not start it",
+          fourth.says("not started", 60))
+    check("   and no sandbox started", "started (run 1" not in fourth.text())
+    found = {}
+    check("2. (A) shows a `not_started` issue: not approved, and fixable",
+          wait(lambda: bool(found.update(not_started()) or found), 15)
+          and found.get("translation_key") == "not_approved" and found.get("is_fixable") is True,
+          str({k: found.get(k) for k in ("translation_key", "is_fixable")}))
+    screen = open_screen(f"not_started_{DOMAIN}")
+    text = screen_text(screen)
+    check("3. its screen shows `describe`'s lines", screen.get("type") == "form"
+          and "It will NOT be allowed to" in text and "control anything" in text, text[:120])
+    try:
+        open_screen(f"not_started_{DOMAIN}", house_a.MEDIATOR_TOKEN_FILE.read_text().strip())
+        status = 200
+    except urllib.error.HTTPError as err:
+        status = err.code
+    check("4. the mediator's non-admin login cannot open it", status == 401, f"HTTP {status}")
+    done = house_a.request("POST", f"/api/repairs/issues/fix/{screen['flow_id']}", {},
+                           token=house_a.TOKEN_FILE.read_text().strip())
+    pid = fourth.sandbox(1, 60)
+    check("5. Allow and start: a sandbox starts", done.get("type") == "create_entry"
+          and pid is not None and alive(pid), f"{done.get('type')}, pid {pid}")
+    check("   and the integration publishes its switch", fourth.published(1))
+    record = last_record(fourth.approvals, DOMAIN) or {}
+    check("6. the issue is gone, and the approval says who gave it",
+          wait(lambda: not not_started(), 10)
+          and record.get("by") == "an administrator, from the Repairs panel", str(record.get("by")))
+    fourth.end(signal.SIGTERM)
+
+    wider = {"schema_version": 1, "services": {"call": ["light.turn_on"]}}
+    fifth = Run(python, work / "audit_e", work / "supervisor_e.log", approve=False,
+                permissions=wider, approvals=fourth.approvals)
+    runs.append(fifth)
+    check("7. its permissions widened, it is not started again",
+          fifth.says("not started", 60) and "started (run 1" not in fifth.text())
+    text = ""
+    if wait(lambda: bool(not_started()), 15):
+        text = screen_text(open_screen(f"not_started_{DOMAIN}"))
+    check("   and its screen says what it is allowed to do has changed",
+          "allowed to do has changed" in text, text[:120])
+    fifth.end(signal.SIGTERM)
+    sixth = Run(python, work / "audit_f", work / "supervisor_f.log", permissions=wider,
+                approvals=fourth.approvals)
+    runs.append(sixth)
+    pid = sixth.sandbox(1, 60)
+    check("8. approved by the operator instead, a new supervisor starts it",
+          pid is not None and alive(pid), f"pid {pid}")
+    check("   and the issue is gone, though no screen was submitted",
+          wait(lambda: not not_started(), 15))
+    sixth.end(signal.SIGTERM)
 
 
 def main() -> int:

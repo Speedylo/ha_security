@@ -103,7 +103,7 @@ The screen behind it:
 
 1. A supervisor for `demo_flood` started with no approval on record says "not started"; no sandbox.
 2. (A) shows `not_started_demo_flood` from `confine_bridge`, key `not_approved`, fixable.
-3. Its screen, opened as the panel does, shows `describe`'s lines ("It will not be able to" and
+3. Its screen, opened as the panel does, shows `describe`'s lines ("It will NOT be allowed to" and
    "control anything").
 4. The mediator's own, non-admin token cannot open it (HTTP 401).
 5. **Allow and start** submitted: a sandbox starts (run 1), and the integration publishes its switch.
