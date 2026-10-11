@@ -153,8 +153,9 @@ flow mode takes the dialog path as before.
 
 **K5, mutants** at the tag: every mutant patching `sandbox.py`, `sandbox_runtime.py` or `supervise.py`
 stays killed, M41–M44 (F57c) too, plus five new ones:
-**M45**, the kept folder is mounted as the whole data directory (the design §0 rejects), killed by
-step 6 (`planted`); **M46**, the size check always passes, killed by step 7; **M47**, flow mode always
+**M45**, the kept folder is mounted as the whole data directory (the design §0 rejects), killed at
+step 4, where the sensor reads `planted` instead of `refresh-2` (step 3 finds the entry anywhere in
+the kept folder, so that the mutant gets as far as the plant; step 6 is the same claim, stated); **M46**, the size check always passes, killed by step 7; **M47**, flow mode always
 runs the dialog, killed by step 4; **M48**, the throwaway folder is not deleted, killed by step 12;
 **M49**, the deletion does not restore permissions before retrying, killed by step 12 (the `000`
 directory is left).

@@ -60,9 +60,15 @@ def reads(value: str, seconds: float = 90) -> bool:
 
 
 def holds_entry(kept: Path) -> bool:
-    entries = kept / "core.config_entries"
+    """Whether Home Assistant's entries file under `kept` names the integration.
+
+    Looked for anywhere under the folder, not only at its top, so that a design keeping the
+    whole configuration directory (M45) passes this step and is caught where it matters, by
+    the code it lets the integration plant.
+    """
     try:
-        return f'"domain":"{DOMAIN}"' in entries.read_text().replace(" ", "")
+        return any(f'"domain":"{DOMAIN}"' in path.read_text().replace(" ", "")
+                   for path in kept.rglob("core.config_entries"))
     except OSError:
         return False
 
