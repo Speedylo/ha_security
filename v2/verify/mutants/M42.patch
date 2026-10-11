@@ -1,7 +1,7 @@
 # M42 (F57c rule 6): a start does not remove the not-started issue
 --- a/framework/confine/supervise.py
 +++ b/framework/confine/supervise.py
-@@ -251,5 +251,5 @@
+@@ -255,5 +255,5 @@
          sandbox_end.detach()
          say(f"{self.domain} started (run {self.starts}, pid {self.sandbox.pid})")
 -        self._tell("started", self.domain)

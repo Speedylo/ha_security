@@ -192,14 +192,6 @@ class Supervisor:
 
     def launch(self) -> None:
         self.wanted = False
-        # A fresh data directory for every start, as every experiment harness gives one. Found on
-        # the Pi (2026-10-05): with the first start's directory reused, the private instance finds
-        # the integration's config entry already stored, the config flow aborts as
-        # `already_configured`, and flow mode never sets the stored entry up — so the restarted
-        # integration ran and published nothing. Keeping `/sandbox/data` across starts, which an
-        # OAuth integration needs to stay logged in (§7.42), is therefore not supported yet.
-        data = self.root / ".confine" / f"{self.domain}-start{self.starts + 1}"
-        data.mkdir(parents=True)
         spec_file = self.root / "spec.json"
         spec_file.write_text(json.dumps({
             "domain": self.domain, "mode": "flow", "auth": True,
@@ -220,6 +212,18 @@ class Supervisor:
             if isinstance(err, NotApproved):
                 self._not_approved()
             return
+        # A fresh data directory for every start, as every experiment harness gives one. Found on
+        # the Pi (2026-10-05): with the first start's directory reused, the private instance finds
+        # the integration's config entry already stored, the config flow aborts as
+        # `already_configured`, and flow mode never sets the stored entry up — so the restarted
+        # integration ran and published nothing. Keeping `/sandbox/data` across starts, which an
+        # OAuth integration needs to stay logged in (§7.42), is therefore not supported yet.
+        #
+        # Made only once the start is registered. Made before, a refused start left this run's
+        # directory behind, and the next attempt, after an administrator allowed it, failed on
+        # it with `FileExistsError` (F57c's C2, 2026-10-11): `starts` counts only real starts.
+        data = self.root / ".confine" / f"{self.domain}-start{self.starts + 1}"
+        data.mkdir(parents=True)
         spec = SandboxSpec(
             domain=self.domain, own_dir=str(self.own), data_dir=str(data),
             argv=[str(self.python), "/sandbox/runtime.py"],
