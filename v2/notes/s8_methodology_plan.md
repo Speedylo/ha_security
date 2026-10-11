@@ -57,3 +57,11 @@ draft was written with the skill's guidelines in context but not checked against
 - R7: **[48]** systemd, `units/user@.service.in`, https://github.com/systemd/systemd (line
   `Delegate=pids memory cpu`; checked 2026-10-11). The project's own measurement on the Pi is §7.22.
 - 8.6: "closes that gap" → "narrows that gap"; the fault paragraph now links to the post-cut-off rule.
+
+**2026-10-11 (later): paragraph-structure pass** (Younes asked whether topic → evidence → analysis → link
+was respected; 10 of 23 paragraphs broke it). Fixed: P12 (facts listed without meaning) now says what
+they add up to; the paragraph on treatment and the one on faults each split in two, every new
+paragraph with its own topic sentence; P14 and P19 open on their claim; P7, P9, P16, P18, P20 gained
+a link or the missing analysis; P3 names S9 instead of pointing at a section. **2,281 words of prose,
+281 over the 2,000 budget** (the links and topic sentences cost ~240, of which ~50 were trimmed back);
+cut at the week-6 read-through with §9 and §12.
