@@ -1,61 +1,41 @@
 # 8. Methodology and Capstone Design
 
-## 8.1 The method, and one rule it is written under
+## 8.1 The method, and three rules it is written under
 
-The project's method is ordinary engineering research — requirements traced to evidence, a threat
-model before the design, a design justified against candidates, an implementation, and a paired
-evaluation. Three rules were adopted at the start and are worth stating, because the results in
-§12 are only interpretable if the reader knows them.
+The project follows an engineering research method: requirements traced to evidence, a threat model written before the design, a design chosen against alternatives, an implementation, and a paired evaluation that runs each integration with and without confinement. The results in Section 12 can only be read correctly if three rules that governed this method are known, because each rule constrains what a result is allowed to mean.
 
-**Rule 1 — Every requirement traces to a finding, or it is cut.** Requirements that arrive from
-intuition about what a sandbox ought to do are how scope inflates and how a design ends up
-answering questions nobody asked.
+The first rule is that every requirement traces to a finding, or it is cut. A requirement that arrives from intuition about what a sandbox ought to do is how scope inflates, and how a design comes to answer questions that the problem never posed. Section 8.4 shows the rule producing a requirement rather than only removing them.
 
-**Rule 2 — The threat model is written before the architecture.** Placing it between requirements
-and design means the controls answer threats enumerated independently of them. Written the other
-way round, a threat model becomes post-hoc justification for a design that was going to be built
-anyway, which is a recognisable failure mode and one an assessor is entitled to look for.
+The second rule is that the threat model is written before the architecture. Placed between the requirements and the design, the threat model enumerates threats independently of the controls that later answer them. Written afterwards, a threat model tends to justify the design that was going to be built anyway, which is a recognised failure and one an assessor is entitled to look for.
 
-**Rule 3 — Predictions are registered before measurements, and superseded text is not edited to be
-right.** Where a later section corrects an earlier one, the earlier text stands and gains a
-forward pointer. This is deliberate: a reader can check what was believed *before* the number
-arrived rather than only what is believed after. Six of eight registered predictions were wrong
-and none was revised, and §13.1 argues that record is itself a result.
+The third rule is that a prediction is committed before the measurement it predicts, and that text later found wrong is corrected with a dated note rather than rewritten. A reader can then check what was believed before a number arrived, not only what is believed after it. Of the first eight predictions the project registered, six were wrong and none was revised, a record that Section 13 treats as a result in its own right. The same rule governs the verification described in Section 8.6, so the threat model and the evidence that tests it were both fixed before the outcomes that could have shaped them.
 
-## 8.2 Threat model: framework and scope
+## 8.2 Threat model: framework, scope and owner
 
-**ISO 31000** [25] supplies the risk-management process; **STRIDE** [26] fills the identification
-slot ISO 31000 deliberately leaves open, applied per trust boundary. §5.1 states how each clause is
-discharged.
+The threat model follows ISO 31000 for the risk-management process [25] and uses STRIDE to identify threats, applied to each trust boundary in turn [26]. ISO 31000 deliberately leaves the identification method open, so the two are complementary: the standard fixes the process from context to treatment, and STRIDE fills the one step the standard does not prescribe.
 
-**In scope:** a self-hosted Home Assistant installation extended by third-party integrations,
-together with the assets those integrations can reach. **The risk owner is the occupying
-householder** — the party that owns the assets, carries the consequences, and has neither a
-security function nor an incident-response capability. Naming them matters, because every
-judgement in the model is calibrated to that owner and would be different for an organisation.
+The system in scope is a self-hosted Home Assistant installation extended by third-party integrations, together with the assets those integrations can reach. The risk owner is the householder who lives with it: the party that owns the assets and bears the consequences, but has no security function and no means of responding to an incident. Every rating in the model is calibrated to that owner, and would differ for an organisation with a security team.
 
-**Out of scope:** threats originating from a compromised platform, a hostile LAN, or physical
-access. Platform maintainers are **trusted**: if the platform is hostile, no integration-level
-control helps.
+Three sources of threat are out of scope: a compromised platform, a hostile local network, and physical access. The platform's maintainers are trusted, because if the platform itself is hostile no control at the level of an integration can help. This exclusion has a consequence that the design inherits directly. Since F57, an administrator of the house's Home Assistant can approve a grant from the Repairs panel (Section 9.3), so a compromised administrator account could approve a wider grant than intended. That case belongs to the compromised platform excluded here, which is why Section 9.8 records it as a limit of the architecture rather than as a threat this model treats.
 
-## 8.3 Assets and actors
+## 8.3 Assets, actors and trust boundaries
+
+The assets an integration can reach range from the physical control of the home to the audit record that makes any other loss attributable, and Table 8.1 lists them. Reversibility is the axis that makes them comparable. A disclosure cannot be undone, whereas availability is normally recovered, which is why the model rates an outage below an exfiltration of similar apparent severity, and it applies that judgement consistently.
 
 **Table 8.1 — Assets**
 
 | ID | Asset | Why it matters |
 |---|---|---|
-| A1 | **Physical control of the dwelling** — locks, alarms, garage doors | Life-safety and property; irreversible in effect |
-| A2 | **Occupancy and behavioural data** | Enables physical burglary; irreversible once disclosed |
-| A3 | **Stored credentials** | Lateral compromise beyond the home |
-| A4 | **Camera and media streams** | Intimate privacy harm |
-| A5 | **Platform availability** | Automations include alarms and heating |
-| A6 | **Other integrations' state and secrets** | Reachable in-process, demonstrated |
-| A7 | **The audit record** | Meta-asset: its integrity determines whether any other loss is attributable |
-| A8 | **The home network** | Pivot target reachable from the gateway |
+| A1 | Physical control of the dwelling: locks, alarms, garage doors | Life safety and property; irreversible in effect |
+| A2 | Occupancy and behavioural data | Enables burglary; irreversible once disclosed |
+| A3 | Stored credentials | Lateral compromise beyond the home |
+| A4 | Camera and media streams | Intimate privacy harm |
+| A5 | Platform availability | Automations include alarms and heating |
+| A6 | Other integrations' state and secrets | Reachable in-process, as demonstrated |
+| A7 | The audit record | Its integrity decides whether any other loss can be attributed |
+| A8 | The home network | A pivot target reachable from the gateway |
 
-**Reversibility is the axis that makes these commensurable.** Disclosure is permanent;
-availability is normally recovered. That is what justifies rating an outage below an exfiltration
-of comparable drama, and it is applied consistently.
+The actors in Table 8.2 differ in how strongly their threat is evidenced, and the model states that difference rather than levelling it. A remote attacker exploiting a vulnerable integration (AC3) is the only actor documented in this ecosystem, through eight integrations disclosed in 2021 with unauthenticated flaws [4], [6]. A co-resident compromised integration (AC4) is the only one with a demonstrated technique: Corno and Mannella reached another integration's live objects by walking Python's garbage collector [9]. A malicious author (AC1) is the most severe actor and the least evidenced, and is stated as such rather than inflated.
 
 **Table 8.2 — Actors**
 
@@ -63,137 +43,74 @@ of comparable drama, and it is applied consistently.
 |---|---|---|
 | AC1 | Malicious integration author | No documented Home Assistant case; the capability is trivially available |
 | AC2 | Compromised honest author | XZ Utils: two years of trust-building, then a backdoor [8] |
-| AC3 | Remote attacker via a vulnerable integration | **Documented in this ecosystem** — 2021, eight integrations, unauthenticated [4][6] |
-| AC4 | Co-resident compromised integration | **Demonstrated** — the garbage-collector technique [9] |
+| AC3 | Remote attacker via a vulnerable integration | Documented in this ecosystem: 2021, eight integrations, unauthenticated [4], [6] |
+| AC4 | Co-resident compromised integration | Demonstrated: the garbage-collector technique [9] |
 | AC5 | The user | Not an adversary, but a source of risk through action |
-| AC6 | Platform maintainers | **Trusted**; out of scope |
+| AC6 | Platform maintainers | Trusted; out of scope |
 
-AC3 is the only actor with documented realisation *in this ecosystem*, and AC4 the only one with a
-demonstrated technique. **AC1 is the most severe and the least evidenced, and is stated as such
-rather than inflated.**
+Six trust boundaries separate these actors from the assets, and in today's Home Assistant four of the six do not exist. Figure 8.1 shows why. The integration and the platform share one operating-system process and one Python interpreter, so the boundaries between an integration and the mediating component (TB1), the network (TB3), the host (TB5) and other integrations (TB6) have no point anywhere in the running system at which they could be enforced. The two that exist, the platform's API surface (TB2) and the distribution channel (TB4), constrain an integration's structure but not its behaviour.
 
-## 8.4 Trust boundaries — and the finding is that four of six do not exist
+![Figure 8.1](../figures/fig_4_1_current_state.svg)
 
-| ID | Boundary | Status today |
-|---|---|---|
-| TB1 | Integration ↔ mediating component | **Absent.** Integration and platform share a process |
-| TB2 | Mediating component ↔ Home Assistant | Exists as the platform's API surface; unscoped and unauthenticated per integration |
-| TB3 | Integration ↔ external network | **Absent.** Unrestricted outbound |
-| TB4 | Author and channel ↔ the user's machine | Exists procedurally; verifies structure not behaviour |
-| TB5 | Integration ↔ host OS, filesystem, process table | **Absent.** Integration holds the platform's OS privileges |
-| TB6 | Integration ↔ other integrations | **Absent.** Demonstrated crossable |
+**Figure 8.1 — Home Assistant as it stands, with the six trust boundaries overlaid.** Everything within the heavy border shares one process; the four boundaries marked ABSENT have no enforcement point. The gap between TB1 and TB2 is where a mediating component would stand, and today nothing does. Drawn with OWASP Threat Dragon [27] from one source, so the model and the figure cannot drift.
 
-> **Figure 8.1 — [TO DRAW]** Home Assistant as it stands today, with the six trust boundaries
-> overlaid; four of the six do not exist. Everything within the heavy border shares one
-> operating-system process and one Python interpreter, so the boundaries marked ABSENT have no
-> enforcement point anywhere in the running system. TB1 and TB2 are drawn as two curves with an
-> empty gap between them: **that gap is where a mediating component would stand, and today nothing
-> does.** Drawn with OWASP Threat Dragon [27]; the model and the rendering are generated from one
-> source so they cannot drift.
+The confined design instantiates the four missing boundaries, and Figure 8.2 draws it on the same canvas so that the difference between the two figures carries the argument. Five flows present in Figure 8.1 are absent from Figure 8.2, and none of them is refused by a check: the stores they read are not in the sandbox's view, and the integrations no longer share a process, so there is no request to make. TB2 is narrowed rather than closed. The mediator connects as an ordinary Home Assistant user, so it holds no administrative function but can still operate every device. One flow is new: no grant reaches a sandbox until a person has approved exactly what was shown.
 
-**Three of the four missing boundaries are missing for one reason**, visible in the figure as a
-single enclosure: the integration and the platform occupy the same process, so there is no
-location at which any of the three could be enforced. This is why the register below finds four
-Critical risks sharing a single cause, and why no combination of controls placed *inside* that
-enclosure can address them.
+![Figure 8.2](../figures/fig_8_2_confined.svg)
 
-## 8.5 Risk identification and evaluation
+**Figure 8.2 — The confined design, on Figure 8.1's canvas.** Each integration runs in its own sandbox and reaches the platform only through the mediator. TB1, TB3, TB5 and TB6 now exist, and TB5 and TB6 are crossed by no flow at all; TB4 is unchanged and TB2 is narrowed (residual risk R3). Flow A is the approval (Section 9.3).
 
-Eighteen threats, identified by applying STRIDE to each boundary. The full register with ratings
-and justifications is **Appendix C**; the summary and the concentration it reveals are here.
+## 8.4 Risks, treatment, and a requirement the model generated
+
+Applying STRIDE to each boundary identified eighteen threats, and their concentration is the model's main finding. Four are Critical and twelve High, and all four Critical threats share a single cause, the shared process, as the summary in Table 8.3 shows. The full register, with every rating and its justification, is in Appendix C.
+
+**Table 8.3 — Threat summary (inherent risk)**
 
 | ID | Threat | Inherent |
 |---|---|---|
-| T01 | Integration bypasses mediation by acting on in-process objects | **25 Critical** |
-| T03 | Integration modifies the mediating component or its policy in memory | **25 Critical** |
-| T05 | Integration induces an undeclared service call — a confused deputy | **25 Critical** |
-| T04 | Integration recovers the platform credential held by the mediator | **20 Critical** |
-| T02, T06, T08, T09, T10, T12–T18 | Spoofing, disclosure, tampering, DoS and repudiation across TB2–TB6 | 12–16 High |
+| T01 | Integration bypasses mediation by acting on in-process objects | 25 Critical |
+| T03 | Integration modifies the mediating component or its policy in memory | 25 Critical |
+| T05 | Integration induces an undeclared service call, as a confused deputy | 25 Critical |
+| T04 | Integration recovers the platform credential held by the mediator | 20 Critical |
+| T02, T06, T08–T10, T12–T18 | Spoofing, disclosure, tampering, denial of service and repudiation across TB2–TB6 | 12–16 High |
 | T07, T11 | Cross-integration state corruption; DNS rebinding to an internal address | 8 Medium |
 
-**Four Critical and twelve High inherent risks, and the Critical ones share a single cause.** That
-concentration is the finding: **one architectural decision governs the majority of the risk**, and
-treating it is worth more than treating any number of individual threats.
+The likelihood of T01, T03 and T05 is rated 5, almost certain, meaning that the event occurs by default in normal operation. The rating is not an exaggeration. An integration that calls `lock.unlock` today exploits nothing, so the register records ordinary platform behaviour as Critical risk. Since one architectural decision governs most of the risk, treating that decision is worth more than treating any number of individual threats, and that is the choice Section 9 describes.
 
-**A note on the likelihood ratings of T01, T03 and T05.** Their likelihood is 5 — *almost certain*,
-meaning "occurs by default in normal operation". This is not hyperbole. An integration calling
-`lock.unlock` today is not exploiting anything. **The register records ordinary platform behaviour
-as Critical risk**, which is exactly what §2 argued and what an assessment of this system should
-surface.
+The treatments overwhelmingly change consequence rather than likelihood: they bound what an integration's code can do, which complements the ecosystem's existing controls on who may publish. Each treatment maps to a requirement from Section 3, and one requirement did not exist until the model produced it. Section 3 contained no requirement on resource exhaustion, because neither the problem statement nor the literature justified one and the first rule forbade inventing it. T16, an integration exhausting CPU, memory or disk, supplied the justification: availability is a security property when automations include alarms and heating, and the closest published model treats a gateway's "resource saturation up to a frozen state" as a threat [9]. Requirement S9, that the framework shall bound an integration's consumption of CPU, memory and disk, was therefore derived from an identified threat, at the point in the process where ISO 31000 places it [25].
 
-## 8.6 Treatment, and a requirement the threat model generated
+## 8.5 Residual risks
 
-Treatments are overwhelmingly **change consequence** — bounding what code can do — which is the
-deliberate complement to the ecosystem's existing likelihood controls. Each treatment maps to a
-requirement from §3.6; the full mapping is in Appendix C.
+Seven risks remain after treatment, and each is stated with the reason it is retained, because a residual risk that is not written down has been ignored rather than accepted. Table 8.4 lists them.
 
-One outcome is worth reporting on its own, because it is evidence the ordering in §8.1 works.
-**§3.6 contained no requirement addressing resource exhaustion**, because nothing in the problem
-statement or the literature justified one and Rule 1 forbade inventing it. T16 — an integration
-exhausting CPU, memory or disk — supplied the justification: availability is a security property,
-automations include alarms and heating, and the closest published model treats gateway "resource
-saturation up to a frozen state" as an explicit threat.
-
-> **S9 — The framework shall bound an integration's consumption of CPU, memory and disk.**
-> *Derived from T16, by this chapter.* *Verification:* an integration deliberately exhausting each
-> resource is shown not to render the gateway unresponsive.
-
-**The requirement was derived from an identified threat rather than from an implementer's
-instinct, and it arrived at the point in the process where ISO 31000 says it should.**
-
-## 8.7 Residual risks
-
-Seven risks remain after treatment, each stated with why it is retained — because a residual risk
-that is not written down has been ignored rather than accepted.
+**Table 8.4 — Residual risks**
 
 | | Risk | Residual | Why retained |
 |---|---|---|---|
-| **R1** | The over-declaring manifest | High | **Structural.** The browser precedent has the identical limit after fifteen years. Authority becomes *visible* and *bounded*, replacing a silent-full-trust default |
-| **R2** | Abuse of legitimately declared authority | High, structural | An integration that declares `lock.unlock` may unlock the door at 03:00. Addressing it requires contextual integrity, a different mechanism with its own usability costs |
-| **R3** | The mediator holds an unscoped credential | High | **An upstream platform limitation, not a design flaw here.** Home Assistant issues no read-only or per-domain token, so the mediator must hold full authority to mediate at all. §15.2 is the ask |
-| **R4** | A local audit log cannot be authoritative against whoever controls the machine | Medium | Hash-chaining gives tamper-*evidence*, not tamper-proofing, and says nothing about events never recorded: **integrity is not completeness** |
-| **R5** | Exfiltration through a declared host | High | **Structural.** Destination control cannot become content control without payload inspection, which is a privacy problem in itself and defeated by TLS |
-| **R6** | The user is not equipped to evaluate a declaration | Medium | Out of scope, and honestly so. Enforcement does not depend on the user reading the manifest |
-| **R7** | I/O bandwidth is unbounded | Medium | **Inherited.** cgroup v2's `io` controller is present on the host and *not delegated* to a user manager, so an unprivileged supervisor cannot enforce it at any effort |
+| R1 | The over-declaring manifest | High | Structural: the browser-extension precedent has the same limit [12]. Authority becomes visible and bounded instead of silent and total |
+| R2 | Abuse of legitimately declared authority | High, structural | An integration that declares `lock.unlock` may unlock the door at 03:00; preventing that needs contextual integrity, a different mechanism with its own usability costs |
+| R3 | The mediator's credential still reaches every device | High, narrowed | The mediator runs as an ordinary user (F45): it can no longer create users, change the configuration or install integrations, but it can operate every device, because the platform's per-domain policy cannot be configured through a supported interface |
+| R4 | A local audit log cannot be authoritative against whoever controls the machine | Medium | Hash chaining gives tamper evidence, not tamper proofing, and says nothing about events never recorded |
+| R5 | Exfiltration through a declared host | High | Structural: destination control cannot become content control without inspecting payloads, which is itself a privacy problem and is defeated by TLS |
+| R6 | The user is not equipped to evaluate a declaration | Medium | Out of scope: enforcement does not depend on the user reading the manifest |
+| R7 | Input and output bandwidth is unbounded | Medium | Inherited: the kernel's `io` controller is not delegated to an unprivileged user, so the supervisor cannot apply it |
 
-**Summary against appetite.** No residual Critical risk remains. **Four residual High risks
-remain, each structural and each stated.** The appetite declared that High residual risk is
-acceptable only where it is structural and openly stated; this satisfies it only under that
-clause, **and that should be said plainly rather than presented as a clean result.**
+R3 changed during verification, and the change illustrates the third rule at work. The model originally stated that Home Assistant issues no scoped token, so the mediator had to hold full authority. Checked against the platform's own release, that was wrong: a token carries its user's permissions, and an entity policy by domain is enforced. The mediator had held an administrator's token only because this project's bridge admitted no one else (finding F45). It now runs as an ordinary user, which removes every administrative function from its reach. The risk stays High because the locks of A1 are still reachable, but its reason is now narrower and exact: the platform's per-domain policy exists, yet no supported interface creates one.
 
-**R7 could not have been written when this model was drafted.** It was measured during the
-evaluation, from a property of the host rather than of the design — which is the second occasion
-in this project of a later stage generating something an earlier one had no basis to write, and
-the reason "new threats surface from the evaluation itself" is a standing review trigger.
+No Critical residual risk remains, and four High residual risks do, each structural and each stated. The appetite declared for this owner accepts High residual risk only where it is structural and openly stated, so the design satisfies the appetite under that clause, and the result should be read that way rather than as a clean one.
 
-## 8.8 Relationship to the closest published model
+## 8.6 How the claims were verified
 
-Corno and Mannella's model [9] enumerates eleven threats across confidentiality, integrity,
-availability, authentication, authorisation and non-repudiation. §12.5 scores this system against
-**both** registers, so the security result is comparable against an existing published model
-rather than against criteria invented here — the framing the independent systematic review [21]
-proposed.
+Before the engineering cut-off, every claim in the report was entered in a register with the evidence behind it, the commit on which it was measured and a pass criterion fixed before any rerun. The register holds 153 claims: 119 verified by a test or measurement, 27 qualified, five argued rather than measured, and two withdrawn. The tier decides the wording used later, so that verified claims "show", qualified claims "suggest", and argued claims are presented as argument.
 
-One difference is the sharpest available statement of what this project contributes. **Their
-notion of *scope* is defined by documentation; this project makes it enforceable.** Their model
-states that a plug-in's scope is "the set of variables, files, or resources that the plug-in can
-legitimately access", and that "to legitimately access a resource, the plug-in documentation has
-to include its possible use". Every one of their threats is defined relative to that scope. **The
-closest published threat model therefore presupposes a notion of scope that has no
-machine-readable representation and no enforcement mechanism.** The manifest of §9.4 is that same
-notion of scope, made explicit, machine-checkable and enforced at runtime — which is why their
-model can be used to evaluate this system directly, and why their model motivates it.
+Each measurement and each fix was preceded by a prediction note committed to the repository before the run. The repository holds 34 such notes, and a script checks that each note was committed before its first result and that no prediction line was changed afterwards. A prediction that fails is reported as failed. When the first fix for F57's approval screen was regressed, for instance, the start that followed an approval crashed; the failure is recorded in the note, and the correction carries its own tag.
 
-## 8.9 Limits of the threat model
+A suite that passes shows that the code does what the suite checks, but not that the suite checks what the report claims. Mutation testing closes that gap [46]. Each security-relevant check in the framework was removed or inverted by a hand-written mutant, one per enforcement point, and a mutant counts as killed when at least one suite fails with it applied. There are 53 such mutants; every one was killed when it was introduced or last rerun, except one that is equivalent to the original code on the reference interpreter. Automated mutation of the mediator and the manifest parser was considered and not run, a decision Section 14 records.
 
-- **It models threats originating from an integration.** Others are excluded by scope, not because
-  they are unimportant.
-- **The ratings are judgements.** Likelihood is anchored on documented occurrence and impact on the
-  asset valuation, so both axes can be argued against rather than merely disputed. **The ordering
-  is more robust than the values.**
-- **A threat model enumerates what its author thought of.** This is not a hedge but the central
-  methodological point: testing demonstrates the absence of *known* failures, never the absence of
-  failures.
-- **STRIDE is boundary-oriented** and is weaker on threats arising from the composition of
-  individually permitted actions. R2 is the clearest example, and it is retained rather than
-  solved.
+Faults around the framework were injected as well, because the suites test misbehaving integrations far more than failing surroundings. Nine faults, from a sandbox dying mid-message to the wall clock jumping an hour, were each run against a criterion fixed beforehand; five held as designed, and four exposed defects that were fixed and retested. Finally, the reproduction instructions were followed from a fresh clone of the repository. Following them on a freshly imaged device remains open (finding F18), because no spare memory card was available.
+
+The cut-off froze engineering, but the writing of this report turned up defects that had to be fixed. Each such fix received its own prediction note, a test shown to fail before it, its own tag and a regression run of the suites, and every one is listed in Appendix F. One full rerun of every measurement, mutant, suite and fault follows the last fix, at the final tag, so the numbers in Section 12 come from one version of the code.
+
+## 8.7 What the method does not establish
+
+The method has three limits that bound how far its results reach. First, no independent adversary attacked the framework. The plan included one, and it was dropped because the framework was built with AI assistance, so neither the author nor the assistant would have been independent of the assumptions that built it. The security results therefore rest on attacks the project wrote itself, and a security review that found a sandbox escape missed by every suite (F34) is the strongest evidence that attacks the builders did not imagine exist. Second, STRIDE is oriented to boundaries and is weaker on threats that arise from combining individually permitted actions; R2 is the clearest case, and it is retained rather than solved. Third, the ratings are judgements: likelihood is anchored on documented occurrence and impact on the asset valuation, so both can be argued with rather than merely disputed, and the ordering of the risks is more robust than their values. Within these limits, Section 9 describes the architecture that the treatments produced, and Section 12 measures it.
