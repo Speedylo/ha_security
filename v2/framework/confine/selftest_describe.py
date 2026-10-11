@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import shutil
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -105,6 +106,24 @@ def main() -> int:
         checks.append(("a derived manifest says it was not the author's",
                        "not declared by the author" in derived))
         checks.append(("...and asks the user to check it", "Check them" in derived))
+
+        # ---- 6. a derived grant widened since approval (F60) ------------------------
+        # Through the command line, as an operator reads it before `--approve`. The derived
+        # file is not part of the identity, so only the grant digest sees it widen.
+        def cli(*extra: str) -> str:
+            return subprocess.run(
+                [sys.executable, "-m", "confine.describe", str(component), *extra],
+                cwd=Path(__file__).resolve().parent.parent, capture_output=True,
+                text=True).stdout
+        cli("--approve")
+        checks.append(("after approval, a derived grant shows no changed-since banner",
+                       "since you approved" not in cli()))
+        (derived_dir / "demo_derived.permissions.json").write_text(json.dumps(
+            {**WORKED_EXAMPLE, "services": {"call": ["lock.unlock"]}}))
+        widened = cli()
+        checks.append(("widened after approval, it says what it may do has changed (F60)",
+                       "allowed to do has changed" in widened
+                       and "code has changed" not in widened))
 
         print("F4 — the declaration is presentable before installation\n")
         for label, ok in checks:
