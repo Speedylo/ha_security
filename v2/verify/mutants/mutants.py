@@ -263,6 +263,10 @@ MUTANTS = [
      "framework/confine/describe.py",
      "    if current.composite != shown_identity:",
      "    if False:"),
+    ("M50", "F60, T12", "describe's banner ignores the grant digest, as before F60",
+     "framework/confine/describe.py",
+     "            \"manifest\" in moved or \"requirements\" in moved or record.get(\"grant\") != grant)",
+     "            \"manifest\" in moved or \"requirements\" in moved)"),
 ]
 
 

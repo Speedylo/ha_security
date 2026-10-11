@@ -226,8 +226,8 @@ def changes_since_approval(component: Path, manifest: Manifest,
                            approvals: Path) -> tuple[bool, bool, bool]:
     """(approved before, code changed, permissions changed), against the last approval.
 
-    The permissions count as changed when the identity's manifest or requirements moved, as
-    `main` says, **or when the grant digest differs**: a derived grant lives in a file the
+    The permissions count as changed when the identity's manifest or requirements moved, which
+    is all `main` compared before F60, **or when the grant digest differs**: a derived grant lives in a file the
     identity does not hash, so only the digest sees it widen (F57).
     """
     record = last_record(approvals, component.name)
@@ -350,11 +350,14 @@ def main() -> int:
     audit_path = args.audit or (config_root / DEFAULT_LOG)
     current = Identity.compute(component)
     approved = last_identity(audit_path, component.name)
-    moved = current.changes_from(approved) if approved is not None else []
 
+    # F60: the permissions count as changed when the grant digest differs too, as on F57c's
+    # Repairs screen. A derived grant's file is not in the identity, so widening it moved no
+    # identity, and the wider list was shown with no warning that it had changed.
+    _, code_changed, permissions_changed = changes_since_approval(component, manifest, audit_path)
     print(describe(manifest, name=metadata.get("name"), version=metadata.get("version"),
-                   code_changed=args.changed or "source" in moved,
-                   permissions_changed="manifest" in moved or "requirements" in moved))
+                   code_changed=args.changed or code_changed,
+                   permissions_changed=permissions_changed))
 
     if approved is None and not args.approve:
         # Said out loud rather than rendered as "nothing has changed". A first install and an
