@@ -1,0 +1,4 @@
+house_a_down exit=0
+house_a_up exit=0
+selftest_keep exit=1
+ALLDONE

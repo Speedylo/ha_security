@@ -1088,9 +1088,23 @@ async def run() -> dict:
         from homeassistant.config_entries import ConfigEntryState
         from homeassistant.data_entry_flow import FlowResultType
 
-        flow = await drive_flow(hass, spec["domain"], spec.get("flow_input") or {},
-                                spec.get("menu_choice") or {}, setup_log_into=result,
-                                select_first=spec.get("select_first") or ())
+        stored = hass.config_entries.async_entries(spec["domain"])
+        if stored:
+            # F59. The entry an earlier start created, kept in `.storage`, is set up as Home
+            # Assistant's own start-up sets it up: `async_setup_component` sets up every stored
+            # entry of the domain (`setup.py`, 2026.8.3). Running the setup dialog again instead
+            # stops as `already_configured`, and the integration runs set up by nothing.
+            from homeassistant.setup import async_setup_component
+            result["component_setup"] = await async_setup_component(hass, spec["domain"], {})
+            flow = {"stored": len(stored)}
+            # On standard error, which the supervisor keeps as the run's log: the report on
+            # standard output is printed only when a run ends by itself.
+            print(f"confine: set up {len(stored)} stored entry, no setup dialog run",
+                  file=sys.stderr, flush=True)
+        else:
+            flow = await drive_flow(hass, spec["domain"], spec.get("flow_input") or {},
+                                    spec.get("menu_choice") or {}, setup_log_into=result,
+                                    select_first=spec.get("select_first") or ())
         result["flow"] = flow
         await hass.async_block_till_done()
         await hass.async_start()

@@ -139,12 +139,19 @@ class SandboxSpec:
     # unprivileged is the space a sandbox writes into its own scratch. The supervisor takes the
     # number from `resources.disk_mb`; the default is the framework's, not the integration's.
     tmp_size_mb: int = 64
+    # F59: a host folder bound read-write at `DATA/.storage`, where Home Assistant keeps its
+    # configuration entries and registries, so that they outlive one start. Only that folder:
+    # `DATA` itself is still fresh every start, because it is the configuration directory the
+    # integration's code is loaded from, and an integration that could keep it could replace its
+    # own approved code there (`notes/f59_kept_storage_prediction.md` §0). None keeps nothing.
+    kept_dir: str | None = None
 
     # Inside the sandbox, an integration's own things are always in the same two places,
     # whatever they were called outside. A fixed layout means the sandbox runner needs no
     # configuration and the integration cannot learn its own path on the host.
     COMPONENT = "/sandbox/component"
     DATA = "/sandbox/data"
+    KEPT = "/sandbox/data/.storage"
 
     def to_json(self) -> str:
         return json.dumps({k: v for k, v in self.__dict__.items()})
@@ -228,6 +235,14 @@ def build_root(spec: SandboxSpec, scratch: str = "/tmp/.confine-root") -> None:
     # 4. The integration's own two directories, at fixed locations.
     _bind(spec.own_dir, inside(SandboxSpec.COMPONENT), read_only=True)
     _bind(spec.data_dir, inside(SandboxSpec.DATA), read_only=False)
+    if spec.kept_dir is not None:
+        # Into a data directory the host has just made and nothing has run in, so the mount point
+        # cannot be a link the integration planted. Checked anyway: anything already there means
+        # the directory is not the fresh one this assumes.
+        kept = Path(inside(SandboxSpec.KEPT))
+        if kept.exists() or kept.is_symlink():
+            raise FileExistsError(f"{SandboxSpec.KEPT} already exists in a fresh data directory")
+        _bind(spec.kept_dir, str(kept), read_only=False)
 
     # 5. /proc, which is a view of *this* PID namespace and therefore lists only the sandbox.
     Path(inside("/proc")).mkdir(parents=True, exist_ok=True)

@@ -49,6 +49,9 @@ from .selftest_bridge import interpreter_trees
 from .spawn import Sandbox, become_subreaper, start
 
 HERE = Path(__file__).resolve().parent
+#: Where an integration's `.storage` is kept between starts, under its configuration root (F59).
+KEPT_ROOT = Path("confine/kept")
+MB = 1024 * 1024
 #: Who an approval from the Repairs screen is recorded as given by. Home Assistant does not tell
 #: a Repairs flow which administrator opened it (F57c §1, rule 4).
 ALLOWED_BY = "an administrator, from the Repairs panel"
@@ -56,12 +59,17 @@ ALLOWED_BY = "an administrator, from the Repairs panel"
 
 class Supervisor:
     def __init__(self, component: Path, permissions: dict, python: Path, audit_dir: Path,
-                 hours: float, approvals: Path | None = None) -> None:
+                 hours: float, approvals: Path | None = None, keep: Path | None = None) -> None:
         self.domain = component.name
         # F57: the integration runs from a copy in a temporary directory, whose own configuration
         # root holds no approvals, so the approvals are read from the original's root, where
         # `describe --approve` writes them, unless another file is named.
         self.approvals = approvals or component.parent.parent / DEFAULT_LOG
+        # F59: what the integration stores in `.storage` is kept here between starts, beside the
+        # approvals by default, so it outlives this supervisor and a restart of the machine.
+        self.keep = keep or component.parent.parent / KEPT_ROOT / self.domain
+        self.keep.mkdir(mode=0o700, parents=True, exist_ok=True)
+        self.data: Path | None = None
         self.python = python
         self.hours = hours
         self.delegation = Delegation.discover()
@@ -192,6 +200,16 @@ class Supervisor:
 
     def launch(self) -> None:
         self.wanted = False
+        # F59 rule 4: the kept folder is held to `disk_mb`, as `/tmp` is, and checked before
+        # the start, since nothing bounds it while a run writes to it.
+        limit = self.manifest.resources.disk_mb
+        size = kept_size(self.keep)
+        if size > limit * MB:
+            say(f"not started: {self.domain} has stored {size / MB:.0f} MB, more than the "
+                f"{limit} MB it may keep ({self.keep})")
+            self._tell("not_started", self.domain, "too_much_data",
+                       detail=f"{size / MB:.0f} MB stored, {limit} MB allowed")
+            return
         spec_file = self.root / "spec.json"
         spec_file.write_text(json.dumps({
             "domain": self.domain, "mode": "flow", "auth": True,
@@ -224,8 +242,10 @@ class Supervisor:
         # it with `FileExistsError` (F57c's C2, 2026-10-11): `starts` counts only real starts.
         data = self.root / ".confine" / f"{self.domain}-start{self.starts + 1}"
         data.mkdir(parents=True)
+        self.data = data
         spec = SandboxSpec(
             domain=self.domain, own_dir=str(self.own), data_dir=str(data),
+            kept_dir=str(self.keep),
             argv=[str(self.python), "/sandbox/runtime.py"],
             runtime_files={str(HERE / "sandbox_runtime.py"): "/sandbox/runtime.py",
                            # `"egress": True` imports it inside the sandbox (`endtoend_egress`).
@@ -254,6 +274,7 @@ class Supervisor:
                                  stderr=stderr.fileno(), channel_end=sandbox_end.fileno())
         sandbox_end.detach()
         say(f"{self.domain} started (run {self.starts}, pid {self.sandbox.pid})")
+        say(f"{self.domain} run {self.starts} folder {data}")
         self._tell("started", self.domain)
 
     def stop(self) -> None:
@@ -270,6 +291,7 @@ class Supervisor:
             pass
         self.cgroup.remove()                      # now empty, so the directory goes too
         self.sandbox, self.cgroup = None, None
+        self._remove_start_dir()
 
     def reap(self) -> None:
         """A sandbox that exited by itself is reported, and not restarted."""
@@ -281,6 +303,20 @@ class Supervisor:
             assert self.cgroup is not None
             self.cgroup.remove()
             self.sandbox, self.cgroup = None, None
+            self._remove_start_dir()
+
+    def _remove_start_dir(self) -> None:
+        """F59 rule 5: the start's throwaway folder goes once nothing of its sandbox runs.
+
+        Called only after the cgroup is killed and the sandbox waited for. On the Pi `/tmp` is
+        memory, and until F59 every start's folder stayed there until the supervisor exited.
+        """
+        if self.data is None:
+            return
+        left = remove_folder(self.data)
+        if left:
+            say(f"could not remove all of {self.data}: {left}")
+        self.data = None
 
     # ---------------------------------------------------------------- the loop
 
@@ -350,7 +386,64 @@ class Supervisor:
         finally:
             self.stop()
             self.platform.close()
-            shutil.rmtree(self.root, ignore_errors=True)
+            remove_folder(self.root)
+
+
+def kept_size(folder: Path) -> int:
+    """The apparent size of every file under `folder`, following no link (F59 rule 4).
+
+    Apparent rather than allocated, so that a sparse file counts at the size it claims: it can
+    be filled later. A directory the integration made unreadable is opened up to be counted, or
+    whatever it holds would not be.
+    """
+    total, stack = 0, [folder]
+    while stack:
+        directory = stack.pop()
+        try:
+            entries = list(os.scandir(directory))
+        except FileNotFoundError:
+            continue
+        except PermissionError:
+            try:
+                os.chmod(directory, 0o700)
+                entries = list(os.scandir(directory))
+            except OSError:
+                return sys.maxsize          # what cannot be counted is not under the limit
+        for entry in entries:
+            if entry.is_dir(follow_symlinks=False):
+                stack.append(Path(entry.path))
+            else:
+                total += entry.stat(follow_symlinks=False).st_size
+    return total
+
+
+def remove_folder(folder: Path) -> str:
+    """Delete a folder a sandbox wrote in; what could not be deleted, or "" (F59 rule 5).
+
+    `shutil.rmtree` removes a link without following it on Linux
+    (`rmtree.avoids_symlink_attacks`), so a link planted towards the host's files removes only
+    the link. A directory the integration made unreadable stops it, so after a first attempt
+    every directory left is given back its owner's permissions, without following links, and
+    the deletion is tried once more.
+    """
+    if not folder.exists():
+        return ""
+    shutil.rmtree(folder, ignore_errors=True)
+    if not folder.exists():
+        return ""
+    stack = [folder]
+    while stack:
+        directory = stack.pop()
+        try:
+            os.chmod(directory, 0o700)
+            stack += [Path(e.path) for e in os.scandir(directory) if e.is_dir(follow_symlinks=False)]
+        except OSError:
+            continue
+    shutil.rmtree(folder, ignore_errors=True)
+    if not folder.exists():
+        return ""
+    left = sorted(str(p) for p in folder.rglob("*"))
+    return ", ".join(left[:3]) or str(folder)
 
 
 class PredecessorsRemain(RuntimeError):
@@ -400,8 +493,8 @@ def main() -> int:
                     help=f"where `describe --approve` recorded approvals (default: "
                          f"<the component's config root>/{DEFAULT_LOG})")
     ap.add_argument("--keep-dir", type=Path,
-                    help="where what the integration stores is kept between starts (F59; "
-                         "accepted, not yet used)")
+                    help=f"where what the integration stores is kept between starts (F59; "
+                         f"default: <the component's config root>/{KEPT_ROOT}/<domain>)")
     args = ap.parse_args()
 
     require_ready(deep=False)
@@ -415,7 +508,8 @@ def main() -> int:
     signal.signal(signal.SIGTERM, terminate)
     try:
         supervisor = Supervisor(args.component.resolve(), json.loads(args.permissions),
-                                args.python, args.audit_dir, args.hours, args.approvals)
+                                args.python, args.audit_dir, args.hours, args.approvals,
+                                args.keep_dir)
     except PredecessorsRemain as err:
         say(str(err))
         return 1

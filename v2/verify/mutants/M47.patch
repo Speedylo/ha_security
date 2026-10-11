@@ -1,0 +1,10 @@
+# M47 (F59 rule 3): a stored entry is not set up; the setup dialog runs again
+--- a/framework/confine/sandbox_runtime.py
++++ b/framework/confine/sandbox_runtime.py
+@@ -1090,5 +1090,5 @@
+ 
+         stored = hass.config_entries.async_entries(spec["domain"])
+-        if stored:
++        if False:
+             # F59. The entry an earlier start created, kept in `.storage`, is set up as Home
+             # Assistant's own start-up sets it up: `async_setup_component` sets up every stored

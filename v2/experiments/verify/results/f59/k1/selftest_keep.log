@@ -1,0 +1,12 @@
+
+1 — the first start logs in, and the kept folder holds its entry
+
+  ok    1. the sensor reads refresh-1  — refresh-1
+  ok    2. the integration planted code in place of its link, so step 6 means something  — done
+  FAIL  3. the kept folder holds its configuration entry  — no folder
+
+  stopped at: 3. the kept folder holds its configuration entry
+
+  logs: /tmp/selftest-keep-0tjlowqf
+
+2/3 checks passed

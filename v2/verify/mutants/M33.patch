@@ -1,7 +1,7 @@
 # M33 (F48, F29): after (A) returns, the supervisor forgets the integration was running
 --- a/framework/confine/supervise.py
 +++ b/framework/confine/supervise.py
-@@ -324,5 +324,5 @@
+@@ -360,5 +360,5 @@
          self.mediator.attach_platform(platform)
          self._listen(platform)
 -        self.wanted = was_running

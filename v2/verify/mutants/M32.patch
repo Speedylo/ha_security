@@ -1,7 +1,7 @@
 # M32 (F48, §7.44): a reinstatement does not ask for a start
 --- a/framework/confine/supervise.py
 +++ b/framework/confine/supervise.py
-@@ -138,5 +138,5 @@
+@@ -146,5 +146,5 @@
      def reinstated(self, identity: str) -> None:
          say(f"{identity} reinstated (recorded); starting it again")
 -        self.wanted = True

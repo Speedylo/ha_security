@@ -1,0 +1,12 @@
+# M45 (F59 §0, F57): the whole configuration directory is kept, so planted code loads
+--- a/framework/confine/supervise.py
++++ b/framework/confine/supervise.py
+@@ -245,6 +245,6 @@
+         self.data = data
+         spec = SandboxSpec(
+-            domain=self.domain, own_dir=str(self.own), data_dir=str(data),
+-            kept_dir=str(self.keep),
++            domain=self.domain, own_dir=str(self.own), data_dir=str(self.keep),
++            kept_dir=None,
+             argv=[str(self.python), "/sandbox/runtime.py"],
+             runtime_files={str(HERE / "sandbox_runtime.py"): "/sandbox/runtime.py",

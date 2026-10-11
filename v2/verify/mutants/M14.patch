@@ -1,10 +1,10 @@
 # M14 (C1, S8): the integration's own directory is mounted read-write
 --- a/framework/confine/sandbox.py
 +++ b/framework/confine/sandbox.py
-@@ -227,5 +227,5 @@
+@@ -234,5 +234,5 @@
  
      # 4. The integration's own two directories, at fixed locations.
 -    _bind(spec.own_dir, inside(SandboxSpec.COMPONENT), read_only=True)
 +    _bind(spec.own_dir, inside(SandboxSpec.COMPONENT), read_only=False)
      _bind(spec.data_dir, inside(SandboxSpec.DATA), read_only=False)
- 
+     if spec.kept_dir is not None:
