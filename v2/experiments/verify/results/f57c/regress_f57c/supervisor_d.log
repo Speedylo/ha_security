@@ -1,0 +1,22 @@
+19:35:49  supervising demo_flood; durable log /tmp/selftest-supervise-i9sl_qby/audit_d/decisions-20261011T193549-2935.jsonl; Ctrl-C to stop
+19:35:49  not started: demo_flood: no approval is on record for its permissions; read it with `python3 -m confine.describe /tmp/supervise-demo_flood-e0kz1uok/custom_components/demo_flood` and approve it with `--approve`
+19:35:49  demo_flood allowed by an administrator, from the Repairs panel
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/younes/r2exp/f57c/tag/v2/framework/confine/supervise.py", line 426, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/younes/r2exp/f57c/tag/v2/framework/confine/supervise.py", line 419, in main
+    supervisor.run()
+    ~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/f57c/tag/v2/framework/confine/supervise.py", line 334, in run
+    self.launch()
+    ~~~~~~~~~~~^^
+  File "/home/younes/r2exp/f57c/tag/v2/framework/confine/supervise.py", line 202, in launch
+    data.mkdir(parents=True)
+    ~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/pathlib/_local.py", line 724, in mkdir
+    os.mkdir(self, mode)
+    ~~~~~~~~^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '/tmp/supervise-demo_flood-e0kz1uok/.confine/demo_flood-start1'

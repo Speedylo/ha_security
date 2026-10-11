@@ -1,0 +1,4 @@
+house_a_up exit=0
+selftest_approval exit=1
+selftest_supervise exit=1
+ALLDONE

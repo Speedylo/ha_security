@@ -142,3 +142,39 @@ Ledger line; Appendix F's F57 row ("not done" removed); the findings table; the 
 `report/06_implementation.md` on the consent flow; §9 (what a household sees and does when an
 integration is not approved, and the approval authority now reachable from (A)'s admins); §14; and the
 threat model's statement of who can approve: an operator on the Pi, or an administrator of (A).
+
+## 6. Outcome (added 2026-10-11, after the runs)
+
+**C1 held.** At the test commit `a350f54`, on the Pi with (A) up: `selftest_approval` passed 1–10 and
+reported one failure, the missing `approve_shown`, exit 1; `selftest_supervise` passed its 35 earlier
+checks and step 1, and stopped at step 2, exit 1 (`experiments/verify/results/f57c/c1/`). A dry run on
+the laptop before the test was committed gave the same, and is not counted.
+
+**C2 failed at `fix-2026-10-f57c` (`aab6252`), and the fault was in the fix.** `selftest_approval`
+14/14 on the laptop and the Pi, `selftest_describe` passed, but `selftest_supervise` stopped at
+**step 5**: Allow and start completed (`create_entry`) and no sandbox started. The supervisor had
+crashed with `FileExistsError` (`regress_f57c/supervisor_d.log`): `launch` made the start's data
+directory before registering, a refused start left it behind without counting a start, and the start
+after Allow tried to make the same directory. Before F57c nothing retried a refused start, so the
+order had never mattered. Fixed by making the directory after registration, at its own tag,
+**`fix-2026-10-f57d`** (`e2285a3`), the first tag kept as it was. The mutant runs begun at `-f57c` were
+stopped, and are not counted.
+
+**C2 and C3 held at `fix-2026-10-f57d`.** On the Pi, (A) restarted from the tag: `selftest_approval`
+14/14, `selftest_describe` passed, `selftest_supervise` **50/50** (`regress_f57d/`); on the laptop
+`selftest_approval` 14/14 and `selftest_describe` passed (`c2_laptop/`, at `-f57c`; the correction does
+not touch what they run).
+
+**C4 held.** Every mutant killed: M31–M35 by `selftest_supervise` as before; M39 and M40 by
+`selftest_approval` and now also `selftest_supervise`; **M41** by `selftest_supervise` step 2 (no
+issue); **M42** by step 8 (the issue stays after the operator's way); **M43** by `selftest_approval`
+check 12; **M44** by check 13 (`regress_f57d/mutants/`).
+
+**Two things not predicted.** The button's label is the step's `submit` translation, which Home
+Assistant supports (`script/hassfest/translations.py`), so it reads **Allow and start** as the note
+said. Writing the screen found F60: `describe`'s terminal banner did not compare the grant digest, so
+a widened derived grant was shown without saying it had changed; the screen uses
+`changes_since_approval`, which does (`notes/f60_banner_prediction.md`).
+
+F57 is resolved in full. Still owed from §5: the dated correction to `report/06_implementation.md`
+on the consent flow, §9, §14, the threat model's statement of who can approve, Appendix F, the ledger.

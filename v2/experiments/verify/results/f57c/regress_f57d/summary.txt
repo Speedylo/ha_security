@@ -1,0 +1,6 @@
+house_a_down exit=0 seconds=2
+house_a_up exit=0 seconds=3
+c2_selftest_approval exit=0 seconds=0
+c3_selftest_describe exit=0 seconds=0
+c2_selftest_supervise exit=0 seconds=21
+ALLDONE
