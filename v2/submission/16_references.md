@@ -54,11 +54,11 @@ https://www.home-assistant.io/blog/2021/01/23/security-disclosure2/
 **[7]** elttam, *PwnAssistant — Controlling /home's via a Home Assistant RCE* (CVE-2023-27482).
 https://www.elttam.com/blog/pwnassistant
 
-**[8]** *XZ Utils backdoor* (CVE-2024-3094), March 2024. Backdoor introduced by a contributor who
-had acquired maintainer trust over approximately two years; discovered by A. Freund while
-investigating an SSH latency regression rather than through code review.
-https://en.wikipedia.org/wiki/XZ_Utils_backdoor — see also
-https://www.rapid7.com/blog/post/2024/04/01/etr-backdoored-xz-utils-cve-2024-3094/
+**[8]** P. Przymus and T. Durieux, "Wolves in the Repository: A Software Engineering Analysis of the
+XZ Utils Supply Chain Attack", in *Proc. 2025 IEEE/ACM 22nd Int. Conf. Mining Software Repositories
+(MSR)*, Ottawa, ON, Canada, 2025, pp. 91–102. doi:10.1109/MSR66628.2025.00026 — §III-B gives the
+attacker's involvement as 2.6 years (2021-10-29 to 2024-03-28). *(Replaced the Wikipedia source
+2026-10-11; checked against Crossref 2026-10-12.)*
 
 **[22]** GitHub Security Lab, *Securing our home labs: Home Assistant code review*.
 https://github.blog/security/vulnerability-research/securing-our-home-labs-home-assistant-code-review/
@@ -129,6 +129,92 @@ L. Kohnfelder and P. Garg, *The Threats to Our Products*, Microsoft, 1999.
 **[28]** Y. Rekhter, B. Moskowitz, D. Karrenberg, G. J. de Groot and E. Lear, "Address Allocation
 for Private Internets", BCP 5, RFC 1918, IETF, February 1996.
 https://www.rfc-editor.org/rfc/rfc1918
+
+## Added in the rewrite (2026-10-12)
+
+Entries [30]–[48] are cited by Sections 8, 9 and 12. Their numbers are provisional and follow the
+working report's; the list is renumbered by first appearance in week 5. [29] (Jiang et al., USENIX
+Security 2023) is in the working report's list but is not cited in the submission, so it is not
+carried here.
+
+### Audit standards
+
+**[30]** Common Criteria Recognition Arrangement, *Common Criteria for Information Technology
+Security Evaluation, Part 2: Security functional components*, version 3.1 revision 5,
+CCMB-2017-04-002, April 2017. Component FAU_STG.4, *Prevention of audit data loss*.
+https://www.commoncriteriaportal.org/files/ccfiles/CCPART2V3.1R5.pdf
+
+**[31]** Joint Task Force, *Security and Privacy Controls for Information Systems and
+Organizations*, NIST Special Publication 800-53 Revision 5, National Institute of Standards and
+Technology, September 2020. doi:10.6028/NIST.SP.800-53r5. Control AU-5, *Response to Audit Logging
+Process Failures*, and its enhancement AU-5(4), *Shutdown on Failure*.
+
+### Platform (continued)
+
+**[32]** Home Assistant, Developer Documentation: Integration Quality Scale rule *The integration
+dependency supports passing in a websession*.
+https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/inject-websession
+— recommends `async_get_clientsession(hass)`; opened 2026-10-08.
+
+**[42]** Home Assistant, Developer Documentation: *Config entries*.
+https://developers.home-assistant.io/docs/config_entries_index — entries are persistently stored
+and set up during startup; checked 2026-10-11.
+
+**[43]** Home Assistant, Developer Documentation: *Repairs*.
+https://developers.home-assistant.io/docs/core/platform/repairs — issues are brought to the
+user's attention, and a `RepairsFlow` fixes them; checked 2026-10-11.
+
+**[44]** Home Assistant Core 2026.8.3, `homeassistant/components/repairs/websocket_api.py`.
+https://github.com/home-assistant/core — `require_admin(permission=POLICY_EDIT)` on both fix
+endpoints. The documentation says nothing about administrators, so the source is the evidence.
+
+### Linux kernel interfaces
+
+**[33]** Linux man-pages project, *namespaces(7)*. https://man7.org/linux/man-pages/man7/namespaces.7.html
+
+**[34]** Linux man-pages project, *seccomp(2)*. https://man7.org/linux/man-pages/man2/seccomp.2.html
+
+**[35]** The Linux kernel documentation, *Control Group v2*.
+https://docs.kernel.org/admin-guide/cgroup-v2.html — also carries the common-ancestor rule for
+moving processes between control groups (stated as well in *cgroups(7)*).
+
+**[36]** Linux man-pages project, *unix(7)*. https://man7.org/linux/man-pages/man7/unix.7.html —
+socket pairs and `SCM_RIGHTS`.
+
+**[37]** Linux man-pages project, *chroot(2)*. https://man7.org/linux/man-pages/man2/chroot.2.html
+— not intended as a security mechanism; the `mkdir foo; chroot foo; cd ..` escape.
+
+**[38]** Linux man-pages project, *pivot_root(2)*.
+https://man7.org/linux/man-pages/man2/pivot_root.2.html
+
+**[39]** Linux man-pages project, *user_namespaces(7)*.
+https://man7.org/linux/man-pages/man7/user_namespaces.7.html — a process in a new user namespace
+holds the full set of capabilities inside it.
+
+**[48]** systemd, `units/user@.service.in`. https://github.com/systemd/systemd — the line
+`Delegate=pids memory cpu`; checked 2026-10-11.
+
+### Network and protocols
+
+**[40]** C. Jackson, A. Barth, A. Bortz, W. Shao and D. Boneh, "Protecting Browsers from DNS
+Rebinding Attacks", in *Proc. 14th ACM Conf. Computer and Communications Security (CCS)*, 2007,
+pp. 421–431. doi:10.1145/1315245.1315298 *(Checked against Crossref 2026-10-12.)*
+
+**[41]** J. Weil, V. Kuarsingh, C. Donley, C. Liljenstolpe and M. Azinger, "IANA-Reserved IPv4
+Prefix for Shared Address Space", BCP 153, RFC 6598, IETF, April 2012.
+https://www.rfc-editor.org/rfc/rfc6598
+
+**[45]** D. Hardt, Ed., "The OAuth 2.0 Authorization Framework", RFC 6749, IETF, October 2012.
+https://www.rfc-editor.org/rfc/rfc6749 — §4.1 step (A).
+
+**[47]** E. Rescorla, "The Transport Layer Security (TLS) Protocol Version 1.3", RFC 8446, IETF,
+August 2018. https://www.rfc-editor.org/rfc/rfc8446 — §1.
+
+### Testing
+
+**[46]** Y. Jia and M. Harman, "An Analysis and Survey of the Development of Mutation Testing",
+*IEEE Transactions on Software Engineering*, vol. 37, no. 5, pp. 649–678, September 2011.
+doi:10.1109/TSE.2010.62 *(Checked against Crossref 2026-10-12.)*
 
 ---
 
