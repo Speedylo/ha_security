@@ -4,7 +4,7 @@ This section states what was measured, on what, with which instruments, and how 
 
 ## 11.1 The claim and what would falsify it
 
-The central claim of this project is that unmodified, pre-existing integrations can be confined at a cost worth paying. The claim contains three assertions that can fail independently: confinement is effective, it is compatible, and it is affordable. A sandbox that blocks every attack but breaks most integrations would satisfy the first while defeating the claim, so all three must be tested. To make each assertion testable, each was given a falsifier before measurement: an observation that would show it false, judged where necessary against an unconfined arm in which the same integration runs without the framework. Table 11.1 sets them out.
+The central claim of this project is that unmodified, pre-existing integrations can be confined at a cost worth paying. The claim contains three assertions that can fail independently: confinement is effective, it is compatible, and it is affordable. A sandbox that blocks every attack but breaks most integrations would satisfy the first while defeating the claim, so all three must be tested. Following Popper's criterion of falsifiability [51], each assertion was given a falsifier before measurement: an observation that would show it false, judged where necessary against an unconfined arm in which the same integration runs without the framework. Table 11.1 sets them out.
 
 **Table 11.1 — The three assertions and their falsifiers, fixed on 2 September 2026**
 

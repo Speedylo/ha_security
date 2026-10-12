@@ -67,3 +67,5 @@ a link or the missing analysis; P3 names S9 instead of pointing at a section. **
 cut at the week-6 read-through with §9 and §12.
 
 **2026-10-11: Younes read §8 — "overall fine".** Approved as drafted (2,281 words; trim with §9/§12 at week 6).
+
+**2026-10-12: [51] Popper, *The Logic of Scientific Discovery* (1959), added to rule 3 in 8.1** (Younes asked; skill loaded). +38 words. Also cited in §11.1; owed to §6 and §13 when rewritten.

@@ -132,7 +132,7 @@ https://www.rfc-editor.org/rfc/rfc1918
 
 ## Added in the rewrite (2026-10-12)
 
-Entries [30]–[50] are cited by Sections 8, 9, 11 and 12. Their numbers are provisional and follow the
+Entries [30]–[51] are cited by Sections 8, 9, 11 and 12. Their numbers are provisional and follow the
 working report's; the list is renumbered by first appearance in week 5. [29] (Jiang et al., USENIX
 Security 2023) is in the working report's list but is not cited in the submission, so it is not
 carried here.
@@ -224,6 +224,14 @@ has in memory, where each page is divided by the number of processes sharing it"
 
 **[50]** B. Efron, "Bootstrap Methods: Another Look at the Jackknife", *The Annals of Statistics*,
 vol. 7, no. 1, pp. 1–26, 1979. doi:10.1214/aos/1176344552 *(Checked against Crossref 2026-10-12.)*
+
+### Method
+
+**[51]** K. R. Popper, *The Logic of Scientific Discovery*. London, U.K.: Hutchinson, 1959. English
+translation of *Logik der Forschung*, Vienna: Springer, 1934 (dated 1935). Falsifiability as the
+criterion of demarcation and the methodological rule against saving a theory by ad hoc adjustment:
+Part I, ch. 4 ("Falsifiability"). Publisher and year checked against the Open Library record
+2026-10-12. Cited in §8.1 and §11.1; to cite in §6 and §13 when they are rewritten.
 
 ---
 

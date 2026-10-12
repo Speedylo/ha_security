@@ -43,3 +43,5 @@ the project's procedure (no Popper reference added; offer it if wanted); "unconf
 before Table 11.1 uses it; [1] on the telemetry's missing spread; [5] on HACS; **[49]** kernel proc docs
 for PSS (definition quoted, checked); **[50]** Efron 1979 for the bootstrap (Crossref). Voice: no first
 person. 1,298 prose words.
+
+**2026-10-12: Popper [51] cited in 11.1** ("Following Popper's criterion of falsifiability [51]"), the principle recast earlier now carries its source; the argument itself sits in §8.1 rule 3.
