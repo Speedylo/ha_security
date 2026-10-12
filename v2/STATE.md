@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-12 (later): §11 DRAFTED for review** (`submission/11_data_presentation.md`, 1,276 prose words vs 1,100; plan `notes/s11_data_presentation_plan.md`). Pushed `0f6bb57` after a scan against the laptop backup of the Pi credentials (Pi unreachable): 14 values, 7 files, 0 hits.
+
 **2026-10-12: §8 wording fixed (two clauses cut by Younes, "Defining the system, however, …"); owed references [30]–[48] and the new [8] added to `submission/16_references.md` ([40], [46], [8] checked on Crossref, [41] on the RFC; [29] not cited, not carried). Numbers provisional until the week-5 renumbering.** Next: week 3, §11 first.
 
 **2026-10-11 (night): §8 DRAFTED AND APPROVED, pushed after a clean scan (4 commits, 0 secrets)** (Younes: "overall fine"; `submission/08_methodology_and_design.md`, 2,281 words vs 2,000, trim at week 6 with §9/§12; plan and decisions `notes/s8_methodology_plan.md`: R3 High, narrowed; Figure 8.2 = `figures/fig_8_2_confined.py` with TB2 NARROWED + approval flow A; Corno comparison moves to §7; refs [46]–[48] owed, [8] now Przymus & Durieux MSR 2025). **Week 2 done early. Next: week 3 — §11 Data presentation, §10 Feasibility, §3 Specification, Appendices B–E.** §11 must state the three assertions + falsifiers, the paired design and the no-aggregate rule §12 relies on.

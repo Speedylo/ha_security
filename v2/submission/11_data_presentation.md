@@ -1,135 +1,69 @@
 # 11. Data Presentation
 
-This chapter states what was measured, on what, and with what instruments — before §12 states what
-the measurements showed. The separation is deliberate: an evaluation that introduces its method
-alongside its results invites the reading that the method was chosen to fit them.
+This section states what was measured, on what, with which instruments, and how the results are to be read, before Section 12 reports what the measurements showed. An evaluation that introduces its method alongside its results invites the reading that the method was chosen to fit them. The assertions and their falsifiers below were written on 2 September 2026, before any of the measurements they specify had been run, and were not revised in light of the results. The method begins with the claim it tests.
 
-## 11.1 The rule this evaluation is written under
+## 11.1 The claim and what would falsify it
 
-**Every figure in §12 names the run that produced it, and every claim carries its strength.** Three
-labels are used throughout and they are not decorative:
+The central claim of this project is that unmodified, pre-existing integrations can be confined at a cost worth paying. The claim contains three assertions that can fail independently: confinement is effective, it is compatible, and it is affordable. A sandbox that blocks every attack but breaks most integrations would satisfy the first while defeating the claim, so all three must be tested. A claim is empirical only if some observation could show it false, so each assertion was given a falsifier before measurement, as Table 11.1 sets out.
 
-| Label | Meaning |
+**Table 11.1 — The three assertions and their falsifiers, fixed on 2 September 2026**
+
+| Assertion | Falsified if |
 |---|---|
-| **Measured** | A number produced by a named run whose raw output is in the repository |
-| **Demonstrated** | A behaviour observed in a named test, without a number attached |
-| **Argued** | A conclusion reasoned from measurements, and labelled as reasoning |
+| A. Confinement is effective | The garbage-collector technique [9] reaches a platform object from inside the sandbox, or a platform credential is recoverable from the sandbox, or the attack pattern disclosed in 2021 [6] succeeds under the framework |
+| B. Confinement is compatible | The unconfined arm shows that most of the confined shortfall is caused by the design, that is, the unconfined arm passes substantially all of the head-weighted corpus while the confined arm does not |
+| C. Confinement is affordable | The cost of each sandbox reduces the number the reference device can hold below the mean number of community integrations an installation running HACS has, 4.02 [1], or mediation at realistic numbers of sandboxes changes what the platform can do |
 
-A fourth category is reported explicitly rather than omitted: **a measurement that did not
-resolve**. One did, and §12.8 reports it as unresolved rather than presenting three points as a
-trend.
+Each falsifier names an observation rather than a threshold of satisfaction. Any one condition under A would defeat the architecture, not merely its implementation, because each is an attack the architecture was designed to remove. The falsifier for C is stated against a mean because the platform's telemetry publishes no spread across installations, so a budget above the mean may still fail installations in the tail, and this weakness is carried into the result.
 
-## 11.2 The test environment
+A fourth falsifier applies to the evaluation rather than to the framework. The evaluation fails on its own terms if it reports as passed a requirement it cannot demonstrate, or reports an aggregate figure that conceals a breakdown it holds. This condition makes the honesty of the reporting something that can be checked, and Section 12.4 checks it. Assertion B, however, can be tested only against a baseline, which is the subject of the paired design.
 
-Every measurement in this report was taken on one machine, and holding it fixed is what makes the
-paired arms comparable.
+## 11.2 The paired design
 
-| | |
+Every security and compatibility result is the difference between two arms run on the same host, with the same platform release and in the same session. In the confined arm the integration runs inside the framework. In the unconfined arm the same integration runs as Home Assistant runs it today, in a full installation with no namespaces, no system-call filter, no resource limits, no separate file-system view, no mediator and no bridge. Confinement is therefore the only variable between the arms.
+
+The pairing is what gives a negative result its meaning. A security test that finds nothing is ambiguous, because a broken test also finds nothing; the same attack succeeding in the unconfined arm shows that the test works on this host and release, so its failure in the confined arm can be attributed to confinement. The pairing also cuts against the framework. An attack that fails in both arms, for a reason unrelated to confinement, is excluded from the framework's results rather than counted in its favour.
+
+Two decisions in the construction of the arms protect the comparison. Both arms call the same measurement function with the same arguments, so they classify outcomes by the same rules. The unconfined arm is also deliberately generous: it sets up the platform's default components together with every component and package the integration declares, which makes any cost charged to confinement larger rather than smaller. Its first version was less generous, and an integration that declares the `mqtt` component failed unconfined while passing confined; a baseline weaker than the arm it is compared against inverts the cost it is meant to measure. The arms also share one environment, described next.
+
+## 11.3 Environment and corpora
+
+Every measurement was taken on one device, the reference hardware that requirement C4 names, and Table 11.2 records its configuration.
+
+**Table 11.2 — The test environment**
+
+| Item | Value |
 |---|---|
-| Device | **Raspberry Pi 5, 4 GB** |
-| OS | Raspberry Pi OS trixie, kernel 6.12.47, aarch64 |
-| Platform | **Home Assistant 2026.8.3**, pinned to a commit, unmodified |
-| Interpreter | Python 3.14.7 |
-| Privilege | **Unprivileged throughout** — no root, inside a systemd user scope |
+| Device | Raspberry Pi 5, 4 GB |
+| Operating system | Raspberry Pi OS (Debian 13), kernel 6.12.47, 64-bit Arm |
+| Platform | Home Assistant 2026.8.3, unmodified, on Python 3.14.7 |
+| Framework | Supervisor and mediator on the operating system's Python 3.13.5, standard library only |
+| Privilege | An ordinary user throughout; no step of any run requires root |
 
-**One release, one host, one architecture.** This is a stated limit and not a small one: two
-integrations in the corpora fail on constants removed *in this very release*, which is a live
-demonstration that a compatibility figure has a shelf life.
+Holding the environment fixed makes the arms comparable, but it also limits how far the results generalise: they describe one platform release on one device and one processor architecture. Releases remove interfaces that integrations depend on, and one integration in the head-weighted corpus fails on a constant removed in this very release, so a compatibility figure should be expected to change with the release.
 
-## 11.3 The corpora
+Compatibility was measured on real, unmodified integrations from HACS, the community catalogue, and two corpora were used because they answer different questions. Table 11.3 compares them.
 
-Compatibility is measured over real, unmodified community integrations fetched from HACS. **Two
-corpora were used, and using two is the point.**
+**Table 11.3 — The two corpora**
 
-**Table 11.1 — The two corpora**
-
-| | Head-weighted | **Uniform (seed 20260902)** |
+| | Head-weighted | Uniform |
 |---|---|---|
-| Selection | The most-installed integrations | Drawn from the whole HACS index with equal probability |
-| Repositories requested | 40 | 40 |
-| **Distinct integrations measured** | **37** | **40** |
-| Install count, median | **16,294** | **48** |
-| Installs represented, total | **998,478** | 46,979 |
-| Python files, median | 19 (max 1,015) | **11 (max 143)** |
-| Declares no components at all | 18 of 37 | **26 of 40** |
-| Declared components, median | 1 | **0** |
-| **Overlap between the two** | — | **2** (`bermuda`, `browser_mod`) |
+| Selection | The 40 most-installed repositories | 40 repositories drawn with equal probability (seed 20260902) |
+| Integrations measured | 37 | 40 |
+| Install count, median | 16,294 | 48 |
+| Installations represented | 998,478 | 46,979 |
+| Integrations declaring no platform components | 18 of 37 | 26 of 40 |
 
-**Two of forty is the number that justifies having run this at all.** The corpora share 5% of their
-members, so the second is close to an independent sample of the same ecosystem rather than a
-re-slicing of the first. The head corpus represents **twenty-one times** the deployed reach of the
-uniform one from the same number of repositories requested. Neither is wrong; they answer different
-questions — **what most installations run**, and **what most integrations do**.
+The head-weighted corpus describes what most installations run, and the uniform corpus describes what most integrations are. The two share only two members, so the second is close to an independent sample of the same ecosystem rather than a different view of the first, while the first represents twenty-one times the installations of the second. Neither corpus generalises to integrations distributed outside HACS. The instruments applied to these corpora are described next.
 
-> **A detail worth stating, because it is a reproducibility limit found by re-reading.** The head
-> corpus requests forty *repositories* and measures thirty-seven *integrations*: one fetch failed,
-> and **three domains are each claimed by two different repositories**, while a domain is one slot
-> on disk. Which repository won each collision is not recoverable from the manifest, and in one
-> case the two candidates differ by 5 versus 46 Python files. The manifest permits the corpus to be
-> redrawn; it does not fully determine what a redraw would contain.
+## 11.4 Instruments and statistics
 
-## 11.4 The paired design, and why every headline number has two arms
+Compatibility is reported as two numbers that are never combined. The first, whether an integration imports and sets up cleanly, was measured for every integration in both corpora; it is an upper bound, because an integration that imports may still fail at its first poll. The second is whether an integration was executed end to end, its entities and actions working in a live platform. Most integrations cannot be tested this way: 26 of the 37 head-weighted integrations require an API key, token, password, user name, host or e-mail address before their configuration can complete, and no test of any sandbox can supply those details. End-to-end results are therefore reported as a named set of integrations rather than as a rate.
 
-**The single most important methodological decision in this evaluation is that nothing is measured
-in one arm.** Every compatibility and security figure was produced twice on the same host, in the
-same session, against the same release: once **confined**, and once against a **full, unconfined**
-Home Assistant with no namespaces, no seccomp, no cgroup, no mount view, no mediator and no bridge.
+Security is measured with an adversarial integration that makes 38 attack attempts from inside a sandbox and records one of three outcomes for each. An attempt is blocked when something refuses it, empty when it succeeds and finds nothing because nothing is there, and leaked when it returns something it should not. The first two are kept apart because a refusal depends on a check that an attacker might evade, while an empty result depends on the resource being absent from the sandbox.
 
-Two construction decisions carry the validity of that comparison:
+Performance is measured as memory and time. Memory is the proportional set size, which divides each shared page among the processes that map it, because most of a sandbox consists of interpreter pages the kernel shares between sandboxes. Each figure was measured during development and re-measured in five passes over frozen code, the first three each on a separate boot. A figure passes if the median across passes falls within a tolerance fixed before the first pass, 20% for timings and 5% for memory; a figure outside it is reported as a finding, not averaged away. The 99th percentile is recorded for each pass. A bootstrap 95% interval of the median was computed as well, but resampling five values yields little more than their range, so Section 12 reports the range itself rather than imply a precision five passes cannot give. These instruments produce the data; the rules for presenting it follow.
 
-**The measurement function is shared, not copied.** Both arms import the same `inspect()` function
-and call it with the same arguments, so both compute the same outcome ladder with the same platform
-list and the same error handling. A reimplementation that drifted by one platform name would have
-satisfied "hold the measurement fixed" in appearance only.
+## 11.5 How the results are presented
 
-**The baseline's bias runs toward the baseline, deliberately.** The unconfined arm is given the
-platform's base component, `default_config`, the integration's declared components and their
-requirements, and the core package set. **A generous baseline makes the design's measured cost
-larger**, which is the direction an evaluation of one's own artifact should err in.
-
-> **The first version of this arm was biased the other way, and the correction is the reason to
-> trust the second.** It set up only two components, so an integration declaring `mqtt` failed
-> against the "full" instance while passing under confinement. **A baseline stingier than the arm
-> it is compared against does not decompose a figure; it inverts it** — it would have reported a
-> *negative* cost for confinement.
-
-## 11.5 The instruments
-
-| Instrument | What it produces |
-|---|---|
-| `compat.py` | The compatibility ladder in both arms, plus the C1 integrity count on every run |
-| `selftest_*.py` (**19 suites**) | Every mechanism's behaviour, including the cases that must *fail* |
-| The adversary integration | 38 attack attempts against a sandbox, recording three outcomes rather than two |
-| `strace` cross-check | A second instrument bounding the in-process egress recorder |
-| `integrity.py` | Source-tree hashing before and after each run — C1, counted |
-
-**The adversary records three outcomes and the third is the design's whole argument:**
-
-| Outcome | Meaning |
-|---|---|
-| `BLOCKED` | The attempt raised. Something refused it |
-| `EMPTY` | The attempt **succeeded and found nothing**, because there was nothing there |
-| `LEAKED` | It returned something it should not have |
-
-**A design producing only `BLOCKED` would be the procedural one.** Collapsing `EMPTY` into "pass"
-would hide exactly the property the architecture was chosen for.
-
-## 11.6 Predictions registered before measurement
-
-Eight predictions were committed to the repository **before** the corresponding runs, five in the
-evaluation plan and three in a file committed before the uniform corpus was drawn. They are scored
-in §12.9. Registering them is what makes the evaluation falsifiable rather than descriptive: **a
-prediction is worth having precisely because it can be wrong**, and six of these were.
-
-## 11.7 What this evaluation cannot do
-
-Stated in advance rather than conceded afterwards.
-
-- **It cannot measure what a live Home Assistant does with a mediated write**, because the far side
-  of the mediator is a stand-in.
-- **It cannot report an end-to-end compatibility rate**, because 26 of 37 head-corpus integrations
-  require a credential before their own configuration flow completes, and no measurement of any
-  confinement scheme can produce those credentials.
-- **It cannot assess R3**, the mediator's unscoped credential, because the limitation is upstream.
-- **It cannot demonstrate the absence of failures**, only the absence of the failures it looked
-  for. This is why the threat model is a separate activity from the testing.
+Three rules govern how Section 12 presents the data. First, no aggregate figure of threats controlled is reported. Such a figure would merge attacks refused by a check, attacks that found nothing to reach and risks retained by decision into one number, which is the concealment the fourth falsifier names. Section 12 reports each category separately, and Appendix C gives the full register. Second, where the population is small, results are reported as named integrations with their outcomes, so that a reader can see which cases a figure rests on. Third, the strength of each statement follows its evidence: a verified result is said to show, a qualified one to suggest, and an argued one is presented as argument. Under these rules, Section 12 reports each assertion against its falsifier and states whether the falsifier was met.
