@@ -36,3 +36,10 @@ in one clause only.
 
 **Numbers that move at the final rerun:** none quoted here except the pass count (five, unless the
 rerun adds a sixth) and the adversary's 38 attempts.
+
+**2026-10-12 (later): checklist pass with the academic-research-writer skill** (Younes: always load it for
+report writing; §11 had been drafted without it). Fixed: the uncited falsifiability principle recast as
+the project's procedure (no Popper reference added; offer it if wanted); "unconfined arm" defined in 11.1
+before Table 11.1 uses it; [1] on the telemetry's missing spread; [5] on HACS; **[49]** kernel proc docs
+for PSS (definition quoted, checked); **[50]** Efron 1979 for the bootstrap (Crossref). Voice: no first
+person. 1,298 prose words.

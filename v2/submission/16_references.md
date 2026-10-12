@@ -132,7 +132,7 @@ https://www.rfc-editor.org/rfc/rfc1918
 
 ## Added in the rewrite (2026-10-12)
 
-Entries [30]–[48] are cited by Sections 8, 9 and 12. Their numbers are provisional and follow the
+Entries [30]–[50] are cited by Sections 8, 9, 11 and 12. Their numbers are provisional and follow the
 working report's; the list is renumbered by first appearance in week 5. [29] (Jiang et al., USENIX
 Security 2023) is in the working report's list but is not cited in the submission, so it is not
 carried here.
@@ -215,6 +215,15 @@ August 2018. https://www.rfc-editor.org/rfc/rfc8446 — §1.
 **[46]** Y. Jia and M. Harman, "An Analysis and Survey of the Development of Mutation Testing",
 *IEEE Transactions on Software Engineering*, vol. 37, no. 5, pp. 649–678, September 2011.
 doi:10.1109/TSE.2010.62 *(Checked against Crossref 2026-10-12.)*
+
+### Measurement and statistics
+
+**[49]** The Linux kernel documentation, *The /proc Filesystem*, §1.1, `/proc/PID/smaps`.
+https://docs.kernel.org/filesystems/proc.html — the proportional set size is "the count of pages it
+has in memory, where each page is divided by the number of processes sharing it"; checked 2026-10-12.
+
+**[50]** B. Efron, "Bootstrap Methods: Another Look at the Jackknife", *The Annals of Statistics*,
+vol. 7, no. 1, pp. 1–26, 1979. doi:10.1214/aos/1176344552 *(Checked against Crossref 2026-10-12.)*
 
 ---
 
