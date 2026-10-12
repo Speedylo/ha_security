@@ -2,9 +2,9 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
-**2026-10-12 (night): §10 and §11 APPROVED (Younes: "fine"). Next of week 3: Appendices B–E (§3 waits until Younes says).**
+**2026-10-12 (night): §10 and §11 APPROVED (Younes: "fine"). **Next session: §3 Specification** (load the academic-research-writer skill first; C1 defines "unmodified" as the code with the manifest requirement beside it, per the decision at the end of `notes/rewrite_plan_outline_mapping.md`), then Appendices B–E (C first).**
 
-**2026-10-12 (night): "unmodified" framing DECIDED (Younes)** — code unmodified, a manifest per integration still needed, every evaluation manifest hand-written, production at scale unmeasured; wording and owed places in `notes/rewrite_plan_outline_mapping.md` (end). §10.4 updated (§10 now ~960 words). §3 NOT to be drafted yet (Younes).
+**2026-10-12 (night): "unmodified" framing DECIDED (Younes)** — code unmodified, a manifest per integration still needed, every evaluation manifest hand-written, production at scale unmeasured; wording and owed places in `notes/rewrite_plan_outline_mapping.md` (end). §10.4 updated (§10 now ~960 words). §3 deferred to the next session (not on hold).
 
 **2026-10-12 (evening): §10 DRAFTED for review** (`submission/10_feasibility.md`, ~850 words vs 700; plan `notes/s10_feasibility_plan.md`; refs/ PDFs question for Younes). Popper [51] in §8.1 and §11.1; pushed `0ffd84b` after a Pi scan (14 values, 0 hits).
 
