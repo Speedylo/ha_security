@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-12 (evening): §10 DRAFTED for review** (`submission/10_feasibility.md`, ~850 words vs 700; plan `notes/s10_feasibility_plan.md`; refs/ PDFs question for Younes). Popper [51] in §8.1 and §11.1; pushed `0ffd84b` after a Pi scan (14 values, 0 hits).
+
 **2026-10-12 (later): §11 DRAFTED for review** (`submission/11_data_presentation.md`, 1,276 prose words vs 1,100; plan `notes/s11_data_presentation_plan.md`). Pushed `0f6bb57` after a scan against the laptop backup of the Pi credentials (Pi unreachable): 14 values, 7 files, 0 hits.
 
 **2026-10-12: §8 wording fixed (two clauses cut by Younes, "Defining the system, however, …"); owed references [30]–[48] and the new [8] added to `submission/16_references.md` ([40], [46], [8] checked on Crossref, [41] on the RFC; [29] not cited, not carried). Numbers provisional until the week-5 renumbering.** Next: week 3, §11 first.

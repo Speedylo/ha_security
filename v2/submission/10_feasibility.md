@@ -1,117 +1,31 @@
 # 10. Feasibility Study
 
-Feasibility was not assumed. Each dimension below was settled before the work that depended on it,
-and two of the technical answers changed the design.
+Feasibility was assessed before the work that depended on it, across technical, economic, legal and ethical, operational and scheduling dimensions. The technical assessment was the decisive one, because the design rests on kernel features that a householder's device may not provide, and two of its findings changed the design.
 
 ## 10.1 Technical feasibility
 
-Three questions had to be answered before the architecture could be committed to, and each was
-answered by measurement on the target device rather than from documentation.
+The reference device was probed before the architecture was fixed, because a design that assumes kernel features is only as sound as the kernel it runs on. On the Raspberry Pi 5, running Raspberry Pi OS with kernel 6.12.47, an ordinary user could create user, network and process-identifier namespaces, all seven namespace types the design uses were present [33], and system-call filtering with seccomp was available [34]. The supervisor therefore needs no privilege, which matters for security as well as convenience: a confinement tool that must run as root enlarges the attack surface it exists to reduce.
 
-**Does the host support the primitives?** Probed directly on the Raspberry Pi 5 (Pi OS trixie,
-kernel 6.12.47): unprivileged user, network and PID namespaces are available and were created as
-an ordinary user; all seven namespace types are present; seccomp-BPF is present including
-`user_notif`; cgroup v2 offers `pids`, `cpu`, `io` and `cpuset`. **Two findings changed the
-design.** The `memory` controller is **absent** on a stock installation and must be enabled at
-boot — a genuine deployment constraint, not a detail. And the `io` controller is present but **not
-delegated** to a user manager, which is why I/O bandwidth is a retained residual risk rather than
-an unimplemented feature.
+Two findings of the probe changed the design. The distribution's default kernel command line disables the control-group memory controller, so bounding an integration's memory requires a one-time change at boot. Rather than start without the control and so imply a protection it cannot give, the framework refuses to start, with a stated reason, when the controller is missing. The second finding is that the input and output controller, although present in the kernel, is not delegated to an unprivileged user's service manager [48], so I/O bandwidth became a stated residual risk instead of a feature that could be built.
 
-**Can a stripped Home Assistant be built at all?** Home Assistant's own entry point cannot be
-used: `bootstrap.py` imports `.components` at module level, pulling in the frontend and the
-recorder — precisely the weight a sandbox exists to avoid. The sandbox therefore **constructs** a
-`HomeAssistant` object directly and wires the registries the helper layer reaches for. *Measured:*
-an ordinary integration — a config entry, a `DataUpdateCoordinator`, a `SensorEntity`,
-`async_add_entities` — reaches `LOADED` and publishes its entity against such an instance, with no
-HTTP server, no recorder, no frontend and no authentication.
+The second question was whether Home Assistant could run inside a sandbox at all. Its own entry point loads the web frontend and the recorder, the weight a sandbox exists to avoid, so the sandbox constructs the platform's core object directly and sets up only what the integration needs. An ordinary polling integration loaded and published its sensor against this reduced instance.
 
-**Does it fit?** This is the question C4 turns on, and the arithmetic is the argument.
-
-| | RSS, one sandbox | **PSS per sandbox, six live** | Sandboxes in 60% of 4 GB |
-|---|---|---|---|
-| With the platform's base component | 161.3 MB | **136.6 MB** | **17** |
-| Without it | 109.4 MB | **90.0 MB** | **26** |
-| Difference | 51.9 MB | **46.6 MB** | **+9 — a factor of 1.53** |
-
-**The method is not a subtraction, and that is the whole of it.** The obvious experiment builds one
-sandbox each way and subtracts two resident-memory figures. That is wrong, because most of a
-sandbox is interpreter and library pages the kernel maps into every sandbox from the same physical
-memory: a megabyte removed from one process's resident set is a megabyte removed from the *budget*
-only if it was private to that process. The saving was therefore measured across six live sandboxes
-per arm by **proportional set size**.
-
-**Verdict: technically feasible, and the budget is 26 sandboxes against a measured mean of 4.02
-community integrations per HACS-running installation** — a margin of about 6×.
+The third question was whether confinement fits, and memory decides it. Measured as proportional set size [49], a sandbox costs 56.5 MB without platform components and 135.6 MB with all ten, so 60% of the device's 4 GB holds 17 to 43 sandboxes against a mean of 4.02 community integrations per installation [1]. The design is therefore technically feasible on the hardware that requirement C4 names, with a margin of at least four times the mean.
 
 ## 10.2 Economic feasibility
 
-The framework uses only the Python standard library and `ctypes`. There is no licence cost, no
-service cost, and no additional hardware: it runs on the device the user already owns. The
-marginal cost of confining one integration is about **120 MB of memory** and **31.5 µs per
-mediated request**.
-
-The dependency decision is deliberate and worth stating as an economic one. **A confinement tool
-that pulls a dependency tree has enlarged the attack surface it exists to reduce**, and it has
-also acquired a maintenance liability that a volunteer ecosystem cannot carry.
-
-The costs that are real are not resource costs. They are **integration effort** — the framework is
-a research artifact, not a packaged product — and **maintenance against a moving platform**, which
-§12.6 shows is not hypothetical.
+The framework adds no licence, service or hardware cost: it runs on the device the householder already owns, and its supervisor and mediator use only the Python standard library. Avoiding dependencies is also a security decision, because each one adds code and maintainers that must be trusted, the supply-chain exposure this project addresses [23]. The real costs are memory, quantified above, and maintenance: the sandbox builds the platform's core object outside its documented entry point, so a Home Assistant release may require the framework to be updated.
 
 ## 10.3 Legal and ethical feasibility
 
-No personal data was collected. Every measurement ran on the author's own hardware against the
-author's own test installation. The one measurement touching a live third-party service used an
-ordinary unauthenticated public endpoint at ordinary polling rates.
-
-**The adversarial work is the part that needed a position, and §4.7 states it:** the adversary is
-purpose-built to reproduce the *pattern* of the 2021 disclosures rather than to exploit the eight
-named integrations at their vulnerable versions. Those versions are not in the corpus, and the
-report states this as a limitation of the evaluation rather than as a design choice with no cost —
-it means the adversary exercises the class of attack and not the historical instances.
-
-The four third-party papers obtained for this work are stored privately and are not redistributed.
+No personal data about anyone other than the author was collected, and every measurement ran on the author's own device and test installation. Six integrations contacted live third-party services at their normal polling rates: four public services without credentials, and two through free accounts the author created for the purpose. Two further integrations that control devices on the home network were tested against simulated devices rather than real ones. The adversarial work reproduces the attack patterns of published disclosures and research [6], [9] with integrations written for the evaluation, not against the vulnerable versions of real integrations, so no third party's software or users were attacked. The cost of this choice is that the adversary exercises classes of attack rather than their historical instances. One class, an escape through a shared terminal found by code review, was described and fixed but deliberately not developed into a working exploit.
 
 ## 10.4 Operational feasibility
 
-**The supervisor does not need to be privileged**, which is what makes the design deployable by a
-user rather than by a distribution. Unprivileged user namespaces are available on the target, and
-the whole framework runs as an ordinary user.
+The framework is operable by a householder once installed, and installation is the step that demands most. Enabling the memory controller requires a one-line change to the boot configuration and a restart, the only step that needs administrative access to the device. After installation, every decision a user makes, including approving an integration's permissions, is taken in Home Assistant's own interface, with no terminal step.
 
-Two operational constraints are real and are stated rather than smoothed over. The `memory`
-controller must be enabled at boot, which is a one-line change to the kernel command line and a
-reboot. And **where the supervisor runs turns out to matter more than when it acts**: a measurement
-of four cgroup placement mechanisms found that `clone3(CLONE_INTO_CGROUP)` fails with the same
-`EACCES` as migration, so what binds the sandbox is the supervisor's own position in the cgroup
-hierarchy. That corrected an assumption made in the design chapter, and it is a deployment
-requirement rather than an implementation detail.
+The framework also fits the existing ecosystem without asking anything of it. It requires no change to any integration or to Home Assistant's code, and adds only one integration of its own, the bridge, to the household's installation. A 2026 request for comment proposes running integrations on separate machines, motivated mainly by reliability and scale [11]. Relocation changes where untrusted code runs but not what it may do, so if that proposal is adopted it would be a substrate for the enforcement described here rather than a substitute for it.
 
 ## 10.5 Scheduling feasibility
 
-The work was staged with gates, and the gates were used rather than passed through: **two of the
-four architectural decisions diverged** from the first pass when re-examined against evidence, and
-one profile decision was reversed by a measurement that contradicted its own prediction.
-
-The schedule risk that remains is stated in §14: the largest missing piece — the push loop — is
-*building* rather than *testing*, and the largest evaluation gap — running many integrations end to
-end — is blocked on something no schedule can fix, namely that **26 of 37 corpus integrations
-require a credential before their own configuration flow can complete.**
-
-## 10.6 Market need and integration with existing systems
-
-**Need** is established by measurement rather than asserted: 379,326 installations run HACS, a mean
-of 4.02 community integrations each, and the platform states plainly that such code is outside its
-security programme and installed "at your own risk" [4][10].
-
-**Integration with existing systems** is the design's central constraint and its main claim. The
-framework requires **no change to any integration** and **no change to Home Assistant**. It is
-additive to the ecosystem's existing control — informal community review — because the two act on
-different variables: review acts on likelihood, confinement on impact.
-
-It is also **complementary to the platform's own direction of travel.** A 2026 request for comment
-proposes running integrations on separate machines [11], motivated principally by reliability and
-scale. Relocation without scoping changes *where* untrusted code runs without changing *what it may
-do* — an integration that must still read and write platform state across a process boundary needs
-a credential, and unless that credential is scoped by something, nothing is bounded. **If that
-proposal is adopted it becomes a natural substrate for the enforcement described here rather than
-a substitute for it.**
+The work was staged so that each risky question was answered before the work that depended on it: the probe preceded the architecture, and the memory budget preceded the evaluation. Engineering stopped at a declared cut-off on 8 October 2026, and the report was written afterwards, with one full rerun of every measurement at the final version of the code. Reproduction on a freshly imaged device awaits a spare memory card and remains open.
