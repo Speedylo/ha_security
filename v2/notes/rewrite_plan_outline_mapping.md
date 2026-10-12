@@ -229,3 +229,24 @@ the pointer is replaced by the content it points at.
 **Younes reviews each section against its source before the next one starts.** This has to be
 defensible aloud in a viva, and a condensed version he has not checked line by line is a different
 object from the one he watched every number arrive in.
+
+## Decided 2026-10-12 (Younes): what "unmodified" claims
+
+"Unmodified" means the integration's **code** (C1, counted: 75 trees, zero changes). Confinement also needs a
+`permissions` manifest per integration, which no integration ships today (0 of 38 in the corpus). The framework
+accepts one declared by the author (`Provenance.AUTHOR`) or supplied with the installation (`DERIVED`); with
+none, S6 grants nothing. **What the evidence rests on:** the import-level figures (84%, 92%) ran with
+`Provenance.NONE` (`compat.py:302`), so they need no manifest; the 13 end-to-end integrations ran on manifests
+the project wrote by hand. Static-analysis and observation proposers (working report §5.9.3 M3, M5) were not
+built. So the cost of producing manifests at scale (authors, analysis, curation) is unmeasured and is the main
+adoption question. Agreed wording:
+
+> The integrations' code is unmodified; confinement additionally requires a permissions manifest per
+> integration, which the framework accepts from the author or supplied with the installation. In the
+> evaluation, every manifest was written by hand by the project, and producing manifests at scale, by
+> authors, analysis or curation, is unmeasured and is the main question for adoption.
+
+**Owed:** §10.4 ✅ (2026-10-12); §3 C1 (define "unmodified" as the code, the manifest requirement beside it);
+§8.7 or §12's bounds (a limit: end-to-end results rest on hand-written manifests; approved sections, so with
+Younes); §14 (manifest production as future work: static analysis and observation as proposers, author
+adoption, curated repository); abstract, §1, §15 (carry the qualified wording).

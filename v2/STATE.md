@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-12 (night): "unmodified" framing DECIDED (Younes)** — code unmodified, a manifest per integration still needed, every evaluation manifest hand-written, production at scale unmeasured; wording and owed places in `notes/rewrite_plan_outline_mapping.md` (end). §10.4 updated (§10 now ~960 words). §3 NOT to be drafted yet (Younes).
+
 **2026-10-12 (evening): §10 DRAFTED for review** (`submission/10_feasibility.md`, ~850 words vs 700; plan `notes/s10_feasibility_plan.md`; refs/ PDFs question for Younes). Popper [51] in §8.1 and §11.1; pushed `0ffd84b` after a Pi scan (14 values, 0 hits).
 
 **2026-10-12 (later): §11 DRAFTED for review** (`submission/11_data_presentation.md`, 1,276 prose words vs 1,100; plan `notes/s11_data_presentation_plan.md`). Pushed `0f6bb57` after a scan against the laptop backup of the Pi credentials (Pi unreachable): 14 values, 7 files, 0 hits.
