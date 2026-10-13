@@ -2,6 +2,10 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-13: §3 DRAFTED for review** (`submission/03_project_specification.md`, ~1,200 prose words vs 1,000; plan and five decisions for Younes in `notes/s3_specification_plan.md`: sub-section order changed from the template's, C1 carries the agreed "unmodified" wording, all twenty requirements met with S9 and N2 narrowed). Next: Younes reviews §3, then Appendices B–E (C first).
+
+**2026-10-13: the Pi's disk is almost full — 87% (24 of 29 GB used, 3.8 GB free).** Most of it is `~/r2exp` (9.2 GB): `tb` 1.6 GB, per-fix clones `f16` 958 MB, `f59` 789 MB, `f57` 722 MB, `f57d` 529 MB, `mutants` 707 MB; `ha314` (611 MB) and `houseA-deps` (364 MB) are live, keep them. **Free space before the end-of-week-5 full rerun** (fresh clone, all mutants, timings: disk-backed timings and mutant TMPDIRs need room; a mutant once left 1.2 GB in /tmp). Younes decides which clones go; delete by literal path only. The Pi had also rebooted (up 36 min when checked).
+
 **2026-10-12 (night): §10 and §11 APPROVED (Younes: "fine"). **Next session: §3 Specification** (load the academic-research-writer skill first; C1 defines "unmodified" as the code with the manifest requirement beside it, per the decision at the end of `notes/rewrite_plan_outline_mapping.md`), then Appendices B–E (C first).**
 
 **2026-10-12 (night): "unmodified" framing DECIDED (Younes)** — code unmodified, a manifest per integration still needed, every evaluation manifest hand-written, production at scale unmeasured; wording and owed places in `notes/rewrite_plan_outline_mapping.md` (end). §10.4 updated (§10 now ~960 words). §3 deferred to the next session (not on hold).

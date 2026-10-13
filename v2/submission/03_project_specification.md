@@ -1,132 +1,103 @@
 # 3. Project Specification
 
+This section fixes what the project set out to build and how each part was to be judged. Every requirement was traced to a finding in the problem statement or the literature and stated with its test before any code existed, so that the evaluation could not be fitted to the implementation afterwards.
+
 ## 3.1 Objective
 
-To design, build and evaluate a mechanism by which a Home Assistant community integration's
-required authority is **declared, enforced at runtime and audited** — without modifying the
-integration, without modifying Home Assistant, and without depending on the integration author's
-cooperation or honesty — and to **measure what that confinement costs** in compatibility, memory
-and latency against an unconfined baseline on representative hardware.
-
-The objective is deliberately two-part. The mechanism is the engineering; the measurement is the
-research, because no published work reports what fraction of real, unmodified extensions still
-function once confinement is applied.
+The objective is to design, build and evaluate a mechanism through which the authority of a Home Assistant community integration is declared, enforced at run time and recorded, without modifying the integration's code or the platform and without relying on the honesty of the integration's author. Because no published work reports what fraction of real, unmodified extensions still function once confined, the objective has a second, research half: to measure what confinement costs in compatibility, memory and latency against an unconfined baseline, on hardware typical of self-hosted installations.
 
 ## 3.2 Scope
 
-**In scope:** third-party *integrations* — Python modules loaded into the Home Assistant process
-— installed through HACS onto a self-hosted installation on a single machine.
+The project addresses third-party integrations: Python packages that Home Assistant loads into its own process, installed through HACS, the community catalogue [5], onto a self-hosted installation on one machine. Integrations are in scope because they share the platform's process and therefore all of its authority, whereas add-ons already run as separate containers [3]. Table 3.1 lists what was excluded and why.
 
-**Out of scope**, each for a stated reason:
+**Table 3.1 — Exclusions**
 
-| Non-goal | Why excluded |
+| Excluded | Reason |
 |---|---|
-| **Add-ons (apps)** | Already isolated as containers [3]. The problem is specific to in-process integrations, and the existence of add-ons shows the platform already accepts process isolation where its architecture permits it |
-| **Determining whether an integration is malicious** | This project bounds authority; it does not classify intent. Detection is a likelihood control the ecosystem already has |
-| **Preventing abuse of legitimately declared authority** | An integration that declares `lock.unlock` and then unlocks the door at 03:00 is acting inside its declaration. Confinement structurally cannot prevent this; it is a residual risk, not a defect |
-| **Guaranteeing the manifest is minimal or honest** | An author declares what they choose. The mechanism converts *invisible* authority into *declared, bounded and audited* authority — a smaller claim than "the manifest makes integrations safe" |
-| **Supply-chain integrity** | Signing and provenance are likelihood controls with their own literature. Complementary, not in scope |
-| **Multi-user access control** | Home Assistant "assumes every user is trusted" [10]; changing that is a platform-level concern |
-| **User comprehension of disclosures** | Whether users act correctly on permission prompts is a human-factors question with its own literature |
+| Add-ons | Already isolated as containers [3], which shows that the platform accepts process isolation where its architecture allows it |
+| Deciding whether an integration is malicious | The project bounds authority; it does not classify intent |
+| Misuse of declared authority | An integration granted `lock.unlock` that unlocks the door at night acts within its grant, so this is a residual risk rather than a defect |
+| A minimal or honest manifest | An author declares what they choose; the mechanism makes authority visible, bounded and recorded, which is a smaller claim than making integrations safe |
+| Supply-chain integrity | Whether code can be trusted is a complementary question with its own literature [23] |
+| Multi-user access control | The platform "assumes every user is trusted" [10], and changing that requires changing the platform |
+| Whether users understand disclosures | A human-factors question; the project requires only that the grant be shown |
 
-## 3.3 Key features
+Four parties have a stake in what an installed integration can do. The user owns the devices and carries the risk, and must be able to see and bound what an integration may do without reading its code. The author wants the integration to work and should not have to change it. The platform project cannot underwrite third-party code, whose users "install them at their own risk" [4]. The attacker, a malicious author or one who has taken over an honest author's repository [8], is the party on whose behaviour enforcement must not depend. These interests produce the constraints.
 
-1. **A permissions clause in the manifest the integration already ships.** Eight declarable
-   capabilities — entity reads, subscriptions and writes; service calls; event access; network
-   egress; filesystem paths; config-entry enumeration; HTTP route registration — plus an optional
-   resource clause. Anything not declared is denied.
-2. **Per-integration Linux sandboxing.** Each integration runs in its own user, mount, PID,
-   network, IPC and UTS namespaces, under a seccomp-BPF filter denying 29 syscalls, inside a
-   cgroup v2 slice bounding memory, CPU, process count and disk space.
-3. **A real but stripped Home Assistant inside the sandbox.** The integration imports the genuine
-   helper layer and receives a genuine `hass` object — but a *local* one whose state machine and
-   service registry start empty, so denial is structural rather than a check that must not be
-   forgotten.
-4. **An out-of-process mediator holding the platform credential.** Every permitted effect crosses
-   one inherited Unix socket; identity is a property of the socket, not a claim in the message.
-5. **A mediated egress broker** that resolves a declared hostname itself and pins the connection
-   to the resolved address, so a name that resolves to an internal address at request time is
-   refused.
-6. **A tamper-evident audit log** — hash-chained and MAC-keyed — recording every decision, the
-   clause that decided it, and the integration's three-part content identity, written *before*
-   the action it records.
-7. **A user-facing renderer** that prints an integration's declared authority in plain language
-   before it is installed.
+## 3.3 Constraints
 
-## 3.4 Deliverables
+Four constraints are properties of the situation rather than choices, and together they rule out most mechanisms that prior work used.
 
-| | Deliverable | State |
+**C1 — Integrations shall run with their code unmodified.** Chrome could require extension authors to adopt a new permission model because the platform was new [12]. Home Assistant cannot, because 4,220 custom integrations report through its telemetry [1], written by volunteers against an interface that presumes full authority. "Unmodified" refers to the code. Confinement additionally requires a permissions manifest per integration, which the framework accepts from the author or supplied with the installation; no existing integration carries one, so every manifest in the evaluation was written by hand by the project, and producing manifests at scale is unmeasured.
+
+**C2 — Home Assistant shall not be modified.** The project has no authority over the platform, so a mechanism needing a platform change would be a proposal rather than a control a household could deploy.
+
+**C3 — Enforcement shall not presuppose the author's cooperation or honesty.** The closest prior work relies on plug-in developers to write truthful declarations, and its authors acknowledge that "anyone accessing the integrations source code could alter it" [18]. A malicious author declares whatever serves the attack, so the framework must hold an integration to its declaration whatever its behaviour, and grant nothing when the declaration is absent.
+
+**C4 — The design shall run on self-hosted, resource-constrained hardware.** Home Assistant is commonly installed on single-board computers, so every measurement was taken on a Raspberry Pi 5 with 4 GB of memory, without root privileges except for one boot-time change that enables the kernel's memory controller.
+
+C1 and C3 together define the central difficulty: confinement must be imposed on code written on the assumption that it has none, by a party that is neither the code's author nor the platform's maintainer. The requirements state what that confinement must achieve.
+
+## 3.4 Requirements
+
+Fifteen further requirements, functional (F), security (S) and non-functional (N), were derived in the same way as the constraints. A sixteenth entered later, and its origin is evidence that the method worked: S9, a bound on resource consumption, had no basis in the problem statement or the literature and was added only when the threat model identified resource exhaustion as a threat. Table 3.2 summarises all twenty with their verdicts; Appendix B gives each one's derivation, criterion and evidence.
+
+**Table 3.2 — Requirements and verdicts**
+
+| | The framework shall… | Verdict |
 |---|---|---|
-| D1 | The confinement framework (`confine/`) — standard library plus `ctypes`, no third-party dependencies | Built |
-| D2 | **19 self-test suites**, all passing on the target hardware | Built |
-| D3 | Two reproducible corpora of real community integrations — 37 by install count, 40 drawn uniformly — with manifests | Built |
-| D4 | A paired confined/unconfined measurement harness computing compatibility identically in both arms | Built |
-| D5 | An adversarial integration exercising the 2021 file-theft pattern, the published garbage-collector attack, credential recovery, and absent/malformed/over-broad/mismatched manifests | Built |
-| D6 | A threat model — 18 threats, 7 residual risks — under ISO 31000 with STRIDE | Built |
-| D7 | This report, with every figure traceable to a named run and a raw result file | This document |
+| C1 | Run integrations with their code unmodified | Met: 75 source trees compared before and after the runs, no change |
+| C2 | Require no change to Home Assistant | Met: every arm ran on the unmodified release 2026.8.3 |
+| C3 | Not depend on the author's cooperation | Met: absent, over-broad and mismatched manifests each handled as specified |
+| C4 | Run on resource-constrained hardware | Met: every measurement on the Raspberry Pi 5 |
+| F1 | Let a confined integration publish entities | Met, including into a live Home Assistant instance |
+| F2 | Let a confined integration reach declared network endpoints | Met by real integrations against their live services |
+| F3 | Express authority in a declarative manifest | Met: every decision names the clause that produced it |
+| F4 | Show declared authority before it is granted | Met: grants and denials rendered in plain language, at equal weight |
+| S1 | Enforce outside the integration's process | Met, paired: the heap-walk attack reaches a credential unconfined and nothing confined |
+| S2 | Keep every platform credential out of the sandbox | Met, paired |
+| S3 | Mediate reads and subscriptions, not only writes | Met, paired: 36 of 36 entity states readable unconfined, 1 of 36 confined |
+| S4 | Attribute and enforce network access per integration | Met: each of two concurrent integrations denied the other's host |
+| S5 | Separate operations of unequal risk | Met: a grant of `lock.lock` does not permit `lock.unlock` |
+| S6 | Deny by default | Met: an absent or unparseable manifest grants nothing |
+| S7 | Record every decision in a tamper-evident log | Met: modification, deletion and reordering each detected |
+| S8 | Isolate files and processes | Met, paired: the 2021 file-theft pattern recovers 2 of 2 secrets unconfined and 0 of 2 confined |
+| S9 | Bound processor, memory and disk use | Met against narrowed wording: disk space, not I/O bandwidth |
+| N1 | Report overhead against an unconfined baseline | Met: memory, latency and capacity reported |
+| N2 | Report compatibility as measured, not asserted | Met by reporting: import-level for 75 integrations, end to end for 13, never combined |
+| N3 | Fail in a stated way | Met: refuses to start without its preconditions and fails closed when the mediator stops |
 
-## 3.5 Constraints and challenges
+All twenty requirements are met, two in a narrowed form. S9 was narrowed on evidence, because the device's service manager does not delegate control of I/O bandwidth to an unprivileged user [48]. N2 is met by how results are reported rather than by a rate, since most integrations need an account before they can run end to end. Some verdicts changed during verification, S3 being met only once state changes could be pushed to a sandbox, and Appendix B keeps that history. The design that meets these requirements has seven features.
 
-These are properties of the situation rather than choices, and they eliminate most of the designs
-prior work used.
+## 3.5 Key features
 
-**C1 — Integrations shall run unmodified.** 4,220 integrations already exist, written by
-volunteers against an API that presumes full authority. *Verified:* source trees hashed before
-and after every run — **75 tree comparisons, zero source changes, zero diff lines**.
+Each feature names, in brackets, the requirements it answers.
 
-**C2 — Home Assistant core shall not be modified.** A solution requiring a core patch is a
-proposal, not a deployable control. *Verified:* every arm runs against an unmodified official
-release, 2026.8.3.
+1. **A permissions manifest** with eight clauses: seven grant capability (entity reads, subscriptions and writes; service calls; events; network access; files; enumeration of configuration entries; HTTP routes) and one bounds resources. Anything not declared is denied (F3, S5, S6).
+2. **One sandbox per integration**, built from seven Linux namespaces [33], a seccomp filter [34] and a cgroup v2 slice bounding memory, processor time, processes and disk space [35] (S8, S9).
+3. **A real but minimal Home Assistant runtime inside each sandbox**, so that the integration's unmodified code runs against the platform's genuine helpers while seeing only the state and services it was granted (C1, C2).
+4. **An out-of-process mediator** that runs as an ordinary, non-administrator Home Assistant user, holds the only credential, and decides every request crossing each sandbox's single channel; identity is a property of the channel, not a claim in the message (S1, S2, S3).
+5. **An egress broker** that resolves a declared host name itself and connects to the address it resolved, with the home network behind a separate permission (F2, S4).
+6. **A tamper-evident audit log**, hash-chained and keyed, written before the action it records and naming the integration's identity and the deciding clause (F3, S7).
+7. **Approval and recovery in the Home Assistant interface**: the grant shown in plain language, an approval bound to the integration's identity and to the grant shown, and Repairs issues that explain a stopped integration and never widen its permissions except through an action labelled as an approval (F4, N3).
 
-**C3 — Enforcement shall not presuppose the author's cooperation or honesty.** The closest prior
-work requires developers to write truthful declarations and its authors acknowledge the
-declarations can be altered. *Verified:* the adversarial evaluation includes absent, over-broad
-and deliberately mismatched manifests.
+## 3.6 Deliverables
 
-**C4 — The design shall run on self-hosted, resource-constrained hardware.** *Verified:* every
-measurement in this report was taken on a **Raspberry Pi 5, 4 GB, Raspberry Pi OS trixie, kernel
-6.12.47, Python 3.14.7, aarch64**, unprivileged and without root.
+Table 3.3 lists the framework and the evidence needed to check its claims.
 
-The **central challenge** follows from C1 and C3 together: the confinement must be imposed on
-code that was written to assume it has none, by a party who is neither the code's author nor the
-platform's maintainer. Everything difficult about this project descends from that sentence.
+**Table 3.3 — Deliverables**
 
-## 3.6 Requirements
-
-Twenty requirements, each traced to a finding in §2 or §7 and each stating how it will be
-verified. Requirements that could not be traced were cut. The full register, with derivations and
-verdicts, is **Appendix B**; the summary is below.
-
-| | Requirement | Verdict |
-|---|---|---|
-| **C1** | Integrations run unmodified | ✅ Counted — 75 trees, 0 changes |
-| **C2** | Home Assistant core unmodified | ✅ |
-| **C3** | No dependence on author cooperation | ✅ |
-| **C4** | Runs on resource-constrained hardware | ✅ |
-| **F1** | Integrations can publish entities and states | ✅ |
-| **F2** | Integrations can reach declared network endpoints | ✅ |
-| **F3** | Authority expressed in a declarative manifest | ✅ |
-| **F4** | Declared authority presentable to the user before installation | ✅ |
-| **S1** | Enforcement outside the integration's execution context | ✅ Paired |
-| **S2** | Sandbox holds no credential granting unmediated access | ✅ Paired |
-| **S3** | Mediation covers reads and subscriptions, not only writes | ◐ Partial — the push loop is not built |
-| **S4** | Egress attributable and enforceable per integration | ✅ |
-| **S5** | Manifest granularity distinguishes risk-asymmetric operations | ✅ |
-| **S6** | Enforcement defaults to denial | ✅ |
-| **S7** | Every decision recorded in a tamper-evident log | ✅ |
-| **S8** | Filesystem and process isolation | ✅ Paired |
-| **S9** | Resource limits bounded | ✅ Against narrowed wording — space, not I/O bandwidth |
-| **N1** | Overhead small enough not to change how the platform is used | ✅ |
-| **N2** | Compatibility cost measured and reported, not asserted | ◐ Partial — import-level for 77, end-to-end for 5 |
-| **N3** | Degrades to a stated failure mode | ✅ |
-
-**Nineteen met, one partial in two halves.** The two ◐ rows are the two the report is most
-careful about, and §12.7 states them rather than a limitations section conceding them later.
+| | Deliverable |
+|---|---|
+| D1 | The confinement framework: supervisor, sandbox and mediator, the supervisor and mediator using only Python's standard library |
+| D2 | A Home Assistant integration that brings approvals and Repairs into the user interface |
+| D3 | Twenty-nine self-test suites, and 53 hand-written mutants that test the suites |
+| D4 | Two pinned corpora of real community integrations, 37 by install count and 40 drawn uniformly, and a harness that runs each one confined and unconfined |
+| D5 | An adversarial suite reproducing the published attacks against the platform |
+| D6 | A threat model of nineteen threats and seven residual risks, following ISO 31000 [25] with STRIDE [26] |
+| D7 | A verification record: predictions committed before each run, a register of 153 claims, a log of 60 findings |
+| D8 | A reproduction guide, and this report |
 
 ## 3.7 Expected outcome
 
-That an unmodified community integration can be confined and still work; that the published
-attacks against this platform fail under confinement and succeed without it, measured on the same
-host in the same session; and that **the compatibility cost of the design is separable from the
-compatibility cost of the platform** — which requires an unconfined baseline, and is the reason
-the evaluation is paired throughout.
+The expected outcome was stated as a claim that the evaluation could refute: unmodified integrations can be confined at a cost worth paying. The claim divides into three assertions, that confinement defeats the published attacks that motivated it, that it leaves integrations able to run, and that a reference device can afford it, and each assertion received a falsifier before anything was measured. Every result is reported as a difference between a confined and an unconfined arm on the same host and platform release, because only that difference separates the cost of the design from the cost of the platform and the corpus. Section 11 sets out how those measurements were made.
