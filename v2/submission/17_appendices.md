@@ -63,7 +63,7 @@ Inherent risk is rated against Home Assistant as it stands, with no requirement 
 
 **Table C.3 — Threats identified, by trust boundary, with inherent risk**
 
-| ID | STRIDE | Threat | CM | I | L | Inherent |
+| ID | STRIDE | Threat | CM | Impact | Likelihood | Inherent |
 |---|---|---|---|---|---|---|
 | | | **TB1 — integration and mediating component** | | | | |
 | T01 | Elevation | Bypasses mediation by acting directly on the platform's in-process objects | T10 | 5 | 5 | 25 Critical |
@@ -145,7 +145,7 @@ The seven residual risks, R1 to R7, are given with their ratings and the reason 
 | T10 | Authorisation: escalation | T01, T03, T05, T13 | Demonstrated, except T13, retained |
 | T11 | Non-repudiation: anonymous action | T18 | Demonstrated, bounded by R4 |
 
-Eight of the eleven are mapped, five without qualification. The two registers differ in both directions: theirs reaches consequences this design does not touch, delay, partial loss and physical damage, while this register separates the update channel (TB4) and the host (TB5) into boundaries that a gateway-level model folds together. Neither register contains the other, and reporting only this project's own would have been the more favourable choice. T16's control plausibly reaches T5 and T6 as well, since a gateway being exhausted is delayed and partially lost before it is lost entirely, but the register maps T16 only to T7, and the table reports that mapping as it stands.
+Eight of the eleven are mapped, five without qualification. The two registers differ in both directions: theirs reaches consequences this design does not touch, delay, partial loss and physical damage, while this register separates the update channel (TB4) and the host (TB5) into boundaries that a gateway-level model folds together. T16's control plausibly reaches T5 and T6 as well, since a gateway being exhausted is delayed and partially lost before it is lost entirely, but the register maps T16 only to T7, and the table reports that mapping as it stands.
 
 ---
 
