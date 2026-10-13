@@ -73,3 +73,11 @@ up with `--fresh`, and runs the confined arm, writing one JSON per arm.
   Appendix F before anything else is written.
 - **P3 or P4 fails.** The zero proves nothing in that run; the T06 row keeps its current wording,
   marked as unpaired.
+
+## 5. Result (2026-10-13, appended after the runs)
+
+Two runs at tag `pair-2026-10-t06`, identical: **P1–P6 all held** (unconfined 3 of 3; confined 0 of
+3, declared change delivered, control 3 of 3; one decision on disk, chain clean; 2026.8.3 on the
+Pi in both arms). One fault before any measurement: `run.sh` called `realpath` on a directory not
+yet created; fixed at the same tag before the first run. Results in
+`experiments/pair_subscriptions/`. Per §4, Table C.4's T06 row now cites this pair.

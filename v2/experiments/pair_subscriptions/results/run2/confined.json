@@ -1,0 +1,22 @@
+{
+  "arm": "confined",
+  "ha_version": "2026.8.3",
+  "host": "raspberrypi",
+  "subscription_granted": true,
+  "declared_delivered": true,
+  "undeclared_delivered": [],
+  "undeclared": [
+    "sensor.bedroom_occupancy",
+    "lock.front_door",
+    "person.younes"
+  ],
+  "control_seen": [
+    "lock.front_door",
+    "person.younes",
+    "sensor.bedroom_occupancy"
+  ],
+  "decisions": 1,
+  "decisions_allowed": 1,
+  "decisions_after_control": 1,
+  "chain_breaks": 0
+}

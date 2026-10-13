@@ -487,6 +487,17 @@ The correction was prompted by scrutiny of two individual ratings rather than by
 scheduled review, which is worth stating plainly. Both changes raise risk, and one of them
 strengthens a requirement (S9) rather than excusing its absence.
 
+> **A second correction (2026-10-13).** T07 is raised from 8 Medium to **20 Critical** (impact
+> 2 → 5, likelihood 4 unchanged). Its justification was that the owning integration's next update
+> overwrites a forged state. That misses the automations: a state trigger fires on any change to its
+> entity, and the context it receives names no integration (`triggers/state.py`, `Context` in
+> `core.py`, 2026.8.3), so a forged `home` on a presence entity makes an arrival automation disarm
+> the alarm or unlock the door, which is A1, level 5. Event-driven entities may not update for hours,
+> and an automation that has acted is not undone by a corrected state. T07 now also maps to Corno and
+> Mannella's T3. The treatment and its verdict are unchanged. A residual remains within R2: an
+> integration can still forge its *own* declared entities. Like the first correction, this one was
+> prompted by scrutiny of a single rating (Younes, reviewing Appendix C), and it raises risk.
+
 ## 4.13 Limits of this threat model
 
 - **It models threats originating from an integration** (§4.2). Threats originating from a

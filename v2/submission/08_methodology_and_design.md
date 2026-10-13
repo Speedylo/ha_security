@@ -62,7 +62,7 @@ The confined design instantiates the four missing boundaries, and Figure 8.2 dra
 
 ## 8.4 Risks, treatment, and a requirement the model generated
 
-Applying STRIDE to each boundary identified eighteen threats, and their concentration is the model's main finding. Four are Critical and twelve High, and all four Critical threats share a single cause, the shared process, as the summary in Table 8.3 shows. The full register, with every rating and its justification, is in Appendix C.
+Applying STRIDE to each boundary identified eighteen threats, and their concentration is the model's main finding. Five are Critical and twelve High, and all five Critical threats share a single cause, the shared process, as the summary in Table 8.3 shows. The full register, with every rating and its justification, is in Appendix C.
 
 **Table 8.3 — Threat summary (inherent risk)**
 
@@ -72,8 +72,9 @@ Applying STRIDE to each boundary identified eighteen threats, and their concentr
 | T03 | Integration modifies the mediating component or its policy in memory | 25 Critical |
 | T05 | Integration induces an undeclared service call, as a confused deputy | 25 Critical |
 | T04 | Integration recovers the platform credential held by the mediator | 20 Critical |
+| T07 | Integration writes state for entities it does not own, triggering the automations that act on it | 20 Critical |
 | T02, T06, T08–T10, T12–T18 | Spoofing, disclosure, tampering, denial of service and repudiation across TB2–TB6 | 12–16 High |
-| T07, T11 | Cross-integration state corruption; DNS rebinding to an internal address | 8 Medium |
+| T11 | DNS rebinding to an internal address | 8 Medium |
 
 The three highest ratings record ordinary platform behaviour, not exploits. The likelihood of T01, T03 and T05 is rated 5, almost certain, meaning that the event occurs by default in normal operation, and the rating is not an exaggeration. An integration that calls `lock.unlock` today exploits nothing; it uses the platform as designed. Since one architectural decision governs most of the risk, treating that decision is worth more than treating any number of individual threats, and that is the choice Section 9 describes.
 
