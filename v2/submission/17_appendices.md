@@ -29,14 +29,123 @@ verification criterion · verdict · evidence.
 
 ## Appendix C — Threat register
 
-*[To be lifted verbatim: eighteen threats T01–T18 with STRIDE category, trust boundary, impact,
-likelihood, inherent rating, treatment option, the control applied, the requirement it maps to, and
-the mapping to the closest published model. Followed by the seven residual risks R1–R7 with their
-retention rationale and residual rating.]*
+This appendix gives the full register that Section 8 summarises. It follows ISO 31000's process [25]: criteria fixed first, threats identified with STRIDE [26] at each of the six trust boundaries, each threat rated before treatment, then treated, then scored against the running system. Table C.5 maps the register onto Corno and Mannella's eleven threats [9], so that the result can be checked against a model this project did not write.
 
-**Also to include:** the impact and likelihood scales, with the note that they are **ordinal, not
-cardinal** — they order risks for treatment priority, and the product of two ordinal scales is not
-a quantity and is not treated as one.
+### C.1 Risk criteria
+
+The scales are ordinal, not cardinal. They order risks for treatment, and the product of two ordinal scales is not a quantity, so the bands below are labels for priority rather than measurements. The risk owner is the occupying householder, who has neither a security function nor any capacity to respond to an incident, and every rating is calibrated to that owner. A threat is rated on the worst outcome consistent with the actor model, and at the highest impact level that any of the three harm types in Table C.1 matches.
+
+**Table C.1 — Impact (asset identifiers as in Table 8.1)**
+
+| | Level | Confidentiality | Integrity and control | Availability |
+|---|---|---|---|---|
+| 5 | Severe | — | Physical access to the dwelling by a state change (A1) | A life-safety function defeated: alarm, smoke or CO response, heating in freezing conditions (A5 with A1) |
+| 4 | Major | Credentials compromised beyond the home (A3); camera or media access (A4) | Reach into other devices on the home network (A8) | Total loss of the platform while unattended (A5) |
+| 3 | Moderate | Occupancy or behaviour disclosed (A2) | Undetected corruption of another integration's data (A6) | Loss of attribution: harm that cannot be traced to its source (A7) |
+| 2 | Minor | Individual non-sensitive readings disclosed | Corruption that is detected, or overwritten by the owning integration's next update (A6) | Partial or transient loss of function |
+| 1 | Negligible | No meaningful loss | | |
+
+**Table C.2 — Likelihood, and the evaluation bands**
+
+| | Level | Anchor |
+|---|---|---|
+| 5 | Almost certain | Occurs by default in normal operation |
+| 4 | Likely | Documented in this ecosystem, or requires no attacker skill |
+| 3 | Possible | Documented in comparable ecosystems |
+| 2 | Unlikely | Technically available, no documented occurrence |
+| 1 | Rare | Requires capability inconsistent with the actor model |
+
+Bands: Low 1–4, Medium 5–9, High 10–16, Critical 17–25. **Appetite:** no residual Critical risk is acceptable, and a residual High risk is acceptable only where it is structural, meaning that no available control addresses it, and is stated openly to the user.
+
+### C.2 Threats and inherent risk
+
+Inherent risk is rated against Home Assistant as it stands, with no requirement of Section 3 implemented. The CM column gives the corresponding threat in Corno and Mannella's model [9].
+
+**Table C.3 — Threats identified, by trust boundary, with inherent risk**
+
+| ID | STRIDE | Threat | CM | I | L | Inherent |
+|---|---|---|---|---|---|---|
+| | | **TB1 — integration and mediating component** | | | | |
+| T01 | Elevation | Bypasses mediation by acting directly on the platform's in-process objects | T10 | 5 | 5 | 25 Critical |
+| T02 | Spoofing | Presents itself as another integration to obtain that integration's authority | T9 | 4 | 4 | 16 High |
+| T03 | Tampering | Modifies the mediating component or its policy in memory | T10 | 5 | 5 | 25 Critical |
+| T04 | Disclosure | Recovers the platform credential held by the mediator | T1 | 5 | 4 | 20 Critical |
+| T19 | Denial of service | Floods the mediator with refused requests, each a durable record, exhausting the decision capacity all sandboxes share and the disk | T7 | 3 | 4 | 12 High, against the design |
+| | | **TB2 — mediating component and Home Assistant** | | | | |
+| T05 | Elevation | Induces the mediator to make an undeclared service call, as a confused deputy | T3, T10 | 5 | 5 | 25 Critical |
+| T06 | Disclosure | Reads undeclared entity states, or subscribes to a stream of the whole installation | T1 | 3 | 5 | 15 High |
+| T07 | Tampering | Writes state for entities it does not own, corrupting another integration's data | T4 | 2 | 4 | 8 Medium |
+| | | **TB3 — integration and external network** | | | | |
+| T08 | Disclosure | Sends data to an undeclared host | T2 | 4 | 4 | 16 High |
+| T09 | Disclosure | Sends data through a declared host: content, not destination | T2 | 4 | 3 | 12 High |
+| T10 | Elevation | Reaches other devices on the home network, or services on the gateway's loopback | T3 | 4 | 3 | 12 High |
+| T11 | Spoofing | Uses a declared host name that resolves, at request time, to an internal address | T9 | 4 | 2 | 8 Medium |
+| | | **TB4 — author and channel, and the user's machine** | | | | |
+| T12 | Tampering | A malicious update arrives through the authorised update path to an integration already trusted | — | 5 | 3 | 15 High |
+| T13 | Spoofing | The declaration misrepresents behaviour: over-declared, or absent | T10 | 4 | 4 | 16 High |
+| | | **TB5 — integration and host operating system** | | | | |
+| T14 | Disclosure | Reads files outside its resources: `secrets.yaml`, the state database, tokens | T1 | 4 | 4 | 16 High |
+| T15 | Disclosure | Reads another process's memory, environment or command line through the process table | T1 | 4 | 4 | 16 High |
+| T16 | Denial of service | Exhausts processor, memory or disk, making the gateway unresponsive | T7 | 4 | 3 | 12 High |
+| | | **TB6 — integration and other integrations** | | | | |
+| T17 | Disclosure, tampering | Reads or alters another integration's live objects and secrets | T1, T4 | 4 | 4 | 16 High |
+| T18 | Repudiation | Acts without attribution, so no record identifies which integration acted | T11 | 3 | 5 | 15 High |
+
+Eighteen threats were identified against the platform as it stands: four Critical, twelve High and two Medium, and all four Critical threats share one cause, the shared process. T19 has no rating against the platform, because it does not exist there. The treatment of T18 created it: a durable record per decision makes each refusal cost the mediator about 3.7 ms of shared time, and a flood of refusals happened by accident during the evaluation. It is rated against the design before its control and is not counted among the eighteen.
+
+### C.3 Treatment and verdicts
+
+Every treatment but two changes consequence rather than likelihood, bounding what the code can do. The verdicts are not aggregated into a single figure, for the reason Section 11 gives. *Paired* means the threat was also shown to succeed against the unconfined arm on the same host and platform release.
+
+**Table C.4 — Treatment, requirement and verdict**
+
+| ID | Control | Req. | Verdict and evidence |
+|---|---|---|---|
+| T01 | Run the integration outside the platform's process | S1 | Demonstrated, paired: the heap walk reaches a credential through 7 objects unconfined, and only the attacker's own 8,942 objects confined |
+| T02 | Identity taken from the channel, on every request | S1, S7 | Demonstrated: a request claiming to come from another integration is decided under its sender's own grant, and refused |
+| T03 | Mediator outside the integration's address space | S1 | Demonstrated; cannot be paired, because unconfined there is no mediator to tamper with |
+| T04 | Credential held only by the mediator | S2 | Demonstrated, paired: the sandbox's sweep finds no credential while the same token is live in the mediator |
+| T05 | Service calls checked against the manifest, deny by default | F3, S5, S6 | Demonstrated: `lock.unlock` refused under a grant of `lock.lock`; `lock.*` rejected when the manifest is parsed |
+| T06 | Reads and subscriptions both mediated | S3 | Demonstrated, paired: reads 36 of 36 unconfined, 1 of 36 confined; undeclared changes delivered 4 of 4 unconfined, 0 of 3 confined |
+| T07 | Writes only to declared entities | F3, S6 | Demonstrated |
+| T08 | Network access per integration, by declared host | S4 | Demonstrated: two concurrent integrations, each refused the host only the other declared |
+| T09 | Retained (R5) | — | Retained: the mediator controls the destination and never sees content |
+| T10 | Private destinations refused unless separately granted | S4 | Demonstrated, and the granted path measured with a real integration against a simulated device |
+| T11 | Destination checked on the resolved address, not the name | S4 | Demonstrated: the host clause satisfied, the connection refused on its address |
+| T12 | Each start confined by the manifest and code it starts with; a changed grant needs a new approval | F3, S6 | Demonstrated: a changed manifest bounds the next start and is reported before it takes effect |
+| T13 | Retained in part (R1, R2): the declaration is shown and approved, and enforcement is bounded to it | F4 | Retained: an over-broad grant is honoured once approved; the ceiling it cannot raise is measured |
+| T14 | Filesystem view limited to the integration's own directories | S8 | Demonstrated, paired: canary secrets 2 of 2 unconfined, 0 of 2 confined; the path does not exist |
+| T15 | Process table limited to the sandbox | S8 | Demonstrated, paired: another process's environment read unconfined, nothing to read confined |
+| T16 | Resource limits from the manifest | S9 | Partial: memory, processor time, processes and disk space bounded, each shown by a sandbox exceeding it; I/O bandwidth not bounded (R7); the persistent data folder checked against the disk bound only at start |
+| T17 | Separate processes, so no shared heap | S1 | Demonstrated, paired, by the same heap walk as T01 |
+| T18 | Attributed, tamper-evident record written before the action | S7 | Demonstrated, bounded by R4: modification, deletion and reordering each detected by both chains independently |
+| T19 | Refusals counted per integration; past 100 in 10 s, one record, and the integration stopped until a person restarts it, never with more authority | S7, S9 | Demonstrated: cut off within 0.81 s after exactly 100 recorded refusals, while a second sandbox continued to be served |
+
+Sixteen of the nineteen threats are demonstrated, six of them paired; one is partial and two are retained by decisions made before the evaluation. All four Critical inherent threats are among those demonstrated, which is the register's most important result, because one control, the separate process, answers the cause they share.
+
+### C.4 Residual risks
+
+The seven residual risks, R1 to R7, are given with their ratings and the reason each is retained in Table 8.4. One further residual sits within T14 and was found by measurement. The sandbox's filesystem binds the interpreter and its libraries at their host paths, so a confined integration can read the host's directory layout along those paths, including a user's name where the runtime is installed under a home directory. It cannot read any content outside its grant. Its likelihood is 5, because the exposure follows from the construction, and its impact 1, since a name and directory names give no capability and disclose no reading, so it is rated 5, Medium, and retained. The remedy is a deployment step, installation under a neutral path. Rated at impact 2 it would be High, and the appetite would then require the remedy.
+
+### C.5 The register against an external model
+
+**Table C.5 — Corno and Mannella's eleven threats [9], scored through Table C.3's CM column**
+
+| CM | Their threat | Mapped from | Verdict |
+|---|---|---|---|
+| T1 | Confidentiality: data used outside its scope | T04, T06, T14, T15, T17 | Demonstrated, all five paired |
+| T2 | Data spread outside its scope | T08, T09 | Split: T08 demonstrated, T09 retained, because destination is controlled and content is not |
+| T3 | Integrity: device state altered | T05, T10 | Demonstrated |
+| T4 | Integrity: private data altered | T07, T17 | Demonstrated |
+| T5 | Availability: delay | — | Not mapped |
+| T6 | Availability: partial loss | — | Not mapped |
+| T7 | Availability: complete loss, including "resource saturation up to a frozen state" | T16, T19 | Partial: T19 demonstrated, T16 partial |
+| T8 | Availability: physical damage | — | Not mapped; out of reach of any software control on the gateway |
+| T9 | Authentication: impersonation | T02, T11 | Demonstrated |
+| T10 | Authorisation: escalation | T01, T03, T05, T13 | Demonstrated, except T13, retained |
+| T11 | Non-repudiation: anonymous action | T18 | Demonstrated, bounded by R4 |
+
+Eight of the eleven are mapped, five without qualification. The two registers differ in both directions: theirs reaches consequences this design does not touch, delay, partial loss and physical damage, while this register separates the update channel (TB4) and the host (TB5) into boundaries that a gateway-level model folds together. Neither register contains the other, and reporting only this project's own would have been the more favourable choice. T16's control plausibly reaches T5 and T6 as well, since a gateway being exhausted is delayed and partially lost before it is lost entirely, but the register maps T16 only to T7, and the table reports that mapping as it stands.
 
 ---
 

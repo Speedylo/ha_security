@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-13: Appendix C DRAFTED for review** (`submission/17_appendices.md`: criteria C.1–C.2, Table C.3 nineteen threats with inherent risk, Table C.4 treatment + verdict (16 demonstrated, 6 paired, T16 partial, T09/T13 retained), C.4 points to Table 8.4 for R1–R7 and adds the T14 layout residual, Table C.5 against Corno & Mannella). Sources: `report/04` §4.7–§4.11, `report/07` §7.26.3–§7.26.4, §7.30, §7.44. Next: Younes reviews C, then B, D, E.
+
 **2026-10-13: §3 APPROVED (Younes: "fine").** Was: **§3 DRAFTED for review** (`submission/03_project_specification.md`, ~1,200 prose words vs 1,000; plan and five decisions for Younes in `notes/s3_specification_plan.md`: sub-section order changed from the template's, C1 carries the agreed "unmodified" wording, all twenty requirements met with S9 and N2 narrowed). Next: Younes reviews §3, then Appendices B–E (C first).
 
 **2026-10-13: the Pi's disk is almost full — 87% (24 of 29 GB used, 3.8 GB free).** Most of it is `~/r2exp` (9.2 GB): `tb` 1.6 GB, per-fix clones `f16` 958 MB, `f59` 789 MB, `f57` 722 MB, `f57d` 529 MB, `mutants` 707 MB; `ha314` (611 MB) and `houseA-deps` (364 MB) are live, keep them. **Free space before the end-of-week-5 full rerun** (fresh clone, all mutants, timings: disk-backed timings and mutant TMPDIRs need room; a mutant once left 1.2 GB in /tmp). Younes decides which clones go; delete by literal path only. The Pi had also rebooted (up 36 min when checked).
