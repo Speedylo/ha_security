@@ -1,4 +1,4 @@
-# Confining unmodified third-party integrations in Home Assistant
+# Confining unmodified community integrations in Home Assistant
 
 This directory is the capstone project: *Confining Unmodified Third-Party Integrations in Home
 Assistant — A Declared-Authority Architecture and Its Measured Cost*. Everything outside `v2/` in this

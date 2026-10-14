@@ -158,7 +158,7 @@ Home Assistant**.
 
 ## 7.5 The gap, and the contribution
 
-> **No published work builds or evaluates runtime confinement of Home Assistant's third-party
+> **No published work builds or evaluates runtime confinement of Home Assistant's community
 > integrations, and none measures the compatibility cost of confining extensions that already
 > exist and cannot be rewritten — the constraint that determines whether any such scheme is
 > deployable at all.**

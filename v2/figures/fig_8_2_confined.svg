@@ -100,7 +100,7 @@
 <text x="652" y="440" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">decides each request</text>
 <ellipse cx="850.0" cy="414.5" rx="90.0" ry="57.5" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
 <text x="850" y="407" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Integration A</text>
-<text x="850" y="422" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(third-party)</text>
+<text x="850" y="422" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(community)</text>
 <ellipse cx="1055.0" cy="385.0" rx="95.0" ry="60.0" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
 <text x="1055" y="363" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Stripped Home Assistant</text>
 <text x="1055" y="378" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">the real helper layer · its own</text>
@@ -108,7 +108,7 @@
 <text x="1055" y="407" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">empty at start</text>
 <ellipse cx="850.0" cy="642.5" rx="90.0" ry="57.5" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
 <text x="850" y="635" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Integration B</text>
-<text x="850" y="650" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(third-party)</text>
+<text x="850" y="650" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(community)</text>
 <ellipse cx="1055.0" cy="650.0" rx="95.0" ry="55.0" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
 <text x="1055" y="636" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Stripped Home Assistant</text>
 <text x="1055" y="650" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">a separate instance,</text>

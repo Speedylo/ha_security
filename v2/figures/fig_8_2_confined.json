@@ -924,7 +924,7 @@
             },
             "attrs": {
               "text": {
-                "text": "Integration A\n(third-party)"
+                "text": "Integration A\n(community)"
               },
               "body": {
                 "stroke": "#333333",
@@ -1024,7 +1024,7 @@
               "handlesGoodsOrServices": false,
               "isWebApplication": false,
               "privilegeLevel": "",
-              "name": "Integration A\n(third-party)",
+              "name": "Integration A\n(community)",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -1162,7 +1162,7 @@
             },
             "attrs": {
               "text": {
-                "text": "Integration B\n(third-party)"
+                "text": "Integration B\n(community)"
               },
               "body": {
                 "stroke": "#333333",
@@ -1262,7 +1262,7 @@
               "handlesGoodsOrServices": false,
               "isWebApplication": false,
               "privilegeLevel": "",
-              "name": "Integration B\n(third-party)",
+              "name": "Integration B\n(community)",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",

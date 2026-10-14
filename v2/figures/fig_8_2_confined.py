@@ -55,12 +55,12 @@ NODES = [
     ("mediator",   "process", "Mediator\nholds the credential ·\ndecides each request",
                                                                             575,  360, 155, 130),
     # --- inside sandbox A — the integration kept at its Figure 4.1 position -------
-    ("integ_a",  "process", "Integration A\n(third-party)",                  760,  357, 180, 115),
+    ("integ_a",  "process", "Integration A\n(community)",                  760,  357, 180, 115),
     ("ha_min_a", "process", "Stripped Home Assistant\nthe real helper layer · its own\n"
                             "bus, state machine and hass.data,\nempty at start",
                                                                             960,  325, 190, 120),
     # --- inside sandbox B — the integration kept ---------------------------------
-    ("integ_b",  "process", "Integration B\n(third-party)",                  760,  585, 180, 115),
+    ("integ_b",  "process", "Integration B\n(community)",                  760,  585, 180, 115),
     ("ha_min_b", "process", "Stripped Home Assistant\na separate instance,\nseparately empty",
                                                                             960,  595, 190, 110),
     # --- on disk — secrets and entries kept; two stores are new ------------------

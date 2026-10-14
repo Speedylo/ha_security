@@ -65,7 +65,7 @@ for y, title in SANDBOXES:
     c.box(1130, y + 35, 320, 50, "Unmodified integration", size=12)
     c.box(1130, y + 95, 320, 80, "Runtime (B): a minimal Home Assistant\nwhose state holds only "
           "declared\nentities, with the bridge's sandbox half", size=12)
-c.box(1110, 590, 360, 110, "… one sandbox for each\nthird-party integration;\nno token to (A) "
+c.box(1110, 590, 360, 110, "… one sandbox for each\ncommunity integration;\nno token to (A) "
       "in any of them", fill="none", dashed=True, size=12)
 
 # One channel per sandbox: the only descriptor that leaves it.

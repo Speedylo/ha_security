@@ -7,7 +7,7 @@ installations** as of 21 August 2026 [1].
 
 Its capability comes from *integrations* — modules that connect the platform to a particular
 device or cloud service. Beyond the roughly 1,500 shipped with the platform, users install
-community-written integrations through a third-party distribution channel, the Home Assistant
+community-written integrations through a community-run distribution channel, the Home Assistant
 Community Store (HACS). An integration is not a program the platform runs at arm's length. It is
 a Python module placed in the user's configuration directory, which Home Assistant **imports into
 its own running process** at startup and then calls into, passing it the live `hass` object —
@@ -42,7 +42,7 @@ published per-domain telemetry, retrieved 21 August 2026)
 | Custom integrations with < 100 installs | 3,095 |
 
 Three observations shape everything that follows. **The channel is mainstream, not marginal** —
-unreviewed third-party code is the normal configuration of a Home Assistant system. **The
+unreviewed community code is the normal configuration of a Home Assistant system. **The
 distribution is extremely long-tailed** — 3,095 of 4,220 integrations have fewer than 100
 installs, and these are overwhelmingly single-author projects serving small audiences, precisely
 the population least likely to attract independent code review. And **the head concentrates

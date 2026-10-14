@@ -8,7 +8,7 @@ The objective is to design, build and evaluate a mechanism through which the aut
 
 ## 3.2 Scope
 
-The project addresses third-party integrations: Python packages that Home Assistant loads into its own process, installed through HACS, the community catalogue [5], onto a self-hosted installation on one machine. Integrations are in scope because they share the platform's process and therefore all of its authority, whereas add-ons already run as separate containers [3]. Table 3.1 lists what was excluded and why.
+The project addresses community integrations: Python packages that Home Assistant loads into its own process, installed through HACS, the community catalogue [5], onto a self-hosted installation on one machine. Integrations are in scope because they share the platform's process and therefore all of its authority, whereas add-ons already run as separate containers [3]. Table 3.1 lists what was excluded and why.
 
 **Table 3.1 — Exclusions**
 
@@ -22,7 +22,7 @@ The project addresses third-party integrations: Python packages that Home Assist
 | Multi-user access control | The platform "assumes every user is trusted" [10], and changing that requires changing the platform |
 | Whether users understand disclosures | A human-factors question; the project requires only that the grant be shown |
 
-Four parties have a stake in what an installed integration can do. The user owns the devices and carries the risk, and must be able to see and bound what an integration may do without reading its code. The author wants the integration to work and should not have to change it. The platform project cannot underwrite third-party code, whose users "install them at their own risk" [4]. The attacker, a malicious author or one who has taken over an honest author's repository [8], is the party on whose behaviour enforcement must not depend. These interests produce the constraints.
+Four parties have a stake in what an installed integration can do. The user owns the devices and carries the risk, and must be able to see and bound what an integration may do without reading its code. The author wants the integration to work and should not have to change it. The platform project cannot underwrite community code, whose users "install them at their own risk" [4]. The attacker, a malicious author or one who has taken over an honest author's repository [8], is the party on whose behaviour enforcement must not depend. These interests produce the constraints.
 
 ## 3.3 Constraints
 

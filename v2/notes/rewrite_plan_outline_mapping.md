@@ -78,6 +78,8 @@ Verified claims "show", Qualified ones "suggest", Argued ones are presented as a
 conflicts with this plan, the programme template decides the structure, and primary technical sources
 remain the evidence for facts about the platform.
 
+**Terminology (Younes, 2026-10-14).** The subject is "community integrations", in the title and throughout; "third-party" only for dependencies, services, and in quotations.
+
 **Written 2026-09-08**, against the two capstone outlines in `.claude/Outlines.txt` (Blokbustr, 49
 body pages; LucidLink, 61). **Both follow one template**, so that template is the programme's
 structure even though the handbook has not arrived. Younes's guidance: no hard page requirement,

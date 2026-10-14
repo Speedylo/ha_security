@@ -87,7 +87,7 @@ are volunteers. A regime that assigned liability for integration behaviour to th
 project would be unenforceable and would probably end the ecosystem.
 
 This matters for how the contribution should be positioned. A mechanism that gives users a
-technical means of bounding third-party code is a **better answer to that political pressure than
+technical means of bounding community integrations is a **better answer to that political pressure than
 either liability or curation**, because it neither requires a vendor nor asks a volunteer project
 to underwrite code it did not write.
 
@@ -103,7 +103,7 @@ services. Under any modern data-protection regime this is personal data of a sen
 today **any installed integration can read all of it with no record that it did**.
 
 Two legal observations follow. First, the household deploying Home Assistant is generally outside
-the scope of data-protection law by the domestic exemption — but the third-party integration
+the scope of data-protection law by the domestic exemption — but the community integration
 author receiving exfiltrated data is not. Second, and more useful to this project: **the absence
 of an audit record is itself the legally significant gap.** Attribution is what makes any
 subsequent claim possible, and the platform currently has none. The tamper-evident decision log

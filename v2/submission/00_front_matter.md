@@ -1,4 +1,4 @@
-# Confining Unmodified Third-Party Integrations in Home Assistant
+# Confining Unmodified Community Integrations in Home Assistant
 
 ### A Declared-Authority Architecture and Its Measured Cost
 
@@ -90,8 +90,8 @@ ISO 31000; empirical evaluation.
 | | |
 |---|---|
 | **HA** | Home Assistant. Version pinned throughout: **2026.8.3** |
-| **HACS** | Home Assistant Community Store — the distribution channel for third-party integrations |
-| **Integration** | Third-party Python code loaded into Home Assistant's process. The subject of this report. Distinct from an **add-on**, which is a separate container and already isolated |
+| **HACS** | Home Assistant Community Store — the distribution channel for community integrations |
+| **Integration** | Community-written Python code loaded into Home Assistant's process. The subject of this report. Distinct from an **add-on**, which is a separate container and already isolated |
 | **Mediator** | The out-of-process component holding the platform credential and deciding every request a confined integration makes |
 | **Manifest** | An integration's declaration. `manifest.json` already exists; this work adds a permissions clause and makes it load-bearing |
 | **Sandbox** | One confined integration: its own user, mount, PID, network and IPC namespaces, a seccomp filter and a cgroup |
