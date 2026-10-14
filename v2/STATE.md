@@ -2,7 +2,7 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
-**Session end 2026-10-14. Next session: §4 STEEPLE** (skill first; draft is 1,346 words vs 700 and stale: 31.5 µs, ~120 MB, "§12.6", "§15.2", an unverified Cyber Resilience Act placeholder, nordpool as the only live service where six were contacted, "no permission model" after F45). Then §5, §6, §1. Open: where contribution 1's results go (rec. §9.3); the literature search (planned, not run). Commits since the last push are local.
+**Session end 2026-10-14. Next session: §4 STEEPLE** (skill first; draft is 1,346 words vs 700 and stale: 31.5 µs, ~120 MB, "§12.6", "§15.2", an unverified Cyber Resilience Act placeholder, nordpool as the only live service where six were contacted, "no permission model" after F45). Then §5, §6, §1. Open: where contribution 1's results go (rec. §9.3); the literature search (planned, not run). Everything pushed at session end.
 
 **2026-10-14: §7 APPROVED (Younes: "fine").** Contribution 1's missing results (recommendation: §9.3) still unanswered. Next: §4 STEEPLE, §5, §6, §1.
 
