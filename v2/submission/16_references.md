@@ -233,6 +233,14 @@ criterion of demarcation and the methodological rule against saving a theory by 
 Part I, ch. 4 ("Falsifiability"). Publisher and year checked against the Open Library record
 2026-10-12. Cited in §8.1 and §11.1; to cite in §6 and §13 when they are rewritten.
 
+### Platform source
+
+**[52]** Home Assistant Core 2026.8.3, `homeassistant/core.py` (`ServiceRegistry.async_call`: a call
+made without a context receives `Context()`, whose `user_id` is `None`, line 2881) and
+`homeassistant/helpers/service.py` (`verify_domain_control`: the permission check returns early when
+the call's context names no user, line 1027). https://github.com/home-assistant/core/tree/2026.8.3 —
+checked against the pinned source 2026-10-14. Cited in §2.3.
+
 ---
 
 ## Verification status

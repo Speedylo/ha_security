@@ -1,108 +1,42 @@
 # 2. Problem Statement
 
-## 2.1 What an integration can reach today
+Section 1 described how an integration runs inside Home Assistant's own process. This section sets out what that position allows it to reach, why no existing control bounds it, and who carries the resulting risk.
 
-Combining the loading mechanism of §1 with the impact statements the platform itself publishes,
-Table 2.1 sets out what a community integration can reach in a stock installation. **This is not
-a list of vulnerabilities.** It is a list of ordinary capabilities that follow from running
-in-process.
+## 2.1 What an integration can reach
 
-**Table 2.1 — Authority held by any custom integration**
+An integration's authority follows from where it runs, not from any vulnerability. Table 2.1 lists what it can reach, and its last column separates what is deduced from the loading model from what is stated or demonstrated, because the two carry different weight as evidence.
+
+**Table 2.1 — Authority held by any community integration**
 
 | Asset | Reach | Consequence of abuse | Basis |
 |---|---|---|---|
-| Entity states | All entities in the installation | Occupancy, presence, sleep patterns, absence from home | Deduced from the loading model [2] |
-| Service calls | Any service, including `lock.unlock`, alarm disarm | Physical access to the dwelling | Deduced; **no scoping check is documented** [2] |
-| Stored credentials | Any file readable by the process, incl. stored secrets | Lateral compromise of every linked cloud account | **Stated by the platform** [4] |
-| Camera and media entities | Same as any other entity | Surveillance | Deduced [2] |
-| Filesystem | Whatever the process user can read | Configuration, database, tokens | **Stated by the platform** [4] |
-| Network | Unrestricted outbound; internal network reachable | Exfiltration; pivot into the home LAN | Reported in an RCE assessment [7] |
-| **Other integrations' live objects** | Any object on the Python heap, via the garbage collector | Theft or alteration of another integration's secrets and state | **Demonstrated experimentally** [9] |
+| Entity states | Every entity in the installation | Occupancy, presence, sleep patterns, absence from home | Deduced from the loading model [2] |
+| Service calls | Any service, including unlocking a door and disarming an alarm | Physical access to the dwelling | Deduced; no scoping rule or caller check is documented [2] |
+| Stored credentials | Any file the process can read, including stored secrets | Compromise of every linked cloud account | Stated by the platform [4] |
+| File system | Whatever the process's user can read | Configuration, history database, tokens | Stated by the platform [4] |
+| Network | Unrestricted outbound access and the home network | Exfiltration; a foothold inside the home | Reported for code running in the platform [7] |
+| Other integrations' live objects | Any object in the shared interpreter | Theft or alteration of another integration's secrets | Demonstrated experimentally [9] |
 
-The final column distinguishes what is *deduced* from the architecture from what has been
-independently *demonstrated* or *stated*, because the two carry different evidential weight.
+The last row shows that the missing boundary lies between integrations as well as between an integration and the platform. Corno and Mannella [9] showed that one integration can walk Python's garbage collector to reach another integration's live object and read or modify its private state. Any permission check inside the shared process is reachable by the same technique, so enforcement has to sit outside it. The consequence column also sets this platform apart: a compromised browser extension costs its user data, whereas a compromised integration can unlock the front door through the platform's own control path, indistinguishably from the owner.
 
-The last row is the least obvious. Corno and Mannella [9] show that a Home Assistant integration
-can obtain a reference to *another* integration's live object by iterating the Python garbage
-collector and matching on class and name, then read and modify that object's private state.
-Because every integration shares one interpreter, the absence of a boundary is not only between
-an integration and the platform but **between integrations**. This single published result
-constrains every possible solution, and §8 returns to it.
+## 2.2 What bounds that authority today
 
-The distinguishing feature of this platform, relative to the general problem of untrusted
-plug-ins, is the consequence column. A compromised browser extension costs a user data. A
-compromised Home Assistant integration can also **unlock the front door**, using the platform's
-own legitimate control path, indistinguishably from the user's own action.
+No control in the ecosystem acts on what an integration does once installed. The community store's inclusion criteria [5] require a public repository, valid metadata, a release and passing structural checks, and none of them concerns the code's behaviour. This is a reasonable limit for a volunteer project facing 4,220 integrations [1], but it means that inclusion in the default store, which users may reasonably read as curation, carries no security meaning.
 
-## 2.2 Nothing checks behaviour before the code arrives
+The platform's own history shows the exposure in practice. In January 2021, Home Assistant disclosed a directory-traversal flaw in the community store and the same flaw class in seven other widely installed integrations, through which an attacker could "access any file that is accessible by the Home Assistant process," including stored credentials, in most cases without authentication [4], [6]. The response was fast and thorough [4], but it closed a vulnerability class and left integrations' authority unchanged: an integration that reads the secrets file directly, or calls the unlock service, traverses no path. The episode also showed that the threat includes honest authors whose code is exploitable, with the same harm as malice.
 
-HACS publishes the criteria a repository must satisfy for inclusion in its default store [5]:
-that it be public and hosted on GitHub, pass the HACS Action and Hassfest, have at least one
-release, a valid manifest and brands entry, a valid `hacs.json`, issues enabled, topics defined,
-not be archived, and that certain files be valid JSON and sorted alphabetically.
+Community review is the one safeguard that works, since integration source is public and obvious malice in a popular integration is likely to be noticed. Its limits, however, are structural. It is weakest where the population is largest, since 3,095 of the 4,220 integrations have fewer than 100 installations [1]; it covers the revision that was read, while later releases arrive through an update path the user has already authorised; and it can miss what is not obvious, as the 2021 flaws were found by a researcher rather than by reviewers [4], and the XZ Utils backdoor was planted by a contributor who spent about two and a half years earning trust [8]. Review lowers the likelihood that hostile code arrives; nothing limits its impact once it has.
 
-Every one of these is structural or procedural. **None concerns the behaviour of the code.**
-There is no security review, no static analysis, no declaration of intent and no audit. Correct
-alphabetical sorting is a listing requirement; what the code does is not. This is not a criticism
-of HACS — reviewing 4,220 repositories and their every subsequent release is not something a
-volunteer project can undertake, and HACS does not claim to. The point is narrower: **the gate
-users reasonably perceive as curation carries no security meaning at all.**
+## 2.3 Who carries the risk
 
-## 2.3 The exposure is documented, not hypothetical
+The platform states its position plainly. Attacks that require a user to install a third-party integration are excluded from its security programme [10], and custom integrations are installed "at their own risk" [4]. The platform does distinguish administrators from other users of its interfaces, but an integration never passes through those interfaces: it calls the core object directly, a service call made that way carries no user, and the permission check is skipped when no user is present [52]. The user is therefore assigned the risk without any means to act on it, being unable to see what an integration will access before installing it, to restrict what it accesses while running, or to find out afterwards what it accessed.
 
-In January 2021 Home Assistant published two security disclosures concerning custom integrations
-[4][6]. A directory-traversal vulnerability was reported in HACS itself; investigating, the
-project found the same vulnerability class in a set of other widely-installed integrations. The
-impact, in the platform's own words, was that an attacker could "access any file that is
-accessible by the Home Assistant process. This access includes any credential that you might have
-stored to allow Home Assistant to access other services" [4]. In most of the affected
-integrations **no authentication was required** [6].
+The single-process design is recognised as a limit within the project: a 2026 request for comment proposes running integrations on separate machines, mainly for reliability [11]. Relocation alone does not bound authority, however, because a remote integration still needs a credential to act on the platform, and an unscoped credential gives it the same reach from elsewhere.
 
-The platform's response was fast and multi-layered: a core release with traversal protection,
-Supervisor warnings, companion-app notifications, and blocking of insecure instances from remote
-access [4]. Its significance here is what it did *not* change. The remediation blocks a
-**vulnerability class**; it does not alter what an integration is permitted to do. An integration
-that reads `secrets.yaml` directly, or calls `lock.unlock`, is not performing directory traversal
-and is untouched by any of those measures. The 2021 response is therefore evidence *for* the
-argument rather than against it.
+## 2.4 The statement
 
-Two features of the episode are decisive. **The flaw was systemic rather than individual** —
-several independently written integrations exhibited the same class simultaneously, which is the
-signature of an extension model that makes the insecure thing easy. And **these were
-vulnerabilities, not malice** — so the threat model must address both the malicious author and
-the honest author whose code is compromised. The mechanism of harm is identical in both cases.
-
-## 2.4 Review exists, and it acts on the wrong variable
-
-Integration source is public and the Home Assistant user base is unusually technical. Informal
-peer review is a real control, and it is reasonable to expect blatant malice to be noticed in a
-popular integration. Any honest account has to credit that. Its coverage, however, is uneven in
-three measurable ways: **it is weakest where the population is largest** (3,095 of 4,220
-integrations have under 100 installs); **it is point-in-time while distribution is continuous**
-(HACS delivers subsequent releases through an already-authorised update path); and **it is
-demonstrably permeable to the non-obvious** (the 2021 class was found by a researcher, not by the
-community, and the XZ Utils backdoor [8] survived two years of trust-building in a library
-present in every Linux distribution).
-
-The conclusion is not that review is ineffective. It is that review and confinement occupy
-**different roles in risk treatment**: review acts on the *likelihood* that hostile code arrives;
-confinement acts on the *impact* once it has. The first exists in this ecosystem and works. **The
-second does not exist at all.**
-
-## 2.5 The statement
-
-> Home Assistant loads community-written integrations into its own process, granting them
-> unscoped authority over every entity, service, credential and network path available to the
-> platform — including physical control of locks and alarms. This code is distributed at scale
-> through a channel whose inclusion criteria verify repository structure but never code
-> behaviour, and it is installed on the majority of reporting installations. The platform
-> explicitly places such code outside its security programme and assigns the resulting risk to
-> the user [10]. The ecosystem's one real safeguard is informal review of public source, which is
-> effective against obvious malice in popular integrations but weakens across a long tail where
-> the median integration has twenty installs, covers only the revision actually read, and did not
-> prevent the documented case.
+> Home Assistant loads community-written integrations into its own process, where they hold unscoped authority over every entity, service, credential and network path available to the platform, including control of locks and alarms. This code reaches more than half of reporting installations through a channel that checks repository structure but not behaviour. The platform excludes it from its security programme and assigns the risk to the user, and the one working safeguard, community review, acts on the likelihood that hostile code arrives rather than on what it can do once it runs.
 >
-> **Every control in place today acts on the likelihood that hostile code arrives. None bounds
-> what it can do once it is running. What is missing is a mechanism: a way for an integration's
-> required authority to be declared, enforced and audited, so that the risk the user is told they
-> own becomes a risk they can actually see and limit.**
+> What is missing is a mechanism through which an integration's authority is declared, enforced and recorded, so that the risk the user is told to own becomes one the user can see and limit.
+
+Section 3 turns this statement into an objective, four constraints and the requirements a solution must meet.
