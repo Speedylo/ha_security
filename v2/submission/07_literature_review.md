@@ -1,188 +1,55 @@
 # 7. Literature Review
 
+Section 2 ended by identifying a missing mechanism: a way for an integration's authority to be declared, enforced and recorded. This section asks whether such a mechanism already exists, in comparable extension ecosystems, on smart-home platforms or in work on Home Assistant itself, and states what remains undone.
+
 ## 7.1 Scope and method
 
-§2 ended with a mechanism that does not exist: a way for an integration's required authority to be
-declared, enforced and audited. This chapter asks whether it exists already — in Home Assistant,
-in comparable extension ecosystems, or in the research literature — and states what remains
-undone.
+Five bodies of work bear on the problem: least privilege for browser extensions, the security of smart-home application platforms, extensible smart-home hubs, software supply-chain attacks, and the empirical measurement of extension behaviour. Searches covered Google Scholar, Semantic Scholar, OpenAlex and the ACM, IEEE, USENIX and NDSS proceedings, combining terms such as *smart home*, *plug-in*, *integration*, *permission*, *sandbox*, *least privilege* and *Home Assistant*, and were followed by forward and backward citation chasing. The review is narrative rather than systematic: the search was not registered in advance, inclusion was by judgement, and no second reviewer screened the results. Relevant work may therefore have been missed, and Section 7.6 states what would follow if it had. The four sources closest to this project [9], [18], [20], [21] were read in full.
 
-Searches were run across Google Scholar, Semantic Scholar, OpenAlex and the ACM/IEEE/USENIX/NDSS
-proceedings, using combinations of *smart home*, *IoT platform*, *extension*, *plug-in*,
-*integration*, *permission*, *capability*, *sandbox*, *least privilege* and *Home Assistant*,
-followed by forward and backward citation chasing. This is a **structured narrative review, not a
-systematic review**: the search was not pre-registered, inclusion was by judgement, and no second
-reviewer screened the results. §7.6 states what follows if relevant work was missed.
+## 7.2 Least privilege for extensions
 
-## 7.2 Least privilege for extensions is a solved problem elsewhere
+The problem is not new, and it was first addressed in web browsers. Barth et al. [12] found Firefox extensions running with the user's full privileges, so that a bug in well-intentioned extension code became exploitable by a hostile web page. Of 25 popular extensions, 88% needed less than the full set of privileges, but 76% used unnecessarily powerful interfaces, which made those privileges hard to reduce. Their response, a declared permission manifest with privilege separation, was adopted by Google Chrome and became the standard model for browser extensions.
 
-The problem is not new and not specific to home automation. Barth, Felt, Saxena and Boodman [12]
-analysed the Firefox extension system and described exactly Home Assistant's present situation:
-extensions "run with the user's full privileges and can read and write arbitrary files and launch
-new processes". Their empirical finding is the one that matters here. Of 25 popular Firefox
-extensions, **88% needed less than the full set of available privileges** and **76% used
-unnecessarily powerful APIs**, which made reducing their privileges difficult. The architecture
-they proposed — a declared permission manifest, privilege separation, isolated worlds — was
-adopted by Chrome and is now standard.
+Two consequences follow for this project. The central idea, declaring an extension's authority in a manifest and enforcing it at run time, is established practice and is not claimed as new. Barth et al. also identified the obstacle that governs this project's difficulty, however: Chrome could require developers to adopt the model because the extension platform was new, whereas Home Assistant's 4,220 integrations [1] already exist and were written against an interface that presumes full authority. The precedent shows where to go, but not how to get there from an ecosystem that cannot be rewritten.
 
-Two things follow. First, **the idea at the centre of this work is not novel and this report does
-not claim it is.** The problem is best read as *proven elsewhere, absent here*. Second, Barth et
-al. also identified the obstacle that governs this project's difficulty: most extensions used
-unnecessarily powerful APIs, making privilege reduction hard. Chrome could address that because it
-was designing a **new** platform and could require developers to migrate. Home Assistant cannot.
-**The precedent establishes that the destination is right while saying almost nothing about how to
-reach it from where Home Assistant stands.**
+## 7.3 Smart-home application platforms
 
-## 7.3 Smart-home platforms: a decade of work on a different platform model
+A decade of research on smart-home applications, conducted almost entirely on Samsung SmartThings, documented the same overprivilege on a different kind of platform. Fernandes, Jung and Prakash [13] analysed 499 applications and 132 device handlers, found design flaws that granted applications far more authority than they used, and demonstrated attacks including one that programmed a backdoor code into a door lock. The mechanisms that followed each improved the platform's permission model. FlowFence [14] runs sensitive computation in quarantined modules that enforce declared data flows; ContexIoT [15] identifies the context of a sensitive action and asks the user at run time; SmartAuth [16] reconciles what an application's description claims with what its code does; and Tyche [17] groups operations by risk rather than by function, because unlocking a door is not the inverse of locking it in risk terms. Tyche's observation carries directly into this project's manifest, which distinguishes `lock.unlock` from `lock.lock`.
 
-### 7.3.1 The SmartThings literature
+The framing of this literature applies to Home Assistant, but its assumptions do not. Table 7.1 sets the two platforms side by side.
 
-Fernandes, Jung and Prakash [13] performed the foundational analysis of 499 SmartApps and 132
-device handlers, identifying two intrinsic design flaws producing significant **overprivilege**
-and demonstrating attacks including programming a backdoor PIN into a door lock. The subsequent
-literature proposed mechanisms: **FlowFence** [14] requires applications to declare intended data
-flows and runs sensitive computation in sandboxed Quarantined Modules; **ContexIoT** [15] provides
-contextual integrity and prompts the user at runtime; **SmartAuth** [16] reconciles what an app
-*says* it does with what it does; and **Tyche** [17] proposes a risk-based permission model
-grouping operations "into units of similar risk", motivated by the observation that physical
-operations are **risk-asymmetric** — unlocking a door is not the inverse of locking it.
+**Table 7.1 — Platform assumptions in prior work and in Home Assistant**
 
-**Tyche's asymmetry observation carries directly into this project's design** and produces one of
-its requirements: a manifest whose granularity is the domain will grant `lock.unlock` to anything
-permitted to call `lock.lock`. Granularity is a security property, not a formatting detail.
-
-This is a mature body of work and its framing of overprivilege applies directly. Its *assumptions*
-do not.
-
-**Table 7.1 — Platform assumptions in prior work versus Home Assistant**
-
-| | SmartThings, as studied in [13]–[17] | Home Assistant |
+| | SmartThings, as studied in [13]–[16] | Home Assistant |
 |---|---|---|
-| Who operates the platform | A vendor, centrally | The end user, self-hosted |
-| Where applications execute | Vendor cloud, in a Groovy sandbox | In the platform's own Python process, on the user's hardware |
-| Existing permission model | Yes — a capability system, found over-permissive | **None** |
-| Can the platform be changed? | Yes, by the vendor | Only by the open-source project |
-| Can applications be required to change? | Yes, via developer terms and review | **No** — authors are volunteers, code already exists |
-| Distribution | Vendor-controlled store | Community store, no code review |
+| Who operates the platform | A vendor, centrally | The user, on their own hardware |
+| Where applications run | The vendor's cloud, in a language sandbox | In the platform's own Python process |
+| Permission model for applications | A capability system, found over-permissive | None: user permissions exist, but code inside the process bypasses them [52] |
+| Can applications be required to change? | Yes, through developer terms and review | No: authors are volunteers and the code already exists |
+| Distribution | A store the vendor controls | A community store with no code review [5] |
 
-Prior mechanisms improve a permission model that already exists, on a platform whose operator can
-mandate migration, for applications running in a sandbox the operator built. Tyche is the clearest
-illustration: it does not require apps to be rewritten, but it does require the **platform
-operator** to implement a new framework — an option available to Samsung and unavailable here.
+Each mechanism above therefore relies on something Home Assistant lacks. Tyche requires no change to applications, but it requires the platform operator to implement a new permission framework; FlowFence requires applications written against its programming model; and SmartAuth requires a position in an app store from which to mediate installation. None transfers to modules that are imported into the platform's own process from repositories the platform does not control.
 
-### 7.3.2 Extensible hubs, and the closest prior work
+## 7.4 Extensible hubs: the closest prior work
 
-**Corno and Mannella [9]** propose the only published threat model for smart-home gateways
-extensible through plug-ins, validated on Home Assistant. Their validation is offensive and
-valuable: they wrote three integrations in which two attack the third, reaching another
-integration's live object by walking the Python garbage collector, then reading and modifying its
-private state.
+A smaller body of work addresses hubs extended by plug-ins, which is the Home Assistant case exactly. Corno and Mannella [9] proposed a threat model of eleven threats for extensible smart-home gateways, validated on Home Assistant with three purpose-built integrations. Their validation was offensive: one integration walked Python's garbage collector to reach another's live object, then read its secret or altered its state. This result constrains any solution, because it shows that no boundary exists between integrations sharing a process, so a permission layer inside that process can be bypassed by the code it constrains. The authors recommend that "the gateway itself (and its APIs) should enforce more controls" and that plug-ins "should authenticate themselves" [9], but they do not build or evaluate such a mechanism.
 
-**This result constrains every possible solution.** It is not merely that an integration holds
-full authority over the *platform*; co-residence in one interpreter means **there is no boundary
-between integrations either**. A permission layer implemented as an in-process API wrapper cannot
-be a security boundary, because the code it purports to constrain can enumerate the heap and reach
-past it — including to any credential the layer holds. Isolation must be at least at process
-granularity. That conclusion is normally asserted; here it is demonstrated by independent
-published work, and it is the single most load-bearing citation in this report.
+Their subsequent work [18] applies the Manufacturer Usage Description standard [19] to the gateway, letting plug-in developers declare the network endpoints they need; the declarations are merged into one gateway profile and enforced as firewall rules on a router. The design shares this project's declare-and-enforce shape, but three properties bound it, each evident from the paper. Enforcement happens at the network layer, so reading every entity or calling the unlock service, which never becomes a packet, is not mediated. Merging all declarations into one profile means each plug-in's effective policy is the union of every plug-in's declarations. And the declarations come from developers, who, the authors acknowledge, could alter them, so a malicious author declares what the attack requires. The evaluation covered three integrations, two of them purpose-built. Mannella's doctoral thesis [20] consolidates this line of work, and none of the future work it lists proposes runtime confinement of plug-in authority.
 
-**What the paper recommends, and does not build.** Its own summary: "the gateway itself (and its
-APIs) should enforce more controls. Then, the plug-ins should authenticate themselves while
-interacting with the platform". That is a description of a mediating, per-plug-in-authenticated
-API boundary — precisely the mechanism this project builds — offered as a recommendation. No such
-mechanism is implemented or evaluated. The paper's stated future work is diagnostic and
-developer-facing throughout.
+Independent reviews reach the same position. Thingnes and Meland's systematic review [21] screened 713 papers and named "Insecure Extension Runtime" and "Insufficient Access Control" among eight challenges for users of extensible hubs. The solutions it found were suggestions or belonged to other platforms, and it proposed, as future research, "a proof-of-concept implementation for Home Assistant … evaluated based on the threat model introduced by Corno and Mannella" [21]. GitHub Security Lab's audit of Home Assistant [22] likewise declined to examine community integrations, while warning that they "will have complete access" to the installation. This project adopts the evaluation framing that the review proposes: its threat register is scored against Corno and Mannella's eleven threats in Appendix C (Table C.5), where eight are covered, five without qualification, and the three not covered are availability consequences, such as physical damage, that a software control on the gateway cannot reach.
 
-**The same authors' subsequent work [18]** adapts the Manufacturer Usage Description standard [19]
-to extensible gateways: plug-in developers specify which endpoints they need, the gateway
-consolidates the declarations into one signed gateway-level MUD file, and osMUD enforces the
-result as `iptables` rules on an OpenWrt router. Three properties bound what this can achieve,
-all evident from the paper itself:
+## 7.5 Supply chain, and measurement as method
 
-- **Enforcement is at the network layer, not the platform's.** An integration reading every entity
-  state or calling `lock.unlock` is exercising Home Assistant's own API, in-process. The
-  garbage-collector attack crosses no network at all. **A firewall cannot mediate a call that
-  never becomes a packet.**
-- **Consolidation removes per-plug-in attribution.** Because all declarations merge into one
-  gateway-level file and the firewall sees a single host, the effective policy for any plug-in is
-  the **union of every plug-in's declarations**. An integration that declares nothing still
-  reaches every endpoint any other integration declared.
-- **It depends on the developer's cooperation, and the authors say so** — acknowledging that
-  "anyone accessing the integrations source code could alter it" and proposing developer
-  allow-lists as mitigation.
+Software supply-chain research addresses how hostile code arrives. Ladisa et al. [23] taxonomise the routes by which malicious code enters open-source ecosystems, including the compromise of a maintainer, the route realised in XZ Utils [8]. Its countermeasures, such as signing, provenance attestation and reproducible builds, reduce the likelihood that a malicious artifact is delivered, but none bounds what an artifact does once it runs. Supply-chain hardening and runtime confinement are therefore complements, as review and confinement were in Section 2.
 
-Validation covered three integrations, two of them purpose-built.
+One methodological precedent supports this project's approach rather than its subject. Li et al. [24], in a 2025 preprint, measured interface usage across 2,562 Model Context Protocol servers to argue for privilege management in that ecosystem. Measuring what extensions actually use, and fitting a privilege model to the measurement, transfers directly to Home Assistant, where no such measurement had been made.
 
-**Mannella's doctoral thesis [20]** consolidates this line of work, and its future work confirms
-the direction of travel: applying the threat model to a large corpus, machine learning for traffic
-analysis, usability studies. **No item proposes runtime confinement of plug-in authority.**
+## 7.6 The gap and the contribution
 
-### 7.3.3 An independent systematic review names this exact work
+Taken together, the five strands locate the gap precisely. Least privilege for extensions is understood and proven [12], but on platforms whose operators could require migration. Smart-home application security is mature [13]–[17], but it assumes a vendor-operated platform with a sandbox and applications that can be changed. The problem is recognised on Home Assistant itself [9], [21], [22], and confinement has been suggested but not built; the mechanism that was built [18] enforces at the network layer and merges every plug-in's declarations. Supply-chain work [8], [23] acts on arrival rather than on behaviour.
 
-**Thingnes and Meland [21]** screened 713 papers from 2019–2024, selected 16, and synthesised
-eight prevalent security challenges for users of extensible smart-home hubs. **Two of the eight
-are this project's subject**: "Insecure Extension Runtime" and "Insufficient Access Control". The
-concrete solutions they can point to are *suggestions* or *other platforms* — sandboxing cited as
-existing in Apple HomeKit, and the one access-control prototype targeting SmartThings.
+> No published work builds or evaluates runtime confinement of Home Assistant's community integrations, and none measures the compatibility cost of confining extensions that already exist and cannot be rewritten, which determines whether any such scheme can be deployed.
 
-Their Future Research Directions section then proposes, unprompted, exactly the work reported
-here:
+The gap is therefore constructive and empirical rather than conceptual, and the project claims three contributions against it. The first is an empirical account of the platform interfaces community integrations depend on, measured over two samples of the community catalogue, following the method of [24]. The second is a confinement architecture for an extension model that cannot be changed, whose novelty lies in the retrofit, enforcing declared authority on code written to assume it has none, without the cooperation of the platform's maintainers or the integration's author, and not in the manifest. The third is a measured trade-off between security and compatibility: prior work argues that confinement is desirable [9], [21] or that overprivilege is common [13], but none reports what fraction of real, unmodified extensions still work once confined.
 
-> "Extensible smart home hubs often lack fine-grained access control… **A proof-of-concept
-> implementation for Home Assistant, for instance, could be evaluated based on the threat model
-> introduced by Corno and Mannella**, providing insight into its applicability and effectiveness."
-> [21]
-
-This is stronger evidence for the gap than any argument this chapter could construct, and it
-supplies the evaluation framing §12 adopts.
-
-**GitHub Security Lab's professional audit [22]** found six vulnerabilities in the core platform,
-assessed its layered architecture favourably, and **explicitly declined to examine community
-integrations**: "we did not examine these community integrations. However, it's important to
-exercise caution when using them because they will have complete access to your Home Assistant
-installation." A dedicated security audit confirmed the full-access property and left the area
-unexamined.
-
-## 7.4 Supply chain, and measurement as method
-
-Ladisa, Plate, Martínez and Barais [23] systematise attacks on open-source supply chains,
-including the maintainer-compromise route realised in XZ Utils [8]. This literature addresses
-**how hostile code gets in**, and its countermeasures — signing, provenance, reproducible builds —
-are all controls on likelihood. None bounds what an artifact does once running.
-
-One methodological precedent validates this project's approach. Li et al. [24] measured API usage
-across 2,562 Model Context Protocol servers to argue for privilege management in that ecosystem.
-The structure — *measure empirically what extensions actually use, then design a privilege model
-that fits the measurement* — is directly transferable, and **no equivalent measurement exists for
-Home Assistant**.
-
-## 7.5 The gap, and the contribution
-
-> **No published work builds or evaluates runtime confinement of Home Assistant's community
-> integrations, and none measures the compatibility cost of confining extensions that already
-> exist and cannot be rewritten — the constraint that determines whether any such scheme is
-> deployable at all.**
-
-The gap is not conceptual but **constructive and empirical**. Three contributions follow, each
-stated so it can be checked:
-
-1. **An empirical account of the API surface community integrations actually depend on**, measured
-   over the HACS catalogue, making the retrofit problem quantitative rather than rhetorical.
-2. **A confinement architecture for an extension model that cannot be changed.** The novelty is
-   not the manifest, which is established practice [12], but **the retrofit**: enforcing a declared
-   authority boundary on code written to assume it has none, without the cooperation of either the
-   platform's maintainers or the extension's author.
-3. **A quantified security/compatibility trade-off.** Prior work asserts that confinement is
-   desirable [9][21] or that overprivilege is prevalent [13]; **none reports what fraction of
-   real, unmodified extensions still function once confinement is applied.** The closest evaluation
-   [18] covers three integrations, two purpose-built. This is the contribution most likely to
-   survive scrutiny, because it is the one nobody else has data for.
-
-## 7.6 Threats to the validity of this review
-
-The contribution claim depends on an absence, and absences are the hardest thing to establish.
-The review is narrative rather than systematic. The claim is that no *published* work does this;
-unpublished work may exist and the Home Assistant project could implement confinement at any
-time. **If the gap closes, the contribution reduces to items 1 and 3** — the measurement and the
-quantified trade-off — which remain valid and unclaimed regardless of who builds the mechanism.
-The project is deliberately structured so that outcome weakens it rather than invalidating it.
+The claim rests on an absence, which is the hardest kind of claim to establish. Unpublished work may exist, and the platform's maintainers could build confinement at any time. If they did, the second contribution would lose its novelty, but the first and third, the measurement and the trade-off, would remain valid whoever built the mechanism. Section 8 describes the method by which the project pursued them.
