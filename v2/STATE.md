@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-14: §7 APPROVED (Younes: "fine").** Contribution 1's missing results (recommendation: §9.3) still unanswered. Next: §4 STEEPLE, §5, §6, §1.
+
 **2026-10-14: documented literature search 2024-12 → 2026-10 PLANNED, NOT RUN (Younes: "keep it planned").** Protocol committed `fa9a77f` (`notes/lit_search_2025_2026_protocol.md`): closes the window after Thingnes & Meland [21] for §7's absence claim; three decisions owed before running (Google Scholar by hand for S1, Semantic Scholar key, partial second review). Raise it again before §7 is finalised.
 
 **2026-10-14 (late night): §7 DRAFTED for review** (`submission/07_literature_review.md`, 1,497 prose words vs 1,400; plan `notes/s7_literature_review_plan.md`). Table 7.1's permission-model row corrected after F45 (cites [52]); Corno comparison is one paragraph pointing to Table C.5; contribution 1 over both corpora. **Flag for Younes: contribution 1 (API surface) has no results in any rewritten section** — recommendation: two or three sentences in §9.3 where the schema is justified. Pushed before starting (2 commits, scan clean). Next: Younes reviews §7, then §4, §5, §6, §1.
