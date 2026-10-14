@@ -206,14 +206,116 @@ Eight of the eleven are mapped, five without qualification. The two registers di
 
 ## Appendix D — Full compatibility results
 
-*[To be lifted verbatim: for each of the 77 integrations across both corpora, in both arms — the
-outcome on the ladder (not found → import failed → imports clean → platform import failed →
-platforms clean), the error string where one occurred, the declared components and packages, and
-the install count.]*
+This appendix lists every integration measured at the import level, in both arms, so that a reader can check the central compatibility result of Section 12.2 row by row rather than accept its zero on trust. The result rests on a comparison of two columns: if confinement caused a failure, some integration would pass in the unconfined column and fail in the confined one. No row in either table does so.
 
-**The point of the appendix is the column comparison**: the confined and unconfined outcome for
-each integration side by side, so a reader can verify the set difference is empty in both
-directions rather than taking §12.2's zero on trust.
+Each integration was placed on a ladder of outcomes, from worst to best. *Not found* means the platform could not locate the integration; *import failed* means its main module could not be imported; *platform import failed* means the module imported but at least one of its entity platforms did not; and *platforms clean* means the module and every entity platform it declares imported. The ladder measures whether code loads, not whether it works, which is why Section 12.2 reports the thirteen integrations executed end to end separately and never combines the two figures. The unconfined arm imported each integration into a full Home Assistant instance; the confined arm imported it inside a sandbox with only the components it declares. Both arms ran on release 2026.8.3 on the Raspberry Pi 5. The results below are from the re-run of 3 October 2026, made after the platform instance used by every runtime was corrected; each corpus produced the same outcomes as in its first run.
+
+The two corpora are drawn differently and share only `bermuda` and `browser_mod`, so 77 measurements cover 75 distinct integrations. The head-weighted corpus takes the most-installed integrations; 40 repositories were requested and 39 fetched, and two pairs of them install under the same domain (`govee` and `solarman`), leaving 37 integrations. The uniform corpus is a random draw of 40 from the whole community catalogue with a recorded seed (20260902). Installation counts are those recorded in each corpus manifest from Home Assistant's analytics [1], where 0 means that no installation reported the integration. Both manifests pin each integration to the commit whose files match the measured copy byte for byte (finding F21, Appendix F).
+
+**Table D.1 — Head-weighted corpus (37 integrations), by installations**
+
+| Integration | Installations | Unconfined | Confined |
+|---|---|---|---|
+| `hacs` | 379,326 | Import failed | Import failed |
+| `sonoff` | 43,799 | Platforms clean | Platforms clean |
+| `localtuya` | 32,222 | Platforms clean | Platforms clean |
+| `alexa_media` | 29,308 | Platforms clean | Platforms clean |
+| `spook` | 27,331 | Not found | Not found |
+| `webrtc` | 26,804 | Platforms clean | Platforms clean |
+| `frigate` | 26,484 | Platforms clean | Platforms clean |
+| `browser_mod` | 26,109 | Platforms clean | Platforms clean |
+| `alarmo` | 25,370 | Platforms clean | Platforms clean |
+| `waste_collection_schedule` | 23,336 | Platforms clean | Platforms clean |
+| `meross_lan` | 22,628 | Platforms clean | Platforms clean |
+| `xiaomi_miot` | 21,657 | Platforms clean | Platforms clean |
+| `scheduler` | 21,557 | Platforms clean | Platforms clean |
+| `bambu_lab` | 19,980 | Import failed | Import failed |
+| `nodered` | 18,180 | Platforms clean | Platforms clean |
+| `xiaomi_home` | 18,084 | Platforms clean | Platforms clean |
+| `watchman` | 17,956 | Platforms clean | Platforms clean |
+| `adaptive_lighting` | 16,550 | Platforms clean | Platforms clean |
+| `tapo_control` | 16,294 | Import failed | Import failed |
+| `dreame_vacuum` | 14,793 | Platforms clean | Platforms clean |
+| `battery_notes` | 14,405 | Platforms clean | Platforms clean |
+| `powercalc` | 13,777 | Platforms clean | Platforms clean |
+| `midea_ac_lan` | 12,605 | Platforms clean | Platforms clean |
+| `solcast_solar` | 11,444 | Platforms clean | Platforms clean |
+| `govee` | 10,230 | Platforms clean | Platforms clean |
+| `smartthinq_sensors` | 10,016 | Platforms clean | Platforms clean |
+| `homematicip_local` | 9,947 | Platforms clean | Platforms clean |
+| `octopus_energy` | 9,820 | Platforms clean | Platforms clean |
+| `solarman` | 9,690 | Platforms clean | Platforms clean |
+| `eufy_security` | 9,683 | Platform import failed | Platform import failed |
+| `dwd_weather` | 9,598 | Platforms clean | Platforms clean |
+| `bermuda` | 9,385 | Import failed | Import failed |
+| `nordpool` | 8,253 | Platforms clean | Platforms clean |
+| `pirateweather` | 8,220 | Platforms clean | Platforms clean |
+| `thermal_comfort` | 7,955 | Platforms clean | Platforms clean |
+| `llmvision` | 7,866 | Platforms clean | Platforms clean |
+| `ble_monitor` | 7,816 | Platforms clean | Platforms clean |
+
+**Table D.2 — Uniform corpus (40 integrations), by installations**
+
+| Integration | Installations | Unconfined | Confined |
+|---|---|---|---|
+| `browser_mod` | 26,109 | Platforms clean | Platforms clean |
+| `bermuda` | 9,385 | Import failed | Import failed |
+| `zendure_ha` | 3,746 | Platforms clean | Platforms clean |
+| `network_scanner` | 2,700 | Platforms clean | Platforms clean |
+| `apsystems_ecu_reader` | 815 | Platforms clean | Platforms clean |
+| `polleninformation` | 695 | Platforms clean | Platforms clean |
+| `solis_modbus` | 576 | Platforms clean | Platforms clean |
+| `localtuya_rc` | 438 | Platforms clean | Platforms clean |
+| `pronote` | 353 | Platforms clean | Platforms clean |
+| `irrigationprogram` | 343 | Platforms clean | Platforms clean |
+| `enphase_ev` | 302 | Platforms clean | Platforms clean |
+| `oekofen_pellematic_compact` | 231 | Platforms clean | Platforms clean |
+| `sessy` | 215 | Platforms clean | Platforms clean |
+| `trakt_tv` | 215 | Platforms clean | Platforms clean |
+| `nature_remo` | 181 | Platforms clean | Platforms clean |
+| `qolsys_panel` | 163 | Platforms clean | Platforms clean |
+| `saj_esolar_air` | 159 | Platforms clean | Platforms clean |
+| `tvoverlay_ui` | 112 | Platforms clean | Platforms clean |
+| `kamstrup_403` | 73 | Platforms clean | Platforms clean |
+| `sonyavr` | 48 | Platforms clean | Platforms clean |
+| `lifesmart` | 47 | Platforms clean | Platforms clean |
+| `lightwave2` | 38 | Platform import failed | Platform import failed |
+| `tasmota_mielhvac` | 13 | Platforms clean | Platforms clean |
+| `ocado` | 8 | Platforms clean | Platforms clean |
+| `skybellgen` | 8 | Platforms clean | Platforms clean |
+| `regensburg_transport` | 5 | Platforms clean | Platforms clean |
+| `honor_x3` | 1 | Platforms clean | Platforms clean |
+| `alarm_clocks` | 0 | Platforms clean | Platforms clean |
+| `als_sundance_marin` | 0 | Platforms clean | Platforms clean |
+| `circuitsetup_energy_analyzer` | 0 | Platforms clean | Platforms clean |
+| `ecobot` | 0 | Platforms clean | Platforms clean |
+| `enki` | 0 | Platforms clean | Platforms clean |
+| `ha_insights` | 0 | Platforms clean | Platforms clean |
+| `kroki` | 0 | Platforms clean | Platforms clean |
+| `next_rocket_launch` | 0 | Platform import failed | Platform import failed |
+| `nuki_otp` | 0 | Platforms clean | Platforms clean |
+| `smhi_brandrisk` | 0 | Platforms clean | Platforms clean |
+| `trmnl_webhook_push` | 0 | Platforms clean | Platforms clean |
+| `vacation_mode` | 0 | Platforms clean | Platforms clean |
+| `warema_wms` | 0 | Platforms clean | Platforms clean |
+
+The failures are the same in both arms, and so are their messages. Table D.3 gives each one with its cause. Every cause lies in the integration, the corpus or the platform release, and none in confinement. Three integrations import a package, `aiofiles`, that they do not declare and that no component of the default configuration installs, so they fail wherever that package is absent. Two use constants that Home Assistant has since removed. The remaining failures concern how one integration ships its interface and how another is laid out in its repository.
+
+**Table D.3 — The nine failing measurements, identical in both arms**
+
+| Integration | Corpus | Outcome | Message, both arms | Cause |
+|---|---|---|---|---|
+| `bambu_lab`, `tapo_control` | Head | Import failed | `ModuleNotFoundError: No module named 'aiofiles'` | An undeclared dependency |
+| `bermuda` | Both | Import failed | `ModuleNotFoundError: No module named 'aiofiles'` | An undeclared dependency |
+| `eufy_security` | Head | Platform import failed | `ImportError: cannot import name 'SOURCE_TYPE_GPS' from 'homeassistant.components.device_tracker'` | A constant removed from the platform |
+| `lightwave2` | Uniform | Platform import failed | `ImportError: cannot import name 'COLOR_MODE_BRIGHTNESS' from 'homeassistant.components.light'` | A constant removed from the platform |
+| `next_rocket_launch` | Uniform | Platform import failed | `ImportError: Exception importing custom_components.next_rocket_launch.sensor` | Inside the integration's sensor module |
+| `hacs` | Head | Import failed | `ModuleNotFoundError: No module named 'custom_components.hacs.hacs_frontend'` | The interface is bundled when a release is built and is absent from a source checkout |
+| `spook` | Head | Not found | `IntegrationNotFound: Integration 'spook' not found.` | The repository's directory layout |
+
+One further measurement tested whether a fuller instance would rescue a failure in the confined arm. The harness re-ran `hacs` with every component it declares set up, and it failed with the same message, which confirms that the missing module belongs to the integration's packaging rather than to the components the sandbox omits.
+
+The same runs also carried the count behind C1. Every source tree was hashed before and after its run, in all four runs, and no source file changed and no line differed. That count was first made on the head-weighted pair in September (75 trees across the two arms, Appendix B) and was extended to the uniform pair by this re-run.
 
 ---
 
