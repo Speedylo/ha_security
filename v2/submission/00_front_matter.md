@@ -41,12 +41,12 @@ failures attributable to the design number none, twice. Five integrations were e
 end; one, `nordpool`, published the same electricity price confined as unconfined, in the same
 minute, through a mediated connection logged to a named host and port. On a Raspberry Pi 5,
 mediation costs 31.5 µs, the audit record is made durable before the action it records at 3.67 ms,
-and the mediator is 63× clear of realistic demand. Nineteen self-test suites pass.
+and the mediator is 63× clear of realistic demand. Twenty-nine self-test suites pass.
 
 **The most useful result was a failure, and it arrived last.** Running one real community
 integration confined against its own real API found that the platform's own HTTP helper could
 not be constructed inside the sandbox at all, so the egress design had been unusable for the 41%
-of the corpus it exists to serve — behind eighteen suites that all passed, because every earlier
+of the corpus it exists to serve — behind nineteen suites that all passed, because every earlier
 test subject had been written by the author of the sandbox. Six of eight predictions registered
 before measurement were wrong and none was revised.
 

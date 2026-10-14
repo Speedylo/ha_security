@@ -209,6 +209,14 @@ than one that was denied — it means the capability was not merely refused but 
 > beats an aggregate, and the recount is itself an instance of that: the attack that moved moved
 > *to the stronger column*, which is exactly the information an "attacks blocked" figure destroys.
 
+> **Dated correction, 2026-10-14: the suite is 21/8/10/1 over 40, not 38.** §7.32 (2026-10-03)
+> added two attacks, both refused by the mediator with a clause: misdirecting the audit record
+> through a decoy entity, and sending the mediator a malformed frame. Every suite run since prints
+> `BLOCKED 21  DENY 8  EMPTY 10  PERMIT 1`, which is 39 attacks and one permitted control request
+> (e.g. `experiments/verify/results/f59/regress/suites_1/selftest_adversary.log`). The "38" in
+> §7.22.1 and §7.45 predates that change; found while writing the submission's Appendix E. No
+> outcome moved: both added attacks land in the refused column, and no canary was recovered.
+
 **Two demonstrations require a paired baseline, and the pairing is the evidence:**
 
 - **S8, the 2021 file-theft pattern.** §3.5 requires it be "reproduced against a baseline

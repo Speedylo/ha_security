@@ -53,7 +53,7 @@ namespace has no route for the multicast range at all. Only measuring both join 
 via a specific address, and via `INADDR_ANY` — distinguished the two.
 
 **What that episode taught is not about multicast.** It is that the design had been unusable for
-41% of its target population, for as long as it had existed, **behind eighteen self-test suites
+41% of its target population, for as long as it had existed, **behind nineteen self-test suites
 that all passed** — because every earlier test subject had been written by the author of the
 sandbox, and none of them called the helper the platform tells real authors to call.
 

@@ -64,7 +64,7 @@ evaluation is scoped to.
 Running a single real community integration confined against its own real API found that **the
 platform's own HTTP helper could not be constructed inside the sandbox at all** — so the egress
 design had been unusable for the 41% of the corpus it was built to serve, for as long as it had
-existed, **behind eighteen self-test suites that all passed**, because every earlier test subject
+existed, **behind nineteen self-test suites that all passed**, because every earlier test subject
 had been written by the author of the sandbox.
 
 Two measured steps fixed it, and the integration then published the same electricity price confined

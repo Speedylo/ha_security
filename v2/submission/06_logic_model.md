@@ -78,7 +78,7 @@ four architectural decisions **diverged** from the first pass when re-examined a
 | 1 | **Problem and literature** | Primary sources only; four key papers read in full; the gap stated as a falsifiable absence |
 | 2 | **Requirements and threats, in that order** | 19 requirements each traced to a finding; then the threat model, which generated a 20th |
 | 3 | **Architecture** | Four decisions, each with candidates, a measurement where one was available, and a recorded divergence where the first pass had been wrong |
-| 4 | **Implementation** | The framework, 19 self-test suites, and an adversary built to attack it |
+| 4 | **Implementation** | The framework, 29 self-test suites, and an adversary built to attack it |
 | 5 | **Evaluation** | Paired arms throughout; predictions registered before measurement; three whole-report read-through passes |
 
 **The ordering is itself an activity.** The threat model was written *before* the architecture, so
@@ -87,7 +87,7 @@ threat model becomes a justification for decisions already taken.
 
 ## 6.5 Outputs
 
-- A confinement framework with **19 passing self-test suites** on the target hardware.
+- A confinement framework with **29 passing self-test suites** on the target hardware.
 - **Two reproducible corpora** of real community integrations, with manifests permitting redraw.
 - A **paired measurement harness** computing compatibility identically in both arms from one
   shared function — so a drift of one platform name could not flatter either side.
