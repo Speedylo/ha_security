@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**Session end 2026-10-14. Next session: §4 STEEPLE** (skill first; draft is 1,346 words vs 700 and stale: 31.5 µs, ~120 MB, "§12.6", "§15.2", an unverified Cyber Resilience Act placeholder, nordpool as the only live service where six were contacted, "no permission model" after F45). Then §5, §6, §1. Open: where contribution 1's results go (rec. §9.3); the literature search (planned, not run). Commits since the last push are local.
+
 **2026-10-14: §7 APPROVED (Younes: "fine").** Contribution 1's missing results (recommendation: §9.3) still unanswered. Next: §4 STEEPLE, §5, §6, §1.
 
 **2026-10-14: documented literature search 2024-12 → 2026-10 PLANNED, NOT RUN (Younes: "keep it planned").** Protocol committed `fa9a77f` (`notes/lit_search_2025_2026_protocol.md`): closes the window after Thingnes & Meland [21] for §7's absence claim; three decisions owed before running (Google Scholar by hand for S1, Semantic Scholar key, partial second review). Raise it again before §7 is finalised.
