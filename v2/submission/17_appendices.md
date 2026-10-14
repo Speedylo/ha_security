@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | Framework | `v2/framework/confine/` — standard library plus `ctypes`, no third-party dependencies, no override flag |
-| Self-tests | **19 suites**, all passing on the test hardware. `selftest_*.py` in the same directory |
+| Self-tests | **29 suites**, all passing on the test hardware (Appendix E). `selftest.py` and `selftest_*.py` in the same directory; `experiments/selftests/suites_all.sh` runs them |
 | Experiments | `v2/experiments/` — each with its script, its raw result file and a readable write-up |
 | Figures | `v2/figures/` — each figure and its threat model generated from one source, so they cannot drift |
 | Corpora | `hacs_corpus_manifest.json` — both corpora, redrawable; the uniform draw records its seed (20260902) |
@@ -72,7 +72,7 @@ The verdicts in Table B.2 cite the evidence in the body of the report or in the 
 | S9 | Met, narrowed | Memory exhaustion ended by the kernel, process creation refused at the cap, a 25% processor cap held at 25.1%, writing refused at the disk quota (Appendix C, T16) | Narrowed on evidence: "disk" means space, not I/O bandwidth, because the device's service manager does not delegate that control to an unprivileged user [48] |
 | N1 | Met | Memory, latency and capacity reported against the unconfined arm, with no threshold (Table 12.4) | — |
 | N2 | Met by reporting | Import-level results for 75 integrations and end-to-end results for 13 are reported separately and never combined (Tables 12.2 and 12.3) | — |
-| N3 | Met | The framework refuses to start without the memory controller or from the wrong control-group position, and fails closed when the mediator stops (Appendix E) | Strengthened during verification: a killed supervisor once left its sandbox running without a mediator (F30), and a sandbox did not restart when the platform returned (F29); both fixed |
+| N3 | Met | The framework refuses to start without the memory controller or from the wrong control-group position, and fails closed when the mediator stops (Section 9; Appendix E, `selftest_supervise`) | Strengthened during verification: a killed supervisor once left its sandbox running without a mediator (F30), and a sandbox did not restart when the platform returned (F29); both fixed |
 
 All twenty requirements are met, eighteen as stated and two in a narrower form. S9 was narrowed by the evidence, and N2 is met by the way results are reported rather than by a measured rate. The history column also bears on how far the verdicts can be trusted. Eleven of the twenty rows changed after the criteria were frozen, and in four of them (C1, F3, S7, S8) verification found that a verdict had claimed more than the code supported. In each of those four, the code or the check was corrected and the criterion was left as written, so no verdict was restored by weakening the test it had failed.
 
@@ -219,14 +219,47 @@ directions rather than taking §12.2's zero on trust.
 
 ## Appendix E — Self-test suites
 
-*[To be lifted: the 19 suites, what each asserts, and its pass count.]*
+The self-test suites are the evidence on which most verdicts in Appendix B rest, and each was written against a claim stated in the design before the suite existed. A suite is one of the 29 test programs that the suite runner executes: the base sandbox test and 28 suites, each named for what it checks. They were last run in full at the final fix of the writing phase (tag `fix-2026-10-f59`), twice on the Raspberry Pi 5, and all 29 passed both times. The count of checks in Table E.1 is the number of lines a suite marks as passed in its log; three suites report a paired comparison instead, because their result is a difference between two arms rather than a list of checks. Section 12.4 reports how the suites were themselves tested, by deliberate defects introduced into the code that some suite had to detect.
 
-Two are worth flagging to a reader scanning the list. **One suite passes when a surprising thing is
-true** — connected UDP sockets were assumed peer-pinned and are not, and the test passes when a
-datagram is redirectable, so a future kernel change fails the suite rather than silently
-invalidating the design's foundation. **One exists because an instrument lied**: the integrity
-checker's first version reported a clean zero by comparing the baseline tree against itself, and
-the self-test written for that failure mode is what caught it.
+**Table E.1 — The 29 suites, grouped by what they protect**
+
+| Suite | What it asserts | Checks passed |
+|---|---|---|
+| *Isolation and the published attacks* | | |
+| `selftest` (base) | A sandbox built beside a secrets file, the platform's configuration store and a second integration's source sees only its own directory; the other files are absent rather than refused | 19 |
+| `selftest_adversary` | A hostile integration inside a sandbox makes 39 attacks and one permitted control request; neither planted secret reaches it, and the durable record matches the decisions made | 43 |
+| `selftest_adversary_baseline` | The same attacks with no sandbox: both planted secrets recovered and 11 attacks returning data, so the confined arm's result is a comparison | Paired: 2 of 2 secrets recovered |
+| `selftest_gc` | The garbage-collector heap walk [9] reaches a live credential unconfined and nothing confined, while the same credential stays live in the mediator | Paired: 7 objects against 0 of 8,942 |
+| `selftest_reads` | What an integration can see of a furnished home, confined and unconfined | Paired: 36 of 36 entities against 1 of 36 |
+| `selftest_resources` | Each of the four resource bounds holds when a sandbox tries to exceed it, and a limit that cannot be enforced is refused rather than ignored | 15 |
+| `selftest_flood` | An integration that keeps requesting what it may not have is stopped after a fixed number of refusals and is not restarted with more authority | 36 |
+| *Policy, identity and the record* | | |
+| `selftest_policy` | `lock.lock` does not grant `lock.unlock`; paths into the configuration root are rejected when the manifest is parsed; no manifest grants nothing; every decision names its clause | 33 |
+| `selftest_c3` | An over-broad manifest is honoured, as the residual risk R1 states, and behaviour mismatched to the manifest is refused, each refusal naming a distinct clause | 17 |
+| `selftest_channel` | Two sandboxes both claiming the same identity are each recorded under their true identity, which comes from the channel and not from the message | 11 |
+| `selftest_audit` | Identity has three components, including the dependency versions installed; modification, deletion and reordering of records are detected by two chains that fail independently; the record is written before the action | 42 |
+| `selftest_integrity` | The counter behind C1 gives the known answer on trees changed in known ways, and does not count the bytecode caches that a clean run leaves | 15 |
+| `selftest_t12` | An update is checked against its own declaration, so a malicious update cannot inherit the grants of the version before it | 33 |
+| `selftest_approval` | A sandbox starts only under a grant a person has approved, bound to the integration's identity and to the grant that was shown | 14 |
+| `selftest_describe` | Every state an integration can be in has a plain-language rendering, with denials shown at the same weight as grants | 16 |
+| *Network access* | | |
+| `selftest_socket_pinning` | A connected TCP socket cannot be redirected; a connected UDP socket can, which is why datagrams are relayed rather than handed over | 6 |
+| `selftest_fdpass` | A connected socket crosses into the sandbox intact, and four ways a hostile sender could abuse the passing are refused | 12 |
+| `selftest_egress` | A declared host is reached, an undeclared one refused with its clause, a host declared by another integration refused, and a name resolving to a private address refused | 23 |
+| `selftest_egress_shim` | Unmodified HTTP client libraries reach a declared host, and the sandbox never holds the host's real address | 7 |
+| `selftest_egress_sandboxed` | Two real integrations in real namespaces poll their own hosts at once, and each is refused the other's | 18 |
+| `selftest_local_tcp` | A declared port on a home-network device is reached, and undeclared ports and addresses are refused | 17 |
+| `selftest_udp` | Datagrams reach declared ports through the relay, device discovery works, and the sandbox never holds a socket able to broadcast | 21 |
+| `selftest_netshape` | The instrument that records an integration's network behaviour reports what a deliberately provoked behaviour should produce | 13 |
+| *The platform, the supervisor and the user interface* | | |
+| `selftest_bridge` | An unmodified integration in a sandbox publishes an entity, reads a declared one, finds an undeclared one absent, and has its service calls reach their targets | 14 |
+| `selftest_push` | A state change reaches a sandbox only when its subscription was granted | 28 |
+| `selftest_real_platform` | The mediator, acting as a non-administrator user, publishes into and acts on a live Home Assistant instance | 52 |
+| `selftest_ws` | The mediator's WebSocket client reproduces the protocol specification's own example values | 9 |
+| `selftest_supervise` | The supervisor stops a flooding sandbox, restarts one from the Repairs panel, restarts one when the platform returns, clears a dead supervisor's sandbox, and does not restart one that exited by itself | 50 |
+| `selftest_keep` | What an integration stores survives a restart, within its disk bound, and nothing it could run from does | 14 |
+
+Two suites deserve attention from a reader scanning the table, because each records a case in which an assumption failed. The first, `selftest_socket_pinning`, passes when something surprising is true. The network design originally assumed that a connected UDP socket, like a connected TCP socket, could not be redirected to another address; the suite found that it can, the design was changed to relay datagrams, and the suite now passes only while redirection works. A future kernel that pinned UDP sockets would therefore fail the suite and prompt a review, rather than leave a design resting silently on a changed fact. The second, `selftest_netshape`, exists because an instrument once misled the project. The first version of the network recorder reported 23 of 37 integrations attempting to reach the network, and that number reflected what the recorder attributed to the integration rather than what the integration did. Since then the recorder has been tested against behaviours whose answers are known in advance before any of its output is trusted.
 
 ---
 
