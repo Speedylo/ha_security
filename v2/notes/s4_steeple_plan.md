@@ -48,3 +48,6 @@ named hosts, recorded decisions; limits T09 and no user study). Accountability/l
 §4.5/§4.6 to avoid repetition. **Research conduct moved to §8.6** (approved section; one new paragraph
 after fault injection, shown to Younes): purpose-built adversary, own hardware, simulated devices,
 polling rates. §8 now ~3,190 words.
+**Later 2026-10-15:** the §8.6 research-conduct paragraph dropped (Younes: "not important"); §8 is back
+to its approved text. §4.4 rewritten for flow (topic → why a security measure could cost the environment
+→ how the framework avoids both); the vendor-cloud point kept, marked as argued. Question 3 closed.
