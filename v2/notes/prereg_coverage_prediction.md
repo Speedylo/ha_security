@@ -39,3 +39,20 @@ committed before its first result. On 2026-10-15 there are 35 notes and the scri
 **If any note prints CHECK,** it is logged as finding F61, reported as found, and §8.6 says so.
 
 Result: `experiments/verify/results/prereg_20261015/prereg.txt`.
+
+## Outcome (added 2026-10-15, after the run)
+
+**P1 held.** All 34 notes other than `integrity_consistency` and this one print `ok`, including the six
+not verified before: `f08_t06` +7 min, `minor_findings` +3, `final_pass` +8, `f48_f49` +119,
+`tests_bite` +134 (found by its own paths once the glob took it), each with 0 prediction lines changed
+(`experiments/verify/results/prereg_20261015/prereg.txt`). No F61.
+
+**P2 missed, on this note alone.** The run printed `UNCHECKED prereg_coverage`: this note names its
+result path, but the result was not yet committed when the script ran, so it had nothing to compare.
+Not foreseen when P2 was written. After the result was committed (`git log` on that path), a second
+run gave 35 `ok` and `0 note(s) to look at` (`prereg_after_commit.txt`).
+
+**P3 held.** The 29 that passed before are unchanged, same commits and gaps.
+
+§8.6 now reads 36 notes, each checked except the note that defines the check; §6.2's uncounted notes
+are nine (this one added).

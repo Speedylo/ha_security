@@ -8,7 +8,7 @@ The primary population is the households that run community integrations: 379,32
 
 ## 6.2 Underlying assumptions
 
-The project's assumptions are on record, because each was written down as a prediction and committed to the repository before the measurement that could prove it wrong. Table 6.1 scores every prediction that can be counted individually. Eight further notes set pass-or-fail criteria for fixes rather than predicting outcomes, and they are not counted.
+The project's assumptions are on record, because each was written down as a prediction and committed to the repository before the measurement that could prove it wrong. Table 6.1 scores every prediction that can be counted individually. Nine further notes set pass-or-fail criteria for fixes and checks rather than predicting outcomes, and they are not counted.
 
 **Table 6.1 — Registered predictions, scored**
 
