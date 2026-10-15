@@ -247,7 +247,9 @@ adoption question. Agreed wording:
 > The integrations' code is unmodified; confinement additionally requires a permissions manifest per
 > integration, which the framework accepts from the author or supplied with the installation. In the
 > evaluation, every manifest was written by hand by the project, and producing manifests at scale, by
-> authors, analysis or curation, is unmeasured and is the main question for adoption.
+> authors, analysis or curation, is unmeasured.
+
+**2026-10-15 (Younes):** "and is the main question for adoption" dropped from the agreed wording, everywhere it is carried (§1 done; §14, §15, abstract).
 
 **Owed:** §10.4 ✅ (2026-10-12); §3 C1 (define "unmodified" as the code, the manifest requirement beside it);
 §8.7 or §12's bounds (a limit: end-to-end results rest on hand-written manifests; approved sections, so with
