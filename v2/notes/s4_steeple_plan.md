@@ -39,5 +39,5 @@ re-checked); "single-digit watts" (unsourced); "the largest open-source smart-ho
   Younes: "fine".
 - 4.7 Ethical: option 3 — research conduct briefly, then consent: approval honours an over-broad grant
   (T13 retained); Felt et al. [56] 17% / 3%; the screen's design choices; no user study.
-Prose now ~960 words vs 700; trim at week 6. Questions 2 and 3 above are superseded; question 1
+Prose now ~960 words vs 700; trim at week 6. Question 2 above is superseded and question 3 (§4.4 vendor-cloud argument) is still open; question 1
 (whose accounts) no longer arises, the sentence no longer names accounts.
