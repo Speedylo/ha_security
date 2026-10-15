@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**Session end 2026-10-15. Next session (2026-10-16): the final rerun** (Younes: "we'll do it tomorrow"). Order: Younes reads `notes/final_rerun_prediction.md` §2 and gives the go-ahead → cut `final-2026-10` → fresh clone on the Pi at `~/r2exp/final` → steps 1–13. Pi stays on throughout (~10–12 h); Younes reboots it before step 10. Today: §1, §4–§6, §12 cleanup, §13–§15, front matter approved; references renumbered; Pi disk freed (8.9 GB). Week 6 trims: §12 (~4,280/3,500), §4, §6, §14 over budget; strip reference annotations at typeset.
+
 **2026-10-15: final rerun PREDICTIONS COMMITTED** (`notes/final_rerun_prediction.md`, `62c4895`): 13 steps in order (suites ×2, 53 mutants, faults, fuzz, compat both corpora both arms, paired attacks, phase2 subjects, functional retest with (A) down, T06 pair, timings ×5, depth series, API surface, record checks), each with criterion and prediction. Tag `final-2026-10` not yet cut; nothing has run. `REPRODUCE.md` now says 29 suites. Awaiting Younes's review and go-ahead (Pi must stay on for the whole run; fresh boot before the timing passes).
 
 **2026-10-15: Pi disk freed (Younes: option a).** The six run directories (tb, f16, f57, f57d, f59, mutants) were checked: not git clones; 2,087 files with no copy in the repo (full regression and mutant logs, raw coverage data, run scripts, F16 outputs) archived to `experiments/verify/results/archive/` (10.2 MB, sha256 matched, credential scan 0 hits), then deleted by literal path (test-locked dirs in f59 unlocked first). Pi now 68%, 8.9 GB free. Kept: ha314, houseA-deps, platform-deps, both corpora. Next: the final rerun (predictions first).
