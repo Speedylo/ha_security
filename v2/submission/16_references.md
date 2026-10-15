@@ -275,6 +275,26 @@ https://www.etsi.org/deliver/etsi_en/303600_303699/303645/03.01.03_60/en_303645v
 Provision 5.6-7 ("Software should run with least necessary privileges, taking account of both
 security and functionality"). Both read in the PDF 2026-10-15. Cited in §5.2.
 
+
+### Behaviour models and shared trust
+
+**[58]** C. Fu, Q. Zeng and X. Du, "HAWatcher: Semantics-Aware Anomaly Detection for Appified Smart
+Homes", in *Proc. 30th USENIX Security Symposium*, Aug. 2021.
+https://www.usenix.org/conference/usenixsecurity21/presentation/fu-chenglong — listing and abstract
+checked 2026-10-15 (learns a home's normal behaviour from event logs and app semantics, flags
+mismatches at run time; SmartThings, four testbeds, 62 anomaly cases); full text not read. Cited in §14.
+
+**[59]** Z. B. Celik, G. Tan and P. McDaniel, "IoTGuard: Dynamic Enforcement of Security and Safety
+Policy in Commodity IoT", in *Proc. NDSS*, 2019.
+https://ndss-symposium.org/ndss-paper/iotguard-dynamic-enforcement-of-security-and-safety-policy-in-commodity-iot
+— listing and abstract checked 2026-10-15 (instruments apps, builds a dynamic model, blocks unsafe
+states); full text not read. Cited in §14.
+
+**[60]** J. R. Douceur, "The Sybil Attack", in *Peer-to-Peer Systems (IPTPS 2002)*, LNCS vol. 2429,
+pp. 251–260, 2002, doi:10.1007/3-540-45748-8_24 — bibliographic record and abstract checked
+2026-10-15 ("without a logically centralized authority, Sybil attacks are always possible except under
+extreme and unrealistic assumptions"); full text not read. Cited in §14.
+
 ---
 
 ## Verification status

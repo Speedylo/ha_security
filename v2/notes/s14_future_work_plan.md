@@ -21,3 +21,12 @@ upstream process boundary + per-entity policy (R3, §9.8).
    And "Section 14 … beginning with an independent adversary and a functional retest of the integrations
    whose runs showed setup only" — the retest is done. Proposed: "functionally checked for the thirteen
    executed end to end", and "beginning with an independent adversary".
+
+**Revised 2026-10-15 (Younes):** two ideas added. (1) A local behaviour model ("classifier") over the
+decision record as the approach to R2: may delay or refuse, never grant; its decisions recorded;
+[58] HAWatcher, [59] IoTGuard, [15] ContexIoT. (2) The web-of-trust layer deferred on 2026-08-22
+(`decision_audit_identity_and_trust_layer.md`): verdicts per code-hash identity shared between
+households, computed locally; limits named: Sybil [60] Douceur, "clean" = within declaration only,
+verdicts never records (§4.7). Table row 9 now "Beyond one device: anchoring and sharing the record".
+Refs [58]–[60] reuse the numbers freed in §5 (renumbering in week 5). §14 ~840 words vs 700.
+§12.5 fixed (Younes: yes).
