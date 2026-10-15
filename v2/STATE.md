@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-15: §12 cleanup APPROVED (Younes: "section 12 is fine").** Next: Pi disk (Younes to choose clones), then the final rerun.
+
 **2026-10-15: §12 cleaned up** — old 2026-09-08 tail deleted (each part's destination recorded in `notes/s12_results_plan.md`); contribution 1's numbers as new Table 12.4 at the end of §12.2; costs/verification tables renumbered 12.5/12.6 (App B updated); §12.2's stale "nine of which produced checkable values" fixed. ~4,280 words vs 3,500. References re-checked: order still 1–58. Pushed `5b19ead` before (scan 0 hits).
 
 **2026-10-15: references renumbered by first appearance** (58 entries, all cited, [54] gap closed; map in `notes/references_renumbering_20261015.md`; notes written before today keep old numbers). Owed at typeset: strip each entry's verification annotation and the Verification status section (build_docx.py includes the file as is). Pushed `ff2cab9` before (scan 0 hits).
