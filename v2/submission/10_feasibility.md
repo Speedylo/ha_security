@@ -10,7 +10,7 @@ Two findings of the probe changed the design. The distribution's default kernel 
 
 The second question was whether Home Assistant could run inside a sandbox at all. Its own entry point loads the web frontend and the recorder, the weight a sandbox exists to avoid, so the sandbox constructs the platform's core object directly and sets up only what the integration needs. An ordinary polling integration loaded and published its sensor against this reduced instance.
 
-The third question was whether confinement fits, and memory decides it. Measured as proportional set size [54], a sandbox costs 56.5 MB without platform components and 135.6 MB with all ten, so 60% of the device's 4 GB holds 17 to 43 sandboxes against a mean of 4.02 community integrations per installation [1]. The design is therefore technically feasible on the hardware that requirement C4 names, with a margin of at least four times the mean.
+The third question was whether confinement fits, and memory decides it. Measured as proportional set size [55], a sandbox costs 56.5 MB without platform components and 135.6 MB with all ten, so 60% of the device's 4 GB holds 17 to 43 sandboxes against a mean of 4.02 community integrations per installation [1]. The design is therefore technically feasible on the hardware that requirement C4 names, with a margin of at least four times the mean.
 
 ## 10.2 Economic feasibility
 

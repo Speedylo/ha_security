@@ -1,5 +1,13 @@
 # §7 after the documented literature search — draft for Younes's approval
 
+**Outcome, 2026-10-15 (Younes):** changes 4 (gap sentence only) and 5 approved and applied, with
+SandTrap named inline in contribution 2 ("…for JavaScript extensions of the Node-RED automation
+platform [42]…"). The new §7.3 paragraph, the §7.4 P3CRID sentence and the strands-paragraph addition
+were declined. §7.1: not the proposed version; one sentence added instead (the search window, a
+protocol registered before it ran, 642 distinct records, none that builds or evaluates confinement of
+Home Assistant's integrations). Only SandTrap enters the reference list, as [42]; TAPShield and P3CRID
+are not cited. Appendix B's N2 row: open.
+
 **Written 2026-10-15.** §7 was approved on 2026-10-14, before the search ran. The search
 (`experiments/lit_search_2026/summary.md`) found nothing that closes the gap, but it found
 SandTrap (2021), which §7 did not cite and which bears on two of its sentences, and two works inside

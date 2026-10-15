@@ -162,71 +162,78 @@ https://github.blog/security/vulnerability-research/securing-our-home-labs-home-
 **[41]** Z. Li, K. Li, B. Ma, M. Xu, Y. Zhang and X. Cheng, "We Urgently Need Privilege Management
 in MCP: A Measurement of API Usage in MCP Ecosystems", arXiv:2507.06250, 2025.
 
-**[42]** K. R. Popper, *The Logic of Scientific Discovery*. London, U.K.: Hutchinson, 1959. English
+**[42]** M. M. Ahmadpanah, D. Hedin, M. Balliu, L. E. Olsson and A. Sabelfeld, "SandTrap: Securing
+JavaScript-driven Trigger-Action Platforms", in *Proc. 30th USENIX Security Symposium*, 2021,
+pp. 2899–2916. Read in full (author copy, https://www.cse.chalmers.se/~andrei/usenix21.pdf),
+2026-10-15; §6 (evaluation: 10 benign and 10 malicious cases per platform, Node-RED policies averaging
+2,650 lines, under 100 ms added per node). Found by the documented search of 2026-10-15
+(`experiments/lit_search_2026/summary.md`); cited in §7.6.
+
+**[43]** K. R. Popper, *The Logic of Scientific Discovery*. London, U.K.: Hutchinson, 1959. English
 translation of *Logik der Forschung*, Vienna: Springer, 1934 (dated 1935). Falsifiability as the
 criterion of demarcation and the methodological rule against saving a theory by ad hoc adjustment:
 Part I, ch. 4 ("Falsifiability"). Publisher and year checked against the Open Library record
 2026-10-12. Cited in §8.1 and §11.1; to cite in §6 and §13 when they are rewritten.
 
-**[43]** E. Rescorla, "The Transport Layer Security (TLS) Protocol Version 1.3", RFC 8446, IETF,
+**[44]** E. Rescorla, "The Transport Layer Security (TLS) Protocol Version 1.3", RFC 8446, IETF,
 August 2018. https://www.rfc-editor.org/rfc/rfc8446 — §1.
 
-**[44]** Y. Jia and M. Harman, "An Analysis and Survey of the Development of Mutation Testing",
+**[45]** Y. Jia and M. Harman, "An Analysis and Survey of the Development of Mutation Testing",
 *IEEE Transactions on Software Engineering*, vol. 37, no. 5, pp. 649–678, September 2011.
 doi:10.1109/TSE.2010.62 *(Checked against Crossref 2026-10-12.)*
 
-**[45]** Linux man-pages project, *chroot(2)*. https://man7.org/linux/man-pages/man2/chroot.2.html
+**[46]** Linux man-pages project, *chroot(2)*. https://man7.org/linux/man-pages/man2/chroot.2.html
 — not intended as a security mechanism; the `mkdir foo; chroot foo; cd ..` escape.
 
-**[46]** Linux man-pages project, *user_namespaces(7)*.
+**[47]** Linux man-pages project, *user_namespaces(7)*.
 https://man7.org/linux/man-pages/man7/user_namespaces.7.html — a process in a new user namespace
 holds the full set of capabilities inside it.
 
-**[47]** Linux man-pages project, *pivot_root(2)*.
+**[48]** Linux man-pages project, *pivot_root(2)*.
 https://man7.org/linux/man-pages/man2/pivot_root.2.html
 
-**[48]** Home Assistant, Developer Documentation: *Repairs*.
+**[49]** Home Assistant, Developer Documentation: *Repairs*.
 https://developers.home-assistant.io/docs/core/platform/repairs — issues are brought to the
 user's attention, and a `RepairsFlow` fixes them; checked 2026-10-11.
 
-**[49]** Linux man-pages project, *unix(7)*. https://man7.org/linux/man-pages/man7/unix.7.html —
+**[50]** Linux man-pages project, *unix(7)*. https://man7.org/linux/man-pages/man7/unix.7.html —
 socket pairs and `SCM_RIGHTS`.
 
-**[50]** C. Jackson, A. Barth, A. Bortz, W. Shao and D. Boneh, "Protecting Browsers from DNS
+**[51]** C. Jackson, A. Barth, A. Bortz, W. Shao and D. Boneh, "Protecting Browsers from DNS
 Rebinding Attacks", in *Proc. 14th ACM Conf. Computer and Communications Security (CCS)*, 2007,
 pp. 421–431. doi:10.1145/1315245.1315298 *(Checked against Crossref 2026-10-12.)*
 
-**[51]** Home Assistant, Developer Documentation: *Config entries*.
+**[52]** Home Assistant, Developer Documentation: *Config entries*.
 https://developers.home-assistant.io/docs/config_entries_index — entries are persistently stored
 and set up during startup; checked 2026-10-11.
 
-**[52]** D. Hardt, Ed., "The OAuth 2.0 Authorization Framework", RFC 6749, IETF, October 2012.
+**[53]** D. Hardt, Ed., "The OAuth 2.0 Authorization Framework", RFC 6749, IETF, October 2012.
 https://www.rfc-editor.org/rfc/rfc6749 — §4.1 step (A).
 
-**[53]** Home Assistant Core 2026.8.3, `homeassistant/components/repairs/websocket_api.py`.
+**[54]** Home Assistant Core 2026.8.3, `homeassistant/components/repairs/websocket_api.py`.
 https://github.com/home-assistant/core — `require_admin(permission=POLICY_EDIT)` on both fix
 endpoints. The documentation says nothing about administrators, so the source is the evidence.
 
-**[54]** The Linux kernel documentation, *The /proc Filesystem*, §1.1, `/proc/PID/smaps`.
+**[55]** The Linux kernel documentation, *The /proc Filesystem*, §1.1, `/proc/PID/smaps`.
 https://docs.kernel.org/filesystems/proc.html — the proportional set size is "the count of pages it
 has in memory, where each page is divided by the number of processes sharing it"; checked 2026-10-12.
 
-**[55]** B. Efron, "Bootstrap Methods: Another Look at the Jackknife", *The Annals of Statistics*,
+**[56]** B. Efron, "Bootstrap Methods: Another Look at the Jackknife", *The Annals of Statistics*,
 vol. 7, no. 1, pp. 1–26, 1979. doi:10.1214/aos/1176344552 *(Checked against Crossref 2026-10-12.)*
 
-**[56]** C. Fu, Q. Zeng and X. Du, "HAWatcher: Semantics-Aware Anomaly Detection for Appified Smart
+**[57]** C. Fu, Q. Zeng and X. Du, "HAWatcher: Semantics-Aware Anomaly Detection for Appified Smart
 Homes", in *Proc. 30th USENIX Security Symposium*, Aug. 2021.
 https://www.usenix.org/conference/usenixsecurity21/presentation/fu-chenglong — listing and abstract
 checked 2026-10-15 (learns a home's normal behaviour from event logs and app semantics, flags
 mismatches at run time; SmartThings, four testbeds, 62 anomaly cases); full text not read. Cited in §14.
 
-**[57]** Z. B. Celik, G. Tan and P. McDaniel, "IoTGuard: Dynamic Enforcement of Security and Safety
+**[58]** Z. B. Celik, G. Tan and P. McDaniel, "IoTGuard: Dynamic Enforcement of Security and Safety
 Policy in Commodity IoT", in *Proc. NDSS*, 2019.
 https://ndss-symposium.org/ndss-paper/iotguard-dynamic-enforcement-of-security-and-safety-policy-in-commodity-iot
 — listing and abstract checked 2026-10-15 (instruments apps, builds a dynamic model, blocks unsafe
 states); full text not read. Cited in §14.
 
-**[58]** J. R. Douceur, "The Sybil Attack", in *Peer-to-Peer Systems (IPTPS 2002)*, LNCS vol. 2429,
+**[59]** J. R. Douceur, "The Sybil Attack", in *Peer-to-Peer Systems (IPTPS 2002)*, LNCS vol. 2429,
 pp. 251–260, 2002, doi:10.1007/3-540-45748-8_24 — bibliographic record and abstract checked
 2026-10-15 ("without a logically centralized authority, Sybil attacks are always possible except under
 extreme and unrealistic assumptions"); full text not read. Cited in §14.
