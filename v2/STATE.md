@@ -2,7 +2,7 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
-**2026-10-15 (later still), Younes:** B rows reviewed — only P3CRID stays B; R0003, R0057, R0497 (TAPShield), R0639 dropped. TAPShield unreadable → changes made because of it ROLLED BACK: §7.6 gap sentence, contribution 3's wording, §3 objective and App B N2 back to approved text (the compatibility claim means Home Assistant in context). Kept: SandTrap [42] in contributions 2–3, §7.1's search sentence. Owed: Part 2 of `experiments/lit_search_2026/review_younes.md` (20 exclusions).
+**2026-10-15 (later still), Younes:** B rows reviewed — only P3CRID stays B; R0003, R0057, R0497 (TAPShield), R0639 dropped. TAPShield unreadable → changes made because of it ROLLED BACK: §7.6 gap sentence, contribution 3's wording, §3 objective and App B N2 back to approved text (the compatibility claim means Home Assistant in context). Kept: SandTrap [42] in contributions 2–3, §7.1's search sentence. Part 2 (20 exclusions) agreed by Younes — lit search complete.
 
 **2026-10-15 (late): lit search CLOSED into §7 (`c2296ce`).** Scholar S1 run by Younes (37 entries, 30 distinct, 16 new, +1 B). TAPShield: full text unobtainable → B on abstract (Younes). §7 (Younes): gap sentence narrowed to Home Assistant; contributions 2–3 name SandTrap, new ref [42] (old 42–58 → 43–59, map `notes/references_renumbering_20261015b.md`); §7.1 one added sentence on the search. Declined: new §7.3 paragraph, P3CRID sentence. **Open:** Appendix B N2 row ("No prior work reports … unmodified extensions") — narrow or keep as frozen; Younes's review of B rows + `review_younes.md` (protocol §5). Not pushed.
 

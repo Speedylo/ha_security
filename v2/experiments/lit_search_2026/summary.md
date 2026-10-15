@@ -63,8 +63,8 @@ the saved pages are kept in `scholar/`. Scholar's estimate is not a count of ret
   Younes decided 2026-10-15: dropped, and the changes made because of it rolled back (§7.6's gap
   sentence, contribution 3's wording, §3's objective and Appendix B's N2 return to their approved text).
   The claim that no work measures compatibility refers, in context, to Home Assistant's integrations.
-- Younes: B rows reviewed 2026-10-15 (above). Still owed: the 20 exclusions in
-  `review_younes.md` (seed 20261015); disagreements recorded in that file, not erased.
+- Younes's review done 2026-10-15: B rows as above; all 20 sampled exclusions agreed (seed 20261015),
+  recorded in `review_younes.md`. No disagreement on exclusions.
 - Done 2026-10-15: §7.1 gains one sentence (window, registered protocol, 642 records, none confining
   Home Assistant's integrations); contributions 2 and 3 name SandTrap as [42]. TAPShield and P3CRID are
   not cited. The narrowing of the gap sentence was rolled back (see TAPShield above).

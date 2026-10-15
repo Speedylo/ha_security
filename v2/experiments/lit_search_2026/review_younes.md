@@ -74,7 +74,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -84,7 +84,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -94,7 +94,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -104,7 +104,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -114,7 +114,7 @@ Save the file when done and tell me.
 - My decision: **excluded after reading the abstract**
 - My reason: AI-generated podcast episode on LLM agents in Home Assistant; not scholarly.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -124,7 +124,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -134,7 +134,7 @@ Save the file when done and tell me.
 - My decision: **excluded after reading the abstract**
 - My reason: Survey of multi-user access control preferences in dementia care; users, not third-party code.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -144,7 +144,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -154,7 +154,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -164,7 +164,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -174,7 +174,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -184,7 +184,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -194,7 +194,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -204,7 +204,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -214,7 +214,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -224,7 +224,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -234,7 +234,7 @@ Save the file when done and tell me.
 - My decision: **excluded after reading the abstract**
 - My reason: User dashboard for device security settings across vendors.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -244,7 +244,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -254,7 +254,7 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -264,6 +264,6 @@ Save the file when done and tell me.
 - My decision: **excluded on the title**
 - My reason: Title shows it is not about third-party code on a smart-home hub.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
