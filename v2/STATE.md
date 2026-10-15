@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-15: §13 APPROVED (Younes: "section 13 is fine"; keep the AI-assistance/curriculum sentence).** Next: §14 Future work.
+
 **2026-10-15: §13 DRAFTED for review** (`submission/13_learning_strategies.md`, ~910 words vs 800; plan `notes/s13_learning_strategies_plan.md`). One instance per strategy; "a test that cannot fail proves nothing" in 13.3; one question (AI assistance and the curriculum in 13.4). Pushed `ff0f6fe` before starting (scan 20 values, 0 hits).
 
 **2026-10-15: §1 APPROVED (Younes: "section 1 is fine").** §1–§12 and App B–F are approved. §1 says "at least 17 sandboxes" (worst case); §4.3 explains 17–43. "Main question for adoption" dropped from the agreed wording. Next (week 5): §13–§15, front matter, abstract, then the one full rerun at the final tag (predictions first; include `pair_subscriptions/run.sh`; unconfined arms with (A) down; free Pi disk first — Younes to choose clones).
