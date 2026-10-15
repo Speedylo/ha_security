@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-15: Pi disk freed (Younes: option a).** The six run directories (tb, f16, f57, f57d, f59, mutants) were checked: not git clones; 2,087 files with no copy in the repo (full regression and mutant logs, raw coverage data, run scripts, F16 outputs) archived to `experiments/verify/results/archive/` (10.2 MB, sha256 matched, credential scan 0 hits), then deleted by literal path (test-locked dirs in f59 unlocked first). Pi now 68%, 8.9 GB free. Kept: ha314, houseA-deps, platform-deps, both corpora. Next: the final rerun (predictions first).
+
 **2026-10-15: §12 cleanup APPROVED (Younes: "section 12 is fine").** Next: Pi disk (Younes to choose clones), then the final rerun.
 
 **2026-10-15: §12 cleaned up** — old 2026-09-08 tail deleted (each part's destination recorded in `notes/s12_results_plan.md`); contribution 1's numbers as new Table 12.4 at the end of §12.2; costs/verification tables renumbered 12.5/12.6 (App B updated); §12.2's stale "nine of which produced checkable values" fixed. ~4,280 words vs 3,500. References re-checked: order still 1–58. Pushed `5b19ead` before (scan 0 hits).
