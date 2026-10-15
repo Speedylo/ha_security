@@ -11,7 +11,7 @@ FA = "abstract (full text not obtained)"
 DECISIONS = {
     # --- B: adjacent (cited in §7 where it changes what §7 says) ---
     "R0226": (F, "B", "P3CRID threat model (2026): names Home Assistant integrations as an attack vector; its only mitigation for integration code from GitHub is the owner reviewing it. No run-time confinement proposed. Supports the gap."),
-    "R0497": (FA, "B?", "TAPShield (Euro S&P 2025): SGX + language-level sandboxes (vm2, SandTrap) for apps on Node-RED and IFTTT; abstract reports security, performance and compatibility trade-offs on real-world apps. Not Home Assistant. FULL TEXT NEEDED: if it measures the compatibility of confining existing apps over a corpus, it meets clause 2 of class A."),
+    "R0497": (FA, "B", "TAPShield (Euro S&P 2025): SGX + language-level sandboxes (vm2, SandTrap) for apps on Node-RED and IFTTT; abstract reports security, performance and compatibility trade-offs on real-world apps. Not Home Assistant. Full text not obtained (IEEE paywall; Younes's institution has no access; no repository copy at KTH DiVA, Lund, ResearchGate, 2026-10-15). Judged on the abstract (Younes, 2026-10-15): §7's claim is narrowed so that it holds whatever its compatibility evaluation measured."),
     "R0057": (FA, "B", "SHERLOC (2026): cryptographic enforcement of app permissions on a pub/sub smart-home platform; a new system that apps are written for, not confinement of existing extensions; not Home Assistant."),
     "R0003": (F, "B", "Home Assistant work at the network layer: ESPHome Native API vs MQTT over TLS 1.3. Does not concern integration code; does not change §7."),
     # --- C after abstract or full text ---

@@ -14,23 +14,24 @@ committed.
 | Excluded on title | 590 |
 | Screened on abstract (Scholar records on its snippet) | 52 |
 | Excluded on abstract or full text (C) | 47 |
-| **B — adjacent** | **4, and 1 pending (B?)** |
-| **A — closes the gap** | **0, pending one full text** |
+| **B — adjacent** | **5** (TAPShield on its abstract) |
+| **A — closes the gap** | **0** |
 
 Full text was read for R0003, R0048, R0226, R0261. It could not be obtained (publisher blocks,
 paywall) for R0057, R0231, R0281, R0497, R0611; those were judged on their abstracts, as §5.3 allows.
 **Google Scholar (S1, by hand, §9.1):** run by Younes 2026-10-15 19:19, range 2024–2026, the query as
 written in §4; Scholar estimated "about 116 results" but displayed 37 entries over four pages (10, 10, 7,
-10; the fourth save repeats most of page 3 and adds three), 30 of them distinct. 14 were already in the
+10). Page 4 was reached by paging, with nothing clicked; it repeated seven of page 3's entries and added
+three, and on a later attempt the same page came back empty (Younes, 2026-10-15). Scholar's paging is not
+stable, which is why the protocol records this source as not reproducible, 30 of them distinct. 14 were already in the
 set and 16 were new; one new record is B (R0639). Parsed by `scholar_parse.py` into `raw/scholar_S1.json.gz`;
 the saved pages are kept in `scholar/`. Scholar's estimate is not a count of retrievable records.
 
 ## Against the prediction (§6)
 
-- **A: zero** — holds provisionally. One record, TAPShield (R0497), cannot be settled without its
-  full text; see below.
+- **A: zero** — holds, with TAPShield (R0497) judged on its abstract; see below.
 - **B: zero to five** — holds: P3CRID (R0226), SHERLOC (R0057), the ESPHome/MQTT analysis (R0003),
-  the protocol-security thesis from Scholar (R0639), and TAPShield if it stays B.
+  the protocol-security thesis from Scholar (R0639), and TAPShield (R0497).
 - **Forward citations of [5], [15], [33], [25] since 2024-12-01: fewer than 30** — holds: 11
   (4, 6, 0, 1). None builds or evaluates confinement of hub extensions.
 
@@ -44,8 +45,9 @@ the saved pages are kept in `scholar/`. Scholar's estimate is not a count of ret
    with Intel SGX and language-level sandboxes, and its abstract reports "compatibility trade-offs" on
    real-world apps. It is not Home Assistant, so the first half of §7's sentence stands. Whether it
    meets the second half ("none measures the compatibility cost of confining extensions that already
-   exist") depends on what that compatibility evaluation is. **Full text needed** (IEEE Xplore,
-   university access).
+   exist") depends on what that compatibility evaluation is, and its full text could not be obtained.
+   It is classed B on the abstract, and §7's sentence is narrowed to Home Assistant's integrations so
+   that it holds either way (Younes, 2026-10-15).
 3. **Outside the window, found by following TAPShield back:** SandTrap (Ahmadpanah, Hedin, Balliu,
    Olsson and Sabelfeld, USENIX Security 2021) confines **unmodified** third-party Node-RED nodes at
    run time with per-node policies (module, API, value and context levels) in a self-hosted hub, and
@@ -56,7 +58,9 @@ the saved pages are kept in `scholar/`. Scholar's estimate is not a count of ret
 
 ## Owed
 
-- Younes: TAPShield's full text through the library; then its row is settled A or B.
+- TAPShield's full text could not be obtained (paywall; no institutional access; no repository copy).
+  Younes decided 2026-10-15: B on the abstract, and §7's sentence narrowed so that it holds whatever
+  TAPShield's compatibility evaluation measured.
 - Younes: review every A and B (R0003, R0057, R0226, R0497, R0639) and the 20 exclusions in
   `review_sample.csv` (seed 20261015); disagreements recorded in that file, not erased.
 - Then: §7.1's one or two sentences with these counts; SandTrap (and TAPShield) placed in §7's text
