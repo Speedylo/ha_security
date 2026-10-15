@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-15: front matter and abstract DRAFTED for review** (`submission/00_front_matter.md`; abstract 246 words; plan `notes/s0_front_matter_plan.md`). Pushed `003d27c` first (10 commits, scan 0 hits). Placeholders for Younes: programme details, acknowledgements, handbook declaration wording.
+
 **2026-10-15: §15 APPROVED (Younes: "section 15 is fine"; his edit "rather than on its impact" kept).** All body sections §1–§15 and App B–F approved. Next: front matter and abstract; week-5 housekeeping (reference renumbering, delete old §12 text below line 134 and add contribution 1's numbers, Pi disk), then the final rerun.
 
 **2026-10-15: §15 DRAFTED for review** (`submission/15_conclusion.md`, ~633 words vs 600; plan `notes/s15_conclusion_plan.md`). Claim against its falsifiers, bounds, the platform's part, the method; every stale figure dropped. Next: Younes reviews §15, then front matter and abstract.

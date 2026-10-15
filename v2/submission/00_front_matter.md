@@ -15,44 +15,9 @@
 
 ## Abstract
 
-Home Assistant is the largest open-source home-automation platform, reporting **669,743 active
-installations** [1], and its capability comes from integrations — modules that connect it to a
-device or a cloud service. Community-written integrations are installed by more than half of
-those installations, and every one of them runs **inside Home Assistant's own process with Home
-Assistant's own authority**. There is no permission model, no scoping rule and no caller check
-[2]. An integration installed to display electricity prices may read every stored credential,
-call `lock.unlock`, reach any host on the home network, and — as Corno and Mannella demonstrate
-[9] — walk the Python garbage collector into another integration's live objects and read its
-secrets. The 2021 disclosures show this is not hypothetical for this ecosystem [4][6].
+Home Assistant, an open-source home-automation platform with 669,743 reporting installations, loads community-written integrations into its own process with its full authority, so an integration installed to display electricity prices can read stored credentials, operate door locks and reach any device on the home network. This project designs, builds and evaluates a framework that confines such integrations without changing their code or the platform. Each integration runs in its own Linux sandbox, built from namespaces, a system-call filter and control groups, against a minimal copy of the platform, and it reaches the household's installation and the network only through a separate mediator that holds the credential the integration never sees. What an integration may do is declared in a permissions block of its manifest, approved by a person in the platform's interface, enforced while it runs and recorded in a tamper-evident log. Every result was measured against the same integration unconfined, on a Raspberry Pi 5. The published attacks on the platform succeed unconfined and find nothing confined. Across 75 community integrations, confinement caused no failure to load that did not also occur without it, thirteen integrations ran confined end to end, the mediator runs about sixty times clear of realistic demand, and the device holds at least 17 sandboxes against a mean of 4.02 integrations per installation. The results are bounded by attacks written within the project, manifests written by hand and a single platform release. Of the 229 predictions committed before their measurements, 205 held.
 
-This project **designs, builds and evaluates confinement for these integrations without
-modifying them**, on the ground that the declaration such a scheme needs already exists in every
-integration's manifest and is currently spent on a log line and a discovery heuristic.
-Enforcement is placed outside the integration's process, because the garbage-collector result
-eliminates every in-process design; the integration runs unmodified inside Linux namespaces,
-seccomp-BPF and cgroup v2, against a real stripped Home Assistant, and reaches the platform and
-the network only through a mediator that holds the credential it never sees.
-
-**The cost of confinement, measured against an unconfined baseline on the same host and release,
-is zero at the import level.** Across 77 community integrations on two corpora sharing 5% of
-their members — 37 by install count and 40 drawn uniformly — the confined and unconfined arms
-fail on the *same* integrations for the *same* reasons: 84% and 92% clean in both arms, so the
-failures attributable to the design number none, twice. Five integrations were executed end to
-end; one, `nordpool`, published the same electricity price confined as unconfined, in the same
-minute, through a mediated connection logged to a named host and port. On a Raspberry Pi 5,
-mediation costs 31.5 µs, the audit record is made durable before the action it records at 3.67 ms,
-and the mediator is 63× clear of realistic demand. Twenty-nine self-test suites pass.
-
-**The most useful result was a failure, and it arrived last.** Running one real community
-integration confined against its own real API found that the platform's own HTTP helper could
-not be constructed inside the sandbox at all, so the egress design had been unusable for the 41%
-of the corpus it exists to serve — behind nineteen suites that all passed, because every earlier
-test subject had been written by the author of the sandbox. Six of eight predictions registered
-before measurement were wrong and none was revised.
-
-**Keywords:** Home Assistant; smart-home gateway; extension security; permission manifest;
-sandboxing; Linux namespaces; seccomp; cgroup v2; least privilege; threat modelling; STRIDE;
-ISO 31000; empirical evaluation.
+**Keywords:** Home Assistant; smart-home security; extension confinement; least privilege; permission manifest; Linux sandboxing; empirical evaluation.
 
 ---
 
@@ -64,39 +29,34 @@ ISO 31000; empirical evaluation.
 
 *[Wording to be supplied from the programme handbook.]* The factual content it will need:
 
-- The design, implementation, measurements and text of this report are the author's own work.
-  Sources are cited at every use and consolidated in the References.
-- **A prior two-week feasibility spike by the same author exists** and is not part of this
-  submission. Everything learned in that spike was treated as private knowledge and was not
-  citable until re-derived in this pass; where it is mentioned it is labelled as prior work with
-  its date and explicitly not relied on.
-- **Generative AI was used as a working tool throughout**, for drafting prose, writing code and
-  reviewing arguments. Every measurement reported here was executed by the author on the hardware
-  named in §3.5, and every figure is reproducible from the scripts and result files in the
-  repository.
+- The design, implementation, measurements and text of this report are the author's own work. Sources are cited at every use and listed in the References.
+- An earlier two-week feasibility study by the same author preceded this project. Nothing learned in it is relied on here unless it was established again within this project.
+- Generative AI was used as a working tool throughout, for writing code, drafting prose and reviewing arguments. Every measurement reported here was run on the reference device, and every figure can be reproduced from the scripts and result files in the repository (Appendix A).
 
 ## Contents
 
+*[Generated at typeset time.]*
+
 ## List of Figures
 
-*[Generated at typeset time — see the figure register in §9 and §12.]*
+*[Generated at typeset time.]*
 
 ## List of Tables
 
 *[Generated at typeset time.]*
 
-## Abbreviations
+## Abbreviations and identifiers
 
 | | |
 |---|---|
-| **HA** | Home Assistant. Version pinned throughout: **2026.8.3** |
-| **HACS** | Home Assistant Community Store — the distribution channel for community integrations |
-| **Integration** | Community-written Python code loaded into Home Assistant's process. The subject of this report. Distinct from an **add-on**, which is a separate container and already isolated |
-| **Mediator** | The out-of-process component holding the platform credential and deciding every request a confined integration makes |
-| **Manifest** | An integration's declaration. `manifest.json` already exists; this work adds a permissions clause and makes it load-bearing |
-| **Sandbox** | One confined integration: its own user, mount, PID, network and IPC namespaces, a seccomp filter and a cgroup |
-| **F*n* / S*n* / C*n* / N*n*** | Functional, security, constraint and non-functional requirements (§3) |
-| **T*nn* / R*n*** | Threats and residual risks in the register (§8) |
-| **P*n*** | Predictions registered *before* the corresponding measurement (eight; six were wrong) |
-| **PSS** | Proportional set size — the memory accounting used for per-sandbox cost |
-| **netns** | Linux network namespace |
+| **Arm** | One of two paired runs of the same integration, on the same device and platform release: confined (in the framework) or unconfined (as Home Assistant runs it today) |
+| **Community Store** | The Home Assistant Community Store (HACS), the usual channel for installing community integrations |
+| **Integration** | A Python module that connects Home Assistant to a device or service and runs inside its process. Distinct from an add-on, which runs in its own container |
+| **Manifest** | The `manifest.json` file every integration ships. This framework adds a `permissions` block to it, which states what the integration may do |
+| **Mediator** | The separate process that holds the platform credential and decides every request a confined integration makes |
+| **Sandbox** | The confined environment of one integration: its own Linux namespaces, a system-call filter and a control group |
+| **Release** | Home Assistant 2026.8.3, the platform version used throughout |
+| **F1–F4, S1–S9, C1–C4, N1–N3** | Functional, security, constraint and non-functional requirements (Section 3, Appendix B) |
+| **T01–T19, R1–R7** | Threats and residual risks of the threat model (Section 8, Appendix C) |
+| **F01–F60** | Findings of the verification campaign, written with two digits to distinguish them from requirements (Appendix F) |
+| **M01–M50** | Deliberate defects (mutants) used to test whether the test suites detect a removed check (Section 8.6) |
