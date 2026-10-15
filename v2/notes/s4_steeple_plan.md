@@ -41,3 +41,10 @@ re-checked); "single-digit watts" (unsourced); "the largest open-source smart-ho
   (T13 retained); Felt et al. [56] 17% / 3%; the screen's design choices; no user study.
 Prose now ~960 words vs 700; trim at week 6. Question 2 above is superseded and question 3 (§4.4 vendor-cloud argument) is still open; question 1
 (whose accounts) no longer arises, the sentence no longer names accounts.
+
+**Revised again 2026-10-15 (Younes's framing):** §4.7 is now data sovereignty and implicit surveillance
+(occupants and guests observed without knowing; one person consents for all, [56]; declared reads,
+named hosts, recorded decisions; limits T09 and no user study). Accountability/liability left to
+§4.5/§4.6 to avoid repetition. **Research conduct moved to §8.6** (approved section; one new paragraph
+after fault injection, shown to Younes): purpose-built adversary, own hardware, simulated devices,
+polling rates. §8 now ~3,190 words.
