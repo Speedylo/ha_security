@@ -19,3 +19,11 @@ features) replaced by "the reference device".
    wording are yours to supply.
 2. The declaration's AI sentence ("for writing code, drafting prose and reviewing arguments") — confirm
    it matches what you are willing to declare.
+
+**Revised 2026-10-15 (Younes):** prediction sentence removed from the abstract (Younes's edit).
+Keywords aligned with the closest papers' index terms, read from the PDFs in `refs/`: Corno & Mannella
+[9] "Cybersecurity, Gateways, Home Assistant, Internet of Things, Threat Modeling, Smart Home"; the MUD
+gateway paper "Cybersecurity, Gateways, Home Assistant, Internet of Things, Manufacturer Usage
+Description, Smart Home"; the systematic review "human-centred cybersecurity solutions; smart home; home
+automation; cybersecurity awareness; security challenges". Now: Home Assistant; IoT security; smart home;
+smart-home gateways; extension sandboxing; least privilege; threat modelling.
