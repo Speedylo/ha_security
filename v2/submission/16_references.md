@@ -266,6 +266,15 @@ lab study; 17% paid attention to permissions at installation, 3% of survey respo
 three comprehension questions correctly. Figures checked 2026-10-15 in the abstract and §1 of the tech report itself;
 DOI and pages of the SOUPS version to confirm on Crossref. Cited in §4.7.
 
+### Consumer IoT security
+
+**[57]** ETSI, *CYBER; Cyber Security for Consumer Internet of Things: Baseline Requirements*, ETSI EN
+303 645 V3.1.3, Sept. 2024.
+https://www.etsi.org/deliver/etsi_en/303600_303699/303645/03.01.03_60/en_303645v030103p.pdf — §1
+(scope lists "connected home automation and alarm systems, especially their gateways and hubs"),
+Provision 5.6-7 ("Software should run with least necessary privileges, taking account of both
+security and functionality"). Both read in the PDF 2026-10-15. Cited in §5.2 and §5.6.
+
 ---
 
 ## Verification status

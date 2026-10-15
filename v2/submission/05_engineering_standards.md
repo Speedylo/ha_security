@@ -1,109 +1,27 @@
 # 5. Engineering Standards
 
-Standards are listed here only where they are **load-bearing** — where the work follows the
-standard's structure, adopts its vocabulary, or is checkable against it. A standard named without
-being used is not a standard the project applied.
+A standard shapes a project only where the work follows its structure or can be checked against its requirements, so this section names only standards of that kind. For each, it states what the standard requires and how the project meets it, and it closes with the standards that were considered and not applied, since leaving one out is also a decision.
 
 ## 5.1 Risk management and threat modelling
 
-### 5.1.1 ISO 31000 — Risk management
+The threat model follows ISO 31000 [25], which fixes the order of a risk-management process: establish the scope and context, identify risks, analyse and evaluate them, then treat, monitor and record them. The project keeps that order, and Section 8 shows its main consequence: because risks were assessed before any control was designed, the model produced a requirement, the bound on resources (S9), that no earlier requirement contained. ISO 31000 prescribes no technique for identifying risks, however, so STRIDE [26] fills that step, applied to each of the six trust boundaries in turn. The standard also supplies no impact scale, and the project departs from generic scales deliberately. Impact is derived from the value of the household's assets, because no general scale has a level for defeating a safety function in a dwelling. The model is drawn with OWASP Threat Dragon [27], and a single script produces both the model file and the figure, so the diagram cannot drift from the model it shows.
 
-**Used as the process framework for the entire threat model (§8).** ISO 31000 [25] specifies a
-risk-management process — establish scope and context, identify, analyse, evaluate, treat,
-monitor, record — and deliberately does *not* prescribe a technique for identification.
+## 5.2 Least privilege
 
-The threat model follows its clause structure explicitly, and **each section names the clause it
-discharges**, so the process is auditable rather than merely invoked: scope and context (§6.3.2,
-§6.3.3), assets (§6.3.2), risk criteria (§6.3.4), identification (§6.4.2), analysis and
-evaluation (§6.4.3–6.4.4), treatment (§6.5), residual risk (§6.5.3) and monitoring (§6.6).
+The standard closest to the platform's problem is ETSI EN 303 645 [57], the European baseline for consumer IoT security, whose scope names "connected home automation and alarm systems, especially their gateways and hubs". Its provision 5.6-7 states that "software should run with least necessary privileges", and NIST SP 800-53 states the same principle as control AC-6 for processes acting on behalf of users [31]. Home Assistant's integration model is the opposite of this provision, since every integration runs with all of the platform's privileges. The framework meets it in two ways. Each integration receives only what its manifest declares, and most of what it does not declare is absent from its view rather than refused on request. The framework also applies the principle to itself, because the mediator acts on the platform as a user without administrator rights. One departure is stated: the system-call filter denies 29 dangerous calls instead of allowing only the calls an integration needs, because the namespaces have already removed almost everything those calls could reach (Section 9.2).
 
-One deliberate departure is recorded. ISO 31000 is generic and supplies no impact criteria. Rather
-than importing a published generic scale, the impact scale here is **derived from the asset
-valuation**, because no general-purpose scale contains a rung for defeat of a life-safety function
-in a dwelling. Calibration to the actual risk owner — the occupying householder, who has no
-security function and no incident-response capability — is what makes the ratings mean anything.
+## 5.3 Audit
 
-### 5.1.2 STRIDE — Threat identification
+Attribution depends on the record surviving, and audit standards say what a system may do when it cannot record. Common Criteria component FAU_STG.4 [30] requires a design to choose, for when its audit trail is full, between ignoring audited events, preventing them and overwriting the oldest records, and NIST SP 800-53 control AU-5 [31] requires an alert and leaves further action to the organisation, with shutdown on failure as an optional enhancement, AU-5(4). Neither standard prefers stopping, but both recognise it as legitimate, and the framework chooses it because losing records would break requirement S7. It applies that choice at two scales. A decision is written to disk before it is acted upon, and a failed write stops the mediator, so every channel closes and no unrecorded action can occur. A single sandbox that floods the mediator with refused requests is stopped instead, after 100 refusals within ten seconds, so that its neighbours keep running while every refusal is still recorded.
 
-**Used to fill the identification slot ISO 31000 leaves open.** STRIDE [26] supplies a systematic
-enumeration — spoofing, tampering, repudiation, information disclosure, denial of service,
-elevation of privilege — and it is applied here **per trust boundary** rather than per component,
-which produces the six-boundary structure of §8.4 and the eighteen threats of §8.5.
+## 5.4 Network addresses
 
-Its known limitation is stated in §8.9: STRIDE is boundary-oriented, and is consequently weaker on
-threats arising from the *composition* of individually permitted actions. That limitation is why
-one residual risk is retained rather than solved.
+Two address standards define what the egress proxy refuses. RFC 1918 [28] reserves the private ranges that home routers assign to the devices in a house, and RFC 6598 [41] reserves 100.64.0.0/10 for carrier-grade NAT, a range that overlay networks such as Tailscale also use. The proxy refuses both, together with loopback and link-local addresses, unless the manifest separately grants the home network. A grant for a public host therefore cannot be turned into a route to the router or to the reference device. RFC 6598 was added after the cut-off, when the writing of Section 9 found that the first check accepted that range (finding F58).
 
-### 5.1.3 OWASP Threat Dragon — Threat model representation
+## 5.5 Kernel interfaces
 
-**Used to draw the model.** Threat Dragon [27] is an open-source threat-modelling tool with a
-documented JSON model format. Both figures in the threat-model chapter are produced by a script
-that emits the Threat Dragon model **and** the rendered figure from one source, so the diagram and
-the model cannot drift apart — the same discipline the project applies to every other number.
+The isolation rests on documented Linux interfaces rather than on standards: namespaces [33], the seccomp filter [34], cgroup v2 [35] and the passing of file descriptors over Unix sockets [36]. Because documentation states what an interface offers but not how a given device is configured, each was checked on the reference device rather than assumed. That check found two departures from the documentation. Raspberry Pi OS starts the kernel with the memory controller disabled, which a single boot setting restores, and the I/O controller is not delegated to an unprivileged user [48]. The second is why the resource bound on I/O bandwidth remains partial (T16).
 
-## 5.2 Information security management
+## 5.6 Standards considered and not applied
 
-### 5.2.1 ISO/IEC 27001 — Access control
-
-The design's core principle is ISO/IEC 27001's Annex A access-control position: access to
-information and assets should be **restricted to what is required for the authorised purpose**,
-and granted by explicit rule rather than by default. Home Assistant's integration model is the
-exact inverse — every integration receives every capability, and the manifest of §9.4 is the
-mechanism that supplies the missing rule.
-
-> *[To verify before submission: cite the current edition (ISO/IEC 27001:2022) and the specific
-> Annex A control identifiers used. Currently argued from the principle rather than the clause.]*
-
-### 5.2.2 OWASP Secure Coding Practices
-
-Three practices are applied and each is checkable in the artifact:
-
-- **Default deny.** Anything not declared is refused, and the majority of the manifest is enforced
-  *structurally* — the capability is absent from the sandbox rather than refused on request.
-- **Validate at the trust boundary, in the trusted party.** Identity is taken from the socket the
-  request arrived on, never from a field in the message the sandbox composes. The one place this
-  rule was violated — a flag read from the sandbox's own request — was a genuine security defect,
-  and §13.3 records that it was found by writing the attack rather than by reading the code.
-- **Fail legibly.** The seccomp filter returns `EPERM` rather than killing the process, so a
-  refusal stays diagnosable. Where a control cannot do this — the cgroup kill — the report records
-  that the audit trail is weakest exactly where the control is strongest.
-
-## 5.3 Network and platform interfaces
-
-### 5.3.1 RFC 1918 — Private address space
-
-**Normative for what the egress broker refuses.** RFC 1918 [28] defines the private IPv4 ranges,
-and the broker's `is_public` check treats those ranges — with loopback, link-local and their IPv6
-equivalents — as non-public destinations requiring a separate explicit declaration. This is what
-prevents a declared public hostname from becoming a route to the router's admin page.
-
-### 5.3.2 Linux kernel interfaces
-
-These are stable kernel ABIs rather than standards, and they are listed here because the design's
-security properties rest on them:
-
-| Interface | Used for |
-|---|---|
-| **Namespaces** (user, mount, PID, network, IPC, UTS) | The isolation boundary itself |
-| **seccomp-BPF** | Syscall restriction — 29 calls denied, returning `EPERM` |
-| **cgroup v2** | Memory, CPU, process-count and disk-space bounds |
-| **SCM_RIGHTS** | File-descriptor passing, so a connected socket crosses the boundary without the sandbox ever holding a route |
-
-**The kernel's behaviour was verified on the target rather than assumed**, and the verification
-found two things a specification would not have: cgroup v2's `memory` controller is absent on a
-stock Raspberry Pi OS installation, and its `io` controller is present but **not delegated** to a
-user manager — which is why one residual risk is retained as *inherited* rather than fixed.
-
-## 5.4 Standards considered and not applied
-
-Recorded because their absence is a decision.
-
-- **ISO/IEC 27400** (IoT security and privacy guidelines) is addressed to device manufacturers and
-  service providers. Its guidance for a *platform operator* has no addressee here, since the
-  operator is the householder.
-- **IEC 62443** targets industrial automation, and its zone-and-conduit model does not transfer to
-  a single-process consumer hub.
-- **MUD (RFC 8520)** [19] is directly relevant and is treated as **prior work rather than as an
-  applied standard** (§7.3.2): the closest published work applies it to this exact problem, and
-  §7.3.2 states precisely why network-layer enforcement cannot reach the platform-API authority
-  that Table 2.1 shows to be most consequential.
+Four standards were considered and set aside because their addressees or their layer differ from this project's. ISO/IEC 27001 specifies an organisation's information security management system, and the risk owner here is a household with no such organisation. IEC 62443 addresses industrial automation, and its model of zones and conduits does not map onto integrations sharing one process. ETSI EN 303 645 is applied above for least privilege, but most of its provisions, such as those on default passwords and update policy, bind the manufacturer of a device rather than a component running on it. The Manufacturer Usage Description standard [19] is treated in Section 7 as prior work rather than as a standard to follow, because it acts on network traffic, and an integration that unlocks a door through the platform sends no packet for it to filter.
