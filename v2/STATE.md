@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-15: §14 APPROVED (Younes: "section 14 is fine").** ~840 words vs 700, trim at week 6. Next: §15 Conclusion, then front matter and abstract.
+
 **2026-10-15: §14 extended (Younes)** — behaviour model over the decision record (R2; [58] HAWatcher, [59] IoTGuard) and the deferred web-of-trust layer (row 9; Sybil [60] Douceur); ~840 words vs 700. §12.5 fixed: thirteen functionally checked; §14 begins with an independent adversary. Awaiting Younes's review of §14.
 
 **2026-10-15: §14 DRAFTED for review** (`submission/14_future_work.md`, ~615 words + Table 14.1 vs 700; plan `notes/s14_future_work_plan.md`). Old items already done dropped; ten items from the stated bounds, independent adversary first. Flag: approved §12.5 still says "functionally checked for nine" and promises a functional retest that is done.
