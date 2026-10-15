@@ -42,7 +42,7 @@ Result: `experiments/verify/results/prereg_20261015/prereg.txt`.
 
 ## Outcome (added 2026-10-15, after the run)
 
-**P1 held.** All 34 notes other than `integrity_consistency` and this one print `ok`, including the six
+**P1 held.** All 34 notes other than `integrity_consistency` and this one print `ok`, including the five
 not verified before: `f08_t06` +7 min, `minor_findings` +3, `final_pass` +8, `f48_f49` +119,
 `tests_bite` +134 (found by its own paths once the glob took it), each with 0 prediction lines changed
 (`experiments/verify/results/prereg_20261015/prereg.txt`). No F61.
