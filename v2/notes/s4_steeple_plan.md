@@ -28,3 +28,16 @@ re-checked); "single-digit watts" (unsourced); "the largest open-source smart-ho
 2. §4.5 reads the CRA as leaving most community integrations without obligations ("appear to"). That
    is an interpretation of recital 18, hedged; keep, or cut to the bare citation?
 3. §4.4's vendor-cloud point is presented as argument without a source. Keep as argument, or cut it?
+
+**Revised 2026-10-15 after Younes's review.** Not convinced by political, legal, ethical. Agreed:
+- 4.5 Political: who carries responsibility (platform disclaims [10], CRA targets commercial supply
+  [53] recital 18, volunteers lack means [1]) → the user, with no means → the project gives one that
+  holds whoever is made responsible; the platform's own hardware [55] may make it a product under the Act.
+  Rewritten a second time for flow and to state the contribution (Younes: "not clear how the project contributes").
+- 4.6 Legal: CRA Art. 14 (since 2026-09-11, 24 h early warning) presupposes evidence; integrations'
+  calls carry no user [52], [21]; the decision record (S7) supplies it. GDPR paragraph and [54] dropped.
+  Younes: "fine".
+- 4.7 Ethical: option 3 — research conduct briefly, then consent: approval honours an over-broad grant
+  (T13 retained); Felt et al. [56] 17% / 3%; the screen's design choices; no user study.
+Prose now ~960 words vs 700; trim at week 6. Questions 2 and 3 above are superseded; question 1
+(whose accounts) no longer arises, the sentence no longer names accounts.

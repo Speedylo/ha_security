@@ -256,6 +256,16 @@ confirmed in the European Parliament's Legislative Observatory summary. Cited in
 **[55]** Home Assistant, *Home Assistant Green*. https://www.home-assistant.io/green — "Home
 Assistant Green is created and designed by Nabu Casa"; checked 2026-10-15. Cited in §4.5.
 
+### Usable security
+
+**[56]** A. P. Felt, E. Ha, S. Egelman, A. Haney, E. Chin and D. Wagner, "Android Permissions: User
+Attention, Comprehension, and Behavior", in *Proc. 8th Symp. Usable Privacy and Security (SOUPS)*,
+Washington, DC, USA, 2012. Tech. report version: UC Berkeley EECS-2012-26,
+https://www2.eecs.berkeley.edu/Pubs/TechRpts/2012/EECS-2012-26.html — 308-user survey and 25-user
+lab study; 17% paid attention to permissions at installation, 3% of survey respondents answered all
+three comprehension questions correctly. Figures checked 2026-10-15 in the abstract and §1 of the tech report itself;
+DOI and pages of the SOUPS version to confirm on Crossref. Cited in §4.7.
+
 ---
 
 ## Verification status
