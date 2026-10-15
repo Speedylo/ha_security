@@ -49,8 +49,7 @@ held after a fix. Where a note's count is stated by the working report, that cou
    add the three to `RESULTS` before the week-5 rerun.
 2. §6.2 says isolation, equal compatibility and refusal "held in every prediction that tested them".
    True of every miss listed above; confirm you're happy to state it.
-3. A logic-model figure (inputs → activities → outputs → outcomes) is conventional for this section;
-   none is drafted. Add one to the figure list?
+3. ~~A logic-model figure~~ — Younes 2026-10-15: no figure.
 
 **Revised 2026-10-15 after Younes's review of §6.2:** it "throws facts at a reader's face as if they did
 the project" (the aiodns sentence). Insider examples deleted (aiodns share, page-cache bound, port-binding
