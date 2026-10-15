@@ -2,6 +2,10 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-15: §6 DRAFTED for review** (`submission/06_logic_model.md`, ~1,080 words vs 900; plan `notes/s6_logic_model_plan.md` with the per-note scorecard). Table 6.1 scores all 229 countable predictions in 35 notes: 205 held (first evaluation 2/8, 3–5 Oct 107/119, campaign 96/102). Long-term outcome no longer contradicts §9. Three questions in the plan note, incl. §8.6's "34 notes, a script checks each" (35 files; prereg.py checks 29). Next: Younes reviews §6, then §1.
+
+**2026-10-15: §5 APPROVED (Younes: "section 5 is fine").** Next: §6, §1.
+
 **2026-10-15: §5 revised after Younes's review** — §5.5 (kernel interfaces) and §5.6 (not applied) dropped; refs [58]/[59] removed; 632 words vs 900. The two plan-note questions are closed. Awaiting Younes's approval, then §6, §1.
 
 **2026-10-15: §5 DRAFTED for review** (`submission/05_engineering_standards.md`, 911 words vs 900; plan `notes/s5_standards_plan.md`). New: ETSI EN 303 645 [57] (scope names home-automation hubs; Provision 5.6-7 least privilege), NIST AC-6 via [31]; FAU_STG.4/AU-5 worded to F40's primary-text reading; RFC 6598 [41] after F58; ISO/IEC 27001 moved to not applied. Two questions in the plan note. Next: Younes reviews §5, then §6, §1.

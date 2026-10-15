@@ -1,121 +1,58 @@
 # 6. Logic Model Framework
 
+This section traces the project from the people it serves, through what it assumed and used, to what it produced and what that may change.
+
 ## 6.1 Target population
 
-**Primary: households running Home Assistant with community integrations installed.** The
-telemetry gives the size and shape of this population directly: **379,326 installations run HACS
-(56.6% of all reporting installations)**, and each runs a mean of **4.02** community integrations.
-These are the parties who own the assets, carry the consequences, and are currently assigned the
-risk without any means of acting on it.
-
-**Secondary: community integration authors** — 4,220 of them, overwhelmingly single-author
-volunteer projects with a median of 20 installs. They are a target population rather than a
-stakeholder to satisfy, because the design's central constraint is that **it must impose no work
-on them**. An author who does nothing gets a manifest with no permissions clause, which under
-default-deny means their integration is confined to what it can do without any grant.
-
-**Tertiary: the Home Assistant project.** Not an adopter of this artifact, but the eventual owner
-of any durable fix — and the audience for the single upstream ask in §15.2.
+The primary population is the households that run community integrations: 379,326 of Home Assistant's 669,743 active installations, or 56.6%, run the community store, each with a mean of 4.02 community integrations [1]. These households own the assets at risk and carry that risk without a means of acting on it. The second population is the authors, whose 4,220 integrations have a median of 20 installations [1]. Most are volunteers, which is why requirement C1 leaves their code unmodified, although each integration still needs a manifest, and every manifest in this evaluation was written by hand. The third is the Home Assistant project, which would have to own any lasting fix.
 
 ## 6.2 Underlying assumptions
 
-Eight assumptions were **registered as predictions before the corresponding measurement was run**,
-in a committed file, so they could be scored rather than remembered. **Six were wrong.**
+The project's assumptions are on record, because each was committed as a prediction before the measurement that could refute it. Table 6.1 scores every prediction that can be counted one by one. Eight further notes from the verification campaign set pass-or-fail criteria for fixes rather than predicting outcomes, and they are not counted.
 
-| | Assumption | Outcome |
-|---|---|---|
-| P1 | Confinement's import-level compatibility cost is at or near zero | ✅ Held — measured 0, twice |
-| P2 | A zero measured on one corpus holds on a near-independent sample | ✅ Held |
-| P3 | A package the platform pins defensively must therefore be installed | ✗ Wrong — it is not |
-| P4 | The mediator degrades in the tail before the median | ✗ Wrong — it saturates and degrades in both |
-| P5 | cgroup v2's page-cache charging will kill a legitimate large-file reader | ✗ Wrong — page cache is reclaimable |
-| P6 | The ecosystem's long tail imports worse than its head | ✗ **Wrong in sign** — the tail imports eight points better |
-| P7 | Per-integration declared components beat a blanket profile | ✅ Held |
-| P8 | Wiring the auth manager raises the compatibility figure | ✗ Wrong in both halves — it moved the figure by zero |
+**Table 6.1 — Registered predictions, scored**
 
-**The pattern is the finding, not the count.** The two assumptions that held were the two *about
-the design*. Every wrong one was an assumption about what the ecosystem or the kernel would do.
-**The design behaved as designed; the world did not behave as assumed** — and that is only
-available as a statement because the predictions were on the record before the numbers were.
+| Period | Prediction notes | Held | Registered |
+|---|---|---|---|
+| First evaluation, 2–3 September 2026 | The evaluation's register and 1 note | 2 | 8 |
+| Completing and re-measuring the framework, 3–5 October | 16 | 107 | 119 |
+| Verification campaign, 7–13 October | 10 | 96 | 102 |
+| **Total** | | **205** | **229** |
 
-Three further assumptions underpin the work and are **not** falsifiable within it, so they are
-stated as limits: that the kernel's namespace and cgroup implementations are sound; that an
-integration's declared `manifest.json` is a meaningful starting point for a permissions clause;
-and that a household is willing to accept a bounded, declared integration in place of an
-unbounded, silent one.
+The first row differs from the others because of what its predictions were about. The two that held concerned the design: that confinement would cost little or no compatibility, and that this would hold on an independent sample. The six that failed concerned the world around it. The least-installed integrations, for instance, were predicted to import 10 to 30 points worse than the most-installed and imported 8 points better, and the memory bound was expected to kill a legitimate reader of large files, although the kernel reclaims the page cache it charges. Later predictions held more often largely because they concerned code that had just been read or built, so their rate reflects familiarity rather than foresight.
+
+The later misses show where the remaining uncertainty lay. Some concerned the platform again: the share of name resolution through `aiodns` fell from 96% to between 11% and 17% once the platform's own device discovery was no longer counted as the integrations'. Others concerned the project's instruments, such as a harness that bound a port already in use. The rest found the edges of the design, as when the flood cut-off stopped a benchmark that issued refusals as fast as an attack would. None concerned its core: isolation, equal compatibility in both arms, and refusal of what was not declared held in every prediction that tested them.
+
+Two assumptions could not be tested and are stated as limits: that the kernel's namespaces and system-call filter are sound, and that the person approving a declaration understands it, which no user study examined.
 
 ## 6.3 Resources and challenges
 
 ### 6.3.1 Resources
 
-| Resource | What it provided |
-|---|---|
-| **Raspberry Pi 5, 4 GB, Pi OS trixie** | The target device. Every measurement in §12 was taken on it, unprivileged and without root |
-| **Home Assistant 2026.8.3 source, pinned** | The platform under test, unmodified. Pinning a commit is what makes any compatibility figure reproducible |
-| **The HACS index** | Two reproducible corpora — 37 integrations by install count, 40 drawn uniformly with a recorded seed |
-| **Home Assistant's published telemetry** | Every ecosystem figure in §1 and §6.1 |
-| **Four primary papers, read in full** | The threat model this work is evaluated against, the MUD architecture, the consolidating thesis, and the systematic review that names this project as an open direction |
-| **Python standard library and `ctypes`** | The entire framework. No third-party dependency, deliberately: a confinement tool that pulls a dependency tree has enlarged the attack surface it exists to reduce |
+The project used one device, one pinned platform release and public data. The device is a Raspberry Pi 5 with 4 GB of memory, the kind of single-board computer on which households run the platform [55], and every reported measurement was taken on it without administrator rights. Home Assistant 2026.8.3 was pinned so that each compatibility figure can be reproduced, and the corpora come from the community store's index. The supervisor and mediator use only Python's standard library, because a confinement tool that brings its own dependencies enlarges the surface it exists to reduce. The code was written with AI assistance, which shortened the building but, as the last challenge explains, cost the project its independent adversary.
 
 ### 6.3.2 Challenges
 
-| Challenge | How it was met, or not |
-|---|---|
-| **The extensions cannot be changed** | Confinement is imposed from outside by a supervisor; the integration's source is never touched, and this is now counted rather than argued |
-| **The platform cannot be changed** | Enforcement lives in a mediator beside the platform, not in it. Cost: the mediator must hold an unscoped credential, which is a retained residual risk with an upstream owner |
-| **The published attack defeats every in-process design** | Resolved by architecture rather than by defence: the sandbox is a different process, so the attack runs perfectly and finds nothing |
-| **26 of 37 corpus integrations need a credential before setup completes** | **Not met.** It caps the executed-end-to-end population at 11 and it binds any confinement scheme equally. It is why N2's second number is a named set of five and not a rate |
-| **The platform moves underneath the design** | Partially met. One release, one host, one architecture. The first measured instance of a platform helper breaking the design arrived in the last week of measurement |
-| **A test written by the author of the thing tested** | **This is the project's central methodological finding** and §13 is about it |
+Four challenges shaped the work. Neither the integrations nor the platform could be changed, so confinement is imposed from outside, by a supervisor that builds each sandbox and a mediator that acts on the platform as an ordinary user. The platform moves, and because the framework depends on internals such as the HTTP client helper [32], its results describe only the release measured. The ecosystem limited the evidence: 26 of the 37 most-installed integrations need an account or a device address before their setup can finish, so end-to-end execution reached a named set of thirteen rather than a sample, a ceiling the unconfined arm meets equally. Finally, the project tested its own work, and the code review that found a sandbox escape missed by every suite (F34) shows what the absence of an independent adversary costs.
 
 ## 6.4 Activities
 
-The work was organised in five stages with gates between them, and the gates were used: two of
-four architectural decisions **diverged** from the first pass when re-examined against evidence.
-
-| | Stage | Activity |
-|---|---|---|
-| 1 | **Problem and literature** | Primary sources only; four key papers read in full; the gap stated as a falsifiable absence |
-| 2 | **Requirements and threats, in that order** | 19 requirements each traced to a finding; then the threat model, which generated a 20th |
-| 3 | **Architecture** | Four decisions, each with candidates, a measurement where one was available, and a recorded divergence where the first pass had been wrong |
-| 4 | **Implementation** | The framework, 29 self-test suites, and an adversary built to attack it |
-| 5 | **Evaluation** | Paired arms throughout; predictions registered before measurement; three whole-report read-through passes |
-
-**The ordering is itself an activity.** The threat model was written *before* the architecture, so
-the controls answer threats enumerated independently of them. Written the other way round, a
-threat model becomes a justification for decisions already taken.
+The activities followed the order of the method: requirements traced to findings, a threat model written before the architecture, which is how it produced the resource bound S9, an architecture chosen against measured alternatives, and an implementation with its suites and an adversary to attack it. Evaluation compared every security and compatibility result with an unconfined arm, and a verification campaign then tested the evidence itself, through mutants, fault injection, a code review and a register of claims, until the engineering cut-off on 8 October 2026.
 
 ## 6.5 Outputs
 
-- A confinement framework with **29 passing self-test suites** on the target hardware.
-- **Two reproducible corpora** of real community integrations, with manifests permitting redraw.
-- A **paired measurement harness** computing compatibility identically in both arms from one
-  shared function — so a drift of one platform name could not flatter either side.
-- An **adversarial integration** covering the 2021 pattern, the published `gc` attack, credential
-  recovery, and absent, over-broad and mismatched manifests.
-- A **threat model** of 18 threats and 7 residual risks, mapped to the closest published model.
-- A **measured compatibility result** against an unconfined baseline: the number nobody else has.
+The outputs are the eight deliverables of Table 3.3, and each can be run or checked by someone other than the author. The framework and its interface integration run on the reference device, the 29 suites and 53 mutants show what the tests detect, the two corpora and their harness reproduce every compatibility figure, and the record of 153 claims and 60 findings links each claim in this report to its evidence.
 
 ## 6.6 Outcomes
 
-### 6.6.1 Short-term — achieved and measured
+### 6.6.1 Short-term outcomes
 
-The published attack that forced the architecture was **reproduced and defeated** against a live
-credential; the 2021 file-theft pattern **succeeds unconfined and recovers nothing confined**; and
-the import-level compatibility cost of confinement across 77 integrations is **zero**, twice, on
-corpora sharing 5% of their members.
+The short-term outcomes are achieved and measured. The heap-walk attack [9] and the 2021 path-traversal pattern [6] succeed unconfined and find nothing confined. Confinement costs no import-level compatibility across 75 integrations, thirteen integrations run confined end to end, and the reference device holds 17 to 43 sandboxes against a mean of 4.02 integrations per installation [1].
 
-### 6.6.2 Intermediate — plausible, and each with a named blocker
+### 6.6.2 Intermediate outcomes
 
-That the framework runs a realistic household's worth of integrations end to end rather than five;
-that the mediator acts on a live Home Assistant rather than a stand-in; and that the manifest is
-generated by static analysis rather than written. Each is priced in §14, and none needs a research
-result — they need engineering time.
+The intermediate outcomes are plausible but not yet shown, and each has a known obstacle. Manifests would have to be generated from an integration's code rather than written by hand, the framework would have to run a household's integrations for months, disk and network bandwidth would need a bound the device does not delegate to an unprivileged user (T16), and an independent adversary would have to attack it. Each needs engineering time rather than a new research result.
 
-### 6.6.3 Long-term — the outcome that is not this project's to deliver
+### 6.6.3 Long-term outcomes
 
-**Enforcement inside the platform's own loader.** This report states plainly that a capability
-check inside Home Assistant would be the better design on every axis except deployability, and
-that this project's most durable contribution to it may be the *evidence* such a proposal needs:
-what confinement costs in compatibility, what the declaration should express, and which threats it
-closes. Those answers do not depend on the architecture that produced them.
+The long-term outcome lies with the platform. Because a check inside the platform's process can be reached by the code it restricts [9], a lasting fix would require Home Assistant to place community integrations behind a process boundary itself, and to make its existing per-domain user policy configurable, so that the mediator's own credential could be narrowed (R3). The project cannot deliver that change, but it supplies the evidence a proposal would need: what confinement costs, what a declaration must express, and which threats it closes and which it leaves open.
