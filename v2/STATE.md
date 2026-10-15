@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-15: §4 STEEPLE DRAFTED for review** (`submission/04_steeple.md`, 859 prose words vs 700; plan `notes/s4_steeple_plan.md`). All stale points fixed (43 µs, 17–43 sandboxes, pointers removed, six live services, F45). CRA cited as new [53] (recital 18, Art. 24, Art. 64(10)), GDPR household exemption as [54]. Dropped: the 52-vs-2 components paragraph (pre-rerun figure, not rechecked). **Three questions for Younes** in the plan note (whose accounts for pirateweather/trakt; the CRA reading; the unsourced vendor-cloud argument). Also owed in §5: §5.3.1 says the broker refuses RFC 1918 ranges only; since F58 it also refuses RFC 6598 [41]. Next: Younes reviews §4, then §5, §6, §1.
+
 **Session end 2026-10-14. Next session: §4 STEEPLE** (skill first; draft is 1,346 words vs 700 and stale: 31.5 µs, ~120 MB, "§12.6", "§15.2", an unverified Cyber Resilience Act placeholder, nordpool as the only live service where six were contacted, "no permission model" after F45). Then §5, §6, §1. Open: where contribution 1's results go (rec. §9.3); the literature search (planned, not run). Everything pushed at session end.
 
 **2026-10-14: §7 APPROVED (Younes: "fine").** Contribution 1's missing results (recommendation: §9.3) still unanswered. Next: §4 STEEPLE, §5, §6, §1.
