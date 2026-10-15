@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Verification 4.8: was every prediction committed before its results, and left alone after?
 
-For each `notes/*_prediction.md`:
+For each `notes/*prediction*.md`:
   order     the commit that added the note is an ancestor of, and older than, the first commit
             holding any of its results. Results are found by the paths the note names, or, for a
             note that names none, by the commit recorded in RESULTS below (read from the log, and
@@ -38,6 +38,11 @@ RESULTS = {
     "e2e_functional_retest": "bd81f9c",
     # The same: it cites F54's regression as the run that found it.
     "f56_port": "a7943de",
+    # Added 2026-10-15 (notes/prereg_coverage_prediction.md): notes that name no result path and
+    # were reported UNCHECKED, or that the old glob missed. Each is the first commit after the note
+    # touching experiments/*/results, its message read to confirm it reports that note's work.
+    "f08_t06": "7271291", "minor_findings": "aa072c2", "final_pass": "d739e77",
+    "f48_f49": "b22c306",
 }
 #: The checks registered without results of their own yet, or registered for this campaign.
 SKIP = {"integrity_consistency"}
@@ -64,8 +69,9 @@ def first_result(paths: list[str]) -> str | None:
 
 def main() -> int:
     bad = 0
-    for note in sorted(Path("notes").glob("*_prediction.md")):
-        name = note.name.removesuffix("_prediction.md")
+    # The glob also takes notes with a date after "prediction" (f48_f49_prediction_20261007.md).
+    for note in sorted(Path("notes").glob("*prediction*.md")):
+        name = note.name.split("_prediction")[0]
         if name in SKIP:
             continue
         added = first_commit(str(note))
