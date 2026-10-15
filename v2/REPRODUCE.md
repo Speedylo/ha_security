@@ -200,7 +200,7 @@ bash experiments/selftests/suites_all.sh ~/r2exp/suites
 cat ~/r2exp/suites/summary.txt
 ```
 
-**Check:** the preflight exits 0, and every one of the 27 lines in `summary.txt` reads `exit=0`. The
+**Check:** the preflight exits 0, and every one of the 29 suite lines in `summary.txt` reads `exit=0`. The
 whole run takes about two minutes. One known caveat: `selftest`'s "the user's home directory: ABSENT"
 row fails if `TMPDIR` points under your home directory, because the test's configuration root is then
 itself under home (F10). Leave `TMPDIR` unset.

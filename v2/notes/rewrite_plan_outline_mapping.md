@@ -65,6 +65,7 @@ evidence currently sits on two tags: timings, memory, the 40 mutants and the reg
 | 2026-10-11 | `fix-2026-10-f60` | `describe.py` (`main`'s banner), `selftest_describe` state 6; M50 | **framework fix** (F60) + its test | `selftest_describe`, `selftest_approval` (laptop, Pi); M50 with F59's mutants |
 | 2026-10-11 | `fix-2026-10-f59` | `sandbox.py` (`kept_dir`), `sandbox_runtime.py` (stored entry set up), `supervise.py` (`--keep-dir`, `kept_size`, `remove_folder`, Try again); `selftest_keep` (new, 29 suites), `experiments/keep/demo_keep`; `selftest_supervise` passes `--keep-dir`; M45–M49 | **framework fix** (F59) + its test | `selftest_keep`; 29 suites ×2; `nordpool`; M14, M15, M31–M35, M41, M42, M45–M50 |
 | 2026-10-13 | `pair-2026-10-t06` | `pair_subscriptions.py`, `pair_unconfined.py` (new), `experiments/pair_subscriptions/run.sh` | test harness only (T06's true pair); no framework code touched | the pair itself, twice on the Pi: P1–P6 held |
+| 2026-10-15 | — (commit `f8b02b2`) | `verify/prereg.py` (glob widened, four `RESULTS` entries) | verification script only (`notes/prereg_coverage_prediction.md`) | the script itself: 35 of 36 notes ok, one skipped by design |
 
 §5 below (what must survive the compression) still holds in full.
 
