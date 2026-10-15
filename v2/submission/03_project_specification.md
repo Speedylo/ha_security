@@ -4,7 +4,7 @@ This section fixes what the project set out to build and how each part was to be
 
 ## 3.1 Objective
 
-The objective is to design, build and evaluate a mechanism through which the authority of a Home Assistant community integration is declared, enforced at run time and recorded, without modifying the integration's code or the platform and without relying on the honesty of the integration's author. Because no published work reports what fraction of Home Assistant's real, unmodified integrations still function once confined, the objective has a second, research half: to measure what confinement costs in compatibility, memory and latency against an unconfined baseline, on hardware typical of self-hosted installations.
+The objective is to design, build and evaluate a mechanism through which the authority of a Home Assistant community integration is declared, enforced at run time and recorded, without modifying the integration's code or the platform and without relying on the honesty of the integration's author. Because no published work reports what fraction of real, unmodified extensions still function once confined, the objective has a second, research half: to measure what confinement costs in compatibility, memory and latency against an unconfined baseline, on hardware typical of self-hosted installations.
 
 ## 3.2 Scope
 

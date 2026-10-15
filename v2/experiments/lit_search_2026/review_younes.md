@@ -20,9 +20,9 @@ Save the file when done and tell me.
 - My decision: **kept as relevant (B)**
 - My reason: Home Assistant work at the network layer: ESPHome Native API vs MQTT over TLS 1.3. Does not concern integration code; does not change §7.
 
-**Agree:** 
+**Agree:** No
 
-**Why (only if no):** 
+**Why (only if no):** drop (Younes: only P3CRID kept)
 
 ### 2. SHERLOC: a privacy-preserving smart home system with secure message routing and privilege control
 
@@ -30,9 +30,9 @@ Save the file when done and tell me.
 - My decision: **kept as relevant (B)**
 - My reason: SHERLOC (2026): cryptographic enforcement of app permissions on a pub/sub smart-home platform; a new system that apps are written for, not confinement of existing extensions; not Home Assistant.
 
-**Agree:** 
+**Agree:** no
 
-**Why (only if no):** 
+**Why (only if no):** drop (Younes: only P3CRID kept)
 
 ### 3. P3CRID: A Threat Model Methodology for Smart Homes
 
@@ -40,7 +40,7 @@ Save the file when done and tell me.
 - My decision: **kept as relevant (B)**
 - My reason: P3CRID threat model (2026): names Home Assistant integrations as an attack vector; its only mitigation for integration code from GitHub is the owner reviewing it. No run-time confinement proposed. Supports the gap.
 
-**Agree:** 
+**Agree:** yes
 
 **Why (only if no):** 
 
@@ -50,9 +50,9 @@ Save the file when done and tell me.
 - My decision: **kept as relevant (B)**
 - My reason: TAPShield (Euro S&P 2025): SGX + language-level sandboxes (vm2, SandTrap) for apps on Node-RED and IFTTT; abstract reports security, performance and compatibility trade-offs on real-world apps. Not Home Assistant. Full text not obtained (IEEE paywall; Younes's institution has no access; no repository copy at KTH DiVA, Lund, ResearchGate, 2026-10-15). Judged on the abstract (Younes, 2026-10-15): §7's claim is narrowed so that it holds whatever its compatibility evaluation measured.
 
-**Agree:** 
+**Agree:** no
 
-**Why (only if no):** 
+**Why (only if no):** drop (Younes: only P3CRID kept)
 
 ### 5. A comprehensive examination of cybersecurity in communication protocols utilized by home automation technologies: an in-depth exploration of potential …
 
@@ -60,9 +60,9 @@ Save the file when done and tell me.
 - My decision: **kept as relevant (B)**
 - My reason: Thesis (2026) on the security of home-automation communication protocols, using Home Assistant's Bluetooth proxy; network layer, does not change §7.
 
-**Agree:** 
+**Agree:** no
 
-**Why (only if no):** 
+**Why (only if no):** drop (Younes: only P3CRID kept)
 
 ---
 

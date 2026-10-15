@@ -67,6 +67,14 @@ DECISIONS = {
 }
 
 
+# Younes's review, 2026-10-15: of the B rows only P3CRID stays B; the others are dropped to C. TAPShield's
+# full text could not be read, so nothing in the submission rests on it.
+YOUNES = "Younes's review 2026-10-15: dropped (only P3CRID kept as B). My first call: B. "
+for _rid in ("R0003", "R0057", "R0497", "R0639"):
+    _stage, _dec, _why = DECISIONS[_rid]
+    DECISIONS[_rid] = (_stage, "C", YOUNES + _why)
+
+
 def apply():
     rows = list(csv.DictReader(open("screening.csv")))
     for r in rows:
