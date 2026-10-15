@@ -81,3 +81,11 @@ class Canvas:
     def save(self, path):
         path.write_text("\n".join(self.parts + ["</svg>"]) + "\n")
         print(f"wrote {path.name}")
+        try:
+            import cairosvg  # optional: the SVG is the figure of record; the PNG is Word's fallback
+            png = path.with_suffix(".png")
+            cairosvg.svg2png(url=str(path), write_to=str(png), output_width=1600,
+                             background_color="white")
+            print(f"wrote {png.name}")
+        except ImportError:
+            print("cairosvg not installed — skipped PNG (the SVG is the figure of record)")

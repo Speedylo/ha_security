@@ -19,10 +19,16 @@ from docx.enum.section import WD_SECTION
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
 from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
+from docx.opc.packuri import PackURI
+from docx.opc.part import Part
+from docx.oxml.ns import nsmap, qn
 from docx.shared import Cm, Pt, RGBColor
 
 HERE = pathlib.Path(__file__).parent
+
+# Word 2016's namespace for SVG pictures, unknown to python-docx (see add_figure).
+nsmap["asvg"] = "http://schemas.microsoft.com/office/drawing/2016/SVG/main"
 
 # Order is the report's order. The front matter is handled specially.
 FILES = [
@@ -162,6 +168,36 @@ def add_table(doc, rows: list[list[str]]) -> None:
     doc.add_paragraph()
 
 
+def add_figure(doc, svg: pathlib.Path) -> None:
+    """Embed a figure as SVG, the figure of record, with its PNG as Word's fallback.
+
+    Word stores an SVG picture as an ordinary PNG picture whose blip carries an
+    extension pointing at the SVG part; Word 2016 and later, and its PDF export,
+    draw the SVG, and older readers draw the PNG. python-docx writes only the
+    PNG half, so the SVG part and the extension are added here. The PNG is the
+    one each figure script writes beside its SVG.
+    """
+    png = svg.with_suffix(".png")
+    if not png.exists():
+        raise SystemExit(f"{png.name} missing: run the figure's script with cairosvg installed")
+    doc.add_picture(str(png), width=Cm(16))
+    para = doc.paragraphs[-1]
+    para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    package = doc.part.package
+    svg_part = Part(package.next_partname("/word/media/image%d.svg"), "image/svg+xml",
+                    svg.read_bytes(), package)
+    rid = doc.part.relate_to(svg_part, RT.IMAGE)
+    blip = para._p.xpath(".//a:blip")[0]
+    ext_lst = OxmlElement("a:extLst")
+    ext = OxmlElement("a:ext")
+    ext.set("uri", "{96DAC541-7B7A-43D3-8B79-37D633B846F1}")
+    svg_blip = OxmlElement("asvg:svgBlip")
+    svg_blip.set(qn("r:embed"), rid)
+    ext.append(svg_blip)
+    ext_lst.append(ext)
+    blip.append(ext_lst)
+
+
 def add_code(doc, lines: list[str]) -> None:
     para = doc.add_paragraph()
     para.paragraph_format.left_indent = Cm(0.6)
@@ -243,6 +279,14 @@ def render(doc, lines: list[str], *, first_file: bool) -> None:
     while i < n:
         line = lines[i]
         stripped = line.strip()
+
+        # Figure: ![label](path/to/figure.svg)
+        figure = re.match(r"^!\[[^\]]*\]\(([^)]+\.svg)\)$", stripped)
+        if figure:
+            flush_para()
+            add_figure(doc, (HERE / figure.group(1)).resolve())
+            i += 1
+            continue
 
         # Fenced code
         if stripped.startswith("```"):
