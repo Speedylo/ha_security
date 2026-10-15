@@ -273,14 +273,7 @@ DOI and pages of the SOUPS version to confirm on Crossref. Cited in §4.7.
 https://www.etsi.org/deliver/etsi_en/303600_303699/303645/03.01.03_60/en_303645v030103p.pdf — §1
 (scope lists "connected home automation and alarm systems, especially their gateways and hubs"),
 Provision 5.6-7 ("Software should run with least necessary privileges, taking account of both
-security and functionality"). Both read in the PDF 2026-10-15. Cited in §5.2 and §5.6.
-
-**[58]** ISO/IEC, *Information security, cybersecurity and privacy protection — Information security
-management systems — Requirements*, ISO/IEC 27001:2022, 2022. https://www.iso.org/standard/27001 —
-cited for its subject only (an organisation's ISMS); the text was not read. Cited in §5.6.
-
-**[59]** IEC, *Security for industrial automation and control systems*, IEC 62443 series.
-https://webstore.iec.ch — cited for its scope only; the text was not read. Cited in §5.6.
+security and functionality"). Both read in the PDF 2026-10-15. Cited in §5.2.
 
 ---
 

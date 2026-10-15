@@ -29,3 +29,10 @@ ISO/IEC 27400 dropped (not checked).
    scope), and it is applied only for 5.6-7; the rest of it is set aside in §5.6 as the manufacturer's.
 2. ISO/IEC 27001 is no longer "applied". Examiners often expect it; keeping it as applied would need
    the 2022 Annex A control numbers checked against the standard, which is paywalled.
+
+**Revised 2026-10-15 after Younes's review:** §5.5 (kernel interfaces, "not standards") and §5.6
+(not applied, "not that important") dropped; intro now promises requirement → how met → departure.
+Both questions above are closed: 27001 and 62443 no longer appear, refs [58]/[59] removed (gap until
+week-5 renumbering, like [54]); EN 303 645 stays as the §5.2 anchor. Kernel facts (memory controller,
+io not delegated [48], T16 partial) remain in §3/§8/§10. Younes also cut the Threat Dragon
+single-script clause from §5.1. §5 now 632 words vs 900.

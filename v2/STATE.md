@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-15: §5 revised after Younes's review** — §5.5 (kernel interfaces) and §5.6 (not applied) dropped; refs [58]/[59] removed; 632 words vs 900. The two plan-note questions are closed. Awaiting Younes's approval, then §6, §1.
+
 **2026-10-15: §5 DRAFTED for review** (`submission/05_engineering_standards.md`, 911 words vs 900; plan `notes/s5_standards_plan.md`). New: ETSI EN 303 645 [57] (scope names home-automation hubs; Provision 5.6-7 least privilege), NIST AC-6 via [31]; FAU_STG.4/AU-5 worded to F40's primary-text reading; RFC 6598 [41] after F58; ISO/IEC 27001 moved to not applied. Two questions in the plan note. Next: Younes reviews §5, then §6, §1.
 
 **2026-10-15: §4 APPROVED (Younes: "section 4 is fine").** ~1,030 prose words vs 700, accepted; trim at week 6. Reworked with Younes: 4.2–4.5 rewritten for flow (topic → reasoning → the project's contribution); 4.5 who carries responsibility (CRA [53], Home Assistant Green [55]); 4.6 CRA Art. 14 needs evidence the platform cannot give, the decision record supplies it (GDPR dropped, [54] unused); 4.7 data sovereignty and implicit surveillance, consent by proxy (Felt et al. [56], read in the original); research conduct dropped altogether (Younes: not important). Lesson: Younes wants each subsection to say what the project contributes, with transitions, not a list of facts. **Next: §5** (add FAU_STG.4 [30], AU-5 [31]; §5.3.1 must add RFC 6598 [41] after F58), then §6, §1.
