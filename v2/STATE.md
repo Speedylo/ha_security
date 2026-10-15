@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-15: §14 DRAFTED for review** (`submission/14_future_work.md`, ~615 words + Table 14.1 vs 700; plan `notes/s14_future_work_plan.md`). Old items already done dropped; ten items from the stated bounds, independent adversary first. Flag: approved §12.5 still says "functionally checked for nine" and promises a functional retest that is done.
+
 **2026-10-15: §13 APPROVED (Younes: "section 13 is fine"; keep the AI-assistance/curriculum sentence).** Next: §14 Future work.
 
 **2026-10-15: §13 DRAFTED for review** (`submission/13_learning_strategies.md`, ~910 words vs 800; plan `notes/s13_learning_strategies_plan.md`). One instance per strategy; "a test that cannot fail proves nothing" in 13.3; one question (AI assistance and the curriculum in 13.4). Pushed `ff0f6fe` before starting (scan 20 values, 0 hits).

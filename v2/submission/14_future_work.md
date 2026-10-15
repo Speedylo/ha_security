@@ -1,50 +1,30 @@
 # 14. Future Work
 
-Ordered by what each would settle rather than by effort, with the effort stated so the ordering can
-be argued with. **Every item is one change to one artifact; none is a wish.** The order was revised
-once by evidence: running a single real integration promoted the network-stack item from nowhere to
-sixth, which is what evidence is supposed to do to a plan.
+The work below is ordered by what each item would settle, beginning with the limits that bound the central claim and ending with the changes that belong to others. Each item extends a bound stated in Sections 9 and 12, and Table 14.1 gives its cost so that the order can be argued with.
 
-| | Work | What it settles | Cost |
+**Table 14.1 — Future work, in order of what it would settle**
+
+| | Work | What it would settle | Cost |
 |---|---|---|---|
-| **1** | **The push loop** | S3's subscription half moves from a refusal to a demonstrated filter, and the one latency path that could consume the 63× margin becomes measurable. Both are currently gaps in the artifact rather than in the measurement | **Days.** The largest missing piece and the highest-value one |
-| **2** | **The real Home Assistant component** | The mediator's far side is a stand-in, so what a *live* instance does with a mediated write is untested. What this settles is **entity identity, not realism**: publishing over the states API produces states with no registry row, and **83% of community integrations publish by the path that creates one** | **Days** |
-| **3** | **Static analysis for a derived manifest** | The undeclared-package *and* undeclared-component bound — the only measured compatibility cost in the whole report. A top-level import is trivially detectable, and a component dependency is a name in the platform's own source, so the closure is computable **exactly** rather than approximated | **Days** |
-| **4** | **The one unevaluated threat** | The only threat in either register with no evidence at all. Set an integration up, change its manifest, spawn it again, and show the second run is bounded by the second declaration and that the change is visible before it takes effect | **Hours.** It was never scheduled, which is why closing out the schedule did not catch it |
-| **5** | **Re-run the API-surface parser on the uniform corpus** | The other half of contribution 1 — what most *integrations* ask for, against what most *installations* run | **One run.** The script exists and the corpus is fetched: **the cheapest outstanding item in the report** |
-| **6** | **The other two network stacks, confined** | A synchronous HTTP stack and a raw socket, each spawned in real namespaces against a real destination. **Promoted by §12.6's result:** the one stack actually spawned turned out to break, so "the other two are presumably fine" is exactly the reasoning that was wrong once | **Days**, and may need recorded fixtures |
-| **7** | **asyncio datagram transports, and a confined UDP round trip** | The unserved quarter of datagram integrations, and whether relayed UDP behaves in real namespaces as it does against the decision path | **Days** |
-| **8** | **Filesystem quota for the sandbox's writable directory** | An integration can currently fill the user's disk through its own data directory. Needs privilege, so it also needs a decision about whether the design's unprivileged position admits a privileged installer step | Small, plus a design decision that is not small |
-| **9** | **The end-to-end arm at scale** | The compatibility number at the level that matters, as something other than a named set of five. **Blocked on credentials for 26 of 37**, so it needs a cooperating vendor set or recorded request fixtures | **Weeks**, and the honest framing is that this is a different project's measurement |
-| **10** | **Off-box audit anchoring** | The audit log's authority against whoever controls the machine. The contribution here is that **the artifact already emits the record such a layer would consume** | A different project |
-| **11** | **Enforcement inside the platform's own loader** | The better design on every axis except deployability. **Not this project's to do, and that is why it is last rather than absent** — but a platform proposal must answer what confinement costs, what the declaration should express, and which threats it closes, and those answers do not depend on the architecture that produced them | Upstream |
+| 1 | An independent adversary | Whether the security result holds against attacks the project did not write | Weeks, and a reviewer outside the project |
+| 2 | Producing manifests at scale | Whether manifests can be supplied for the ecosystem rather than written by hand for an evaluation | Weeks for an analyser; adoption by authors is not an engineering question |
+| 3 | A household's integrations, over months | Whether the compatibility and cost results hold in daily use rather than in test runs | Months of running time |
+| 4 | Further platform releases and devices | Whether the results survive the platform's changes, release by release | Days per release once automated |
+| 5 | A study of the approval screen | Whether the person approving a grant understands what it allows | Weeks, with ethical approval |
+| 6 | The remaining resource bounds | Disk and network bandwidth, and the size of an integration's stored data during a run | Small in code; needs a decision on a privileged installation step |
+| 7 | Three implementation gaps | Structured service data, three declarable operations that do nothing, and commands lost in a sandbox's first second | Days |
+| 8 | Completing the verification | Automated mutation of the mediator and the manifest parser, and the reproduction guide followed on a freshly installed device | Days; hours for the guide, given a spare memory card |
+| 9 | Anchoring the record off the device | Whether the decision record can be trusted against whoever controls the machine | A separate project |
+| 10 | Changes in the platform | A process boundary and a configurable per-entity policy provided by Home Assistant itself | Upstream |
 
-## 14.1 The next engineering work, and why it is a composition rather than an item
+The first item comes first because every attack in the evaluation was written within the project. The code review that found a route out of the sandbox, which no test had detected, shows that attacks written by the builders miss what they did not imagine, and only a reviewer independent of the design can test the result against that gap.
 
-The list above prices the pieces separately, and that framing **understates them**, because what
-has never happened is all of them at once: a real Home Assistant, real integrations at volume,
-executed rather than merely imported, with the durable audit log actually engaged.
+The second item decides whether the framework can be adopted at all. The integrations' code is unmodified, but each needs a `permissions` block in its manifest, and no integration ships one today. Authors could add the block themselves, since it changes no code, and a manifest could also be derived by analysing an integration's source, which can identify most of the packages it imports and the platform components it depends on directly from its code. A curated collection of manifests, maintained alongside the community store, would serve integrations whose authors do not respond. How accurate a derived manifest is, compared with a hand-written one, is the measurement that would decide between these routes.
 
-| Part | Where it stands |
-|---|---|
-| A real Home Assistant | **Never.** The mediator's far side is a stand-in |
-| Real integrations | **Partly.** 77 at import; **5** executed; **1** against a real API |
-| A large sample, executed | **n=5**, with a ceiling of 11 |
-| The logging mechanism, engaged | **One run of about eight.** Every other experiment recorded to an in-memory list |
+Items 3 to 5 extend the evidence rather than the framework. The thirteen integrations executed end to end form a named set, limited by the account credentials and device addresses that most integrations require, so running a household's own integrations for months would test what a sample cannot. The results also describe one platform release, and since the framework depends on platform internals, each release needs the compatibility runs repeated; automating them would make that check routine. A study of the approval screen would test the assumption that a declaration helps the person who reads it, which the evaluation could not examine.
 
-**The logging half is the sharpest of the four, and it has no home in the report's own limitations
-until now.** The mechanism is built and its properties are demonstrated — both chains fail
-independently, tamper, delete and reorder are all detected, durability is measured. What is *not*
-demonstrated is the mechanism running underneath the evaluation. **And the one time it did run for
-real, it produced three defects in a single session:** the log was created inside a directory the
-harness deletes, so the run reported no decisions at all; the destination evidence was read from a
-structure that does not carry the request, so every destination read as empty; and the log recorded
-an egress target as a host **without its port**, so it could not distinguish a grant of 443 from
-one of 6445 on the same machine.
+Items 6 to 8 complete the framework and its verification. The I/O controller is not delegated to an unprivileged user on the reference device, so bandwidth can be bounded only through a privileged step at installation, a change to the design's unprivileged position that needs its own decision. The three implementation gaps are stated in Section 9.8 and each can be fixed without changing the architecture. Automated mutation was considered and not run, so the 53 hand-written defects show that each tested point is guarded but not that every point is.
 
-**This is §13.3's lesson arriving a second time on a different component**, and it is the argument
-for the composition being *the* next work rather than one of eleven ranked items.
+Two risks remain beyond engineering and are research questions in their own right. An integration may abuse authority it legitimately declared, such as unlocking a door at three in the morning, and preventing that requires judging the context of an action rather than its permission. An integration may also send household data to a host it is permitted to reach, and controlling content rather than destination would require inspecting traffic that encryption is designed to hide. The framework makes both risks visible and recorded, but neither can be closed by confinement alone.
 
-**The cheapest first move is not the big run:** wire the durable log into the other experiment
-harnesses. It is a small change to code that already exists, requires no new measurement, and on the
-evidence above it is likelier to find something than to confirm something.
+The last item is not this project's to deliver. A permission check inside the platform's process can be reached by the code it restricts [9], so a durable fix requires Home Assistant to place community integrations behind a process boundary itself. The platform already enforces a policy per entity, but provides no supported way to create one; exposing it would let the mediator's own credential be limited to the entities the installed manifests name. The evidence such a proposal needs, what confinement costs, what a declaration must express and which threats it closes, is what this project provides.
