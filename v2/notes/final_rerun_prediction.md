@@ -28,7 +28,7 @@ under its own tag, with the affected steps rerun and both runs kept.
    again to get a better number.
 6. A figure outside its criterion is a finding (F61 onwards), reported in the submission, not averaged
    away.
-7. Results go to `experiments/verify/results/final_20261015/<step>/`, each with its provenance record
+7. Results go to `experiments/verify/results/final_20261016/<step>/`, each with its provenance record
    (`<result>.run.json`: command, commit, clean tree, interpreter, host, resolve moment).
 
 ## 1. The steps, in order
