@@ -227,3 +227,8 @@ adversary; the mean as the only demand statistic) and hands the limits to §14.
   evaluation's falsifier fired twice during development and that the campaign found six further wrong or
   unsupported statements (consistent with §12.4). The old 2026-09-08 draft stays below the marker as a
   record until §3, §6 and §14 have absorbed what it held; then it is deleted.
+
+**Owed (2026-10-15, Younes):** once the old 2026-09-08 text below line 134 of `12_results.md` is
+removed, §12 may gain contribution 1's precise numbers (report §7.33 table: config_entries 94.4/92.5,
+services 64.6/37.5, bus 48.6/17.5, states 41.0/35.0, others' services 22.2/12.5; own entry 90% vs all
+entries 22.5%), pointing back to §9.3's paragraph.

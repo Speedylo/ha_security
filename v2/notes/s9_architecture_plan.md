@@ -204,3 +204,9 @@ https://developers.home-assistant.io/docs/core/platform/repairs (issues "brought
 (`require_admin(permission=POLICY_EDIT)` on both fix endpoints; the docs say nothing about admins, so the source
 is the evidence); [45] D. Hardt, Ed., "The OAuth 2.0 Authorization Framework," RFC 6749, IETF, Oct. 2012 (§4.1 (A):
 the client directs the resource owner's user-agent to the authorization endpoint).
+
+**2026-10-15 (after approval, Younes chose option a):** §9.3 gains one paragraph (126 words) after
+Table 9.1 giving contribution 1's results in plain terms: method of [24], 144 most-installed + 40
+random, reach-widening interfaces rarer in the random sample, hence per-operation grants and default
+refusal of other integrations' services (one in eight random integrations needs the declaration).
+Source: report §7.33 / `figures/api_surface_uniform.json`. Precise numbers deferred to §12.
