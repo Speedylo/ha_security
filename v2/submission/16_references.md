@@ -248,15 +248,13 @@ horizontal cybersecurity requirements for products with digital elements (Cyber 
 *Official Journal of the European Union*, L, 2024/2847, 20 Nov. 2024.
 http://data.europa.eu/eli/reg/2024/2847/oj — recital 18 (non-monetised free and open-source software
 is not a commercial activity), Article 24 (stewards' duties), Article 64(10) (fines do not apply to
-stewards), Article 71 (applies from 11 December 2027; Article 14 from 11 September 2026). Checked
+stewards), Article 14 (manufacturers report an actively exploited vulnerability; early warning within 24 h),
+Article 71 (applies from 11 December 2027; Article 14 from 11 September 2026). Checked
 2026-10-15 against a reproduction of the OJ text (EUR-Lex did not render to the fetcher); the signing date 23 October 2024
-confirmed in the European Parliament's Legislative Observatory summary. Cited in §4.5.
+confirmed in the European Parliament's Legislative Observatory summary. Cited in §4.5 and §4.6.
 
-**[54]** Regulation (EU) 2016/679 of the European Parliament and of the Council of 27 April 2016 on
-the protection of natural persons with regard to the processing of personal data and on the free
-movement of such data (General Data Protection Regulation), *Official Journal of the European Union*,
-L 119, pp. 1–88, 4 May 2016. — Article 2(2)(c) and recital 18 (household exemption; applies still to
-those who provide the means). Recital 18 checked 2026-10-15. Cited in §4.6.
+**[55]** Home Assistant, *Home Assistant Green*. https://www.home-assistant.io/green — "Home
+Assistant Green is created and designed by Nabu Casa"; checked 2026-10-15. Cited in §4.5.
 
 ---
 
