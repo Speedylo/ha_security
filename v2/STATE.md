@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-15: §1 DRAFTED for review** (`submission/01_introduction.md`, ~665 words vs 600; plan `notes/s1_introduction_plan.md`). Table 1.1 re-derived from the snapshot, all figures match; agreed "unmodified" wording carried. Next: Younes reviews §1, then week 5 (§13–§15, front matter, abstract, rerun).
+
 **2026-10-15: contribution 1's results placed in §9.3 (Younes: option a)** — one paragraph after Table 9.1; precise numbers owed to §12 once its old text is removed. Pushed `main` at `3ebc288` after an exact-value scan on the Pi (20 values, 7 files, 0 hits).
 
 **2026-10-15: §6 APPROVED (Younes: "section 6 is fine").** ~1,060 words vs 900, trim at week 6. Next: §1 Introduction (carry the agreed "unmodified" wording), then week 5.
