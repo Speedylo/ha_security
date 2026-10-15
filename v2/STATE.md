@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-15: §15 APPROVED (Younes: "section 15 is fine"; his edit "rather than on its impact" kept).** All body sections §1–§15 and App B–F approved. Next: front matter and abstract; week-5 housekeeping (reference renumbering, delete old §12 text below line 134 and add contribution 1's numbers, Pi disk), then the final rerun.
+
 **2026-10-15: §15 DRAFTED for review** (`submission/15_conclusion.md`, ~633 words vs 600; plan `notes/s15_conclusion_plan.md`). Claim against its falsifiers, bounds, the platform's part, the method; every stale figure dropped. Next: Younes reviews §15, then front matter and abstract.
 
 **2026-10-15: §14 APPROVED (Younes: "section 14 is fine").** ~840 words vs 700, trim at week 6. Next: §15 Conclusion, then front matter and abstract.
