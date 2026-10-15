@@ -102,3 +102,17 @@ novelty is restated against it; contributions 1 and 3 are checked against it sep
 
 **Estimated time:** script and runs about 2 hours; screening 1–3 hours, depending on how many records
 survive de-duplication; Younes's checks about an hour; the §7.1 text 30 minutes.
+
+## 9. Amendment 2026-10-15 — decisions taken, before any search has run
+
+1. **Google Scholar:** option (a) for S1 only. Younes runs S1 by hand and records the date, the hit
+   count and the first 50 results; those enter `screening.csv` with source `scholar`.
+2. **Semantic Scholar:** no API key; the script waits between requests and retries on HTTP 429.
+3. **Second reviewer:** the partial check of §5 (every A and B, and 20 random exclusions, seed
+   recorded).
+
+**Reference numbers.** The references were renumbered on 2026-10-15. The forward-citation seeds of §3,
+written as [9], [18], [20], [21], are now [5] (Corno and Mannella 2022, threat model), [15] (Corno and
+Mannella 2023, gateway MUD), [33] (Mannella's 2024 thesis) and [25] (Thingnes and Meland 2025). [25]
+was itself published inside the window; it is the seed, not a result, and is excluded from the counts.
+A seed that OpenAlex does not index is recorded as such, not replaced.
