@@ -62,7 +62,7 @@ the saved pages are kept in `scholar/`. Scholar's estimate is not a count of ret
   Younes decided 2026-10-15: B on the abstract, and §7's sentence narrowed so that it holds whatever
   TAPShield's compatibility evaluation measured.
 - Younes: review every A and B (R0003, R0057, R0226, R0497, R0639) and the 20 exclusions in
-  `review_sample.csv` (seed 20261015); disagreements recorded in that file, not erased.
+  `review_younes.csv` (seed 20261015); disagreements recorded in that file, not erased.
 - Done 2026-10-15: §7.1 gains one sentence (window, registered protocol, 642 records, none confining
   Home Assistant's integrations); §7.6's gap sentence is narrowed to Home Assistant and contributions 2
   and 3 name SandTrap as [42]. TAPShield and P3CRID are not cited (Younes declined the paragraphs).
