@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-15: §6 APPROVED (Younes: "section 6 is fine").** ~1,060 words vs 900, trim at week 6. Next: §1 Introduction (carry the agreed "unmodified" wording), then week 5.
+
 **2026-10-15: `verify/prereg.py` widened (option B, Younes).** It had verified 29 of 35 notes (glob missed two dated notes; three named no results). Prediction `notes/prereg_coverage_prediction.md` first; now 35 of 36 ok, integrity_consistency skipped by design; no F61. §8.6 corrected to "36 notes… each one, except the note that defines the check"; §6.2 nine uncounted notes. Younes: no logic-model figure; manifests may come from authors (§6.6.2 fixed).
 
 **2026-10-15: §6 DRAFTED for review** (`submission/06_logic_model.md`, ~1,080 words vs 900; plan `notes/s6_logic_model_plan.md` with the per-note scorecard). Table 6.1 scores all 229 countable predictions in 35 notes: 205 held (first evaluation 2/8, 3–5 Oct 107/119, campaign 96/102). Long-term outcome no longer contradicts §9. Three questions in the plan note, incl. §8.6's "34 notes, a script checks each" (35 files; prereg.py checks 29). Next: Younes reviews §6, then §1.
