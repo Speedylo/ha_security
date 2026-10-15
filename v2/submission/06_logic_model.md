@@ -29,11 +29,11 @@ Two assumptions could not be tested and are stated as limits: that the kernel's 
 
 ### 6.3.1 Resources
 
-The project used one device, one pinned platform release and public data. The device is a Raspberry Pi 5 with 4 GB of memory, the kind of single-board computer on which households run the platform [55], and every reported measurement was taken on it without administrator rights. Home Assistant 2026.8.3 was pinned so that each compatibility figure can be reproduced, and the corpora come from the community store's index. The supervisor and mediator use only Python's standard library, because a confinement tool that brings its own dependencies enlarges the surface it exists to reduce. The code was written with AI assistance, which shortened the building.
+The project used one device, one pinned platform release and public data. The device is a Raspberry Pi 5 with 4 GB of memory, the kind of single-board computer on which households run the platform [24], and every reported measurement was taken on it without administrator rights. Home Assistant 2026.8.3 was pinned so that each compatibility figure can be reproduced, and the corpora come from the community store's index. The supervisor and mediator use only Python's standard library, because a confinement tool that brings its own dependencies enlarges the surface it exists to reduce. The code was written with AI assistance, which shortened the building.
 
 ### 6.3.2 Challenges
 
-Four challenges shaped the work. Neither the integrations nor the platform could be changed, so confinement is imposed from outside, by a supervisor that builds each sandbox and a mediator that acts on the platform as an ordinary user. The platform moves, and because the framework depends on internals such as the HTTP client helper [32], its results describe only the release measured. The ecosystem limited the evidence: 26 of the 37 most-installed integrations need an account or a device address before their setup can finish, so end-to-end execution reached a named set of thirteen rather than a sample, a ceiling the unconfined arm meets equally. Finally, the project tested its own work, and the code review that found a sandbox escape missed by every suite (F34) shows what the absence of an independent adversary costs.
+Four challenges shaped the work. Neither the integrations nor the platform could be changed, so confinement is imposed from outside, by a supervisor that builds each sandbox and a mediator that acts on the platform as an ordinary user. The platform moves, and because the framework depends on internals such as the HTTP client helper [22], its results describe only the release measured. The ecosystem limited the evidence: 26 of the 37 most-installed integrations need an account or a device address before their setup can finish, so end-to-end execution reached a named set of thirteen rather than a sample, a ceiling the unconfined arm meets equally. Finally, the project tested its own work, and the code review that found a sandbox escape missed by every suite (F34) shows what the absence of an independent adversary costs.
 
 ## 6.4 Activities
 
@@ -47,7 +47,7 @@ The outputs are the eight deliverables of Table 3.3, and each can be run or chec
 
 ### 6.6.1 Short-term outcomes
 
-The short-term outcomes are achieved and measured. The heap-walk attack [9] and the 2021 path-traversal pattern [6] succeed unconfined and find nothing confined. Confinement costs no import-level compatibility across 75 integrations, thirteen integrations run confined end to end, and the reference device holds 17 to 43 sandboxes against a mean of 4.02 integrations per installation [1].
+The short-term outcomes are achieved and measured. The heap-walk attack [5] and the 2021 path-traversal pattern [7] succeed unconfined and find nothing confined. Confinement costs no import-level compatibility across 75 integrations, thirteen integrations run confined end to end, and the reference device holds 17 to 43 sandboxes against a mean of 4.02 integrations per installation [1].
 
 ### 6.6.2 Intermediate outcomes
 
@@ -55,4 +55,4 @@ The intermediate outcomes are plausible but not yet shown, and each has a known 
 
 ### 6.6.3 Long-term outcomes
 
-The long-term outcome lies with the platform. Because a check inside the platform's process can be reached by the code it restricts [9], a lasting fix would require Home Assistant to place community integrations behind a process boundary itself, and to make its existing per-domain user policy configurable, so that the mediator's own credential could be narrowed (R3). The project cannot deliver that change, but it supplies the evidence a proposal would need: what confinement costs, what a declaration must express, and which threats it closes and which it leaves open.
+The long-term outcome lies with the platform. Because a check inside the platform's process can be reached by the code it restricts [5], a lasting fix would require Home Assistant to place community integrations behind a process boundary itself, and to make its existing per-domain user policy configurable, so that the mediator's own credential could be narrowed (R3). The project cannot deliver that change, but it supplies the evidence a proposal would need: what confinement costs, what a declaration must express, and which threats it closes and which it leaves open.

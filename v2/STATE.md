@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-15: references renumbered by first appearance** (58 entries, all cited, [54] gap closed; map in `notes/references_renumbering_20261015.md`; notes written before today keep old numbers). Owed at typeset: strip each entry's verification annotation and the Verification status section (build_docx.py includes the file as is). Pushed `ff2cab9` before (scan 0 hits).
+
 **2026-10-15: front matter APPROVED (Younes).** Keywords final; AI declaration confirmed. Next: reference renumbering.
 
 **2026-10-15: front matter and abstract DRAFTED for review** (`submission/00_front_matter.md`; abstract 246 words; plan `notes/s0_front_matter_plan.md`). Pushed `003d27c` first (10 commits, scan 0 hits). Placeholders for Younes: programme details, acknowledgements, handbook declaration wording.
