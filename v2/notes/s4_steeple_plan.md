@@ -51,3 +51,4 @@ polling rates. §8 now ~3,190 words.
 **Later 2026-10-15:** the §8.6 research-conduct paragraph dropped (Younes: "not important"); §8 is back
 to its approved text. §4.4 rewritten for flow (topic → why a security measure could cost the environment
 → how the framework avoids both); the vendor-cloud point kept, marked as argued. Question 3 closed.
+**Later 2026-10-15:** §4.2 and §4.3 rewritten for flow (Younes). §4.3 now names the remaining cost as labour: hand-written manifests (the agreed "unmodified" wording) and following each release; 43 µs dropped from §4 (Table 12.4 has it). §4 ~1,030 words.
