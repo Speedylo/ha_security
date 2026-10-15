@@ -27,3 +27,7 @@ gateway paper "Cybersecurity, Gateways, Home Assistant, Internet of Things, Manu
 Description, Smart Home"; the systematic review "human-centred cybersecurity solutions; smart home; home
 automation; cybersecurity awareness; security challenges". Now: Home Assistant; IoT security; smart home;
 smart-home gateways; extension sandboxing; least privilege; threat modelling.
+
+**2026-10-15:** keywords now "Home Assistant; Internet of Things; smart home; smart-home gateways;
+extension sandboxing; least privilege; cybersecurity" (Younes). Declaration's AI sentence confirmed
+(Younes: yes). Still owed from Younes: programme details, acknowledgements, handbook wording.
