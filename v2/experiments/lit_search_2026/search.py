@@ -206,6 +206,9 @@ def rows_from(path):
             yield {"source": src, "title": r.get("title"), "date": r.get("publicationDate") or str(r.get("year")),
                    "venue": r.get("venue"), "doi": norm_doi(ext.get("DOI") or (ext.get("ArXiv") and f"10.48550/arxiv.{ext['ArXiv']}")),
                    "url": r.get("url"), "abstract": r.get("abstract") or ""}
+        elif src.startswith("scholar"):  # saved by hand and parsed by scholar_parse.py; no DOI
+            yield {"source": src, "title": r["title"], "date": str(r["year"] or ""), "venue": r["byline"],
+                   "doi": None, "url": r["url"], "abstract": r["snippet"]}
         else:
             yield {"source": src, "title": r["title"], "date": r["published"][:10], "venue": "arXiv",
                    "doi": norm_doi(r.get("doi")) or "10.48550/arxiv." + r["id"].rsplit("/abs/", 1)[1].split("v")[0],

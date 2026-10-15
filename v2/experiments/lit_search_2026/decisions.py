@@ -58,6 +58,12 @@ DECISIONS = {
     "R0614": (A_, "C", "RBAC flaws in vendor-cloud sharing features; users, not third-party code."),
     "R0609": (A_, "C", "Energy management model (cites [15]); not security of extensions."),
     "R0610": (A_, "C", "Network reliability by redundancy (cites [15]); not extensions."),
+    # --- Google Scholar, S1 by hand (2026-10-15 19:19); judged on Scholar's snippet ---
+    "R0627": ("abstract (Scholar snippet)", "C", "Behavioural privacy prediction built with Flask and Home Assistant; user privacy, not integration code."),
+    "R0628": ("abstract (Scholar snippet)", "C", "Edge-IoT health architecture feeding Home Assistant over MQTT; system integration."),
+    "R0629": ("abstract (Scholar snippet)", "C", "Controller-less consumer IoT architecture compared qualitatively with Matter and Home Assistant."),
+    "R0633": ("abstract (Scholar snippet)", "C", "Review of a home-automation product (qToggle) against openHAB, Home Assistant and others."),
+    "R0639": ("abstract (Scholar snippet)", "B", "Thesis (2026) on the security of home-automation communication protocols, using Home Assistant's Bluetooth proxy; network layer, does not change §7."),
 }
 
 

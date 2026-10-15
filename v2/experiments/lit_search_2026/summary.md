@@ -9,24 +9,28 @@ committed.
 
 | Stage | Records |
 |---|---|
-| Found, all sources (OpenAlex 641 incl. 496 full-text S1 sweep and 11 forward citations; Semantic Scholar 76; arXiv 4) | 721 |
-| After de-duplication (DOI, then normalised title; the seed [25] removed) | 626 |
-| Excluded on title | 579 |
-| Screened on abstract | 47 |
-| Excluded on abstract or full text (C) | 43 |
-| **B — adjacent** | **3, and 1 pending (B?)** |
+| Found, all sources (OpenAlex 641 incl. 496 full-text S1 sweep and 11 forward citations; Semantic Scholar 76; arXiv 4; Google Scholar 37 entries on four saved pages) | 758 |
+| After de-duplication (DOI, then normalised title; the seed [25] removed) | 642 |
+| Excluded on title | 590 |
+| Screened on abstract (Scholar records on its snippet) | 52 |
+| Excluded on abstract or full text (C) | 47 |
+| **B — adjacent** | **4, and 1 pending (B?)** |
 | **A — closes the gap** | **0, pending one full text** |
 
 Full text was read for R0003, R0048, R0226, R0261. It could not be obtained (publisher blocks,
 paywall) for R0057, R0231, R0281, R0497, R0611; those were judged on their abstracts, as §5.3 allows.
-Google Scholar (S1, by hand) is **not yet run** — Younes, §9.1.
+**Google Scholar (S1, by hand, §9.1):** run by Younes 2026-10-15 19:19, range 2024–2026, the query as
+written in §4; Scholar estimated "about 116 results" but displayed 37 entries over four pages (10, 10, 7,
+10; the fourth save repeats most of page 3 and adds three), 30 of them distinct. 14 were already in the
+set and 16 were new; one new record is B (R0639). Parsed by `scholar_parse.py` into `raw/scholar_S1.json.gz`;
+the saved pages are kept in `scholar/`. Scholar's estimate is not a count of retrievable records.
 
 ## Against the prediction (§6)
 
 - **A: zero** — holds provisionally. One record, TAPShield (R0497), cannot be settled without its
   full text; see below.
 - **B: zero to five** — holds: P3CRID (R0226), SHERLOC (R0057), the ESPHome/MQTT analysis (R0003),
-  and TAPShield if it stays B.
+  the protocol-security thesis from Scholar (R0639), and TAPShield if it stays B.
 - **Forward citations of [5], [15], [33], [25] since 2024-12-01: fewer than 30** — holds: 11
   (4, 6, 0, 1). None builds or evaluates confinement of hub extensions.
 
@@ -52,9 +56,8 @@ Google Scholar (S1, by hand) is **not yet run** — Younes, §9.1.
 
 ## Owed
 
-- Younes: Google Scholar S1 by hand (date, hit count, first 50 results) → rows with source `scholar`.
 - Younes: TAPShield's full text through the library; then its row is settled A or B.
-- Younes: review every A and B (R0003, R0057, R0226, R0497) and the 20 exclusions in
+- Younes: review every A and B (R0003, R0057, R0226, R0497, R0639) and the 20 exclusions in
   `review_sample.csv` (seed 20261015); disagreements recorded in that file, not erased.
 - Then: §7.1's one or two sentences with these counts; SandTrap (and TAPShield) placed in §7's text
   where the comparison with this project's design is made.
