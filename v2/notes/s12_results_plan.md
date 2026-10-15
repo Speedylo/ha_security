@@ -232,3 +232,15 @@ adversary; the mean as the only demand statistic) and hands the limits to §14.
 removed, §12 may gain contribution 1's precise numbers (report §7.33 table: config_entries 94.4/92.5,
 services 64.6/37.5, bus 48.6/17.5, states 41.0/35.0, others' services 22.2/12.5; own entry 90% vs all
 entries 22.5%), pointing back to §9.3's paragraph.
+
+**2026-10-15: old 2026-09-08 tail deleted; contribution 1's numbers added (Younes).**
+- Tail's destinations confirmed: 12.4 → §3 C1 row; 12.6 → §12.2; 12.7 → §14; 12.9 → §6.2.
+  12.8 (non-monotonic depth series) superseded: resolved 2026-10-03 (56.5/92.3/111.6/135.6 MB, §10, §12.3).
+  12.10 ("52 components vs 2") dropped: pre-rerun figure, not rechecked (as in §4), and its argument for a
+  check inside the loader contradicts §9. 12.2.2's profile decision dropped as design history.
+- New Table 12.4 (API surface, 144 most-installed vs 40 random; report §7.33 /
+  `figures/api_surface_uniform.json`) at the end of §12.2, with one paragraph pointing to §9.3.
+  Tables renumbered: costs 12.4 → 12.5, verification 12.5 → 12.6 (Appendix B's two references updated).
+- Stale in approved §12.2's closing paragraph, fixed as §12.5 was: "thirteen …, nine of which produced
+  checkable values" → "each of which produced a value checked against its own code".
+- §12 now ~4,280 prose words vs 3,500 (trim at week 6).
