@@ -51,3 +51,9 @@ held after a fix. Where a note's count is stated by the working report, that cou
    True of every miss listed above; confirm you're happy to state it.
 3. A logic-model figure (inputs → activities → outputs → outcomes) is conventional for this section;
    none is drafted. Add one to the figure list?
+
+**Revised 2026-10-15 after Younes's review of §6.2:** it "throws facts at a reader's face as if they did
+the project" (the aiodns sentence). Insider examples deleted (aiodns share, page-cache bound, port-binding
+harness); the one example kept per paragraph is explained in plain terms (least-installed integrations
+expected to load less often, loaded more often; the flood safeguard stopping a legitimate performance
+test). Misses split 6 (first row) + 18 (later) = 24. ~1,050 words.

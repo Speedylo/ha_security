@@ -8,20 +8,20 @@ The primary population is the households that run community integrations: 379,32
 
 ## 6.2 Underlying assumptions
 
-The project's assumptions are on record, because each was committed as a prediction before the measurement that could refute it. Table 6.1 scores every prediction that can be counted one by one. Eight further notes from the verification campaign set pass-or-fail criteria for fixes rather than predicting outcomes, and they are not counted.
+The project's assumptions are on record, because each was written down as a prediction and committed to the repository before the measurement that could prove it wrong. Table 6.1 scores every prediction that can be counted individually. Eight further notes set pass-or-fail criteria for fixes rather than predicting outcomes, and they are not counted.
 
 **Table 6.1 — Registered predictions, scored**
 
 | Period | Prediction notes | Held | Registered |
 |---|---|---|---|
-| First evaluation, 2–3 September 2026 | The evaluation's register and 1 note | 2 | 8 |
+| First evaluation, 2–3 September 2026 | The evaluation plan and 1 note | 2 | 8 |
 | Completing and re-measuring the framework, 3–5 October | 16 | 107 | 119 |
 | Verification campaign, 7–13 October | 10 | 96 | 102 |
 | **Total** | | **205** | **229** |
 
-The first row differs from the others because of what its predictions were about. The two that held concerned the design: that confinement would cost little or no compatibility, and that this would hold on an independent sample. The six that failed concerned the world around it. The least-installed integrations, for instance, were predicted to import 10 to 30 points worse than the most-installed and imported 8 points better, and the memory bound was expected to kill a legitimate reader of large files, although the kernel reclaims the page cache it charges. Later predictions held more often largely because they concerned code that had just been read or built, so their rate reflects familiarity rather than foresight.
+The first evaluation is the most informative row, because its predictions were made before the project knew how the ecosystem behaved. The two that held concerned the framework itself: that confining an integration would cost little or no compatibility, and that this result would repeat on a second, independently drawn sample. The six that failed concerned the world around the framework. The least-installed integrations, for example, were expected to load successfully less often than the most popular ones because they are less maintained, and they loaded more often.
 
-The later misses show where the remaining uncertainty lay. Some concerned the platform again: the share of name resolution through `aiodns` fell from 96% to between 11% and 17% once the platform's own device discovery was no longer counted as the integrations'. Others concerned the project's instruments, such as a harness that bound a port already in use. The rest found the edges of the design, as when the flood cut-off stopped a benchmark that issued refusals as fast as an attack would. None concerned its core: isolation, equal compatibility in both arms, and refusal of what was not declared held in every prediction that tested them.
+Later predictions held far more often, but mainly because most were written about code that had just been read or built, so their rate reflects familiarity rather than foresight. Their 18 misses came largely from the platform's behaviour and from the project's own test tools, and a few exposed limits at the framework's edges, such as a safeguard against an integration that floods the mediator with requests, which also stopped a legitimate performance test. None of the 24 misses concerned the framework's central properties: that integrations are isolated, that they work as well confined as unconfined, and that whatever they did not declare is refused.
 
 Two assumptions could not be tested and are stated as limits: that the kernel's namespaces and system-call filter are sound, and that the person approving a declaration understands it, which no user study examined.
 
