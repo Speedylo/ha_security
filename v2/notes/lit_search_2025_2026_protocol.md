@@ -116,3 +116,12 @@ written as [9], [18], [20], [21], are now [5] (Corno and Mannella 2022, threat m
 Mannella 2023, gateway MUD), [33] (Mannella's 2024 thesis) and [25] (Thingnes and Meland 2025). [25]
 was itself published inside the window; it is the seed, not a result, and is excluded from the counts.
 A seed that OpenAlex does not index is recorded as such, not replaced.
+
+## 10. Amendment 2026-10-15 — field searched, written after the first API attempts, before any screening
+
+OpenAlex's `search=` parameter matches **full text**, not titles and abstracts (its response states the
+query it ran), and cursor paging now needs a key. The first two attempts failed on paging (HTTP 401)
+before any record was saved. Changed then: every OpenAlex string runs against `title_and_abstract`,
+the field Semantic Scholar and arXiv search, so the three sources compare; S1 runs **also** over
+OpenAlex's full text (496 records), because S1 is where an A would be, and that costs screening time
+only. Paging uses page numbers. Nothing had been screened when this was decided.

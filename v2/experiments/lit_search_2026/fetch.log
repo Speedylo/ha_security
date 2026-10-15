@@ -1,0 +1,17 @@
+openalex_S1: 10
+s2_S1: 2
+arxiv_S1: 1
+openalex_S2: 8
+s2_S2: 6
+arxiv_S2: 0
+openalex_S3: 15
+s2_S3: 8
+arxiv_S3: 1
+openalex_S4: 101
+s2_S4: 60
+arxiv_S4: 2
+openalex_S1_fulltext: 496
+openalex_cites_ref5_corno2022: 4
+openalex_cites_ref15_corno2023: 6
+openalex_cites_ref33_mannella2024: 0
+openalex_cites_ref25_thingnes2025: 1
