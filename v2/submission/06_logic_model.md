@@ -4,7 +4,7 @@ This section traces the project from the people it serves, through what it assum
 
 ## 6.1 Target population
 
-The primary population is the households that run community integrations: 379,326 of Home Assistant's 669,743 active installations, or 56.6%, run the community store, each with a mean of 4.02 community integrations [1]. These households own the assets at risk and carry that risk without a means of acting on it. The second population is the authors, whose 4,220 integrations have a median of 20 installations [1]. Most are volunteers, which is why requirement C1 leaves their code unmodified, although each integration still needs a manifest, and every manifest in this evaluation was written by hand. The third is the Home Assistant project, which would have to own any lasting fix.
+The primary population is the households that run community integrations: 379,326 of Home Assistant's 669,743 active installations, or 56.6%, run the community store, each with a mean of 4.02 community integrations [1]. These households own the assets at risk and carry that risk without a means of acting on it. The second population is the authors, whose 4,220 integrations have a median of 20 installations [1]. Most are volunteers, which is why requirement C1 leaves their code unmodified. What the framework asks of them is smaller: a `permissions` block in the manifest each integration already ships, which no integration carries yet, so every manifest in this evaluation was written by hand. The third is the Home Assistant project, which would have to own any lasting fix.
 
 ## 6.2 Underlying assumptions
 
@@ -29,7 +29,7 @@ Two assumptions could not be tested and are stated as limits: that the kernel's 
 
 ### 6.3.1 Resources
 
-The project used one device, one pinned platform release and public data. The device is a Raspberry Pi 5 with 4 GB of memory, the kind of single-board computer on which households run the platform [55], and every reported measurement was taken on it without administrator rights. Home Assistant 2026.8.3 was pinned so that each compatibility figure can be reproduced, and the corpora come from the community store's index. The supervisor and mediator use only Python's standard library, because a confinement tool that brings its own dependencies enlarges the surface it exists to reduce. The code was written with AI assistance, which shortened the building but, as the last challenge explains, cost the project its independent adversary.
+The project used one device, one pinned platform release and public data. The device is a Raspberry Pi 5 with 4 GB of memory, the kind of single-board computer on which households run the platform [55], and every reported measurement was taken on it without administrator rights. Home Assistant 2026.8.3 was pinned so that each compatibility figure can be reproduced, and the corpora come from the community store's index. The supervisor and mediator use only Python's standard library, because a confinement tool that brings its own dependencies enlarges the surface it exists to reduce. The code was written with AI assistance, which shortened the building.
 
 ### 6.3.2 Challenges
 
@@ -51,7 +51,7 @@ The short-term outcomes are achieved and measured. The heap-walk attack [9] and 
 
 ### 6.6.2 Intermediate outcomes
 
-The intermediate outcomes are plausible but not yet shown, and each has a known obstacle. Manifests would have to be generated from an integration's code rather than written by hand, the framework would have to run a household's integrations for months, disk and network bandwidth would need a bound the device does not delegate to an unprivileged user (T16), and an independent adversary would have to attack it. Each needs engineering time rather than a new research result.
+The intermediate outcomes are plausible but not yet shown, and each has a known obstacle. Integrations beyond the evaluation would need manifests, added by their authors or supplied with an installation. The framework would also have to run a household's integrations for months, disk and network bandwidth would need a bound the device does not delegate to an unprivileged user (T16), and an independent adversary would have to attack it. None needs a new research result.
 
 ### 6.6.3 Long-term outcomes
 
