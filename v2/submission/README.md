@@ -33,6 +33,9 @@ load-bearing, and this draft preserves them in condensed form rather than droppi
 
 ## Known gaps in this draft
 
+*Superseded (2026-10-15): every section and appendix is now written and approved; the live list of
+what remains is the top block of `../STATE.md`. The list below is kept as it was.*
+
 1. **Four appendices are stubs.** The tables exist in `report/` and need lifting, not writing.
 2. **Nine figures are marked `[TO DRAW]`.** This is the largest remaining block of work and it
    *adds* pages rather than cutting them.
@@ -53,3 +56,10 @@ The title-page title is 18 pt — the only size not derived from the two the bri
 directly will be overwritten and its changes lost. On opening in Word, right-click the
 contents page and choose *Update Field* to populate it — the heading structure is already
 there, so it builds itself.
+
+**Figures (2026-10-15).** A line `![Figure n](../figures/name.svg)` is embedded as an SVG picture,
+the figure of record, with `name.png` beside it as the fallback Word requires (older readers show
+it; Word 2016+ and its PDF export draw the SVG). Each figure script writes that PNG when `cairosvg`
+is installed; the build stops if a PNG is missing. Rendered in Word on 2026-10-15: **112 pages**
+(A4, 2.5 cm margins, 1.15 spacing), body §1–§15 on pp. 4–75, references pp. 76–81, appendices
+pp. 82–112; contents and lists still to generate, reference annotations still to strip.
