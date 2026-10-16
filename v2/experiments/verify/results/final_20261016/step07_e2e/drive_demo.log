@@ -1,0 +1,47 @@
+{
+  "switch_in_A": "switch.demo_flood_misbehave",
+  "press": {
+    "success": true,
+    "error": null,
+    "seconds": 0.01216250899960869
+  },
+  "cut_off_after_s": 0.4109638910013018,
+  "issue_after_s": 0.0004138179992878577,
+  "press_to_issue_s": 0.4238581290010188,
+  "issue": {
+    "severity": "error",
+    "is_fixable": true,
+    "translation_key": "cut_off",
+    "translation_placeholders": {
+      "name": "demo_flood"
+    }
+  },
+  "supervisor_after_cut_off": [
+    "11:00:04  demo_flood cut off by the mediator; killing its sandbox"
+  ],
+  "records_during_flood": {
+    "cutoff": 1,
+    "decision": 102
+  },
+  "fix_flow": [
+    "confirm",
+    "create_entry"
+  ],
+  "restarted_after_s": 0.12075848899985431,
+  "issue_gone": true,
+  "switch_back_off_after_s": 0.5980872479995014,
+  "records_total": {
+    "cutoff": 1,
+    "decision": 103,
+    "reinstate": 1,
+    "run": 1
+  }
+}
+  ok    the press was accepted
+  ok    it was cut off
+  ok    the house was told
+  ok    the fix flow completed
+  ok    it was started again
+  ok    the issue is gone
+  ok    its switch is back
+  ok    one cut-off and one reinstatement recorded

@@ -1,0 +1,21 @@
+start 2026-10-16T10:59:09+01:00 commit 38e70ecbaae8e16c45957f371663729ca7268e10 tag final-2026-10 dirty=0
+house_a_up exit=0 seconds=4
+real_platform_restart exit=0 seconds=26
+approval exit=0
+supervisor pid 61364
+drive_demo exit=0 seconds=1
+e2e_real_thermal exit=0 seconds=22
+e2e_real_adaptive exit=0 seconds=22
+house_a_down exit=0 seconds=2
+e2e_standin exit=0 seconds=10
+egress_nordpool exit=0 seconds=107
+egress_dwd_weather exit=1 seconds=213
+egress_pirateweather exit=1 seconds=143
+egress_smhi_brandrisk exit=0 seconds=191
+egress_regensburg_transport exit=0 seconds=471
+local_midea_ac_lan exit=0 seconds=1321
+local_localtuya exit=0 seconds=116
+oauth_trakt exit=0 seconds=23
+dirty after=0
+end 2026-10-16T11:44:11+01:00
+ALLDONE

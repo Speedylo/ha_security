@@ -1,0 +1,28 @@
+Final rerun, step 7 — the end-to-end subjects (final-2026-10, 10:59–11:44). Commands are verify/phase2_l23.sh's,
+issued against the clone (F61's clause: the script cds into the frozen ~/r2exp/verify/v2), with the supervisor
+approved as F61's fix does. (A) up for the real-platform steps, down for every step with an unconfined arm.
+
+  ok  real_platform_restart        55/55
+  ok  drive_demo                   cut-off, Repairs issue, fix flow, restart, one cut-off + one reinstatement recorded
+  ok  e2e_real_thermal / _adaptive published through the mediator 1/1 each; durable log failing: none
+  ok  e2e_standin                  published 4/5, durable log failing: none — identical to phase 2 (2026-10-05)
+  ok  nordpool                     16/16; 0.029 = 0.029
+  ok  smhi_brandrisk               20/20
+  ok  regensburg_transport         16/16; "2 Graß via Geibelplatz at 12:17" in both arms
+  ..  dwd_weather                  15/16, exit 1 — the one failed check is "nothing the integration asked for was
+                                   refused": www.dwd.de, which the declaration written from source missed. The same
+                                   check failed the same way in phase 2 (15/16) and is kept by design (report §7.31:
+                                   the omission is contained, the host not added afterwards). Table 12.3's claim —
+                                   same forecast issue time and measurement time — holds (03:00 and 09:00 in both).
+  ..  pirateweather                16/17, exit 1 — the one failed check is equality of a live reading: 12.4056 °C
+                                   confined against 12.3889 °C unconfined, read minutes apart. Same kind as Table 12.3's
+                                   own 17.6 against 17.62 and regensburg's 16:05 against 16:04. Key never in the
+                                   mediator's records (T3 ok); refusal with the clause absent ok.
+  ok  midea_ac_lan, localtuya      identical to phase 2 per arm, incl. device traffic only from the mediator's host
+  ok  trakt_tv                     identical to phase 2: refresh, spent token refused on respawn, carried token loads,
+                                   nothing declared refused. Data directory kept.
+
+Credential scan of this folder: 0 hits for the live Trakt and Pirate Weather values.
+Prediction "all thirteen as in Table 12.3": held as Table 12.3 states them. Neither exit 1 is a new finding.
+For week 6: Table 12.3's pirateweather cell gives 17.6 against 17.62 from an earlier run; this rerun's pair is
+12.41 against 12.39 °C. nordpool's 0.033 and regensburg's 16:05/16:04 likewise come from earlier runs.
