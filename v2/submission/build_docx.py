@@ -16,6 +16,7 @@ import re
 
 from docx import Document
 from docx.enum.section import WD_SECTION
+from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
 from docx.oxml import OxmlElement
@@ -245,19 +246,35 @@ def add_quote(doc, lines: list[str]) -> None:
         add_table(doc, table_rows)
 
 
-def add_toc_field(doc) -> None:
+# A caption opens its paragraph in bold: "**Table 12.3 — Title**" or "**Figure 9.1 — Title.** Text".
+# The bold part becomes a caption paragraph in its own style, so that the lists of tables and
+# figures can be generated from those styles; any text after it follows as an ordinary paragraph.
+CAPTION = re.compile(r"^\*\*((Table|Figure) [A-Z0-9][^*]*?)\*\*\s*(.*)$")
+CAPTION_STYLE = {"Table": "Table Caption", "Figure": "Figure Caption"}
+
+# The front matter's three generated lists, each the field that builds it.
+GENERATED = {
+    "Contents": (r'TOC \o "1-3" \h \z \u', "contents page"),
+    "List of Figures": (r'TOC \h \z \t "Figure Caption,1"', "list of figures"),
+    "List of Tables": (r'TOC \h \z \t "Table Caption,1"', "list of tables"),
+}
+
+
+def add_toc_field(doc, instruction: str = GENERATED["Contents"][0],
+                  what: str = "contents page") -> None:
     """A TOC field Word populates on open (References > Update Table)."""
     para = doc.add_paragraph()
     run = para.add_run()
     begin = OxmlElement("w:fldChar")
     begin.set(qn("w:fldCharType"), "begin")
+    begin.set(qn("w:dirty"), "true")
     instr = OxmlElement("w:instrText")
     instr.set(qn("xml:space"), "preserve")
-    instr.text = r'TOC \o "1-3" \h \z \u'
+    instr.text = instruction
     sep = OxmlElement("w:fldChar")
     sep.set(qn("w:fldCharType"), "separate")
     placeholder = OxmlElement("w:t")
-    placeholder.text = "Right-click and choose Update Field to build the contents page."
+    placeholder.text = f"Right-click and choose Update Field to build the {what}."
     end = OxmlElement("w:fldChar")
     end.set(qn("w:fldCharType"), "end")
     for node in (begin, instr, sep, placeholder, end):
@@ -271,10 +288,18 @@ def render(doc, lines: list[str], *, first_file: bool) -> None:
     def flush_para():
         if not para_buf:
             return
+        text = " ".join(para_buf)
+        para_buf.clear()
+        caption = CAPTION.match(text)
+        if caption:
+            title, kind, rest = caption.groups()
+            add_runs(doc.add_paragraph(style=CAPTION_STYLE[kind]), title)
+            if not rest:
+                return
+            text = rest
         para = doc.add_paragraph()
         para.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        add_runs(para, " ".join(para_buf))
-        para_buf.clear()
+        add_runs(para, text)
 
     while i < n:
         line = lines[i]
@@ -334,8 +359,14 @@ def render(doc, lines: list[str], *, first_file: bool) -> None:
                     doc.add_page_break()
                 head = doc.add_heading(level=min(level, 4))
                 add_runs(head, text)
-                if first_file and text.strip() == "Contents":
-                    add_toc_field(doc)
+                if first_file and text.strip() in GENERATED:
+                    add_toc_field(doc, *GENERATED[text.strip()])
+                    # The source's "*[Generated at typeset time.]*" stands where the field now is.
+                    j = i + 1
+                    while j < n and not lines[j].strip():
+                        j += 1
+                    if j < n and lines[j].strip() == "*[Generated at typeset time.]*":
+                        i = j
             i += 1
             continue
 
@@ -396,6 +427,14 @@ def build(out: pathlib.Path) -> tuple[int, int]:
         style.paragraph_format.space_before = Pt(14 if level <= 2 else 10)
         style.paragraph_format.space_after = Pt(6)
         style.paragraph_format.keep_with_next = True
+
+    for name in CAPTION_STYLE.values():
+        style = doc.styles.add_style(name, WD_STYLE_TYPE.PARAGRAPH)
+        style.base_style = normal
+        style.font.bold = True
+        style.paragraph_format.space_before = Pt(6)
+    # A table's caption stands above it, a figure's below.
+    doc.styles["Table Caption"].paragraph_format.keep_with_next = True
 
     title = doc.styles["Title"]
     set_font(title.font, BODY)
