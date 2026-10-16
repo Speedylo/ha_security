@@ -1,254 +1,119 @@
 # References
 
-**[1]** Home Assistant, *Analytics*. https://analytics.home-assistant.io/ — 669,743 active
-installations; retrieved 21 August 2026. Per-domain custom-integration install counts from
-https://analytics.home-assistant.io/custom_integrations.json, same date.
+[1] Home Assistant. "Home Assistant analytics." Home Assistant. https://analytics.home-assistant.io/ and https://analytics.home-assistant.io/custom_integrations.json (accessed Aug. 21, 2026).
 
-**[2]** Home Assistant, Developer Documentation: *Creating your first integration*
-(https://developers.home-assistant.io/docs/creating_component_index/) and *Service actions*
-(https://developers.home-assistant.io/docs/dev_101_services/). The latter documents registration
-and invocation of service actions and specifies no permission model, scoping rule or caller check.
+[2] Home Assistant. "Creating your first integration" and "Service actions." Home Assistant Developer Documentation. https://developers.home-assistant.io/docs/creating_component_index/ and https://developers.home-assistant.io/docs/dev_101_services/ (accessed Oct. 16, 2026).
 
-**[3]** Home Assistant, *Disclosure: security vulnerabilities in custom integrations HACS, Dwains
-Dashboard, Font Awesome and others*, 22 January 2021.
-https://www.home-assistant.io/blog/2021/01/22/security-disclosure/
+[3] Home Assistant. "Disclosure: Security vulnerabilities in custom integrations HACS, Dwains Dashboard, Font Awesome and others." Home Assistant Blog. https://www.home-assistant.io/blog/2021/01/22/security-disclosure/ (accessed Oct. 16, 2026).
 
-**[4]** elttam, *PwnAssistant — Controlling /home's via a Home Assistant RCE* (CVE-2023-27482).
-https://www.elttam.com/blog/pwnassistant
+[4] elttam. "PwnAssistant: Controlling /home's via a Home Assistant RCE (CVE-2023-27482)." elttam Blog. https://www.elttam.com/blog/pwnassistant (accessed Oct. 16, 2026).
 
-**[5]** F. Corno and L. Mannella, "A Threat Model for Extensible Smart Home Gateways",
-*7th International Conference on Smart and Sustainable Technologies (SpliTech)*, 2022.
-https://iris.polito.it/handle/11583/2963822
+[5] F. Corno and L. Mannella, "A threat model for extensible smart home gateways," in *Proc. 7th Int. Conf. Smart and Sustainable Technologies (SpliTech)*, Split/Bol, Croatia, 2022, pp. 1–6, doi: 10.23919/SpliTech55088.2022.9854235.
 
-**[6]** HACS, *Include default repositories*. https://hacs.xyz/docs/publish/include/
+[6] HACS. "Include default repositories." HACS Documentation. https://hacs.xyz/docs/publish/include/ (accessed Oct. 16, 2026).
 
-**[7]** Home Assistant, *Security Disclosure 2: vulnerabilities in custom integrations HACS, Font
-Awesome and others*, 23 January 2021.
-https://www.home-assistant.io/blog/2021/01/23/security-disclosure2/
+[7] Home Assistant. "Security disclosure 2: Vulnerabilities in custom integrations HACS, Font Awesome and others." Home Assistant Blog. https://www.home-assistant.io/blog/2021/01/23/security-disclosure2/ (accessed Oct. 16, 2026).
 
-**[8]** P. Przymus and T. Durieux, "Wolves in the Repository: A Software Engineering Analysis of the
-XZ Utils Supply Chain Attack", in *Proc. 2025 IEEE/ACM 22nd Int. Conf. Mining Software Repositories
-(MSR)*, Ottawa, ON, Canada, 2025, pp. 91–102. doi:10.1109/MSR66628.2025.00026 — §III-B gives the
-attacker's involvement as 2.6 years (2021-10-29 to 2024-03-28). *(Replaced the Wikipedia source
-2026-10-11; checked against Crossref 2026-10-12.)*
+[8] P. Przymus and T. Durieux, "Wolves in the repository: A software engineering analysis of the XZ Utils supply chain attack," in *Proc. IEEE/ACM 22nd Int. Conf. Mining Software Repositories (MSR)*, Ottawa, ON, Canada, 2025, pp. 91–102, doi: 10.1109/MSR66628.2025.00026.
 
-**[9]** Home Assistant, *Security*. https://www.home-assistant.io/security/
+[9] Home Assistant. "Security." Home Assistant. https://www.home-assistant.io/security/ (accessed Oct. 16, 2026).
 
-**[10]** Home Assistant Core 2026.8.3, `homeassistant/core.py` (`ServiceRegistry.async_call`: a call
-made without a context receives `Context()`, whose `user_id` is `None`, line 2881) and
-`homeassistant/helpers/service.py` (`verify_domain_control`: the permission check returns early when
-the call's context names no user, line 1027). https://github.com/home-assistant/core/tree/2026.8.3 —
-checked against the pinned source 2026-10-14. Cited in §2.3.
+[10] Home Assistant Core, version 2026.8.3, files `homeassistant/core.py` (`ServiceRegistry.async_call`) and `homeassistant/helpers/service.py` (`verify_domain_control`). [Online]. Available: https://github.com/home-assistant/core/tree/2026.8.3
 
-**[11]** T. Cohen (titilambert), *Remote Integration Execution*, Home Assistant Community RFC,
-12 May 2026. https://community.home-assistant.io/t/remote-integration-execution/1010130
+[11] T. Cohen. "Remote integration execution." Home Assistant Community (RFC). https://community.home-assistant.io/t/remote-integration-execution/1010130 (accessed Oct. 16, 2026).
 
-**[12]** Home Assistant, *Add-ons* (apps), Developer Documentation.
-https://developers.home-assistant.io/docs/add-ons
+[12] Home Assistant. "Add-ons." Home Assistant Developer Documentation. https://developers.home-assistant.io/docs/add-ons (accessed Oct. 16, 2026).
 
-**[13]** P. Ladisa, H. Plate, M. Martínez and O. Barais, "SoK: Taxonomy of Attacks on Open-Source
-Software Supply Chains", *IEEE Symposium on Security and Privacy*, 2023.
+[13] P. Ladisa, H. Plate, M. Martinez, and O. Barais, "SoK: Taxonomy of attacks on open-source software supply chains," in *Proc. IEEE Symp. Security and Privacy (SP)*, San Francisco, CA, USA, 2023, pp. 1509–1526, doi: 10.1109/SP46215.2023.10179304.
 
-**[14]** A. Barth, A. P. Felt, P. Saxena and A. Boodman, "Protecting Browsers from Extension
-Vulnerabilities", *NDSS*, 2010.
-https://www.adambarth.com/papers/2010/barth-felt-saxena-boodman.pdf
+[14] A. Barth, A. P. Felt, P. Saxena, and A. Boodman, "Protecting browsers from extension vulnerabilities," in *Proc. Network and Distributed System Security Symp. (NDSS)*, San Diego, CA, USA, 2010. [Online]. Available: https://www.adambarth.com/papers/2010/barth-felt-saxena-boodman.pdf
 
-**[15]** F. Corno and L. Mannella, "A Gateway-based MUD Architecture to Enhance Smart Home
-Security", 2023.
+[15] F. Corno and L. Mannella, "A gateway-based MUD architecture to enhance smart home security," in *Proc. 8th Int. Conf. Smart and Sustainable Technologies (SpliTech)*, Split/Bol, Croatia, 2023, pp. 1–6, doi: 10.23919/SpliTech58164.2023.10193747.
 
-**[16]** systemd, `units/user@.service.in`. https://github.com/systemd/systemd — the line
-`Delegate=pids memory cpu`; checked 2026-10-11.
+[16] systemd, file `units/user@.service.in`. [Online]. Available: https://github.com/systemd/systemd (accessed Oct. 11, 2026).
 
-**[17]** Linux man-pages project, *namespaces(7)*. https://man7.org/linux/man-pages/man7/namespaces.7.html
+[17] Linux man-pages project. "namespaces(7)." man7.org. https://man7.org/linux/man-pages/man7/namespaces.7.html (accessed Oct. 16, 2026).
 
-**[18]** Linux man-pages project, *seccomp(2)*. https://man7.org/linux/man-pages/man2/seccomp.2.html
+[18] Linux man-pages project. "seccomp(2)." man7.org. https://man7.org/linux/man-pages/man2/seccomp.2.html (accessed Oct. 16, 2026).
 
-**[19]** The Linux kernel documentation, *Control Group v2*.
-https://docs.kernel.org/admin-guide/cgroup-v2.html — also carries the common-ancestor rule for
-moving processes between control groups (stated as well in *cgroups(7)*).
+[19] The Linux Kernel Documentation. "Control Group v2." docs.kernel.org. https://docs.kernel.org/admin-guide/cgroup-v2.html (accessed Oct. 16, 2026).
 
-**[20]** ISO, *ISO 31000:2018 — Risk management — Guidelines*, International Organization for
-Standardization, 2018. https://www.iso.org/standard/65694.html — the clause numbers Chapter 4
-discharges section by section (§6.3.2 scope and assets, §6.3.3 context, §6.3.4 risk criteria,
-§6.4.2 risk identification) are this edition's.
+[20] *Risk Management — Guidelines*, ISO 31000:2018, International Organization for Standardization, Geneva, Switzerland, 2018.
 
-**[21]** A. Shostack, *Threat Modeling: Designing for Security*, Wiley, 2014. The systematic
-treatment of STRIDE this chapter applies per trust boundary. The acronym originates with
-L. Kohnfelder and P. Garg, *The Threats to Our Products*, Microsoft, 1999.
+[21] A. Shostack, *Threat Modeling: Designing for Security*. Indianapolis, IN, USA: Wiley, 2014.
 
-**[22]** Home Assistant, Developer Documentation: Integration Quality Scale rule *The integration
-dependency supports passing in a websession*.
-https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/inject-websession
-— recommends `async_get_clientsession(hass)`; opened 2026-10-08.
+[22] Home Assistant. "The integration dependency supports passing in a websession." Home Assistant Developer Documentation, Integration Quality Scale. https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/inject-websession (accessed Oct. 8, 2026).
 
-**[23]** Regulation (EU) 2024/2847 of the European Parliament and of the Council of 23 October 2024 on
-horizontal cybersecurity requirements for products with digital elements (Cyber Resilience Act),
-*Official Journal of the European Union*, L, 2024/2847, 20 Nov. 2024.
-http://data.europa.eu/eli/reg/2024/2847/oj — recital 18 (non-monetised free and open-source software
-is not a commercial activity), Article 24 (stewards' duties), Article 64(10) (fines do not apply to
-stewards), Article 14 (manufacturers report an actively exploited vulnerability; early warning within 24 h),
-Article 71 (applies from 11 December 2027; Article 14 from 11 September 2026). Checked
-2026-10-15 against a reproduction of the OJ text (EUR-Lex did not render to the fetcher); the signing date 23 October 2024
-confirmed in the European Parliament's Legislative Observatory summary. Cited in §4.5 and §4.6.
+[23] Regulation (EU) 2024/2847 of the European Parliament and of the Council of 23 October 2024 on horizontal cybersecurity requirements for products with digital elements (Cyber Resilience Act), *Off. J. Eur. Union*, L series, Nov. 20, 2024. [Online]. Available: http://data.europa.eu/eli/reg/2024/2847/oj
 
-**[24]** Home Assistant, *Home Assistant Green*. https://www.home-assistant.io/green — "Home
-Assistant Green is created and designed by Nabu Casa"; checked 2026-10-15. Cited in §4.5.
+[24] Home Assistant. "Home Assistant Green." Home Assistant. https://www.home-assistant.io/green (accessed Oct. 15, 2026).
 
-**[25]** T. R. Thingnes and P. H. Meland, "Security Challenges for Users of Extensible Smart Home
-Hubs: A Systematic Literature Review", *Future Internet*, 17(6):238, 2025.
-https://doi.org/10.3390/fi17060238
+[25] T. R. Thingnes and P. H. Meland, "Security challenges for users of extensible smart home hubs: A systematic literature review," *Future Internet*, vol. 17, no. 6, Art. no. 238, 2025, doi: 10.3390/fi17060238.
 
-**[26]** A. P. Felt, E. Ha, S. Egelman, A. Haney, E. Chin and D. Wagner, "Android Permissions: User
-Attention, Comprehension, and Behavior", in *Proc. 8th Symp. Usable Privacy and Security (SOUPS)*,
-Washington, DC, USA, 2012. Tech. report version: UC Berkeley EECS-2012-26,
-https://www2.eecs.berkeley.edu/Pubs/TechRpts/2012/EECS-2012-26.html — 308-user survey and 25-user
-lab study; 17% paid attention to permissions at installation, 3% of survey respondents answered all
-three comprehension questions correctly. Figures checked 2026-10-15 in the abstract and §1 of the tech report itself;
-DOI and pages of the SOUPS version to confirm on Crossref. Cited in §4.7.
+[26] A. P. Felt, E. Ha, S. Egelman, A. Haney, E. Chin, and D. Wagner, "Android permissions: User attention, comprehension, and behavior," in *Proc. 8th Symp. Usable Privacy and Security (SOUPS)*, Washington, DC, USA, 2012, pp. 1–14, doi: 10.1145/2335356.2335360.
 
-**[27]** OWASP, *Threat Dragon*. https://owasp.org/www-project-threat-dragon/ — the model format
-`figures/fig_4_1_current_state.py` emits, from which Figures 4.1 and 5.1 are generated.
+[27] OWASP. "OWASP Threat Dragon." OWASP Foundation. https://owasp.org/www-project-threat-dragon/ (accessed Oct. 16, 2026).
 
-**[28]** ETSI, *CYBER; Cyber Security for Consumer Internet of Things: Baseline Requirements*, ETSI EN
-303 645 V3.1.3, Sept. 2024.
-https://www.etsi.org/deliver/etsi_en/303600_303699/303645/03.01.03_60/en_303645v030103p.pdf — §1
-(scope lists "connected home automation and alarm systems, especially their gateways and hubs"),
-Provision 5.6-7 ("Software should run with least necessary privileges, taking account of both
-security and functionality"). Both read in the PDF 2026-10-15. Cited in §5.2.
+[28] *CYBER; Cyber Security for Consumer Internet of Things: Baseline Requirements*, ETSI EN 303 645 V3.1.3, European Telecommunications Standards Institute, Sophia Antipolis, France, Sep. 2024.
 
-**[29]** Joint Task Force, *Security and Privacy Controls for Information Systems and
-Organizations*, NIST Special Publication 800-53 Revision 5, National Institute of Standards and
-Technology, September 2020. doi:10.6028/NIST.SP.800-53r5. Control AU-5, *Response to Audit Logging
-Process Failures*, and its enhancement AU-5(4), *Shutdown on Failure*.
+[29] Joint Task Force, "Security and privacy controls for information systems and organizations," Nat. Inst. Standards Technol., Gaithersburg, MD, USA, NIST SP 800-53 Rev. 5, Sep. 2020, doi: 10.6028/NIST.SP.800-53r5.
 
-**[30]** Common Criteria Recognition Arrangement, *Common Criteria for Information Technology
-Security Evaluation, Part 2: Security functional components*, version 3.1 revision 5,
-CCMB-2017-04-002, April 2017. Component FAU_STG.4, *Prevention of audit data loss*.
-https://www.commoncriteriaportal.org/files/ccfiles/CCPART2V3.1R5.pdf
+[30] *Common Criteria for Information Technology Security Evaluation, Part 2: Security Functional Components*, version 3.1 revision 5, CCMB-2017-04-002, Common Criteria Recognition Arrangement, Apr. 2017.
 
-**[31]** Y. Rekhter, B. Moskowitz, D. Karrenberg, G. J. de Groot and E. Lear, "Address Allocation
-for Private Internets", BCP 5, RFC 1918, IETF, February 1996.
-https://www.rfc-editor.org/rfc/rfc1918
+[31] Y. Rekhter, B. Moskowitz, D. Karrenberg, G. J. de Groot, and E. Lear, "Address allocation for private internets," IETF, BCP 5, RFC 1918, Feb. 1996. [Online]. Available: https://www.rfc-editor.org/rfc/rfc1918
 
-**[32]** J. Weil, V. Kuarsingh, C. Donley, C. Liljenstolpe and M. Azinger, "IANA-Reserved IPv4
-Prefix for Shared Address Space", BCP 153, RFC 6598, IETF, April 2012.
-https://www.rfc-editor.org/rfc/rfc6598
+[32] J. Weil, V. Kuarsingh, C. Donley, C. Liljenstolpe, and M. Azinger, "IANA-reserved IPv4 prefix for shared address space," IETF, BCP 153, RFC 6598, Apr. 2012. [Online]. Available: https://www.rfc-editor.org/rfc/rfc6598
 
-**[33]** L. Mannella, *Securing IoT Gateways in Smart Home Environments*, PhD thesis, Politecnico
-di Torino, 2024.
+[33] L. Mannella, "Securing IoT gateways in smart home environments," Ph.D. dissertation, Dept. Control Comput. Eng., Politecnico di Torino, Turin, Italy, 2024.
 
-**[34]** E. Fernandes, J. Jung and A. Prakash, "Security Analysis of Emerging Smart Home
-Applications", *37th IEEE Symposium on Security and Privacy*, 2016.
+[34] E. Fernandes, J. Jung, and A. Prakash, "Security analysis of emerging smart home applications," in *Proc. IEEE Symp. Security and Privacy (SP)*, San Jose, CA, USA, 2016, pp. 636–654, doi: 10.1109/SP.2016.44.
 
-**[35]** E. Fernandes, J. Paupore, A. Rahmati, D. Simionato, M. Conti and A. Prakash, "FlowFence:
-Practical Data Protection for Emerging IoT Application Frameworks", *USENIX Security*, 2016.
+[35] E. Fernandes, J. Paupore, A. Rahmati, D. Simionato, M. Conti, and A. Prakash, "FlowFence: Practical data protection for emerging IoT application frameworks," in *Proc. 25th USENIX Security Symp.*, Austin, TX, USA, 2016, pp. 531–548.
 
-**[36]** Y. Jia, Q. A. Chen, S. Wang, A. Rahmati, E. Fernandes, Z. M. Mao and A. Prakash,
-"ContexIoT: Towards Providing Contextual Integrity to Appified IoT Platforms", *NDSS*, 2017.
+[36] Y. J. Jia *et al.*, "ContexIoT: Towards providing contextual integrity to appified IoT platforms," in *Proc. Network and Distributed System Security Symp. (NDSS)*, San Diego, CA, USA, 2017, doi: 10.14722/ndss.2017.23051.
 
-**[37]** Y. Tian, N. Zhang, Y.-H. Lin, X. Wang, B. Ur, X. Guo and P. Tague, "SmartAuth:
-User-Centered Authorization for the Internet of Things", *USENIX Security*, 2017.
+[37] Y. Tian *et al.*, "SmartAuth: User-centered authorization for the Internet of Things," in *Proc. 26th USENIX Security Symp.*, Vancouver, BC, Canada, 2017, pp. 361–378.
 
-**[38]** A. Rahmati, E. Fernandes, K. Eykholt and A. Prakash, "Tyche: A Risk-Based Permission Model
-for Smart Homes", *IEEE Secure Development Conference (SecDev)*, 2018.
-DOI 10.1109/SECDEV.2018.00012. Preprint: arXiv:1801.04609.
+[38] A. Rahmati, E. Fernandes, K. Eykholt, and A. Prakash, "Tyche: A risk-based permission model for smart homes," in *Proc. IEEE Cybersecurity Development Conf. (SecDev)*, Cambridge, MA, USA, 2018, pp. 29–36, doi: 10.1109/SecDev.2018.00012.
 
-**[39]** E. Lear, R. Droms and D. Romascanu, "Manufacturer Usage Description Specification",
-RFC 8520, IETF, March 2019. https://www.rfc-editor.org/rfc/rfc8520
+[39] E. Lear, R. Droms, and D. Romascanu, "Manufacturer usage description specification," IETF, RFC 8520, Mar. 2019. [Online]. Available: https://www.rfc-editor.org/rfc/rfc8520
 
-**[40]** GitHub Security Lab, *Securing our home labs: Home Assistant code review*.
-https://github.blog/security/vulnerability-research/securing-our-home-labs-home-assistant-code-review/
+[40] GitHub Security Lab. "Securing our home labs: Home Assistant code review." The GitHub Blog. https://github.blog/security/vulnerability-research/securing-our-home-labs-home-assistant-code-review/ (accessed Oct. 16, 2026).
 
-**[41]** Z. Li, K. Li, B. Ma, M. Xu, Y. Zhang and X. Cheng, "We Urgently Need Privilege Management
-in MCP: A Measurement of API Usage in MCP Ecosystems", arXiv:2507.06250, 2025.
+[41] Z. Li, K. Li, B. Ma, M. Xu, Y. Zhang, and X. Cheng, "We urgently need privilege management in MCP: A measurement of API usage in MCP ecosystems," 2025, *arXiv:2507.06250*.
 
-**[42]** M. M. Ahmadpanah, D. Hedin, M. Balliu, L. E. Olsson and A. Sabelfeld, "SandTrap: Securing
-JavaScript-driven Trigger-Action Platforms", in *Proc. 30th USENIX Security Symposium*, 2021,
-pp. 2899–2916. Read in full (author copy, https://www.cse.chalmers.se/~andrei/usenix21.pdf),
-2026-10-15; §6 (evaluation: 10 benign and 10 malicious cases per platform, Node-RED policies averaging
-2,650 lines, under 100 ms added per node). Found by the documented search of 2026-10-15
-(`experiments/lit_search_2026/summary.md`); cited in §7.6.
+[42] M. M. Ahmadpanah, D. Hedin, M. Balliu, L. E. Olsson, and A. Sabelfeld, "SandTrap: Securing JavaScript-driven trigger-action platforms," in *Proc. 30th USENIX Security Symp.*, 2021, pp. 2899–2916.
 
-**[43]** K. R. Popper, *The Logic of Scientific Discovery*. London, U.K.: Hutchinson, 1959. English
-translation of *Logik der Forschung*, Vienna: Springer, 1934 (dated 1935). Falsifiability as the
-criterion of demarcation and the methodological rule against saving a theory by ad hoc adjustment:
-Part I, ch. 4 ("Falsifiability"). Publisher and year checked against the Open Library record
-2026-10-12. Cited in §8.1 and §11.1; to cite in §6 and §13 when they are rewritten.
+[43] K. R. Popper, *The Logic of Scientific Discovery*. London, U.K.: Hutchinson, 1959.
 
-**[44]** E. Rescorla, "The Transport Layer Security (TLS) Protocol Version 1.3", RFC 8446, IETF,
-August 2018. https://www.rfc-editor.org/rfc/rfc8446 — §1.
+[44] E. Rescorla, "The Transport Layer Security (TLS) protocol version 1.3," IETF, RFC 8446, Aug. 2018. [Online]. Available: https://www.rfc-editor.org/rfc/rfc8446
 
-**[45]** Y. Jia and M. Harman, "An Analysis and Survey of the Development of Mutation Testing",
-*IEEE Transactions on Software Engineering*, vol. 37, no. 5, pp. 649–678, September 2011.
-doi:10.1109/TSE.2010.62 *(Checked against Crossref 2026-10-12.)*
+[45] Y. Jia and M. Harman, "An analysis and survey of the development of mutation testing," *IEEE Trans. Softw. Eng.*, vol. 37, no. 5, pp. 649–678, Sep. 2011, doi: 10.1109/TSE.2010.62.
 
-**[46]** Linux man-pages project, *chroot(2)*. https://man7.org/linux/man-pages/man2/chroot.2.html
-— not intended as a security mechanism; the `mkdir foo; chroot foo; cd ..` escape.
+[46] Linux man-pages project. "chroot(2)." man7.org. https://man7.org/linux/man-pages/man2/chroot.2.html (accessed Oct. 16, 2026).
 
-**[47]** Linux man-pages project, *user_namespaces(7)*.
-https://man7.org/linux/man-pages/man7/user_namespaces.7.html — a process in a new user namespace
-holds the full set of capabilities inside it.
+[47] Linux man-pages project. "user_namespaces(7)." man7.org. https://man7.org/linux/man-pages/man7/user_namespaces.7.html (accessed Oct. 16, 2026).
 
-**[48]** Linux man-pages project, *pivot_root(2)*.
-https://man7.org/linux/man-pages/man2/pivot_root.2.html
+[48] Linux man-pages project. "pivot_root(2)." man7.org. https://man7.org/linux/man-pages/man2/pivot_root.2.html (accessed Oct. 16, 2026).
 
-**[49]** Home Assistant, Developer Documentation: *Repairs*.
-https://developers.home-assistant.io/docs/core/platform/repairs — issues are brought to the
-user's attention, and a `RepairsFlow` fixes them; checked 2026-10-11.
+[49] Home Assistant. "Repairs." Home Assistant Developer Documentation. https://developers.home-assistant.io/docs/core/platform/repairs (accessed Oct. 11, 2026).
 
-**[50]** Linux man-pages project, *unix(7)*. https://man7.org/linux/man-pages/man7/unix.7.html —
-socket pairs and `SCM_RIGHTS`.
+[50] Linux man-pages project. "unix(7)." man7.org. https://man7.org/linux/man-pages/man7/unix.7.html (accessed Oct. 16, 2026).
 
-**[51]** C. Jackson, A. Barth, A. Bortz, W. Shao and D. Boneh, "Protecting Browsers from DNS
-Rebinding Attacks", in *Proc. 14th ACM Conf. Computer and Communications Security (CCS)*, 2007,
-pp. 421–431. doi:10.1145/1315245.1315298 *(Checked against Crossref 2026-10-12.)*
+[51] C. Jackson, A. Barth, A. Bortz, W. Shao, and D. Boneh, "Protecting browsers from DNS rebinding attacks," in *Proc. 14th ACM Conf. Computer and Communications Security (CCS)*, Alexandria, VA, USA, 2007, pp. 421–431, doi: 10.1145/1315245.1315298.
 
-**[52]** Home Assistant, Developer Documentation: *Config entries*.
-https://developers.home-assistant.io/docs/config_entries_index — entries are persistently stored
-and set up during startup; checked 2026-10-11.
+[52] Home Assistant. "Config entries." Home Assistant Developer Documentation. https://developers.home-assistant.io/docs/config_entries_index (accessed Oct. 11, 2026).
 
-**[53]** D. Hardt, Ed., "The OAuth 2.0 Authorization Framework", RFC 6749, IETF, October 2012.
-https://www.rfc-editor.org/rfc/rfc6749 — §4.1 step (A).
+[53] D. Hardt, Ed., "The OAuth 2.0 authorization framework," IETF, RFC 6749, Oct. 2012. [Online]. Available: https://www.rfc-editor.org/rfc/rfc6749
 
-**[54]** Home Assistant Core 2026.8.3, `homeassistant/components/repairs/websocket_api.py`.
-https://github.com/home-assistant/core — `require_admin(permission=POLICY_EDIT)` on both fix
-endpoints. The documentation says nothing about administrators, so the source is the evidence.
+[54] Home Assistant Core, version 2026.8.3, file `homeassistant/components/repairs/websocket_api.py`. [Online]. Available: https://github.com/home-assistant/core/tree/2026.8.3
 
-**[55]** The Linux kernel documentation, *The /proc Filesystem*, §1.1, `/proc/PID/smaps`.
-https://docs.kernel.org/filesystems/proc.html — the proportional set size is "the count of pages it
-has in memory, where each page is divided by the number of processes sharing it"; checked 2026-10-12.
+[55] The Linux Kernel Documentation. "The /proc filesystem." docs.kernel.org. https://docs.kernel.org/filesystems/proc.html (accessed Oct. 12, 2026).
 
-**[56]** B. Efron, "Bootstrap Methods: Another Look at the Jackknife", *The Annals of Statistics*,
-vol. 7, no. 1, pp. 1–26, 1979. doi:10.1214/aos/1176344552 *(Checked against Crossref 2026-10-12.)*
+[56] B. Efron, "Bootstrap methods: Another look at the jackknife," *Ann. Statist.*, vol. 7, no. 1, pp. 1–26, 1979, doi: 10.1214/aos/1176344552.
 
-**[57]** C. Fu, Q. Zeng and X. Du, "HAWatcher: Semantics-Aware Anomaly Detection for Appified Smart
-Homes", in *Proc. 30th USENIX Security Symposium*, Aug. 2021.
-https://www.usenix.org/conference/usenixsecurity21/presentation/fu-chenglong — listing and abstract
-checked 2026-10-15 (learns a home's normal behaviour from event logs and app semantics, flags
-mismatches at run time; SmartThings, four testbeds, 62 anomaly cases); full text not read. Cited in §14.
+[57] C. Fu, Q. Zeng, and X. Du, "HAWatcher: Semantics-aware anomaly detection for appified smart homes," in *Proc. 30th USENIX Security Symp.*, 2021, pp. 4223–4240.
 
-**[58]** Z. B. Celik, G. Tan and P. McDaniel, "IoTGuard: Dynamic Enforcement of Security and Safety
-Policy in Commodity IoT", in *Proc. NDSS*, 2019.
-https://ndss-symposium.org/ndss-paper/iotguard-dynamic-enforcement-of-security-and-safety-policy-in-commodity-iot
-— listing and abstract checked 2026-10-15 (instruments apps, builds a dynamic model, blocks unsafe
-states); full text not read. Cited in §14.
+[58] Z. B. Celik, G. Tan, and P. McDaniel, "IoTGuard: Dynamic enforcement of security and safety policy in commodity IoT," in *Proc. Network and Distributed System Security Symp. (NDSS)*, San Diego, CA, USA, 2019, doi: 10.14722/ndss.2019.23326.
 
-**[59]** J. R. Douceur, "The Sybil Attack", in *Peer-to-Peer Systems (IPTPS 2002)*, LNCS vol. 2429,
-pp. 251–260, 2002, doi:10.1007/3-540-45748-8_24 — bibliographic record and abstract checked
-2026-10-15 ("without a logically centralized authority, Sybil attacks are always possible except under
-extreme and unrealistic assumptions"); full text not read. Cited in §14.
-
-
----
-
-## Verification status
-
-Four PDFs are held locally in `v2/refs/` and were read in full: [5], [15], [33] and [25].
-`00_METHOD.md` §2's evidence rule applies to what they say, and §2.4 is written from the papers
-rather than from their abstracts.
-
-**Bibliographic detail not yet verified against the source itself**, and owed to the Stage 5 pass:
-[15]'s venue and DOI (the PDF is held but the entry carries a year only), [21]'s ISBN and the
-Kohnfelder & Garg attribution, and [20]'s clause numbering against the published 2018 edition
-rather than against the chapter's use of it. Every other entry's identifiers are either a URL that
-resolves or were transcribed from the chapters that cited them.
+[59] J. R. Douceur, "The Sybil attack," in *Peer-to-Peer Systems (IPTPS 2002)*, Lecture Notes in Computer Science, vol. 2429. Berlin, Germany: Springer, 2002, pp. 251–260, doi: 10.1007/3-540-45748-8_24.
