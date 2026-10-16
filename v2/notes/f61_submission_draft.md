@@ -5,7 +5,7 @@ clause carries a placeholder: [PI RESULT]. Nothing below is in `submission/` yet
 
 ## 1. Appendix F, new row after F60
 
-| F61 | Final rerun | Minor | The two fault-injection scripts, and the end-to-end script's supervisor, were not updated when F57 made an approval mandatory, so every fault case stopped at its first registration. From F57's fix to the final rerun, no fault case ran against the current code | Fixed in the scripts under their own tag; no framework code changed. The fault cases were rerun at that tag: 11 of 11 criteria held on the laptop, [PI RESULT] on the reference device |
+| F61 | Final rerun | Minor | The two fault-injection scripts, and the end-to-end script's supervisor, were not updated when F57 made an approval mandatory, so every fault case stopped at its first registration, and from F57's fix to the final rerun no fault case ran against the current code. The end-to-end script also changed into a fixed directory holding an older copy of the code rather than running from its own checkout, the defect F19 had found in the suite runner | Fixed in the fault scripts under their own tag; the end-to-end commands were run from the final tag's checkout, with the approval recorded. No framework code changed. The fault cases were rerun at that tag: 11 of 11 criteria held on the laptop, [PI RESULT] on the reference device |
 
 ## 2. Appendix F, the closing paragraph (changed words in bold)
 
@@ -27,7 +27,9 @@ existed. The scripts were corrected under their own tag, with a prediction note 
 fault step was rerun from it; the failed attempt is kept beside the result. The lesson is a
 property of regression testing rather than of this project: a regression run checks the files a fix
 touches, so a script that depends on a changed rule without being changed itself drops out of view
-until everything is run again. That is the case for one full rerun at the end, and here it was the
+until everything is run again. The same rerun found that the end-to-end script still changed into an
+older copy of the code by a fixed path, the defect F19 had found in the suite runner, so its commands
+were run from the final tag instead. That is the case for one full rerun at the end, and here it was the
 rerun that found the gap.
 
 ## 4. Counts elsewhere that follow from F61
@@ -37,12 +39,9 @@ rerun that found the gap.
 - §8.6 second paragraph: "The repository holds 36 such notes" — F61's prediction note adds one.
   The exact figure comes from step 13 (`verify/prereg.py`) rather than from counting by hand.
 
-## Points for Younes to decide
+## Decided (Younes, 2026-10-16)
 
-1. **Severity: Minor.** The framework behaved as specified, and nothing the household relies on
-   changed. The gap in the record (six days with no fault case run against the current code) is
-   what makes it worth a row. Major instead, if the gap in the record should weigh more.
-2. **One finding or two.** `verify/phase2_l23.sh` also `cd`s into the old frozen tree
-   (`~/r2exp/verify/v2`) rather than the checkout it belongs to: run as is, it would have tested that
-   tree. This is the same defect as F19 in `suites_all.sh`, recurring in a second script. The draft
-   folds only the approval gap into F61. The path could be F62, a clause in F61, or a note under F19.
+1. Severity Minor.
+2. The stale path in `verify/phase2_l23.sh` is a clause in F61, not a finding of its own.
+
+Still pending: [PI RESULT], from step 3's Pi half; then these changes go into `submission/`.
