@@ -48,3 +48,5 @@ Proposed: "Since the approval step added after finding F57, an administrator…"
 
 - §8.6's F61 paragraph runs to about 260 words. The regression lesson and the three stale-path scripts could
   go in two sentences, with the detail left to Appendix F (≈ 100 words).
+
+## Applied 2026-10-16 (Younes: C4, C5, O5 as proposed)

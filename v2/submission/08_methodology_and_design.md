@@ -16,7 +16,7 @@ The threat model follows ISO 31000 for the risk-management process [20] and uses
 
 The system in scope is a self-hosted Home Assistant installation extended by community integrations, together with the assets those integrations can reach. The risk owner is the householder who lives with it: the party that owns the assets and bears the consequences, but has no security function and no means of responding to an incident. Every rating in the model is calibrated to that owner, and would differ for an organisation with a security team. Defining the system, however, also means defining what it does not cover.
 
-Three sources of threat are out of scope: a compromised platform, a hostile local network, and physical access. The platform's maintainers are trusted, because if the platform itself is hostile no control at the level of an integration can help. This exclusion has a consequence that the design inherits directly. Since F57, an administrator of the house's Home Assistant can approve a grant from the Repairs panel (Section 9.3), so a compromised administrator account could approve a wider grant than intended. That case belongs to the compromised platform excluded here, which is why Section 9.8 records it as a limit of the architecture rather than as a threat this model treats.
+Three sources of threat are out of scope: a compromised platform, a hostile local network, and physical access. The platform's maintainers are trusted, because if the platform itself is hostile no control at the level of an integration can help. This exclusion has a consequence that the design inherits directly. Since the approval step added after finding F57, an administrator of the house's Home Assistant can approve a grant from the Repairs panel (Section 9.3), so a compromised administrator account could approve a wider grant than intended. That case belongs to the compromised platform excluded here, which is why Section 9.8 records it as a limit of the architecture rather than as a threat this model treats.
 
 ## 8.3 Assets, actors and trust boundaries
 
@@ -62,7 +62,7 @@ The confined design instantiates the four missing boundaries, and Figure 8.2 dra
 
 ## 8.4 Risks, treatment, and a requirement the model generated
 
-Applying STRIDE to each boundary identified eighteen threats, and their concentration is the model's main finding. Five are Critical and twelve High, and all five Critical threats share a single cause, the shared process, as the summary in Table 8.3 shows. The full register, with every rating and its justification, is in Appendix C.
+Applying STRIDE to each boundary identified eighteen threats, and their concentration is the model's main finding. Five are Critical and twelve High, and all five Critical threats share a single cause, the shared process, as the summary in Table 8.3 shows. A nineteenth, T19, arose from the design itself, because writing a durable record for every decision lets a flood of refused requests exhaust the mediator; it is rated against the design rather than the platform, and Appendix C gives both. The full register, with every rating and its justification, is in Appendix C.
 
 **Table 8.3 — Threat summary (inherent risk)**
 
@@ -100,7 +100,7 @@ Seven risks remain after treatment, and each is stated with the reason it is ret
 
 R3 changed during verification. The model originally stated that Home Assistant issues no scoped token, so the mediator had to hold full authority. Checked against the platform's own release, that was wrong: a token carries its user's permissions, and an entity policy by domain is enforced. The mediator had held an administrator's token only because this project's bridge admitted no one else (finding F45). It now runs as an ordinary user, which removes every administrative function from its reach. The risk stays High because the locks of A1 are still reachable, but its reason is now narrower and exact: the platform's per-domain policy exists, yet no supported interface creates one.
 
-No Critical residual risk remains, and four High residual risks do, each structural and each stated. The appetite declared for this owner accepts High residual risk only where it is structural and openly stated, so the design satisfies the appetite under that clause, and the result should be read that way rather than as a clean one. Whether the treatments hold in the running system is what the verification method tested.
+No Critical residual risk remains, and four High residual risks do, R1, R2, R3 and R5, each stated and none with an available control. The appetite declared for this owner accepts High residual risk only where it is structural and openly stated, so the design satisfies the appetite under that clause, and the result should be read that way rather than as a clean one. Whether the treatments hold in the running system is what the verification method tested.
 
 ## 8.6 How the claims were verified
 
