@@ -56,3 +56,18 @@ harness files and this note.
 
 If G2–G4 hold, the submission states F61 in Appendix F and §8.6 as a harness defect found by the
 final rerun, and gives step 3's figures from `fix-2026-10-f61`.
+
+## Outcome, 2026-10-16 (appended; nothing above edited)
+
+- **G1 — holds in substance, not as written.** `git diff --stat final-2026-10 fix-2026-10-f61` also lists
+  step 1's results, committed between the two tags. Restricted to everything outside
+  `experiments/verify/results/`, it lists exactly the three files named.
+- **G2 — held.** Laptop, fresh clone of the fix tag: 11/11.
+- **G3 — held.** Pi: 11/11.
+- **G4 — held.** `faults_pi_fixed.sh`: every line `ok`; FI1 running again 3 s after (A) answered.
+- **G5 — held.** The attempt at `final-2026-10` is kept (`step03_faults/faults_laptop_attempt1.*`).
+
+Results: `experiments/verify/results/final_20261016/step03_faults*`, `verdicts_steps_2_4.txt`.
+Found while preparing step 7, decided by Younes as a clause of F61: `verify/phase2_l23.sh` changes
+into the frozen tree `~/r2exp/verify/v2` and starts its supervisor unapproved; step 7's driver
+issues its commands against the clone, with the approval recorded as here.
