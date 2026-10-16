@@ -84,6 +84,11 @@ def set_font(font, name: str) -> None:
         rpr.append(rfonts)
     for slot in ("w:ascii", "w:hAnsi", "w:cs", "w:eastAsia"):
         rfonts.set(qn(slot), name)
+    # A theme slot (Word's built-in headings carry `asciiTheme="majorHAnsi"`) outranks the
+    # explicit name, which is how the headings came out in Calibri Light.
+    for slot in ("w:asciiTheme", "w:hAnsiTheme", "w:cstheme", "w:eastAsiaTheme"):
+        if rfonts.get(qn(slot)) is not None:
+            del rfonts.attrib[qn(slot)]
 
 
 def shade(element, fill: str) -> None:
@@ -112,13 +117,14 @@ def add_runs(paragraph, text: str, *, bold: bool = False,
             run = paragraph.add_run(piece[1:-1])
             set_font(run.font, MONO)
             run.font.size = Pt(PT_CODE_INLINE)
-            run.font.color.rgb = RGBColor(0x8A, 0x1C, 0x1C)
-            run.bold, run.italic = bold, italic
+            run.bold, run.italic = bold or None, italic or None
         elif piece.startswith("*") and piece.endswith("*") and len(piece) > 2:
             add_runs(paragraph, piece[1:-1], bold=bold, italic=True)
         else:
             run = paragraph.add_run(piece)
-            run.bold, run.italic = bold, italic
+            # None, not False: a run that says "not bold" overrides its paragraph's style,
+            # which left every caption in regular weight.
+            run.bold, run.italic = bold or None, italic or None
 
 
 def _is_continuation(line: str) -> bool:
@@ -151,15 +157,29 @@ def add_table(doc, rows: list[list[str]]) -> None:
     table = doc.add_table(rows=len(rows), cols=width)
     table.style = "Table Grid"
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    table.autofit = False
+    widths = column_widths(rows, width)
+    grid = table._tbl.tblGrid
+    for c, col in enumerate(grid.findall(qn("w:gridCol"))):
+        col.set(qn("w:w"), str(int(widths[c] * 567)))
     for r, row in enumerate(rows):
+        tr_pr = table.rows[r]._tr.get_or_add_trPr()
+        tr_pr.append(OxmlElement("w:cantSplit"))
+        if r == 0 and has_header:
+            tr_pr.append(OxmlElement("w:tblHeader"))
         for c in range(width):
             cell = table.cell(r, c)
+            cell.width = Cm(widths[c])
             cell.text = ""
             para = cell.paragraphs[0]
             para.paragraph_format.space_before = Pt(2)
             para.paragraph_format.space_after = Pt(2)
             text = row[c] if c < len(row) else ""
             add_runs(para, text)
+            # A header keeps with the first row below it, so a table never starts with
+            # its header alone at the foot of a page.
+            if r == 0 and has_header:
+                para.paragraph_format.keep_with_next = True
             for run in para.runs:
                 run.font.size = Pt(PT_TABLE)
                 if r == 0 and has_header:
@@ -167,6 +187,45 @@ def add_table(doc, rows: list[list[str]]) -> None:
             if r == 0 and has_header:
                 shade(cell._tc.get_or_add_tcPr(), "E8ECF2")
     doc.add_paragraph()
+
+
+TEXT_WIDTH_CM = 16.0
+
+
+def column_widths(rows: list[list[str]], width: int) -> list[float]:
+    """Share the text width by how much each column holds, so that an ID or a number
+    does not take as much room as a sentence. Long text is damped (square root), and
+    no column falls below 1.6 cm."""
+    def plain(text: str) -> str:
+        return re.sub(r"[*`]", "", text)
+    weight = []
+    for c in range(width):
+        cells = [plain(row[c]) if c < len(row) else "" for row in rows]
+        longest_word = max((len(w) for t in cells for w in t.split()), default=1)
+        mean = sum(len(t) for t in cells) / max(len(cells), 1)
+        weight.append(max(mean ** 0.5, longest_word ** 0.5 * 1.2, 1.0))
+    # A column is never narrower than its longest word, so that a name such as
+    # `adaptive_lighting` is not broken in two (about 0.215 cm a monospace character at table size, plus cell padding;
+    # capped so that one long path cannot take the table), nor narrower than 1.6 cm.
+    floors = []
+    for c in range(width):
+        words = [w for row in rows if c < len(row) for w in plain(row[c]).split()]
+        longest = max((len(w) for w in words), default=1)
+        floors.append(min(max(1.6, longest * 0.215 + 0.45), 5.5))
+    total = sum(weight)
+    raw = [TEXT_WIDTH_CM * w / total for w in weight]
+    fixed: set[int] = set()        # a column held at its floor stays there
+    for _ in range(width):
+        below = {i for i in range(width) if raw[i] < floors[i] - 1e-9}
+        if not below:
+            break
+        fixed |= below
+        spare = TEXT_WIDTH_CM - sum(floors[i] for i in fixed)
+        rest = sum(weight[i] for i in range(width) if i not in fixed)
+        if spare <= 0 or rest <= 0:
+            break
+        raw = [floors[i] if i in fixed else spare * weight[i] / rest for i in range(width)]
+    return raw
 
 
 def add_figure(doc, svg: pathlib.Path) -> None:
@@ -184,6 +243,8 @@ def add_figure(doc, svg: pathlib.Path) -> None:
     doc.add_picture(str(png), width=Cm(16))
     para = doc.paragraphs[-1]
     para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # A figure's caption stands below it, so the figure keeps with the caption.
+    para.paragraph_format.keep_with_next = True
     package = doc.part.package
     svg_part = Part(package.next_partname("/word/media/image%d.svg"), "image/svg+xml",
                     svg.read_bytes(), package)
@@ -255,8 +316,10 @@ CAPTION_STYLE = {"Table": "Table Caption", "Figure": "Figure Caption"}
 # The front matter's three generated lists, each the field that builds it.
 GENERATED = {
     "Contents": (r'TOC \o "1-3" \h \z \u', "contents page"),
-    "List of Figures": (r'TOC \h \z \t "Figure Caption,1"', "list of figures"),
-    "List of Tables": (r'TOC \h \z \t "Table Caption,1"', "list of tables"),
+    # Built from a TC field inside each caption (see add_caption): a TOC field over a custom
+    # paragraph style found no entries when Word updated it.
+    "List of Figures": (r'TOC \h \z \f f', "list of figures"),
+    "List of Tables": (r'TOC \h \z \f t', "list of tables"),
 }
 
 
@@ -281,7 +344,49 @@ def add_toc_field(doc, instruction: str = GENERATED["Contents"][0],
         run._r.append(node)
 
 
-def render(doc, lines: list[str], *, first_file: bool) -> None:
+# Front-matter headings that open a new page. The rest of the front matter (Acknowledgements
+# after the abstract's page, List of Tables after the List of Figures) follows on.
+FRONT_PAGE_BREAK = {"Abstract", "Acknowledgements", "Contents", "List of Figures",
+                    "Abbreviations and identifiers"}
+
+
+def add_field_run(paragraph, instruction: str) -> None:
+    """A field with no result text, such as a TC entry, which prints nothing."""
+    run = paragraph.add_run()
+    begin = OxmlElement("w:fldChar")
+    begin.set(qn("w:fldCharType"), "begin")
+    instr = OxmlElement("w:instrText")
+    instr.set(qn("xml:space"), "preserve")
+    instr.text = instruction
+    end = OxmlElement("w:fldChar")
+    end.set(qn("w:fldCharType"), "end")
+    for node in (begin, instr, end):
+        run._r.append(node)
+
+
+def add_caption(doc, title: str, kind: str) -> None:
+    para = doc.add_paragraph(style=CAPTION_STYLE[kind])
+    add_runs(para, title)
+    entry = re.sub(r"[*`]", "", title).replace('"', "'").rstrip(".")
+    add_field_run(para, f' TC "{entry}" \\f {kind[0].lower()} \\l 1 ')
+
+
+def body_started(doc) -> bool:
+    return len(doc.sections) > 1
+
+
+def number_pages(section, fmt: str, start: int | None = None) -> None:
+    sect_pr = section._sectPr
+    for old in sect_pr.findall(qn("w:pgNumType")):
+        sect_pr.remove(old)
+    pg = OxmlElement("w:pgNumType")
+    pg.set(qn("w:fmt"), fmt)
+    if start is not None:
+        pg.set(qn("w:start"), str(start))
+    sect_pr.append(pg)
+
+
+def render(doc, lines: list[str], *, first_file: bool, name: str = "") -> None:
     i, n = 0, len(lines)
     para_buf: list[str] = []
 
@@ -293,12 +398,22 @@ def render(doc, lines: list[str], *, first_file: bool) -> None:
         caption = CAPTION.match(text)
         if caption:
             title, kind, rest = caption.groups()
-            add_runs(doc.add_paragraph(style=CAPTION_STYLE[kind]), title)
+            add_caption(doc, title, kind)
             if not rest:
                 return
             text = rest
         para = doc.add_paragraph()
-        para.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        if name == "16_references.md" and re.match(r"^\[\d+\] ", text):
+            # A reference list reads down its left edge: numbers hang, long URLs are not
+            # stretched across the line by justification.
+            para.paragraph_format.left_indent = Cm(1.0)
+            para.paragraph_format.first_line_indent = Cm(-1.0)
+            para.paragraph_format.space_after = Pt(5)
+        else:
+            para.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        if text.endswith(":"):
+            # A sentence that introduces what follows stays on its page.
+            para.paragraph_format.keep_with_next = True
         add_runs(para, text)
 
     while i < n:
@@ -354,12 +469,17 @@ def render(doc, lines: list[str], *, first_file: bool) -> None:
             if first_file and level == 1:
                 para = doc.add_paragraph(style="Title")
                 add_runs(para, text)
-            else:
-                if level == 1:
-                    doc.add_page_break()
-                head = doc.add_heading(level=min(level, 4))
+            elif first_file and level == 3:
+                add_runs(doc.add_paragraph(style="Subtitle"), text)
+            elif first_file:
+                # Front matter: headed like a section, but outside the outline, so the
+                # contents page begins at the Introduction.
+                head = doc.add_paragraph(style="Front Heading")
+                # "Page break before" on the heading, not a break paragraph: a break
+                # paragraph that falls at the top of a page breaks again and leaves it blank.
+                head.paragraph_format.page_break_before = text.strip() in FRONT_PAGE_BREAK
                 add_runs(head, text)
-                if first_file and text.strip() in GENERATED:
+                if text.strip() in GENERATED:
                     add_toc_field(doc, *GENERATED[text.strip()])
                     # The source's "*[Generated at typeset time.]*" stands where the field now is.
                     j = i + 1
@@ -367,6 +487,18 @@ def render(doc, lines: list[str], *, first_file: bool) -> None:
                         j += 1
                     if j < n and lines[j].strip() == "*[Generated at typeset time.]*":
                         i = j
+            else:
+                new_page = level == 2 and bool(re.match(r"Appendix [B-Z] ", text))
+                if level == 1 and not body_started(doc):
+                    # The body starts a section of its own: page 1 at the Introduction,
+                    # with the front matter numbered in lower-case roman numerals.
+                    number_pages(doc.sections[0], "lowerRoman")
+                    number_pages(doc.add_section(WD_SECTION.NEW_PAGE), "decimal", start=1)
+                elif level == 1:
+                    new_page = True
+                head = doc.add_heading(level=min(level, 4))
+                head.paragraph_format.page_break_before = new_page
+                add_runs(head, text)
             i += 1
             continue
 
@@ -436,11 +568,28 @@ def build(out: pathlib.Path) -> tuple[int, int]:
     # A table's caption stands above it, a figure's below.
     doc.styles["Table Caption"].paragraph_format.keep_with_next = True
 
+    front = doc.styles.add_style("Front Heading", WD_STYLE_TYPE.PARAGRAPH)
+    front.base_style = normal
+    front.font.size = Pt(PT_HEADING)
+    front.font.bold = True
+    front.paragraph_format.space_before = Pt(14)
+    front.paragraph_format.space_after = Pt(6)
+    front.paragraph_format.keep_with_next = True
+
+    subtitle = doc.styles["Subtitle"]
+    set_font(subtitle.font, BODY)
+    subtitle.font.size = Pt(PT_HEADING)
+    subtitle.font.italic = False
+    subtitle.font.color.rgb = RGBColor(0, 0, 0)
+
     title = doc.styles["Title"]
     set_font(title.font, BODY)
     title.font.size = Pt(PT_TITLE)
     title.font.bold = True
     title.font.color.rgb = RGBColor(0, 0, 0)
+    # The default template rules a line under the title; a title page does not need one.
+    for border in title.element.xpath("./w:pPr/w:pBdr"):
+        border.getparent().remove(border)
 
     for name in ("List Bullet", "List Number", "Quote"):
         if name in [s.name for s in doc.styles]:
@@ -458,7 +607,7 @@ def build(out: pathlib.Path) -> tuple[int, int]:
         path = HERE / name
         text = path.read_text()
         words += len(text.split())
-        render(doc, text.split("\n"), first_file=(index == 0))
+        render(doc, text.split("\n"), first_file=(index == 0), name=name)
 
     _add_page_numbers(doc)
     doc.save(out)
@@ -466,7 +615,7 @@ def build(out: pathlib.Path) -> tuple[int, int]:
 
 
 def _add_page_numbers(doc) -> None:
-    for section in doc.sections:
+    for section in doc.sections[:1]:   # later sections link to this footer
         para = section.footer.paragraphs[0]
         para.alignment = WD_ALIGN_PARAGRAPH.CENTER
         run = para.add_run()
