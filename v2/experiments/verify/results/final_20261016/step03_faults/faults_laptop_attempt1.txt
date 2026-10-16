@@ -1,0 +1,9 @@
+Step 3, laptop half, attempt 1 — 2026-10-16T07:23:57+00:00
+host: DESKTOP-6OPV9NM (WSL laptop), Python 3.12.3, kernel 6.18.54.1-microsoft-standard-WSL2
+tree: fresh clone of final-2026-10 (38e70ecbaae8e16c45957f371663729ca7268e10), clean (0 changes)
+command (from v2/framework): python3 ../verify/faults.py --json ../out/faults_laptop.json
+exit: 1 — stopped in the first case (FI2/FI6), no JSON written; log: faults_laptop_attempt1.log
+cause: confine.manifest.NotApproved from Mediator.register -> ActingPolicy.bind -> require_approval.
+  F57 (80daf82, 2026-10-10) made every registration that names its component require an approval and
+  added approve_as_experimenter to the harnesses; verify/faults.py (last changed 60d14d5, 2026-10-06)
+  was not among them, and no run of it since F57 exercised it. A harness defect, not a framework one.

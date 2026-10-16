@@ -1,0 +1,25 @@
+Datagrams through the relay, with real sockets on both ends.
+==============================================================================
+[  ok  ] 1. a unicast datagram is accepted for a declared port — 19 bytes
+[  ok  ] 1b. and the device's reply comes back through the relay — inverter-says-hello
+[  ok  ] 1c. with the address it came from, so the integration can tell devices apart — ('127.0.0.1', 47244)
+[  ok  ] 2. an undeclared port is denied — '47245' matches no clause at /permissions/network/local/udp
+[  ok  ] 2b. and the denial names the clause that held no match (F3) — /permissions/network/local/udp
+[  ok  ] 2d. a declared local UDP port does not reach a public address — 8.8.8.8 is not an address on the home network
+[  ok  ] 2c. after a refused send, recvfrom times out and asks the mediator nothing — timed out; 0 recv requests
+[  ok  ] 8. replies from every peer the socket sent to are collected, not only the last — [b'reply-from-a', b'reply-from-b']
+[  ok  ] 9. a socket with a timeout raises TimeoutError once nothing more arrives — after 1.5 s
+[  ok  ] 4. SO_BROADCAST is recorded by the shim and never applied to the sandbox's socket — the sandbox's socket reports 0
+[  ok  ] 3. **discovery** — the mediator broadcast on the declared port and got an answer — device-here from ('127.0.0.1', 40008)
+[  ok  ] 5b. a scan goes to the relay's own broadcast address, whatever the request says — targets ['127.0.0.1', '127.0.0.1']
+[  ok  ] 5. the scan reports which addresses answered — the observed-responder set — ['127.0.0.1']
+[  ok  ] 6. an oversized payload is refused before it is decoded, not after — payload of 65517 bytes exceeds 65507
+[  ok  ] 6b. and a payload that is not hex is refused rather than guessed at — payload is not hex: non-hexadecimal number found in fromhex() arg at position 0
+[  ok  ] 7. with no datagram grant the shim intercepts nothing and asks nobody — fail-closed: in a sandbox this reaches nothing, because the namespace has no route
+[  ok  ] 7b. an asyncio DatagramProtocol bound to a declared port receives what arrives — 3 datagrams, first from ('127.0.0.1', 57326)
+[  ok  ] 7d. a socket bound to port 0 before its event loop registers it still gets replies — [b'govee-reply']
+[  ok  ] 7e. an undeclared bind and a multicast join succeed quietly; the listen is refused once — ok; 1 refused listen
+[  ok  ] 7f. an asyncio endpoint's broadcast scan delivers its replies to the event loop — [b'scan-reply']
+[  ok  ] 7c. and the listen is one recorded decision, however many datagrams follow — 1 listen decisions for 3 datagrams
+==============================================================================
+21/21 checks passed

@@ -1,0 +1,21 @@
+
+FI2, FI6 — a sandbox that dies mid-frame, and one that declares a frame too large
+
+Traceback (most recent call last):
+  File "/tmp/claude-1000/-home-younes-capstone-v2/ec1d0ba1-fa49-4534-acda-a4bb6e8846f0/scratchpad/final-laptop/v2/framework/../verify/faults.py", line 280, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/claude-1000/-home-younes-capstone-v2/ec1d0ba1-fa49-4534-acda-a4bb6e8846f0/scratchpad/final-laptop/v2/framework/../verify/faults.py", line 266, in main
+    channel_faults(root / "ch")
+  File "/tmp/claude-1000/-home-younes-capstone-v2/ec1d0ba1-fa49-4534-acda-a4bb6e8846f0/scratchpad/final-laptop/v2/framework/../verify/faults.py", line 78, in channel_faults
+    fd_dies, _, sock_dies = pair(m, "demo", directory)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-1000/-home-younes-capstone-v2/ec1d0ba1-fa49-4534-acda-a4bb6e8846f0/scratchpad/final-laptop/v2/framework/../verify/faults.py", line 65, in pair
+    mediator.register(domain, Channel(ours), component=directory)
+  File "/tmp/claude-1000/-home-younes-capstone-v2/ec1d0ba1-fa49-4534-acda-a4bb6e8846f0/scratchpad/final-laptop/v2/framework/confine/mediator.py", line 333, in register
+    bind(identity, Path(component))
+  File "/tmp/claude-1000/-home-younes-capstone-v2/ec1d0ba1-fa49-4534-acda-a4bb6e8846f0/scratchpad/final-laptop/v2/framework/confine/platform.py", line 153, in bind
+    require_approval(manifest, component, self.approvals or root / DEFAULT_LOG)
+  File "/tmp/claude-1000/-home-younes-capstone-v2/ec1d0ba1-fa49-4534-acda-a4bb6e8846f0/scratchpad/final-laptop/v2/framework/confine/manifest.py", line 81, in require_approval
+    raise NotApproved(f"{domain}: no approval is on record for its permissions; {how}")
+confine.manifest.NotApproved: demo: no approval is on record for its permissions; read it with `python3 -m confine.describe /tmp/faults-4ok_l67w/ch/custom_components/demo` and approve it with `--approve`

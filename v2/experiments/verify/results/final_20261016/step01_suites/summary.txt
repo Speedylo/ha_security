@@ -1,0 +1,10 @@
+start 2026-10-16T08:18:03+01:00 commit 38e70ecbaae8e16c45957f371663729ca7268e10 tag final-2026-10 dirty=0 host raspberrypi kernel 6.12.47+rpt-rpi-2712
+house_a_down exit=0 seconds=0
+house_a_up exit=0 seconds=6
+preflight exit=0 seconds=0
+suites_1 exit=0 seconds=121
+suites_2 exit=0 seconds=114
+suites_1 failed=0 of 29
+suites_2 failed=0 of 29
+end 2026-10-16T08:22:06+01:00
+ALLDONE
