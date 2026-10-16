@@ -164,3 +164,15 @@ Three scripts named stale locations and were re-issued against the clone by the 
 `verify/phase2_l23.sh` (also unapproved; F61's clause), `verify/final_timing.sh` (names `verify-final`;
 `phase3_timing.sh` was called with `ROOT` instead), and `experiments/unstrip/results/item12_20261003/depth.sh`
 (`~/r2exp/v2`). Step 13 follows.
+
+**Step 13 (13:02, fresh clone of `main` at `da1495a`).** `consistency.py` 0 problems. `recompute.py` 39 EQUAL,
+1 DIFFERS, explained: the working report's abstract says "Twenty-six" suites, written before F48's, F57's and
+F59's suites; the submission says 29. `prereg.py` reported this note and F61's as CHECK, each paired by a
+cited older path (this note's step table names `item12_20261003/depth.sh`); paired with their own first
+results (`0c771fa`, `c41eafd`) both are ok and the count is 0. Prediction: held for consistency and
+recompute; held for prereg only once the pairing is corrected, which the script as committed does not do.
+
+**The run as a whole:** 13 steps; one finding in the verification (F61), one figure outside its band (F62,
+the push from (A), faster), every other criterion met. Nothing in §3's list of outcomes that would matter
+beyond a correction occurred: every suite passed, every mutant but the equivalent one was killed, no
+compatibility member moved, and both memory figures stayed inside 5%.
