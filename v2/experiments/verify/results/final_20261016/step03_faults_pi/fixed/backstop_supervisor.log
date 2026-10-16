@@ -1,0 +1,5 @@
+10:45:34  cleared 1 sandbox cgroup(s) an earlier supervisor left behind
+10:45:34  supervising demo_flood; durable log /home/younes/r2exp/final-run/out/step03_faults_pi/fixed/backstop_audit/decisions-20261016T104534-52400.jsonl; Ctrl-C to stop
+10:45:34  demo_flood started (run 1, pid 52416)
+10:45:34  demo_flood run 1 folder /tmp/supervise-demo_flood-_0gffx7j/.confine/demo_flood-start1
+10:45:35  stopped

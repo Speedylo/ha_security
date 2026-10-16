@@ -1,0 +1,14 @@
+Final rerun, steps 2–4, against notes/final_rerun_prediction.md §2 (and F61's G3–G4 for step 3's Pi half).
+
+Step 2 — mutants (final-2026-10, 08:22–10:44). 50 framework mutants: 49 killed, M25 survived (equivalent,
+  as recorded), 0 patches failed. Bridge: M18a, M18b, M18c each loaded mutated in (A) and killed (1 suite
+  each); control 0 failures. 52 of 53 killed. Prediction "52 killed, M25 survives, every patch applies": held.
+  Logs: step02_mutants/step02_mutants_logs.tar.gz (1,687 entries); patch offsets are not recorded (patch -s).
+Step 3 — faults. Laptop at final-2026-10: stopped at FI2, NotApproved (F61; step03_faults/*attempt1*).
+  At fix-2026-10-f61: laptop 11/11 (G2); Pi faults.py 11/11 (G3); faults_pi_fixed.sh every line ok (G4):
+  FI1 running again 3 s after (A) answered, one supervisor and one sandbox; FI4 no orphan, one sandbox after
+  restart, one file per start, no chain breaks; F30's planted process killed and reported. Clone clean after.
+  Prediction "all hold": held at the fix tag.
+Step 4 — fuzzing (final-2026-10). 4,864 requests; 0 distinct (operation, field, exception) escapes.
+  Prediction "0 escapes": held.
+Gates (gates.txt): held at 10:46:10; steps 5, 7, 8, 9 started.

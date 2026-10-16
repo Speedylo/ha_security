@@ -1,0 +1,3 @@
+10:45:04  supervising demo_flood; durable log /home/younes/r2exp/final-run/out/step03_faults_pi/fixed/fi4_audit/decisions-20261016T104504-52294.jsonl; Ctrl-C to stop
+10:45:05  demo_flood started (run 1, pid 52310)
+10:45:05  demo_flood run 1 folder /tmp/supervise-demo_flood-lpte18b5/.confine/demo_flood-start1

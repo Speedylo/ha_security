@@ -1,0 +1,5 @@
+start 2026-10-16T08:22:26+01:00 commit 38e70ecbaae8e16c45957f371663729ca7268e10 dirty=0
+framework mutants: 50 run, survived (failed_suites=0): M25 , patch failed: 0
+bridge: M18a house_a_up exit=0;M18a bridge_in_A=mutated;M18a failed_suites=1;M18b house_a_up exit=0;M18b bridge_in_A=mutated;M18b failed_suites=1;M18c house_a_up exit=0;M18c bridge_in_A=mutated;M18c failed_suites=1;control house_a_up exit=0;control failed_suites=0;
+end 2026-10-16T10:44:08+01:00
+ALLDONE
