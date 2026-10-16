@@ -42,3 +42,5 @@ which is off, so this cannot be checked from the laptop. Options:
 - The `chroot` against `pivot_root` paragraph (§9.2, ~300 words) is the longest single explanation in the
   report. It is good defence material, but could be halved.
 - §9.7's paragraph on stored data (~330 words).
+
+## Applied 2026-10-16 (Younes: C6 both pointers fixed; Q1 verify on the Pi, text unchanged for now)
