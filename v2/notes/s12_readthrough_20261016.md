@@ -93,3 +93,5 @@ T1 25, T2 29, T3 36, T4 22, T5 26, T6 21, T7 15, T8 15. The estimate assumed dee
 keep every fact a reader needs and remove only restatement, history and mechanism detail (T3 drops the
 resolver and Zeroconf; §9.5 keeps the mechanism). Going further would mean cutting content: for example,
 Table 12.4's paragraph, or the paragraph on the network halves, which §1 and §4 partly repeat.
+
+## Applied 2026-10-16 (Younes: all eight). §12 prose 4,458 → 4,269 words.
