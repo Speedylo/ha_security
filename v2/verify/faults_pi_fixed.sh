@@ -4,14 +4,24 @@
 # Usage: bash faults_pi_fixed.sh FRAMEWORK_DIR OUTDIR. Needs (A) up. Processes are found by bracketed
 # patterns and killed by recorded PID.
 F=${1:?framework dir}; OUT=${2:?outdir}; P=~/r2exp/ha314/bin/python
-mkdir -p "$OUT"; R="$OUT/results.txt"; : > "$R"
+mkdir -p "$OUT"; OUT=$(cd "$OUT" && pwd); R="$OUT/results.txt"; : > "$R"
 sandboxes() { pgrep -f '/sandbox/runtime[.]py' | tr '\n' ' '; }
 supervisors() { pgrep -f 'confine[.]supervise' | tr '\n' ' '; }
 count() { echo $# ; }
 wait_for() { local file=$1 text=$2 limit=$3; for _ in $(seq "$limit"); do grep -q "$text" "$file" 2>/dev/null && return 0; sleep 1; done; return 1; }
+# F61: the supervisor registers nothing unapproved (F57). The grant it loads, a derived manifest that
+# declares nothing, is approved as selftest_supervise approves it, beside this run's output; what the
+# integration stores is kept there too, so nothing is written into the checkout.
+( cd "$F" && python3 -c 'import sys; from pathlib import Path
+from confine.describe import record_approval
+from confine.manifest import Manifest, Provenance
+c = Path(sys.argv[1]).resolve()
+record_approval(c, Path(sys.argv[2]), Manifest(c.name, Provenance.DERIVED, {"schema_version": 1}))' \
+    ../experiments/flood/demo_flood "$OUT/approvals.jsonl" ) || { echo "approval not recorded" >> "$R"; exit 2; }
 start_supervisor() {
   ( cd "$F" && exec systemd-run --user --scope -q python3 -u -m confine.supervise \
-      --component ../experiments/flood/demo_flood --python "$P" --audit-dir "$2" ) > "$1" 2>&1 &
+      --component ../experiments/flood/demo_flood --python "$P" --audit-dir "$2" \
+      --approvals "$OUT/approvals.jsonl" --keep-dir "$OUT/kept" ) > "$1" 2>&1 &
 }
 say() { echo "$*" | tee -a "$R"; }
 judge() { if [ "$2" = "$3" ]; then say "  ok    $1 — $4"; else say "  FAIL  $1 — $4 (expected $3, got $2)"; fi; }

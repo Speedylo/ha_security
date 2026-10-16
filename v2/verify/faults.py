@@ -32,6 +32,7 @@ sys.path.insert(0, str(HERE.parent.parent / "framework"))
 from confine import mediator as mediator_module                       # noqa: E402
 from confine.audit import AuditLog                                    # noqa: E402
 from confine.channel import MAX_FRAME, Channel                        # noqa: E402
+from confine.describe import approve_as_experimenter                   # noqa: E402
 from confine.egress import EgressBroker                               # noqa: E402
 from confine.manifest import Manifest                                 # noqa: E402
 from confine.mediator import Decision, Mediator                       # noqa: E402
@@ -57,6 +58,9 @@ def component(root: Path, domain: str, permissions: dict) -> Path:
     (directory / "manifest.json").write_text(json.dumps(
         {"domain": domain, "name": domain, "version": "1.0.0", "requirements": [],
          "permissions": {"schema_version": 1, **permissions}}))
+    # F61: F57's gate refuses a registration with no approval on record, and this harness was
+    # missed when the others were given this call. The experimenter approves what is on disk.
+    approve_as_experimenter(directory)
     return directory
 
 
