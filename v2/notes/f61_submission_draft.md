@@ -30,7 +30,7 @@ touches, so a script that depends on a changed rule without being changed itself
 until everything is run again. The same rerun found that the end-to-end script still changed into an
 older copy of the code by a fixed path, the defect F19 had found in the suite runner, so its commands
 were run from the final tag instead. That is the case for one full rerun at the end, and here it was the
-rerun that found the gap.
+rerun that found both.
 
 ## 4. Counts elsewhere that follow from F61
 
