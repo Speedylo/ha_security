@@ -1,0 +1,20 @@
+Final rerun, step 13 — the record, from a fresh clone of main at da1495a on the Pi (13:02), clean.
+
+  prereg.py       exit 1: "2 note(s) to look at" — f61_fault_harness_approval and final_rerun, each paired by
+                  the path search with a commit from before the note (results +-15099 and +-17193 min). Both are
+                  the false positive RESULTS exists for: the F61 note's appended outcome names the bare folder
+                  experiments/verify/results/ (first commit d1d7f4c, 2026-10-05), and the final-rerun note's
+                  step table cites the harness item12_20261003/depth.sh (e9ec2b1, 2026-10-03).
+                  Re-run from a scratch copy with each paired to the first result it predicts
+                  (final_rerun → 0c771fa, step 1; f61 → c41eafd, the laptop run at the fix tag; the attempt at
+                  final-2026-10 is the run that found F61, as review_fixes' F33 run): every note ok,
+                  "0 note(s) to look at" (prereg_paired.txt). verify/prereg.py itself is unchanged.
+  consistency.py  exit 0: 446 headings, 2,479 § references, 31 bibliography entries, 0 problems.
+  recompute.py    exit 1: EQUAL 39, DIFFERS 1. A1.25 "self-test suites": recomputed 28 selftest_*.py plus the
+                  base suite (29), against the working report's abstract "Twenty-six", written before the suites
+                  for F48 (selftest_supervise), F57 (selftest_approval) and F59 (selftest_keep). The submission
+                  states 29 throughout (D3, Appendix E, Table E.1). Explained; not a defect in a figure.
+
+Prediction "prereg and consistency pass; recompute EQUAL or each difference explained": consistency held;
+recompute held (one difference, explained); prereg held only once the two notes are paired with their own
+results — as written, the script reports them.
