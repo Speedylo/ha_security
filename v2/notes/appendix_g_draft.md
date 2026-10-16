@@ -21,12 +21,10 @@ The block has eight top-level capabilities. Seven grant something, and one, `res
 | | `local` | `{"tcp": [ports], "udp": [ports]}` | A port on the home network, at an address the mediator pins |
 | | `discover` | `{"listen": [ports], "scan": [ports]}` | Discovery of devices on the home network by broadcast |
 | | `allow_private` | A boolean, superseded by `local` | Nothing; accepted so that a manifest written against the earlier schema still parses |
-| `files` | `read`, `write` | A list of paths | Validated as described in G.3, but not yet mounted into a sandbox started by the supervisor (see the note below the table) |
+| `files` | `read`, `write` | A list of paths | Validated as described in G.3, but not mounted into a sandbox the supervisor starts (finding F63) |
 | `config_entries` | `read_all` | `true` | Listing every integration's configuration entries; permitted and recorded, but no action is taken (F50) |
-| `http` | `register` | A list of path prefixes | Accepted and shown at approval, but not yet matched against any request (see the note below the table) |
+| `http` | `register` | A list of path prefixes | Accepted and shown at approval, but matched against no request (finding F63) |
 | `resources` | `memory_mb`, `cpu_percent`, `max_processes`, `disk_mb` | Integers within 16–8,192, 1–1,600, 1–4,096 and 1–4,096 | The sandbox's limits. Without a declaration the framework's defaults apply (640 MB, 64 processes, 64 MB of disk, no processor cap), and a declaration can only lower them (F32) |
-
-[NOTE FOR YOUNES — wording depends on your decision on the `files`/`http` gap; see the cover note.]
 
 Two asymmetries in the table are deliberate. Entity patterns are permitted because an author cannot know which devices a household owns, while services and network destinations must be named exactly because an author always knows which services and hosts the integration's own code contacts. The network clauses are also split by reach: `egress` names a host, because the author knows the service it uses, whereas `local` and `discover` name only ports, because a device's address on the home network is a lease that does not exist when the manifest is written.
 

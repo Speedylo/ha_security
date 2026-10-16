@@ -12,7 +12,7 @@ The work below is ordered by what each item would settle, beginning with the lim
 | 4 | Further platform releases and devices | Whether the results survive the platform's changes, release by release | Days per release once automated |
 | 5 | A study of the approval screen | Whether the person approving a grant understands what it allows | Weeks, with ethical approval |
 | 6 | The remaining resource bounds | Disk and network bandwidth, and the size of an integration's stored data during a run | Small in code; needs a decision on a privileged installation step |
-| 7 | Four implementation gaps | Structured service data, three declarable operations that do nothing, commands lost in a sandbox's first second, and an OAuth first login, which needs a person's browser | Days |
+| 7 | Four implementation gaps | Structured service data, five declarable clauses that do nothing, commands lost in a sandbox's first second, and an OAuth first login, which needs a person's browser | Days |
 | 8 | Completing the verification | Automated mutation of the mediator and the manifest parser, and the reproduction guide followed on a freshly installed device | Days; hours for the guide, given a spare memory card |
 | 9 | Beyond one device: anchoring and sharing the record | Whether the record can be trusted against whoever controls the machine, and whether verdicts shared between households can warn of a hostile release | A separate project; resistance to fake participants is unsolved |
 | 10 | Changes in the platform | A process boundary and a configurable per-entity policy provided by Home Assistant itself | Upstream |

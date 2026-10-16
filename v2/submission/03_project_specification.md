@@ -73,7 +73,7 @@ All twenty requirements are met, two in a narrowed form. S9 was narrowed on evid
 
 Each feature names, in brackets, the requirements it answers.
 
-1. **A permissions manifest** with eight clauses: seven grant capability (entity reads, subscriptions and writes; service calls; events; network access; files; enumeration of configuration entries; HTTP routes) and one bounds resources. Anything not declared is denied (F3, S5, S6).
+1. **A permissions manifest** with eight clauses: seven grant capability (entity reads, subscriptions and writes; service calls; events; network access; files; enumeration of configuration entries; HTTP routes) and one bounds resources. Anything not declared is denied (F3, S5, S6). The clauses for events, the enumeration of configuration entries, files and HTTP routes are accepted and shown at approval but not yet acted on (Section 9.8).
 2. **One sandbox per integration**, built from seven Linux namespaces [17], a seccomp filter [18] and a cgroup v2 slice bounding memory, processor time, processes and disk space [19] (S8, S9).
 3. **A real but minimal Home Assistant runtime inside each sandbox**, so that the integration's unmodified code runs against the platform's genuine helpers while seeing only the state and services it was granted (C1, C2).
 4. **An out-of-process mediator** that runs as an ordinary, non-administrator Home Assistant user, holds the only credential, and decides every request crossing each sandbox's single channel; identity is a property of the channel, not a claim in the message (S1, S2, S3).
@@ -95,7 +95,7 @@ Table 3.3 lists the framework and the evidence needed to check its claims.
 | D4 | Two pinned corpora of real community integrations, 37 by install count and 40 drawn uniformly, and a harness that runs each one confined and unconfined |
 | D5 | An adversarial suite reproducing the published attacks against the platform |
 | D6 | A threat model of nineteen threats and seven residual risks, following ISO 31000 [20] with STRIDE [21] |
-| D7 | A verification record: predictions committed before each run, a register of 153 claims, a log of 62 findings |
+| D7 | A verification record: predictions committed before each run, a register of 153 claims, a log of 63 findings |
 | D8 | A reproduction guide, and this report |
 
 ## 3.7 Expected outcome

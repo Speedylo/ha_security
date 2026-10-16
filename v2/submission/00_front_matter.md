@@ -58,5 +58,5 @@ Home Assistant, an open-source home-automation platform with 669,743 reporting i
 | **Release** | Home Assistant 2026.8.3, the platform version used throughout |
 | **F1–F4, S1–S9, C1–C4, N1–N3** | Functional, security, constraint and non-functional requirements (Section 3, Appendix B) |
 | **T01–T19, R1–R7** | Threats and residual risks of the threat model (Section 8, Appendix C) |
-| **F01–F62** | Findings of the verification campaign, written with two digits to distinguish them from requirements (Appendix F) |
+| **F01–F63** | Findings of the verification campaign, written with two digits to distinguish them from requirements (Appendix F) |
 | **M01–M50** | Deliberate defects (mutants) used to test whether the test suites detect a removed check (Section 8.6) |

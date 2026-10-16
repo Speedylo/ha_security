@@ -33,3 +33,7 @@ Options:
   [the final tag]" would then need a sentence. `http.register` would still be (a).
 - **(c) Leave the body as is** and let Appendix G's table carry the facts. Not recommended: §3.5 and Table 9.2
   would then disagree with Appendix G.
+
+## Applied 2026-10-16 (Younes: record as F63, option a)
+
+Appendix G inserted from the draft (files and http rows name F63). F63 in Appendix F (Minor, "Writing Appendix G"; carried as a stated limitation with F53); totals 63 / 39 Minor. Table 9.2: five declarable clauses accepted but not acted on (F50, F63), fail closed. §3.5 feature 1 names the four kinds of clause. §14 row 7 "five declarable clauses". §12.4: ten after the cut-off, all but F63 resolved, 63 in Appendix F. Front matter F01–F63; §3 D7, §6 63 findings.

@@ -42,7 +42,7 @@ The activities followed the order of the method: requirements traced to findings
 
 ## 6.5 Outputs
 
-The outputs are the eight deliverables of Table 3.3, and each can be run or checked by someone other than the author. The framework and its interface integration run on the reference device, the 29 suites and 53 mutants show what the tests detect, the two corpora and their harness reproduce every compatibility figure, and the record of 153 claims and 62 findings links each claim in this report to its evidence.
+The outputs are the eight deliverables of Table 3.3, and each can be run or checked by someone other than the author. The framework and its interface integration run on the reference device, the 29 suites and 53 mutants show what the tests detect, the two corpora and their harness reproduce every compatibility figure, and the record of 153 claims and 63 findings links each claim in this report to its evidence.
 
 ## 6.6 Outcomes
 
