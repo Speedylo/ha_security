@@ -1,6 +1,6 @@
 # Open a .docx in Microsoft Word (via WSL: powershell.exe -File render_word.ps1 -In C:\...\in.docx -Pdf C:\...\out.pdf [-OutDocx C:\...\out.docx]),
 # update the contents, list of figures and list of tables, export a PDF, and optionally save Word's copy
-# with the fields filled. Paths must be Windows paths; the file is opened read-only and closed unsaved.
+# with the fields filled. Paths must be Windows paths; the input is closed without saving, so only -OutDocx writes a .docx.
 param([string]$In, [string]$Pdf, [string]$OutDocx = "")
 $ErrorActionPreference = "Stop"
 $w = New-Object -ComObject Word.Application
