@@ -110,3 +110,10 @@ midday its output stands at its 100% ceiling."
 
 §12.2's "42 of its 45 predictions held" stays, because it describes the retest. If wanted, a clause can
 add "and 43 when it was repeated at the submitted version, the target now carried".
+
+## Applied 2026-10-16 (Younes: option B, all ten passes; Table 12.3 rerun values for the three network rows, `adaptive_lighting` kept)
+
+Table 12.5 as in option B; §12.3's lead-in and memory paragraph (41 and 25 "on the re-measured figure") and
+§11.3 as drafted. Table 12.3: nordpool 0.029, regensburg 12:17 in both arms, pirateweather 12.41 against
+12.39 °C, and one sentence before `watchman`'s in the paragraph after the table. The optional "43 when repeated"
+clause was not added. `consistency.py` 0 problems.
