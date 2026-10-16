@@ -39,3 +39,5 @@ two rows:
   `v2/experiments/verify/results/final_20261016/` |
 - | Reproduction | `v2/REPRODUCE.md`, followed from a fresh clone; on a freshly imaged device still open
   (F18) |
+
+## Applied 2026-10-16 (Younes: O7, O8, O9)

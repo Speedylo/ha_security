@@ -14,7 +14,7 @@ This design is reasonable for code that the platform's maintainers review. The p
 | Installations running the Community Store | 379,326 (56.6%) |
 | Distinct community integrations reporting | 4,220 |
 | Total community-integration installations | 1,904,297 |
-| Mean community integrations per Community Store installation | 4.02 |
+| Mean community integrations per Community Store installation, the store itself not counted | 4.02 |
 | Median installations per community integration | 20 |
 | Community integrations with at least 1,000 installations | 257 |
 | Community integrations with fewer than 100 installations | 3,095 |
