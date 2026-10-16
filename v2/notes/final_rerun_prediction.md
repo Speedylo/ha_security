@@ -139,3 +139,28 @@ mutant surviving at the tag (§8.6's claim that every check is guarded), a compa
 - `REPRODUCE.md` §10 says 27 suites; there are 29.
 - `REPRODUCE.md` §9's instruction to stop (A) before unconfined runs stays; step 8 relies on it.
 - F18 stays open: the guide followed on a freshly imaged card needs a spare card.
+
+## Outcomes, 2026-10-16 (appended; nothing above edited)
+
+Tag `final-2026-10` = `38e70ec`. Results in `experiments/verify/results/final_20261016/`, one verdict file
+per step or group; drivers in `drivers/`. Pi rebooted (Younes, `sudo reboot`) before step 10.
+
+| # | Outcome | Prediction |
+|---|---|---|
+| 1 | Preflight 0; 29/29 suites, twice | held |
+| 2 | 52 of 53 killed, M25 survives (equivalent); every patch applied; M18a–c loaded mutated in (A) | held |
+| 3 | At `final-2026-10`: `faults.py` stopped at FI2 with `NotApproved` — **F61** (the fault harnesses lacked F57's approval step). At `fix-2026-10-f61` (`notes/f61_fault_harness_approval_prediction.md`): 11/11 on both hosts, FI1/FI4 every line ok | held at the fix tag |
+| 4 | 4,864 requests, 0 escapes | held |
+| 5 | 31/37 and 37/40 in both arms, same members and messages, C1 zero | held, exact |
+| 6 | Heap walk and canaries as stated; 36/36 → 1/36, 20/20 → 0/20 | held |
+| 7 | Every subject as Table 12.3 states it. `dwd_weather` 15/16 (the kept `www.dwd.de` refusal, as in phase 2); `pirateweather` 16/17 (a live reading 12.41 against 12.39 °C) | held as Table 12.3 states it |
+| 8 | 43/45; only the F54 row changed (to PASS) | held |
+| 9 | P1–P6 | held |
+| 10 | Every figure within band except the change in (A) reaching the sandbox: 0.50 ms against 0.71 (−29.6%, faster) — **F62** | **wrong for one row** |
+| 11 | 57.0, 92.9, 112.0, 135.6 MB; monotonic; spread ≤ 0.1 MB | held |
+| 12 | Both parses equal the committed JSONs in every field | held |
+
+Three scripts named stale locations and were re-issued against the clone by the drivers:
+`verify/phase2_l23.sh` (also unapproved; F61's clause), `verify/final_timing.sh` (names `verify-final`;
+`phase3_timing.sh` was called with `ROOT` instead), and `experiments/unstrip/results/item12_20261003/depth.sh`
+(`~/r2exp/v2`). Step 13 follows.
