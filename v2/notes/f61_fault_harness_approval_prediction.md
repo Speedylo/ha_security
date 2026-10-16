@@ -71,3 +71,7 @@ Results: `experiments/verify/results/final_20261016/step03_faults*`, `verdicts_s
 Found while preparing step 7, decided by Younes as a clause of F61: `verify/phase2_l23.sh` changes
 into the frozen tree `~/r2exp/verify/v2` and starts its supervisor unapproved; step 7's driver
 issues its commands against the clone, with the approval recorded as here.
+
+Addendum, 2026-10-16 (Younes): the clause also names `verify/final_timing.sh` (fixed path
+`~/r2exp/verify-final`) and `experiments/unstrip/results/item12_20261003/depth.sh` (`~/r2exp/v2`); the final
+rerun's drivers re-issued both scripts' commands against the clone. Appendix F and §8.6 say "three scripts".

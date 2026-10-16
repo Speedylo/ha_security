@@ -176,3 +176,15 @@ recompute; held for prereg only once the pairing is corrected, which the script 
 the push from (A), faster), every other criterion met. Nothing in §3's list of outcomes that would matter
 beyond a correction occurred: every suite passed, every mutant but the equivalent one was killed, no
 compatibility member moved, and both memory figures stayed inside 5%.
+
+## Decisions after the run, 2026-10-16 (appended; nothing above edited)
+
+Younes: yes to all three.
+- **F62** is in the submission: Appendix F row (Minor), counts 62 / 38 Minor, Table 12.5's push row
+  restated from step 10 (0.50 ms; 0.50–0.52 ms across the five passes), and §12.3 gives the range
+  0.5–0.9 ms across every run on record (F46's 0.50–0.66 and 0.93 included). Cause not established.
+- **`verify/prereg.py`** has RESULTS entries for this note (`0c771fa`) and F61's (`c41eafd`), tagged
+  `fix-2026-10-prereg`; 37 of 37 ok, 0 to look at (`experiments/verify/results/prereg_20261016/`).
+  §8.6 now says 38 notes (37 checked, plus the note that defines the check).
+- **F61's clause** names all three stale-path scripts: `phase2_l23.sh`, `final_timing.sh`,
+  `item12_20261003/depth.sh`.
