@@ -17,11 +17,12 @@ The project's assumptions are on record, because each was written down as a pred
 | First evaluation, 2–3 September 2026 | The evaluation plan and 1 note | 2 | 8 |
 | Completing and re-measuring the framework, 3–5 October | 16 | 107 | 119 |
 | Verification campaign, 7–13 October | 10 | 96 | 102 |
-| **Total** | | **205** | **229** |
+| Final rerun, 16 October | 2 | 14 | 18 |
+| **Total** | | **219** | **247** |
 
 The first evaluation is the most informative row, because its predictions were made before the project knew how the ecosystem behaved. The two that held concerned the framework itself: that confining an integration would cost little or no compatibility, and that this result would repeat on a second, independently drawn sample. The six that failed concerned the world around the framework. The least-installed integrations, for example, were expected to load successfully less often than the most popular ones because they are less maintained, and they loaded more often.
 
-Later predictions held far more often, but mainly because most were written about code that had just been read or built, so their rate reflects familiarity rather than foresight. Their 18 misses came largely from the platform's behaviour and from the project's own test tools, and a few exposed limits at the framework's edges, such as a safeguard against an integration that floods the mediator with requests, which also stopped a legitimate performance test. None of the 24 misses concerned the framework's central properties: that integrations are isolated, that they work as well confined as unconfined, and that whatever they did not declare is refused.
+Later predictions held far more often, but mainly because most were written about code that had just been read or built, so their rate reflects familiarity rather than foresight. Their 22 misses came largely from the platform's behaviour and from the project's own test tools, and a few exposed limits at the framework's edges, such as a safeguard against an integration that floods the mediator with requests, which also stopped a legitimate performance test. None of the 28 misses concerned the framework's central properties: that integrations are isolated, that they work as well confined as unconfined, and that whatever they did not declare is refused.
 
 Two assumptions could not be tested and are stated as limits: that the kernel's namespaces and system-call filter are sound, and that the person approving a declaration understands it, which no user study examined.
 
@@ -41,7 +42,7 @@ The activities followed the order of the method: requirements traced to findings
 
 ## 6.5 Outputs
 
-The outputs are the eight deliverables of Table 3.3, and each can be run or checked by someone other than the author. The framework and its interface integration run on the reference device, the 29 suites and 53 mutants show what the tests detect, the two corpora and their harness reproduce every compatibility figure, and the record of 153 claims and 60 findings links each claim in this report to its evidence.
+The outputs are the eight deliverables of Table 3.3, and each can be run or checked by someone other than the author. The framework and its interface integration run on the reference device, the 29 suites and 53 mutants show what the tests detect, the two corpora and their harness reproduce every compatibility figure, and the record of 153 claims and 62 findings links each claim in this report to its evidence.
 
 ## 6.6 Outcomes
 
