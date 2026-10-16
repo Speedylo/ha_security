@@ -73,3 +73,5 @@ abstract, §1, §6.6.1, §10 and §15, which the template's sections require.)
   sentence was added to §8.6 on 2026-10-16 with Younes's yes, so this would reverse that choice.
 - U2 also drops "and Section 9.8 states them": Table 9.2 lists only two of the three limits (data-store
   size, OAuth first login); the last-second loss is in neither table nor §14.
+
+## Applied 2026-10-16 (Younes: R1a, R1b, R2a, R2b, U2, U3, U4; not U1, not the Table 9.2 addition). 259 words.

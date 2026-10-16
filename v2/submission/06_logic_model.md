@@ -4,7 +4,7 @@ This section traces the project from the people it serves, through what it assum
 
 ## 6.1 Target population
 
-The primary population is the households that run community integrations: 379,326 of Home Assistant's 669,743 active installations, or 56.6%, run the community store, each with a mean of 4.02 community integrations [1]. These households own the assets at risk and carry that risk without a means of acting on it. The second population is the authors, whose 4,220 integrations have a median of 20 installations [1]. Most are volunteers, which is why requirement C1 leaves their code unmodified. What the framework asks of them is smaller: a `permissions` block in the manifest each integration already ships, which no integration carries yet, so every manifest in this evaluation was written by hand. The third is the Home Assistant project, which would have to own any lasting fix.
+The primary population is the households that run community integrations: 379,326 of Home Assistant's 669,743 active installations, or 56.6%, run the community store, each with a mean of 4.02 community integrations [1]. These households own the assets at risk and carry that risk without a means of acting on it. The second population is the authors, whose 4,220 integrations have a median of 20 installations [1]. Most are volunteers, which is why requirement C1 leaves their code unmodified. What the framework asks of them is smaller: a `permissions` block in the manifest each integration already ships, which no integration carries yet. The third is the Home Assistant project, which would have to own any lasting fix.
 
 ## 6.2 Underlying assumptions
 
