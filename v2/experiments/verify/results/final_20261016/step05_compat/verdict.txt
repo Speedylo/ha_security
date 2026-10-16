@@ -1,0 +1,12 @@
+Final rerun, step 5 — compatibility, both corpora, both arms (final-2026-10, (A) down, 10:46–10:59).
+Criterion (notes/final_rerun_prediction.md §2 step 5), exact:
+  ok  head corpus 31/37 in both arms (c1_baseline, c1_declared_core)
+  ok  uniform corpus 37/40 in both arms (uniform_baseline, uniform_confined)
+  ok  the same failing members in both arms, and the same as the 2026-10-03 rerun:
+        head    bambu_lab, bermuda, tapo_control (aiofiles undeclared); hacs (hacs_frontend absent);
+                spook (not found); eufy_security (SOURCE_TYPE_GPS removed from device_tracker)
+        uniform bermuda (aiofiles); lightwave2 (COLOR_MODE_BRIGHTNESS removed); next_rocket_launch (sensor import)
+  ok  the same error message in both arms for each failing member
+  ok  no integration passes unconfined and fails confined
+  ok  C1: zero source files changed — 37 + 38 head comparisons, 40 + 40 uniform, 0 diff lines
+Prediction "all exact": held.

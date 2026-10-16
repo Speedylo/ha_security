@@ -1,0 +1,9 @@
+start 2026-10-16T10:46:10+01:00 commit 38e70ecbaae8e16c45957f371663729ca7268e10 tag final-2026-10 dirty=0
+house_a_down exit=0 seconds=1
+c1_baseline exit=0 seconds=294
+c1_declared_core exit=0 seconds=122
+uniform_baseline exit=0 seconds=270
+uniform_confined exit=0 seconds=92
+dirty after=0
+end 2026-10-16T10:59:09+01:00
+ALLDONE
