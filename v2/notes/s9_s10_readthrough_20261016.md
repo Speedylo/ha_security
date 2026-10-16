@@ -44,3 +44,7 @@ which is off, so this cannot be checked from the laptop. Options:
 - §9.7's paragraph on stored data (~330 words).
 
 ## Applied 2026-10-16 (Younes: C6 both pointers fixed; Q1 verify on the Pi, text unchanged for now)
+
+## Q1 resolved 2026-10-16 (Pi on)
+
+On the Pi, `~/r2exp/corpus` (37 integrations, 38 `manifest.json` files: one integration has a second) and `~/r2exp/corpus_uniform` (40, 40): `grep -l "\"permissions\""` matches 0 files in either. "38 manifests" was the head corpus's file count. §9.3 now says "none of the 75 integrations in the project's two corpora declares one" (75 distinct; two are shared).
