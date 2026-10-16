@@ -85,3 +85,11 @@ After C1–C3 (+~70 words) and all of T1–T8 (−~405), §12 would come to abou
 ## Applied 2026-10-16 (Younes: C1–C3 as drafted; O1–O4; trims deferred to after the whole read-through)
 
 C1 as drafted, plus "The major findings" → "The campaign's twelve major findings" (Appendix F now has 14 Major). C2, C3 (§8.6 and the Table 12.6 row) as drafted. O1–O4 as suggested. consistency 0.
+
+## Trims drafted 2026-10-16 (not applied; `notes/s12_trims_20261016.py` holds each old/new pair)
+
+T1–T8 as listed above, drafted sentence by sentence. They save **189 words**, not the ~400 estimated:
+T1 25, T2 29, T3 36, T4 22, T5 26, T6 21, T7 15, T8 15. The estimate assumed deeper cuts. These drafts
+keep every fact a reader needs and remove only restatement, history and mechanism detail (T3 drops the
+resolver and Zeroconf; §9.5 keeps the mechanism). Going further would mean cutting content: for example,
+Table 12.4's paragraph, or the paragraph on the network halves, which §1 and §4 partly repeat.
