@@ -1,0 +1,230 @@
+[
+  {
+    "domain": "powercalc",
+    "egress_attempts": [
+      {
+        "kind": "connect",
+        "host": "224.0.0.251",
+        "port": 1,
+        "phase": "platform"
+      }
+    ],
+    "components_setup": {
+      "light": true,
+      "group": true,
+      "template": true,
+      "select": true,
+      "utility_meter": true,
+      "integration": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "menu": "virtual_power"
+        },
+        {
+          "step": "virtual_power",
+          "sent": [
+            "create_energy_sensor",
+            "create_standby_energy_sensor",
+            "create_utility_meters",
+            "entity_id",
+            "mode",
+            "name"
+          ]
+        },
+        {
+          "step": "fixed",
+          "sent": [
+            "fixed_value"
+          ]
+        },
+        {
+          "step": "power_advanced",
+          "sent": [
+            "energy_filter_outlier_enabled",
+            "energy_integration_method"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "entries": [
+      {
+        "title": "lamp power",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "light.living_room",
+      "sensor.all_standby_energy",
+      "sensor.all_standby_power",
+      "sensor.lamp_power_energy",
+      "sensor.lamp_power_power"
+    ],
+    "mirrored": [
+      "light.living_room"
+    ],
+    "published": [
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.lamp_power_energy",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "5.00",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.all_standby_power",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "sensor.all_standby_energy",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      }
+    ],
+    "refused": [],
+    "push": {
+      "subscribed": [],
+      "received": [],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "bytecode": {
+      "groups": {
+        "stdlib": {
+          "from_cache": 218,
+          "compiled": 0,
+          "examples": []
+        },
+        "platform (site-packages)": {
+          "from_cache": 508,
+          "compiled": 0,
+          "examples": []
+        },
+        "platform-deps": {
+          "from_cache": 846,
+          "compiled": 0,
+          "examples": []
+        },
+        "deps": {
+          "from_cache": 0,
+          "compiled": 84,
+          "examples": [
+            "cronsim.cronsim",
+            "cronsim",
+            "numpy.version"
+          ]
+        },
+        "component": {
+          "from_cache": 0,
+          "compiled": 80,
+          "examples": [
+            "custom_components.powercalc.analytics",
+            "custom_components.powercalc.const",
+            "custom_components.powercalc.power_profile"
+          ]
+        }
+      },
+      "seconds_since_start": 2.29
+    },
+    "probe": null,
+    "install": {
+      "ok": true,
+      "installed": [
+        "cronsim",
+        "numpy"
+      ],
+      "resolved_before": "2026-10-06T00:00:00Z",
+      "resolved": [
+        "cronsim-2.7",
+        "numpy-2.5.3"
+      ]
+    },
+    "decisions": [
+      {
+        "identity": "powercalc",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "durable": {
+      "records": 7,
+      "runs": 1,
+      "decisions": 6,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "platform_states": {
+      "sensor.lamp_power_power": "5.00",
+      "sensor.lamp_power_energy": "unknown",
+      "sensor.all_standby_power": "unknown",
+      "sensor.all_standby_energy": "unknown"
+    }
+  }
+]

@@ -1,0 +1,10 @@
+start 2026-10-16T12:27:25+01:00 uptime up 0 minutes commit 38e70ecbaae8e16c45957f371663729ca7268e10 tag final-2026-10 dirty=0
+house_a_up exit=0 seconds=6
+pass1 exit=0 seconds=221
+pass2 exit=0 seconds=216
+pass3 exit=0 seconds=215
+pass4 exit=0 seconds=215
+pass5 exit=0 seconds=214
+dirty after=6
+end 2026-10-16T12:50:32+01:00
+ALLDONE

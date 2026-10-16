@@ -1,0 +1,16 @@
+scale — 6 sandboxes, minimal
+
+  sandbox 1: RSS   75.3 MB   PSS   63.6 MB   machine +  68.3 MB
+  sandbox 2: RSS   75.3 MB   PSS   60.5 MB   machine + 132.8 MB
+  sandbox 3: RSS   75.3 MB   PSS   59.0 MB   machine + 182.2 MB
+  sandbox 4: RSS   75.3 MB   PSS   58.1 MB   machine + 226.3 MB
+  sandbox 5: RSS   75.3 MB   PSS   57.5 MB   machine + 284.3 MB
+  sandbox 6: RSS   75.3 MB   PSS   57.0 MB   machine + 347.7 MB
+
+  sum of RSS               451.7 MB
+  sum of PSS               342.3 MB
+  PSS per sandbox           57.0 MB   <- the §6.3.2 figure's successor
+
+  4050 MB machine; in 60% of it (2430 MB), about 42 sandboxes fit
+
+wrote /home/younes/r2exp/final-run/out/step11_depth/depth_none_r3.json

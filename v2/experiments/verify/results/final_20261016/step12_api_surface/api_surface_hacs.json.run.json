@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "api_surface.py",
+    "--root",
+    "/home/younes/r2exp/final-run/top150",
+    "--label",
+    "hacs-top150",
+    "--json",
+    "/home/younes/r2exp/final-run/out/step12_api_surface/api_surface_hacs.json"
+  ],
+  "cwd": "/home/younes/r2exp/final/v2/figures",
+  "executable": "/home/younes/r2exp/ha314/bin/python",
+  "python": "3.14.7",
+  "host": "raspberrypi",
+  "machine": "aarch64",
+  "time": "2026-10-16T12:57:19+0100",
+  "commit": "38e70ecbaae8e16c45957f371663729ca7268e10",
+  "uncommitted_changes": false,
+  "resolve_before": "2026-10-06T00:00:00Z"
+}

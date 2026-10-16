@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "scale.py",
+    "--json",
+    "/home/younes/r2exp/final/v2/experiments/verify/results/phase3_timing/final_rerun_pass5/latency_scale.json"
+  ],
+  "cwd": "/home/younes/r2exp/final/v2/experiments/mediation_latency",
+  "executable": "/usr/bin/python3",
+  "python": "3.13.5",
+  "host": "raspberrypi",
+  "machine": "aarch64",
+  "time": "2026-10-16T12:46:02+0100",
+  "commit": "38e70ecbaae8e16c45957f371663729ca7268e10",
+  "uncommitted_changes": false,
+  "resolve_before": "2026-10-06T00:00:00Z"
+}

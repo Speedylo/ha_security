@@ -1,0 +1,320 @@
+[
+  {
+    "domain": "adaptive_lighting",
+    "egress_attempts": [
+      {
+        "kind": "connect",
+        "host": "224.0.0.251",
+        "port": 1,
+        "phase": "platform"
+      }
+    ],
+    "components_setup": {
+      "light": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "name"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "entries": [
+      {
+        "title": "confined test",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "light.living_room",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+      "switch.confined_test_adaptive_lighting_confined_test"
+    ],
+    "mirrored": [
+      "light.living_room"
+    ],
+    "published": [
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "state": "off",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "state": "off",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "switch.confined_test_adaptive_lighting_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      }
+    ],
+    "refused": [],
+    "push": {
+      "subscribed": [
+        "light.living_room"
+      ],
+      "received": [
+        {
+          "entity": "light.living_room",
+          "state": "on"
+        }
+      ],
+      "unexpected": [],
+      "commands": [
+        {
+          "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+          "service": "turn_on",
+          "ok": true,
+          "error": null
+        }
+      ]
+    },
+    "egress": {},
+    "probe": null,
+    "install": {
+      "ok": true,
+      "installed": [
+        "ulid_transform"
+      ],
+      "resolved_before": "2026-10-06T00:00:00Z",
+      "resolved": [
+        "ulid_transform-2.2.9"
+      ]
+    },
+    "decisions": [
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/subscribe/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.command",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "the platform operating the integration's own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "durable": {
+      "records": 12,
+      "runs": 1,
+      "decisions": 11,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "command": {
+      "entity_in_A": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+      "outcome": {
+        "success": true,
+        "error": null,
+        "seconds": 0.011945452000077239
+      },
+      "state_in_A_after": "on"
+    },
+    "registry": [
+      {
+        "entity_id": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "unique_id": "adaptive_lighting:switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "config_entry": true,
+        "device": true
+      },
+      {
+        "entity_id": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "unique_id": "adaptive_lighting:switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "config_entry": true,
+        "device": true
+      },
+      {
+        "entity_id": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "unique_id": "adaptive_lighting:switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "config_entry": true,
+        "device": true
+      },
+      {
+        "entity_id": "switch.confined_test_adaptive_lighting_confined_test",
+        "unique_id": "adaptive_lighting:switch.confined_test_adaptive_lighting_confined_test",
+        "config_entry": true,
+        "device": true
+      }
+    ],
+    "platform_states": {
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test": "on",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test": "on",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test": "on",
+      "switch.confined_test_adaptive_lighting_confined_test": "on"
+    },
+    "calls_executed_in_A": [],
+    "publish_history": [
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "off"
+      ],
+      [
+        "<command>",
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test turn_on"
+      ],
+      [
+        "<push>",
+        "30.0"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "off"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "on"
+      ],
+      [
+        "switch.confined_test_adaptive_lighting_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "on"
+      ]
+    ],
+    "pushes_sent": {
+      "adaptive_lighting": 1
+    },
+    "subscribers": [],
+    "watched_in_A": [
+      "light.living_room"
+    ]
+  }
+]

@@ -1,0 +1,16 @@
+mediated request latency against sandbox count — aarch64, Python 3.13.5
+  real mediator: identity, manifest decision, clause, reply. No audit write.
+
+   sandboxes   median µs       p95       p99       max     req/s
+           1        41.4      44.9      51.9     694.1     23003
+           2        67.9      73.7      81.9    1347.8     28717
+           4        96.0     195.4     203.4    3921.0     30233
+           8       222.5     449.1     462.2    8823.0     28852
+          16       478.8     953.6     974.6   19024.6     30764
+          26       811.2     898.7    1638.6   31740.6     29690
+
+  §7.6 P4 predicted: median within 2× of one client, p99 an order of magnitude worse.
+    median  41.4 → 811.2 µs  (19.6×)
+    p99     51.9 → 1638.6 µs  (31.6×)
+
+wrote /home/younes/r2exp/final/v2/experiments/verify/results/phase3_timing/final_rerun_pass3/latency_scale.json

@@ -1,0 +1,61 @@
+{
+  "host": {
+    "machine": "aarch64",
+    "python": "3.14.7",
+    "node": "raspberrypi",
+    "mem_total_mb": 4050
+  },
+  "count": 6,
+  "builder": "corrected",
+  "per_sandbox": [
+    {
+      "n": 1,
+      "pid": 5743,
+      "rss_mb": 161.1,
+      "pss_mb": 144.0,
+      "machine_used_mb": 64.1
+    },
+    {
+      "n": 2,
+      "pid": 5747,
+      "rss_mb": 161.0,
+      "pss_mb": 140.2,
+      "machine_used_mb": 182.4
+    },
+    {
+      "n": 3,
+      "pid": 5751,
+      "rss_mb": 161.0,
+      "pss_mb": 138.2,
+      "machine_used_mb": 305.9
+    },
+    {
+      "n": 4,
+      "pid": 5755,
+      "rss_mb": 161.0,
+      "pss_mb": 137.0,
+      "machine_used_mb": 448.4
+    },
+    {
+      "n": 5,
+      "pid": 5759,
+      "rss_mb": 161.0,
+      "pss_mb": 136.3,
+      "machine_used_mb": 577.3
+    },
+    {
+      "n": 6,
+      "pid": 5763,
+      "rss_mb": 161.0,
+      "pss_mb": 135.7,
+      "machine_used_mb": 715.9
+    }
+  ],
+  "settled": {
+    "sum_rss_mb": 966.0,
+    "sum_pss_mb": 814.2,
+    "machine_delta_mb": 715.9,
+    "first_sandbox_mb": 64.1,
+    "marginal_mb": 130.4
+  }
+}

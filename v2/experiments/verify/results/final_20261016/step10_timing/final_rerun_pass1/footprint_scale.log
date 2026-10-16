@@ -1,0 +1,17 @@
+R2 scale — aarch64, Python 3.14.7, 6 sandboxes, corrected builder
+  sandbox 1: RSS  161.0 MB   PSS  143.8 MB   machine +  49.3 MB
+  sandbox 2: RSS  160.9 MB   PSS  140.1 MB   machine + 162.4 MB
+  sandbox 3: RSS  161.0 MB   PSS  138.2 MB   machine + 264.0 MB
+  sandbox 4: RSS  161.0 MB   PSS  137.1 MB   machine + 404.1 MB
+  sandbox 5: RSS  160.9 MB   PSS  136.2 MB   machine + 556.4 MB
+  sandbox 6: RSS  160.9 MB   PSS  135.7 MB   machine + 684.5 MB
+
+  sum of RSS                  965.6 MB   (counts shared pages 6x — over-estimate)
+  sum of PSS                  814.1 MB   (shared pages divided among sharers)
+  machine memory consumed     684.5 MB   (MemAvailable delta)
+  first sandbox                49.3 MB
+  MARGINAL per sandbox        127.0 MB   <- the figure that decides C4
+
+  host has 4050 MB; in 60% of it (2430 MB) about 19 sandboxes fit
+
+wrote /home/younes/r2exp/final/v2/experiments/verify/results/phase3_timing/final_rerun_pass1/footprint_scale.json

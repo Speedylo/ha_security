@@ -1,0 +1,21 @@
+{
+  "profile": null,
+  "setup_components": [
+    "http",
+    "websocket_api"
+  ],
+  "count": 6,
+  "per_sandbox_pss_mb": [
+    92.9,
+    92.9,
+    92.9,
+    92.9,
+    92.9,
+    92.9
+  ],
+  "sum_rss_mb": 674.6,
+  "sum_pss_mb": 557.4,
+  "pss_per_sandbox_mb": 92.9,
+  "capacity": 26,
+  "mem_total_mb": 4050
+}

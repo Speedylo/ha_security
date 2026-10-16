@@ -1,0 +1,13 @@
+scale — 3 sandboxes, http,websocket_api
+
+  sandbox 1: RSS  112.4 MB   PSS   99.9 MB   machine + 124.2 MB
+  sandbox 2: RSS  112.4 MB   PSS   96.6 MB   machine + 244.2 MB
+  sandbox 3: RSS  112.4 MB   PSS   95.0 MB   machine + 297.2 MB
+
+  sum of RSS               337.1 MB
+  sum of PSS               284.9 MB
+  PSS per sandbox           95.0 MB   <- the §6.3.2 figure's successor
+
+  4050 MB machine; in 60% of it (2430 MB), about 25 sandboxes fit
+
+wrote /home/younes/r2exp/final/v2/experiments/verify/results/phase3_timing/final_rerun_pass1/depth_two.json

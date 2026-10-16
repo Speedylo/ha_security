@@ -1,0 +1,29 @@
+Final rerun, steps 10–12 (final-2026-10), against notes/final_rerun_prediction.md §2.
+Pi rebooted by Younes at 12:26 (sudo reboot); step 10 started at 12:27, "up 0 minutes".
+
+Step 10 — timings and memory, five passes (12:27–12:50), each 15/15 sub-steps exit 0.
+  Judged with verify/timing_stats.py (as at final-2026-10) over these five passes only, in a scratch tree
+  (step10_timing/timing_stats.txt). Its reference column is the working report's figure; the criterion is
+  Table 12.5's (submission), so each row below is read against Table 12.5.
+    ok    memory, no components         median 59 MB vs 56.5 (+4.4%; band ±5%)   predicted 58.7 (+3.9%)
+    ok    memory, ten components        141 MB vs 135.6 (+4.0%)                  predicted 141 (+4.0%)
+    ok    marginal per added sandbox    median 130 MB, 127–134 (F43's range 126–134; +4.8% vs §7.35's 124.4)
+    ok    mediation latency, one        43.0 µs (41.4–44.4) vs 43                 predicted 40–47
+    ok    mediation latency, 26         median ~802 µs (794–816) vs 800
+    ok    durable record                3.67 ms (3.66–3.69) vs 3.67               predicted 3.5–3.8
+    ok    push, mediator cost           11.6 µs (11.4–11.7) vs 10.9 (+6.4%)
+    MISS  change in (A) to the push     median 0.50 ms (0.50–0.52) vs 0.71 (−29.6%; band ±20%) — faster
+    ok    a user's command              12.4 ms (11.9–13.5), inside Table 12.5's 11–16 ms
+    ok    flood start to cut-off        0.809 s vs 0.81
+    ok    powercalc, compiled install   1.88 s vs 1.87
+    ..    powercalc, default install    2.27 s (2.25–2.89; first pass after boot 2.89) vs §7.39's 2.47 — not in Table 12.5
+  Prediction "every figure within its criterion": wrong for one row. Rule 6: a finding (F62), reported, not
+  averaged away. Cause not established. Untested hypothesis: (A)'s configuration was created fresh by step 9's
+  `house_a up --fresh` a few hours earlier, where the verification passes ran against a longer-lived one.
+Step 11 — declaration depth, three rounds of six sandboxes (12:50–12:57).
+    none 57.0 (+0.9% vs 56.5) · two 92.9 (+0.7% vs 92.3) · four 112.0 (+0.4% vs 111.6) · ten 135.6 (0.0%)
+    monotonic; spread ≤ 0.1 MB across rounds. Prediction "monotonic, each within 5%, the same spread": held.
+Step 12 — API surface (12:57). Top-150 sample rebuilt from figures/hacs_top150_manifest.json's 144 in-sample
+  rows (144/144 at their recorded commits) and the uniform corpus, parsed under Python 3.14: both JSONs equal
+  figures/api_surface_hacs.json and figures/api_surface_uniform.json in every field (n 144 / 4,628 files;
+  n 40 / 835 files). Prediction "identical": held.

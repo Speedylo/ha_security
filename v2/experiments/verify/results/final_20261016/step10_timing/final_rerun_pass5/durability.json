@@ -1,0 +1,52 @@
+{
+  "host": "aarch64",
+  "python": "3.13.5",
+  "durability": {
+    "with fsync (as built)": {
+      "n": 2000,
+      "median": 3679.0,
+      "p95": 4301.4,
+      "p99": 12004.3,
+      "max": 22665.4
+    },
+    "without fsync": {
+      "n": 2000,
+      "median": 59.9,
+      "p95": 63.1,
+      "p99": 73.0,
+      "max": 188.3
+    }
+  },
+  "page_cache": [
+    {
+      "cap_mb": 64,
+      "file_mb": 512,
+      "returncode": 0,
+      "oom_kill": 0,
+      "peak_mb": 6.4,
+      "read_bytes": "536870912",
+      "stderr": "",
+      "killed": false
+    },
+    {
+      "cap_mb": 128,
+      "file_mb": 512,
+      "returncode": 0,
+      "oom_kill": 0,
+      "peak_mb": 6.4,
+      "read_bytes": "536870912",
+      "stderr": "",
+      "killed": false
+    },
+    {
+      "cap_mb": 256,
+      "file_mb": 512,
+      "returncode": 0,
+      "oom_kill": 0,
+      "peak_mb": 6.4,
+      "read_bytes": "536870912",
+      "stderr": "",
+      "killed": false
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+start 2026-10-16T12:50:32+01:00 uptime up 23 minutes commit 38e70ecbaae8e16c45957f371663729ca7268e10 tag final-2026-10 dirty=6
+depth_none_r1 exit=0 seconds=10
+depth_two_r1 exit=0 seconds=10
+depth_four_r1 exit=0 seconds=13
+depth_ten_r1 exit=0 seconds=16
+depth_none_r2 exit=0 seconds=10
+depth_two_r2 exit=0 seconds=10
+depth_four_r2 exit=0 seconds=12
+depth_ten_r2 exit=0 seconds=16
+depth_none_r3 exit=0 seconds=10
+depth_two_r3 exit=0 seconds=10
+depth_four_r3 exit=0 seconds=13
+depth_ten_r3 exit=0 seconds=15
+dirty after=6
+end 2026-10-16T12:56:57+01:00
+ALLDONE

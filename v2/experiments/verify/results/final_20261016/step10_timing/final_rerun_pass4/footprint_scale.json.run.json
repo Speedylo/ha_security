@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "measure_scale.py",
+    "--builder",
+    "corrected",
+    "--count",
+    "6",
+    "--json",
+    "/home/younes/r2exp/final/v2/experiments/verify/results/phase3_timing/final_rerun_pass4/footprint_scale.json"
+  ],
+  "cwd": "/home/younes/r2exp/final/v2/experiments/r2_footprint",
+  "executable": "/home/younes/r2exp/ha314/bin/python",
+  "python": "3.14.7",
+  "host": "raspberrypi",
+  "machine": "aarch64",
+  "time": "2026-10-16T12:42:03+0100",
+  "commit": "38e70ecbaae8e16c45957f371663729ca7268e10",
+  "uncommitted_changes": false,
+  "resolve_before": "2026-10-06T00:00:00Z"
+}

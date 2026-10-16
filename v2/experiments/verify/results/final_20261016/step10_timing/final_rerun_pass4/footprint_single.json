@@ -1,0 +1,77 @@
+{
+  "builder": "corrected",
+  "host": {
+    "machine": "aarch64",
+    "python": "3.14.7",
+    "node": "raspberrypi",
+    "ha_version": "2026.8.3"
+  },
+  "questions": {
+    "Q1_minimal_instance": {
+      "ok": true
+    },
+    "Q2_integration_runs": {
+      "ok": true,
+      "base_component": true,
+      "entry_state": "ConfigEntryState.LOADED",
+      "entities_published": [
+        "sensor.ticks"
+      ],
+      "all_entity_ids": [
+        "sensor.ticks"
+      ],
+      "sensor_value": "1"
+    },
+    "Q3_footprint": {
+      "peak_rss_mb": 161.3,
+      "rss_at_running_mb": 161.1,
+      "time_to_running_s": 1.5,
+      "host_mem_mb": 4050
+    }
+  },
+  "core_state": "RUNNING",
+  "start_event_fired": true,
+  "start_event_pending_listeners": 1,
+  "stages": [
+    {
+      "stage": "bare interpreter",
+      "rss_mb": 24.1,
+      "elapsed_s": 0.0
+    },
+    {
+      "stage": "+ import homeassistant.const",
+      "rss_mb": 29.4,
+      "elapsed_s": 0.03
+    },
+    {
+      "stage": "+ import homeassistant.core",
+      "rss_mb": 46.4,
+      "elapsed_s": 0.16
+    },
+    {
+      "stage": "+ import helper layer + sensor platform",
+      "rss_mb": 108.6,
+      "elapsed_s": 0.81
+    },
+    {
+      "stage": "+ minimal hass constructed and running",
+      "rss_mb": 108.7,
+      "elapsed_s": 0.81
+    },
+    {
+      "stage": "+ base 'homeassistant' component",
+      "rss_mb": 160.9,
+      "elapsed_s": 1.5
+    },
+    {
+      "stage": "+ probe integration set up",
+      "rss_mb": 161.1,
+      "elapsed_s": 1.5
+    },
+    {
+      "stage": "after hass.async_stop()",
+      "rss_mb": 161.3,
+      "elapsed_s": 1.51
+    }
+  ]
+}

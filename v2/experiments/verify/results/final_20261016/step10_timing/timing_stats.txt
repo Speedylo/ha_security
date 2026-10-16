@@ -1,0 +1,15 @@
+5 pass(es): pass1, pass2, pass3, pass4, pass5
+
+  mediation latency, one client, median            §7.45.1 stated    43.0 µs  passes [41.5, 42.5, 41.4, 44.4, 43.9]  → within T (-1.2%); 95% [41.4, 44.4]; p99 [51.4, 52.9, 51.9, 62, 58.7]
+  mediation latency, 26 clients, median            §7.19   stated       — µs  passes [794, 816, 811, 802, 799]  → reported; 95% [794, 816]
+  durable record with fsync, median                §7.20.1 stated  3670.7 µs  passes [3.67e+03, 3.67e+03, 3.66e+03, 3.69e+03, 3.68e+03]  → within T (+0.1%); 95% [3.66e+03, 3.69e+03]; p99 [1.12e+04, 1.29e+04, 4.75e+03, 1.25e+04, 1.2e+04]
+  one sandbox, RSS at running                      §7.35   stated   161.3 MB  passes [161, 161, 161, 161, 161]  → within M (-0.1%); 95% [161, 161]
+  marginal memory per added sandbox                §7.35   stated   124.4 MB  passes [127, 131, 134, 129, 130]  → within M (+4.8%); 95% [127, 134]
+  PSS per sandbox, no components                   §7.35   stated    56.5 MB  passes [59, 59, 59, 59, 59]  → within M (+4.4%); 95% [59, 59]
+  PSS per sandbox, ten components                  §7.35   stated   135.6 MB  passes [141, 141, 141, 141, 141]  → within M (+4.0%); 95% [141, 141]
+  one delivered push, mediator cost                §7.36   stated    10.9 µs  passes [11.6, 11.6, 11.4, 11.4, 11.7]  → within T (+6.4%); 95% [11.4, 11.7]
+  change in (A) to the mediator's push, median     §7.37   stated    0.71 ms  passes [0.5, 0.5, 0.5, 0.5, 0.52]  → OUTSIDE T (-29.6%); 95% [0.5, 0.52]
+  a user's command to the integration's code       §7.38   stated    16.0 ms  passes [13.5, 11.9, 12.4, 11.9, 12.6]  → OUTSIDE T (-22.3%); 95% [11.9, 13.5]
+  flood start to cut-off, on disk                  §7.44   stated   0.812 s   passes [0.809, 0.809, 0.809, 0.81, 0.805]  → within T (-0.4%); 95% [0.805, 0.81]
+  powercalc time to report, default install        §7.39   stated    2.47 s   passes [2.89, 2.29, 2.25, 2.26, 2.27]  → within T (-8.1%); 95% [2.25, 2.89]
+  powercalc time to report, compiled install       §7.39   stated    1.87 s   passes [1.9, 1.88, 1.88, 1.87, 1.88]  → within T (+0.5%); 95% [1.87, 1.9]
