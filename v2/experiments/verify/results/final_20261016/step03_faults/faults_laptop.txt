@@ -1,0 +1,6 @@
+Step 3, laptop half, at fix-2026-10-f61 (F61's G2) — 2026-10-16T07:27:00+00:00
+host: DESKTOP-6OPV9NM (WSL laptop), Python 3.12.3, kernel 6.18.54.1-microsoft-standard-WSL2
+tree: fresh clone of fix-2026-10-f61 (04cb668add072a0ef47f7e00c1a52052b558a76c), clean before the run (the one untracked entry after it is the run's own out/ folder)
+command (from v2/framework): python3 ../verify/faults.py --json ../out/faults_laptop.json
+exit: 0 — 11/11 criteria held; log faults_laptop.log, results faults_laptop.json
+provenance: faults.py writes no .run.json; this file is its record (command, commit, tree, interpreter, host, time)
