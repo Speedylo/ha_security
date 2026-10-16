@@ -1,0 +1,6349 @@
+[
+  {
+    "domain": "powercalc",
+    "arm": "unconfined",
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false,
+      "light": true,
+      "group": true,
+      "template": true,
+      "select": true,
+      "utility_meter": true,
+      "integration": true
+    },
+    "history": [
+      [
+        "sensor.lamp_power_power",
+        "unknown"
+      ],
+      [
+        "sensor.lamp_power_energy",
+        "unknown"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "8.06"
+      ],
+      [
+        "sensor.all_standby_power",
+        "unknown"
+      ],
+      [
+        "sensor.all_standby_energy",
+        "unknown"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "8.06"
+      ],
+      [
+        "sensor.lamp_power_energy",
+        "0.0000"
+      ],
+      [
+        "light.living_room",
+        "on"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "3.00"
+      ],
+      [
+        "light.living_room",
+        "off"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "0.00"
+      ],
+      [
+        "sensor.all_standby_power",
+        "0.00"
+      ]
+    ],
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "menu": "virtual_power"
+        },
+        {
+          "step": "virtual_power",
+          "sent": [
+            "create_energy_sensor",
+            "create_standby_energy_sensor",
+            "create_utility_meters",
+            "entity_id",
+            "mode",
+            "name"
+          ]
+        },
+        {
+          "step": "linear",
+          "sent": [
+            "max_power",
+            "min_power"
+          ]
+        },
+        {
+          "step": "power_advanced",
+          "sent": [
+            "energy_filter_outlier_enabled",
+            "energy_integration_method"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "world",
+        "at": 15,
+        "utc": "2026-10-16T10:44:33.186762+00:00",
+        "entity": "light.living_room"
+      },
+      {
+        "kind": "world",
+        "at": 30,
+        "utc": "2026-10-16T10:44:48.201405+00:00",
+        "entity": "light.living_room"
+      }
+    ],
+    "entries": [
+      {
+        "title": "lamp power",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "conversation.home_assistant",
+      "sensor.all_standby_energy",
+      "sensor.all_standby_power",
+      "sensor.lamp_power_energy",
+      "sensor.lamp_power_power",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sun.sun",
+      "zone.home"
+    ],
+    "published": [
+      {
+        "entity": "conversation.home_assistant",
+        "state": "unknown",
+        "platform": null,
+        "attributes": {
+          "friendly_name": "Home Assistant",
+          "supported_features": 1
+        }
+      },
+      {
+        "entity": "sensor.all_standby_energy",
+        "state": "unknown",
+        "platform": "powercalc",
+        "attributes": {
+          "state_class": "total_increasing",
+          "source_entity": "sensor.dummy",
+          "source_domain": "sensor",
+          "source": "sensor.all_standby_power",
+          "unit_of_measurement": "kWh",
+          "device_class": "energy",
+          "icon": "mdi:lightning-bolt",
+          "friendly_name": "All standby energy"
+        }
+      },
+      {
+        "entity": "sensor.all_standby_power",
+        "state": "0.00",
+        "platform": "powercalc",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "All standby power"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_energy",
+        "state": "0.0000",
+        "platform": "powercalc",
+        "attributes": {
+          "state_class": "total_increasing",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "source": "sensor.lamp_power_power",
+          "unit_of_measurement": "kWh",
+          "device_class": "energy",
+          "icon": "mdi:lightning-bolt",
+          "friendly_name": "lamp power energy"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "0.00",
+        "platform": "powercalc",
+        "attributes": {
+          "state_class": "measurement",
+          "calculation_mode": "linear",
+          "integration": "powercalc",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "energy_sensor_entity_id": "sensor.lamp_power_energy",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "lamp power power"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_dawn",
+        "state": "2026-10-17T05:53:31+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dawn"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_dusk",
+        "state": "2026-10-16T17:39:14+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dusk"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_midnight",
+        "state": "2026-10-16T23:45:49+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next midnight"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_noon",
+        "state": "2026-10-16T11:46:07+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next noon"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_rising",
+        "state": "2026-10-17T06:28:00+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next rising"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_setting",
+        "state": "2026-10-16T17:04:53+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next setting"
+        }
+      },
+      {
+        "entity": "sun.sun",
+        "state": "above_horizon",
+        "platform": null,
+        "attributes": {
+          "next_dawn": "2026-10-17T05:53:31.210936+00:00",
+          "next_dusk": "2026-10-16T17:39:14.654243+00:00",
+          "next_midnight": "2026-10-16T23:45:49+00:00",
+          "next_noon": "2026-10-16T11:46:07+00:00",
+          "next_rising": "2026-10-17T06:28:00.797871+00:00",
+          "next_setting": "2026-10-16T17:04:53.572261+00:00",
+          "elevation": 28.1,
+          "azimuth": 162.66,
+          "rising": true,
+          "friendly_name": "Sun"
+        }
+      },
+      {
+        "entity": "zone.home",
+        "state": "0",
+        "platform": null,
+        "attributes": {
+          "latitude": 51.5,
+          "longitude": -0.12,
+          "radius": 100,
+          "passive": false,
+          "editable": true,
+          "icon": "mdi:home",
+          "friendly_name": "Home"
+        }
+      }
+    ],
+    "probe": null,
+    "variant": "powercalc",
+    "log_tail": [
+      "  File \"/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/recorder/__init__.py\", line 149, in async_setup",
+      "    instance = hass.data[DATA_INSTANCE] = Recorder(",
+      "                                          ~~~~~~~~^",
+      "        hass=hass,",
+      "        ^^^^^^^^^^",
+      "    ...<8 lines>...",
+      "        exclude_event_types=exclude_event_types,",
+      "        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "    )",
+      "    ^",
+      "  File \"/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/recorder/core.py\", line 182, in __init__",
+      "    db_connected: asyncio.Future[bool] = hass.data[DATA_RECORDER].db_connected",
+      "                                         ~~~~~~~~~^^^^^^^^^^^^^^^",
+      "KeyError: 'recorder'",
+      "zlib_ng and isal are not available, falling back to zlib, performance will be degraded."
+    ]
+  },
+  {
+    "domain": "powercalc",
+    "components_setup": {
+      "light": true,
+      "group": true,
+      "template": true,
+      "select": true,
+      "utility_meter": true,
+      "integration": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "menu": "virtual_power"
+        },
+        {
+          "step": "virtual_power",
+          "sent": [
+            "create_energy_sensor",
+            "create_standby_energy_sensor",
+            "create_utility_meters",
+            "entity_id",
+            "mode",
+            "name"
+          ]
+        },
+        {
+          "step": "linear",
+          "sent": [
+            "max_power",
+            "min_power"
+          ]
+        },
+        {
+          "step": "power_advanced",
+          "sent": [
+            "energy_filter_outlier_enabled",
+            "energy_integration_method"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "none",
+        "at": 0,
+        "utc": "2026-10-16T10:45:07.521270+00:00"
+      }
+    ],
+    "entries": [
+      {
+        "title": "lamp power",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "light.living_room",
+      "sensor.all_standby_energy",
+      "sensor.all_standby_power",
+      "sensor.lamp_power_energy",
+      "sensor.lamp_power_power"
+    ],
+    "mirrored": [
+      "light.living_room"
+    ],
+    "published": [
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "calculation_mode": "linear",
+          "integration": "powercalc",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "energy_sensor_entity_id": "sensor.lamp_power_energy",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "lamp power power"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_energy",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "total_increasing",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "source": "sensor.lamp_power_power",
+          "unit_of_measurement": "kWh",
+          "device_class": "energy",
+          "icon": "mdi:lightning-bolt",
+          "friendly_name": "lamp power energy"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "8.06",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "calculation_mode": "linear",
+          "integration": "powercalc",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "energy_sensor_entity_id": "sensor.lamp_power_energy",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "lamp power power"
+        }
+      },
+      {
+        "entity": "sensor.all_standby_power",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "All standby power"
+        }
+      },
+      {
+        "entity": "sensor.all_standby_energy",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "total_increasing",
+          "source_entity": "sensor.dummy",
+          "source_domain": "sensor",
+          "source": "sensor.all_standby_power",
+          "unit_of_measurement": "kWh",
+          "device_class": "energy",
+          "icon": "mdi:lightning-bolt",
+          "friendly_name": "All standby energy"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "3.00",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "calculation_mode": "linear",
+          "integration": "powercalc",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "energy_sensor_entity_id": "sensor.lamp_power_energy",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "lamp power power"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_energy",
+        "state": "0.0000",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "total_increasing",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "source": "sensor.lamp_power_power",
+          "unit_of_measurement": "kWh",
+          "device_class": "energy",
+          "icon": "mdi:lightning-bolt",
+          "friendly_name": "lamp power energy"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "0.00",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "calculation_mode": "linear",
+          "integration": "powercalc",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "energy_sensor_entity_id": "sensor.lamp_power_energy",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "lamp power power"
+        }
+      },
+      {
+        "entity": "sensor.all_standby_power",
+        "state": "0.00",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "All standby power"
+        }
+      }
+    ],
+    "refused": [],
+    "push": {
+      "subscribed": [
+        "light.living_room"
+      ],
+      "received": [
+        {
+          "entity": "light.living_room",
+          "state": "on"
+        },
+        {
+          "entity": "light.living_room",
+          "state": "off"
+        }
+      ],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "probe": null,
+    "variant": "powercalc",
+    "arm": "confined",
+    "install": {
+      "ok": true,
+      "installed": [
+        "cronsim",
+        "numpy"
+      ],
+      "resolved_before": "2026-10-06T00:00:00Z",
+      "resolved": [
+        "cronsim-2.7",
+        "numpy-2.5.3"
+      ]
+    },
+    "durable": {
+      "records": 12,
+      "runs": 1,
+      "decisions": 11,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "decisions": [
+      {
+        "identity": "powercalc",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/subscribe/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "history": [
+      [
+        "sensor.lamp_power_power",
+        "unknown"
+      ],
+      [
+        "sensor.lamp_power_energy",
+        "unknown"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "8.06"
+      ],
+      [
+        "sensor.all_standby_power",
+        "unknown"
+      ],
+      [
+        "sensor.all_standby_energy",
+        "unknown"
+      ],
+      [
+        "<world>",
+        "light.living_room on"
+      ],
+      [
+        "light.living_room",
+        "on"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "3.00"
+      ],
+      [
+        "sensor.lamp_power_energy",
+        "0.0000"
+      ],
+      [
+        "<world>",
+        "light.living_room off"
+      ],
+      [
+        "light.living_room",
+        "off"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "0.00"
+      ],
+      [
+        "sensor.all_standby_power",
+        "0.00"
+      ]
+    ],
+    "calls": [],
+    "platform_states": {
+      "sensor.living_room_temperature": "21.4",
+      "sensor.living_room_humidity": "48",
+      "light.living_room": "off",
+      "sensor.lamp_power_power": "0.00",
+      "sensor.lamp_power_energy": "0.0000",
+      "sensor.all_standby_power": "0.00",
+      "sensor.all_standby_energy": "unknown"
+    },
+    "log_tail": [
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/composite.py\", line 16, in initialize",
+      "    await loader.initialize(prefer_cached)",
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/remote.py\", line 142, in initialize",
+      "    self.library_contents = await self.load_library_json(prefer_cached)",
+      "                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/remote.py\", line 247, in load_library_json",
+      "    return await self.hass.async_add_executor_job(self._load_local_library_json)",
+      "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "  File \"/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/concurrent/futures/thread.py\", line 86, in run",
+      "    result = ctx.run(self.task)",
+      "  File \"/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/concurrent/futures/thread.py\", line 73, in run",
+      "    return fn(*args, **kwargs)",
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/remote.py\", line 265, in _load_local_library_json",
+      "    raise ProfileDownloadError(\"Local library.json file not found\")",
+      "custom_components.powercalc.power_profile.error.ProfileDownloadError: Local library.json file not found"
+    ]
+  },
+  {
+    "domain": "powercalc",
+    "components_setup": {
+      "light": true,
+      "group": true,
+      "template": true,
+      "select": true,
+      "utility_meter": true,
+      "integration": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "menu": "virtual_power"
+        },
+        {
+          "step": "virtual_power",
+          "sent": [
+            "create_energy_sensor",
+            "create_standby_energy_sensor",
+            "create_utility_meters",
+            "entity_id",
+            "mode",
+            "name"
+          ]
+        },
+        {
+          "step": "linear",
+          "sent": [
+            "max_power",
+            "min_power"
+          ]
+        },
+        {
+          "step": "power_advanced",
+          "sent": [
+            "energy_filter_outlier_enabled",
+            "energy_integration_method"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "none",
+        "at": 0,
+        "utc": "2026-10-16T10:45:55.889943+00:00"
+      }
+    ],
+    "entries": [
+      {
+        "title": "lamp power",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "light.living_room",
+      "sensor.all_standby_energy",
+      "sensor.all_standby_power",
+      "sensor.lamp_power_energy",
+      "sensor.lamp_power_power"
+    ],
+    "mirrored": [
+      "light.living_room"
+    ],
+    "published": [
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "calculation_mode": "linear",
+          "integration": "powercalc",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "energy_sensor_entity_id": "sensor.lamp_power_energy",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "lamp power power"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_energy",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "total_increasing",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "source": "sensor.lamp_power_power",
+          "unit_of_measurement": "kWh",
+          "device_class": "energy",
+          "icon": "mdi:lightning-bolt",
+          "friendly_name": "lamp power energy"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "8.06",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "calculation_mode": "linear",
+          "integration": "powercalc",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "energy_sensor_entity_id": "sensor.lamp_power_energy",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "lamp power power"
+        }
+      },
+      {
+        "entity": "sensor.all_standby_power",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "All standby power"
+        }
+      },
+      {
+        "entity": "sensor.all_standby_energy",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "total_increasing",
+          "source_entity": "sensor.dummy",
+          "source_domain": "sensor",
+          "source": "sensor.all_standby_power",
+          "unit_of_measurement": "kWh",
+          "device_class": "energy",
+          "icon": "mdi:lightning-bolt",
+          "friendly_name": "All standby energy"
+        }
+      }
+    ],
+    "refused": [
+      {
+        "op": "entity.subscribe",
+        "target": "light.living_room",
+        "clause": "/permissions/entities/subscribe"
+      }
+    ],
+    "push": {
+      "subscribed": [],
+      "received": [],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "probe": null,
+    "variant": "powercalc-no-subscribe",
+    "arm": "confined",
+    "install": {
+      "ok": true,
+      "installed": [
+        "cronsim",
+        "numpy"
+      ],
+      "resolved_before": "2026-10-06T00:00:00Z",
+      "resolved": [
+        "cronsim-2.7",
+        "numpy-2.5.3"
+      ]
+    },
+    "durable": {
+      "records": 8,
+      "runs": 1,
+      "decisions": 7,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "decisions": [
+      {
+        "identity": "powercalc",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/subscribe",
+        "reason": "nothing is declared at /permissions/entities/subscribe"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "history": [
+      [
+        "sensor.lamp_power_power",
+        "unknown"
+      ],
+      [
+        "sensor.lamp_power_energy",
+        "unknown"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "8.06"
+      ],
+      [
+        "sensor.all_standby_power",
+        "unknown"
+      ],
+      [
+        "sensor.all_standby_energy",
+        "unknown"
+      ],
+      [
+        "<world>",
+        "light.living_room on"
+      ],
+      [
+        "light.living_room",
+        "on"
+      ],
+      [
+        "<world>",
+        "light.living_room off"
+      ],
+      [
+        "light.living_room",
+        "off"
+      ]
+    ],
+    "calls": [],
+    "platform_states": {
+      "sensor.living_room_temperature": "21.4",
+      "sensor.living_room_humidity": "48",
+      "light.living_room": "off",
+      "sensor.lamp_power_power": "8.06",
+      "sensor.lamp_power_energy": "unknown",
+      "sensor.all_standby_power": "unknown",
+      "sensor.all_standby_energy": "unknown"
+    },
+    "log_tail": [
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/composite.py\", line 16, in initialize",
+      "    await loader.initialize(prefer_cached)",
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/remote.py\", line 142, in initialize",
+      "    self.library_contents = await self.load_library_json(prefer_cached)",
+      "                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/remote.py\", line 247, in load_library_json",
+      "    return await self.hass.async_add_executor_job(self._load_local_library_json)",
+      "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "  File \"/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/concurrent/futures/thread.py\", line 86, in run",
+      "    result = ctx.run(self.task)",
+      "  File \"/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/concurrent/futures/thread.py\", line 73, in run",
+      "    return fn(*args, **kwargs)",
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/remote.py\", line 265, in _load_local_library_json",
+      "    raise ProfileDownloadError(\"Local library.json file not found\")",
+      "custom_components.powercalc.power_profile.error.ProfileDownloadError: Local library.json file not found"
+    ]
+  },
+  {
+    "domain": "powercalc",
+    "components_setup": {
+      "light": true,
+      "group": true,
+      "template": true,
+      "select": true,
+      "utility_meter": true,
+      "integration": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "menu": "virtual_power"
+        },
+        {
+          "step": "virtual_power",
+          "sent": [
+            "create_energy_sensor",
+            "create_standby_energy_sensor",
+            "create_utility_meters",
+            "entity_id",
+            "mode",
+            "name"
+          ]
+        },
+        {
+          "step": "linear",
+          "sent": [
+            "max_power",
+            "min_power"
+          ]
+        },
+        {
+          "step": "power_advanced",
+          "sent": [
+            "energy_filter_outlier_enabled",
+            "energy_integration_method"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "none",
+        "at": 0,
+        "utc": "2026-10-16T10:46:44.306731+00:00"
+      }
+    ],
+    "entries": [
+      {
+        "title": "lamp power",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "sensor.all_standby_energy",
+      "sensor.all_standby_power",
+      "sensor.lamp_power_energy",
+      "sensor.lamp_power_power"
+    ],
+    "mirrored": [],
+    "published": [
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "calculation_mode": "linear",
+          "integration": "powercalc",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "energy_sensor_entity_id": "sensor.lamp_power_energy",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "lamp power power"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_energy",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "total_increasing",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "source": "sensor.lamp_power_power",
+          "unit_of_measurement": "kWh",
+          "device_class": "energy",
+          "icon": "mdi:lightning-bolt",
+          "friendly_name": "lamp power energy"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "unavailable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "lamp power power"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_energy",
+        "state": "unavailable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "total_increasing",
+          "unit_of_measurement": "kWh",
+          "device_class": "energy",
+          "icon": "mdi:lightning-bolt",
+          "friendly_name": "lamp power energy"
+        }
+      },
+      {
+        "entity": "sensor.all_standby_power",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "All standby power"
+        }
+      },
+      {
+        "entity": "sensor.all_standby_energy",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "total_increasing",
+          "source_entity": "sensor.dummy",
+          "source_domain": "sensor",
+          "source": "sensor.all_standby_power",
+          "unit_of_measurement": "kWh",
+          "device_class": "energy",
+          "icon": "mdi:lightning-bolt",
+          "friendly_name": "All standby energy"
+        }
+      }
+    ],
+    "refused": [],
+    "push": {
+      "subscribed": [],
+      "received": [],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "probe": null,
+    "variant": "powercalc-no-read",
+    "arm": "confined",
+    "install": {
+      "ok": true,
+      "installed": [
+        "cronsim",
+        "numpy"
+      ],
+      "resolved_before": "2026-10-06T00:00:00Z",
+      "resolved": [
+        "cronsim-2.7",
+        "numpy-2.5.3"
+      ]
+    },
+    "durable": {
+      "records": 7,
+      "runs": 1,
+      "decisions": 6,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "decisions": [
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "history": [
+      [
+        "sensor.lamp_power_power",
+        "unknown"
+      ],
+      [
+        "sensor.lamp_power_energy",
+        "unknown"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "unavailable"
+      ],
+      [
+        "sensor.lamp_power_energy",
+        "unavailable"
+      ],
+      [
+        "sensor.all_standby_power",
+        "unknown"
+      ],
+      [
+        "sensor.all_standby_energy",
+        "unknown"
+      ],
+      [
+        "<world>",
+        "light.living_room on"
+      ],
+      [
+        "light.living_room",
+        "on"
+      ],
+      [
+        "<world>",
+        "light.living_room off"
+      ],
+      [
+        "light.living_room",
+        "off"
+      ]
+    ],
+    "calls": [],
+    "platform_states": {
+      "sensor.living_room_temperature": "21.4",
+      "sensor.living_room_humidity": "48",
+      "light.living_room": "off",
+      "sensor.lamp_power_power": "unavailable",
+      "sensor.lamp_power_energy": "unavailable",
+      "sensor.all_standby_power": "unknown",
+      "sensor.all_standby_energy": "unknown"
+    },
+    "log_tail": [
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/composite.py\", line 16, in initialize",
+      "    await loader.initialize(prefer_cached)",
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/remote.py\", line 142, in initialize",
+      "    self.library_contents = await self.load_library_json(prefer_cached)",
+      "                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/remote.py\", line 247, in load_library_json",
+      "    return await self.hass.async_add_executor_job(self._load_local_library_json)",
+      "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "  File \"/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/concurrent/futures/thread.py\", line 86, in run",
+      "    result = ctx.run(self.task)",
+      "  File \"/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/concurrent/futures/thread.py\", line 73, in run",
+      "    return fn(*args, **kwargs)",
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/remote.py\", line 265, in _load_local_library_json",
+      "    raise ProfileDownloadError(\"Local library.json file not found\")",
+      "custom_components.powercalc.power_profile.error.ProfileDownloadError: Local library.json file not found"
+    ]
+  },
+  {
+    "domain": "watchman",
+    "arm": "unconfined",
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false
+    },
+    "history": [
+      [
+        "sensor.watchman_last_update",
+        "2026-10-16T10:47:34+00:00"
+      ],
+      [
+        "sensor.watchman_missing_entities",
+        "0"
+      ],
+      [
+        "sensor.watchman_missing_actions",
+        "0"
+      ],
+      [
+        "sensor.watchman_status",
+        "waiting_for_ha"
+      ],
+      [
+        "sensor.watchman_parse_duration",
+        "0.0"
+      ],
+      [
+        "sensor.watchman_last_parse",
+        "unknown"
+      ],
+      [
+        "sensor.watchman_processed_files",
+        "0"
+      ],
+      [
+        "sensor.watchman_ignored_files",
+        "0"
+      ],
+      [
+        "button.watchman_create_report_file",
+        "unknown"
+      ],
+      [
+        "text.watchman_ignored_labels",
+        ""
+      ],
+      [
+        "sensor.watchman_last_update",
+        "2026-10-16T10:47:35+00:00"
+      ],
+      [
+        "sensor.watchman_missing_entities",
+        "0"
+      ],
+      [
+        "sensor.watchman_missing_actions",
+        "0"
+      ],
+      [
+        "sensor.watchman_status",
+        "pending"
+      ],
+      [
+        "sensor.watchman_status",
+        "parsing"
+      ],
+      [
+        "sensor.watchman_last_update",
+        "2026-10-16T10:48:05+00:00"
+      ],
+      [
+        "sensor.watchman_missing_entities",
+        "1"
+      ],
+      [
+        "sensor.watchman_missing_actions",
+        "1"
+      ],
+      [
+        "sensor.watchman_parse_duration",
+        "0.017273354000281"
+      ],
+      [
+        "sensor.watchman_last_parse",
+        "2026-10-16T11:48:05+00:00"
+      ],
+      [
+        "sensor.watchman_processed_files",
+        "2"
+      ],
+      [
+        "sensor.watchman_status",
+        "idle"
+      ]
+    ],
+    "setup_errors": [],
+    "flow": {
+      "steps": [],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "none",
+        "at": 0,
+        "utc": "2026-10-16T10:47:35.184295+00:00"
+      }
+    ],
+    "entries": [
+      {
+        "title": "Watchman",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "button.watchman_create_report_file",
+      "conversation.home_assistant",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sensor.watchman_ignored_files",
+      "sensor.watchman_last_parse",
+      "sensor.watchman_last_update",
+      "sensor.watchman_missing_actions",
+      "sensor.watchman_missing_entities",
+      "sensor.watchman_parse_duration",
+      "sensor.watchman_processed_files",
+      "sensor.watchman_status",
+      "sun.sun",
+      "text.watchman_ignored_labels",
+      "zone.home"
+    ],
+    "published": [
+      {
+        "entity": "button.watchman_create_report_file",
+        "state": "unknown",
+        "platform": "watchman",
+        "attributes": {
+          "icon": "mdi:file-document-outline",
+          "friendly_name": "Watchman Create Report File"
+        }
+      },
+      {
+        "entity": "conversation.home_assistant",
+        "state": "unknown",
+        "platform": null,
+        "attributes": {
+          "friendly_name": "Home Assistant",
+          "supported_features": 1
+        }
+      },
+      {
+        "entity": "sensor.sun_next_dawn",
+        "state": "2026-10-17T05:53:31+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dawn"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_dusk",
+        "state": "2026-10-16T17:39:14+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dusk"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_midnight",
+        "state": "2026-10-16T23:45:49+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next midnight"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_noon",
+        "state": "2026-10-16T11:46:07+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next noon"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_rising",
+        "state": "2026-10-17T06:28:00+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next rising"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_setting",
+        "state": "2026-10-16T17:04:53+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next setting"
+        }
+      },
+      {
+        "entity": "sensor.watchman_ignored_files",
+        "state": "0",
+        "platform": "watchman",
+        "attributes": {
+          "state_class": "measurement",
+          "icon": "mdi:file-remove",
+          "friendly_name": "Watchman Ignored Files"
+        }
+      },
+      {
+        "entity": "sensor.watchman_last_parse",
+        "state": "2026-10-16T11:48:05+00:00",
+        "platform": "watchman",
+        "attributes": {
+          "device_class": "timestamp",
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Watchman Last Parse"
+        }
+      },
+      {
+        "entity": "sensor.watchman_last_update",
+        "state": "2026-10-16T10:48:05+00:00",
+        "platform": "watchman",
+        "attributes": {
+          "device_class": "timestamp",
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Watchman Last Update"
+        }
+      },
+      {
+        "entity": "sensor.watchman_missing_actions",
+        "state": "1",
+        "platform": "watchman",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "items",
+          "icon": "mdi:shield-half-full",
+          "friendly_name": "Watchman Missing Actions"
+        }
+      },
+      {
+        "entity": "sensor.watchman_missing_entities",
+        "state": "1",
+        "platform": "watchman",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "items",
+          "icon": "mdi:shield-half-full",
+          "friendly_name": "Watchman Missing Entities"
+        }
+      },
+      {
+        "entity": "sensor.watchman_parse_duration",
+        "state": "0.017273354000281",
+        "platform": "watchman",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "s",
+          "device_class": "duration",
+          "icon": "mdi:timer-outline",
+          "friendly_name": "Watchman Parse Duration"
+        }
+      },
+      {
+        "entity": "sensor.watchman_processed_files",
+        "state": "2",
+        "platform": "watchman",
+        "attributes": {
+          "state_class": "measurement",
+          "icon": "mdi:file-document-check",
+          "friendly_name": "Watchman Processed Files"
+        }
+      },
+      {
+        "entity": "sensor.watchman_status",
+        "state": "idle",
+        "platform": "watchman",
+        "attributes": {
+          "device_class": "enum",
+          "icon": "mdi:sleep",
+          "friendly_name": "Watchman Status"
+        }
+      },
+      {
+        "entity": "sun.sun",
+        "state": "above_horizon",
+        "platform": null,
+        "attributes": {
+          "next_dawn": "2026-10-17T05:53:31.210936+00:00",
+          "next_dusk": "2026-10-16T17:39:14.654243+00:00",
+          "next_midnight": "2026-10-16T23:45:49+00:00",
+          "next_noon": "2026-10-16T11:46:07+00:00",
+          "next_rising": "2026-10-17T06:28:00.797871+00:00",
+          "next_setting": "2026-10-16T17:04:53.572261+00:00",
+          "elevation": 28.25,
+          "azimuth": 163.56,
+          "rising": true,
+          "friendly_name": "Sun"
+        }
+      },
+      {
+        "entity": "text.watchman_ignored_labels",
+        "state": "",
+        "platform": "watchman",
+        "attributes": {
+          "mode": "text",
+          "min": 0,
+          "max": 255,
+          "icon": "mdi:label-off",
+          "friendly_name": "Ignored Labels"
+        }
+      },
+      {
+        "entity": "zone.home",
+        "state": "0",
+        "platform": null,
+        "attributes": {
+          "latitude": 51.5,
+          "longitude": -0.12,
+          "radius": 100,
+          "passive": false,
+          "editable": true,
+          "icon": "mdi:home",
+          "friendly_name": "Home"
+        }
+      }
+    ],
+    "probe": null,
+    "variant": "watchman",
+    "log_tail": [
+      "  File \"/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/recorder/__init__.py\", line 149, in async_setup",
+      "    instance = hass.data[DATA_INSTANCE] = Recorder(",
+      "                                          ~~~~~~~~^",
+      "        hass=hass,",
+      "        ^^^^^^^^^^",
+      "    ...<8 lines>...",
+      "        exclude_event_types=exclude_event_types,",
+      "        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "    )",
+      "    ^",
+      "  File \"/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/recorder/core.py\", line 182, in __init__",
+      "    db_connected: asyncio.Future[bool] = hass.data[DATA_RECORDER].db_connected",
+      "                                         ~~~~~~~~~^^^^^^^^^^^^^^^",
+      "KeyError: 'recorder'",
+      "zlib_ng and isal are not available, falling back to zlib, performance will be degraded."
+    ]
+  },
+  {
+    "domain": "watchman",
+    "setup_errors": [],
+    "flow": {
+      "steps": [],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "none",
+        "at": 0,
+        "utc": "2026-10-16T10:48:23.038013+00:00"
+      }
+    ],
+    "entries": [
+      {
+        "title": "Watchman",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "button.watchman_create_report_file",
+      "sensor.living_room_temperature",
+      "sensor.watchman_ignored_files",
+      "sensor.watchman_last_parse",
+      "sensor.watchman_last_update",
+      "sensor.watchman_missing_actions",
+      "sensor.watchman_missing_entities",
+      "sensor.watchman_parse_duration",
+      "sensor.watchman_processed_files",
+      "sensor.watchman_status",
+      "text.watchman_ignored_labels"
+    ],
+    "mirrored": [
+      "sensor.living_room_temperature"
+    ],
+    "published": [
+      {
+        "entity": "text.watchman_ignored_labels",
+        "state": "",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "mode": "text",
+          "min": 0,
+          "max": 255,
+          "pattern": null,
+          "icon": "mdi:label-off",
+          "friendly_name": "Ignored Labels"
+        }
+      },
+      {
+        "entity": "sensor.watchman_last_update",
+        "state": "2026-10-16T10:48:22+00:00",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "device_class": "timestamp",
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Watchman Last Update"
+        }
+      },
+      {
+        "entity": "sensor.watchman_missing_entities",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "entities": "",
+          "unit_of_measurement": "items",
+          "icon": "mdi:shield-half-full",
+          "friendly_name": "Watchman Missing Entities"
+        }
+      },
+      {
+        "entity": "sensor.watchman_missing_actions",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "entities": "",
+          "unit_of_measurement": "items",
+          "icon": "mdi:shield-half-full",
+          "friendly_name": "Watchman Missing Actions"
+        }
+      },
+      {
+        "entity": "sensor.watchman_status",
+        "state": "waiting_for_ha",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "waiting_for_ha",
+            "parsing",
+            "pending",
+            "idle",
+            "safe_mode"
+          ],
+          "device_class": "enum",
+          "icon": "mdi:timer-sand",
+          "friendly_name": "Watchman Status"
+        }
+      },
+      {
+        "entity": "sensor.watchman_parse_duration",
+        "state": "0.0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "s",
+          "device_class": "duration",
+          "icon": "mdi:timer-outline",
+          "friendly_name": "Watchman Parse Duration"
+        }
+      },
+      {
+        "entity": "sensor.watchman_last_parse",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "device_class": "timestamp",
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Watchman Last Parse"
+        }
+      },
+      {
+        "entity": "sensor.watchman_processed_files",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "icon": "mdi:file-document-check",
+          "friendly_name": "Watchman Processed Files"
+        }
+      },
+      {
+        "entity": "sensor.watchman_ignored_files",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "icon": "mdi:file-remove",
+          "friendly_name": "Watchman Ignored Files"
+        }
+      },
+      {
+        "entity": "button.watchman_create_report_file",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:file-document-outline",
+          "friendly_name": "Watchman Create Report File"
+        }
+      },
+      {
+        "entity": "sensor.watchman_last_update",
+        "state": "2026-10-16T10:48:23+00:00",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "device_class": "timestamp",
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Watchman Last Update"
+        }
+      },
+      {
+        "entity": "sensor.watchman_missing_entities",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "entities": [],
+          "unit_of_measurement": "items",
+          "icon": "mdi:shield-half-full",
+          "friendly_name": "Watchman Missing Entities"
+        }
+      },
+      {
+        "entity": "sensor.watchman_missing_actions",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "entities": [],
+          "unit_of_measurement": "items",
+          "icon": "mdi:shield-half-full",
+          "friendly_name": "Watchman Missing Actions"
+        }
+      },
+      {
+        "entity": "sensor.watchman_status",
+        "state": "pending",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "waiting_for_ha",
+            "parsing",
+            "pending",
+            "idle",
+            "safe_mode"
+          ],
+          "device_class": "enum",
+          "icon": "mdi:timer-sand",
+          "friendly_name": "Watchman Status"
+        }
+      },
+      {
+        "entity": "sensor.watchman_status",
+        "state": "parsing",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "waiting_for_ha",
+            "parsing",
+            "pending",
+            "idle",
+            "safe_mode"
+          ],
+          "device_class": "enum",
+          "icon": "mdi:progress-clock",
+          "friendly_name": "Watchman Status"
+        }
+      },
+      {
+        "entity": "sensor.watchman_last_update",
+        "state": "2026-10-16T10:48:53+00:00",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "device_class": "timestamp",
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Watchman Last Update"
+        }
+      },
+      {
+        "entity": "sensor.watchman_missing_entities",
+        "state": "2",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "items",
+          "icon": "mdi:shield-half-full",
+          "friendly_name": "Watchman Missing Entities"
+        }
+      },
+      {
+        "entity": "sensor.watchman_missing_actions",
+        "state": "1",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "items",
+          "icon": "mdi:shield-half-full",
+          "friendly_name": "Watchman Missing Actions"
+        }
+      },
+      {
+        "entity": "sensor.watchman_parse_duration",
+        "state": "0.0132232359992486",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "s",
+          "device_class": "duration",
+          "icon": "mdi:timer-outline",
+          "friendly_name": "Watchman Parse Duration"
+        }
+      },
+      {
+        "entity": "sensor.watchman_last_parse",
+        "state": "2026-10-16T10:48:53+00:00",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "device_class": "timestamp",
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Watchman Last Parse"
+        }
+      },
+      {
+        "entity": "sensor.watchman_processed_files",
+        "state": "2",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "icon": "mdi:file-document-check",
+          "friendly_name": "Watchman Processed Files"
+        }
+      },
+      {
+        "entity": "sensor.watchman_status",
+        "state": "idle",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "waiting_for_ha",
+            "parsing",
+            "pending",
+            "idle",
+            "safe_mode"
+          ],
+          "device_class": "enum",
+          "icon": "mdi:sleep",
+          "friendly_name": "Watchman Status"
+        }
+      }
+    ],
+    "refused": [
+      {
+        "op": "entity.subscribe",
+        "target": "sensor.living_room_temperature",
+        "clause": "/permissions/entities/subscribe"
+      }
+    ],
+    "push": {
+      "subscribed": [],
+      "received": [],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "probe": null,
+    "variant": "watchman",
+    "arm": "confined",
+    "install": {
+      "ok": true,
+      "installed": [
+        "prettytable",
+        "wcwidth"
+      ],
+      "resolved_before": "2026-10-06T00:00:00Z",
+      "resolved": [
+        "prettytable-3.12.0",
+        "wcwidth-0.9.2"
+      ]
+    },
+    "durable": {
+      "records": 25,
+      "runs": 1,
+      "decisions": 24,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "decisions": [
+      {
+        "identity": "watchman",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/subscribe",
+        "reason": "nothing is declared at /permissions/entities/subscribe"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "history": [
+      [
+        "text.watchman_ignored_labels",
+        ""
+      ],
+      [
+        "sensor.watchman_last_update",
+        "2026-10-16T10:48:22+00:00"
+      ],
+      [
+        "sensor.watchman_missing_entities",
+        "0"
+      ],
+      [
+        "sensor.watchman_missing_actions",
+        "0"
+      ],
+      [
+        "sensor.watchman_status",
+        "waiting_for_ha"
+      ],
+      [
+        "sensor.watchman_parse_duration",
+        "0.0"
+      ],
+      [
+        "sensor.watchman_last_parse",
+        "unknown"
+      ],
+      [
+        "sensor.watchman_processed_files",
+        "0"
+      ],
+      [
+        "sensor.watchman_ignored_files",
+        "0"
+      ],
+      [
+        "button.watchman_create_report_file",
+        "unknown"
+      ],
+      [
+        "sensor.watchman_last_update",
+        "2026-10-16T10:48:23+00:00"
+      ],
+      [
+        "sensor.watchman_missing_entities",
+        "0"
+      ],
+      [
+        "sensor.watchman_missing_actions",
+        "0"
+      ],
+      [
+        "sensor.watchman_status",
+        "pending"
+      ],
+      [
+        "sensor.watchman_status",
+        "parsing"
+      ],
+      [
+        "sensor.watchman_last_update",
+        "2026-10-16T10:48:53+00:00"
+      ],
+      [
+        "sensor.watchman_missing_entities",
+        "2"
+      ],
+      [
+        "sensor.watchman_missing_actions",
+        "1"
+      ],
+      [
+        "sensor.watchman_parse_duration",
+        "0.0132232359992486"
+      ],
+      [
+        "sensor.watchman_last_parse",
+        "2026-10-16T10:48:53+00:00"
+      ],
+      [
+        "sensor.watchman_processed_files",
+        "2"
+      ],
+      [
+        "sensor.watchman_status",
+        "idle"
+      ]
+    ],
+    "calls": [],
+    "platform_states": {
+      "sensor.living_room_temperature": "21.4",
+      "sensor.living_room_humidity": "48",
+      "light.living_room": "on",
+      "text.watchman_ignored_labels": "",
+      "sensor.watchman_last_update": "2026-10-16T10:48:53+00:00",
+      "sensor.watchman_missing_entities": "2",
+      "sensor.watchman_missing_actions": "1",
+      "sensor.watchman_status": "idle",
+      "sensor.watchman_parse_duration": "0.0132232359992486",
+      "sensor.watchman_last_parse": "2026-10-16T10:48:53+00:00",
+      "sensor.watchman_processed_files": "2",
+      "sensor.watchman_ignored_files": "0",
+      "button.watchman_create_report_file": "unknown"
+    },
+    "log_tail": []
+  },
+  {
+    "domain": "watchman",
+    "setup_errors": [],
+    "flow": {
+      "steps": [],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "none",
+        "at": 0,
+        "utc": "2026-10-16T10:49:09.890011+00:00"
+      }
+    ],
+    "entries": [
+      {
+        "title": "Watchman",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "button.watchman_create_report_file",
+      "light.living_room",
+      "sensor.living_room_temperature",
+      "sensor.watchman_ignored_files",
+      "sensor.watchman_last_parse",
+      "sensor.watchman_last_update",
+      "sensor.watchman_missing_actions",
+      "sensor.watchman_missing_entities",
+      "sensor.watchman_parse_duration",
+      "sensor.watchman_processed_files",
+      "sensor.watchman_status",
+      "text.watchman_ignored_labels"
+    ],
+    "mirrored": [
+      "light.living_room",
+      "sensor.living_room_temperature"
+    ],
+    "published": [
+      {
+        "entity": "text.watchman_ignored_labels",
+        "state": "",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "mode": "text",
+          "min": 0,
+          "max": 255,
+          "pattern": null,
+          "icon": "mdi:label-off",
+          "friendly_name": "Ignored Labels"
+        }
+      },
+      {
+        "entity": "button.watchman_create_report_file",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:file-document-outline",
+          "friendly_name": "Watchman Create Report File"
+        }
+      },
+      {
+        "entity": "sensor.watchman_last_update",
+        "state": "2026-10-16T10:49:09+00:00",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "device_class": "timestamp",
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Watchman Last Update"
+        }
+      },
+      {
+        "entity": "sensor.watchman_missing_entities",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "entities": "",
+          "unit_of_measurement": "items",
+          "icon": "mdi:shield-half-full",
+          "friendly_name": "Watchman Missing Entities"
+        }
+      },
+      {
+        "entity": "sensor.watchman_missing_actions",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "entities": "",
+          "unit_of_measurement": "items",
+          "icon": "mdi:shield-half-full",
+          "friendly_name": "Watchman Missing Actions"
+        }
+      },
+      {
+        "entity": "sensor.watchman_status",
+        "state": "waiting_for_ha",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "waiting_for_ha",
+            "parsing",
+            "pending",
+            "idle",
+            "safe_mode"
+          ],
+          "device_class": "enum",
+          "icon": "mdi:timer-sand",
+          "friendly_name": "Watchman Status"
+        }
+      },
+      {
+        "entity": "sensor.watchman_parse_duration",
+        "state": "0.0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "s",
+          "device_class": "duration",
+          "icon": "mdi:timer-outline",
+          "friendly_name": "Watchman Parse Duration"
+        }
+      },
+      {
+        "entity": "sensor.watchman_last_parse",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "device_class": "timestamp",
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Watchman Last Parse"
+        }
+      },
+      {
+        "entity": "sensor.watchman_processed_files",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "icon": "mdi:file-document-check",
+          "friendly_name": "Watchman Processed Files"
+        }
+      },
+      {
+        "entity": "sensor.watchman_ignored_files",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "icon": "mdi:file-remove",
+          "friendly_name": "Watchman Ignored Files"
+        }
+      },
+      {
+        "entity": "sensor.watchman_missing_entities",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "entities": [],
+          "unit_of_measurement": "items",
+          "icon": "mdi:shield-half-full",
+          "friendly_name": "Watchman Missing Entities"
+        }
+      },
+      {
+        "entity": "sensor.watchman_missing_actions",
+        "state": "0",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "entities": [],
+          "unit_of_measurement": "items",
+          "icon": "mdi:shield-half-full",
+          "friendly_name": "Watchman Missing Actions"
+        }
+      },
+      {
+        "entity": "sensor.watchman_status",
+        "state": "pending",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "waiting_for_ha",
+            "parsing",
+            "pending",
+            "idle",
+            "safe_mode"
+          ],
+          "device_class": "enum",
+          "icon": "mdi:timer-sand",
+          "friendly_name": "Watchman Status"
+        }
+      },
+      {
+        "entity": "sensor.watchman_status",
+        "state": "parsing",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "waiting_for_ha",
+            "parsing",
+            "pending",
+            "idle",
+            "safe_mode"
+          ],
+          "device_class": "enum",
+          "icon": "mdi:progress-clock",
+          "friendly_name": "Watchman Status"
+        }
+      },
+      {
+        "entity": "sensor.watchman_last_update",
+        "state": "2026-10-16T10:49:39+00:00",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "device_class": "timestamp",
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Watchman Last Update"
+        }
+      },
+      {
+        "entity": "sensor.watchman_missing_entities",
+        "state": "1",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "items",
+          "icon": "mdi:shield-half-full",
+          "friendly_name": "Watchman Missing Entities"
+        }
+      },
+      {
+        "entity": "sensor.watchman_missing_actions",
+        "state": "1",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "items",
+          "icon": "mdi:shield-half-full",
+          "friendly_name": "Watchman Missing Actions"
+        }
+      },
+      {
+        "entity": "sensor.watchman_parse_duration",
+        "state": "0.0141711029991711",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "s",
+          "device_class": "duration",
+          "icon": "mdi:timer-outline",
+          "friendly_name": "Watchman Parse Duration"
+        }
+      },
+      {
+        "entity": "sensor.watchman_last_parse",
+        "state": "2026-10-16T10:49:39+00:00",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "device_class": "timestamp",
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Watchman Last Parse"
+        }
+      },
+      {
+        "entity": "sensor.watchman_processed_files",
+        "state": "2",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "icon": "mdi:file-document-check",
+          "friendly_name": "Watchman Processed Files"
+        }
+      },
+      {
+        "entity": "sensor.watchman_status",
+        "state": "idle",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "waiting_for_ha",
+            "parsing",
+            "pending",
+            "idle",
+            "safe_mode"
+          ],
+          "device_class": "enum",
+          "icon": "mdi:sleep",
+          "friendly_name": "Watchman Status"
+        }
+      }
+    ],
+    "refused": [
+      {
+        "op": "entity.subscribe",
+        "target": "sensor.living_room_temperature",
+        "clause": "/permissions/entities/subscribe"
+      },
+      {
+        "op": "entity.subscribe",
+        "target": "light.living_room",
+        "clause": "/permissions/entities/subscribe"
+      }
+    ],
+    "push": {
+      "subscribed": [],
+      "received": [],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "probe": null,
+    "variant": "watchman-both-declared",
+    "arm": "confined",
+    "install": {
+      "ok": true,
+      "installed": [
+        "prettytable",
+        "wcwidth"
+      ],
+      "resolved_before": "2026-10-06T00:00:00Z",
+      "resolved": [
+        "prettytable-3.12.0",
+        "wcwidth-0.9.2"
+      ]
+    },
+    "durable": {
+      "records": 26,
+      "runs": 1,
+      "decisions": 25,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "decisions": [
+      {
+        "identity": "watchman",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/1",
+        "reason": "declared"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/subscribe",
+        "reason": "nothing is declared at /permissions/entities/subscribe"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/subscribe",
+        "reason": "nothing is declared at /permissions/entities/subscribe"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "watchman",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "history": [
+      [
+        "text.watchman_ignored_labels",
+        ""
+      ],
+      [
+        "button.watchman_create_report_file",
+        "unknown"
+      ],
+      [
+        "sensor.watchman_last_update",
+        "2026-10-16T10:49:09+00:00"
+      ],
+      [
+        "sensor.watchman_missing_entities",
+        "0"
+      ],
+      [
+        "sensor.watchman_missing_actions",
+        "0"
+      ],
+      [
+        "sensor.watchman_status",
+        "waiting_for_ha"
+      ],
+      [
+        "sensor.watchman_parse_duration",
+        "0.0"
+      ],
+      [
+        "sensor.watchman_last_parse",
+        "unknown"
+      ],
+      [
+        "sensor.watchman_processed_files",
+        "0"
+      ],
+      [
+        "sensor.watchman_ignored_files",
+        "0"
+      ],
+      [
+        "sensor.watchman_missing_entities",
+        "0"
+      ],
+      [
+        "sensor.watchman_missing_actions",
+        "0"
+      ],
+      [
+        "sensor.watchman_status",
+        "pending"
+      ],
+      [
+        "sensor.watchman_status",
+        "parsing"
+      ],
+      [
+        "sensor.watchman_last_update",
+        "2026-10-16T10:49:39+00:00"
+      ],
+      [
+        "sensor.watchman_missing_entities",
+        "1"
+      ],
+      [
+        "sensor.watchman_missing_actions",
+        "1"
+      ],
+      [
+        "sensor.watchman_parse_duration",
+        "0.0141711029991711"
+      ],
+      [
+        "sensor.watchman_last_parse",
+        "2026-10-16T10:49:39+00:00"
+      ],
+      [
+        "sensor.watchman_processed_files",
+        "2"
+      ],
+      [
+        "sensor.watchman_status",
+        "idle"
+      ]
+    ],
+    "calls": [],
+    "platform_states": {
+      "sensor.living_room_temperature": "21.4",
+      "sensor.living_room_humidity": "48",
+      "light.living_room": "on",
+      "text.watchman_ignored_labels": "",
+      "button.watchman_create_report_file": "unknown",
+      "sensor.watchman_last_update": "2026-10-16T10:49:39+00:00",
+      "sensor.watchman_missing_entities": "1",
+      "sensor.watchman_missing_actions": "1",
+      "sensor.watchman_status": "idle",
+      "sensor.watchman_parse_duration": "0.0141711029991711",
+      "sensor.watchman_last_parse": "2026-10-16T10:49:39+00:00",
+      "sensor.watchman_processed_files": "2",
+      "sensor.watchman_ignored_files": "0"
+    },
+    "log_tail": []
+  },
+  {
+    "domain": "adaptive_lighting",
+    "arm": "unconfined",
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false,
+      "light": true
+    },
+    "calls": [
+      {
+        "service": "light.turn_on",
+        "utc": "2026-10-16T10:50:02.185374+00:00",
+        "data": {
+          "entity_id": "light.living_room",
+          "brightness": 255
+        }
+      }
+    ],
+    "history": [
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "off"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "off"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "on"
+      ],
+      [
+        "switch.confined_test_adaptive_lighting_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "unavailable"
+      ],
+      [
+        "switch.confined_test_adaptive_lighting_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "unavailable"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "unavailable"
+      ],
+      [
+        "switch.confined_test_adaptive_lighting_confined_test",
+        "unavailable"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "off"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "off"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "on"
+      ],
+      [
+        "switch.confined_test_adaptive_lighting_confined_test",
+        "on"
+      ]
+    ],
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "name"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "options_flow",
+        "at": 2,
+        "utc": "2026-10-16T10:50:02.171043+00:00",
+        "type": "create_entry",
+        "errors": null
+      }
+    ],
+    "entries": [
+      {
+        "title": "confined test",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "conversation.home_assistant",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sun.sun",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+      "switch.confined_test_adaptive_lighting_confined_test",
+      "zone.home"
+    ],
+    "published": [
+      {
+        "entity": "conversation.home_assistant",
+        "state": "unknown",
+        "platform": null,
+        "attributes": {
+          "friendly_name": "Home Assistant",
+          "supported_features": 1
+        }
+      },
+      {
+        "entity": "sensor.sun_next_dawn",
+        "state": "2026-10-17T05:53:31+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dawn"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_dusk",
+        "state": "2026-10-16T17:39:14+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dusk"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_midnight",
+        "state": "2026-10-16T23:45:49+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next midnight"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_noon",
+        "state": "2026-10-16T11:46:07+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next noon"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_rising",
+        "state": "2026-10-17T06:28:00+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next rising"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_setting",
+        "state": "2026-10-16T17:04:53+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next setting"
+        }
+      },
+      {
+        "entity": "sun.sun",
+        "state": "above_horizon",
+        "platform": null,
+        "attributes": {
+          "next_dawn": "2026-10-17T05:53:31.210936+00:00",
+          "next_dusk": "2026-10-16T17:39:14.654243+00:00",
+          "next_midnight": "2026-10-16T23:45:49+00:00",
+          "next_noon": "2026-10-16T11:46:07+00:00",
+          "next_rising": "2026-10-17T06:28:00.797871+00:00",
+          "next_setting": "2026-10-16T17:04:53.572261+00:00",
+          "elevation": 28.36,
+          "azimuth": 164.23,
+          "rising": true,
+          "friendly_name": "Sun"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "state": "on",
+        "platform": "adaptive_lighting",
+        "attributes": {
+          "icon": "mdi:brightness-4",
+          "friendly_name": "confined test Adaptive Lighting Adapt Brightness: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "state": "on",
+        "platform": "adaptive_lighting",
+        "attributes": {
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "confined test Adaptive Lighting Adapt Color: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "state": "off",
+        "platform": "adaptive_lighting",
+        "attributes": {
+          "icon": "mdi:sleep",
+          "friendly_name": "confined test Adaptive Lighting Sleep Mode: confined test"
+        }
+      },
+      {
+        "entity": "switch.confined_test_adaptive_lighting_confined_test",
+        "state": "on",
+        "platform": "adaptive_lighting",
+        "attributes": {
+          "brightness_pct": 100,
+          "color_temp_kelvin": 5390,
+          "color_temp_mired": 185,
+          "sun_position": 0.9692688574560633,
+          "force_rgb_color": false,
+          "icon": "mdi:theme-light-dark",
+          "friendly_name": "confined test Adaptive Lighting: confined test"
+        }
+      },
+      {
+        "entity": "zone.home",
+        "state": "0",
+        "platform": null,
+        "attributes": {
+          "latitude": 51.5,
+          "longitude": -0.12,
+          "radius": 100,
+          "passive": false,
+          "editable": true,
+          "icon": "mdi:home",
+          "friendly_name": "Home"
+        }
+      }
+    ],
+    "probe": null,
+    "variant": "adaptive_lighting",
+    "log_tail": [
+      "  File \"/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/recorder/__init__.py\", line 149, in async_setup",
+      "    instance = hass.data[DATA_INSTANCE] = Recorder(",
+      "                                          ~~~~~~~~^",
+      "        hass=hass,",
+      "        ^^^^^^^^^^",
+      "    ...<8 lines>...",
+      "        exclude_event_types=exclude_event_types,",
+      "        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "    )",
+      "    ^",
+      "  File \"/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/recorder/core.py\", line 182, in __init__",
+      "    db_connected: asyncio.Future[bool] = hass.data[DATA_RECORDER].db_connected",
+      "                                         ~~~~~~~~~^^^^^^^^^^^^^^^",
+      "KeyError: 'recorder'",
+      "zlib_ng and isal are not available, falling back to zlib, performance will be degraded."
+    ]
+  },
+  {
+    "domain": "adaptive_lighting",
+    "components_setup": {
+      "light": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "name"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "options_flow",
+        "at": 2,
+        "utc": "2026-10-16T10:50:34.866527+00:00",
+        "type": "create_entry",
+        "errors": null
+      }
+    ],
+    "entries": [
+      {
+        "title": "confined test",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "light.living_room",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+      "switch.confined_test_adaptive_lighting_confined_test"
+    ],
+    "mirrored": [
+      "light.living_room"
+    ],
+    "published": [
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "state": "off",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sleep",
+          "friendly_name": "Adaptive Lighting: confined test Adaptive Lighting Sleep Mode: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "Adaptive Lighting: confined test Adaptive Lighting Adapt Color: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:brightness-4",
+          "friendly_name": "Adaptive Lighting: confined test Adaptive Lighting Adapt Brightness: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "state": "off",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sleep",
+          "friendly_name": "confined test Adaptive Lighting Sleep Mode: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "confined test Adaptive Lighting Adapt Color: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:brightness-4",
+          "friendly_name": "confined test Adaptive Lighting Adapt Brightness: confined test"
+        }
+      },
+      {
+        "entity": "switch.confined_test_adaptive_lighting_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "manual_control": [],
+          "brightness_pct": 100,
+          "color_temp_kelvin": 5395,
+          "color_temp_mired": 185,
+          "sun_position": 0.9698268089093482,
+          "force_rgb_color": false,
+          "icon": "mdi:theme-light-dark",
+          "friendly_name": "confined test Adaptive Lighting: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "state": "unavailable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "restored": true,
+          "icon": "mdi:sleep",
+          "friendly_name": "confined test Adaptive Lighting Sleep Mode: confined test",
+          "supported_features": 0
+        }
+      },
+      {
+        "entity": "switch.confined_test_adaptive_lighting_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "manual_control": [],
+          "brightness_pct": 100,
+          "color_temp_kelvin": 5395,
+          "color_temp_mired": 185,
+          "sun_position": 0.9698631691652924,
+          "force_rgb_color": false,
+          "icon": "mdi:theme-light-dark",
+          "friendly_name": "confined test Adaptive Lighting: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "state": "unavailable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "restored": true,
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "confined test Adaptive Lighting Adapt Color: confined test",
+          "supported_features": 0
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "state": "unavailable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "restored": true,
+          "icon": "mdi:brightness-4",
+          "friendly_name": "confined test Adaptive Lighting Adapt Brightness: confined test",
+          "supported_features": 0
+        }
+      },
+      {
+        "entity": "switch.confined_test_adaptive_lighting_confined_test",
+        "state": "unavailable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "restored": true,
+          "icon": "mdi:theme-light-dark",
+          "friendly_name": "confined test Adaptive Lighting: confined test",
+          "supported_features": 0
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "state": "off",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sleep",
+          "friendly_name": "Adaptive Lighting: confined test Adaptive Lighting Sleep Mode: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "Adaptive Lighting: confined test Adaptive Lighting Adapt Color: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:brightness-4",
+          "friendly_name": "Adaptive Lighting: confined test Adaptive Lighting Adapt Brightness: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "state": "off",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sleep",
+          "friendly_name": "confined test Adaptive Lighting Sleep Mode: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "confined test Adaptive Lighting Adapt Color: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:brightness-4",
+          "friendly_name": "confined test Adaptive Lighting Adapt Brightness: confined test"
+        }
+      },
+      {
+        "entity": "switch.confined_test_adaptive_lighting_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "manual_control": [],
+          "brightness_pct": 100,
+          "color_temp_kelvin": 5395,
+          "color_temp_mired": 185,
+          "sun_position": 0.9698632880406356,
+          "force_rgb_color": false,
+          "icon": "mdi:theme-light-dark",
+          "friendly_name": "confined test Adaptive Lighting: confined test"
+        }
+      }
+    ],
+    "refused": [],
+    "push": {
+      "subscribed": [
+        "light.living_room"
+      ],
+      "received": [],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "probe": null,
+    "variant": "adaptive_lighting",
+    "arm": "confined",
+    "install": {
+      "ok": true,
+      "installed": [
+        "ulid_transform"
+      ],
+      "resolved_before": "2026-10-06T00:00:00Z",
+      "resolved": [
+        "ulid_transform-2.2.9"
+      ]
+    },
+    "durable": {
+      "records": 23,
+      "runs": 1,
+      "decisions": 22,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "decisions": [
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/subscribe/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "service.call",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/services/call/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "history": [
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "off"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "off"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "on"
+      ],
+      [
+        "switch.confined_test_adaptive_lighting_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "unavailable"
+      ],
+      [
+        "switch.confined_test_adaptive_lighting_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "unavailable"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "unavailable"
+      ],
+      [
+        "switch.confined_test_adaptive_lighting_confined_test",
+        "unavailable"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "off"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "off"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "on"
+      ],
+      [
+        "switch.confined_test_adaptive_lighting_confined_test",
+        "on"
+      ]
+    ],
+    "calls": [
+      {
+        "service": "light.turn_on",
+        "data": {
+          "entity_id": "light.living_room",
+          "brightness": 255
+        },
+        "utc": "2026-10-16T10:50:34.878705+00:00"
+      }
+    ],
+    "platform_states": {
+      "sensor.living_room_temperature": "21.4",
+      "sensor.living_room_humidity": "48",
+      "light.living_room": "on",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test": "off",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test": "on",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test": "on",
+      "switch.confined_test_adaptive_lighting_confined_test": "on"
+    },
+    "log_tail": []
+  },
+  {
+    "domain": "adaptive_lighting",
+    "components_setup": {
+      "light": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "name"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "options_flow",
+        "at": 2,
+        "utc": "2026-10-16T10:51:06.555822+00:00",
+        "type": "create_entry",
+        "errors": null
+      }
+    ],
+    "entries": [
+      {
+        "title": "confined test",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "light.living_room",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+      "switch.confined_test_adaptive_lighting_confined_test"
+    ],
+    "mirrored": [
+      "light.living_room"
+    ],
+    "published": [
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "state": "off",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sleep",
+          "friendly_name": "Adaptive Lighting: confined test Adaptive Lighting Sleep Mode: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "Adaptive Lighting: confined test Adaptive Lighting Adapt Color: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:brightness-4",
+          "friendly_name": "Adaptive Lighting: confined test Adaptive Lighting Adapt Brightness: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "state": "off",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sleep",
+          "friendly_name": "confined test Adaptive Lighting Sleep Mode: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "confined test Adaptive Lighting Adapt Color: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:brightness-4",
+          "friendly_name": "confined test Adaptive Lighting Adapt Brightness: confined test"
+        }
+      },
+      {
+        "entity": "switch.confined_test_adaptive_lighting_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "manual_control": [],
+          "brightness_pct": 100,
+          "color_temp_kelvin": 5395,
+          "color_temp_mired": 185,
+          "sun_position": 0.9703978154859539,
+          "force_rgb_color": false,
+          "icon": "mdi:theme-light-dark",
+          "friendly_name": "confined test Adaptive Lighting: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "state": "unavailable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "restored": true,
+          "icon": "mdi:sleep",
+          "friendly_name": "confined test Adaptive Lighting Sleep Mode: confined test",
+          "supported_features": 0
+        }
+      },
+      {
+        "entity": "switch.confined_test_adaptive_lighting_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "manual_control": [],
+          "brightness_pct": 100,
+          "color_temp_kelvin": 5395,
+          "color_temp_mired": 185,
+          "sun_position": 0.9704338334434158,
+          "force_rgb_color": false,
+          "icon": "mdi:theme-light-dark",
+          "friendly_name": "confined test Adaptive Lighting: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "state": "unavailable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "restored": true,
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "confined test Adaptive Lighting Adapt Color: confined test",
+          "supported_features": 0
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "state": "unavailable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "restored": true,
+          "icon": "mdi:brightness-4",
+          "friendly_name": "confined test Adaptive Lighting Adapt Brightness: confined test",
+          "supported_features": 0
+        }
+      },
+      {
+        "entity": "switch.confined_test_adaptive_lighting_confined_test",
+        "state": "unavailable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "restored": true,
+          "icon": "mdi:theme-light-dark",
+          "friendly_name": "confined test Adaptive Lighting: confined test",
+          "supported_features": 0
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "state": "off",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sleep",
+          "friendly_name": "Adaptive Lighting: confined test Adaptive Lighting Sleep Mode: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "Adaptive Lighting: confined test Adaptive Lighting Adapt Color: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:brightness-4",
+          "friendly_name": "Adaptive Lighting: confined test Adaptive Lighting Adapt Brightness: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "state": "off",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sleep",
+          "friendly_name": "confined test Adaptive Lighting Sleep Mode: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "confined test Adaptive Lighting Adapt Color: confined test"
+        }
+      },
+      {
+        "entity": "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "icon": "mdi:brightness-4",
+          "friendly_name": "confined test Adaptive Lighting Adapt Brightness: confined test"
+        }
+      },
+      {
+        "entity": "switch.confined_test_adaptive_lighting_confined_test",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "manual_control": [],
+          "brightness_pct": 100,
+          "color_temp_kelvin": 5395,
+          "color_temp_mired": 185,
+          "sun_position": 0.9704339647928288,
+          "force_rgb_color": false,
+          "icon": "mdi:theme-light-dark",
+          "friendly_name": "confined test Adaptive Lighting: confined test"
+        }
+      }
+    ],
+    "refused": [],
+    "push": {
+      "subscribed": [
+        "light.living_room"
+      ],
+      "received": [],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "probe": null,
+    "variant": "adaptive_lighting-no-service",
+    "arm": "confined",
+    "install": {
+      "ok": true,
+      "installed": [
+        "ulid_transform"
+      ],
+      "resolved_before": "2026-10-06T00:00:00Z",
+      "resolved": [
+        "ulid_transform-2.2.9"
+      ]
+    },
+    "durable": {
+      "records": 22,
+      "runs": 1,
+      "decisions": 21,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "decisions": [
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/subscribe/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "adaptive_lighting",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "history": [
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "off"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "off"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "on"
+      ],
+      [
+        "switch.confined_test_adaptive_lighting_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "unavailable"
+      ],
+      [
+        "switch.confined_test_adaptive_lighting_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "unavailable"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "unavailable"
+      ],
+      [
+        "switch.confined_test_adaptive_lighting_confined_test",
+        "unavailable"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "off"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test",
+        "off"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test",
+        "on"
+      ],
+      [
+        "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test",
+        "on"
+      ],
+      [
+        "switch.confined_test_adaptive_lighting_confined_test",
+        "on"
+      ]
+    ],
+    "calls": [],
+    "platform_states": {
+      "sensor.living_room_temperature": "21.4",
+      "sensor.living_room_humidity": "48",
+      "light.living_room": "on",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_sleep_mode_confined_test": "off",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_color_confined_test": "on",
+      "switch.adaptive_lighting_confined_test_adaptive_lighting_adapt_brightness_confined_test": "on",
+      "switch.confined_test_adaptive_lighting_confined_test": "on"
+    },
+    "log_tail": []
+  },
+  {
+    "domain": "scheduler",
+    "arm": "unconfined",
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false,
+      "http": true,
+      "websocket_api": true
+    },
+    "calls": [
+      {
+        "service": "light.turn_on",
+        "utc": "2026-10-16T10:53:00.002245+00:00",
+        "data": {
+          "brightness": 200,
+          "entity_id": [
+            "light.living_room"
+          ]
+        }
+      }
+    ],
+    "history": [
+      [
+        "switch.schedule_retest",
+        "unknown"
+      ],
+      [
+        "switch.schedule_retest",
+        "on"
+      ],
+      [
+        "switch.schedule_retest",
+        "triggered"
+      ]
+    ],
+    "setup_errors": [],
+    "flow": {
+      "steps": [],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "service",
+        "at": 2,
+        "utc": "2026-10-16T10:51:41.582849+00:00",
+        "start": "2026-10-16T10:53:00+00:00",
+        "ok": true
+      }
+    ],
+    "entries": [
+      {
+        "title": "Scheduler",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "conversation.home_assistant",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sun.sun",
+      "zone.home"
+    ],
+    "published": [
+      {
+        "entity": "conversation.home_assistant",
+        "state": "unknown",
+        "platform": null,
+        "attributes": {
+          "friendly_name": "Home Assistant",
+          "supported_features": 1
+        }
+      },
+      {
+        "entity": "sensor.sun_next_dawn",
+        "state": "2026-10-17T05:53:31+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dawn"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_dusk",
+        "state": "2026-10-16T17:39:14+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dusk"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_midnight",
+        "state": "2026-10-16T23:45:49+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next midnight"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_noon",
+        "state": "2026-10-16T11:46:07+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next noon"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_rising",
+        "state": "2026-10-17T06:28:00+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next rising"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_setting",
+        "state": "2026-10-16T17:04:53+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next setting"
+        }
+      },
+      {
+        "entity": "sun.sun",
+        "state": "above_horizon",
+        "platform": null,
+        "attributes": {
+          "next_dawn": "2026-10-17T05:53:31.210936+00:00",
+          "next_dusk": "2026-10-16T17:39:14.654243+00:00",
+          "next_midnight": "2026-10-16T23:45:49+00:00",
+          "next_noon": "2026-10-16T11:46:07+00:00",
+          "next_rising": "2026-10-17T06:28:00.797871+00:00",
+          "next_setting": "2026-10-16T17:04:53.572261+00:00",
+          "elevation": 28.42,
+          "azimuth": 164.69,
+          "rising": true,
+          "friendly_name": "Sun"
+        }
+      },
+      {
+        "entity": "zone.home",
+        "state": "0",
+        "platform": null,
+        "attributes": {
+          "latitude": 51.5,
+          "longitude": -0.12,
+          "radius": 100,
+          "passive": false,
+          "editable": true,
+          "icon": "mdi:home",
+          "friendly_name": "Home"
+        }
+      }
+    ],
+    "probe": null,
+    "variant": "scheduler",
+    "log_tail": [
+      "  File \"/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/recorder/__init__.py\", line 149, in async_setup",
+      "    instance = hass.data[DATA_INSTANCE] = Recorder(",
+      "                                          ~~~~~~~~^",
+      "        hass=hass,",
+      "        ^^^^^^^^^^",
+      "    ...<8 lines>...",
+      "        exclude_event_types=exclude_event_types,",
+      "        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "    )",
+      "    ^",
+      "  File \"/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/recorder/core.py\", line 182, in __init__",
+      "    db_connected: asyncio.Future[bool] = hass.data[DATA_RECORDER].db_connected",
+      "                                         ~~~~~~~~~^^^^^^^^^^^^^^^",
+      "KeyError: 'recorder'",
+      "zlib_ng and isal are not available, falling back to zlib, performance will be degraded."
+    ]
+  },
+  {
+    "domain": "scheduler",
+    "components_setup": {
+      "http": true,
+      "websocket_api": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "service",
+        "at": 2,
+        "utc": "2026-10-16T10:54:24.350866+00:00",
+        "start": "2026-10-16T10:56:00+00:00",
+        "ok": true
+      }
+    ],
+    "entries": [
+      {
+        "title": "Scheduler",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "light.living_room"
+    ],
+    "mirrored": [
+      "light.living_room"
+    ],
+    "published": [
+      {
+        "entity": "switch.schedule_retest",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "weekdays": [
+            "daily"
+          ],
+          "timeslots": [
+            "10:56:00"
+          ],
+          "entities": [
+            "light.living_room"
+          ],
+          "current_slot": null,
+          "next_slot": null,
+          "next_trigger": null,
+          "tags": [],
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Scheduler retest"
+        }
+      },
+      {
+        "entity": "switch.schedule_retest",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "weekdays": [
+            "daily"
+          ],
+          "timeslots": [
+            "10:56:00"
+          ],
+          "entities": [
+            "light.living_room"
+          ],
+          "current_slot": null,
+          "next_slot": 0,
+          "next_trigger": "2026-10-16T10:56:00+00:00",
+          "tags": [],
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Scheduler retest"
+        }
+      },
+      {
+        "entity": "switch.schedule_retest",
+        "state": "triggered",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "weekdays": [
+            "daily"
+          ],
+          "timeslots": [
+            "10:56:00"
+          ],
+          "entities": [
+            "light.living_room"
+          ],
+          "current_slot": 0,
+          "next_slot": 0,
+          "next_trigger": "2026-10-16T10:56:00+00:00",
+          "tags": [],
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Scheduler retest"
+        }
+      }
+    ],
+    "refused": [
+      {
+        "op": "entity.subscribe",
+        "target": "light.living_room",
+        "clause": "/permissions/entities/subscribe"
+      }
+    ],
+    "push": {
+      "subscribed": [],
+      "received": [],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "probe": null,
+    "variant": "scheduler",
+    "arm": "confined",
+    "install": {
+      "ok": true,
+      "installed": [],
+      "note": "no requirements declared",
+      "resolved_before": "2026-10-06T00:00:00Z"
+    },
+    "durable": {
+      "records": 7,
+      "runs": 1,
+      "decisions": 6,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "decisions": [
+      {
+        "identity": "scheduler",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "scheduler",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/subscribe",
+        "reason": "nothing is declared at /permissions/entities/subscribe"
+      },
+      {
+        "identity": "scheduler",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "scheduler",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "scheduler",
+        "op": "service.call",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/services/call/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "scheduler",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "history": [
+      [
+        "switch.schedule_retest",
+        "unknown"
+      ],
+      [
+        "switch.schedule_retest",
+        "on"
+      ],
+      [
+        "switch.schedule_retest",
+        "triggered"
+      ]
+    ],
+    "calls": [
+      {
+        "service": "light.turn_on",
+        "data": {
+          "brightness": 200,
+          "entity_id": [
+            "light.living_room"
+          ]
+        },
+        "utc": "2026-10-16T10:56:00.002670+00:00"
+      }
+    ],
+    "platform_states": {
+      "sensor.living_room_temperature": "21.4",
+      "sensor.living_room_humidity": "48",
+      "light.living_room": "on",
+      "switch.schedule_retest": "triggered"
+    },
+    "log_tail": [
+      "Exception in async_timer_updated when dispatching 'scheduler_timer_updated': ('ca2e45',)",
+      "Traceback (most recent call last):",
+      "  File \"/sandbox/data/custom_components/scheduler/switch.py\", line 223, in async_timer_updated",
+      "    if (self._timer_handler._next_trigger - now).total_seconds() < 0:",
+      "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~",
+      "TypeError: unsupported operand type(s) for -: 'NoneType' and 'datetime.datetime'"
+    ]
+  },
+  {
+    "domain": "scheduler",
+    "components_setup": {
+      "http": true,
+      "websocket_api": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "service",
+        "at": 2,
+        "utc": "2026-10-16T10:57:06.113776+00:00",
+        "start": "2026-10-16T10:59:00+00:00",
+        "ok": true
+      }
+    ],
+    "entries": [
+      {
+        "title": "Scheduler",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "switch.schedule_retest"
+    ],
+    "mirrored": [],
+    "published": [
+      {
+        "entity": "switch.schedule_retest",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "weekdays": [
+            "daily"
+          ],
+          "timeslots": [
+            "10:59:00"
+          ],
+          "entities": [
+            "light.living_room"
+          ],
+          "current_slot": null,
+          "next_slot": null,
+          "next_trigger": null,
+          "tags": [],
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Scheduler retest"
+        }
+      },
+      {
+        "entity": "switch.schedule_retest",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "weekdays": [
+            "daily"
+          ],
+          "timeslots": [
+            "10:59:00"
+          ],
+          "entities": [
+            "light.living_room"
+          ],
+          "current_slot": null,
+          "next_slot": 0,
+          "next_trigger": "2026-10-16T10:59:00+00:00",
+          "tags": [],
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Scheduler retest"
+        }
+      },
+      {
+        "entity": "switch.schedule_retest",
+        "state": "triggered",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "weekdays": [
+            "daily"
+          ],
+          "timeslots": [
+            "10:59:00"
+          ],
+          "entities": [
+            "light.living_room"
+          ],
+          "current_slot": 0,
+          "next_slot": 0,
+          "next_trigger": "2026-10-16T10:59:00+00:00",
+          "tags": [],
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Scheduler retest"
+        }
+      }
+    ],
+    "refused": [],
+    "push": {
+      "subscribed": [],
+      "received": [],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "probe": null,
+    "variant": "scheduler-no-read",
+    "arm": "confined",
+    "install": {
+      "ok": true,
+      "installed": [],
+      "note": "no requirements declared",
+      "resolved_before": "2026-10-06T00:00:00Z"
+    },
+    "durable": {
+      "records": 4,
+      "runs": 1,
+      "decisions": 3,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "decisions": [
+      {
+        "identity": "scheduler",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "scheduler",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "scheduler",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "history": [
+      [
+        "switch.schedule_retest",
+        "unknown"
+      ],
+      [
+        "switch.schedule_retest",
+        "on"
+      ],
+      [
+        "switch.schedule_retest",
+        "triggered"
+      ]
+    ],
+    "calls": [],
+    "platform_states": {
+      "sensor.living_room_temperature": "21.4",
+      "sensor.living_room_humidity": "48",
+      "light.living_room": "on",
+      "switch.schedule_retest": "triggered"
+    },
+    "log_tail": []
+  },
+  {
+    "domain": "scheduler",
+    "components_setup": {
+      "http": true,
+      "websocket_api": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "service",
+        "at": 2,
+        "utc": "2026-10-16T10:59:47.904132+00:00",
+        "start": "2026-10-16T11:01:00+00:00",
+        "ok": true
+      }
+    ],
+    "entries": [
+      {
+        "title": "Scheduler",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "light.living_room"
+    ],
+    "mirrored": [
+      "light.living_room"
+    ],
+    "published": [
+      {
+        "entity": "switch.schedule_retest",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "weekdays": [
+            "daily"
+          ],
+          "timeslots": [
+            "11:01:00"
+          ],
+          "entities": [
+            "light.living_room"
+          ],
+          "current_slot": null,
+          "next_slot": null,
+          "next_trigger": null,
+          "tags": [],
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Scheduler retest"
+        }
+      },
+      {
+        "entity": "switch.schedule_retest",
+        "state": "on",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "weekdays": [
+            "daily"
+          ],
+          "timeslots": [
+            "11:01:00"
+          ],
+          "entities": [
+            "light.living_room"
+          ],
+          "current_slot": null,
+          "next_slot": 0,
+          "next_trigger": "2026-10-16T11:01:00+00:00",
+          "tags": [],
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Scheduler retest"
+        }
+      },
+      {
+        "entity": "switch.schedule_retest",
+        "state": "triggered",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "weekdays": [
+            "daily"
+          ],
+          "timeslots": [
+            "11:01:00"
+          ],
+          "entities": [
+            "light.living_room"
+          ],
+          "current_slot": 0,
+          "next_slot": 0,
+          "next_trigger": "2026-10-16T11:01:00+00:00",
+          "tags": [],
+          "icon": "mdi:calendar-clock",
+          "friendly_name": "Scheduler retest"
+        }
+      }
+    ],
+    "refused": [
+      {
+        "op": "entity.subscribe",
+        "target": "light.living_room",
+        "clause": "/permissions/entities/subscribe"
+      }
+    ],
+    "push": {
+      "subscribed": [],
+      "received": [],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "probe": null,
+    "variant": "scheduler-no-service",
+    "arm": "confined",
+    "install": {
+      "ok": true,
+      "installed": [],
+      "note": "no requirements declared",
+      "resolved_before": "2026-10-06T00:00:00Z"
+    },
+    "durable": {
+      "records": 6,
+      "runs": 1,
+      "decisions": 5,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "decisions": [
+      {
+        "identity": "scheduler",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "scheduler",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/subscribe",
+        "reason": "nothing is declared at /permissions/entities/subscribe"
+      },
+      {
+        "identity": "scheduler",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "scheduler",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "scheduler",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "history": [
+      [
+        "switch.schedule_retest",
+        "unknown"
+      ],
+      [
+        "switch.schedule_retest",
+        "on"
+      ],
+      [
+        "switch.schedule_retest",
+        "triggered"
+      ]
+    ],
+    "calls": [],
+    "platform_states": {
+      "sensor.living_room_temperature": "21.4",
+      "sensor.living_room_humidity": "48",
+      "light.living_room": "on",
+      "switch.schedule_retest": "triggered"
+    },
+    "log_tail": [
+      "Exception in async_timer_updated when dispatching 'scheduler_timer_updated': ('908e6f',)",
+      "Traceback (most recent call last):",
+      "  File \"/sandbox/data/custom_components/scheduler/switch.py\", line 223, in async_timer_updated",
+      "    if (self._timer_handler._next_trigger - now).total_seconds() < 0:",
+      "        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~",
+      "TypeError: unsupported operand type(s) for -: 'NoneType' and 'datetime.datetime'"
+    ]
+  },
+  {
+    "domain": "thermal_comfort",
+    "arm": "unconfined",
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false
+    },
+    "history": [
+      [
+        "sensor.living_room_absolute_humidity",
+        "8.99806096686178"
+      ],
+      [
+        "sensor.living_room_dew_point",
+        "9.95645201102777"
+      ],
+      [
+        "sensor.living_room_dew_point_perception",
+        "dry"
+      ],
+      [
+        "sensor.living_room_frost_point",
+        "7.06306588826203"
+      ],
+      [
+        "sensor.living_room_frost_risk",
+        "no_risk"
+      ],
+      [
+        "sensor.living_room_heat_index",
+        "20.8488888888889"
+      ],
+      [
+        "sensor.living_room_humidex",
+        "22.658186777006"
+      ],
+      [
+        "sensor.living_room_humidex_perception",
+        "comfortable"
+      ],
+      [
+        "sensor.living_room_moist_air_enthalpy",
+        "40.8471436926806"
+      ],
+      [
+        "sensor.living_room_relative_strain_perception",
+        "outside_calculable_range"
+      ],
+      [
+        "sensor.living_room_summer_scharlau_perception",
+        "comfortable"
+      ],
+      [
+        "sensor.living_room_winter_scharlau_perception",
+        "outside_calculable_range"
+      ],
+      [
+        "sensor.living_room_summer_simmer_index",
+        "24.283208"
+      ],
+      [
+        "sensor.living_room_summer_simmer_perception",
+        "slightly_cool"
+      ],
+      [
+        "sensor.living_room_thoms_discomfort_perception",
+        "no_discomfort"
+      ]
+    ],
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "custom_icons",
+            "enabled_sensors",
+            "humidity_sensor",
+            "name",
+            "poll",
+            "scan_interval",
+            "temperature_sensor"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "none",
+        "at": 0,
+        "utc": "2026-10-16T11:02:31.115034+00:00"
+      }
+    ],
+    "entries": [
+      {
+        "title": "living room",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "conversation.home_assistant",
+      "sensor.living_room_absolute_humidity",
+      "sensor.living_room_dew_point",
+      "sensor.living_room_dew_point_perception",
+      "sensor.living_room_frost_point",
+      "sensor.living_room_frost_risk",
+      "sensor.living_room_heat_index",
+      "sensor.living_room_humidex",
+      "sensor.living_room_humidex_perception",
+      "sensor.living_room_moist_air_enthalpy",
+      "sensor.living_room_relative_strain_perception",
+      "sensor.living_room_summer_scharlau_perception",
+      "sensor.living_room_summer_simmer_index",
+      "sensor.living_room_summer_simmer_perception",
+      "sensor.living_room_thoms_discomfort_perception",
+      "sensor.living_room_winter_scharlau_perception",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sun.sun",
+      "zone.home"
+    ],
+    "published": [
+      {
+        "entity": "conversation.home_assistant",
+        "state": "unknown",
+        "platform": null,
+        "attributes": {
+          "friendly_name": "Home Assistant",
+          "supported_features": 1
+        }
+      },
+      {
+        "entity": "sensor.living_room_absolute_humidity",
+        "state": "8.99806096686178",
+        "platform": "thermal_comfort",
+        "attributes": {
+          "state_class": "measurement",
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "unit_of_measurement": "g/m\u00b3",
+          "icon": "mdi:water",
+          "friendly_name": "living room Absolute humidity"
+        }
+      },
+      {
+        "entity": "sensor.living_room_dew_point",
+        "state": "9.95645201102777",
+        "platform": "thermal_comfort",
+        "attributes": {
+          "state_class": "measurement",
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "unit_of_measurement": "\u00b0C",
+          "device_class": "temperature",
+          "icon": "mdi:thermometer-water",
+          "friendly_name": "living room Dew point"
+        }
+      },
+      {
+        "entity": "sensor.living_room_dew_point_perception",
+        "state": "dry",
+        "platform": "thermal_comfort",
+        "attributes": {
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "dew_point": 9.95645201102777,
+          "device_class": "enum",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Dew point perception"
+        }
+      },
+      {
+        "entity": "sensor.living_room_frost_point",
+        "state": "7.06306588826203",
+        "platform": "thermal_comfort",
+        "attributes": {
+          "state_class": "measurement",
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "unit_of_measurement": "\u00b0C",
+          "device_class": "temperature",
+          "icon": "mdi:snowflake-thermometer",
+          "friendly_name": "living room Frost point"
+        }
+      },
+      {
+        "entity": "sensor.living_room_frost_risk",
+        "state": "no_risk",
+        "platform": "thermal_comfort",
+        "attributes": {
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "frost_point": 7.063065888262031,
+          "device_class": "enum",
+          "icon": "mdi:snowflake-alert",
+          "friendly_name": "living room Frost risk"
+        }
+      },
+      {
+        "entity": "sensor.living_room_heat_index",
+        "state": "20.8488888888889",
+        "platform": "thermal_comfort",
+        "attributes": {
+          "state_class": "measurement",
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "unit_of_measurement": "\u00b0C",
+          "device_class": "temperature",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Heat index"
+        }
+      },
+      {
+        "entity": "sensor.living_room_humidex",
+        "state": "22.658186777006",
+        "platform": "thermal_comfort",
+        "attributes": {
+          "state_class": "measurement",
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "unit_of_measurement": "\u00b0C",
+          "device_class": "temperature",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Humidex"
+        }
+      },
+      {
+        "entity": "sensor.living_room_humidex_perception",
+        "state": "comfortable",
+        "platform": "thermal_comfort",
+        "attributes": {
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "humidex": 22.658186777006005,
+          "device_class": "enum",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Humidex perception"
+        }
+      },
+      {
+        "entity": "sensor.living_room_moist_air_enthalpy",
+        "state": "40.8471436926806",
+        "platform": "thermal_comfort",
+        "attributes": {
+          "state_class": "measurement",
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "unit_of_measurement": "kJ/kg",
+          "icon": "mdi:water-circle",
+          "friendly_name": "living room Moist air enthalpy"
+        }
+      },
+      {
+        "entity": "sensor.living_room_relative_strain_perception",
+        "state": "outside_calculable_range",
+        "platform": "thermal_comfort",
+        "attributes": {
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "relative_strain_index": 0.01,
+          "device_class": "enum",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Relative strain perception"
+        }
+      },
+      {
+        "entity": "sensor.living_room_summer_scharlau_perception",
+        "state": "comfortable",
+        "platform": "thermal_comfort",
+        "attributes": {
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "summer_scharlau_index": 7.42,
+          "device_class": "enum",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Summer Scharlau perception"
+        }
+      },
+      {
+        "entity": "sensor.living_room_summer_simmer_index",
+        "state": "24.283208",
+        "platform": "thermal_comfort",
+        "attributes": {
+          "state_class": "measurement",
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "unit_of_measurement": "\u00b0C",
+          "device_class": "temperature",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Summer Simmer index"
+        }
+      },
+      {
+        "entity": "sensor.living_room_summer_simmer_perception",
+        "state": "slightly_cool",
+        "platform": "thermal_comfort",
+        "attributes": {
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "summer_simmer_index": 24.283208,
+          "device_class": "enum",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Summer Simmer perception"
+        }
+      },
+      {
+        "entity": "sensor.living_room_thoms_discomfort_perception",
+        "state": "no_discomfort",
+        "platform": "thermal_comfort",
+        "attributes": {
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "thoms_discomfort_index": 17.5,
+          "device_class": "enum",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Thoms discomfort perception"
+        }
+      },
+      {
+        "entity": "sensor.living_room_winter_scharlau_perception",
+        "state": "outside_calculable_range",
+        "platform": "thermal_comfort",
+        "attributes": {
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "winter_scharlau_index": 21.91,
+          "device_class": "enum",
+          "icon": "mdi:snowflake-thermometer",
+          "friendly_name": "living room Winter Scharlau perception"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_dawn",
+        "state": "2026-10-17T05:53:31+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dawn"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_dusk",
+        "state": "2026-10-16T17:39:14+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dusk"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_midnight",
+        "state": "2026-10-16T23:45:49+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next midnight"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_noon",
+        "state": "2026-10-16T11:46:07+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next noon"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_rising",
+        "state": "2026-10-17T06:28:00+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next rising"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_setting",
+        "state": "2026-10-16T17:04:53+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next setting"
+        }
+      },
+      {
+        "entity": "sun.sun",
+        "state": "above_horizon",
+        "platform": null,
+        "attributes": {
+          "next_dawn": "2026-10-17T05:53:31.210936+00:00",
+          "next_dusk": "2026-10-16T17:39:14.654243+00:00",
+          "next_midnight": "2026-10-16T23:45:49+00:00",
+          "next_noon": "2026-10-16T11:46:07+00:00",
+          "next_rising": "2026-10-17T06:28:00.797871+00:00",
+          "next_setting": "2026-10-16T17:04:53.572261+00:00",
+          "elevation": 28.82,
+          "azimuth": 167.71,
+          "rising": true,
+          "friendly_name": "Sun"
+        }
+      },
+      {
+        "entity": "zone.home",
+        "state": "0",
+        "platform": null,
+        "attributes": {
+          "latitude": 51.5,
+          "longitude": -0.12,
+          "radius": 100,
+          "passive": false,
+          "editable": true,
+          "icon": "mdi:home",
+          "friendly_name": "Home"
+        }
+      }
+    ],
+    "probe": null,
+    "variant": "thermal_comfort",
+    "log_tail": [
+      "  File \"/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/recorder/__init__.py\", line 149, in async_setup",
+      "    instance = hass.data[DATA_INSTANCE] = Recorder(",
+      "                                          ~~~~~~~~^",
+      "        hass=hass,",
+      "        ^^^^^^^^^^",
+      "    ...<8 lines>...",
+      "        exclude_event_types=exclude_event_types,",
+      "        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "    )",
+      "    ^",
+      "  File \"/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/recorder/core.py\", line 182, in __init__",
+      "    db_connected: asyncio.Future[bool] = hass.data[DATA_RECORDER].db_connected",
+      "                                         ~~~~~~~~~^^^^^^^^^^^^^^^",
+      "KeyError: 'recorder'",
+      "zlib_ng and isal are not available, falling back to zlib, performance will be degraded."
+    ]
+  },
+  {
+    "domain": "thermal_comfort",
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "custom_icons",
+            "enabled_sensors",
+            "humidity_sensor",
+            "name",
+            "poll",
+            "scan_interval",
+            "temperature_sensor"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "none",
+        "at": 0,
+        "utc": "2026-10-16T11:02:43.651735+00:00"
+      }
+    ],
+    "entries": [
+      {
+        "title": "living room",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "sensor.living_room_absolute_humidity",
+      "sensor.living_room_dew_point",
+      "sensor.living_room_dew_point_perception",
+      "sensor.living_room_frost_point",
+      "sensor.living_room_frost_risk",
+      "sensor.living_room_heat_index",
+      "sensor.living_room_humidex",
+      "sensor.living_room_humidex_perception",
+      "sensor.living_room_humidity",
+      "sensor.living_room_moist_air_enthalpy",
+      "sensor.living_room_relative_strain_perception",
+      "sensor.living_room_summer_scharlau_perception",
+      "sensor.living_room_summer_simmer_index",
+      "sensor.living_room_summer_simmer_perception",
+      "sensor.living_room_temperature",
+      "sensor.living_room_thoms_discomfort_perception",
+      "sensor.living_room_winter_scharlau_perception"
+    ],
+    "mirrored": [
+      "sensor.living_room_humidity",
+      "sensor.living_room_temperature"
+    ],
+    "published": [
+      {
+        "entity": "sensor.living_room_absolute_humidity",
+        "state": "8.99806096686178",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "unit_of_measurement": "g/m\u00b3",
+          "icon": "mdi:water",
+          "friendly_name": "living room Absolute humidity"
+        }
+      },
+      {
+        "entity": "sensor.living_room_dew_point",
+        "state": "9.95645201102777",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "unit_of_measurement": "\u00b0C",
+          "device_class": "temperature",
+          "icon": "mdi:thermometer-water",
+          "friendly_name": "living room Dew point"
+        }
+      },
+      {
+        "entity": "sensor.living_room_dew_point_perception",
+        "state": "dry",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "dry",
+            "very_comfortable",
+            "comfortable",
+            "ok_but_humid",
+            "somewhat_uncomfortable",
+            "quite_uncomfortable",
+            "extremely_uncomfortable",
+            "severely_high"
+          ],
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "dew_point": 9.95645201102777,
+          "device_class": "enum",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Dew point perception"
+        }
+      },
+      {
+        "entity": "sensor.living_room_frost_point",
+        "state": "7.06306588826203",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "unit_of_measurement": "\u00b0C",
+          "device_class": "temperature",
+          "icon": "mdi:snowflake-thermometer",
+          "friendly_name": "living room Frost point"
+        }
+      },
+      {
+        "entity": "sensor.living_room_frost_risk",
+        "state": "no_risk",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "no_risk",
+            "unlikely",
+            "probable",
+            "high"
+          ],
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "frost_point": 7.063065888262031,
+          "device_class": "enum",
+          "icon": "mdi:snowflake-alert",
+          "friendly_name": "living room Frost risk"
+        }
+      },
+      {
+        "entity": "sensor.living_room_heat_index",
+        "state": "20.8488888888889",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "unit_of_measurement": "\u00b0C",
+          "device_class": "temperature",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Heat index"
+        }
+      },
+      {
+        "entity": "sensor.living_room_humidex",
+        "state": "22.658186777006",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "unit_of_measurement": "\u00b0C",
+          "device_class": "temperature",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Humidex"
+        }
+      },
+      {
+        "entity": "sensor.living_room_humidex_perception",
+        "state": "comfortable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "comfortable",
+            "noticable_discomfort",
+            "evident_discomfort",
+            "great_discomfort",
+            "dangerous_discomfort",
+            "heat_stroke"
+          ],
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "humidex": 22.658186777006005,
+          "device_class": "enum",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Humidex perception"
+        }
+      },
+      {
+        "entity": "sensor.living_room_moist_air_enthalpy",
+        "state": "40.8471436926806",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "unit_of_measurement": "kJ/kg",
+          "icon": "mdi:water-circle",
+          "friendly_name": "living room Moist air enthalpy"
+        }
+      },
+      {
+        "entity": "sensor.living_room_relative_strain_perception",
+        "state": "outside_calculable_range",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "outside_calculable_range",
+            "comfortable",
+            "slight_discomfort",
+            "discomfort",
+            "significant_discomfort",
+            "extreme_discomfort"
+          ],
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "relative_strain_index": 0.01,
+          "device_class": "enum",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Relative strain perception"
+        }
+      },
+      {
+        "entity": "sensor.living_room_summer_scharlau_perception",
+        "state": "comfortable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "outside_calculable_range",
+            "comfortable",
+            "slightly_uncomfortable",
+            "moderately_uncomfortable",
+            "highly_uncomfortable"
+          ],
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "summer_scharlau_index": 7.42,
+          "device_class": "enum",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Summer Scharlau perception"
+        }
+      },
+      {
+        "entity": "sensor.living_room_winter_scharlau_perception",
+        "state": "outside_calculable_range",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "outside_calculable_range",
+            "comfortable",
+            "slightly_uncomfortable",
+            "moderately_uncomfortable",
+            "highly_uncomfortable"
+          ],
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "winter_scharlau_index": 21.91,
+          "device_class": "enum",
+          "icon": "mdi:snowflake-thermometer",
+          "friendly_name": "living room Winter Scharlau perception"
+        }
+      },
+      {
+        "entity": "sensor.living_room_summer_simmer_index",
+        "state": "24.283208",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "unit_of_measurement": "\u00b0C",
+          "device_class": "temperature",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Summer Simmer index"
+        }
+      },
+      {
+        "entity": "sensor.living_room_summer_simmer_perception",
+        "state": "slightly_cool",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "cool",
+            "slightly_cool",
+            "comfortable",
+            "slightly_warm",
+            "increasing_discomfort",
+            "extremely_warm",
+            "danger_of_heatstroke",
+            "extreme_danger_of_heatstroke",
+            "circulatory_collapse_imminent"
+          ],
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "summer_simmer_index": 24.283208,
+          "device_class": "enum",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Summer Simmer perception"
+        }
+      },
+      {
+        "entity": "sensor.living_room_thoms_discomfort_perception",
+        "state": "no_discomfort",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "options": [
+            "no_discomfort",
+            "less_than_half",
+            "more_than_half",
+            "most",
+            "everyone",
+            "dangerous"
+          ],
+          "temperature": 21.4,
+          "humidity": 48.0,
+          "thoms_discomfort_index": 17.5,
+          "device_class": "enum",
+          "icon": "mdi:sun-thermometer",
+          "friendly_name": "living room Thoms discomfort perception"
+        }
+      }
+    ],
+    "refused": [
+      {
+        "op": "entity.subscribe",
+        "target": "sensor.living_room_temperature",
+        "clause": "/permissions/entities/subscribe"
+      },
+      {
+        "op": "entity.subscribe",
+        "target": "sensor.living_room_humidity",
+        "clause": "/permissions/entities/subscribe"
+      }
+    ],
+    "push": {
+      "subscribed": [],
+      "received": [],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "probe": null,
+    "variant": "thermal_comfort",
+    "arm": "confined",
+    "install": {
+      "ok": true,
+      "installed": [],
+      "note": "no requirements declared",
+      "resolved_before": "2026-10-06T00:00:00Z"
+    },
+    "durable": {
+      "records": 20,
+      "runs": 1,
+      "decisions": 19,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "decisions": [
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/1",
+        "reason": "declared"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/subscribe",
+        "reason": "nothing is declared at /permissions/entities/subscribe"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": false,
+        "clause": "/permissions/entities/subscribe",
+        "reason": "nothing is declared at /permissions/entities/subscribe"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "thermal_comfort",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "history": [
+      [
+        "sensor.living_room_absolute_humidity",
+        "8.99806096686178"
+      ],
+      [
+        "sensor.living_room_dew_point",
+        "9.95645201102777"
+      ],
+      [
+        "sensor.living_room_dew_point_perception",
+        "dry"
+      ],
+      [
+        "sensor.living_room_frost_point",
+        "7.06306588826203"
+      ],
+      [
+        "sensor.living_room_frost_risk",
+        "no_risk"
+      ],
+      [
+        "sensor.living_room_heat_index",
+        "20.8488888888889"
+      ],
+      [
+        "sensor.living_room_humidex",
+        "22.658186777006"
+      ],
+      [
+        "sensor.living_room_humidex_perception",
+        "comfortable"
+      ],
+      [
+        "sensor.living_room_moist_air_enthalpy",
+        "40.8471436926806"
+      ],
+      [
+        "sensor.living_room_relative_strain_perception",
+        "outside_calculable_range"
+      ],
+      [
+        "sensor.living_room_summer_scharlau_perception",
+        "comfortable"
+      ],
+      [
+        "sensor.living_room_winter_scharlau_perception",
+        "outside_calculable_range"
+      ],
+      [
+        "sensor.living_room_summer_simmer_index",
+        "24.283208"
+      ],
+      [
+        "sensor.living_room_summer_simmer_perception",
+        "slightly_cool"
+      ],
+      [
+        "sensor.living_room_thoms_discomfort_perception",
+        "no_discomfort"
+      ]
+    ],
+    "calls": [],
+    "platform_states": {
+      "sensor.living_room_temperature": "21.4",
+      "sensor.living_room_humidity": "48",
+      "light.living_room": "on",
+      "sensor.living_room_absolute_humidity": "8.99806096686178",
+      "sensor.living_room_dew_point": "9.95645201102777",
+      "sensor.living_room_dew_point_perception": "dry",
+      "sensor.living_room_frost_point": "7.06306588826203",
+      "sensor.living_room_frost_risk": "no_risk",
+      "sensor.living_room_heat_index": "20.8488888888889",
+      "sensor.living_room_humidex": "22.658186777006",
+      "sensor.living_room_humidex_perception": "comfortable",
+      "sensor.living_room_moist_air_enthalpy": "40.8471436926806",
+      "sensor.living_room_relative_strain_perception": "outside_calculable_range",
+      "sensor.living_room_summer_scharlau_perception": "comfortable",
+      "sensor.living_room_winter_scharlau_perception": "outside_calculable_range",
+      "sensor.living_room_summer_simmer_index": "24.283208",
+      "sensor.living_room_summer_simmer_perception": "slightly_cool",
+      "sensor.living_room_thoms_discomfort_perception": "no_discomfort"
+    },
+    "log_tail": []
+  }
+]

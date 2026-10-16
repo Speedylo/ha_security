@@ -1,0 +1,40 @@
+(A) stopped
+{
+  "arm": "unconfined",
+  "ha_version": "2026.8.3",
+  "host": "raspberrypi",
+  "declared_delivered": true,
+  "undeclared_delivered": [
+    "lock.front_door",
+    "person.younes",
+    "sensor.bedroom_occupancy"
+  ],
+  "undeclared": [
+    "sensor.bedroom_occupancy",
+    "lock.front_door",
+    "person.younes"
+  ]
+}
+(A) up on http://127.0.0.1:8123, config /home/younes/r2exp/houseA, bridge entry present, admin token in /home/younes/.config/capstone/house_a.token, the mediator's own (non-admin) token in /home/younes/.config/capstone/house_a_mediator.token
+{
+  "arm": "confined",
+  "ha_version": "2026.8.3",
+  "host": "raspberrypi",
+  "subscription_granted": true,
+  "declared_delivered": true,
+  "undeclared_delivered": [],
+  "undeclared": [
+    "sensor.bedroom_occupancy",
+    "lock.front_door",
+    "person.younes"
+  ],
+  "control_seen": [
+    "lock.front_door",
+    "person.younes",
+    "sensor.bedroom_occupancy"
+  ],
+  "decisions": 1,
+  "decisions_allowed": 1,
+  "decisions_after_control": 1,
+  "chain_breaks": 0
+}

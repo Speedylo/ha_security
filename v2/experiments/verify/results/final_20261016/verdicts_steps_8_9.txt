@@ -1,0 +1,12 @@
+Final rerun, steps 8 and 9 (final-2026-10), against notes/final_rerun_prediction.md §2.
+
+Step 8 — functional retest, (A) down, 11:44–12:02. endtoend_function exit 0; retest_e2e_verdicts.py: 43 of 45
+  (its exit 1 is the two failing rows). Against 2026-10-09's verdicts, exactly one row changed: "P4 scheduler
+  confined: exactly one light.turn_on, brightness 200, for light.living_room" FAIL -> PASS, the call now carrying
+  its target (F54 fixed). The two rows still failing are the 'off after a single run' prediction in both arms
+  (unconfined {}, confined 'triggered'), as on 2026-10-09: the prediction misread scheduler's switch.
+  Prediction "43 of 45, the F54 row passes, the two switch rows fail in both arms": held.
+Step 9 — T06's pair, 12:02–12:03 (run.sh: (A) down, unconfined, (A) up --fresh, confined).
+  P1 unconfined 3/3 undeclared delivered, declared delivered; P2 confined 0/3; P3 declared delivered;
+  P4 control 3/3 seen; P5 one decision (allowed), chain breaks 0; P6 both arms HA 2026.8.3 on raspberrypi.
+  Prediction "P1–P6 hold": held. (A) left up, fresh.

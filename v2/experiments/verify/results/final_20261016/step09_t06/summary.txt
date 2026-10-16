@@ -1,0 +1,5 @@
+start 2026-10-16T12:02:54+01:00 commit 38e70ecbaae8e16c45957f371663729ca7268e10 tag final-2026-10 dirty=0
+pair exit=0 seconds=6
+dirty after=0
+end 2026-10-16T12:03:01+01:00
+ALLDONE
