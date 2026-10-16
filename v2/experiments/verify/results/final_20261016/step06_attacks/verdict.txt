@@ -1,0 +1,12 @@
+Final rerun, step 6 — the attacks, paired. Read from step 1's suite logs (final-2026-10, both runs),
+against notes/final_rerun_prediction.md §2 step 6. Each line holds in suites_1 and suites_2.
+
+  ok  unconfined, the heap walk reaches the victim's credential     selftest_gc: "YES — 7 live objects held it"
+  ok  unconfined, the 2021 pattern recovers 2 of 2 canaries          selftest_adversary_baseline: "canaries recovered 2/2"
+  ok  confined, the walk finds only the attacker's objects          selftest_gc: "8942 objects, all its own"; "token reached ... no"
+  ok  ... with the credential live in the mediator                  selftest_gc: PASS "with the credential proven live in the mediator throughout"
+  ok  confined, 0 of 2 canaries recovered                           selftest_adversary: PASS "neither canary reached the adversary"
+  ok  undeclared reads 36/36 -> 1/36 (20/20 -> 0/20)                selftest_reads: lines 9–10
+
+The object count (8942 confined, 11497 in the baseline's own heap) is not a criterion.
+Prediction "all hold": held.
