@@ -65,3 +65,11 @@ abstract, §1, §6.6.1, §10 and §15, which the template's sections require.)
 - **U4.** §9.4, "Messages are framed as a four-byte length followed by a JSON object…" (~35) → cut.
 
 ## Applied 2026-10-16 (Younes: D2–D7 as worded). Not taken: R1, R2, U1–U4, App G draft (D1 still open).
+
+## R1, R2, U1–U4 drafted 2026-10-16 (not applied; pairs in `notes/reread_trims_20261016.py`)
+
+366 words: R1a 21, R1b 10, R2a 7, R2b 10, U1 107, U2 82, U3 93, U4 36.
+- U3 drops §8.6's sentence on the three stale-path scripts, which the F61 row in Appendix F keeps. That
+  sentence was added to §8.6 on 2026-10-16 with Younes's yes, so this would reverse that choice.
+- U2 also drops "and Section 9.8 states them": Table 9.2 lists only two of the three limits (data-store
+  size, OAuth first login); the last-second loss is in neither table nor §14.
