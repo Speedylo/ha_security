@@ -44,4 +44,4 @@ rerun that found both.
 1. Severity Minor.
 2. The stale path in `verify/phase2_l23.sh` is a clause in F61, not a finding of its own.
 
-Still pending: [PI RESULT], from step 3's Pi half; then these changes go into `submission/`.
+Applied to `submission/` on 2026-10-16 once the Pi result was in (11 of 11; FI1 and FI4 as designed).

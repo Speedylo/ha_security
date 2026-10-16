@@ -95,7 +95,7 @@ Table 3.3 lists the framework and the evidence needed to check its claims.
 | D4 | Two pinned corpora of real community integrations, 37 by install count and 40 drawn uniformly, and a harness that runs each one confined and unconfined |
 | D5 | An adversarial suite reproducing the published attacks against the platform |
 | D6 | A threat model of nineteen threats and seven residual risks, following ISO 31000 [20] with STRIDE [21] |
-| D7 | A verification record: predictions committed before each run, a register of 153 claims, a log of 60 findings |
+| D7 | A verification record: predictions committed before each run, a register of 153 claims, a log of 61 findings |
 | D8 | A reproduction guide, and this report |
 
 ## 3.7 Expected outcome
