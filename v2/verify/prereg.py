@@ -43,6 +43,10 @@ RESULTS = {
     # touching experiments/*/results, its message read to confirm it reports that note's work.
     "f08_t06": "7271291", "minor_findings": "aa072c2", "final_pass": "d739e77",
     "f48_f49": "b22c306",
+    # Added 2026-10-16 after the final rerun's step 13: each cites an older results path (the bare
+    # verify results directory; item12_20261003/depth.sh, re-issued by step 11), which the path
+    # search took for its own. Their first results are step 1's run and F61's laptop run.
+    "final_rerun": "0c771fa", "f61_fault_harness_approval": "c41eafd",
 }
 #: The checks registered without results of their own yet, or registered for this campaign.
 SKIP = {"integrity_consistency"}
