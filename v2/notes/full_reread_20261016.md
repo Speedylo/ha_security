@@ -63,3 +63,5 @@ abstract, §1, §6.6.1, §10 and §15, which the template's sections require.)
 - **U2.** §9.7, the stored-data paragraph (~330) → about 200.
 - **U3.** §8.6, the F61 paragraph (~260) → about 150; the detail is in Appendix F.
 - **U4.** §9.4, "Messages are framed as a four-byte length followed by a JSON object…" (~35) → cut.
+
+## Applied 2026-10-16 (Younes: D2–D7 as worded). Not taken: R1, R2, U1–U4, App G draft (D1 still open).

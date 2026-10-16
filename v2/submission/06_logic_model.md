@@ -38,7 +38,7 @@ Four challenges shaped the work. Neither the integrations nor the platform could
 
 ## 6.4 Activities
 
-The activities followed the order of the method: requirements traced to findings, a threat model written before the architecture, which is how it produced the resource bound S9, an architecture chosen against measured alternatives, and an implementation with its suites and an adversary to attack it. Evaluation compared every security and compatibility result with an unconfined arm, and a verification campaign then tested the evidence itself, through mutants, fault injection, a code review and a register of claims, until the engineering cut-off on 8 October 2026.
+The activities followed the order of the method: requirements traced to findings, a threat model written before the architecture, which is how it produced the resource bound S9, an architecture chosen against alternatives, and an implementation with its suites and an adversary to attack it. Evaluation compared every security and compatibility result with an unconfined arm, and a verification campaign then tested the evidence itself, through mutants, fault injection, a code review and a register of claims, until the engineering cut-off on 8 October 2026.
 
 ## 6.5 Outputs
 
@@ -56,4 +56,4 @@ The intermediate outcomes are plausible but not yet shown, and each has a known 
 
 ### 6.6.3 Long-term outcomes
 
-The long-term outcome lies with the platform. Because a check inside the platform's process can be reached by the code it restricts [5], a lasting fix would require Home Assistant to place community integrations behind a process boundary itself, and to make its existing per-domain user policy configurable, so that the mediator's own credential could be narrowed (R3). The project cannot deliver that change, but it supplies the evidence a proposal would need: what confinement costs, what a declaration must express, and which threats it closes and which it leaves open.
+The long-term outcome lies with the platform. Because a check inside the platform's process can be reached by the code it restricts [5], a lasting fix would require Home Assistant to place community integrations behind a process boundary itself, and to make its existing per-entity user policy configurable, so that the mediator's own credential could be narrowed (R3). The project cannot deliver that change, but it supplies the evidence a proposal would need: what confinement costs, what a declaration must express, and which threats it closes and which it leaves open.

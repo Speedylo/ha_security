@@ -46,7 +46,7 @@ Fifteen further requirements, functional (F), security (S) and non-functional (N
 
 | | The framework shall… | Verdict |
 |---|---|---|
-| C1 | Run integrations with their code unmodified | Met: 75 source trees compared before and after the runs, no change |
+| C1 | Run integrations with their code unmodified | Met: every source tree, in both arms of both corpora, unchanged after its run |
 | C2 | Require no change to Home Assistant | Met: every arm ran on the unmodified release 2026.8.3 |
 | C3 | Not depend on the author's cooperation | Met: absent, over-broad and mismatched manifests each handled as specified |
 | C4 | Run on resource-constrained hardware | Met: every measurement on the Raspberry Pi 5 |
