@@ -22,6 +22,8 @@ to use AI and check it), S4 ethics, S5 communication and disclosure.
 | 9 | 2026-10-23 | Diary 2 §7 | "credential scan before every push to the public repository" | The repository is private | Claude's own check before showing the draft | "push to GitHub" | S1 |
 | 10 | 2026-10-23 | Diary 2 AI Evidence Box | "I reviewed every screening decision" | Overclaim about the human's own verification: Younes reviewed the B rows and 20 random exclusions, not the 590 title exclusions | Younes asked why only 52 of 642 were screened | Rewritten to the actual review scope; §3 now states the title stage (590) | S1, S5 |
 | 11 | 2026-10-23 | Planning (S2) | Warned against an agent answering at the defence | Assumed the answers would be presented as Younes's; he meant an openly labelled agent, a practice already used in the School of Business Administration | Younes | Plan kept, on condition that SSE and the supervisor confirm | S4, S5 |
+| 12 | 2026-10-23 | Diary 2 §8 | "each section was drafted, reviewed and approved by me" | Implied Younes drafted the sections; Claude drafted them | Younes, in his Word read | "drafted" removed | S1, S5 |
+| 13 | 2026-10-23 | Diary 2 AI Evidence Box | Human verification listed "references [checked] against Crossref" | Claude did the Crossref checks; it was not Younes's verification | Younes, in his Word read | Removed from the human-verification field | S1, S5 |
 
 ## Open
 
