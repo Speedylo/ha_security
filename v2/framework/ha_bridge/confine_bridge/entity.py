@@ -30,6 +30,9 @@ class BridgedEntity(RestoreEntity):
     """Common to every domain: identity, device, and taking a new definition."""
 
     _attr_should_poll = False
+    #: Attributes this platform takes into the entity's own properties (a number's range, a
+    #: text's limits). Per platform, because on a sensor `min` or `max` is an ordinary attribute.
+    _described: frozenset[str] = frozenset()
 
     def __init__(self, definition: dict[str, Any], data) -> None:
         self._data = data
@@ -66,7 +69,7 @@ class BridgedEntity(RestoreEntity):
                            else attributes.get("friendly_name")
                            or self._published_id.partition(".")[2])
         self._attr_extra_state_attributes = {k: v for k, v in attributes.items()
-                                             if k not in RESERVED}
+                                             if k not in RESERVED and k not in self._described}
         self._take_state(definition.get("state"), attributes)
 
     def _take_state(self, state: Any, attributes: dict[str, Any]) -> None:

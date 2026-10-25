@@ -50,7 +50,7 @@ from .const import (COMMAND_TIMEOUT, DOMAIN, ISSUE_CUT_OFF, ISSUE_NOT_STARTED,
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.SWITCH]
+PLATFORMS = [Platform(domain) for domain in SUPPORTED]
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
