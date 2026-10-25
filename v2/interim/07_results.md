@@ -57,13 +57,28 @@ Loading is not the same as working, so thirteen integrations were also run end t
 
 All thirteen worked confined. Each integration that uses the network was also run with its network permission removed, and every one of its requests was then refused and recorded, which shows that the working runs reached their services through the declared permission and not around it.
 
+Working integrations also show what a permission system has to cover. Following the method of Li et al. (2025), the source code of the 144 most-installed community integrations, and of the 40 in the uniform sample, was read automatically for each part of the platform it uses. Because this reads the code rather than running it, it covers integrations that could not be set up. Table 7.4 gives the main results.
+
+**Table 7.4**
+*Parts of the platform used by community integrations*
+
+| Part of the platform | 144 most-installed | 40 drawn at random |
+|---|---|---|
+| Its own configuration entry | 94% | 93% |
+| The platform's shared data store | 86% | 80% |
+| The event bus, on which every change in the house is announced | 49% | 18% |
+| Calls to services, the actions that operate devices | 65% | 38% |
+| Calls to another integration's services | 22% | 13% |
+
+The parts an integration needs merely to exist, such as its own configuration entry, are used almost equally in both samples. The parts that widen its reach are used far less in the random sample: the event bus by 31 points less, and services by 27 points less. A study of popular integrations alone would therefore overstate how much of the platform a typical integration touches. The measurement also decides how finely permissions are granted. Almost every integration manages its own configuration entry, but few need to act on other integrations, so permission is granted per action rather than for a whole part of the platform, and calls to another integration's services are refused unless declared, which affects about one integration in eight in the random sample.
+
 The compatibility result therefore holds in a precise form: confinement caused no loading failure across 75 integrations and no failure among the thirteen run end to end. In practical terms, an integration that works in a household's installation today was not found to stop working when confined, within the two samples, the named set and the single platform release.
 
 ## 7.3 Confinement is affordable
 
-The third assertion would fail if the device could not hold as many sandboxes as the average installation has community integrations, 4.02 (Home Assistant, n.d.-b), or if mediation changed what the platform can do. Neither condition was met. Table 7.4 gives the main costs, each measured in ten passes on fixed code.
+The third assertion would fail if the device could not hold as many sandboxes as the average installation has community integrations, 4.02 (Home Assistant, n.d.-b), or if mediation changed what the platform can do. Neither condition was met. Table 7.5 gives the main costs, each measured in ten passes on fixed code.
 
-**Table 7.4**
+**Table 7.5**
 *The cost of confinement on a Raspberry Pi 5 with 4 GB of memory*
 
 | Quantity | Median |
