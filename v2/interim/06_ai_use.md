@@ -50,7 +50,7 @@ These limits do not undo the results, but they define how far the results can be
 
 The evidence behind this section is kept in the project's repository and is open to inspection (Appendix A). It has four parts:
 
-- The AI-use log of corrections, with the date, deliverable, output, error, how it was caught and the correction made (Appendix C).
+- The AI-use log of corrections, with the date, deliverable, output, error, how it was caught and the correction made (Appendix B).
 - The literature search's screening table and the author's review sheet, which record both the AI's and the author's decision on every reviewed record.
 - The committed prediction notes and the result files of every experiment, including the final rerun.
 - The AI Evidence Boxes submitted with Diaries 1 and 2.

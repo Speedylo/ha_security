@@ -24,7 +24,13 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_COLOR_INDEX
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
+from docx.opc.part import Part
+from docx.oxml.ns import nsmap
 from docx.text.paragraph import Paragraph
+
+# Word 2016's namespace for SVG pictures, unknown to python-docx (see figure).
+nsmap["asvg"] = "http://schemas.microsoft.com/office/drawing/2016/SVG/main"
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent
@@ -36,7 +42,7 @@ SUPERVISOR = "Dr. Fiaz Ahmad"
 # Owed by the author; marked so that none can be missed (highlighted in the document).
 TODO_STATEMENT = "[Student statement: wording to be provided]"
 TODO_ACK = "[Acknowledgements: to be written by the author]"
-TODO_REPO = "[Repository URL: to be provided]"
+TODO_REPO = "[Repository URL: to be provided once the repository has been cleaned up]"
 
 SECTIONS = ["01_introduction.md", "02_problem_statement.md", "03_objectives.md",
             "04_literature_review.md", "05_methodology.md", "06_ai_use.md", "07_results.md",
@@ -246,9 +252,32 @@ def table(doc, anchor, rows: list[list[str]], widths: list[float] | None = None,
     after.paragraph_format.space_after = Pt(6)
 
 
-def figure(anchor, path: pathlib.Path) -> None:
+def figure(doc, anchor, svg: pathlib.Path) -> None:
+    """Embed a figure as SVG, the figure of record, with its PNG as Word's fallback.
+
+    As in the final report's build: Word stores an SVG picture as a PNG picture whose blip
+    carries an extension pointing at the SVG part, and Word and its PDF export draw the SVG.
+    """
+    if svg.suffix != ".svg" or not svg.exists():
+        raise SystemExit(f"{svg}: figures are embedded from their .svg")
+    png = svg.with_suffix(".png")
+    if not png.exists():
+        raise SystemExit(f"{png.name} missing: run the figure's script")
     par = body_par(anchor, align=WD_ALIGN_PARAGRAPH.CENTER, before=0, after=12, line=1.0)
-    par.add_run().add_picture(str(path), width=Cm(15.5))
+    par.add_run().add_picture(str(png), width=Cm(15.5))
+    package = doc.part.package
+    svg_part = Part(package.next_partname("/word/media/image%d.svg"), "image/svg+xml",
+                    svg.read_bytes(), package)
+    rid = doc.part.relate_to(svg_part, RT.IMAGE)
+    blip = par._p.xpath(".//a:blip")[0]
+    ext_lst = OxmlElement("a:extLst")
+    ext = OxmlElement("a:ext")
+    ext.set("uri", "{96DAC541-7B7A-43D3-8B79-37D633B846F1}")
+    svg_blip = OxmlElement("asvg:svgBlip")
+    svg_blip.set(qn("r:embed"), rid)
+    ext.append(svg_blip)
+    ext_lst.append(ext)
+    blip.append(ext_lst)
 
 
 def heading(anchor, level: int, text: str, *, new_page: bool) -> None:
@@ -287,7 +316,7 @@ def render(doc, anchor, text: str, base: pathlib.Path) -> None:
             title = lines[i + 1].strip().strip("*")
             caption(anchor, m.group(1), m.group(2), title)
             if m.group(1) == "Figure" and pending_figure:
-                figure(anchor, pending_figure)
+                figure(doc, anchor, pending_figure)
                 pending_figure = None
             i += 2; continue
         if line.startswith("|"):
@@ -328,7 +357,7 @@ def appendices(doc, anchor, log_text: str) -> None:
     add_runs(par, "The framework, the experiments, their predictions and results, and the AI-use "
                   "log are kept in the project's repository: ")
     run = par.add_run(TODO_REPO); font(run); run.font.highlight_color = WD_COLOR_INDEX.YELLOW
-    # Appendix C's eight columns need a landscape page: the body's section ends here, and the
+    # Appendix B's eight columns need a landscape page: the body's section ends here, and the
     # document's last section (the anchor) is turned on its side.
     brk = body_par(anchor, after=0, line=1.0)
     portrait = copy.deepcopy(anchor)
@@ -340,7 +369,7 @@ def appendices(doc, anchor, log_text: str) -> None:
     size = anchor.find(qn("w:pgSz"))
     w, h = size.get(qn("w:w")), size.get(qn("w:h"))
     size.set(qn("w:w"), h); size.set(qn("w:h"), w); size.set(qn("w:orient"), "landscape")
-    heading(anchor, 1, "Appendix C: AI-Use Log", new_page=False)
+    heading(anchor, 1, "Appendix B: AI-Use Log", new_page=False)
     par = body_par(anchor)
     add_runs(par, "Each row records a correction to AI output: what the AI produced, what was "
                   "wrong, how it was caught and the correction made. Entries marked *rebuilt* "
@@ -462,6 +491,8 @@ def build(out: pathlib.Path) -> None:
     r = kw.add_run(keywords.strip()); font(r)
 
     page_break_before([p for p in pars if p.text.strip().startswith("RESUME")][0])
+    # The list of figures on its own page, not after the end of the contents.
+    page_break_before(by_text("LIST OF FIGURES")[0])
     resume = french(section_body(HERE / "00_resume.md"))
     body, mots = re.split(r"\*\*Mots-clés\u00a0?:\*\*", resume)
     set_text(xs[3], body.strip())
