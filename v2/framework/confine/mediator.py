@@ -215,24 +215,66 @@ def _number(value: object) -> bool:
             and math.isfinite(value))
 
 
-#: What the mediator forwards from the household to a confined integration (bridge step 2,
-#: approved by Younes 2026-10-25): per entity type, the services, and for each **exactly** the data
-#: keys it carries, with the kind of value each must be. Shape only: whether a value is inside a
-#: number's range or among a select's options is checked by (A) before the command is sent.
-#: Home Assistant's other services on these types (`toggle`, `select_next`, `increment`, ...)
-#: are worked out in (A) and arrive as one of these.
-COMMANDS: dict[str, dict[str, dict[str, Callable[[object], bool]]]] = {
-    "switch": {"turn_on": {}, "turn_off": {}},
-    "button": {"press": {}},
-    "text": {"set_value": {"value": _text}},
-    "select": {"select_option": {"option": _text}},
-    "number": {"set_value": {"value": _number}},
+#: Home Assistant's HVAC modes (`climate.HVACMode`, 2026.8.3).
+HVAC_MODES = frozenset({"off", "heat", "cool", "heat_cool", "auto", "dry", "fan_only"})
+
+
+def _hvac_mode(value: object) -> bool:
+    return isinstance(value, str) and value in HVAC_MODES
+
+
+def _code(value: object) -> bool:
+    return isinstance(value, str) and len(value) <= 64
+
+
+Shape = dict[str, Callable[[object], bool]]
+_ALARM: list[Shape] = [{}, {"code": _code}]
+
+#: What the mediator forwards from the household to a confined integration (bridge steps 2 and 3,
+#: approved by Younes 2026-10-25): per entity type, the services, and for each the shapes its data
+#: may take — **exactly** one shape's keys, each value of the listed kind. Shape only: whether a
+#: value is inside a range, among the options, or the right alarm code is checked by (A) or by the
+#: integration. Home Assistant's other services on these types (`toggle`, `select_next`,
+#: `increment`, ...) are worked out in (A) and arrive as one of these.
+COMMANDS: dict[str, dict[str, list[Shape]]] = {
+    "switch": {"turn_on": [{}], "turn_off": [{}]},
+    "button": {"press": [{}]},
+    "text": {"set_value": [{"value": _text}]},
+    "select": {"select_option": [{"option": _text}]},
+    "number": {"set_value": [{"value": _number}]},
+    "climate": {
+        "turn_on": [{}], "turn_off": [{}],
+        "set_hvac_mode": [{"hvac_mode": _hvac_mode}],
+        "set_temperature": [
+            {"temperature": _number},
+            {"temperature": _number, "hvac_mode": _hvac_mode},
+            {"target_temp_low": _number, "target_temp_high": _number},
+            {"target_temp_low": _number, "target_temp_high": _number, "hvac_mode": _hvac_mode}],
+        "set_fan_mode": [{"fan_mode": _text}],
+        "set_preset_mode": [{"preset_mode": _text}],
+        "set_swing_mode": [{"swing_mode": _text}],
+        "set_swing_horizontal_mode": [{"swing_horizontal_mode": _text}],
+        "set_humidity": [{"humidity": _number}],
+    },
+    "alarm_control_panel": {
+        service: _ALARM for service in (
+            "alarm_disarm", "alarm_arm_home", "alarm_arm_away", "alarm_arm_night",
+            "alarm_arm_vacation", "alarm_arm_custom_bypass", "alarm_trigger")},
 }
+
+#: Data never written to the durable log, allowed or refused: the alarm code the user typed.
+WITHHELD = frozenset({"code"})
+
+
+def _matches(data: dict, shapes: list[Shape]) -> bool:
+    return any(set(data) == set(shape) and all(valid(data[k]) for k, valid in shape.items())
+               for shape in shapes)
 
 
 def _kinds(data: dict) -> dict[str, str]:
     """A refused command's data as each value's type and length — never the value itself."""
-    return {str(k)[:64]: f"{type(v).__name__}, length {len(v)}" if hasattr(v, "__len__")
+    return {str(k)[:64]: "(withheld)" if k in WITHHELD
+            else f"{type(v).__name__}, length {len(v)}" if hasattr(v, "__len__")
             else type(v).__name__ for k, v in list(data.items())[:16]}
 #: A request the policy or its act could not handle: a field of the wrong type, a peer that answered
 #: a datagram with "port unreachable". Refused under this rule, and counted like any other refusal
@@ -527,19 +569,23 @@ class Mediator:
         elif service not in listed:
             decision = Decision(False, f"{service[:64]} is not a command the bridge forwards "
                                        f"for a {kind[:64]}", clause=COMMAND_SERVICES)
-        elif (set(data) != set(listed[service])
-              or not all(valid(data[key]) for key, valid in listed[service].items())):
-            decision = Decision(False, f"{kind}.{service} carries exactly "
-                                       f"{sorted(listed[service]) or 'no data'}, of its kind",
-                                clause=COMMAND_DATA)
+        elif not _matches(data, listed[service]):
+            shapes = " or ".join(str(sorted(shape)) if shape else "no data"
+                                 for shape in listed[service])
+            decision = Decision(False, f"{kind}.{service} carries exactly {shapes}, "
+                                       "of their kind", clause=COMMAND_DATA)
         elif len(self._out[channels[0]].commands) >= MAX_COMMANDS:
             decision = Decision(False, f"{MAX_COMMANDS} commands are already queued for "
                                        f"{identity}", clause=COMMAND_QUEUE)
         else:
             decision = Decision(True, "the platform operating the integration's own entity",
                                 clause=AMBIENT)
-        if decision.clause == COMMAND_DATA:
-            # Recorded by kind: a value refused for its shape is not written into the log.
+        # An allowed command's data is recorded as sent, the alarm code withheld. A refused one's
+        # is recorded by kind, whatever refused it: until step 3 only a refusal for its data was,
+        # and a code sent with a wrong service would have been written into the log.
+        if decision.allowed:
+            request["data"] = {k: "(withheld)" if k in WITHHELD else v for k, v in data.items()}
+        else:
             request["data"] = _kinds(data)
         self._record(identity, request, decision)
         if not decision.allowed:
@@ -549,7 +595,9 @@ class Mediator:
         self._sent_commands[ident] = fd
         self._out[fd].commands.append({"push": "entity.command", "command": ident,
                                        "entity": entity_id, "service": service,
-                                       "data": request["data"]})
+                                       # What was sent, not the record's copy, which withholds
+                                       # the code.
+                                       "data": dict(data)})
         self._flush(fd)
 
     def _answer_command(self, fd: int, identity: str, request: dict) -> None:
