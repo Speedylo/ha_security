@@ -4,7 +4,35 @@
 
 The project combines an engineering method, which produces the confinement framework, with a quantitative, experimental evaluation of it. The engineering method follows a fixed order. Requirements were written first, each traced to a finding about the problem, and a threat model was written before the design, so that threats were listed independently of the controls that would later answer them. The threat model follows the risk-management process of ISO 31000, in which risks are assessed before they are treated (International Organization for Standardization [ISO], 2018), and classifies threats with the STRIDE categories of spoofing, tampering, repudiation, information disclosure, denial of service and elevation of privilege (Shostack, 2014). It identified nineteen threats, together with seven residual risks that the design accepts and states rather than removes. The design was then chosen against alternatives, implemented and evaluated.
 
-The framework that this method produced has three parts. Each community integration runs in its own Linux sandbox, an isolated environment with its own view of the file system and processes, against a minimal copy of the platform. A separate component, the mediator, carries every action the integration takes on the household's real installation and checks it against the permissions the owner approved. The owner approves those permissions in the platform's own interface, and every decision is written to a log that cannot be altered without detection.
+### 5.1.1 The confinement framework
+
+The framework that this method produced has three kinds of component, shown in Figure 5.1. The household's own Home Assistant installation, referred to as (A), runs as it always has, with one addition: a bridge integration through which confined integrations publish their devices and receive the household's commands. Each community integration runs in its own sandbox, inside a minimal private copy of the platform referred to as (B). Between them sits the mediator, the only component that holds a credential to the house. It connects to (A) as an ordinary, non-administrator user, and no sandbox holds any credential at all.
+
+![Figure 5.1](../figures/fig_9_1_system.png)
+
+**Figure 5.1**
+*The confinement framework*
+
+*Note.* Left: the household's installation (A) and its bridge. Centre: the framework's single process, in which the supervisor builds the sandboxes and the mediator decides every request. Right: one sandbox per community integration, joined to the mediator by its own channel. Only the mediator holds a credential to the house, and every decision is written to the audit log before it is carried out.
+
+The framework is easiest to follow through the life of a request, which begins before the integration runs. Its permissions are declared in a `permissions` block of the integration's existing manifest file, or in a file supplied beside it. Each service it may call is named individually, so permission to lock a door does not imply permission to unlock it. Nothing is granted until a person approves: the framework renders the permissions in plain language, listing what the integration cannot do as prominently as what it can, and an administrator can approve them in the platform's own Repairs panel, its usual place for issues that need the household's attention. The approval is bound to the integration's identity, a fingerprint of its code, its manifest and the versions of the software it depends on, so a changed integration needs a new approval.
+
+The sandbox is then built so that what the integration must not reach is absent from its view rather than forbidden to it. Linux namespaces, kernel features that give a process its own private view of the system, show the integration only its own files and processes and give it no network route. A filter blocks the system calls that are dangerous in any setting, such as loading kernel modules, and a control group limits its memory and number of processes. The platform's secrets file and configuration store do not exist inside the sandbox, so there is nothing to ask for. The sandbox's only way out is one channel to the mediator.
+
+When the integration acts on the home, for example by switching on a light, it makes the same call it would make unconfined, and the minimal platform passes it down the channel to the mediator (Figure 5.2). The mediator then takes five steps in a fixed order. It identifies the integration from the channel the request arrived on, never from what the request claims; looks up the permissions bound to that identity; decides whether the request is permitted, naming the clause that decided; writes the decision to the audit log on disk; and only then performs the call on (A) with its own credential. A denied request is recorded and answered, and nothing is performed. Because the record is written before the act, even an action that crashes the mediator remains attributable.
+
+![Figure 5.2](../figures/fig_9_3_request.png)
+
+**Figure 5.2**
+*The life of a request*
+
+*Note.* Top: a service call from the integration passes through the mediator's five steps. Middle: when a declared device changes in (A), its new state is pushed into the sandbox. Bottom: when the household operates a device that the integration provides, the command passes from (A) through the mediator, which records it, to the integration's own handler.
+
+Traffic also runs the other way, as the lower panels of Figure 5.2 show, so a confined integration stays responsive. Network connections follow a similar path. The integration's ordinary network calls are turned into requests on the channel, and the mediator checks each one against the declared hosts, looks up the host's address itself, checks that the address is not inside the home, and connects to exactly that address. This order defeats an attack in which a permitted name is made to point at a device in the house after the check has passed.
+
+Two further properties complete the design. The audit log lies outside every sandbox, and each record is chained to the one before it in two independent ways, so a record that is changed, deleted or reordered is detected. And the framework fails closed: if the mediator stops, every sandbox loses its only route out, and an integration that keeps making refused requests, more than 100 within ten seconds, is stopped rather than allowed to flood the log. When an integration is stopped, the reason is explained to the household in plain language in the Repairs panel.
+
+### 5.1.2 Evaluation design
 
 The evaluation is quantitative and uses a paired design. Every security and compatibility result is the difference between two arms run on the same device, with the same platform release and in the same session: in the confined arm the integration runs inside the framework, and in the unconfined arm the same integration runs as Home Assistant runs it today. Confinement is therefore the only variable between the arms. The pairing gives a negative result its meaning, because a security test that finds nothing could simply be broken; if the same attack succeeds unconfined, the test is shown to work, and its failure under confinement can be attributed to the framework.
 
