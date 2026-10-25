@@ -9,7 +9,7 @@ reference is renumbered to match.
 
     python3 interim/build_interim.py [-o OUT.docx]
 
-Then render through Word (`submission/render_word.ps1`) to fill the contents and the lists.
+Then render through Word (`interim/render_word.ps1`) to fill the contents and the lists.
 """
 
 from __future__ import annotations

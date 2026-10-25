@@ -6,8 +6,7 @@ Every community integration runs inside Home Assistant's own process with all of
 
 | If you want | Read |
 |---|---|
-| The argument and the results | The final report, `submission/capstone_report.pdf` (sources: `submission/*.md`) |
-| A shorter account | The interim report, `interim/interim_report.pdf` (sources: `interim/*.md`) |
+| The argument and the results | The interim report, `interim/interim_report.pdf` (sources: `interim/*.md`); the final report will follow in the same template |
 | To reproduce the results | `REPRODUCE.md`: the environment from a blank Raspberry Pi, then every suite and experiment |
 | One experiment's command and raw results | `experiments/<name>/README.md` |
 | The code | `framework/README.md` |
@@ -25,7 +24,6 @@ Every community integration runs inside Home Assistant's own process with all of
 | `verify/` | The verification campaign's scripts and claim register |
 | `notes/` | Each experiment's predictions, committed before it ran, and the project's working notes |
 | `report/` | The working report against which every claim was registered and checked; the verification scripts read it |
-| `submission/` | The final report in the programme's template, and its build |
 | `interim/` | The interim report, and its build |
 | `proposal/` | The project proposal |
 
