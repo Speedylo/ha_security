@@ -54,7 +54,7 @@ def main() -> int:
 
     def service(domain: str, name: str, data: dict) -> None:
         platform.call({"type": "call_service", "domain": domain, "service": name,
-                       "service_data": data, "blocking": True})
+                       "service_data": data})   # a WebSocket call_service waits for the service
 
     print("\nH1 — (A)'s light dims\n")
     state, attributes = light()

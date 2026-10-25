@@ -25,7 +25,7 @@ LIGHT = "light.living_room"
 
 def _service(platform: RealPlatform, domain: str, service: str, data: dict) -> None:
     platform.call({"type": "call_service", "domain": domain, "service": service,
-                   "service_data": data, "blocking": True})
+                   "service_data": data})   # a WebSocket call_service waits for the service
 
 
 def reset_world(platform: RealPlatform) -> None:
