@@ -17,6 +17,8 @@ Corno, F., & Mannella, L. (2022). A threat model for extensible smart home gatew
 
 Corno, F., & Mannella, L. (2023). A gateway-based MUD architecture to enhance smart home security. In *2023 8th International Conference on Smart and Sustainable Technologies (SpliTech)* (pp. 1–6). IEEE. https://doi.org/10.23919/SpliTech58164.2023.10193747 — [15]
 
+Douceur, J. R. (2002). The Sybil attack. In P. Druschel, F. Kaashoek, & A. Rowstron (Eds.), *Peer-to-peer systems: First International Workshop, IPTPS 2002* (Lecture Notes in Computer Science, Vol. 2429, pp. 251–260). Springer. https://doi.org/10.1007/3-540-45748-8_24 — [60]
+
 elttam. (2023, May 9). *PwnAssistant: Controlling /home's via a Home Assistant RCE*. https://www.elttam.com/blog/pwnassistant — [4] (read in full 2026-10-25)
 
 Fernandes, E., Jung, J., & Prakash, A. (2016). Security analysis of emerging smart home applications. In *2016 IEEE Symposium on Security and Privacy (SP)* (pp. 636–654). IEEE. https://doi.org/10.1109/SP.2016.44 — [34]
