@@ -421,6 +421,32 @@ def build(out: pathlib.Path) -> None:
         set_text(p, SUPERVISOR)
     xs = [p for p in pars if re.fullmatch(r"x{20,}\.?", p.text.strip())]
     # In order: student statement, acknowledgements, abstract, résumé.
+    # The conduct page's "Student's name:" and "Supervisor's name:" lines, completed in the
+    # label's own formatting.
+    for label, name in (("Student’s name:", STUDENT), ("Supervisor’s name:", SUPERVISOR)):
+        par = [p for p in pars if p.text.strip() == label][0]
+        for run in par.runs[1:]:
+            if not run.text.strip():
+                run._r.getparent().remove(run._r)
+        par.runs[-1].text = par.runs[-1].text.rstrip() + " "
+        run = par.add_run(name)
+        if par.runs[0]._r.rPr is not None:
+            run._r.insert(0, copy.deepcopy(par.runs[0]._r.rPr))
+    # The statement page: the student's name above the signature line, whose caption
+    # ("Student's name") stands below it, laid out like the caption.
+    caption_par = [p for p in pars if p.text.strip() == "Student’s name"][0]
+    k = next(i for i, p in enumerate(pars) if p._p is caption_par._p)
+    line_par, above = pars[k - 1], pars[k - 2]
+    assert line_par._p.xpath(".//w:drawing") and not above.text.strip()
+    above.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    above.paragraph_format.left_indent = caption_par.paragraph_format.left_indent
+    above.paragraph_format.right_indent = caption_par.paragraph_format.right_indent
+    run = above.add_run(STUDENT)
+    if caption_par.runs[0]._r.rPr is not None:
+        run._r.insert(0, copy.deepcopy(caption_par.runs[0]._r.rPr))
+    else:
+        font(run)
+
     set_text(xs[0], STATEMENT)
     set_text(xs[1], ACKNOWLEDGEMENTS)
 
