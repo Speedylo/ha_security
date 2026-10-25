@@ -11,6 +11,10 @@ type, as `selftest_audit`'s F3 check does.
     K2   a service not listed for the entity's type is refused under COMMAND_SERVICES
     K3   data that is not exactly the listed keys, of the listed kind, is refused under COMMAND_DATA
     K4   a refused value is recorded by its type and length, never itself
+    K6   climate and alarm-panel commands, each allowed shape, pushed exactly (bridge step 3)
+    K7   data matching none of the allowed shapes is refused under COMMAND_DATA
+    K8   a service of the other type is refused under COMMAND_SERVICES
+    K9   an alarm code is never written to the durable log, allowed or refused
 
 Run:  python3 -m confine.selftest_commands
 """
@@ -34,7 +38,8 @@ except ImportError:  # before step 2 there is no such rule; every K3 case then f
 
 results: list[bool] = []
 OWNED = {"switch.demo_power": "demo", "button.demo_report": "demo", "text.demo_note": "demo",
-         "select.demo_mode": "demo", "number.demo_target": "demo"}
+         "select.demo_mode": "demo", "number.demo_target": "demo",
+         "climate.demo_ac": "demo", "alarm_control_panel.demo_alarm": "demo"}
 
 
 def check(claim: str, condition: bool, detail: str = "") -> None:
@@ -140,6 +145,77 @@ def main() -> int:
         check("K4 and the durable record holds its type and length, not the value",
               hostile not in log_text and "10000" in str(record.get("requested")),
               str(record.get("requested"))[:120])
+
+        print("\nK6 — climate and alarm panel: each allowed shape (bridge step 3)\n")
+        AC, ALARM = "climate.demo_ac", "alarm_control_panel.demo_alarm"
+        for entity, service, data in (
+                (AC, "turn_on", None), (AC, "turn_off", None),
+                (AC, "set_hvac_mode", {"hvac_mode": "cool"}),
+                (AC, "set_temperature", {"temperature": 23.0}),
+                (AC, "set_temperature", {"temperature": 21, "hvac_mode": "heat"}),
+                (AC, "set_temperature", {"target_temp_low": 19.0, "target_temp_high": 24.0}),
+                (AC, "set_fan_mode", {"fan_mode": "auto"}),
+                (AC, "set_preset_mode", {"preset_mode": "eco"}),
+                (AC, "set_swing_mode", {"swing_mode": "vertical"}),
+                (AC, "set_humidity", {"humidity": 45}),
+                (ALARM, "alarm_disarm", {"code": "1234"}),
+                (ALARM, "alarm_arm_away", None), (ALARM, "alarm_arm_home", None),
+                (ALARM, "alarm_arm_night", None), (ALARM, "alarm_arm_vacation", None),
+                (ALARM, "alarm_arm_custom_bypass", None), (ALARM, "alarm_trigger", None)):
+            record, pushed = send(entity, service, data)
+            check(f"K6 {entity.partition('.')[0]}.{service} {data or ''}: allowed and pushed as sent",
+                  record.get("allowed") is True and record.get("clause") == AMBIENT
+                  and pushed is not None and pushed.get("service") == service
+                  and pushed.get("data") == (data or {}), f"{record.get('clause')} {pushed}")
+
+        print("\nK7 — data matching none of the allowed shapes\n")
+        for label, entity, service, data in (
+                ("hvac_mode plasma", AC, "set_hvac_mode", {"hvac_mode": "plasma"}),
+                ("temperature and a range together", AC, "set_temperature",
+                 {"temperature": 22, "target_temp_low": 19, "target_temp_high": 24}),
+                ("a low without a high", AC, "set_temperature", {"target_temp_low": 19}),
+                ("a string temperature", AC, "set_temperature", {"temperature": "22"}),
+                ("a NaN temperature", AC, "set_temperature", {"temperature": math.nan}),
+                ("an extra key on set_fan_mode", AC, "set_fan_mode",
+                 {"fan_mode": "auto", "speed": 3}),
+                ("a numeric code", ALARM, "alarm_disarm", {"code": 1234}),
+                ("a 65-character code", ALARM, "alarm_disarm", {"code": "9" * 65}),
+                ("disarm redirected with entity_id", ALARM, "alarm_disarm",
+                 {"code": "1234", "entity_id": "alarm_control_panel.other"})):
+            record, pushed = send(entity, service, data)
+            check(f"K7 {label}: refused under COMMAND_DATA, not pushed",
+                  record.get("allowed") is False and record.get("clause") == COMMAND_DATA
+                  and pushed is None, f"{record.get('clause')} {pushed}")
+
+        print("\nK8 — a service of the other type\n")
+        for entity, service in ((AC, "alarm_disarm"), (ALARM, "set_temperature"),
+                                (ALARM, "turn_on")):
+            record, pushed = send(entity, service, None)
+            check(f"K8 {entity.partition('.')[0]}.{service}: refused under COMMAND_SERVICES",
+                  record.get("allowed") is False and record.get("clause") == COMMAND_SERVICES
+                  and pushed is None, f"{record.get('clause')} {pushed}")
+
+        record, _ = send(ALARM, "alarm_arm_away_now", {"note": "secret-note"})
+        check("K8 a command refused for its service has its data recorded by kind",
+              record.get("allowed") is False
+              and "secret-note" not in (root / "commands.jsonl").read_text(),
+              str((record.get("requested") or {}).get("data")))
+
+        print("\nK9 — an alarm code never reaches the durable log\n")
+        allowed_record, allowed_pushed = send(ALARM, "alarm_disarm", {"code": "4917"})
+        long_code = "7" * 65
+        refused_record, _ = send(ALARM, "alarm_disarm", {"code": long_code})
+        log_text = (root / "commands.jsonl").read_text()
+        check("K9 the allowed disarm reached the sandbox with its code",
+              allowed_record.get("allowed") is True
+              and (allowed_pushed or {}).get("data") == {"code": "4917"}, str(allowed_pushed))
+        check("K9 neither code is in the log file",
+              "4917" not in log_text and long_code not in log_text and "1234" not in log_text)
+        check("K9 and both records say the code was withheld",
+              (allowed_record.get("requested") or {}).get("data") == {"code": "(withheld)"}
+              and (refused_record.get("requested") or {}).get("data") == {"code": "(withheld)"},
+              f"{(allowed_record.get('requested') or {}).get('data')} "
+              f"{(refused_record.get('requested') or {}).get('data')}")
         check("every chain verifies", mediator.log.verify() == [])
 
     print(f"\n{sum(results)}/{len(results)} checks passed")

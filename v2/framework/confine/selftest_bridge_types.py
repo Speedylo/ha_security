@@ -12,6 +12,10 @@ in (A), described well enough for Home Assistant to draw its control. Operating 
          its data, and the result shows in (A) (bridge step 2)
     T4'' a value (A) rejects never reaches the mediator
     T5   a type still unsupported (light) is refused at publish
+    T6   a climate and an alarm panel are entities of their own type in (A), described (step 3)
+    T7'  each is operated from a user in (A), its data reaching the sandbox exactly
+    T8   a house in US customary units sends a climate temperature to the sandbox in °C
+    T9   an alarm code typed in (A) is not in the durable log
 
 Requires (A) running: `python3 -m confine.house_a up --fresh` on the Pi.
 
@@ -161,6 +165,102 @@ def main() -> int:
               user.outcome.get("success") is False, str(user.outcome.get("error")))
         check("T4'' and no command decision was recorded: it never left (A)",
               after_count == before, f"{after_count - before} new")
+
+        print("\nT6 — a climate and an alarm panel, described (step 3)\n")
+        AC, ALARM = "climate.selftest_ac", "alarm_control_panel.selftest_alarm"
+        ac_attributes = {"friendly_name": "Selftest AC", "hvac_modes": ["off", "cool", "heat", "auto"],
+                         "min_temp": 16, "max_temp": 30, "target_temp_step": 0.5,
+                         "current_temperature": 24.5, "temperature": 22, "fan_modes":
+                         ["auto", "low", "high"], "fan_mode": "auto", "hvac_action": "cooling",
+                         # TARGET_TEMPERATURE | FAN_MODE | TURN_OFF | TURN_ON
+                         "supported_features": 1 | 8 | 128 | 256}
+        alarm_attributes = {"friendly_name": "Selftest alarm", "code_format": "number",
+                            "changed_by": None, "code_arm_required": True,
+                            # ARM_HOME | ARM_AWAY | ARM_NIGHT | TRIGGER | CUSTOM_BYPASS | VACATION
+                            "supported_features": 63}
+        for entity, state, attributes, wanted in (
+                (AC, "cool", ac_attributes,
+                 {"hvac_modes": ["off", "cool", "heat", "auto"], "min_temp": 16, "max_temp": 30,
+                  "current_temperature": 24.5, "temperature": 22,
+                  "fan_modes": ["auto", "low", "high"]}),
+                (ALARM, "disarmed", alarm_attributes, {"code_format": "number"})):
+            answer = sandbox.ask({"op": "entity.publish", "entity": entity, "state": state,
+                                  "attributes": attributes})
+            landed[entity] = platform.published.get(("selftest", entity)) or ""
+            row = registry(platform).get(landed[entity], {})
+            domain = entity.partition(".")[0]
+            check(f"T6 {domain}: a registry row of its domain owned by the bridge",
+                  answer.get("ok") is True and row.get("platform") == "confine_bridge"
+                  and landed[entity].startswith(f"{domain}."),
+                  answer.get("reason") or landed[entity])
+            shown, shown_attributes = platform.read(landed[entity]) if landed[entity] else (None, {})
+            missing = {k: (v, (shown_attributes or {}).get(k)) for k, v in wanted.items()
+                       if (shown_attributes or {}).get(k) != v}
+            check(f"T6 {domain}: (A) holds its state and the attributes that describe it",
+                  shown == state and not missing, f"{shown!r} {missing or ''}")
+
+        print("\nT7' — operating them from a user in (A)\n")
+        for entity, service, data, expected, state, attributes in (
+                (AC, "set_temperature", {"temperature": 23}, {"temperature": 23.0}, "cool",
+                 {**ac_attributes, "temperature": 23}),
+                (AC, "set_hvac_mode", {"hvac_mode": "heat"}, {"hvac_mode": "heat"}, "heat",
+                 {**ac_attributes, "temperature": 23}),
+                (ALARM, "alarm_arm_away", {"code": "4917"}, {"code": "4917"}, "armed_away",
+                 alarm_attributes),
+                (ALARM, "alarm_trigger", {}, {}, "triggered", alarm_attributes)):
+            domain = entity.partition(".")[0]
+            sandbox.received.clear()
+            user = User()
+            pressed = user.press(landed[entity] or entity, service, data)
+            arrived = serve_until(mediator, lambda: (sandbox.drain(), [
+                m for m in sandbox.received if m.get("push") == "entity.command"])[1])
+            command = next((m for m in sandbox.received if m.get("push") == "entity.command"), {})
+            check(f"T7' {domain}.{service}: reaches the sandbox as {expected}",
+                  bool(arrived) and command.get("service") == service
+                  and command.get("data") == expected, f"{command or user.outcome}")
+            if arrived:
+                sandbox.ask({"op": "entity.publish", "entity": entity, "state": state,
+                             "attributes": attributes})
+                sandbox.ask({"op": "entity.command_result", "command": command.get("command"),
+                             "ok": True})
+            serve_until(mediator, lambda: not pressed.is_alive())
+            pressed.join()
+            user.close()
+            shown = platform.read(landed[entity])[0] if landed[entity] else None
+            check(f"T7' {domain}.{service}: the call succeeds and (A) shows {state}",
+                  user.outcome.get("success") is True and shown == state,
+                  f"{user.outcome.get('error') or ''} {shown!r}")
+
+        print("\nT8 — a house in °F sends the sandbox °C\n")
+        admin = house_a.TOKEN_FILE.read_text().strip()
+        switched = house_a._ws_call(admin, {"type": "config/core/update",
+                                            "unit_system": "us_customary"})
+        try:
+            sandbox.received.clear()
+            user = User()
+            pressed = user.press(landed[AC] or AC, "set_temperature", {"temperature": 73.4})
+            arrived = serve_until(mediator, lambda: (sandbox.drain(), [
+                m for m in sandbox.received if m.get("push") == "entity.command"])[1])
+            command = next((m for m in sandbox.received if m.get("push") == "entity.command"), {})
+            sent = (command.get("data") or {}).get("temperature")
+            check("T8 73.4 °F typed in (A) reaches the sandbox as 23.0 °C",
+                  bool(switched.get("success")) and isinstance(sent, (int, float))
+                  and abs(sent - 23.0) < 0.01, f"{sent!r} {switched.get('error') or ''}")
+            if arrived:
+                sandbox.ask({"op": "entity.command_result", "command": command.get("command"),
+                             "ok": True})
+            serve_until(mediator, lambda: not pressed.is_alive())
+            pressed.join()
+            user.close()
+        finally:
+            restored = house_a._ws_call(admin, {"type": "config/core/update",
+                                                "unit_system": "metric"})
+        check("T8 and (A) is back in metric units", bool(restored.get("success")),
+              str(restored.get("error") or ""))
+
+        print("\nT9 — the alarm code is not in the durable log\n")
+        check("T9 '4917' appears nowhere in the run's durable log",
+              "4917" not in (root / "audit" / "decisions.jsonl").read_text())
 
         print("\nT5 — a type still unsupported is refused\n")
         light = sandbox.ask({"op": "entity.publish", "entity": "light.selftest_probe",
