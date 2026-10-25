@@ -376,6 +376,9 @@ class AuditLog:
         # the data of a command it refused for its shape by each value's type and length.
         if request.get("op") == "entity.command" and isinstance(data, dict):
             requested["data"] = data
+        # A question's answer, by its shape only (bridge step 4).
+        if request.get("op") == "entity.answer":
+            requested["answer"] = request.get("answer")
         return self._append({
             "kind": "decision", "run": run_id, "integration": identity,
             "op": request.get("op"), "target": target, "requested": requested,

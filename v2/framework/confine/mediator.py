@@ -25,7 +25,9 @@ from __future__ import annotations
 
 import array
 import collections
+import json
 import math
+from datetime import datetime
 import os
 import selectors
 import socket
@@ -196,6 +198,7 @@ MAX_COMMANDS = 32
 COMMAND_NO_SANDBOX = "(command: the integration has a running sandbox)"
 COMMAND_SERVICES = "(command: only the services listed for the entity's type)"
 COMMAND_DATA = "(command: only the data listed for that service, of its kind)"
+QUERY_ANSWER = "(answer: only the listed shape, at most 500 items and 256 KiB)"
 COMMAND_QUEUE = f"(command: at most {MAX_COMMANDS} queued)"
 COMMAND_ANSWER = "(command: answered only on the channel it was sent to)"
 AMBIENT = "(ambient: §5.10.2)"
@@ -225,6 +228,21 @@ def _hvac_mode(value: object) -> bool:
 
 def _code(value: object) -> bool:
     return isinstance(value, str) and len(value) <= 64
+
+
+def _iso(value: object) -> bool:
+    """An ISO 8601 date or date-time, as a string of at most 40 characters."""
+    if not (isinstance(value, str) and len(value) <= 40):
+        return False
+    try:
+        datetime.fromisoformat(value)
+    except ValueError:
+        return False
+    return True
+
+
+def _forecast_type(value: object) -> bool:
+    return value in ("daily", "hourly", "twice_daily")
 
 
 Shape = dict[str, Callable[[object], bool]]
@@ -260,7 +278,68 @@ COMMANDS: dict[str, dict[str, list[Shape]]] = {
         service: _ALARM for service in (
             "alarm_disarm", "alarm_arm_home", "alarm_arm_away", "alarm_arm_night",
             "alarm_arm_vacation", "alarm_arm_custom_bypass", "alarm_trigger")},
+    # Questions (bridge step 4): answered with a list, which `ANSWERS` checks.
+    "calendar": {"get_events": [{"start": _iso, "end": _iso}]},
+    "weather": {"get_forecasts": [{"type": _forecast_type}]},
 }
+
+#: An answer is a list of at most this many items, and at most this many bytes as JSON.
+MAX_ANSWER_ITEMS, MAX_ANSWER_BYTES = 500, 256 * 1024
+
+
+def _bounded(limit: int) -> Callable[[object], bool]:
+    return lambda value: isinstance(value, str) and len(value) <= limit
+
+
+def _maybe(valid: Callable[[object], bool]) -> Callable[[object], bool]:
+    return lambda value: value is None or valid(value)
+
+
+def _bearing(value: object) -> bool:
+    return _number(value) or (isinstance(value, str) and len(value) <= 8)
+
+
+#: The shape of each item in an answer, from the side the mediator does not trust: the fields Home
+#: Assistant's own response services return (`calendar.const.LIST_EVENT_FIELDS`;
+#: `weather.Forecast`'s display fields), each required or optional, each of its kind.
+ANSWERS: dict[tuple[str, str], tuple[dict, dict]] = {
+    ("calendar", "get_events"): (
+        {"summary": _bounded(255), "start": _iso, "end": _iso},
+        {"description": _maybe(_bounded(4096)), "location": _maybe(_bounded(255))}),
+    ("weather", "get_forecasts"): (
+        {"datetime": _iso},
+        {"condition": _maybe(_bounded(64)), "is_daytime": _maybe(lambda v: isinstance(v, bool)),
+         "wind_bearing": _maybe(_bearing),
+         **{key: _maybe(_number) for key in (
+             "temperature", "templow", "apparent_temperature", "dew_point", "pressure",
+             "wind_speed", "wind_gust_speed", "precipitation", "precipitation_probability",
+             "humidity", "cloud_coverage", "uv_index")}}),
+}
+
+
+def check_answer(question: tuple[str, str], answer: object) -> tuple[str | None, dict]:
+    """Why an answer is refused (None if it is not), and its shape for the record."""
+    try:
+        size = len(json.dumps(answer))
+    except (TypeError, ValueError):
+        return "it is not plain data", {"bytes": None}
+    shape = {"items": len(answer) if isinstance(answer, list) else None, "bytes": size}
+    if not isinstance(answer, list):
+        return "it is not a list", shape
+    if len(answer) > MAX_ANSWER_ITEMS:
+        return f"it has more than {MAX_ANSWER_ITEMS} items", shape
+    if size > MAX_ANSWER_BYTES:
+        return f"it is larger than {MAX_ANSWER_BYTES} bytes", shape
+    required, optional = ANSWERS[question]
+    for index, item in enumerate(answer):
+        if not isinstance(item, dict):
+            return f"item {index} is not a mapping", shape
+        extra = set(item) - set(required) - set(optional)
+        if extra or not set(required) <= set(item):
+            return f"item {index} does not have exactly the listed fields", shape
+        if not all({**required, **optional}[k](v) for k, v in item.items()):
+            return f"item {index} has a field of the wrong kind", shape
+    return None, shape
 
 #: Data never written to the durable log, allowed or refused: the alarm code the user typed.
 WITHHELD = frozenset({"code"})
@@ -330,6 +409,9 @@ class Mediator:
     #: Commands pushed and not yet answered: command id -> the channel it was sent down. An answer
     #: is accepted only from that channel, and only once (W1 step 2b, C7).
     _sent_commands: dict[int, int] = field(default_factory=dict)
+    #: Of those, the questions (bridge step 4): command id -> (type, service, entity). Only these
+    #: have their answers checked and relayed; any other command's answer carries none.
+    _questions: dict[int, tuple[str, str, str]] = field(default_factory=dict)
     #: Relay sockets watched for a channel (W2 (b)): socket -> (channel fd, route).
     _sources: dict = field(default_factory=dict)
     #: Datagrams pushed, per integration. Counted, not recorded, like `pushes_sent`.
@@ -431,6 +513,7 @@ class Mediator:
         for command, sent_to in list(self._sent_commands.items()):
             if sent_to == fd:
                 del self._sent_commands[command]
+                self._questions.pop(command, None)
                 if self._platform is None:
                     continue
                 try:
@@ -593,6 +676,8 @@ class Mediator:
             return
         fd = channels[-1]   # the newest: an older one can only be a sandbox not yet seen to end
         self._sent_commands[ident] = fd
+        if (kind, service) in ANSWERS:
+            self._questions[ident] = (kind, service, entity_id)
         self._out[fd].commands.append({"push": "entity.command", "command": ident,
                                        "entity": entity_id, "service": service,
                                        # What was sent, not the record's copy, which withholds
@@ -614,12 +699,36 @@ class Mediator:
             answer = Decision(False, detail, clause=COMMAND_ANSWER)
         else:
             del self._sent_commands[ident]  # type: ignore[arg-type]
-            self._platform.command_result(  # type: ignore[union-attr]
-                ident, bool(request.get("ok")),
-                None if request.get("ok") else str(request.get("error") or "failed")[:300])
+            question = self._questions.pop(ident, None)  # type: ignore[arg-type]
+            if question is not None and request.get("ok"):
+                self._relay_answer(identity, ident, question, request.get("answer"))
+            else:
+                # An ordinary command's result: an answer attached to it is never relayed.
+                self._platform.command_result(  # type: ignore[union-attr]
+                    ident, bool(request.get("ok")),
+                    None if request.get("ok") else str(request.get("error") or "failed")[:300])
             answer = Decision(True, "relayed", clause=COMMAND_ANSWER)
         self._out[fd].reply = (Channel.frame(answer.as_response(request.get("id"))), None)
         self._flush(fd)
+
+    def _relay_answer(self, identity: str, ident: int, question: tuple[str, str, str],
+                      payload: object) -> None:
+        """A question's answer, from the untrusted side: relayed only if it has the listed shape.
+
+        Recorded by its shape — how many items, how many bytes — never its content: a calendar's
+        events can be private, and an answer that was refused is still the integration's text.
+        """
+        kind, service, entity = question
+        why, shape = check_answer((kind, service), payload)
+        decision = (Decision(True, "an answer of the listed shape", clause=QUERY_ANSWER)
+                    if why is None else
+                    Decision(False, f"the answer was refused: {why}", clause=QUERY_ANSWER))
+        self._record(identity, {"op": "entity.answer", "entity": entity,
+                                "service": f"{kind}.{service}", "answer": shape}, decision)
+        if decision.allowed:
+            self._platform.command_result(ident, True, None, answer=payload)  # type: ignore
+        else:
+            self._platform.command_result(ident, False, decision.reason)  # type: ignore
 
     def watch_source(self, fd: int, sock, route: dict) -> None:
         """Watch a relay socket for one channel, and push what arrives on it (W2 (b))."""

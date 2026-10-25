@@ -255,10 +255,14 @@ class RealPlatform:
                    "service_data": data})
         self.calls.append((domain, service, data))
 
-    def command_result(self, command: int, ok: bool, error: str | None = None) -> None:
-        """The confined integration's answer, back to the bridge, which returns or raises."""
+    def command_result(self, command: int, ok: bool, error: str | None = None,
+                       answer: list | None = None) -> None:
+        """The confined integration's answer, back to the bridge, which returns or raises.
+
+        `answer` only for a question (bridge step 4), and only once the mediator has checked it.
+        """
         self.call({"type": "confine_bridge/command_result", "command": command, "ok": ok,
-                   "error": error})
+                   "error": error, **({"answer": answer} if answer is not None else {})})
 
     def cut_off(self, identity: str, detail: str) -> None:
         """Tell the household: the bridge raises a Repairs issue for `identity`, in plain language."""

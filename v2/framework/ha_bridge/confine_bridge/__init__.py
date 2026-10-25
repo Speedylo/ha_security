@@ -94,7 +94,7 @@ class BridgeData:
         self._ids = itertools.count(1)
 
     async def command(self, integration: str, entity_id: str, service: str,
-                      data: dict[str, Any]) -> None:
+                      data: dict[str, Any]) -> list | None:
         """Send a user's command to the confined integration, and wait for its answer.
 
         Raises `HomeAssistantError`, which the user sees, if no mediator is listening, if the
@@ -122,6 +122,7 @@ class BridgeData:
             self.commands.pop(ident, None)
         if not result.get("ok"):
             raise HomeAssistantError(f"{entity_id}: {result.get('error') or 'refused'}")
+        return result.get("answer")
 
     def request_restart(self, integration: str) -> bool:
         """Ask the mediator to let a cut-off integration run again. False if none is listening.
@@ -303,6 +304,8 @@ def ws_commands(hass: HomeAssistant, connection: websocket_api.ActiveConnection,
     vol.Required("command"): int,
     vol.Required("ok"): bool,
     vol.Optional("error"): vol.Any(cv.string, None),
+    # A question's answer (bridge step 4), already checked by the mediator.
+    vol.Optional("answer"): vol.Any(list, None),
 })
 @callback
 def ws_command_result(hass: HomeAssistant, connection: websocket_api.ActiveConnection,
@@ -311,7 +314,8 @@ def ws_command_result(hass: HomeAssistant, connection: websocket_api.ActiveConne
     data: BridgeData | None = hass.data.get(DOMAIN)
     answer = data.commands.get(msg["command"]) if data else None
     if answer is not None and not answer.done():
-        answer.set_result({"ok": msg["ok"], "error": msg.get("error")})
+        answer.set_result({"ok": msg["ok"], "error": msg.get("error"),
+                           "answer": msg.get("answer")})
     connection.send_result(msg["id"])
 
 

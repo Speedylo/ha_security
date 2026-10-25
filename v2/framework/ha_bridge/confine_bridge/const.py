@@ -12,7 +12,7 @@ SIGNAL_NEW_ENTITY = f"{DOMAIN}_new_entity_{{}}"
 
 #: The entity domains the bridge can stand in for. Others are refused, not approximated.
 SUPPORTED = ("sensor", "binary_sensor", "switch", "button", "text", "select", "number",
-             "climate", "alarm_control_panel")
+             "climate", "alarm_control_panel", "calendar", "weather")
 
 #: How long a user's command waits for the confined integration to answer (W1 step 2b).
 COMMAND_TIMEOUT = 10

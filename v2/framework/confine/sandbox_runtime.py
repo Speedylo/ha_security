@@ -245,6 +245,16 @@ async def build_hass(config_dir: str, with_auth: bool = False):
 
 # ------------------------------------------------------------------------------ the bridge
 
+#: Questions the household may ask a confined integration (bridge step 4): the response service
+#: to run on the entity, how the mediator's data becomes that service's fields, and the key its
+#: answer is under in the response. The mediator decides which questions reach this side.
+QUESTIONS = {
+    ("calendar", "get_events"): (
+        lambda data: {"start_date_time": data["start"], "end_date_time": data["end"]}, "events"),
+    ("weather", "get_forecasts"): (lambda data: {"type": data["type"]}, "forecast"),
+}
+
+
 class Bridge:
     """Everything that crosses the sandbox boundary, in one object."""
 
@@ -341,22 +351,43 @@ class Bridge:
         """
         entity_id = str(message.get("entity") or "")
         domain = entity_id.partition(".")[0]
-        ok, error = True, None
+        service = str(message.get("service"))
+        data = dict(message.get("data") or {})
+        ok, error, answer = True, None, None
         if entity_id not in self.published_ids:
             ok, error = False, f"{entity_id} is not an entity this integration published"
+        elif (domain, service) in QUESTIONS:
+            # A question (bridge step 4): Home Assistant's own response service, on this entity,
+            # and the list it returns is the answer. The mediator checks its shape before (A)
+            # sees it; this side only has to produce it.
+            fields, key = QUESTIONS[(domain, service)]
+            try:
+                response = await self.hass.services.async_call(
+                    domain, service, {**fields(data), "entity_id": entity_id},
+                    blocking=True, return_response=True)
+                answer = ((response or {}).get(entity_id) or {}).get(key)
+            except Exception as err:  # noqa: BLE001 — the user is told, as a native call would
+                ok, error = False, f"{type(err).__name__}: {err}"[:300]
         else:
             try:
                 await self.hass.services.async_call(
-                    domain, str(message.get("service")),
+                    domain, service,
                     # The target last, so nothing in the data can replace it. The mediator
                     # already refuses any key not listed for the service (bridge step 2).
-                    {**(message.get("data") or {}), "entity_id": entity_id}, blocking=True)
+                    {**data, "entity_id": entity_id}, blocking=True)
             except Exception as err:  # noqa: BLE001 — the user is told, as a native call would
                 ok, error = False, f"{type(err).__name__}: {err}"[:300]
-        self.commands.append({"entity": entity_id, "service": message.get("service"),
-                              "ok": ok, "error": error})
-        self.channel.request({"op": "entity.command_result", "command": message.get("command"),
-                              "ok": ok, "error": error})
+        self.commands.append({"entity": entity_id, "service": service, "ok": ok, "error": error})
+        result = {"op": "entity.command_result", "command": message.get("command"),
+                  "ok": ok, "error": error}
+        if answer is not None:
+            result["answer"] = answer
+        try:
+            self.channel.request(result)
+        except Exception as err:  # noqa: BLE001 — too large for one frame: the question fails
+            self.channel.request({"op": "entity.command_result",
+                                  "command": message.get("command"), "ok": False,
+                                  "error": f"the answer could not be sent: {err}"[:300]})
 
     # -- outbound --------------------------------------------------------------------
 
