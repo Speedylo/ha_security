@@ -70,6 +70,8 @@ class BridgedEntity(RestoreEntity):
                            or self._published_id.partition(".")[2])
         self._attr_extra_state_attributes = {k: v for k, v in attributes.items()
                                              if k not in RESERVED and k not in self._described}
+        # Unavailable in (A) while it is unavailable to the integration, whatever its type (F66).
+        self._attr_available = definition.get("state") != "unavailable"
         self._take_state(definition.get("state"), attributes)
 
     def _take_state(self, state: Any, attributes: dict[str, Any]) -> None:
