@@ -12,8 +12,7 @@ The template's format is Times New Roman throughout: sections 14 pt, subsections
 acknowledgements.
 
 **Open question:** does the final report's template also require APA? If it does, the 118-page final changes
-from IEEE too. Ask the supervisor or coordinator. A second risk to ask the coordinator about: similarity
-between the interim and final reports, if the interim is stored by the checker.
+from IEEE too. Ask the supervisor or coordinator. Similarity between the interim and final reports: not a concern (Younes, 2026-10-25).
 
 ## Section map and word budget (body about 9,000–10,000 words)
 

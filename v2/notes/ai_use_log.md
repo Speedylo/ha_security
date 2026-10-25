@@ -24,6 +24,7 @@ to use AI and check it), S4 ethics, S5 communication and disclosure.
 | 11 | 2026-10-23 | Planning (S2) | Warned against an agent answering at the defence | Assumed the answers would be presented as Younes's; he meant an openly labelled agent, a practice already used in the School of Business Administration | Younes | Plan kept, on condition that SSE and the supervisor confirm | S4, S5 |
 | 12 | 2026-10-23 | Diary 2 §8 | "each section was drafted, reviewed and approved by me" | Implied Younes drafted the sections; Claude drafted them | Younes, in his Word read | "drafted" removed | S1, S5 |
 | 13 | 2026-10-23 | Diary 2 AI Evidence Box | Human verification listed "references [checked] against Crossref" | Claude did the Crossref checks; it was not Younes's verification | Younes, in his Word read | Removed from the human-verification field | S1, S5 |
+| 14 | 2026-10-25 | Literature search summary, review sheet | "P3CRID names Home Assistant integrations as an attack vector" | The paper names integrations in general; the Home Assistant vulnerabilities it cites are in Home Assistant itself, not in integrations | Claude, rereading the full text (`fulltext/R0226.txt`, §2.3.5) when Younes asked to reassess | Described as written: integrations in general, code from GitHub left to owner review | S1 |
 
 ## Open
 
