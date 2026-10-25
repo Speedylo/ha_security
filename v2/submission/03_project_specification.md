@@ -93,11 +93,11 @@ Table 3.3 lists the framework and the evidence needed to check its claims.
 | D2 | A Home Assistant integration that brings approvals and Repairs into the user interface |
 | D3 | Twenty-nine self-test suites, and 53 hand-written mutants that test the suites |
 | D4 | Two pinned corpora of real community integrations, 37 by install count and 40 drawn uniformly, and a harness that runs each one confined and unconfined |
-| D5 | An adversarial suite reproducing the published attacks against the platform |
+| D5 | An adversarial suite reproducing the two published attack techniques by a hostile integration, and the threat register's attacks |
 | D6 | A threat model of nineteen threats and seven residual risks, following ISO 31000 [20] with STRIDE [21] |
 | D7 | A verification record: predictions committed before each run, a register of 153 claims, a log of 63 findings |
 | D8 | A reproduction guide, and this report |
 
 ## 3.7 Expected outcome
 
-The expected outcome was stated as a claim that the evaluation could refute: unmodified integrations can be confined at a cost worth paying. The claim divides into three assertions, that confinement defeats the published attacks that motivated it, that it leaves integrations able to run, and that a reference device can afford it, and each assertion received a falsifier before anything was measured. Every result is reported as a difference between a confined and an unconfined arm on the same host and platform release, because only that difference separates the cost of the design from the cost of the platform and the corpus. Section 11 sets out how those measurements were made.
+The expected outcome was stated as a claim that the evaluation could refute: unmodified integrations can be confined at a cost worth paying. The claim divides into three assertions, that confinement defeats the two published attack techniques that motivated it, that it leaves integrations able to run, and that a reference device can afford it, and each assertion received a falsifier before anything was measured. Every result is reported as a difference between a confined and an unconfined arm on the same host and platform release, because only that difference separates the cost of the design from the cost of the platform and the corpus. Section 11 sets out how those measurements were made.
