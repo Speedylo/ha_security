@@ -39,9 +39,14 @@ TEMPLATE = ROOT / "Capstone_Interimreport_RESEARCH-1.docx"
 TITLE = "Confining Unmodified Community Integrations in Home Assistant"
 STUDENT = "Younes Rahati"
 SUPERVISOR = "Dr. Fiaz Ahmad"
-# Owed by the author; marked so that none can be missed (highlighted in the document).
-TODO_STATEMENT = "[Student statement: wording to be provided]"
-TODO_ACK = "[Acknowledgements: to be written by the author]"
+# The statement uses the standard wording of the school's past capstone reports.
+STATEMENT = (f"I, {STUDENT}, have applied ethics to the design process and in the selection of "
+             "the final proposed design. I have held the safety of the public to be paramount "
+             "and have addressed this in the presented design wherever may be applicable.")
+ACKNOWLEDGEMENTS = (f"I would like to thank my supervisor, {SUPERVISOR}, for the guidance and "
+                    "feedback given throughout this project, and the School of Science and "
+                    "Engineering for the opportunity to carry it out.")
+# Owed by the author; highlighted in the document so that it cannot be missed.
 TODO_REPO = "[Repository URL: to be provided once the repository has been cleaned up]"
 
 SECTIONS = ["01_introduction.md", "02_problem_statement.md", "03_objectives.md",
@@ -351,7 +356,7 @@ def references(anchor, text: str) -> None:
         add_runs(par, entry)
 
 
-def appendices(doc, anchor, log_text: str) -> None:
+def appendices(doc, anchor, appendix_b: str) -> None:
     heading(anchor, 1, "Appendix A: Code", new_page=True)
     par = body_par(anchor)
     add_runs(par, "The framework, the experiments, their predictions and results, and the AI-use "
@@ -369,18 +374,20 @@ def appendices(doc, anchor, log_text: str) -> None:
     size = anchor.find(qn("w:pgSz"))
     w, h = size.get(qn("w:w")), size.get(qn("w:h"))
     size.set(qn("w:w"), h); size.set(qn("w:h"), w); size.set(qn("w:orient"), "landscape")
-    heading(anchor, 1, "Appendix B: AI-Use Log", new_page=False)
+    # The reader-facing version of the working log (notes/ai_use_log.md), kept beside the
+    # sections: its title is the heading, its first paragraph the introduction.
+    title, rest = appendix_b.split("\n", 1)
+    heading(anchor, 1, title.lstrip("# ").strip(), new_page=False)
+    intro = rest.strip().split("\n\n")[0]
     par = body_par(anchor)
-    add_runs(par, "Each row records a correction to AI output: what the AI produced, what was "
-                  "wrong, how it was caught and the correction made. Entries marked *rebuilt* "
-                  "were reconstructed from the project's records rather than logged at the time.")
+    add_runs(par, intro)
     rows = []
-    for line in log_text.split("\n"):
+    for line in appendix_b.split("\n"):
         if line.startswith("|"):
             cells = [c.strip() for c in line.strip().strip("|").split("|")]
             if not all(re.fullmatch(r":?-{3,}:?", c) for c in cells):
                 rows.append(cells)
-    table(doc, anchor, rows, widths=[0.8, 2.0, 2.6, 4.4, 4.8, 3.9, 4.4, 1.3], size=8)
+    table(doc, anchor, rows, widths=[0.7, 1.6, 2.8, 4.2, 5.2, 4.2, 3.6, 2.2], size=8)
 
 
 # ---------------------------------------------------------------- the build
@@ -414,8 +421,8 @@ def build(out: pathlib.Path) -> None:
         set_text(p, SUPERVISOR)
     xs = [p for p in pars if re.fullmatch(r"x{20,}\.?", p.text.strip())]
     # In order: student statement, acknowledgements, abstract, résumé.
-    set_text(xs[0], TODO_STATEMENT, highlight=True)
-    set_text(xs[1], TODO_ACK, highlight=True)
+    set_text(xs[0], STATEMENT)
+    set_text(xs[1], ACKNOWLEDGEMENTS)
 
     # The template gives its title-page and statement lines outline levels, so a contents page
     # lists them as headings; only the front-matter headings from the acknowledgements on keep one.
@@ -522,7 +529,7 @@ def build(out: pathlib.Path) -> None:
     for name in SECTIONS:
         render(doc, sect, texts[name], HERE)
     references(sect, (HERE / "references_apa.md").read_text())
-    appendices(doc, sect, (ROOT / "notes" / "ai_use_log.md").read_text())
+    appendices(doc, sect, (HERE / "appendix_b_ai_log.md").read_text())
 
     doc.save(str(out))
     print(f"wrote {out}; renumbered {len(mapping)} captions: "
