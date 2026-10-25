@@ -1,0 +1,67 @@
+
+T1, T2 — each type is an entity of its own type in (A), described
+
+  ok    T1 button: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 button: (A) holds the state and the attributes that describe it  — 'unknown' 
+  ok    T1 text: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 text: (A) holds the state and the attributes that describe it  — '*.tmp' 
+  ok    T1 select: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 select: (A) holds the state and the attributes that describe it  — 'eco' 
+  ok    T1 number: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 number: (A) holds the state and the attributes that describe it  — '21.5' 
+
+T3 — a republish changes the state in (A)
+
+  ok    T3 text: now *.bak  — '*.bak'
+  ok    T3 select: now away  — 'away'
+  ok    T3 number: now 19.0  — '19.0'
+
+T4' — operating each one, from a user in (A) (step 2)
+
+  ok    T4' button.press: reaches the sandbox with exactly its data  — {'push': 'entity.command', 'command': 1, 'entity': 'button.selftest_report', 'service': 'press', 'data': {}}
+  ok    T4' button.press: the user's call succeeds and (A) shows the result  —  '2026-10-25T18:25:02.828994+00:00'
+  ok    T4' text.set_value: reaches the sandbox with exactly its data  — {'push': 'entity.command', 'command': 2, 'entity': 'text.selftest_ignored', 'service': 'set_value', 'data': {'value': '*.log'}}
+  ok    T4' text.set_value: the user's call succeeds and (A) shows the result  —  '*.log'
+  ok    T4' select.select_option: reaches the sandbox with exactly its data  — {'push': 'entity.command', 'command': 3, 'entity': 'select.selftest_mode', 'service': 'select_option', 'data': {'option': 'comfort'}}
+  ok    T4' select.select_option: the user's call succeeds and (A) shows the result  —  'comfort'
+  ok    T4' number.set_value: reaches the sandbox with exactly its data  — {'push': 'entity.command', 'command': 4, 'entity': 'number.selftest_target', 'service': 'set_value', 'data': {'value': 22.0}}
+  ok    T4' number.set_value: the user's call succeeds and (A) shows the result  —  '22.0'
+
+T4'' — a value (A) rejects never reaches the mediator
+
+  ok    T4'' number.set_value 99 (range 5-30) fails in (A)  — Validation error: Value 99.0 for number.selftest_target is outside valid range 5.0 - 30.0
+  ok    T4'' and no command decision was recorded: it never left (A)  — 0 new
+
+T6 — a climate and an alarm panel, described (step 3)
+
+  FAIL  T6 climate: a registry row of its domain owned by the bridge  — the platform refused: confine_bridge/publish: {'code': 'unsupported', 'message': 'the bridge cannot stand in for a climate entity'}
+  FAIL  T6 climate: (A) holds its state and the attributes that describe it  — None {'hvac_modes': (['off', 'cool', 'heat', 'auto'], None), 'min_temp': (16, None), 'max_temp': (30, None), 'current_temperature': (24.5, None), 'temperature': (22, None), 'fan_modes': (['auto', 'low', 'high'], None)}
+  FAIL  T6 alarm_control_panel: a registry row of its domain owned by the bridge  — the platform refused: confine_bridge/publish: {'code': 'unsupported', 'message': 'the bridge cannot stand in for a alarm_control_panel entity'}
+  FAIL  T6 alarm_control_panel: (A) holds its state and the attributes that describe it  — None {'code_format': ('number', None)}
+
+T7' — operating them from a user in (A)
+
+  FAIL  T7' climate.set_temperature: reaches the sandbox as {'temperature': 23.0}  — {'success': True, 'error': None, 'seconds': 0.0009160530007648049}
+  FAIL  T7' climate.set_temperature: the call succeeds and (A) shows cool  —  None
+  FAIL  T7' climate.set_hvac_mode: reaches the sandbox as {'hvac_mode': 'heat'}  — {'success': True, 'error': None, 'seconds': 0.0007997009997779969}
+  FAIL  T7' climate.set_hvac_mode: the call succeeds and (A) shows heat  —  None
+  FAIL  T7' alarm_control_panel.alarm_arm_away: reaches the sandbox as {'code': '4917'}  — {'success': True, 'error': None, 'seconds': 0.0009647749993746402}
+  FAIL  T7' alarm_control_panel.alarm_arm_away: the call succeeds and (A) shows armed_away  —  None
+  FAIL  T7' alarm_control_panel.alarm_trigger: reaches the sandbox as {}  — {'success': True, 'error': None, 'seconds': 0.0007783309993101284}
+  FAIL  T7' alarm_control_panel.alarm_trigger: the call succeeds and (A) shows triggered  —  None
+
+T8 — a house in °F sends the sandbox °C
+
+  FAIL  T8 73.4 °F typed in (A) reaches the sandbox as 23.0 °C  — None 
+  ok    T8 and (A) is back in metric units
+
+T9 — the alarm code is not in the durable log
+
+  ok    T9 '4917' appears nowhere in the run's durable log
+
+T5 — a type still unsupported is refused
+
+  ok    T5 a light is refused at publish  — the platform refused: confine_bridge/publish: {'code': 'unsupported', 'message': 'the bridge cannot stand in for a light entity'}
+  ok    every chain verifies
+
+25/38 checks passed

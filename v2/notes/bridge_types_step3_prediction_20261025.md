@@ -60,3 +60,28 @@ correct are checked by (A) and by the integration, not by the mediator (as in st
 
 **Fails first for T6–T9**: run on the Pi against the pre-change commit, they fail (the bridge refuses
 both domains). Outcome appended below.
+
+---
+
+## Outcome (appended 2026-10-25, after the runs)
+
+Pi, fresh clones of `bridge-s3-pre` (`d2c45fe`) and `bridge-s3` (`4ae2ff5`), clean before and after,
+19:24–19:28; (A) `down` and `up --fresh` before each arm. Results:
+`experiments/real_platform/results/bridge_types_20261025/s3/`. **Every prediction held.**
+
+| | Outcome |
+|---|---|
+| K10 | Held: before, `selftest_commands` 27/57 (laptop and Pi); `selftest_bridge_types` 25/38 against (A) with the old bridge, every T6, T7′ and the first T8 check failing (the bridge refused both domains). T9 passed before too: no code was ever sent |
+| K6–K9, K11 | Held: 57/57 after |
+| T6 | Held: a climate and an alarm panel, each a registry row of its domain owned by the bridge, with the HVAC mode, modes, range, temperatures and fan modes, and the alarm state and code format |
+| T7′ | Held: set_temperature 23 reached the sandbox as `{"temperature": 23.0}`, set_hvac_mode as `{"hvac_mode": "heat"}`, arm_away as `{"code": "4917"}`, trigger as `{}`; each call succeeded and (A) showed the new state |
+| T8 | Held: with (A) in US customary units, 73.4 °F reached the sandbox as 23.000000000000004 °C; (A) back in metric (its `/api/config` reads °C after the run) |
+| T9 | Held: `4917` is not in the run's durable log (nor in (A)'s own `home-assistant.log`) |
+| T10 | Held: 31 of 31 suites; `selftest_bridge_types` 38/38 alone and 38/38 again inside `suites_all` against the same (A), so step 2's corrected button check holds on a reused (A) |
+
+(A)'s log: no error from the bridge.
+
+**Found by the tests before the code was committed, both fixed in `4ae2ff5`:** step 2 recorded a
+command refused for its service with its data verbatim (K8); and the first version of the
+withholding pushed the record's copy of the data, so the code was withheld from the integration too
+(K6's disarm and K9's first check failed until the push carried the data as sent).

@@ -1,0 +1,83 @@
+
+1 — it starts
+
+  ok    run 1's sandbox started  — pid 16900
+  ok    in its own cgroup  — /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/sup-demo_flood-16887-1
+  ok    its switch is in (A)
+  ok    and the integration inside has published it
+
+2 — the mediator cuts it off, and the sandbox is killed (M31)
+
+  ok    the supervisor is told
+  ok    the sandbox's process is gone  — pid 16900
+  ok    and so is its cgroup  — /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/sup-demo_flood-16887-1
+  ok    the house sees a Repairs issue
+
+3 — a person submits the Repairs issue, and it runs again (M32)
+
+  ok    the fix flow completes  — create_entry
+  ok    run 2 started, a new process  — pid 16914
+  ok    the durable log holds one cut-off and one reinstatement  — cutoff 1, reinstate 1
+  ok    and the issue is gone
+
+4 — (A) restarts, and the integration comes back (F29, M33)
+
+  ok    the supervisor saw (A) go
+  ok    and come back
+  ok    run 3 started  — pid 16943
+
+5 — a supervisor killed outright; the next one clears what it left (F30, M34)
+
+  ok    the first supervisor is gone
+  ok    the second reports clearing what the first left  — cleared 1 sandbox cgroup(s)
+  ok    run 3 of the first is not running  — pid 16943
+  ok    and none of the first's cgroups remains
+  ok    the second's own sandbox started  — pid 16961
+
+6 — a sandbox that exits by itself is not restarted (M35)
+
+  ok    the supervisor reports it
+  ok    and starts nothing in its place
+
+7 — it stops cleanly
+
+  ok    it says it stopped
+  ok    no demo_flood cgroup is left
+
+8 — an integration that will not stop by itself is killed (M31)
+
+  ok    demo_stubborn's sandbox started  — pid 16985
+  ok    its switch is in (A)
+  ok    and the integration inside has published it
+  ok    it is cut off
+  ok    its sandbox's process is gone  — pid 16985
+  ok    and so is its cgroup  — /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/sup-demo_stubborn-16972-1
+  ok    not by stopping itself
+  ok    its Repairs issue is cleared
+  ok    no demo_stubborn cgroup is left
+
+9 — not approved: the house is told, and can allow it (F57c, M41–M42)
+
+  ok    1. with no approval on record, the supervisor says it did not start it
+  ok       and no sandbox started
+  ok    2. (A) shows a `not_started` issue: not approved, and fixable  — {'translation_key': 'not_approved', 'is_fixable': True}
+  ok    3. its screen shows `describe`'s lines  — demo_flood These permissions were worked out for you, not declared by the author. Check them before continuing.
+
+If you 
+  ok    4. the mediator's non-admin login cannot open it  — HTTP 401
+  ok    5. Allow and start: a sandbox starts  — create_entry, pid 17007
+  ok       and the integration publishes its switch
+  ok    6. the issue is gone, and the approval says who gave it  — an administrator, from the Repairs panel
+  ok    7. its permissions widened, it is not started again
+  ok       and its screen says what it is allowed to do has changed  — demo_flood **What this integration is allowed to do has changed since you approved it. Its code has not changed. Read th
+  ok    8. approved by the operator instead, a new supervisor starts it  — pid 17035
+  ok       and the issue is gone, though no screen was submitted
+  ok    decisions-20261025T192828-16887.jsonl: no sequence, link or hash break
+  ok    decisions-20261025T192835-16944.jsonl: no sequence, link or hash break
+  ok    decisions-20261025T192846-16972.jsonl: no sequence, link or hash break
+  ok    decisions-20261025T192847-16995.jsonl: no sequence, link or hash break
+  ok    decisions-20261025T192848-17023.jsonl: no sequence, link or hash break
+
+  logs: /tmp/selftest-supervise-7v3ko2ty
+
+50/50 checks passed
