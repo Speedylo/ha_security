@@ -10,6 +10,8 @@ earlier draft used to recommend refusing it. This is what serving them costs and
   5  **the observed-responder rule** — a scan reports which addresses answered, which is the
      only set an address may later be pinned from
   6  payload bounds are enforced before allocation, not after
+  8  a datagram `connect` to the sandbox's own loopback is not relayed, so Home Assistant's
+     `http` can find a source address (F65)
 
 The asymmetry with TCP is the point of the whole file. TCP hands over a connected descriptor
 because a connected TCP socket cannot be re-pointed; UDP cannot, and `selftest_socket_pinning`
@@ -553,6 +555,59 @@ def case_no_relay_fails_closed(root: Path) -> None:
           f"{len(listens)} listen decisions for {len(received)} datagrams")
 
 
+def case_source_address(root: Path) -> None:
+    """F65: Home Assistant's `http` finds its own address with datagram `connect`s, under the shim.
+
+    `network.util.async_get_source_ip` (2026.8.3) opens a UDP socket, connects it and reads
+    `getsockname()[0]`, for 8.8.8.8, then 224.0.0.251, then 127.0.0.1; `http` cannot set up if all
+    three fail. The shim put every connected datagram socket on a Unix socket pair, whose
+    `getsockname()` is `''`, so all three failed — loopback included, although nothing sent to the
+    sandbox's own loopback ever leaves it. `notes/f65_source_ip_prediction_20261025.md`."""
+    shim, relay, decisions = wire(root, "demo_source_ip", {})
+
+    def source_ip(target: str) -> str | None:
+        # Home Assistant's own lookup, as written in `components/network/util.py`.
+        test_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        test_sock.setblocking(False)
+        try:
+            test_sock.connect((target, 1))
+            return test_sock.getsockname()[0]
+        except Exception:  # noqa: BLE001
+            return None
+        finally:
+            test_sock.close()
+
+    try:
+        shim.install()
+        own = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            own.connect(("127.0.0.1", 1))
+            name = own.getsockname()
+        except Exception as err:  # noqa: BLE001
+            name = f"{type(err).__name__}: {err}"
+        looped = shim._dgram.get(own, {})
+        own.close()
+        check(isinstance(name, tuple) and name[0] == "127.0.0.1",
+              "8a. a datagram connect to loopback reports its own address, as a real one does",
+              f"{name!r}")
+        lookup = (source_ip("8.8.8.8") or source_ip("224.0.0.251") or source_ip("127.0.0.1"))
+        check(lookup == "127.0.0.1",
+              "8b. Home Assistant's source-address lookup finds an address under the shim",
+              f"{lookup!r}")
+        check(not decisions and looped.get("writer") is None
+              and ("peer", "127.0.0.1", 1) not in shim._routes,
+              "8c. and the loopback connect asked the mediator nothing and was not relayed",
+              f"{len(decisions)} decisions")
+        public = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        public.connect(("8.8.8.8", 1))
+        relayed = shim._dgram.get(public, {}).get("writer") is not None
+        public.close()
+        check(relayed, "8d. a datagram connect to any other address is still relayed")
+    finally:
+        shim.uninstall()
+        relay.close()
+
+
 def main() -> int:
     print(__doc__.strip().splitlines()[0])
     print("=" * 78)
@@ -563,6 +618,7 @@ def main() -> int:
         case_discovery(root)
         case_bounds(root)
         case_no_relay_fails_closed(root)
+        case_source_address(root)
     passed = sum(1 for ok, _ in _results if ok)
     print("=" * 78)
     print(f"{passed}/{len(_results)} checks passed")

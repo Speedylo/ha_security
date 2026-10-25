@@ -267,7 +267,8 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
             delegation: Delegation, uv: str | None,
             setup_components: list[str] | None = None,
             extra_requirements: list[str] | None = None,
-            profile: str = "minimal", platform_deps: Path | None = None) -> dict:
+            profile: str = "minimal", platform_deps: Path | None = None,
+            egress: bool = False) -> dict:
     """One integration, one sandbox. Nothing is shared between them but the corpus on disk."""
     root = Path(tempfile.mkdtemp(prefix=f"compat-{domain}-"))
     mediator = Mediator()
@@ -318,6 +319,9 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
             # §7.18: record what each integration tries to reach at import, so the demand for
             # an egress proxy is measured rather than inferred from `iot_class` alone.
             "record_egress": True,
+            # F65: the egress shim, installed as `supervise.py` installs it in every sandbox.
+            # Every compatibility figure before 2026-10-25 was measured without it.
+            "egress": egress,
             "setup_components": components}))
         spec = SandboxSpec(
             domain=domain, own_dir=str(own), data_dir=str(data),
@@ -326,6 +330,8 @@ def run_one(domain: str, component: Path, corpus_root: Path, sandbox_python: Pat
                            str(spec_file): "/sandbox/spec.json",
                            str(deps_dir): DEPS},
             env={"PYTHONPATH": DEPS})
+        if egress:
+            spec.runtime_files[str(HERE / "egress_shim.py")] = "/sandbox/egress_shim.py"
         # Bound for any profile that was given one, not only `unstripped`. §6.13.4's
         # measurement is `declared` plus this directory, and the two are independent knobs:
         # one decides which components set up, the other which packages exist.
@@ -508,6 +514,10 @@ def main() -> int:
                     help="print the default_config closure's requirements and exit, so the "
                          "--platform-deps directory is built from the platform's source rather "
                          "than from a list somebody typed")
+    ap.add_argument("--egress", action="store_true",
+                    help="install the egress shim in each sandbox, as supervise.py does (F65). "
+                         "The mediator has no broker and no relay, so every network request "
+                         "is refused")
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
 
@@ -551,7 +561,8 @@ def main() -> int:
             report = run_one(component.name, component, args.corpus, sandbox_python,
                              delegation, uv, profile=args.profile,
                              platform_deps=args.platform_deps,
-                             setup_components=wanted, extra_requirements=extra)
+                             setup_components=wanted, extra_requirements=extra,
+                             egress=args.egress)
         category, detail = classify(report)
         report["category"] = category
         results.append(report)
@@ -604,7 +615,7 @@ def main() -> int:
             report = run_one(row["domain"], by_domain[row["domain"]], args.corpus,
                              sandbox_python, delegation, uv, setup_components=wanted,
                              extra_requirements=extra, profile=args.profile,
-                             platform_deps=args.platform_deps)
+                             platform_deps=args.platform_deps, egress=args.egress)
             category, detail = classify(report)
             report["category"] = category
             report["arm"] = "B"
