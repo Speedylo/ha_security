@@ -7,6 +7,7 @@ waste-collection run after the fix.
     python3 verify/f65_verdicts.py pre  PRE.json
     python3 verify/f65_verdicts.py post POST.json WASTE.json WASTE.log
     python3 verify/f65_verdicts.py second POST.json WASTE.json WASTE.log   (R3, R4: the second route)
+    python3 verify/f65_verdicts.py uniform UNIFORM.json                     (U1-U3: the uniform 40)
 """
 
 from __future__ import annotations
@@ -25,6 +26,9 @@ results: list[tuple[bool, str, str]] = []
 def check(ok: bool, what: str, detail: str = "") -> None:
     results.append((bool(ok), what, detail))
     print(f"  {'PASS' if ok else 'FAIL'}  {what}" + (f"   [{detail}]" if detail else ""))
+
+
+UNIFORM = FINAL.with_name("uniform_confined.json")
 
 
 def rows(path: Path) -> dict[str, dict]:
@@ -115,8 +119,29 @@ def post_waste(waste_json: Path, waste_log: Path, label: str) -> None:
           f"{len(harness) - len(failed)}/{len(harness)}")
 
 
+def uniform(path: Path) -> None:
+    final, run = rows(UNIFORM), rows(path)
+    print(f"U — the uniform sample with the shim: {path.name} against {UNIFORM.name}")
+    for component in ("http", "zeroconf"):
+        before = sorted(d for d, r in final.items()
+                        if (r.get("components_setup") or {}).get(component) is True)
+        after = sorted(d for d, r in run.items()
+                       if (r.get("components_setup") or {}).get(component) is True)
+        check(after == before, f"U1 {component} sets up for the same {len(before)}",
+              f"before {before}; now {after}")
+    differ = [(d, final[d].get("components_setup"), run.get(d, {}).get("components_setup"))
+              for d in sorted(final)
+              if final[d].get("components_setup") != run.get(d, {}).get("components_setup")]
+    check(not differ and len(run) == len(final),
+          f"U2 every component's setup, for all {len(final)}, equals the final rerun's", str(differ))
+    levels = record_levels(final, run)
+    check(not levels, "U3 every level equals the final rerun's", str(levels))
+
+
 if __name__ == "__main__":
-    if sys.argv[1] == "pre":
+    if sys.argv[1] == "uniform":
+        uniform(Path(sys.argv[2]))
+    elif sys.argv[1] == "pre":
         pre(Path(sys.argv[2]))
     elif sys.argv[1] == "second":
         second(Path(sys.argv[2]), Path(sys.argv[3]), Path(sys.argv[4]))

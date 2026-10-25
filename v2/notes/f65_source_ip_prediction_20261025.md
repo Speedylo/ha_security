@@ -141,3 +141,28 @@ F65 is closed for the head corpus: with the shim installed as the supervisor ins
 platform components set up exactly as without it. Not measured with the shim: the uniform sample of
 40, and the other end-to-end subjects (they ran with the shim before either fix, and none of them set
 up `http` or `zeroconf`).
+
+---
+
+## The uniform sample of 40, with the shim: prediction, committed before the run (2026-10-25)
+
+Younes: "re-measure the uniform 40 first, prediction first". The second sample
+(`~/r2exp/corpus_uniform`) was last measured confined in the final rerun
+(`final_20261016/step05_compat/uniform_confined.json`), without the shim. There `http` set up for 8
+of the 40 (`alarm_clocks`, `als_sundance_marin`, `browser_mod`, `circuitsetup_energy_analyzer`,
+`ha_insights`, `irrigationprogram`, `kroki`, `nuki_otp`) and `zeroconf` for 1; `recorder` (4) and
+`logbook` (2) failed, for reasons unrelated to the network; levels 37 `platforms_clean`,
+2 `platform_import_failed`, 1 `import_failed`.
+
+Run: `compat --corpus ~/r2exp/corpus_uniform --profile declared --platform-deps … --egress`, from the
+existing clean clone of `f65b-fix` on the Pi (the framework has not changed since that tag), (A) down.
+
+| | Prediction | Criterion (`verify/f65_verdicts.py uniform`) |
+|---|---|---|
+| U1 | `http` sets up for the same 8, and `zeroconf` for the same 1 | `components_setup` |
+| U2 | For all 40, every component's setup result equals the final rerun's — the `recorder` and `logbook` failures included | `components_setup`, row by row |
+| U3 | Every level equals the final rerun's | `level` |
+
+Not measured: this sample before the fixes (its failure under the unfixed shim is inferred from the
+head sample, not shown). A difference is reported, not explained away; the run is not repeated to
+obtain a pass. Outcome appended below.
