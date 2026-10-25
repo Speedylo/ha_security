@@ -1,0 +1,1932 @@
+{
+  "integration": "waste_collection_schedule",
+  "egress": [
+    "ead.darmstadt.de:443"
+  ],
+  "partial": null,
+  "flow_input": {
+    "country": "Germany",
+    "name": "ead_darmstadt_de\tEAD Darmstadt\tead_darmstadt_de",
+    "street": "Stresemannstra\u00dfe",
+    "show_customize_config": false,
+    "show_sensor_config": false
+  },
+  "select_first": null,
+  "settle_seconds": 30.0,
+  "unreachable_before_run": {},
+  "reports": {
+    "unconfined": {
+      "domain": "waste_collection_schedule",
+      "arm": "unconfined",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "platform"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "ff02::c%3",
+          "port": 1900,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "fe80::9ba0:68cd:7165:a581%3",
+          "port": 0,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "239.255.255.250",
+          "port": 1900,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "10.126.85.243",
+          "port": 0,
+          "phase": "platform"
+        },
+        {
+          "kind": "connect",
+          "host": "/var/run/dbus/system_bus_socket",
+          "port": null,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "ead.darmstadt.de",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "92.205.108.161",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "resolve",
+          "host": "fe80::9ba0:68cd:7165:a581%3",
+          "port": 37165,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "104.26.5.238",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "resolve",
+          "host": "192.168.1.128",
+          "port": null,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "10.255.255.255",
+          "port": 1,
+          "phase": "integration"
+        }
+      ],
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "setup_errors": [],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "country"
+            ]
+          },
+          {
+            "step": "source",
+            "sent": [
+              "name"
+            ]
+          },
+          {
+            "step": "args_ead_darmstadt_de",
+            "sent": [
+              "calendar_title",
+              "street"
+            ]
+          },
+          {
+            "step": "flow_type",
+            "sent": [
+              "show_customize_config",
+              "show_sensor_config"
+            ]
+          }
+        ],
+        "type": "create_entry",
+        "errors": null,
+        "reason": null
+      },
+      "entries": [
+        {
+          "title": "EAD Darmstadt",
+          "state": "ConfigEntryState.LOADED",
+          "loaded": true
+        }
+      ],
+      "loaded": true,
+      "own_entities": [
+        "calendar.waste_collection_schedule_ead_darmstadt",
+        "conversation.home_assistant",
+        "sensor.sun_next_dawn",
+        "sensor.sun_next_dusk",
+        "sensor.sun_next_midnight",
+        "sensor.sun_next_noon",
+        "sensor.sun_next_rising",
+        "sensor.sun_next_setting",
+        "sensor.waste_collection_schedule_bio",
+        "sensor.waste_collection_schedule_ppk",
+        "sensor.waste_collection_schedule_rm1",
+        "sensor.waste_collection_schedule_rm2",
+        "sensor.waste_collection_schedule_rm4",
+        "sensor.waste_collection_schedule_wet",
+        "sun.sun",
+        "zone.home"
+      ],
+      "published": [
+        {
+          "entity": "calendar.waste_collection_schedule_ead_darmstadt",
+          "state": "off",
+          "platform": "waste_collection_schedule"
+        },
+        {
+          "entity": "conversation.home_assistant",
+          "state": "unknown",
+          "platform": null
+        },
+        {
+          "entity": "sensor.sun_next_dawn",
+          "state": "2026-10-26T06:08:21+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_dusk",
+          "state": "2026-10-26T17:19:38+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_midnight",
+          "state": "2026-10-25T23:44:25+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_noon",
+          "state": "2026-10-26T11:44:27+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_rising",
+          "state": "2026-10-26T06:43:35+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_setting",
+          "state": "2026-10-26T16:44:27+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_bio",
+          "state": "on Wed, 04.11.2026",
+          "platform": "waste_collection_schedule"
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_ppk",
+          "state": "on Fri, 06.11.2026",
+          "platform": "waste_collection_schedule"
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_rm1",
+          "state": "on Fri, 30.10.2026",
+          "platform": "waste_collection_schedule"
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_rm2",
+          "state": "on Fri, 06.11.2026",
+          "platform": "waste_collection_schedule"
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_rm4",
+          "state": "on Fri, 06.11.2026",
+          "platform": "waste_collection_schedule"
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_wet",
+          "state": "on Tue, 27.10.2026",
+          "platform": "waste_collection_schedule"
+        },
+        {
+          "entity": "sun.sun",
+          "state": "below_horizon",
+          "platform": null
+        },
+        {
+          "entity": "zone.home",
+          "state": "0",
+          "platform": null
+        }
+      ],
+      "probe": null,
+      "timed_out": false
+    },
+    "confined_declared": {
+      "domain": "waste_collection_schedule",
+      "egress": {
+        "installed": true,
+        "resolved": [
+          "ead.darmstadt.de"
+        ],
+        "connected": [
+          [
+            "ead.darmstadt.de",
+            443
+          ],
+          [
+            "ead.darmstadt.de",
+            443
+          ]
+        ],
+        "datagrams_delivered": 0,
+        "refused_listens": []
+      },
+      "setup_errors": [],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "country"
+            ]
+          },
+          {
+            "step": "source",
+            "sent": [
+              "name"
+            ]
+          },
+          {
+            "step": "args_ead_darmstadt_de",
+            "sent": [
+              "calendar_title",
+              "street"
+            ]
+          },
+          {
+            "step": "flow_type",
+            "sent": [
+              "show_customize_config",
+              "show_sensor_config"
+            ]
+          }
+        ],
+        "type": "create_entry",
+        "errors": null,
+        "reason": null
+      },
+      "entries": [
+        {
+          "title": "EAD Darmstadt",
+          "state": "ConfigEntryState.LOADED",
+          "loaded": true
+        }
+      ],
+      "loaded": true,
+      "local_entities": [
+        "calendar.waste_collection_schedule_ead_darmstadt",
+        "sensor.waste_collection_schedule_bio",
+        "sensor.waste_collection_schedule_ppk",
+        "sensor.waste_collection_schedule_rm1",
+        "sensor.waste_collection_schedule_rm2",
+        "sensor.waste_collection_schedule_rm4",
+        "sensor.waste_collection_schedule_wet"
+      ],
+      "mirrored": [],
+      "published": [
+        {
+          "entity": "sensor.waste_collection_schedule_rm1",
+          "state": "on Fri, 30.10.2026",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_rm2",
+          "state": "on Fri, 06.11.2026",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_bio",
+          "state": "on Wed, 04.11.2026",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_ppk",
+          "state": "on Fri, 06.11.2026",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_wet",
+          "state": "on Tue, 27.10.2026",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_rm4",
+          "state": "on Fri, 06.11.2026",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "calendar.waste_collection_schedule_ead_darmstadt",
+          "state": "off",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "refused": [],
+      "push": {
+        "subscribed": [],
+        "received": [],
+        "unexpected": [],
+        "commands": []
+      },
+      "probe": null,
+      "arm": "confined_declared",
+      "in_house": [
+        {
+          "entity": "sensor.waste_collection_schedule_rm1",
+          "in_house": "sensor.waste_collection_schedule_rm1",
+          "published_state": "on Fri, 30.10.2026",
+          "house_state": "on Fri, 30.10.2026",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_rm2",
+          "in_house": "sensor.waste_collection_schedule_rm2",
+          "published_state": "on Fri, 06.11.2026",
+          "house_state": "on Fri, 06.11.2026",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_bio",
+          "in_house": "sensor.waste_collection_schedule_bio",
+          "published_state": "on Wed, 04.11.2026",
+          "house_state": "on Wed, 04.11.2026",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_ppk",
+          "in_house": "sensor.waste_collection_schedule_ppk",
+          "published_state": "on Fri, 06.11.2026",
+          "house_state": "on Fri, 06.11.2026",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_wet",
+          "in_house": "sensor.waste_collection_schedule_wet",
+          "published_state": "on Tue, 27.10.2026",
+          "house_state": "on Tue, 27.10.2026",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.waste_collection_schedule_rm4",
+          "in_house": "sensor.waste_collection_schedule_rm4",
+          "published_state": "on Fri, 06.11.2026",
+          "house_state": "on Fri, 06.11.2026",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "calendar.waste_collection_schedule_ead_darmstadt",
+          "in_house": "calendar.waste_collection_schedule_ead_darmstadt",
+          "published_state": "off",
+          "house_state": "off",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        }
+      ],
+      "platform": "real",
+      "timed_out": false,
+      "data_inspection": null,
+      "install": {
+        "ok": true,
+        "installed": [
+          "acme",
+          "aiodhcpwatcher",
+          "aiodiscover",
+          "aiodns",
+          "aiohappyeyeballs",
+          "aiohasupervisor",
+          "aiohttp",
+          "aiooui",
+          "aiosignal",
+          "aiousbwatcher",
+          "annotated_types",
+          "anyio",
+          "async_interrupt",
+          "async_timeout",
+          "async_upnp_client",
+          "asyncinotify",
+          "atomicwrites_homeassistant",
+          "attrs",
+          "av",
+          "awesomeversion",
+          "beautifulsoup4",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "boto3",
+          "botocore",
+          "btsocket",
+          "cached_ipaddress",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "ciso8601",
+          "cronsim",
+          "cryptography",
+          "curl_cffi",
+          "dacite",
+          "dbus_fast",
+          "defusedxml",
+          "distro",
+          "envs",
+          "file_read_backwards",
+          "fnv_hash_fast",
+          "fnvhash",
+          "frozenlist",
+          "go2rtc_client",
+          "greenlet",
+          "grpcio",
+          "h11",
+          "ha_ffmpeg",
+          "habluetooth",
+          "hass_nabucasa",
+          "hassil",
+          "home_assistant_frontend",
+          "home_assistant_intents",
+          "httpcore",
+          "httpx",
+          "icalendar",
+          "icalevents",
+          "icmplib",
+          "idna",
+          "ifaddr",
+          "jiter",
+          "jmespath",
+          "josepy",
+          "lxml",
+          "mashumaro",
+          "matter_ble_proxy",
+          "matter_python_client",
+          "multidict",
+          "mutagen",
+          "numpy",
+          "openai",
+          "orjson",
+          "pdfminer_six",
+          "pillow",
+          "propcache",
+          "psutil",
+          "psutil_home_assistant",
+          "pycares",
+          "pycognito",
+          "pycparser",
+          "pycryptodome",
+          "pydantic",
+          "pydantic_core",
+          "pyjwt",
+          "pymicro_vad",
+          "pynacl",
+          "pyopenssl",
+          "pypdf",
+          "pyrfc3339",
+          "pyric",
+          "pyroute2",
+          "pyspeex_noise",
+          "python_dateutil",
+          "python_didl_lite",
+          "pyturbojpeg",
+          "pytz",
+          "pyyaml",
+          "regex",
+          "requests",
+          "s3transfer",
+          "scapy",
+          "securetar",
+          "sentence_stream",
+          "serialx",
+          "six",
+          "sniffio",
+          "snitun",
+          "soupsieve",
+          "sqlalchemy",
+          "tqdm",
+          "typing_extensions",
+          "typing_inspection",
+          "tzdata",
+          "uart_devices",
+          "unicode_rbnf",
+          "urllib3",
+          "usb_devices",
+          "voluptuous",
+          "webrtc_models",
+          "yarl",
+          "zeroconf"
+        ],
+        "resolved_before": "2026-10-06T00:00:00Z",
+        "resolved": [
+          "acme-5.4.0",
+          "aiodhcpwatcher-1.2.7",
+          "aiodiscover-3.3.2",
+          "aiodns-4.0.4",
+          "aiohappyeyeballs-2.7.1",
+          "aiohasupervisor-0.6.0",
+          "aiohttp-3.14.4",
+          "aiooui-0.1.11",
+          "aiosignal-1.4.0",
+          "aiousbwatcher-1.1.2",
+          "annotated_types-0.8.0",
+          "anyio-4.15.1",
+          "async_interrupt-1.2.2",
+          "async_timeout-5.0.1",
+          "async_upnp_client-0.47.1",
+          "asyncinotify-4.4.4",
+          "atomicwrites_homeassistant-1.4.1",
+          "attrs-26.1.0",
+          "av-17.0.1",
+          "awesomeversion-25.8.0",
+          "beautifulsoup4-4.15.0",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "boto3-1.43.108",
+          "botocore-1.43.108",
+          "btsocket-0.3.0",
+          "cached_ipaddress-1.1.2",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.2",
+          "ciso8601-2.3.3",
+          "cronsim-2.7",
+          "cryptography-50.0.2",
+          "curl_cffi-0.16.3",
+          "dacite-1.9.2",
+          "dbus_fast-5.0.22",
+          "defusedxml-0.7.1",
+          "distro-1.9.0",
+          "envs-1.4",
+          "file_read_backwards-2.0.0",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "frozenlist-1.8.0",
+          "go2rtc_client-0.4.0",
+          "greenlet-3.5.6",
+          "grpcio-1.84.0",
+          "h11-0.16.0",
+          "ha_ffmpeg-3.2.2",
+          "habluetooth-6.26.5",
+          "hass_nabucasa-2.2.0",
+          "hassil-3.11.0",
+          "home_assistant_frontend-20260729.7",
+          "home_assistant_intents-2026.7.30",
+          "httpcore-1.0.9",
+          "httpx-0.28.1",
+          "icalendar-7.3.0",
+          "icalevents-0.3.1",
+          "icmplib-3.0.4",
+          "idna-3.20",
+          "ifaddr-0.2.0",
+          "jiter-0.17.0",
+          "jmespath-1.1.0",
+          "josepy-2.2.0",
+          "lxml-6.1.3",
+          "mashumaro-3.23",
+          "matter_ble_proxy-0.7.1",
+          "matter_python_client-1.3.0",
+          "multidict-6.9.1",
+          "mutagen-1.48.1",
+          "numpy-2.3.2",
+          "openai-2.45.0",
+          "orjson-3.12.0",
+          "pdfminer_six-20260107",
+          "pillow-12.3.0",
+          "propcache-0.5.4",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pycares-5.1.0",
+          "pycognito-2024.5.1",
+          "pycparser-3.0",
+          "pycryptodome-3.24.0",
+          "pydantic-2.13.5",
+          "pydantic_core-2.46.5",
+          "pyjwt-2.15.1",
+          "pymicro_vad-1.0.1",
+          "pynacl-1.6.2",
+          "pyopenssl-26.4.0",
+          "pypdf-6.19.0",
+          "pyrfc3339-2.1.0",
+          "pyric-0.1.6.3",
+          "pyroute2-0.9.6",
+          "pyspeex_noise-1.0.2",
+          "python_dateutil-2.9.0.post0",
+          "python_didl_lite-1.5.1",
+          "pyturbojpeg-1.8.3",
+          "pytz-2026.5",
+          "pyyaml-6.0.3",
+          "regex-2026.9.29",
+          "requests-2.34.2",
+          "s3transfer-0.19.2",
+          "scapy-2.8.0",
+          "securetar-2026.4.1",
+          "sentence_stream-1.3.0",
+          "serialx-1.8.2",
+          "six-1.17.0",
+          "sniffio-1.3.1",
+          "snitun-0.45.1",
+          "soupsieve-2.10",
+          "sqlalchemy-2.0.51",
+          "tqdm-4.70.1",
+          "typing_extensions-4.16.0",
+          "typing_inspection-0.4.4",
+          "tzdata-2026.5",
+          "uart_devices-0.1.1",
+          "unicode_rbnf-2.4.0",
+          "urllib3-2.8.0",
+          "usb_devices-0.5.1",
+          "voluptuous-0.16.0",
+          "webrtc_models-0.3.0",
+          "yarl-1.25.1",
+          "zeroconf-0.150.0"
+        ]
+      },
+      "audit": [
+        {
+          "identity": "waste_collection_schedule",
+          "op": "network.egress",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "identity": "waste_collection_schedule",
+          "op": "network.egress",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "identity": "waste_collection_schedule",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "waste_collection_schedule",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "waste_collection_schedule",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "waste_collection_schedule",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "waste_collection_schedule",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "waste_collection_schedule",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "waste_collection_schedule",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "logged": [
+        {
+          "op": "network.egress",
+          "target": "ead.darmstadt.de:443",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "op": "network.egress",
+          "target": "ead.darmstadt.de:443",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.waste_collection_schedule_rm1",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.waste_collection_schedule_rm2",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.waste_collection_schedule_bio",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.waste_collection_schedule_ppk",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.waste_collection_schedule_wet",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.waste_collection_schedule_rm4",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "calendar.waste_collection_schedule_ead_darmstadt",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "audit_breaks": [],
+      "reconcile": [],
+      "durable_raw": [
+        {
+          "hash": "48603adc3ab12b38bcbb2379215d4b75128c1ef4f6d0b2e7a3d98dbfd40a4abf",
+          "identity": {
+            "composite": "df6a2fe38bfb730c73d8df7116048aae141e828b983e3cf6853991c80d8a5df0",
+            "domain": "waste_collection_schedule",
+            "manifest": "199562a039267027ace8d91336512df9aaf1cc759a3c3fcc6b16186f86462889",
+            "requirements": "52a159e4cca1d903e99819136362f61a86e9ae513d8549b517eb41bbca357d2a",
+            "resolved": [
+              "PyJWT==2.15.1",
+              "PyNaCl==1.6.2",
+              "PyRIC==0.1.6.3",
+              "PyTurboJPEG==1.8.3",
+              "PyYAML==6.0.3",
+              "SQLAlchemy==2.0.51",
+              "acme==5.4.0",
+              "aiodhcpwatcher==1.2.7",
+              "aiodiscover==3.3.2",
+              "aiodns==4.0.4",
+              "aiohappyeyeballs==2.7.1",
+              "aiohasupervisor==0.6.0",
+              "aiohttp==3.14.4",
+              "aiooui==0.1.11",
+              "aiosignal==1.4.0",
+              "aiousbwatcher==1.1.2",
+              "annotated-types==0.8.0",
+              "anyio==4.15.1",
+              "async-timeout==5.0.1",
+              "async_interrupt==1.2.2",
+              "async_upnp_client==0.47.1",
+              "asyncinotify==4.4.4",
+              "atomicwrites-homeassistant==1.4.1",
+              "attrs==26.1.0",
+              "av==17.0.1",
+              "awesomeversion==25.8.0",
+              "beautifulsoup4==4.15.0",
+              "bleak-retry-connector==4.6.3",
+              "bleak==3.0.2",
+              "bluetooth-adapters==2.4.0",
+              "bluetooth-auto-recovery==1.6.4",
+              "bluetooth-data-tools==1.29.18",
+              "boto3==1.43.108",
+              "botocore==1.43.108",
+              "btsocket==0.3.0",
+              "cached-ipaddress==1.1.2",
+              "certifi==2026.7.22",
+              "cffi==2.1.1",
+              "charset-normalizer==3.5.2",
+              "ciso8601==2.3.3",
+              "cronsim==2.7",
+              "cryptography==50.0.2",
+              "curl_cffi==0.16.3",
+              "dacite==1.9.2",
+              "dbus-fast==5.0.22",
+              "defusedxml==0.7.1",
+              "distro==1.9.0",
+              "envs==1.4",
+              "file-read-backwards==2.0.0",
+              "fnv-hash-fast==2.0.3",
+              "fnvhash==0.2.1",
+              "frozenlist==1.8.0",
+              "go2rtc-client==0.4.0",
+              "greenlet==3.5.6",
+              "grpcio==1.84.0",
+              "h11==0.16.0",
+              "ha-ffmpeg==3.2.2",
+              "habluetooth==6.26.5",
+              "hass-nabucasa==2.2.0",
+              "hassil==3.11.0",
+              "home-assistant-frontend==20260729.7",
+              "home-assistant-intents==2026.7.30",
+              "httpcore==1.0.9",
+              "httpx==0.28.1",
+              "icalendar==7.3.0",
+              "icalevents==0.3.1",
+              "icmplib==3.0.4",
+              "idna==3.20",
+              "ifaddr==0.2.0",
+              "jiter==0.17.0",
+              "jmespath==1.1.0",
+              "josepy==2.2.0",
+              "lxml==6.1.3",
+              "mashumaro==3.23",
+              "matter-ble-proxy==0.7.1",
+              "matter-python-client==1.3.0",
+              "multidict==6.9.1",
+              "mutagen==1.48.1",
+              "numpy==2.3.2",
+              "openai==2.45.0",
+              "orjson==3.12.0",
+              "pdfminer.six==20260107",
+              "pillow==12.3.0",
+              "propcache==0.5.4",
+              "psutil-home-assistant==0.0.1",
+              "psutil==7.2.2",
+              "pyOpenSSL==26.4.0",
+              "pyRFC3339==2.1.0",
+              "pycares==5.1.0",
+              "pycognito==2024.5.1",
+              "pycparser==3.0",
+              "pycryptodome==3.24.0",
+              "pydantic==2.13.5",
+              "pydantic_core==2.46.5",
+              "pymicro_vad==1.0.1",
+              "pypdf==6.19.0",
+              "pyroute2==0.9.6",
+              "pyspeex_noise==1.0.2",
+              "python-dateutil==2.9.0.post0",
+              "python-didl-lite==1.5.1",
+              "pytz==2026.5",
+              "regex==2026.9.29",
+              "requests==2.34.2",
+              "s3transfer==0.19.2",
+              "scapy==2.8.0",
+              "securetar==2026.4.1",
+              "sentence_stream==1.3.0",
+              "serialx==1.8.2",
+              "six==1.17.0",
+              "sniffio==1.3.1",
+              "snitun==0.45.1",
+              "soupsieve==2.10",
+              "tqdm==4.70.1",
+              "typing-inspection==0.4.4",
+              "typing_extensions==4.16.0",
+              "tzdata==2026.5",
+              "uart-devices==0.1.1",
+              "unicode-rbnf==2.4.0",
+              "urllib3==2.8.0",
+              "usb-devices==0.5.1",
+              "voluptuous==0.16.0",
+              "webrtc-models==0.3.0",
+              "yarl==1.25.1",
+              "zeroconf==0.150.0"
+            ],
+            "source": "cd42b659012e2d391a7c84e44b73479ee54cffd108db3279440c0fdbcddddb55"
+          },
+          "integration": "waste_collection_schedule",
+          "kind": "run",
+          "mac": "68a0a2472a23880de5082dfe0bd67c0c49b16663d2b3cd719b97cacbdcd0a391",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "prev_mac": "0000000000000000000000000000000000000000000000000000000000000000",
+          "provenance": "author-declared",
+          "run": "fc65304a61a21371",
+          "seq": 0,
+          "time": 1792961385.455325
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "/permissions/network/egress/0",
+          "hash": "88e110139bcbb284d6804a37b43304a3ba4ac104d1ca5d9ca4a9f7a2885d9e11",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "3ec54907d39e6d624418a0bd7fb17947859afa3fd565cdb4f0fd64a3c22cf02c",
+          "op": "network.egress",
+          "prev_hash": "48603adc3ab12b38bcbb2379215d4b75128c1ef4f6d0b2e7a3d98dbfd40a4abf",
+          "prev_mac": "68a0a2472a23880de5082dfe0bd67c0c49b16663d2b3cd719b97cacbdcd0a391",
+          "reason": "declared",
+          "requested": {
+            "host": "ead.darmstadt.de",
+            "port": 443
+          },
+          "run": "fc65304a61a21371",
+          "seq": 1,
+          "target": "ead.darmstadt.de:443",
+          "time": 1792961388.0503335
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "/permissions/network/egress/0",
+          "hash": "7e95ce68c0d1f91c09dfc759097848aaa6b5c11b744ad31e657d24f5fe35dd43",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "5adaea699017db71a91d94b142d91c5259de2eeaae017ac8ac1d370db9d74eac",
+          "op": "network.egress",
+          "prev_hash": "88e110139bcbb284d6804a37b43304a3ba4ac104d1ca5d9ca4a9f7a2885d9e11",
+          "prev_mac": "3ec54907d39e6d624418a0bd7fb17947859afa3fd565cdb4f0fd64a3c22cf02c",
+          "reason": "declared",
+          "requested": {
+            "host": "ead.darmstadt.de",
+            "port": 443
+          },
+          "run": "fc65304a61a21371",
+          "seq": 2,
+          "target": "ead.darmstadt.de:443",
+          "time": 1792961388.5069425
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "eece89b7cd4b813b1cf15728430f0332ce6bb468f4f95b50ec0bcffa032d9dfb",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "2c857d4c1c5a4168df0490d55bab9e9667b68bad196269b844024fde63c658d8",
+          "op": "entity.publish",
+          "prev_hash": "7e95ce68c0d1f91c09dfc759097848aaa6b5c11b744ad31e657d24f5fe35dd43",
+          "prev_mac": "5adaea699017db71a91d94b142d91c5259de2eeaae017ac8ac1d370db9d74eac",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.waste_collection_schedule_rm1"
+          },
+          "run": "fc65304a61a21371",
+          "seq": 3,
+          "target": "sensor.waste_collection_schedule_rm1",
+          "time": 1792961389.2707813
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "cb759e452648e814f17f02b6dfa8932f64fca877bcaad411ed892b1d0ed485d1",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "dc28db1444f731fae03145382056342be5acba1c4d77bcb7eae27b7f74a6cddd",
+          "op": "entity.publish",
+          "prev_hash": "eece89b7cd4b813b1cf15728430f0332ce6bb468f4f95b50ec0bcffa032d9dfb",
+          "prev_mac": "2c857d4c1c5a4168df0490d55bab9e9667b68bad196269b844024fde63c658d8",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.waste_collection_schedule_rm2"
+          },
+          "run": "fc65304a61a21371",
+          "seq": 4,
+          "target": "sensor.waste_collection_schedule_rm2",
+          "time": 1792961389.2739515
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "c1668159a0b185b7867877ef2d1f54dfa2f240fe5bcba8e5039a5c0c5ebb4070",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "f792bd1ae969ddc5ec863dee19fcb09be9be0fc49534147f1e65ae4b56ebb3de",
+          "op": "entity.publish",
+          "prev_hash": "cb759e452648e814f17f02b6dfa8932f64fca877bcaad411ed892b1d0ed485d1",
+          "prev_mac": "dc28db1444f731fae03145382056342be5acba1c4d77bcb7eae27b7f74a6cddd",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.waste_collection_schedule_bio"
+          },
+          "run": "fc65304a61a21371",
+          "seq": 5,
+          "target": "sensor.waste_collection_schedule_bio",
+          "time": 1792961389.2763917
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "dafdce2869d323a2d6a49816c27d686b19d77d7e67b40edded820f0fcd01333d",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "7a15619431ab3f1d14c8f9e5cf2df0effe2a90acaf0017784a78e29a93dc12ed",
+          "op": "entity.publish",
+          "prev_hash": "c1668159a0b185b7867877ef2d1f54dfa2f240fe5bcba8e5039a5c0c5ebb4070",
+          "prev_mac": "f792bd1ae969ddc5ec863dee19fcb09be9be0fc49534147f1e65ae4b56ebb3de",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.waste_collection_schedule_ppk"
+          },
+          "run": "fc65304a61a21371",
+          "seq": 6,
+          "target": "sensor.waste_collection_schedule_ppk",
+          "time": 1792961389.278606
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "2ede9496264cac3e7c7a94e591ec99899914f940ec8568aaaccec4a7804cefba",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "09010a77478c3c4eb0065957f4c207f452e22bc04dabee984353948b49d845db",
+          "op": "entity.publish",
+          "prev_hash": "dafdce2869d323a2d6a49816c27d686b19d77d7e67b40edded820f0fcd01333d",
+          "prev_mac": "7a15619431ab3f1d14c8f9e5cf2df0effe2a90acaf0017784a78e29a93dc12ed",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.waste_collection_schedule_wet"
+          },
+          "run": "fc65304a61a21371",
+          "seq": 7,
+          "target": "sensor.waste_collection_schedule_wet",
+          "time": 1792961389.2808614
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "be10a64e3822c0f15f2fd0e9840a16c6f14acd2d7a61b3b032e182c889ac0bc2",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "b1f8cc1279d12ddfc4516231f806a8c91d32d1fbd6aed307849da44a3eb020dc",
+          "op": "entity.publish",
+          "prev_hash": "2ede9496264cac3e7c7a94e591ec99899914f940ec8568aaaccec4a7804cefba",
+          "prev_mac": "09010a77478c3c4eb0065957f4c207f452e22bc04dabee984353948b49d845db",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.waste_collection_schedule_rm4"
+          },
+          "run": "fc65304a61a21371",
+          "seq": 8,
+          "target": "sensor.waste_collection_schedule_rm4",
+          "time": 1792961389.2830067
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "99b168e30083499140b5f298a4f538c3fe131a3e2f60d3a7d45771f7a8b59a16",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "b596f09e41a49d5c8068a5085de750daa2a822fb0c5a4cb0376dd180b3e77b83",
+          "op": "entity.publish",
+          "prev_hash": "be10a64e3822c0f15f2fd0e9840a16c6f14acd2d7a61b3b032e182c889ac0bc2",
+          "prev_mac": "b1f8cc1279d12ddfc4516231f806a8c91d32d1fbd6aed307849da44a3eb020dc",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "calendar.waste_collection_schedule_ead_darmstadt"
+          },
+          "run": "fc65304a61a21371",
+          "seq": 9,
+          "target": "calendar.waste_collection_schedule_ead_darmstadt",
+          "time": 1792961389.3370025
+        }
+      ],
+      "oom_kill": 0
+    },
+    "confined_undeclared": {
+      "domain": "waste_collection_schedule",
+      "egress": {
+        "installed": true,
+        "resolved": [
+          "ead.darmstadt.de"
+        ],
+        "connected": [],
+        "datagrams_delivered": 0,
+        "refused_listens": []
+      },
+      "setup_errors": [],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "country"
+            ]
+          },
+          {
+            "step": "source",
+            "sent": [
+              "name"
+            ]
+          },
+          {
+            "step": "args_ead_darmstadt_de",
+            "sent": [
+              "calendar_title",
+              "street"
+            ]
+          },
+          {
+            "step": "args_ead_darmstadt_de",
+            "sent": [
+              "calendar_title",
+              "street"
+            ]
+          },
+          {
+            "step": "args_ead_darmstadt_de",
+            "sent": [
+              "calendar_title",
+              "street"
+            ]
+          },
+          {
+            "step": "args_ead_darmstadt_de",
+            "sent": [
+              "calendar_title",
+              "street"
+            ]
+          },
+          {
+            "step": "args_ead_darmstadt_de",
+            "sent": [
+              "calendar_title",
+              "street"
+            ]
+          },
+          {
+            "step": "args_ead_darmstadt_de",
+            "sent": [
+              "calendar_title",
+              "street"
+            ]
+          },
+          {
+            "step": "args_ead_darmstadt_de",
+            "sent": [
+              "calendar_title",
+              "street"
+            ]
+          },
+          {
+            "step": "args_ead_darmstadt_de",
+            "sent": [
+              "calendar_title",
+              "street"
+            ]
+          }
+        ],
+        "type": "form",
+        "errors": {
+          "base": "fetch_error"
+        },
+        "reason": null,
+        "step_id": "args_ead_darmstadt_de"
+      },
+      "entries": [],
+      "loaded": false,
+      "local_entities": [],
+      "mirrored": [],
+      "published": [],
+      "refused": [],
+      "push": {
+        "subscribed": [],
+        "received": [],
+        "unexpected": [],
+        "commands": []
+      },
+      "probe": null,
+      "arm": "confined_undeclared",
+      "in_house": [],
+      "platform": "real",
+      "timed_out": false,
+      "data_inspection": null,
+      "install": {
+        "ok": true,
+        "installed": [
+          "acme",
+          "aiodhcpwatcher",
+          "aiodiscover",
+          "aiodns",
+          "aiohappyeyeballs",
+          "aiohasupervisor",
+          "aiohttp",
+          "aiooui",
+          "aiosignal",
+          "aiousbwatcher",
+          "annotated_types",
+          "anyio",
+          "async_interrupt",
+          "async_timeout",
+          "async_upnp_client",
+          "asyncinotify",
+          "atomicwrites_homeassistant",
+          "attrs",
+          "av",
+          "awesomeversion",
+          "beautifulsoup4",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "boto3",
+          "botocore",
+          "btsocket",
+          "cached_ipaddress",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "ciso8601",
+          "cronsim",
+          "cryptography",
+          "curl_cffi",
+          "dacite",
+          "dbus_fast",
+          "defusedxml",
+          "distro",
+          "envs",
+          "file_read_backwards",
+          "fnv_hash_fast",
+          "fnvhash",
+          "frozenlist",
+          "go2rtc_client",
+          "greenlet",
+          "grpcio",
+          "h11",
+          "ha_ffmpeg",
+          "habluetooth",
+          "hass_nabucasa",
+          "hassil",
+          "home_assistant_frontend",
+          "home_assistant_intents",
+          "httpcore",
+          "httpx",
+          "icalendar",
+          "icalevents",
+          "icmplib",
+          "idna",
+          "ifaddr",
+          "jiter",
+          "jmespath",
+          "josepy",
+          "lxml",
+          "mashumaro",
+          "matter_ble_proxy",
+          "matter_python_client",
+          "multidict",
+          "mutagen",
+          "numpy",
+          "openai",
+          "orjson",
+          "pdfminer_six",
+          "pillow",
+          "propcache",
+          "psutil",
+          "psutil_home_assistant",
+          "pycares",
+          "pycognito",
+          "pycparser",
+          "pycryptodome",
+          "pydantic",
+          "pydantic_core",
+          "pyjwt",
+          "pymicro_vad",
+          "pynacl",
+          "pyopenssl",
+          "pypdf",
+          "pyrfc3339",
+          "pyric",
+          "pyroute2",
+          "pyspeex_noise",
+          "python_dateutil",
+          "python_didl_lite",
+          "pyturbojpeg",
+          "pytz",
+          "pyyaml",
+          "regex",
+          "requests",
+          "s3transfer",
+          "scapy",
+          "securetar",
+          "sentence_stream",
+          "serialx",
+          "six",
+          "sniffio",
+          "snitun",
+          "soupsieve",
+          "sqlalchemy",
+          "tqdm",
+          "typing_extensions",
+          "typing_inspection",
+          "tzdata",
+          "uart_devices",
+          "unicode_rbnf",
+          "urllib3",
+          "usb_devices",
+          "voluptuous",
+          "webrtc_models",
+          "yarl",
+          "zeroconf"
+        ],
+        "resolved_before": "2026-10-06T00:00:00Z",
+        "resolved": [
+          "acme-5.4.0",
+          "aiodhcpwatcher-1.2.7",
+          "aiodiscover-3.3.2",
+          "aiodns-4.0.4",
+          "aiohappyeyeballs-2.7.1",
+          "aiohasupervisor-0.6.0",
+          "aiohttp-3.14.4",
+          "aiooui-0.1.11",
+          "aiosignal-1.4.0",
+          "aiousbwatcher-1.1.2",
+          "annotated_types-0.8.0",
+          "anyio-4.15.1",
+          "async_interrupt-1.2.2",
+          "async_timeout-5.0.1",
+          "async_upnp_client-0.47.1",
+          "asyncinotify-4.4.4",
+          "atomicwrites_homeassistant-1.4.1",
+          "attrs-26.1.0",
+          "av-17.0.1",
+          "awesomeversion-25.8.0",
+          "beautifulsoup4-4.15.0",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "boto3-1.43.108",
+          "botocore-1.43.108",
+          "btsocket-0.3.0",
+          "cached_ipaddress-1.1.2",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.2",
+          "ciso8601-2.3.3",
+          "cronsim-2.7",
+          "cryptography-50.0.2",
+          "curl_cffi-0.16.3",
+          "dacite-1.9.2",
+          "dbus_fast-5.0.22",
+          "defusedxml-0.7.1",
+          "distro-1.9.0",
+          "envs-1.4",
+          "file_read_backwards-2.0.0",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "frozenlist-1.8.0",
+          "go2rtc_client-0.4.0",
+          "greenlet-3.5.6",
+          "grpcio-1.84.0",
+          "h11-0.16.0",
+          "ha_ffmpeg-3.2.2",
+          "habluetooth-6.26.5",
+          "hass_nabucasa-2.2.0",
+          "hassil-3.11.0",
+          "home_assistant_frontend-20260729.7",
+          "home_assistant_intents-2026.7.30",
+          "httpcore-1.0.9",
+          "httpx-0.28.1",
+          "icalendar-7.3.0",
+          "icalevents-0.3.1",
+          "icmplib-3.0.4",
+          "idna-3.20",
+          "ifaddr-0.2.0",
+          "jiter-0.17.0",
+          "jmespath-1.1.0",
+          "josepy-2.2.0",
+          "lxml-6.1.3",
+          "mashumaro-3.23",
+          "matter_ble_proxy-0.7.1",
+          "matter_python_client-1.3.0",
+          "multidict-6.9.1",
+          "mutagen-1.48.1",
+          "numpy-2.3.2",
+          "openai-2.45.0",
+          "orjson-3.12.0",
+          "pdfminer_six-20260107",
+          "pillow-12.3.0",
+          "propcache-0.5.4",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pycares-5.1.0",
+          "pycognito-2024.5.1",
+          "pycparser-3.0",
+          "pycryptodome-3.24.0",
+          "pydantic-2.13.5",
+          "pydantic_core-2.46.5",
+          "pyjwt-2.15.1",
+          "pymicro_vad-1.0.1",
+          "pynacl-1.6.2",
+          "pyopenssl-26.4.0",
+          "pypdf-6.19.0",
+          "pyrfc3339-2.1.0",
+          "pyric-0.1.6.3",
+          "pyroute2-0.9.6",
+          "pyspeex_noise-1.0.2",
+          "python_dateutil-2.9.0.post0",
+          "python_didl_lite-1.5.1",
+          "pyturbojpeg-1.8.3",
+          "pytz-2026.5",
+          "pyyaml-6.0.3",
+          "regex-2026.9.29",
+          "requests-2.34.2",
+          "s3transfer-0.19.2",
+          "scapy-2.8.0",
+          "securetar-2026.4.1",
+          "sentence_stream-1.3.0",
+          "serialx-1.8.2",
+          "six-1.17.0",
+          "sniffio-1.3.1",
+          "snitun-0.45.1",
+          "soupsieve-2.10",
+          "sqlalchemy-2.0.51",
+          "tqdm-4.70.1",
+          "typing_extensions-4.16.0",
+          "typing_inspection-0.4.4",
+          "tzdata-2026.5",
+          "uart_devices-0.1.1",
+          "unicode_rbnf-2.4.0",
+          "urllib3-2.8.0",
+          "usb_devices-0.5.1",
+          "voluptuous-0.16.0",
+          "webrtc_models-0.3.0",
+          "yarl-1.25.1",
+          "zeroconf-0.150.0"
+        ]
+      },
+      "audit": [
+        {
+          "identity": "waste_collection_schedule",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "waste_collection_schedule",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "waste_collection_schedule",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "waste_collection_schedule",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "waste_collection_schedule",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "waste_collection_schedule",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "waste_collection_schedule",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "waste_collection_schedule",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        }
+      ],
+      "logged": [
+        {
+          "op": "network.egress",
+          "target": "ead.darmstadt.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "ead.darmstadt.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "ead.darmstadt.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "ead.darmstadt.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "ead.darmstadt.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "ead.darmstadt.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "ead.darmstadt.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "ead.darmstadt.de:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        }
+      ],
+      "audit_breaks": [],
+      "reconcile": [],
+      "durable_raw": [
+        {
+          "hash": "5f406fd1e2948d599790557fb18fb0bc45202af245cf8bdba960d1184083bafd",
+          "identity": {
+            "composite": "df6a2fe38bfb730c73d8df7116048aae141e828b983e3cf6853991c80d8a5df0",
+            "domain": "waste_collection_schedule",
+            "manifest": "199562a039267027ace8d91336512df9aaf1cc759a3c3fcc6b16186f86462889",
+            "requirements": "52a159e4cca1d903e99819136362f61a86e9ae513d8549b517eb41bbca357d2a",
+            "resolved": [
+              "PyJWT==2.15.1",
+              "PyNaCl==1.6.2",
+              "PyRIC==0.1.6.3",
+              "PyTurboJPEG==1.8.3",
+              "PyYAML==6.0.3",
+              "SQLAlchemy==2.0.51",
+              "acme==5.4.0",
+              "aiodhcpwatcher==1.2.7",
+              "aiodiscover==3.3.2",
+              "aiodns==4.0.4",
+              "aiohappyeyeballs==2.7.1",
+              "aiohasupervisor==0.6.0",
+              "aiohttp==3.14.4",
+              "aiooui==0.1.11",
+              "aiosignal==1.4.0",
+              "aiousbwatcher==1.1.2",
+              "annotated-types==0.8.0",
+              "anyio==4.15.1",
+              "async-timeout==5.0.1",
+              "async_interrupt==1.2.2",
+              "async_upnp_client==0.47.1",
+              "asyncinotify==4.4.4",
+              "atomicwrites-homeassistant==1.4.1",
+              "attrs==26.1.0",
+              "av==17.0.1",
+              "awesomeversion==25.8.0",
+              "beautifulsoup4==4.15.0",
+              "bleak-retry-connector==4.6.3",
+              "bleak==3.0.2",
+              "bluetooth-adapters==2.4.0",
+              "bluetooth-auto-recovery==1.6.4",
+              "bluetooth-data-tools==1.29.18",
+              "boto3==1.43.108",
+              "botocore==1.43.108",
+              "btsocket==0.3.0",
+              "cached-ipaddress==1.1.2",
+              "certifi==2026.7.22",
+              "cffi==2.1.1",
+              "charset-normalizer==3.5.2",
+              "ciso8601==2.3.3",
+              "cronsim==2.7",
+              "cryptography==50.0.2",
+              "curl_cffi==0.16.3",
+              "dacite==1.9.2",
+              "dbus-fast==5.0.22",
+              "defusedxml==0.7.1",
+              "distro==1.9.0",
+              "envs==1.4",
+              "file-read-backwards==2.0.0",
+              "fnv-hash-fast==2.0.3",
+              "fnvhash==0.2.1",
+              "frozenlist==1.8.0",
+              "go2rtc-client==0.4.0",
+              "greenlet==3.5.6",
+              "grpcio==1.84.0",
+              "h11==0.16.0",
+              "ha-ffmpeg==3.2.2",
+              "habluetooth==6.26.5",
+              "hass-nabucasa==2.2.0",
+              "hassil==3.11.0",
+              "home-assistant-frontend==20260729.7",
+              "home-assistant-intents==2026.7.30",
+              "httpcore==1.0.9",
+              "httpx==0.28.1",
+              "icalendar==7.3.0",
+              "icalevents==0.3.1",
+              "icmplib==3.0.4",
+              "idna==3.20",
+              "ifaddr==0.2.0",
+              "jiter==0.17.0",
+              "jmespath==1.1.0",
+              "josepy==2.2.0",
+              "lxml==6.1.3",
+              "mashumaro==3.23",
+              "matter-ble-proxy==0.7.1",
+              "matter-python-client==1.3.0",
+              "multidict==6.9.1",
+              "mutagen==1.48.1",
+              "numpy==2.3.2",
+              "openai==2.45.0",
+              "orjson==3.12.0",
+              "pdfminer.six==20260107",
+              "pillow==12.3.0",
+              "propcache==0.5.4",
+              "psutil-home-assistant==0.0.1",
+              "psutil==7.2.2",
+              "pyOpenSSL==26.4.0",
+              "pyRFC3339==2.1.0",
+              "pycares==5.1.0",
+              "pycognito==2024.5.1",
+              "pycparser==3.0",
+              "pycryptodome==3.24.0",
+              "pydantic==2.13.5",
+              "pydantic_core==2.46.5",
+              "pymicro_vad==1.0.1",
+              "pypdf==6.19.0",
+              "pyroute2==0.9.6",
+              "pyspeex_noise==1.0.2",
+              "python-dateutil==2.9.0.post0",
+              "python-didl-lite==1.5.1",
+              "pytz==2026.5",
+              "regex==2026.9.29",
+              "requests==2.34.2",
+              "s3transfer==0.19.2",
+              "scapy==2.8.0",
+              "securetar==2026.4.1",
+              "sentence_stream==1.3.0",
+              "serialx==1.8.2",
+              "six==1.17.0",
+              "sniffio==1.3.1",
+              "snitun==0.45.1",
+              "soupsieve==2.10",
+              "tqdm==4.70.1",
+              "typing-inspection==0.4.4",
+              "typing_extensions==4.16.0",
+              "tzdata==2026.5",
+              "uart-devices==0.1.1",
+              "unicode-rbnf==2.4.0",
+              "urllib3==2.8.0",
+              "usb-devices==0.5.1",
+              "voluptuous==0.16.0",
+              "webrtc-models==0.3.0",
+              "yarl==1.25.1",
+              "zeroconf==0.150.0"
+            ],
+            "source": "cd42b659012e2d391a7c84e44b73479ee54cffd108db3279440c0fdbcddddb55"
+          },
+          "integration": "waste_collection_schedule",
+          "kind": "run",
+          "mac": "7d2d6d46275590d52d87ac81eb836e44ccf6f3f8bd7e158e03ef3e6a66e21ae7",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "prev_mac": "0000000000000000000000000000000000000000000000000000000000000000",
+          "provenance": "author-declared",
+          "run": "37839b9fc587f491",
+          "seq": 0,
+          "time": 1792961422.257327
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "e5c99432f000b47da8029f2aa01a7de80800c5fd05f38405321246a5b8f2a07a",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "64065c13038ff18f912fe170746cf045f9fcd19baf3b14cd95285fec588e64c0",
+          "op": "network.egress",
+          "prev_hash": "5f406fd1e2948d599790557fb18fb0bc45202af245cf8bdba960d1184083bafd",
+          "prev_mac": "7d2d6d46275590d52d87ac81eb836e44ccf6f3f8bd7e158e03ef3e6a66e21ae7",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "ead.darmstadt.de",
+            "port": 443
+          },
+          "run": "37839b9fc587f491",
+          "seq": 1,
+          "target": "ead.darmstadt.de:443",
+          "time": 1792961424.8561966
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "6412866be8848dfad71eb5372007d26fdd60a3853724c46b07f2d476e00009bb",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "5c8e217c320d11aa54690d8baecc71113b79003ea6758462f34c07ba1bd6f208",
+          "op": "network.egress",
+          "prev_hash": "e5c99432f000b47da8029f2aa01a7de80800c5fd05f38405321246a5b8f2a07a",
+          "prev_mac": "64065c13038ff18f912fe170746cf045f9fcd19baf3b14cd95285fec588e64c0",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "ead.darmstadt.de",
+            "port": 443
+          },
+          "run": "37839b9fc587f491",
+          "seq": 2,
+          "target": "ead.darmstadt.de:443",
+          "time": 1792961424.858392
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "c11654ca7591a670e159849e6f2e32b5017f886202b65631b8e239a1ec008a6c",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "bb113312a62abc5314071db86549ee416b900821ec79aea2bdba3303cb8eb01b",
+          "op": "network.egress",
+          "prev_hash": "6412866be8848dfad71eb5372007d26fdd60a3853724c46b07f2d476e00009bb",
+          "prev_mac": "5c8e217c320d11aa54690d8baecc71113b79003ea6758462f34c07ba1bd6f208",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "ead.darmstadt.de",
+            "port": 443
+          },
+          "run": "37839b9fc587f491",
+          "seq": 3,
+          "target": "ead.darmstadt.de:443",
+          "time": 1792961424.8601472
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "f377fa062c428530f81564212362a5f5ffc3f10f18435a0342f5349c9feae1d9",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "c5de8a0dc802638688c68d43d309e425acf48f4897385a1f8b6baf5cc4a9f196",
+          "op": "network.egress",
+          "prev_hash": "c11654ca7591a670e159849e6f2e32b5017f886202b65631b8e239a1ec008a6c",
+          "prev_mac": "bb113312a62abc5314071db86549ee416b900821ec79aea2bdba3303cb8eb01b",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "ead.darmstadt.de",
+            "port": 443
+          },
+          "run": "37839b9fc587f491",
+          "seq": 4,
+          "target": "ead.darmstadt.de:443",
+          "time": 1792961424.861742
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "5b3dedbd919eff6dfd781e089bf434713af95de2443ed116ce0c8a7d0864a09a",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "b3645d8800e56ce5797f9a751080dfe986f64d2ac81dabd01f43ed7d13f22840",
+          "op": "network.egress",
+          "prev_hash": "f377fa062c428530f81564212362a5f5ffc3f10f18435a0342f5349c9feae1d9",
+          "prev_mac": "c5de8a0dc802638688c68d43d309e425acf48f4897385a1f8b6baf5cc4a9f196",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "ead.darmstadt.de",
+            "port": 443
+          },
+          "run": "37839b9fc587f491",
+          "seq": 5,
+          "target": "ead.darmstadt.de:443",
+          "time": 1792961424.8632457
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "a95c871b7ecdad68fdaa209b75d0ffff88838d49eb1a9535fd5fa7ec217a20b3",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "1ea44124530fb3fb4b76c24ccd4be6a2d523c1c6d2b9998b6b75acf25537adbd",
+          "op": "network.egress",
+          "prev_hash": "5b3dedbd919eff6dfd781e089bf434713af95de2443ed116ce0c8a7d0864a09a",
+          "prev_mac": "b3645d8800e56ce5797f9a751080dfe986f64d2ac81dabd01f43ed7d13f22840",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "ead.darmstadt.de",
+            "port": 443
+          },
+          "run": "37839b9fc587f491",
+          "seq": 6,
+          "target": "ead.darmstadt.de:443",
+          "time": 1792961424.8655705
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "896e4ae0fcf42eeb2b63dc9eb56e2e14c3ad56d4091c42c468cbe8a3eb688e5e",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "56568d901cac3352f458f2cb355174944a903fc01d5fa2b522d4d775f6a70dfd",
+          "op": "network.egress",
+          "prev_hash": "a95c871b7ecdad68fdaa209b75d0ffff88838d49eb1a9535fd5fa7ec217a20b3",
+          "prev_mac": "1ea44124530fb3fb4b76c24ccd4be6a2d523c1c6d2b9998b6b75acf25537adbd",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "ead.darmstadt.de",
+            "port": 443
+          },
+          "run": "37839b9fc587f491",
+          "seq": 7,
+          "target": "ead.darmstadt.de:443",
+          "time": 1792961424.8671067
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "f16d8b032e7713b7a5a04be4727243b1a6425cf86baa326b9b5e64352d6482a1",
+          "integration": "waste_collection_schedule",
+          "kind": "decision",
+          "mac": "d45d1afc37abf94f530173ac7568f78bc9a423f1c59c0878bbee444d3fd48ceb",
+          "op": "network.egress",
+          "prev_hash": "896e4ae0fcf42eeb2b63dc9eb56e2e14c3ad56d4091c42c468cbe8a3eb688e5e",
+          "prev_mac": "56568d901cac3352f458f2cb355174944a903fc01d5fa2b522d4d775f6a70dfd",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "ead.darmstadt.de",
+            "port": 443
+          },
+          "run": "37839b9fc587f491",
+          "seq": 8,
+          "target": "ead.darmstadt.de:443",
+          "time": 1792961424.86858
+        }
+      ],
+      "oom_kill": 0
+    }
+  },
+  "checks": {
+    "passed": 16,
+    "total": 16
+  }
+}

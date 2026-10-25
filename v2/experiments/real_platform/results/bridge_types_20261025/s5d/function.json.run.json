@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/home/younes/r2exp/s5d/v2/framework/confine/endtoend_function.py",
+    "--corpus",
+    "/home/younes/r2exp/corpus",
+    "--python",
+    "/home/younes/r2exp/ha314/bin/python",
+    "--platform",
+    "real",
+    "--json",
+    "/home/younes/r2exp/bridge-run/s5d/function.json"
+  ],
+  "cwd": "/home/younes/r2exp/s5d/v2/framework",
+  "executable": "/usr/bin/python3",
+  "python": "3.13.5",
+  "host": "raspberrypi",
+  "machine": "aarch64",
+  "time": "2026-10-25T23:08:10+0100",
+  "commit": "77b29822ca56b57b78e4b908e3d0ae10df367dc3",
+  "uncommitted_changes": false,
+  "resolve_before": "2026-10-06T00:00:00Z"
+}

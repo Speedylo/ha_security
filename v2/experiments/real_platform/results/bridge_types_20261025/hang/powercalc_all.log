@@ -1,0 +1,6 @@
+  powercalc                      unconfined loaded
+  powercalc                      confined   loaded
+  powercalc-no-subscribe         confined   loaded
+  powercalc-no-read              confined   loaded
+
+wrote /home/younes/r2exp/bridge-run/hang/powercalc_all.json

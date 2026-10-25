@@ -29,3 +29,12 @@ zombie is this process's own child, it is reaped.
 | Z2 | On the Pi, the function set runs to the end with `--platform real`: no "did not stop" (the rest of step 5's E3 is judged as that note says) |
 
 Outcome appended below.
+
+---
+
+## Outcome (appended 2026-10-25)
+
+**Both held.** Z1: 3/4 before the fix on the laptop (the zombie reported alive), 4/4 after, and 4/4 on
+the Pi (`s5d/house_a_test.log`). Z2: run D of bridge step 5 ran the function set to the end against
+(A), every unconfined arm stopping and starting (A) without a timeout (`s5d/`). The reproduction is in
+`experiments/real_platform/results/bridge_types_20261025/hang/`.

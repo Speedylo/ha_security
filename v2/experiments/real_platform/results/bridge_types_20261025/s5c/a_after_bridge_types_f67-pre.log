@@ -1,0 +1,229 @@
+2026-10-25 21:36:01.801 WARNING (MainThread) [homeassistant.bootstrap] Skipping pip installation of required modules. This may cause issues
+2026-10-25 21:36:01.804 WARNING (SyncWorker_0) [homeassistant.loader] We found a custom integration confine_bridge which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you experience issues with Home Assistant
+2026-10-25 21:36:01.898 WARNING (MainThread) [aiohttp_fast_zlib] zlib_ng and isal are not available, falling back to zlib, performance will be degraded.
+2026-10-25 21:36:01.981 WARNING (MainThread) [homeassistant.components.http.ban] Login attempt or request with invalid authentication from localhost (127.0.0.1). Requested URL: '/api/'. (Python-urllib/3.13)
+2026-10-25 21:36:02.057 ERROR (MainThread) [homeassistant.setup] Setup failed for 'radio_frequency': Unable to import component: No module named 'rf_protocols'
+Traceback (most recent call last):
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/setup.py", line 341, in _async_setup_component
+    component = await integration.async_get_component()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/loader.py", line 1051, in async_get_component
+    self._component_future.result()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/loader.py", line 1031, in async_get_component
+    comp = await self.hass.async_add_import_executor_job(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self._get_component, True
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/concurrent/futures/thread.py", line 86, in run
+    result = ctx.run(self.task)
+  File "/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/concurrent/futures/thread.py", line 73, in run
+    return fn(*args, **kwargs)
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/loader.py", line 1091, in _get_component
+    ComponentProtocol, importlib.import_module(self.pkg_path)
+                       ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/util/loop.py", line 201, in protected_loop_func
+    return func(*args, **kwargs)
+  File "/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/importlib/__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1406, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1371, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1342, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 938, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 759, in exec_module
+  File "<frozen importlib._bootstrap>", line 491, in _call_with_frames_removed
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/radio_frequency/__init__.py", line 6, in <module>
+    from rf_protocols import ModulationType, RadioFrequencyCommand
+ModuleNotFoundError: No module named 'rf_protocols'
+2026-10-25 21:36:02.061 ERROR (MainThread) [homeassistant.setup] Setup failed for 'infrared': Unable to import component: No module named 'infrared_protocols'
+Traceback (most recent call last):
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/setup.py", line 341, in _async_setup_component
+    component = await integration.async_get_component()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/loader.py", line 1051, in async_get_component
+    self._component_future.result()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/loader.py", line 1031, in async_get_component
+    comp = await self.hass.async_add_import_executor_job(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self._get_component, True
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/concurrent/futures/thread.py", line 86, in run
+    result = ctx.run(self.task)
+  File "/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/concurrent/futures/thread.py", line 73, in run
+    return fn(*args, **kwargs)
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/loader.py", line 1091, in _get_component
+    ComponentProtocol, importlib.import_module(self.pkg_path)
+                       ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/util/loop.py", line 201, in protected_loop_func
+    return func(*args, **kwargs)
+  File "/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/importlib/__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1406, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1371, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1342, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 938, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 759, in exec_module
+  File "<frozen importlib._bootstrap>", line 491, in _call_with_frames_removed
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/infrared/__init__.py", line 12, in <module>
+    from .const import DATA_COMPONENT, DOMAIN
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/infrared/const.py", line 8, in <module>
+    from .entity import InfraredEmitterEntity, InfraredReceiverEntity
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/infrared/entity.py", line 10, in <module>
+    from infrared_protocols.commands import Command as InfraredCommand
+ModuleNotFoundError: No module named 'infrared_protocols'
+2026-10-25 21:36:02.138 ERROR (MainThread) [homeassistant.setup] Setup failed for 'analytics': Unable to import component: No module named 'aiohasupervisor'
+Traceback (most recent call last):
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/setup.py", line 341, in _async_setup_component
+    component = await integration.async_get_component()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/loader.py", line 1051, in async_get_component
+    self._component_future.result()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/loader.py", line 1031, in async_get_component
+    comp = await self.hass.async_add_import_executor_job(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self._get_component, True
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/concurrent/futures/thread.py", line 86, in run
+    result = ctx.run(self.task)
+  File "/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/concurrent/futures/thread.py", line 73, in run
+    return fn(*args, **kwargs)
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/loader.py", line 1091, in _get_component
+    ComponentProtocol, importlib.import_module(self.pkg_path)
+                       ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/util/loop.py", line 201, in protected_loop_func
+    return func(*args, **kwargs)
+  File "/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/importlib/__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1406, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1371, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1342, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 938, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 759, in exec_module
+  File "<frozen importlib._bootstrap>", line 491, in _call_with_frames_removed
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/analytics/__init__.py", line 8, in <module>
+    from homeassistant.components.hassio import HassioNotReadyError
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/hassio/__init__.py", line 9, in <module>
+    from aiohasupervisor import SupervisorBadRequestError, SupervisorError
+ModuleNotFoundError: No module named 'aiohasupervisor'
+2026-10-25 21:36:04.242 WARNING (MainThread) [py.warnings] /home/younes/r2exp/houseA/custom_components/confine_bridge/__init__.py:167: RuntimeWarning: coroutine 'AuthManager.async_get_user' was never awaited
+  if hass.auth.async_get_user(msg["user_id"]) is None:
+
+2026-10-25 21:36:04.462 WARNING (MainThread) [homeassistant.components.http.ban] Login attempt or request with invalid authentication from localhost (127.0.0.1). Requested URL: '/api/'. (Python-urllib/3.13)
+2026-10-25 21:36:08.746 ERROR (MainThread) [homeassistant.components.websocket_api.http.connection] [140735228396544] Value 99.0 for number.selftest_target is outside valid range 5.0 - 30.0
+2026-10-25 21:36:13.422 ERROR (MainThread) [homeassistant.components.websocket_api.http.connection] [140735229869760] Error during service call to calendar.get_events: calendar.selftest_bins: the answer was refused: item 0 does not have exactly the listed fields
+2026-10-25 21:36:14.937 ERROR (MainThread) [homeassistant.components.sensor] Error adding entity sensor.selftest_forecast_time for domain sensor with platform confine_bridge
+Traceback (most recent call last):
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/sensor/__init__.py", line 662, in state
+    if value.tzinfo is None:
+       ^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'tzinfo'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity_platform.py", line 725, in _async_add_entities
+    await self._async_add_entity(
+        entity, False, entity_registry, config_subentry_id
+    )
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity_platform.py", line 1104, in _async_add_entity
+    await entity.add_to_platform_finish()
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity.py", line 1446, in add_to_platform_finish
+    self.async_write_ha_state()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity.py", line 1061, in async_write_ha_state
+    self._async_write_ha_state()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity.py", line 1213, in _async_write_ha_state
+    ) = self.__async_calculate_state()
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity.py", line 1119, in __async_calculate_state
+    state = self._stringify_state(available)
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity.py", line 1067, in _stringify_state
+    if (state := self.state) is None:
+                 ^^^^^^^^^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/sensor/__init__.py", line 676, in state
+    raise ValueError(
+    ...<4 lines>...
+    ) from err
+ValueError: Invalid datetime: sensor.selftest_forecast_time has timestamp device class but provides state 2026-10-25 15:00:00+00:00:<class 'str'> resulting in ''str' object has no attribute 'tzinfo''
+2026-10-25 21:36:15.244 ERROR (MainThread) [homeassistant.components.sensor] Error adding entity sensor.selftest_measured_time for domain sensor with platform confine_bridge
+Traceback (most recent call last):
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/sensor/__init__.py", line 662, in state
+    if value.tzinfo is None:
+       ^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'tzinfo'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity_platform.py", line 725, in _async_add_entities
+    await self._async_add_entity(
+        entity, False, entity_registry, config_subentry_id
+    )
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity_platform.py", line 1104, in _async_add_entity
+    await entity.add_to_platform_finish()
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity.py", line 1446, in add_to_platform_finish
+    self.async_write_ha_state()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity.py", line 1061, in async_write_ha_state
+    self._async_write_ha_state()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity.py", line 1213, in _async_write_ha_state
+    ) = self.__async_calculate_state()
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity.py", line 1119, in __async_calculate_state
+    state = self._stringify_state(available)
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity.py", line 1067, in _stringify_state
+    if (state := self.state) is None:
+                 ^^^^^^^^^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/sensor/__init__.py", line 676, in state
+    raise ValueError(
+    ...<4 lines>...
+    ) from err
+ValueError: Invalid datetime: sensor.selftest_measured_time has timestamp device class but provides state 2026-10-25T18:00:00+00:00:<class 'str'> resulting in ''str' object has no attribute 'tzinfo''
+2026-10-25 21:36:15.550 ERROR (MainThread) [homeassistant.components.sensor] Error adding entity sensor.selftest_next_collection for domain sensor with platform confine_bridge
+Traceback (most recent call last):
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/sensor/__init__.py", line 689, in state
+    return value.isoformat()
+           ^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'isoformat'. Did you mean: 'format'?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity_platform.py", line 725, in _async_add_entities
+    await self._async_add_entity(
+        entity, False, entity_registry, config_subentry_id
+    )
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity_platform.py", line 1104, in _async_add_entity
+    await entity.add_to_platform_finish()
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity.py", line 1446, in add_to_platform_finish
+    self.async_write_ha_state()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity.py", line 1061, in async_write_ha_state
+    self._async_write_ha_state()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity.py", line 1213, in _async_write_ha_state
+    ) = self.__async_calculate_state()
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity.py", line 1119, in __async_calculate_state
+    state = self._stringify_state(available)
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/helpers/entity.py", line 1067, in _stringify_state
+    if (state := self.state) is None:
+                 ^^^^^^^^^^
+  File "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/sensor/__init__.py", line 691, in state
+    raise ValueError(
+    ...<2 lines>...
+    ) from err
+ValueError: Invalid date: sensor.selftest_next_collection has date device class but provides state 2026-10-28:<class 'str'> resulting in ''str' object has no attribute 'isoformat''

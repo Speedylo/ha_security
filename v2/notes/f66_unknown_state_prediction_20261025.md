@@ -37,3 +37,12 @@ New cases in `selftest_bridge_types` (Pi, (A) fresh), `U1`–`U4`:
 
 Then step 5's real-house runs are made again from a fresh clone (step 5's note, E1–E4), since its
 first complete run had this defect in it. Outcome appended below.
+
+---
+
+## Outcome (appended 2026-10-25)
+
+Pi, run C of bridge step 5 (`experiments/real_platform/results/bridge_types_20261025/s5c/`).
+**Every prediction held.** Fails first at this note's `-pre` tag (`bridge_types_f66-pre.log`: U1–U3
+failed, 49/52; `bridge_types_f67-pre.log`: V1–V3 failed, 53/56); after the fix, `selftest_bridge_types`
+56/56, and in step 5's real-house runs every affected entity is in (A) in its published state.

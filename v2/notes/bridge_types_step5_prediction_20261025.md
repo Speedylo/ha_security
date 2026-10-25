@@ -89,3 +89,23 @@ stopped, the pre-change arm measured **H3: held** — (A)'s old light reported `
 **Before a complete run:** F66's fix (`55d8d6d`) and F67's, each with its fails-first test; the house
 test's reset check compared as numbers; `endtoend_local` given the Pi's current LAN address. The
 comparison fragility (`pirateweather`'s rounding) and the timetable minute are recorded, not changed.
+
+## Outcome of the complete runs (appended 2026-10-25, after the runs)
+
+**Run C** (`bridge-s5c`, `6b1a07d`, 21:35–22:29; with F66 and F67 fixed, the LAN address read from
+the host, the house test comparing numbers; (A)'s log kept after every step): `s5c/`.
+**Run D** (`bridge-s5d`, `77b2982`, 22:45–23:08; F69 fixed): the function set, `s5d/`.
+
+| | Outcome |
+|---|---|
+| H1, H2 | Held: 6/6 (run C) |
+| E1 | Held: every publish of every confined-declared arm accepted (C: 13 arms; D: 6) |
+| E2 | **37 of 38.** Run C 26/26 — every entity of `nordpool`, `dwd_weather` (weather and both timestamp sensors), `pirateweather`, `regensburg_transport`, `smhi_brandrisk` (12), `waste_collection_schedule` (six sensors and the calendar), `midea_ac_lan` (its climate), `trakt_tv` — and run D 11/12. The miss: `scheduler`'s `switch.schedule_retest`, published `triggered`, is `off` in (A). Home Assistant declares a toggle entity's state `on` or `off` only (`ToggleEntity.state`, `@final`); `scheduler` overrides it to report `triggered`, and the bridged switch keeps to the declared contract. A fidelity gap of the switch type, recorded; whether to mirror the override is Younes's call |
+| E3 | Held for every subject whose outcome involves the bridge. Function set (run D): `retest_e2e_verdicts` **43 of 45**, the same two rows failing as in the final rerun (`scheduler`'s switch, both arms); alarmo P1–P4 **8/8** (`e2e_ext_verdicts`, whose parsing of the bridge's type list was fixed to read an assignment spanning lines). Run C: `nordpool`, `waste_collection_schedule`, `smhi_brandrisk`, `regensburg_transport` 16/16 each; `trakt_tv` as before; `localtuya` found both simulated devices unconfined and confined-declared, none undeclared; `midea_ac_lan` reached its device in both arms (both timed out, as in earlier runs). Two misses not involving the bridge, as in run B: `dwd_weather`'s second host `www.dwd.de` (a clause miss), `pirateweather`'s A-vs-B value (9.2667 against 9.2722, minutes apart) |
+| E4 | Held: 33 of 33 suites (run C), `selftest_bridge_types` and `selftest_commands` included |
+
+Run D's function set ran to the end: F69 (Z2) held.
+
+**Found by this step, beyond the predictions:** F66 and F67 (bridge), F69 (harness tooling), and F68
+— (A)'s log showed `ws_designate_mediator` calling `hass.auth.async_get_user` without `await`, so its
+"no such user" check never fires; minor and fail-safe (a nonexistent user cannot log in), not yet fixed.

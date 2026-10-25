@@ -1,0 +1,32 @@
+start 2026-10-25T21:35:41+01:00
+f66-pre commit b3f032cf7ea833e0610aba1155c41a2a0f3caf5a dirty=0
+house_a_down_f66-pre exit=0 seconds=2 2026-10-25T21:35:43+01:00
+house_a_up_f66-pre exit=0 seconds=4 2026-10-25T21:35:47+01:00
+bridge_types_f66-pre exit=1 seconds=11 2026-10-25T21:35:58+01:00
+f67-pre commit ac2085157da21d4f87a2f13ce78bac8d4c5346e7 dirty=0
+house_a_down_f67-pre exit=0 seconds=1 2026-10-25T21:35:59+01:00
+house_a_up_f67-pre exit=0 seconds=5 2026-10-25T21:36:04+01:00
+bridge_types_f67-pre exit=1 seconds=12 2026-10-25T21:36:16+01:00
+bridge-s5c commit 6b1a07d97d9e1873d70251014131e529c908263c dirty=0 lan 10.126.85.243 100.86.243.57 172.17.0.1 fd7a:115c:a1e0::ea32:f33a 
+house_a_down_main exit=0 seconds=2 2026-10-25T21:36:18+01:00
+house_a_up_main exit=0 seconds=4 2026-10-25T21:36:22+01:00
+real_house exit=0 seconds=5 2026-10-25T21:36:27+01:00
+bridge_types exit=0 seconds=12 2026-10-25T21:36:39+01:00
+function exit=1 seconds=264 2026-10-25T21:41:03+01:00
+egress_nordpool exit=0 seconds=107 2026-10-25T21:42:50+01:00
+egress_dwd_weather exit=1 seconds=217 2026-10-25T21:46:27+01:00
+egress_pirateweather exit=1 seconds=148 2026-10-25T21:48:55+01:00
+egress_waste_collection_schedule exit=0 seconds=120 2026-10-25T21:50:55+01:00
+egress_smhi_brandrisk exit=0 seconds=197 2026-10-25T21:54:12+01:00
+egress_regensburg_transport exit=0 seconds=475 2026-10-25T22:02:07+01:00
+local_midea_ac_lan exit=0 seconds=1327 2026-10-25T22:24:14+01:00
+local_localtuya exit=0 seconds=121 2026-10-25T22:26:15+01:00
+oauth_trakt exit=0 seconds=23 2026-10-25T22:26:38+01:00
+house_a before suites: up
+suites exit=0 seconds=157 2026-10-25T22:29:15+01:00
+suites failed=0 of 33
+s5c-f66-pre dirty after=0
+s5c-f67-pre dirty after=0
+s5c-bridge-s5c dirty after=0
+end 2026-10-25T22:29:15+01:00
+ALLDONE

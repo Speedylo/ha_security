@@ -1,0 +1,4 @@
+  powercalc                      unconfined loaded
+  powercalc                      confined   loaded
+
+wrote /home/younes/r2exp/bridge-run/hang/powercalc_both.json

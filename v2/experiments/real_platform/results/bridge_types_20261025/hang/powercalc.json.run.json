@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "/home/younes/r2exp/s5c-bridge-s5c/v2/framework/confine/endtoend_function.py",
+    "--corpus",
+    "/home/younes/r2exp/corpus",
+    "--python",
+    "/home/younes/r2exp/ha314/bin/python",
+    "--platform",
+    "real",
+    "--only",
+    "powercalc",
+    "--arm",
+    "confined",
+    "--json",
+    "/home/younes/r2exp/bridge-run/hang/powercalc.json"
+  ],
+  "cwd": "/home/younes/r2exp/s5c-bridge-s5c/v2/framework",
+  "executable": "/usr/bin/python3",
+  "python": "3.13.5",
+  "host": "raspberrypi",
+  "machine": "aarch64",
+  "time": "2026-10-25T22:32:18+0100",
+  "commit": "6b1a07d97d9e1873d70251014131e529c908263c",
+  "uncommitted_changes": false,
+  "resolve_before": "2026-10-06T00:00:00Z"
+}

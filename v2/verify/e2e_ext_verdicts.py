@@ -10,14 +10,16 @@ for every entity each integration published, whether the real bridge could stand
 
 from __future__ import annotations
 
+import ast
 import json
 import sys
 from pathlib import Path
 
 # The bridge's own list (framework/ha_bridge/confine_bridge/const.py), read rather than copied.
 CONST = Path(__file__).resolve().parent.parent / "framework/ha_bridge/confine_bridge/const.py"
-SUPPORTED = next(eval(line.split("=", 1)[1]) for line in CONST.read_text().splitlines()
-                 if line.startswith("SUPPORTED"))
+# The whole assignment, which spans lines since bridge step 3 (one line was read until 2026-10-25).
+SUPPORTED = next(ast.literal_eval(node.value) for node in ast.parse(CONST.read_text()).body
+                 if isinstance(node, ast.Assign) and getattr(node.targets[0], "id", "") == "SUPPORTED")
 
 ALARM = "alarm_control_panel.alarmo"
 WET_EXPECTED = "on Tue, 27.10.2026"

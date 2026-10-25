@@ -1,0 +1,784 @@
+[
+  {
+    "domain": "powercalc",
+    "arm": "unconfined",
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false,
+      "light": true,
+      "group": true,
+      "template": true,
+      "select": true,
+      "utility_meter": true,
+      "integration": true
+    },
+    "history": [
+      [
+        "sensor.lamp_power_power",
+        "unknown"
+      ],
+      [
+        "sensor.lamp_power_energy",
+        "unknown"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "8.06"
+      ],
+      [
+        "sensor.all_standby_power",
+        "unknown"
+      ],
+      [
+        "sensor.all_standby_energy",
+        "unknown"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "8.06"
+      ],
+      [
+        "sensor.lamp_power_energy",
+        "0.0000"
+      ],
+      [
+        "light.living_room",
+        "on"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "3.00"
+      ],
+      [
+        "light.living_room",
+        "off"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "0.00"
+      ],
+      [
+        "sensor.all_standby_power",
+        "0.00"
+      ]
+    ],
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "menu": "virtual_power"
+        },
+        {
+          "step": "virtual_power",
+          "sent": [
+            "create_energy_sensor",
+            "create_standby_energy_sensor",
+            "create_utility_meters",
+            "entity_id",
+            "mode",
+            "name"
+          ]
+        },
+        {
+          "step": "linear",
+          "sent": [
+            "max_power",
+            "min_power"
+          ]
+        },
+        {
+          "step": "power_advanced",
+          "sent": [
+            "energy_filter_outlier_enabled",
+            "energy_integration_method"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "world",
+        "at": 15,
+        "utc": "2026-10-25T21:32:57.873856+00:00",
+        "entity": "light.living_room"
+      },
+      {
+        "kind": "world",
+        "at": 30,
+        "utc": "2026-10-25T21:33:12.885419+00:00",
+        "entity": "light.living_room"
+      }
+    ],
+    "entries": [
+      {
+        "title": "lamp power",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "conversation.home_assistant",
+      "sensor.all_standby_energy",
+      "sensor.all_standby_power",
+      "sensor.lamp_power_energy",
+      "sensor.lamp_power_power",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sun.sun",
+      "zone.home"
+    ],
+    "published": [
+      {
+        "entity": "conversation.home_assistant",
+        "state": "unknown",
+        "platform": null,
+        "attributes": {
+          "friendly_name": "Home Assistant",
+          "supported_features": 1
+        }
+      },
+      {
+        "entity": "sensor.all_standby_energy",
+        "state": "unknown",
+        "platform": "powercalc",
+        "attributes": {
+          "state_class": "total_increasing",
+          "source_entity": "sensor.dummy",
+          "source_domain": "sensor",
+          "source": "sensor.all_standby_power",
+          "unit_of_measurement": "kWh",
+          "device_class": "energy",
+          "icon": "mdi:lightning-bolt",
+          "friendly_name": "All standby energy"
+        }
+      },
+      {
+        "entity": "sensor.all_standby_power",
+        "state": "0.00",
+        "platform": "powercalc",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "All standby power"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_energy",
+        "state": "0.0000",
+        "platform": "powercalc",
+        "attributes": {
+          "state_class": "total_increasing",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "source": "sensor.lamp_power_power",
+          "unit_of_measurement": "kWh",
+          "device_class": "energy",
+          "icon": "mdi:lightning-bolt",
+          "friendly_name": "lamp power energy"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "0.00",
+        "platform": "powercalc",
+        "attributes": {
+          "state_class": "measurement",
+          "calculation_mode": "linear",
+          "integration": "powercalc",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "energy_sensor_entity_id": "sensor.lamp_power_energy",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "lamp power power"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_dawn",
+        "state": "2026-10-26T06:08:21+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dawn"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_dusk",
+        "state": "2026-10-26T17:19:38+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dusk"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_midnight",
+        "state": "2026-10-25T23:44:25+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next midnight"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_noon",
+        "state": "2026-10-26T11:44:27+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next noon"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_rising",
+        "state": "2026-10-26T06:43:35+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next rising"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_setting",
+        "state": "2026-10-26T16:44:27+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next setting"
+        }
+      },
+      {
+        "entity": "sun.sun",
+        "state": "below_horizon",
+        "platform": null,
+        "attributes": {
+          "next_dawn": "2026-10-26T06:08:21.002778+00:00",
+          "next_dusk": "2026-10-26T17:19:38.150808+00:00",
+          "next_midnight": "2026-10-25T23:44:25+00:00",
+          "next_noon": "2026-10-26T11:44:27+00:00",
+          "next_rising": "2026-10-26T06:43:35.266810+00:00",
+          "next_setting": "2026-10-26T16:44:27.552187+00:00",
+          "elevation": -42.64,
+          "azimuth": 313.74,
+          "rising": false,
+          "friendly_name": "Sun"
+        }
+      },
+      {
+        "entity": "zone.home",
+        "state": "0",
+        "platform": null,
+        "attributes": {
+          "latitude": 51.5,
+          "longitude": -0.12,
+          "radius": 100,
+          "passive": false,
+          "editable": true,
+          "icon": "mdi:home",
+          "friendly_name": "Home"
+        }
+      }
+    ],
+    "probe": null,
+    "variant": "powercalc",
+    "log_tail": [
+      "  File \"/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/recorder/__init__.py\", line 149, in async_setup",
+      "    instance = hass.data[DATA_INSTANCE] = Recorder(",
+      "                                          ~~~~~~~~^",
+      "        hass=hass,",
+      "        ^^^^^^^^^^",
+      "    ...<8 lines>...",
+      "        exclude_event_types=exclude_event_types,",
+      "        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "    )",
+      "    ^",
+      "  File \"/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/recorder/core.py\", line 182, in __init__",
+      "    db_connected: asyncio.Future[bool] = hass.data[DATA_RECORDER].db_connected",
+      "                                         ~~~~~~~~~^^^^^^^^^^^^^^^",
+      "KeyError: 'recorder'",
+      "zlib_ng and isal are not available, falling back to zlib, performance will be degraded."
+    ]
+  },
+  {
+    "domain": "powercalc",
+    "components_setup": {
+      "light": true,
+      "group": true,
+      "template": true,
+      "select": true,
+      "utility_meter": true,
+      "integration": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "menu": "virtual_power"
+        },
+        {
+          "step": "virtual_power",
+          "sent": [
+            "create_energy_sensor",
+            "create_standby_energy_sensor",
+            "create_utility_meters",
+            "entity_id",
+            "mode",
+            "name"
+          ]
+        },
+        {
+          "step": "linear",
+          "sent": [
+            "max_power",
+            "min_power"
+          ]
+        },
+        {
+          "step": "power_advanced",
+          "sent": [
+            "energy_filter_outlier_enabled",
+            "energy_integration_method"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "none",
+        "at": 0,
+        "utc": "2026-10-25T21:33:35.232688+00:00"
+      }
+    ],
+    "entries": [
+      {
+        "title": "lamp power",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "light.living_room",
+      "sensor.all_standby_energy",
+      "sensor.all_standby_power",
+      "sensor.lamp_power_energy",
+      "sensor.lamp_power_power"
+    ],
+    "mirrored": [
+      "light.living_room"
+    ],
+    "published": [
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "calculation_mode": "linear",
+          "integration": "powercalc",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "energy_sensor_entity_id": "sensor.lamp_power_energy",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "lamp power power"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_energy",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "total_increasing",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "source": "sensor.lamp_power_power",
+          "unit_of_measurement": "kWh",
+          "device_class": "energy",
+          "icon": "mdi:lightning-bolt",
+          "friendly_name": "lamp power energy"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "8.06",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "calculation_mode": "linear",
+          "integration": "powercalc",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "energy_sensor_entity_id": "sensor.lamp_power_energy",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "lamp power power"
+        }
+      },
+      {
+        "entity": "sensor.all_standby_power",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "All standby power"
+        }
+      },
+      {
+        "entity": "sensor.all_standby_energy",
+        "state": "unknown",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "total_increasing",
+          "source_entity": "sensor.dummy",
+          "source_domain": "sensor",
+          "source": "sensor.all_standby_power",
+          "unit_of_measurement": "kWh",
+          "device_class": "energy",
+          "icon": "mdi:lightning-bolt",
+          "friendly_name": "All standby energy"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "3.00",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "calculation_mode": "linear",
+          "integration": "powercalc",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "energy_sensor_entity_id": "sensor.lamp_power_energy",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "lamp power power"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_energy",
+        "state": "0.0000",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "total_increasing",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "source": "sensor.lamp_power_power",
+          "unit_of_measurement": "kWh",
+          "device_class": "energy",
+          "icon": "mdi:lightning-bolt",
+          "friendly_name": "lamp power energy"
+        }
+      },
+      {
+        "entity": "sensor.lamp_power_power",
+        "state": "0.00",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "calculation_mode": "linear",
+          "integration": "powercalc",
+          "source_entity": "light.living_room",
+          "source_domain": "light",
+          "energy_sensor_entity_id": "sensor.lamp_power_energy",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "lamp power power"
+        }
+      },
+      {
+        "entity": "sensor.all_standby_power",
+        "state": "0.00",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "All standby power"
+        }
+      }
+    ],
+    "refused": [],
+    "push": {
+      "subscribed": [
+        "light.living_room"
+      ],
+      "received": [
+        {
+          "entity": "light.living_room",
+          "state": "on"
+        },
+        {
+          "entity": "light.living_room",
+          "state": "on"
+        },
+        {
+          "entity": "light.living_room",
+          "state": "off"
+        }
+      ],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "probe": null,
+    "in_house": [
+      {
+        "entity": "sensor.lamp_power_power",
+        "in_house": "sensor.lamp_power_power",
+        "published_state": "0.00",
+        "house_state": "0.00",
+        "owned_by_bridge": true,
+        "same_domain": true,
+        "state_matches": true
+      },
+      {
+        "entity": "sensor.lamp_power_energy",
+        "in_house": "sensor.lamp_power_energy",
+        "published_state": "0.0000",
+        "house_state": "0.0000",
+        "owned_by_bridge": true,
+        "same_domain": true,
+        "state_matches": true
+      },
+      {
+        "entity": "sensor.all_standby_power",
+        "in_house": "sensor.all_standby_power",
+        "published_state": "0.00",
+        "house_state": "0.00",
+        "owned_by_bridge": true,
+        "same_domain": true,
+        "state_matches": true
+      },
+      {
+        "entity": "sensor.all_standby_energy",
+        "in_house": "sensor.all_standby_energy",
+        "published_state": "unknown",
+        "house_state": "unknown",
+        "owned_by_bridge": true,
+        "same_domain": true,
+        "state_matches": true
+      }
+    ],
+    "variant": "powercalc",
+    "arm": "confined",
+    "install": {
+      "ok": true,
+      "installed": [
+        "cronsim",
+        "numpy"
+      ],
+      "resolved_before": "2026-10-06T00:00:00Z",
+      "resolved": [
+        "cronsim-2.7",
+        "numpy-2.5.3"
+      ]
+    },
+    "durable": {
+      "records": 12,
+      "runs": 1,
+      "decisions": 11,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "decisions": [
+      {
+        "identity": "powercalc",
+        "op": "entity.read",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/read/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.subscribe",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "/permissions/entities/subscribe/0",
+        "reason": "declared"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "powercalc",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "history": [
+      [
+        "light.living_room",
+        "on"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "unknown"
+      ],
+      [
+        "sensor.lamp_power_energy",
+        "unknown"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "8.06"
+      ],
+      [
+        "sensor.all_standby_power",
+        "unknown"
+      ],
+      [
+        "sensor.all_standby_energy",
+        "unknown"
+      ],
+      [
+        "<world>",
+        "light.living_room on"
+      ],
+      [
+        "light.living_room",
+        "on"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "3.00"
+      ],
+      [
+        "sensor.lamp_power_energy",
+        "0.0000"
+      ],
+      [
+        "<world>",
+        "light.living_room off"
+      ],
+      [
+        "light.living_room",
+        "off"
+      ],
+      [
+        "sensor.lamp_power_power",
+        "0.00"
+      ],
+      [
+        "sensor.all_standby_power",
+        "0.00"
+      ]
+    ],
+    "calls": [],
+    "platform_states": {
+      "sensor.lamp_power_power": "0.00",
+      "sensor.lamp_power_energy": "0.0000",
+      "sensor.all_standby_power": "0.00",
+      "sensor.all_standby_energy": "unknown"
+    },
+    "platform": "real",
+    "log_tail": [
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/composite.py\", line 16, in initialize",
+      "    await loader.initialize(prefer_cached)",
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/remote.py\", line 142, in initialize",
+      "    self.library_contents = await self.load_library_json(prefer_cached)",
+      "                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/remote.py\", line 247, in load_library_json",
+      "    return await self.hass.async_add_executor_job(self._load_local_library_json)",
+      "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "  File \"/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/concurrent/futures/thread.py\", line 86, in run",
+      "    result = ctx.run(self.task)",
+      "  File \"/home/younes/.local/share/uv/python/cpython-3.14.7-linux-aarch64-gnu/lib/python3.14/concurrent/futures/thread.py\", line 73, in run",
+      "    return fn(*args, **kwargs)",
+      "  File \"/sandbox/data/custom_components/powercalc/power_profile/loader/remote.py\", line 265, in _load_local_library_json",
+      "    raise ProfileDownloadError(\"Local library.json file not found\")",
+      "custom_components.powercalc.power_profile.error.ProfileDownloadError: Local library.json file not found"
+    ]
+  }
+]

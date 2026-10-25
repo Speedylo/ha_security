@@ -1,0 +1,24 @@
+  powercalc                      unconfined loaded
+  powercalc                      confined   loaded
+  powercalc-no-subscribe         confined   loaded
+  powercalc-no-read              confined   loaded
+  watchman                       unconfined Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/younes/r2exp/s5c-bridge-s5c/v2/framework/confine/endtoend_function.py", line 425, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/younes/r2exp/s5c-bridge-s5c/v2/framework/confine/endtoend_function.py", line 411, in main
+    with house_stopped():
+         ~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.13/contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "/home/younes/r2exp/s5c-bridge-s5c/v2/framework/confine/real_house.py", line 69, in house_stopped
+    _house_a("down")
+    ~~~~~~~~^^^^^^^^
+  File "/home/younes/r2exp/s5c-bridge-s5c/v2/framework/confine/real_house.py", line 58, in _house_a
+    raise RuntimeError(f"house_a {' '.join(arguments)}: "
+                       f"{(done.stderr or done.stdout).strip()[-200:]}")
+RuntimeError: house_a down: s5c-bridge-s5c/v2/framework/confine/house_a.py", line 300, in stop
+    raise TimeoutError(f"(A), pid {pid}, did not stop within {seconds:.0f} s")
+TimeoutError: (A), pid 36032, did not stop within 60 s
