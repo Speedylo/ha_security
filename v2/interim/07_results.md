@@ -12,7 +12,7 @@ The first assertion would fail if either published attack technique succeeded un
 | Attack | Unconfined | Confined |
 |---|---|---|
 | The garbage-collector technique, aimed at another integration's live credential (Corno & Mannella, 2022) | Credential reached | Nothing found: every object visible belonged to the attacker |
-| The 2021 path-traversal pattern, aimed at two planted secrets (Home Assistant, 2021a) | 2 of 2 secrets recovered | 0 of 2: the file does not exist inside the sandbox |
+| The 2021 path-traversal pattern, aimed at two planted secrets (Home Assistant, 2021) | 2 of 2 secrets recovered | 0 of 2: the file does not exist inside the sandbox |
 | Reading another process's environment variables | Contents read | Nothing to read |
 | Reading the states of devices the integration was not granted | 36 of 36, including all 20 that reveal whether someone is at home | Only the 1 device that was declared |
 
