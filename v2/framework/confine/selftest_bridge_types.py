@@ -24,6 +24,9 @@ in (A), described well enough for Home Assistant to draw its control. Operating 
     U1   a numeric sensor published `unknown` is accepted and shows `unknown` in (A) (F66)
     U2   then a number, then `unavailable`, each shown as such
     U3   a switch published `unavailable` shows `unavailable`
+    V1   a timestamp sensor published with a space shows the same instant in (A) (F67)
+    V2   one published with a `T` shows it; then `unknown`
+    V3   a date sensor shows its date
 
 Requires (A) running: `python3 -m confine.house_a up --fresh` on the Pi.
 
@@ -388,6 +391,26 @@ def main() -> int:
         shown = platform.read(landed[DOWN])[0] if landed[DOWN] else None
         check("U3 a switch published 'unavailable' shows unavailable in (A)",
               answer.get("ok") is True and shown == "unavailable", f"{shown!r}")
+
+        print("\nV — timestamp and date sensors (F67)\n")
+        for entity, device_class, state, expected in (
+                ("sensor.selftest_forecast_time", "timestamp", "2026-10-25 15:00:00+00:00",
+                 "2026-10-25T15:00:00+00:00"),
+                ("sensor.selftest_measured_time", "timestamp", "2026-10-25T18:00:00+00:00",
+                 "2026-10-25T18:00:00+00:00"),
+                ("sensor.selftest_next_collection", "date", "2026-10-28", "2026-10-28")):
+            answer = sandbox.ask({"op": "entity.publish", "entity": entity, "state": state,
+                                  "attributes": {"device_class": device_class}})
+            landed[entity] = platform.published.get(("selftest", entity)) or ""
+            shown = platform.read(landed[entity])[0] if landed[entity] else None
+            label = "V1" if "forecast" in entity else "V2" if "measured" in entity else "V3"
+            check(f"{label} a {device_class} sensor published {state!r} shows {expected!r} in (A)",
+                  answer.get("ok") is True and shown == expected, f"{shown!r}")
+        MEASURED = "sensor.selftest_measured_time"
+        sandbox.ask({"op": "entity.publish", "entity": MEASURED, "state": "unknown",
+                     "attributes": {"device_class": "timestamp"}})
+        shown = platform.read(landed[MEASURED])[0] if landed[MEASURED] else None
+        check("V2 republished 'unknown', (A) shows unknown", shown == "unknown", f"{shown!r}")
 
         print("\nT5 — a type still unsupported is refused\n")
         light = sandbox.ask({"op": "entity.publish", "entity": "light.selftest_probe",
