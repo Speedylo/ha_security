@@ -1,0 +1,5 @@
+start 2026-10-25T17:36:40+01:00 commit 7324f49d707d0a9f461f71ccb87ec914ba8c4c6e dirty=0
+alarmo exit=0 2026-10-25T17:40:24+01:00
+waste exit=0 2026-10-25T17:42:35+01:00
+dirty after=0
+ALLDONE

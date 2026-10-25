@@ -61,3 +61,35 @@ in the clause read from the source and is reported as such, not added afterwards
 A prediction that fails is reported, with the unconfined arm consulted before anything is charged to
 confinement. Neither run is repeated to obtain a pass; a repeat for a cause outside the project (the
 Darmstadt service down, say) is recorded with that cause. The outcome is appended to this note.
+
+---
+
+## Outcome (appended 2026-10-25, after both runs)
+
+Run from a fresh clone of `e2e-ext-2026-10` (`7324f49`), clean before and after, 17:36–17:42 on the Pi.
+Results: `experiments/end_to_end/results/ext_20261025/` (`verdicts.txt`, `waste.log` with the harness's
+checks, the raw JSON, the driver).
+
+**Every prediction held: P1–P4 and P7 10/10 (`verify/e2e_ext_verdicts.py`); P5, P6 and P8 16/16
+(`endtoend_egress`'s checks).**
+
+- `alarmo`: in both arms the alarm panel went `disarmed → arming → armed_away → disarmed`, both commands
+  accepted; the confined arm made no refused request. Record: it published `alarm_control_panel` only
+  (no `event` entity appeared in either arm), which the real bridge refuses — in a real house today its
+  panel could not appear. The unconfined arm's log ends with `KeyError: 'recorder'`, which touched no
+  check.
+- `waste_collection_schedule`: unconfined and confined published the same six sensors with the same
+  dates (WET `on Tue, 27.10.2026`, RM1 `on Fri, 30.10.2026`, …); the only granted destination was
+  `ead.darmstadt.de:443`; nothing was refused with the clause; without it, every connection was refused
+  with the egress clause and the flow stopped at its own `fetch_error`, so no entry was created. No
+  second host: arm A's recorder resolved `ead.darmstadt.de` and two local addresses.
+
+**Not predicted — a partial cost of confinement (finding F65, cause not established).** Confined, the
+integration's calendar entity is missing: the calendar component depends on `http`, whose setup failed in
+the sandbox with *"Could not determine source ip because the system does not have any enabled IPv4
+addresses and creating a socket failed"*. Unconfined, the calendar exists. `alarmo`, which also depends on
+`http`, set up without error in `endtoend_function`, so the failure is specific to the egress harness's
+sandbox; the likely mechanism (not verified) is that `network.async_get_source_ip` opens a UDP socket
+towards a public address, which the egress shim intercepts. The sensors carry the schedule, so the
+integration works, but one of its two kinds of entity is lost to confinement — the first such loss in a
+run where the unconfined arm has it. (The calendar would also be refused by the real bridge, F64.)

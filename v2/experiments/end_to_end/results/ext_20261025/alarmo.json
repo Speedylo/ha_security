@@ -1,0 +1,410 @@
+[
+  {
+    "domain": "alarmo",
+    "arm": "unconfined",
+    "components_setup": {
+      "homeassistant": true,
+      "default_config": false,
+      "http": true,
+      "panel_custom": true,
+      "mqtt": true,
+      "notify": true
+    },
+    "history": [
+      [
+        "alarm_control_panel.alarmo",
+        "disarmed"
+      ],
+      [
+        "alarm_control_panel.alarmo",
+        "arming"
+      ],
+      [
+        "alarm_control_panel.alarmo",
+        "armed_away"
+      ],
+      [
+        "alarm_control_panel.alarmo",
+        "disarmed"
+      ]
+    ],
+    "setup_errors": [],
+    "flow": {
+      "steps": [],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "service",
+        "at": 5,
+        "utc": "2026-10-25T16:37:03.853038+00:00",
+        "ok": true
+      },
+      {
+        "kind": "service",
+        "at": 85,
+        "utc": "2026-10-25T16:38:23.918545+00:00",
+        "ok": true
+      }
+    ],
+    "entries": [
+      {
+        "title": "Alarmo",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "own_entities": [
+      "alarm_control_panel.alarmo",
+      "conversation.home_assistant",
+      "sensor.sun_next_dawn",
+      "sensor.sun_next_dusk",
+      "sensor.sun_next_midnight",
+      "sensor.sun_next_noon",
+      "sensor.sun_next_rising",
+      "sensor.sun_next_setting",
+      "sun.sun",
+      "zone.home"
+    ],
+    "published": [
+      {
+        "entity": "alarm_control_panel.alarmo",
+        "state": "disarmed",
+        "platform": "alarmo",
+        "attributes": {
+          "code_arm_required": false,
+          "next_state": "disarmed",
+          "friendly_name": "Alarmo",
+          "supported_features": 11
+        }
+      },
+      {
+        "entity": "conversation.home_assistant",
+        "state": "unknown",
+        "platform": null,
+        "attributes": {
+          "friendly_name": "Home Assistant",
+          "supported_features": 1
+        }
+      },
+      {
+        "entity": "sensor.sun_next_dawn",
+        "state": "2026-10-26T06:08:21+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dawn"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_dusk",
+        "state": "2026-10-25T17:21:29+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dusk"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_midnight",
+        "state": "2026-10-25T23:44:25+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next midnight"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_noon",
+        "state": "2026-10-26T11:44:27+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next noon"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_rising",
+        "state": "2026-10-26T06:43:35+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next rising"
+        }
+      },
+      {
+        "entity": "sensor.sun_next_setting",
+        "state": "2026-10-25T16:46:25+00:00",
+        "platform": "sun",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next setting"
+        }
+      },
+      {
+        "entity": "sun.sun",
+        "state": "above_horizon",
+        "platform": null,
+        "attributes": {
+          "next_dawn": "2026-10-26T06:08:21.002778+00:00",
+          "next_dusk": "2026-10-25T17:21:29.856055+00:00",
+          "next_midnight": "2026-10-25T23:44:25+00:00",
+          "next_noon": "2026-10-26T11:44:27+00:00",
+          "next_rising": "2026-10-26T06:43:35.266810+00:00",
+          "next_setting": "2026-10-25T16:46:25.105850+00:00",
+          "elevation": 1.01,
+          "azimuth": 249.24,
+          "rising": false,
+          "friendly_name": "Sun"
+        }
+      },
+      {
+        "entity": "zone.home",
+        "state": "0",
+        "platform": null,
+        "attributes": {
+          "latitude": 51.5,
+          "longitude": -0.12,
+          "radius": 100,
+          "passive": false,
+          "editable": true,
+          "icon": "mdi:home",
+          "friendly_name": "Home"
+        }
+      }
+    ],
+    "probe": null,
+    "variant": "alarmo",
+    "log_tail": [
+      "  File \"/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/recorder/__init__.py\", line 149, in async_setup",
+      "    instance = hass.data[DATA_INSTANCE] = Recorder(",
+      "                                          ~~~~~~~~^",
+      "        hass=hass,",
+      "        ^^^^^^^^^^",
+      "    ...<8 lines>...",
+      "        exclude_event_types=exclude_event_types,",
+      "        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "    )",
+      "    ^",
+      "  File \"/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components/recorder/core.py\", line 182, in __init__",
+      "    db_connected: asyncio.Future[bool] = hass.data[DATA_RECORDER].db_connected",
+      "                                         ~~~~~~~~~^^^^^^^^^^^^^^^",
+      "KeyError: 'recorder'",
+      "zlib_ng and isal are not available, falling back to zlib, performance will be degraded."
+    ]
+  },
+  {
+    "domain": "alarmo",
+    "components_setup": {
+      "http": true,
+      "panel_custom": true,
+      "mqtt": true,
+      "notify": true
+    },
+    "setup_errors": [],
+    "flow": {
+      "steps": [],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "steps": [
+      {
+        "kind": "service",
+        "at": 5,
+        "utc": "2026-10-25T16:38:48.714847+00:00",
+        "ok": true
+      },
+      {
+        "kind": "service",
+        "at": 85,
+        "utc": "2026-10-25T16:40:08.800527+00:00",
+        "ok": true
+      }
+    ],
+    "entries": [
+      {
+        "title": "Alarmo",
+        "state": "ConfigEntryState.LOADED",
+        "loaded": true
+      }
+    ],
+    "loaded": true,
+    "local_entities": [
+      "alarm_control_panel.alarmo"
+    ],
+    "mirrored": [],
+    "published": [
+      {
+        "entity": "alarm_control_panel.alarmo",
+        "state": "disarmed",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "code_format": null,
+          "changed_by": null,
+          "code_arm_required": false,
+          "arm_mode": null,
+          "next_state": "disarmed",
+          "open_sensors": null,
+          "bypassed_sensors": null,
+          "delay": null,
+          "last_triggered": null,
+          "friendly_name": "Alarmo",
+          "supported_features": 11
+        }
+      },
+      {
+        "entity": "alarm_control_panel.alarmo",
+        "state": "arming",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "code_format": null,
+          "changed_by": null,
+          "code_arm_required": false,
+          "arm_mode": "armed_away",
+          "next_state": "armed_away",
+          "open_sensors": null,
+          "bypassed_sensors": null,
+          "delay": 60,
+          "last_triggered": null,
+          "friendly_name": "Alarmo",
+          "supported_features": 11
+        }
+      },
+      {
+        "entity": "alarm_control_panel.alarmo",
+        "state": "armed_away",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "code_format": null,
+          "changed_by": null,
+          "code_arm_required": false,
+          "arm_mode": "armed_away",
+          "next_state": "armed_away",
+          "open_sensors": null,
+          "bypassed_sensors": null,
+          "delay": null,
+          "last_triggered": null,
+          "friendly_name": "Alarmo",
+          "supported_features": 11
+        }
+      },
+      {
+        "entity": "alarm_control_panel.alarmo",
+        "state": "disarmed",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "attributes": {
+          "code_format": null,
+          "changed_by": null,
+          "code_arm_required": false,
+          "arm_mode": null,
+          "next_state": "disarmed",
+          "open_sensors": null,
+          "bypassed_sensors": null,
+          "delay": null,
+          "last_triggered": null,
+          "friendly_name": "Alarmo",
+          "supported_features": 11
+        }
+      }
+    ],
+    "refused": [],
+    "push": {
+      "subscribed": [],
+      "received": [],
+      "unexpected": [],
+      "commands": []
+    },
+    "egress": {},
+    "probe": null,
+    "variant": "alarmo",
+    "arm": "confined",
+    "install": {
+      "ok": true,
+      "installed": [
+        "home_assistant_frontend",
+        "paho_mqtt"
+      ],
+      "resolved_before": "2026-10-06T00:00:00Z",
+      "resolved": [
+        "home_assistant_frontend-20260729.7",
+        "paho_mqtt-2.1.0"
+      ]
+    },
+    "durable": {
+      "records": 5,
+      "runs": 1,
+      "decisions": 4,
+      "breaks": [],
+      "reconcile": [],
+      "ok": true
+    },
+    "decisions": [
+      {
+        "identity": "alarmo",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "alarmo",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "alarmo",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      },
+      {
+        "identity": "alarmo",
+        "op": "entity.publish",
+        "claimed_identity": null,
+        "allowed": true,
+        "clause": "(ambient: \u00a75.10.2)",
+        "reason": "its own entity"
+      }
+    ],
+    "history": [
+      [
+        "alarm_control_panel.alarmo",
+        "disarmed"
+      ],
+      [
+        "alarm_control_panel.alarmo",
+        "arming"
+      ],
+      [
+        "alarm_control_panel.alarmo",
+        "armed_away"
+      ],
+      [
+        "alarm_control_panel.alarmo",
+        "disarmed"
+      ]
+    ],
+    "calls": [],
+    "platform_states": {
+      "sensor.living_room_temperature": "21.4",
+      "sensor.living_room_humidity": "48",
+      "light.living_room": "on",
+      "alarm_control_panel.alarmo": "disarmed"
+    },
+    "log_tail": []
+  }
+]
