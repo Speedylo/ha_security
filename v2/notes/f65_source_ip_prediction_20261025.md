@@ -125,3 +125,19 @@ nothing could use. No request changes and nothing new reaches the network.
 R3's second clause is the strongest statement available: with the shim on, the platform components
 each integration needs set up exactly as they did without it. A difference is reported, not
 explained away. Outcome appended below.
+
+### Outcome of the second route (appended 2026-10-25, after the runs)
+
+Pi, fresh clone of `f65b-fix` (`3790cb1`), clean before and after, 18:21–18:28. Results:
+`experiments/compat/results/f65_20261025/second/`, `verdicts_second.txt`. **Every prediction held.**
+
+- R1: laptop 26/29 before (9a `''`, 9b `None`, 9c `''`), 29/29 after; Pi 29/29.
+- R2: 29 of 29 suites exit 0.
+- R3: `zeroconf` set up for `sonoff` and `xiaomi_home`; **for all 37, every component's setup result
+  and every level equal the final rerun's**, which had no shim.
+- R4: calendar published confined; no source-IP message; the harness's checks 16/16.
+
+F65 is closed for the head corpus: with the shim installed as the supervisor installs it, the
+platform components set up exactly as without it. Not measured with the shim: the uniform sample of
+40, and the other end-to-end subjects (they ran with the shim before either fix, and none of them set
+up `http` or `zeroconf`).

@@ -1,0 +1,12 @@
+R3 — the second route fixed, with the shim: compat_egress.json
+  PASS  R3 zeroconf sets up for sonoff and xiaomi_home   [{'sonoff': True, 'xiaomi_home': True}]
+  PASS  R3 every component's setup, for all 37, equals the final rerun's   [[]]
+        record — levels that differ from the final rerun: none
+  PASS  R3 every level equals the final rerun's   [[]]
+
+R4 — waste_collection_schedule: waste.json
+  PASS  R4 the confined arm publishes the calendar entity   [['calendar.waste_collection_schedule_ead_darmstadt']]
+  PASS  R4 no 'Could not determine source ip' in its log
+  PASS  R4 the harness's own checks all pass   [16/16]
+
+6/6 held

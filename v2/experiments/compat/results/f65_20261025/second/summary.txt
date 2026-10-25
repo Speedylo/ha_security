@@ -1,0 +1,10 @@
+start 2026-10-25T18:21:53+01:00 commit 3790cb19994fec3c1df2a74d753050e0c2d265c2 tag f65b-fix dirty=0
+house_a_up exit=0 seconds=4
+suites exit=0 seconds=118
+suites failed=0 of 29
+house_a_down exit=0 seconds=1
+compat_egress exit=0 seconds=124
+waste exit=0 seconds=125
+dirty after=0
+end 2026-10-25T18:28:05+01:00
+ALLDONE
