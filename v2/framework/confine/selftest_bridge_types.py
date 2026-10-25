@@ -264,8 +264,10 @@ def main() -> int:
               str(restored.get("error") or ""))
 
         print("\nT9 — the alarm code is not in the durable log\n")
+        # As a JSON value, in quotes: a bare 4917 can turn up by chance in the log's hex hashes and
+        # timestamps (step 4, 2026-10-25), and a quote cannot.
         check("T9 '4917' appears nowhere in the run's durable log",
-              "4917" not in (root / "audit" / "decisions.jsonl").read_text())
+              '"4917"' not in (root / "audit" / "decisions.jsonl").read_text())
 
         print("\nW1 — a calendar and a weather, described (step 4)\n")
         CAL, WEATHER = "calendar.selftest_bins", "weather.selftest_home"

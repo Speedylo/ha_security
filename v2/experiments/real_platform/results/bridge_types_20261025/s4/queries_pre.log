@@ -1,0 +1,49 @@
+
+Q1 — the listed questions
+
+  FAIL  Q1 calendar.get_events {'start': '2026-10-26T00:00:00+01:00', 'end': '2026-11-02T00:00:00+01:00'}: allowed and pushed exactly  — (command: only the services listed for the entity's type) None
+  FAIL  Q1 weather.get_forecasts {'type': 'daily'}: allowed and pushed exactly  — (command: only the services listed for the entity's type) None
+  FAIL  Q1 weather.get_forecasts {'type': 'hourly'}: allowed and pushed exactly  — (command: only the services listed for the entity's type) None
+  FAIL  Q1 weather.get_forecasts {'type': 'twice_daily'}: allowed and pushed exactly  — (command: only the services listed for the entity's type) None
+
+Q2 — any other question, or data
+
+  FAIL  Q2 get_events with an extra key: refused, not pushed  — (command: only the services listed for the entity's type) None
+  FAIL  Q2 get_events with a non-ISO start: refused, not pushed  — (command: only the services listed for the entity's type) None
+  FAIL  Q2 get_events with a 41-character start: refused, not pushed  — (command: only the services listed for the entity's type) None
+  FAIL  Q2 get_forecasts monthly: refused, not pushed  — (command: only the services listed for the entity's type) None
+  ok    Q2 get_forecasts on a calendar: refused, not pushed  — (command: only the services listed for the entity's type) None
+  ok    Q2 get_events on a weather: refused, not pushed  — (command: only the services listed for the entity's type) None
+  ok    Q2 get_events on a sensor: refused, not pushed  — (command: only the services listed for the entity's type) None
+
+Q3 — a well-formed answer is relayed unchanged
+
+  FAIL  Q3 calendar: 2 items relayed unchanged  —  None
+  FAIL  Q3 weather: 3 items relayed unchanged  —  None
+
+Q4 — a malformed answer is refused and not relayed
+
+  FAIL  Q4 an event with no summary: refused under QUERY_ANSWER, not relayed  — {} None
+  FAIL  Q4 an event with an extra key: refused under QUERY_ANSWER, not relayed  — {} None
+  FAIL  Q4 a 256-character summary: refused under QUERY_ANSWER, not relayed  — {} None
+  FAIL  Q4 a 4,097-character description: refused under QUERY_ANSWER, not relayed  — {} None
+  FAIL  Q4 a non-ISO start: refused under QUERY_ANSWER, not relayed  — {} None
+  FAIL  Q4 501 events: refused under QUERY_ANSWER, not relayed  — {} None
+  FAIL  Q4 300 events over 256 KiB: refused under QUERY_ANSWER, not relayed  — {} None
+  FAIL  Q4 a forecast entry with no datetime: refused under QUERY_ANSWER, not relayed  — {} None
+  FAIL  Q4 a string temperature: refused under QUERY_ANSWER, not relayed  — {} None
+  FAIL  Q4 a NaN temperature: refused under QUERY_ANSWER, not relayed  — {} None
+  FAIL  Q4 a forecast entry with an extra key: refused under QUERY_ANSWER, not relayed  — {} None
+  FAIL  Q4 an answer that is not a list: refused under QUERY_ANSWER, not relayed  — {} None
+
+Q5 — no answer's content reaches the durable log
+
+  ok    Q5 no event title, description or forecast value is in the log
+  FAIL  Q5 each answer's record gives its item count and size  — 0 records; 
+
+Q6 — an answer attached to an ordinary command is not relayed
+
+  ok    Q6 a switch's result carrying an answer: the platform receives no answer  — {'ok': True, 'error': None, 'answer': None}
+  ok    every chain verifies
+
+6/29 checks passed

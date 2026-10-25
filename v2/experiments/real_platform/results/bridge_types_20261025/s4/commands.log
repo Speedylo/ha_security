@@ -1,0 +1,83 @@
+
+K1 — each listed command is forwarded with exactly its data
+
+  ok    K1 switch.turn_on : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 1, 'entity': 'switch.demo_power', 'service': 'turn_on', 'data': {}}
+  ok    K1 switch.turn_off : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 2, 'entity': 'switch.demo_power', 'service': 'turn_off', 'data': {}}
+  ok    K1 button.press : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 3, 'entity': 'button.demo_report', 'service': 'press', 'data': {}}
+  ok    K1 text.set_value {'value': '*.tmp; rm -rf /'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 4, 'entity': 'text.demo_note', 'service': 'set_value', 'data': {'value': '*.tmp; rm -rf /'}}
+  ok    K1 select.select_option {'option': 'away'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 5, 'entity': 'select.demo_mode', 'service': 'select_option', 'data': {'option': 'away'}}
+  ok    K1 number.set_value {'value': 22}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 6, 'entity': 'number.demo_target', 'service': 'set_value', 'data': {'value': 22}}
+  ok    K1 number.set_value {'value': 19.5}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 7, 'entity': 'number.demo_target', 'service': 'set_value', 'data': {'value': 19.5}}
+
+K2 — a service not listed for the entity's type
+
+  ok    K2 number.turn_on: refused under COMMAND_SERVICES, not pushed  — (command: only the services listed for the entity's type) None
+  ok    K2 switch.press: refused under COMMAND_SERVICES, not pushed  — (command: only the services listed for the entity's type) None
+  ok    K2 switch.unlock: refused under COMMAND_SERVICES, not pushed  — (command: only the services listed for the entity's type) None
+  ok    K2 select.set_value: refused under COMMAND_SERVICES, not pushed  — (command: only the services listed for the entity's type) None
+
+K3 — data that is not exactly the listed keys, of the listed kind
+
+  ok    K3 switch turn_on with any data: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 text set_value redirected with entity_id: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 text set_value with no value: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 text set_value with a dict: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 text set_value with 256 characters: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 number set_value with a string: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 number set_value with a boolean: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 number set_value with NaN: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 number set_value with infinity: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 select select_option with a list: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+
+K4 — a refused value is recorded by its kind, never itself
+
+  ok    K4 a 10,000-character value is refused under COMMAND_DATA  — (command: only the data listed for that service, of its kind)
+  ok    K4 and the durable record holds its type and length, not the value  — {'data': {'value': 'str, length 10000'}, 'entity': 'text.demo_note', 'service': 'text.set_value'}
+
+K6 — climate and alarm panel: each allowed shape (bridge step 3)
+
+  ok    K6 climate.turn_on : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 23, 'entity': 'climate.demo_ac', 'service': 'turn_on', 'data': {}}
+  ok    K6 climate.turn_off : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 24, 'entity': 'climate.demo_ac', 'service': 'turn_off', 'data': {}}
+  ok    K6 climate.set_hvac_mode {'hvac_mode': 'cool'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 25, 'entity': 'climate.demo_ac', 'service': 'set_hvac_mode', 'data': {'hvac_mode': 'cool'}}
+  ok    K6 climate.set_temperature {'temperature': 23.0}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 26, 'entity': 'climate.demo_ac', 'service': 'set_temperature', 'data': {'temperature': 23.0}}
+  ok    K6 climate.set_temperature {'temperature': 21, 'hvac_mode': 'heat'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 27, 'entity': 'climate.demo_ac', 'service': 'set_temperature', 'data': {'temperature': 21, 'hvac_mode': 'heat'}}
+  ok    K6 climate.set_temperature {'target_temp_low': 19.0, 'target_temp_high': 24.0}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 28, 'entity': 'climate.demo_ac', 'service': 'set_temperature', 'data': {'target_temp_low': 19.0, 'target_temp_high': 24.0}}
+  ok    K6 climate.set_fan_mode {'fan_mode': 'auto'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 29, 'entity': 'climate.demo_ac', 'service': 'set_fan_mode', 'data': {'fan_mode': 'auto'}}
+  ok    K6 climate.set_preset_mode {'preset_mode': 'eco'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 30, 'entity': 'climate.demo_ac', 'service': 'set_preset_mode', 'data': {'preset_mode': 'eco'}}
+  ok    K6 climate.set_swing_mode {'swing_mode': 'vertical'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 31, 'entity': 'climate.demo_ac', 'service': 'set_swing_mode', 'data': {'swing_mode': 'vertical'}}
+  ok    K6 climate.set_humidity {'humidity': 45}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 32, 'entity': 'climate.demo_ac', 'service': 'set_humidity', 'data': {'humidity': 45}}
+  ok    K6 alarm_control_panel.alarm_disarm {'code': '1234'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 33, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_disarm', 'data': {'code': '1234'}}
+  ok    K6 alarm_control_panel.alarm_arm_away : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 34, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_arm_away', 'data': {}}
+  ok    K6 alarm_control_panel.alarm_arm_home : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 35, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_arm_home', 'data': {}}
+  ok    K6 alarm_control_panel.alarm_arm_night : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 36, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_arm_night', 'data': {}}
+  ok    K6 alarm_control_panel.alarm_arm_vacation : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 37, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_arm_vacation', 'data': {}}
+  ok    K6 alarm_control_panel.alarm_arm_custom_bypass : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 38, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_arm_custom_bypass', 'data': {}}
+  ok    K6 alarm_control_panel.alarm_trigger : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 39, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_trigger', 'data': {}}
+
+K7 — data matching none of the allowed shapes
+
+  ok    K7 hvac_mode plasma: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 temperature and a range together: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 a low without a high: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 a string temperature: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 a NaN temperature: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 an extra key on set_fan_mode: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 a numeric code: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 a 65-character code: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 disarm redirected with entity_id: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+
+K8 — a service of the other type
+
+  ok    K8 climate.alarm_disarm: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K8 alarm_control_panel.set_temperature: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K8 alarm_control_panel.turn_on: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K8 a command refused for its service has its data recorded by kind  — {'note': 'str, length 11'}
+
+K9 — an alarm code never reaches the durable log
+
+  ok    K9 the allowed disarm reached the sandbox with its code  — {'push': 'entity.command', 'command': 53, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_disarm', 'data': {'code': '4917'}}
+  FAIL  K9 neither code is in the log file
+  ok    K9 and both records say the code was withheld  — {'code': '(withheld)'} {'code': '(withheld)'}
+  ok    every chain verifies
+
+56/57 checks passed

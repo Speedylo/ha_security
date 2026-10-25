@@ -73,3 +73,25 @@ calendar view and a forecast card **ask** the integration a question and need an
 | W6 | Every suite passes with (A) up, the real-house suite included twice on the same (A) |
 
 Before the change W1–W5 fail (the bridge refuses both domains). Outcome appended below.
+
+---
+
+## Outcome (appended 2026-10-25, after the runs)
+
+Pi, fresh clones of `bridge-s4-pre` (`7f94a24`) and `bridge-s4` (`2d1e892`), clean before and after,
+19:42–19:46; (A) `down` and `up --fresh` before each arm. Results:
+`experiments/real_platform/results/bridge_types_20261025/s4/`.
+
+| | Outcome |
+|---|---|
+| Q7 | Held: before, `selftest_queries` 6/29 (laptop and Pi), as corrected before commit; `selftest_bridge_types` 39/48 against (A) with the old bridge, W1–W4 failing (W5 passed: no event ever crossed) |
+| Q1–Q6 | Held: 29/29 after (laptop and Pi) |
+| W1–W5 | Held: 48/48 after, against a fresh (A), and 48/48 again inside `suites_all` on the same (A). A calendar and a weather each a registry row of their domain; a user's `calendar.get_events` reached the sandbox as `get_events` with `start` and `end` only and returned the two events it answered; `weather.get_forecasts` daily returned the three entries with their temperatures; an answer with an extra key failed the call and did not reach (A); the titles are not in the log |
+| Q8 | **Missed as written on the Pi: `selftest_commands` 56/57**, alone and again inside `suites_all` (57/57 on the laptop). The failing check was K9's "neither code is in the log file", while K9's record check passed (both records `(withheld)`). The test searched the log for the bare strings `4917` and `1234`, which can occur by chance in the log's hex hashes and microsecond timestamps; six further runs of the same suite on the Pi had no match, and the failing runs' temporary logs no longer exist, so the exact occurrence was not seen. A defect of the test, not of the withholding |
+| W6 | Missed as written: 31 of 32 suites, the one failing being `selftest_commands` (Q8) |
+
+(A)'s log: no error from the bridge.
+
+**Test corrected:** K9 and step 3's T9 now search for the code as a JSON value, in quotes (`"4917"`),
+which is how a leaked code would appear and which cannot occur inside a hash or a timestamp. To be
+verified in step 5's runs, not by repeating these.

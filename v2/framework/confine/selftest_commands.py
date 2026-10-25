@@ -209,8 +209,12 @@ def main() -> int:
         check("K9 the allowed disarm reached the sandbox with its code",
               allowed_record.get("allowed") is True
               and (allowed_pushed or {}).get("data") == {"code": "4917"}, str(allowed_pushed))
+        # Searched for as JSON values, in quotes: a bare "4917" also turns up by chance inside the
+        # log's hex hashes and microsecond timestamps (about one run in four on the Pi, 2026-10-25),
+        # and a quote cannot appear in either.
         check("K9 neither code is in the log file",
-              "4917" not in log_text and long_code not in log_text and "1234" not in log_text)
+              '"4917"' not in log_text and f'"{long_code}"' not in log_text
+              and '"1234"' not in log_text)
         check("K9 and both records say the code was withheld",
               (allowed_record.get("requested") or {}).get("data") == {"code": "(withheld)"}
               and (refused_record.get("requested") or {}).get("data") == {"code": "(withheld)"},
