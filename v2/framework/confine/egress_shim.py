@@ -130,6 +130,17 @@ def _home_network(address: str) -> bool:
     return parsed.is_private and not (parsed.is_loopback or parsed.is_unspecified)
 
 
+def _loopback(address: str) -> bool:
+    """This sandbox's own loopback: in its own network namespace, so it never leaves it."""
+    try:
+        parsed = ipaddress.ip_address(address)
+    except ValueError:
+        return False
+    if isinstance(parsed, ipaddress.IPv6Address) and parsed.ipv4_mapped is not None:
+        parsed = parsed.ipv4_mapped
+    return parsed.is_loopback
+
+
 class EgressShim:
     """Installed in the sandbox before the integration is imported.
 
@@ -319,6 +330,14 @@ class EgressShim:
             return _FALL_THROUGH
 
         def on_connect(sock, notes, real, address, *rest):
+            if (isinstance(address, tuple) and len(address) >= 2 and notes.get("writer") is None
+                    and _loopback(str(address[0]))):
+                # The sandbox's own loopback, in its own network namespace: nothing sent there
+                # leaves the sandbox, so there is nothing to ask — TCP falls through the same way.
+                # Relayed, the socket went onto a Unix pair whose `getsockname()` is '', and Home
+                # Assistant's `http`, which finds its own address by connecting a UDP socket and
+                # reading that name, could not set up in any sandbox (F65, 2026-10-25).
+                return _FALL_THROUGH
             if isinstance(address, tuple) and len(address) >= 2:
                 peer = (str(address[0]), int(address[1]))
                 notes["peer"] = peer
