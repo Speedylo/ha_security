@@ -48,13 +48,13 @@ Compatibility was measured on real, unmodified integrations from HACS, the commu
 
 | | Head-weighted | Uniform |
 |---|---|---|
-| Selection | The 40 most-installed repositories | 40 repositories drawn with equal probability (seed 20260902) |
+| Selection | The 37 most-installed integrations | 40 repositories drawn with equal probability (seed 20260902) |
 | Integrations measured | 37 | 40 |
 | Install count, median | 16,294 | 48 |
 | Installations represented | 998,478 | 46,979 |
 | Integrations declaring no platform components | 18 of 37 | 26 of 40 |
 
-The head-weighted corpus describes what most installations run, and the uniform corpus describes what most integrations are. The two share only two members, so the second is close to an independent sample of the same ecosystem rather than a different view of the first, while the first represents twenty-one times the installations of the second. Neither corpus generalises to integrations distributed outside HACS. The instruments applied to these corpora are described next.
+The head-weighted corpus describes what most installations run, and the uniform corpus describes what most integrations are. Home Assistant's analytics count installations per integration name rather than per repository, and the catalogue lists three of the most-installed names under two repositories each, so the 40 most-installed entries in the catalogue contain 37 distinct integrations. The two share only two members, so the second is close to an independent sample of the same ecosystem rather than a different view of the first, while the first represents twenty-one times the installations of the second. Neither corpus generalises to integrations distributed outside HACS. The instruments applied to these corpora are described next.
 
 ## 11.4 Instruments and statistics
 
