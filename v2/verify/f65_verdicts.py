@@ -6,6 +6,7 @@ waste-collection run after the fix.
 
     python3 verify/f65_verdicts.py pre  PRE.json
     python3 verify/f65_verdicts.py post POST.json WASTE.json WASTE.log
+    python3 verify/f65_verdicts.py second POST.json WASTE.json WASTE.log   (R3, R4: the second route)
 """
 
 from __future__ import annotations
@@ -82,9 +83,43 @@ def record_levels(final: dict[str, dict], run: dict[str, dict]) -> list:
     return differ
 
 
+def second(path: Path, waste_json: Path, waste_log: Path) -> None:
+    final, run = rows(FINAL), rows(path)
+    print(f"R3 — the second route fixed, with the shim: {path.name}")
+    zeroconf = {d: (run.get(d, {}).get("components_setup") or {}).get("zeroconf")
+                for d in ("sonoff", "xiaomi_home")}
+    check(all(v is True for v in zeroconf.values()), "R3 zeroconf sets up for sonoff and xiaomi_home",
+          str(zeroconf))
+    differ = [(d, final[d].get("components_setup"), run.get(d, {}).get("components_setup"))
+              for d in sorted(final)
+              if final[d].get("components_setup") != run.get(d, {}).get("components_setup")]
+    check(not differ and len(run) == len(final),
+          f"R3 every component's setup, for all {len(final)}, equals the final rerun's", str(differ))
+    levels = record_levels(final, run)
+    check(not levels, f"R3 every level equals the final rerun's", str(levels))
+    post_waste(waste_json, waste_log, "R4")
+
+
+def post_waste(waste_json: Path, waste_log: Path, label: str) -> None:
+    print(f"\n{label} — waste_collection_schedule: {waste_json.name}")
+    data = json.loads(waste_json.read_text())
+    reports = data.get("reports", data)
+    confined = [str(e.get("entity")) for e in reports.get("confined_declared", {}).get("published") or []]
+    calendars = [e for e in confined if e.startswith("calendar.")]
+    check(bool(calendars), f"{label} the confined arm publishes the calendar entity", str(calendars))
+    log = waste_log.read_text(errors="replace")
+    check(MESSAGE not in log, f"{label} no {MESSAGE!r} in its log")
+    harness = [line.strip() for line in log.splitlines() if line.startswith(("  ok ", "  FAIL"))]
+    failed = [line for line in harness if line.startswith("FAIL")]
+    check(bool(harness) and not failed, f"{label} the harness's own checks all pass",
+          f"{len(harness) - len(failed)}/{len(harness)}")
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "pre":
         pre(Path(sys.argv[2]))
+    elif sys.argv[1] == "second":
+        second(Path(sys.argv[2]), Path(sys.argv[3]), Path(sys.argv[4]))
     else:
         post(Path(sys.argv[2]), Path(sys.argv[3]), Path(sys.argv[4]))
     failed = [w for ok, w, _ in results if not ok]

@@ -286,6 +286,7 @@ class EgressShim:
             if isinstance(address, tuple) and len(address) >= 2:
                 port = int(address[1])
                 notes["port"] = port
+                notes["bound"] = port
                 if port:
                     try:
                         shim.datagrams.listen_stream(port)
@@ -411,6 +412,18 @@ class EgressShim:
                 return _FALL_THROUGH
             return outcome[0]
 
+        def on_getsockname(sock, notes, real, *rest):
+            if notes.get("writer") is None:
+                return _FALL_THROUGH
+            # On the pair, the kernel names the Unix end, '', which no caller can use: Home
+            # Assistant's `network` reads `[0]` as its own address, and `zeroconf` would not set
+            # up (F65, second route). The answer is the sandbox's only interface, which is what
+            # the kernel reports there without the shim — 224/4 is routed to `lo` too.
+            port = notes.get("bound") or 0
+            if sock.family == socket.AF_INET6:
+                return ("::1", port, 0, 0)
+            return ("127.0.0.1", port)
+
         def on_close(sock, notes, real, *rest):
             writer = notes.get("writer")
             if writer is not None:
@@ -429,6 +442,7 @@ class EgressShim:
         wrap("send", on_send)
         wrap("recvfrom", on_recvfrom)
         wrap("recv", on_recv)
+        wrap("getsockname", on_getsockname)
 
     def deliver(self, push: dict) -> int:
         """A datagram the mediator pushed, into every socket routed to it. Returns how many took it.
