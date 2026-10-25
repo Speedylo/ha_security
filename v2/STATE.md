@@ -2,6 +2,8 @@
 
 ## ▶ Resume here — 2026-10-08: ENGINEERING CUT-OFF DECLARED
 
+**2026-10-25 (later): interim §1, §2, §6 APPROVED** (§1 and §2 rewritten simpler after Younes found §1 too technical; benchmark = six past AUI capstones in `~/capstone/.claude/*.pdf`, see memory). Final report Table 2.1 corrected (Younes): Network row now 'deduced' [2]; new 'Web endpoints' row cites elttam [4] for what it shows (AI-use log 15). **Open, to come back to:** integrations' own HTTP endpoints under confinement (`notes/open_q_http_endpoints_20261025.md`). **Next: interim §3 objectives, §4 literature review.**
+
 **2026-10-25: P3CRID cited** (Younes: in both the final and the interim). §7.4 gains one sentence, ref [41]; old 41–59 → 42–60 (`notes/references_renumbering_20261025.md`); the built docx/pdf are stale until the next build. Similarity interim/final: not a concern (Younes). **Repo cleanup wanted** (keep only what is relevant): approach still to choose — prune `main` by ordinary commits (tags stay valid) or a fresh repo; inventory first, Younes approves, literal-path deletes. **Interim §6 drafted** (`interim/06_ai_use.md`; Younes 2026-10-25: model named as "Claude Opus family" only, App C = full AI-use log, pattern-only scan left out of §6.4; awaiting his read of the text). Next after approval: §1–5.
 
 **2026-10-23 (evening): INTERIM REPORT planned** (`notes/interim_report_plan.md`; due 2026-11-06; template `Capstone_Interimreport_RESEARCH-1.docx`). Younes decided: condensed (30–40 pp), APA 7 as the template asks, Appendix B (conference proposal) omitted for now, French résumé drafted by Claude and checked by Younes. Open: does the final report also need APA? Similarity between interim and final? **Next: section 6, AI use (new), first.**

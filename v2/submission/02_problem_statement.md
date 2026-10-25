@@ -14,7 +14,8 @@ An integration's authority follows from where it runs, not from any vulnerabilit
 | Service calls | Any service, including unlocking a door and disarming an alarm | Physical access to the dwelling | Deduced; no scoping rule or caller check is documented [2] |
 | Stored credentials | Any file the process can read, including stored secrets | Compromise of every linked cloud account | Stated by the platform [3] |
 | File system | Whatever the process's user can read | Configuration, history database, tokens | Stated by the platform [3] |
-| Network | Unrestricted outbound access and the home network | Exfiltration; a foothold inside the home | Reported for code running in the platform [4] |
+| Network | Unrestricted outbound access and the home network | Exfiltration; a foothold inside the home | Deduced from the loading model [2] |
+| Web endpoints | Can add its own HTTP endpoints to the platform's web server, with the login check switched off | An unauthenticated way into the home | Reported for an integration shipped with the platform (CVE-2023-27482) [4] |
 | Other integrations' live objects | Any object in the shared interpreter | Theft or alteration of another integration's secrets | Demonstrated experimentally [5] |
 
 The last row shows that the missing boundary lies between integrations as well as between an integration and the platform. Corno and Mannella [5] showed that one integration can walk Python's garbage collector to reach another integration's live object and read or modify its private state. Any permission check inside the shared process is reachable by the same technique, so enforcement has to sit outside it. The consequence column also sets this platform apart: a compromised browser extension costs its user data, whereas a compromised integration can unlock the front door through the platform's own control path, indistinguishably from the owner.
