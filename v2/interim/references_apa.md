@@ -5,13 +5,25 @@ brackets). Alphabetical; same-author entries with no date are lettered by title.
 against its source before the build. Entries marked *unused* are cited by no interim section yet; drop
 any still unused at the build.
 
+Ahmadpanah, M. M., Hedin, D., Balliu, M., Olsson, L. E., & Sabelfeld, A. (2021). SandTrap: Securing JavaScript-driven trigger-action platforms. In *30th USENIX Security Symposium (USENIX Security 21)* (pp. 2899–2916). USENIX Association. — [43]
+
 Anthropic. (2026). *Claude Code* [Computer software]. https://claude.com/claude-code
+
+Barth, A., Felt, A. P., Saxena, P., & Boodman, A. (2010). Protecting browsers from extension vulnerabilities. In *Proceedings of the Network and Distributed System Security Symposium (NDSS 2010)*. Internet Society. https://www.adambarth.com/papers/2010/barth-felt-saxena-boodman.pdf — [14]
 
 Cohen, T. (2026). *Remote integration execution* [Online forum post, request for comment]. Home Assistant Community. Retrieved October 16, 2026, from https://community.home-assistant.io/t/remote-integration-execution/1010130 — [11] *unused*
 
 Corno, F., & Mannella, L. (2022). A threat model for extensible smart home gateways. In *2022 7th International Conference on Smart and Sustainable Technologies (SpliTech)* (pp. 1–6). IEEE. https://doi.org/10.23919/SpliTech55088.2022.9854235 — [5]
 
+Corno, F., & Mannella, L. (2023). A gateway-based MUD architecture to enhance smart home security. In *2023 8th International Conference on Smart and Sustainable Technologies (SpliTech)* (pp. 1–6). IEEE. https://doi.org/10.23919/SpliTech58164.2023.10193747 — [15]
+
 elttam. (2023, May 9). *PwnAssistant: Controlling /home's via a Home Assistant RCE*. https://www.elttam.com/blog/pwnassistant — [4] (read in full 2026-10-25)
+
+Fernandes, E., Jung, J., & Prakash, A. (2016). Security analysis of emerging smart home applications. In *2016 IEEE Symposium on Security and Privacy (SP)* (pp. 636–654). IEEE. https://doi.org/10.1109/SP.2016.44 — [34]
+
+Fernandes, E., Paupore, J., Rahmati, A., Simionato, D., Conti, M., & Prakash, A. (2016). FlowFence: Practical data protection for emerging IoT application frameworks. In *25th USENIX Security Symposium (USENIX Security 16)* (pp. 531–548). USENIX Association. — [35]
+
+GitHub Security Lab. (2023, November 30). *Securing our home labs: Home Assistant code review*. The GitHub Blog. https://github.blog/security/vulnerability-research/securing-our-home-labs-home-assistant-code-review/ — [40]
 
 HACS. (n.d.). *Include default repositories*. HACS Documentation. Retrieved October 16, 2026, from https://hacs.xyz/docs/publish/include/ — [6]
 
@@ -27,6 +39,16 @@ Home Assistant. (2021b, January 23). *Security disclosure 2: Vulnerabilities in 
 
 Home Assistant. (2026). *Home Assistant Core* (Version 2026.8.3) [Computer software]. GitHub. https://github.com/home-assistant/core/tree/2026.8.3 — [10] *unused*
 
+Jia, Y. J., Chen, Q. A., Wang, S., Rahmati, A., Fernandes, E., Mao, Z. M., & Prakash, A. (2017). ContexIoT: Towards providing contextual integrity to appified IoT platforms. In *Proceedings of the Network and Distributed System Security Symposium (NDSS 2017)*. Internet Society. https://doi.org/10.14722/ndss.2017.23051 — [36] (authors from Crossref)
+
+Kulkarni, S., Mylonas, A., & Vidalis, S. (2026). P3CRID: A threat model methodology for smart homes. *Algorithms, 19*(5), 347. https://doi.org/10.3390/a19050347 — [41]
+
+Ladisa, P., Plate, H., Martinez, M., & Barais, O. (2023). SoK: Taxonomy of attacks on open-source software supply chains. In *2023 IEEE Symposium on Security and Privacy (SP)* (pp. 1509–1526). IEEE. https://doi.org/10.1109/SP46215.2023.10179304 — [13]
+
 Parasuraman, R., & Manzey, D. H. (2010). Complacency and bias in human use of automation: An attentional integration. *Human Factors, 52*(3), 381–410. https://doi.org/10.1177/0018720810376055 — new (§6)
 
 Przymus, P., & Durieux, T. (2025). Wolves in the repository: A software engineering analysis of the XZ Utils supply chain attack. In *2025 IEEE/ACM 22nd International Conference on Mining Software Repositories (MSR)* (pp. 91–102). IEEE. https://doi.org/10.1109/MSR66628.2025.00026 — [8]
+
+Rahmati, A., Fernandes, E., Eykholt, K., & Prakash, A. (2018). Tyche: A risk-based permission model for smart homes. In *2018 IEEE Cybersecurity Development (SecDev)* (pp. 29–36). IEEE. https://doi.org/10.1109/SecDev.2018.00012 — [38]
+
+Thingnes, T. R., & Meland, P. H. (2025). Security challenges for users of extensible smart home hubs: A systematic literature review. *Future Internet, 17*(6), 238. https://doi.org/10.3390/fi17060238 — [25]
