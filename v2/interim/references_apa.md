@@ -11,7 +11,7 @@ Cohen, T. (2026). *Remote integration execution* [Online forum post, request for
 
 Corno, F., & Mannella, L. (2022). A threat model for extensible smart home gateways. In *2022 7th International Conference on Smart and Sustainable Technologies (SpliTech)* (pp. 1–6). IEEE. https://doi.org/10.23919/SpliTech55088.2022.9854235 — [5]
 
-elttam. (n.d.). *PwnAssistant: Controlling /home's via a Home Assistant RCE (CVE-2023-27482)*. Retrieved October 16, 2026, from https://www.elttam.com/blog/pwnassistant — [4]
+elttam. (2023, May 9). *PwnAssistant: Controlling /home's via a Home Assistant RCE*. https://www.elttam.com/blog/pwnassistant — [4] (read in full 2026-10-25)
 
 HACS. (n.d.). *Include default repositories*. HACS Documentation. Retrieved October 16, 2026, from https://hacs.xyz/docs/publish/include/ — [6]
 
