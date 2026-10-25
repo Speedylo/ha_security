@@ -1,0 +1,11 @@
+start 2026-10-25T18:56:21+01:00 commit 90ab606fa0c95f9edc2777d257d9922b3edc1ab9 tag bridge-s1 dirty=0
+import exit=0
+house_a_down exit=0
+house_a_up exit=0
+bridge_types exit=0
+suites exit=0
+suites failed=0 of 30
+bridge errors in (A) log: 0
+dirty after=0
+end 2026-10-25T18:58:31+01:00
+ALLDONE

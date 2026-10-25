@@ -1,0 +1,30 @@
+
+T1, T2 — each type is an entity of its own type in (A), described
+
+  ok    T1 button: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 button: (A) holds the state and the attributes that describe it  — 'unknown' 
+  ok    T1 text: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 text: (A) holds the state and the attributes that describe it  — '*.tmp' 
+  ok    T1 select: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 select: (A) holds the state and the attributes that describe it  — 'eco' 
+  ok    T1 number: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 number: (A) holds the state and the attributes that describe it  — '21.5' 
+
+T3 — a republish changes the state in (A)
+
+  ok    T3 text: now *.bak  — '*.bak'
+  ok    T3 select: now away  — 'away'
+  ok    T3 number: now 19.0  — '19.0'
+
+T4 — operating one is step 2: refused, recorded, and the user is told
+
+  ok    T4 the user's call fails, at once, with the mediator's reason  — 0.0 s: number.selftest_target: set_value is not a command the bridge forwards
+  ok    T4 and it is a recorded refusal under the command rule  — [('number.selftest_target', '(command: turn_on and turn_off only, §7.38)')]
+  ok    T4 and the value in (A) is unchanged
+
+T5 — a type still unsupported is refused
+
+  ok    T5 a light is refused at publish  — the platform refused: confine_bridge/publish: {'code': 'unsupported', 'message': 'the bridge cannot stand in for a light entity'}
+  ok    every chain verifies
+
+16/16 checks passed

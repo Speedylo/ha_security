@@ -1,0 +1,4 @@
+start 2026-10-25T18:55:36+01:00 commit 90ab606fa0c95f9edc2777d257d9922b3edc1ab9 tag bridge-s1 dirty=0
+import exit=0
+house_a_up exit=1
+bridge_types exit=1

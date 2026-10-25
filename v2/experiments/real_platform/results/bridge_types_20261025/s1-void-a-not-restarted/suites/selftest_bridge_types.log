@@ -1,0 +1,30 @@
+
+T1, T2 — each type is an entity of its own type in (A), described
+
+  FAIL  T1 button: published, and a registry row of its domain owned by the bridge  — the platform refused: confine_bridge/publish: {'code': 'unsupported', 'message': 'the bridge cannot stand in for a button entity'}
+  FAIL  T2 button: (A) holds the state and the attributes that describe it  — None 
+  FAIL  T1 text: published, and a registry row of its domain owned by the bridge  — the platform refused: confine_bridge/publish: {'code': 'unsupported', 'message': 'the bridge cannot stand in for a text entity'}
+  FAIL  T2 text: (A) holds the state and the attributes that describe it  — None {'min': (0, None), 'max': (255, None), 'mode': ('text', None)}
+  FAIL  T1 select: published, and a registry row of its domain owned by the bridge  — the platform refused: confine_bridge/publish: {'code': 'unsupported', 'message': 'the bridge cannot stand in for a select entity'}
+  FAIL  T2 select: (A) holds the state and the attributes that describe it  — None {'options': (['comfort', 'eco', 'away'], None)}
+  FAIL  T1 number: published, and a registry row of its domain owned by the bridge  — the platform refused: confine_bridge/publish: {'code': 'unsupported', 'message': 'the bridge cannot stand in for a number entity'}
+  FAIL  T2 number: (A) holds the state and the attributes that describe it  — None {'min': (5.0, None), 'max': (30.0, None), 'step': (0.5, None), 'mode': ('slider', None), 'unit_of_measurement': ('°C', None)}
+
+T3 — a republish changes the state in (A)
+
+  FAIL  T3 text: now *.bak  — None
+  FAIL  T3 select: now away  — None
+  FAIL  T3 number: now 19.0  — None
+
+T4 — operating one is step 2: refused, recorded, and the user is told
+
+  FAIL  T4 the user's call fails, at once, with the mediator's reason  — 0.0 s: None
+  FAIL  T4 and it is a recorded refusal under the command rule  — []
+  FAIL  T4 and the value in (A) is unchanged
+
+T5 — a type still unsupported is refused
+
+  ok    T5 a light is refused at publish  — the platform refused: confine_bridge/publish: {'code': 'unsupported', 'message': 'the bridge cannot stand in for a light entity'}
+  ok    every chain verifies
+
+2/16 checks passed

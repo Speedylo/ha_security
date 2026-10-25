@@ -1,0 +1,15 @@
+framework: /home/younes/r2exp/bridge-s1/v2/framework
+selftest exit=0
+selftest_adversary_baseline exit=0
+selftest_adversary exit=0
+selftest_approval exit=0
+selftest_audit exit=0
+selftest_bridge exit=0
+selftest_bridge_types exit=1
+selftest_c3 exit=0
+selftest_channel exit=0
+selftest_describe exit=0
+selftest_egress exit=0
+selftest_egress_sandboxed exit=0
+selftest_egress_shim exit=0
+selftest_fdpass exit=0

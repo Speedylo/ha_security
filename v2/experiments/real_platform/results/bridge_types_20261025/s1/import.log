@@ -1,0 +1,1 @@
+[<EntityPlatforms.SENSOR: 'sensor'>, <EntityPlatforms.BINARY_SENSOR: 'binary_sensor'>, <EntityPlatforms.SWITCH: 'switch'>, <EntityPlatforms.BUTTON: 'button'>, <EntityPlatforms.TEXT: 'text'>, <EntityPlatforms.SELECT: 'select'>, <EntityPlatforms.NUMBER: 'number'>]
