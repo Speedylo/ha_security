@@ -166,3 +166,13 @@ existing clean clone of `f65b-fix` on the Pi (the framework has not changed sinc
 Not measured: this sample before the fixes (its failure under the unfixed shim is inferred from the
 head sample, not shown). A difference is reported, not explained away; the run is not repeated to
 obtain a pass. Outcome appended below.
+
+### Outcome for the uniform 40 (appended 2026-10-25, after the run)
+
+Pi, the clean clone of `f65b-fix`, (A) down, 18:30–18:32. Results:
+`experiments/compat/results/f65_20261025/uniform/`, `verdicts_uniform.txt`. **Every prediction held
+(4/4):** `http` set up for the same 8 and `zeroconf` for the same 1 (`qolsys_panel`); for all 40, every
+component's setup result and every level equal the final rerun's.
+
+**Both samples, 75 integrations, are now measured with the shim as the supervisor installs it, and
+confinement changes nothing in what loads or which platform components set up.**

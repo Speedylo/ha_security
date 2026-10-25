@@ -1,0 +1,8 @@
+U — the uniform sample with the shim: uniform_egress.json against uniform_confined.json
+  PASS  U1 http sets up for the same 8   [before ['alarm_clocks', 'als_sundance_marin', 'browser_mod', 'circuitsetup_energy_analyzer', 'ha_insights', 'irrigationprogram', 'kroki', 'nuki_otp']; now ['alarm_clocks', 'als_sundance_marin', 'browser_mod', 'circuitsetup_energy_analyzer', 'ha_insights', 'irrigationprogram', 'kroki', 'nuki_otp']]
+  PASS  U1 zeroconf sets up for the same 1   [before ['qolsys_panel']; now ['qolsys_panel']]
+  PASS  U2 every component's setup, for all 40, equals the final rerun's   [[]]
+        record — levels that differ from the final rerun: none
+  PASS  U3 every level equals the final rerun's   [[]]
+
+4/4 held

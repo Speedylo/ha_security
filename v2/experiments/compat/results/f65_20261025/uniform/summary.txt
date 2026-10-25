@@ -1,0 +1,5 @@
+start 2026-10-25T18:30:42+01:00 commit 3790cb19994fec3c1df2a74d753050e0c2d265c2 tag f65b-fix dirty=0
+house_a down
+uniform_egress exit=0 2026-10-25T18:32:16+01:00
+dirty after=0
+ALLDONE
