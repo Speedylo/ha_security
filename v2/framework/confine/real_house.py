@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
+from datetime import datetime
 from contextlib import contextmanager
 from typing import Iterator
 
@@ -72,6 +73,18 @@ def house_stopped() -> Iterator[None]:
         _house_a("up")
 
 
+def _same(shown: str | None, published: str) -> bool:
+    """Equal as strings, or as times when both are ISO date-times: (A) writes a timestamp with a
+    `T`, and an integration may publish the same instant with a space (F67)."""
+    if shown == published:
+        return True
+    try:
+        return (shown is not None
+                and datetime.fromisoformat(shown) == datetime.fromisoformat(published))
+    except ValueError:
+        return False
+
+
 def in_house(platform: RealPlatform, identity: str, published: list[dict]) -> list[dict]:
     """For each entity the integration had accepted, what (A) holds for it at the end of the run.
 
@@ -96,6 +109,6 @@ def in_house(platform: RealPlatform, identity: str, published: list[dict]) -> li
             "owned_by_bridge": row.get("platform") == "confine_bridge"
                                and row.get("unique_id") == f"{identity}:{entity}",
             "same_domain": landed.partition(".")[0] == domain,
-            "state_matches": True if domain == "button" else states.get(landed) == state,
+            "state_matches": True if domain == "button" else _same(states.get(landed), state),
         })
     return rows
