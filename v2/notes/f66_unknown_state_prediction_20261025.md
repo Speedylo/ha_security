@@ -43,6 +43,6 @@ first complete run had this defect in it. Outcome appended below.
 ## Outcome (appended 2026-10-25)
 
 Pi, run C of bridge step 5 (`experiments/real_platform/results/bridge_types_20261025/s5c/`).
-**Every prediction held.** Fails first at this note's `-pre` tag (`bridge_types_f66-pre.log`: U1–U3
+**Every prediction held**, U4 slightly understated: it named U1 and U3, and U2's `unavailable` check failed first too (the old sensor showed `12.5`). Fails first at this note's `-pre` tag (`bridge_types_f66-pre.log`: U1–U3
 failed, 49/52; `bridge_types_f67-pre.log`: V1–V3 failed, 53/56); after the fix, `selftest_bridge_types`
 56/56, and in step 5's real-house runs every affected entity is in (A) in its published state.
