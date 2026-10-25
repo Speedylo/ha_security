@@ -68,9 +68,3 @@ Table 6.2 gives one representative entry from each group in the log.
 | "I reviewed every screening decision" | Overstated the author's verification | The author's question about the review's scope | Rewritten to the actual scope |
 
 The interim report itself was prepared the same way: Claude Code drafted each section from the project's records, and the author reviewed, corrected and approved each one, with corrections added to the log. The French résumé was drafted by Claude and checked by the author.
-
-## References (for this section; to merge into the report's list)
-
-Anthropic. (2026). *Claude Code* [Computer software]. https://claude.com/claude-code
-
-Parasuraman, R., & Manzey, D. H. (2010). Complacency and bias in human use of automation: An attentional integration. *Human Factors, 52*(3), 381–410. https://doi.org/10.1177/0018720810376055
