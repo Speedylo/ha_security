@@ -6,12 +6,11 @@ Every community integration runs inside Home Assistant's own process with all of
 
 | If you want | Read |
 |---|---|
-| The argument and the results | The interim report, `interim/interim_report.pdf` (sources: `interim/*.md`); the final report will follow in the same template |
 | To reproduce the results | `REPRODUCE.md`: the environment from a blank Raspberry Pi, then every suite and experiment |
 | One experiment's command and raw results | `experiments/<name>/README.md` |
 | The code | `framework/README.md` |
 | How every claim was checked | `verify/claims_register.md` and `notes/verification_plan_20261005.md` |
-| How AI assistance was used and checked | The interim report's Section 6 and Appendix B, and the full log in `notes/ai_use_log.md` |
+| How AI assistance was used and checked | The log of every correction to AI output, `notes/ai_use_log.md` |
 
 ## Layout
 
@@ -24,10 +23,9 @@ Every community integration runs inside Home Assistant's own process with all of
 | `verify/` | The verification campaign's scripts and claim register |
 | `notes/` | Each experiment's predictions, committed before it ran, and the project's working notes |
 | `report/` | The working report against which every claim was registered and checked; the verification scripts read it |
-| `interim/` | The interim report, and its build |
 | `proposal/` | The project proposal |
 
-The two diaries submitted during the semester are `Diary1.docx` and `Diary2.docx`.
+The reports and diaries are submitted to the programme separately; this repository holds the work they describe.
 
 ## Conventions
 

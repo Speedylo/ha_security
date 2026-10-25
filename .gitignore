@@ -45,3 +45,8 @@ v2/refs/
 
 # The final report, until it is finished in the interim report's template
 v2/submission/
+
+# Course deliverables, submitted separately (2026-10-25)
+v2/interim/
+v2/Diary1.docx
+v2/Diary2.docx
