@@ -493,11 +493,12 @@ class User:
         self.ws.receive()
         self.outcome: dict = {}
 
-    def press(self, entity_id: str, service: str) -> threading.Thread:
+    def press(self, entity_id: str, service: str, data: dict | None = None) -> threading.Thread:
         def run() -> None:
             start = time.perf_counter()
-            self.ws.send({"id": 1, "type": "call_service", "domain": "switch",
-                          "service": service, "service_data": {"entity_id": entity_id}})
+            self.ws.send({"id": 1, "type": "call_service", "domain": entity_id.partition(".")[0],
+                          "service": service,
+                          "service_data": {"entity_id": entity_id, **(data or {})}})
             answer: list = []
             while not answer:
                 answer = [m for m in self.ws.receive() if m.get("id") == 1]
