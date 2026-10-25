@@ -32,6 +32,7 @@ from pathlib import Path
 
 from .cgroup import Delegation
 from .endtoend_egress import run_confined, run_unconfined
+from .real_house import house_stopped
 from .preflight import require_ready
 from .spawn import become_subreaper
 from .provenance import record_run
@@ -97,6 +98,10 @@ def summarise(arm: str, report: dict, events: list[dict]) -> dict:
         "loaded": report.get("loaded"),
         "flow": (report.get("flow") or {}),
         "error": report.get("error"),
+        # Bridge step 5: what the confined arm published, and what (A) holds for it.
+        "published": report.get("published"),
+        "in_house": report.get("in_house"),
+        "platform": report.get("platform"),
         "device_saw": {
             "udp": sum(e["kind"] == "udp" for e in events),
             "tcp_connections": sum(e["kind"] == "tcp_accept" for e in events),
@@ -120,8 +125,11 @@ def main() -> int:
     ap.add_argument("--uv", default=str(Path.home() / ".local/bin/uv"))
     ap.add_argument("--subject", default="midea_ac_lan", choices=sorted(SUBJECTS))
     ap.add_argument("--arms", default="unconfined,confined_declared,confined_undeclared")
+    ap.add_argument("--platform", choices=["stand-in", "real"], default="stand-in",
+                    help="bridge step 5: confined arms publish to the house's real (A)")
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
+    real = args.platform == "real"
 
     require_ready(deep=False)
     become_subreaper()
@@ -139,7 +147,11 @@ def main() -> int:
         log = Path(tempfile.mkstemp(suffix=f"-{arm}.jsonl")[1])
         device = fake_device(subject, log, args.python)
         try:
-            if arms[arm] is None:
+            if arms[arm] is None and real:
+                with house_stopped():   # F56: the unconfined arm binds port 8123 itself
+                    report = run_unconfined(component, domain, subject, args.python, uv,
+                                            platform_deps)
+            elif arms[arm] is None:
                 report = run_unconfined(component, domain, subject, args.python, uv,
                                         platform_deps)
             else:
@@ -147,7 +159,7 @@ def main() -> int:
                 # running then is looping, as both baseline arms did.
                 report = run_confined(component, domain, subject, arm, arms[arm],
                                       args.python, delegation, uv, platform_deps,
-                                      max_seconds=300)
+                                      max_seconds=300, real=real)
         finally:
             time.sleep(1)
             device.terminate()

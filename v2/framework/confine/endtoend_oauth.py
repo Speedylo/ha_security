@@ -105,8 +105,11 @@ def main() -> int:
     ap.add_argument("--corpus", type=Path, required=True)
     ap.add_argument("--python", type=Path, required=True)
     ap.add_argument("--uv", default=str(Path.home() / ".local/bin/uv"))
+    ap.add_argument("--platform", choices=["stand-in", "real"], default="stand-in",
+                    help="bridge step 5: confined runs publish to the house's real (A)")
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
+    real = args.platform == "real"
 
     require_ready(deep=False)
     become_subreaper()
@@ -129,7 +132,7 @@ def main() -> int:
         report = run_confined(component, "trakt_tv", SUBJECT, name, permissions, args.python,
                               delegation, uv, platform_deps, max_seconds=300,
                               entry_data=entry_for(config, token),
-                              inspect_data=inspector(token, carried))
+                              inspect_data=inspector(token, carried), real=real)
         if carried.get("refresh_token") and carried["refresh_token"] != token["refresh_token"]:
             # Refreshed: this is now the only valid token. Saved at once.
             secrets.update({carried.get("access_token", ""), carried["refresh_token"]})
@@ -147,6 +150,10 @@ def main() -> int:
                          "level": report.get("level"), "error": report.get("error"),
                          "egress": egress, "inspection": report.get("data_inspection"),
                          "published": [p.get("entity") for p in report.get("published") or []],
+                         # Bridge step 5: the record itself (accepted or not), and what (A) holds.
+                         "published_records": report.get("published"),
+                         "in_house": report.get("in_house"),
+                         "platform": report.get("platform"),
                          "audit_breaks": report.get("audit_breaks"),
                          "reconcile": report.get("reconcile")}, secrets)
         results.append(summary)

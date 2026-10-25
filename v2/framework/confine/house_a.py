@@ -113,6 +113,14 @@ input_number:
     step: 1
     initial: 48
     unit_of_measurement: "%"
+  # Bridge step 5 (2026-10-25): the light dims, as the stand-in's WORLD light does, so the
+  # end-to-end set's scripted world (brightness 51, then off) is the same against (A).
+  living_room_brightness:
+    name: Living room brightness (state of the test)
+    min: 0
+    max: 255
+    step: 1
+    initial: 180
 
 input_boolean:
   living_room_light:
@@ -124,6 +132,16 @@ template:
       - name: Living room
         unique_id: house_a_living_room_light
         state: "{{ is_state('input_boolean.living_room_light', 'on') }}"
+        level: "{{ states('input_number.living_room_brightness') | int }}"
+        set_level:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.living_room_brightness
+            data:
+              value: "{{ brightness }}"
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.living_room_light
         turn_on:
           - action: input_boolean.turn_on
             target:

@@ -40,6 +40,8 @@ from .mediator import Mediator
 from .platform import Platform, acting_policy
 from .preflight import require_ready
 from .provenance import record_run
+from .real_house import apply_step, house_stopped, in_house, reset_world
+from .real_platform import RealPlatform
 from .sandbox import SandboxSpec
 from .selftest_bridge import interpreter_trees
 from .spawn import SandboxFailed, become_subreaper, start
@@ -157,13 +159,16 @@ def _install(component: Path, deps: Path, python: Path, uv: str | None) -> dict:
 
 
 def run_confined(name: str, variant: dict, component: Path, python: Path,
-                 delegation: Delegation, uv: str | None, platform_deps: Path | None) -> dict:
+                 delegation: Delegation, uv: str | None, platform_deps: Path | None,
+                 real: bool = False) -> dict:
     domain = variant["domain"]
     root = Path(tempfile.mkdtemp(prefix=f"fn-{domain}-"))
     mediator = Mediator()
     audit_dir = attach(mediator, f"fn-audit-{domain}-")
     durable: dict = {}
-    platform = Platform()
+    # Bridge step 5: with `real`, the house's own Home Assistant, (A), through the bridge, its
+    # world set to `WORLD`'s values and changed by real service calls (`real_house`).
+    platform = RealPlatform() if real else Platform()
     # Every state the platform holds, in order, the world's changes included, so a value can be
     # read before and after each step. And every call the mediator let through, with its time.
     history: list[list] = []
@@ -183,8 +188,11 @@ def run_confined(name: str, variant: dict, component: Path, python: Path,
         deps = root / "deps"
         install = _install(component, deps, python, uv)
 
-        for entity_id, (state, attributes) in WORLD.items():
-            platform.seed(entity_id, state, **attributes)
+        if real:
+            reset_world(platform)
+        else:
+            for entity_id, (state, attributes) in WORLD.items():
+                platform.seed(entity_id, state, **attributes)
 
         def observe(entity_id: str, state: str, _attributes: dict) -> None:
             history.append([entity_id, state])
@@ -193,18 +201,32 @@ def run_confined(name: str, variant: dict, component: Path, python: Path,
             if entity_id not in WORLD and not began:
                 began.append(time.monotonic())
         platform.listeners.append(observe)
+        if real:
+            # (A)'s listeners fire for (A)'s changes, not for what the mediator publishes, so the
+            # integration's publishes are observed where they happen, as `endtoend` does.
+            publish = platform.publish
+
+            def published(identity: str, entity_id: str, state: str, attributes: dict,
+                          naming: dict | None = None) -> None:
+                publish(identity, entity_id, state, attributes, naming)
+                observe(entity_id, state, attributes)
+            platform.publish = published  # type: ignore[method-assign]
+        execute = platform.call_service
 
         def call_service(service_domain: str, service: str, data: dict) -> None:
             from datetime import datetime, timezone
             calls.append({"service": f"{service_domain}.{service}", "data": data,
                           "utc": datetime.now(timezone.utc).isoformat()})
-            Platform.call_service(platform, service_domain, service, data)
+            execute(service_domain, service, data)
         platform.call_service = call_service  # type: ignore[method-assign]
 
         manifest = Manifest.load(own, root)
         approve_as_experimenter(own, root)  # F57: in an experiment, the experimenter approves
         mediator.policy = acting_policy({domain: manifest}, platform)
-        platform.listeners.append(mediator.push)
+        if real:
+            mediator.attach_platform(platform)
+        else:
+            platform.listeners.append(mediator.push)
         mediator_end, sandbox_end = Channel.pair()
         mediator.register(domain, Channel(mediator_end), component=own, installed=deps)
 
@@ -257,7 +279,11 @@ def run_confined(name: str, variant: dict, component: Path, python: Path,
                             time.monotonic() - began[0] >= world_steps[0]["at"]:
                         step = world_steps.pop(0)
                         history.append(["<world>", f"{step['entity']} {step['state']}"])
-                        platform.set_state(step["entity"], step["state"], step["attributes"])
+                        if real:
+                            apply_step(platform, step)
+                        else:
+                            platform.set_state(step["entity"], step["state"],
+                                               step["attributes"])
                 sandbox.wait(timeout=60)
         text = Path(out.name).read_text().strip()
         diagnostic = Path(err.name).read_text().strip()
@@ -275,9 +301,16 @@ def run_confined(name: str, variant: dict, component: Path, python: Path,
         return {"variant": name, "arm": "confined", "level": "no_report", "durable": durable,
                 "error": tail[-1][:200] if tail else ""}
     report = json.loads(text.splitlines()[-1])
+    if real:
+        # What (A) itself holds for each entity the integration published, read back from (A).
+        report["in_house"] = in_house(platform, domain, report.get("published") or [])
+        states = {row["entity"]: row["house_state"] for row in report["in_house"]}
+        platform.close()
+    else:
+        states = {k: v[0] for k, v in platform.states.items()}
     report.update({"variant": name, "arm": "confined", "install": install, "durable": durable,
                    "decisions": list(mediator.audit), "history": history, "calls": calls,
-                   "platform_states": {k: v[0] for k, v in platform.states.items()},
+                   "platform_states": states, "platform": "real" if real else "stand-in",
                    "log_tail": diagnostic.splitlines()[-15:]})
     return report
 
@@ -341,8 +374,12 @@ def main() -> int:
     ap.add_argument("--uv", default=str(Path.home() / ".local/bin/uv"))
     ap.add_argument("--only", help="comma-separated variant names")
     ap.add_argument("--arm", choices=["confined", "unconfined", "both"], default="both")
+    ap.add_argument("--platform", choices=["stand-in", "real"], default="stand-in",
+                    help="bridge step 5: the confined arms act on the house's real (A), which "
+                         "must be running; the unconfined arms run with (A) stopped (F56)")
     ap.add_argument("--json", type=Path, required=True)
     args = ap.parse_args()
+    real = args.platform == "real"
 
     python = Path(args.python)
     uv = args.uv if Path(args.uv).exists() else None
@@ -369,7 +406,10 @@ def main() -> int:
             print(f"  {name:<30} {arm:<10}", end=" ", flush=True)
             if arm == "confined":
                 report = run_confined(name, variant, component, python, delegation, uv,
-                                      platform_deps)
+                                      platform_deps, real=real)
+            elif real:
+                with house_stopped():
+                    report = run_unconfined(name, variant, component, python, uv, platform_deps)
             else:
                 report = run_unconfined(name, variant, component, python, uv, platform_deps)
             results.append(report)

@@ -96,6 +96,8 @@ from .selftest_bridge import interpreter_trees
 from .spawn import Sandbox, SandboxFailed, become_subreaper, start
 from .udp_relay import UdpRelay
 from .provenance import record_run
+from .real_house import house_stopped, in_house
+from .real_platform import RealPlatform
 
 HERE = Path(__file__).resolve().parent
 
@@ -230,7 +232,8 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
                  python: Path, delegation: Delegation, uv: str | None,
                  platform_deps: Path | None, max_seconds: float | None = None,
                  entry_data: dict | None = None,
-                 inspect_data: Callable[[Path], dict] | None = None) -> dict:
+                 inspect_data: Callable[[Path], dict] | None = None,
+                 real: bool = False) -> dict:
     root = Path(tempfile.mkdtemp(prefix=f"e2e-egress-{arm}-"))
     # The audit log lives **outside** `root`, because `root` is removed in the `finally` below
     # and the records are read after it. Keeping it inside meant `records()` found an empty
@@ -268,13 +271,17 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
         # was granted is the one S7 already commits to, and taking it from there rather than
         # from a second in-memory structure is what F3 means by attributable.
         mediator.log = AuditLog(path=audit_dir / "decisions.jsonl")
-        platform = Platform()
+        # Bridge step 5: with `real`, what the integration publishes goes to the house's own Home
+        # Assistant, (A), through the bridge, rather than to the stand-in.
+        platform = RealPlatform() if real else Platform()
         broker = EgressBroker(connect_timeout=20.0)
         relay = UdpRelay()
         manifest = Manifest.load(own, root)
         approve_as_experimenter(own, root)  # F57: in an experiment, the experimenter approves
         mediator.policy = acting_policy({domain: manifest}, platform,
                                         broker=broker, relay=relay)
+        if real:
+            mediator.attach_platform(platform)
         mediator_end, sandbox_end = Channel.pair()
         mediator.register(domain, Channel(mediator_end), component=own, installed=deps)
 
@@ -377,6 +384,11 @@ def run_confined(component: Path, domain: str, subject: dict, arm: str, permissi
         return {"arm": arm, "level": "fatal", "install": install, "audit": audit,
                 "logged": logged, "oom_kill": oom, "error": report["fatal"].strip().splitlines()[-1][:300]}
     report["arm"] = arm
+    if real:
+        # What (A) itself holds for each entity the integration published, read back from (A).
+        report["in_house"] = in_house(platform, domain, report.get("published") or [])
+        platform.close()
+    report["platform"] = "real" if real else "stand-in"
     report["timed_out"] = timed_out
     report["data_inspection"] = inspection
     report["install"] = install
@@ -510,6 +522,9 @@ def main() -> int:
     # checks are arguments about the data; when one is found to be wrong, the data stands.
     ap.add_argument("--recheck", type=Path, metavar="RESULT_JSON")
     ap.add_argument("--uv", default=str(Path.home() / ".local/bin/uv"))
+    ap.add_argument("--platform", choices=["stand-in", "real"], default="stand-in",
+                    help="bridge step 5: the confined arms publish to the house's real (A), which "
+                         "must be running; the unconfined arm runs with (A) stopped (F56)")
     ap.add_argument("--json", type=Path)
     args = ap.parse_args()
 
@@ -567,12 +582,18 @@ def main() -> int:
 
     reports: dict[str, dict] = {}
     print("  A  unconfined baseline ...", flush=True)
-    reports["unconfined"] = run_unconfined(component, domain, running, args.python, uv,
-                                           platform_deps)
+    real = args.platform == "real"
+    if real:
+        with house_stopped():   # F56: the unconfined arm binds port 8123 itself
+            reports["unconfined"] = run_unconfined(component, domain, running, args.python, uv,
+                                                   platform_deps)
+    else:
+        reports["unconfined"] = run_unconfined(component, domain, running, args.python, uv,
+                                               platform_deps)
     for arm, spec in arms.items():
         print(f"  {spec['label']} ...", flush=True)
         reports[arm] = run_confined(component, domain, running, arm, spec["permissions"],
-                                    args.python, delegation, uv, platform_deps)
+                                    args.python, delegation, uv, platform_deps, real=real)
     if secret:
         # Measured before scrubbing, because scrubbing would make it vacuous: did the key reach
         # the mediator at all? It should not. The mediator hands the sandbox a connected socket
