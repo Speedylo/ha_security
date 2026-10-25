@@ -96,3 +96,32 @@ levels do not change (both are `platforms_clean`), but a confined integration th
 multicast connects is the obvious fix, and it is not made here: it lets a socket send to the
 multicast group without the mediator, which `route_multicast_to_loopback` argues reaches only the
 sandbox itself — a decision for Younes, with its own prediction.
+
+---
+
+## The second route (`zeroconf`): prediction, committed before its fix (2026-10-25)
+
+Younes: "fix zeroconf too, prediction first".
+
+**Why not let multicast connects fall through, as loopback now does.** The shim treats a multicast
+destination as discovery (`_is_broadcast`: `govee`'s scan goes to 239.255.255.250), which the
+mediator serves as a declared, recorded capability. A multicast `connect` that fell through would
+send what follows to `lo` with no record — and change how a connected discovery socket behaves. So
+relayed sockets stay relayed.
+
+**The fix.** `getsockname()` on a socket the shim has put on a pair answers what the sandbox's only
+interface would: `('127.0.0.1', port)` (`('::1', port, 0, 0)` for IPv6), where `port` is the port it
+was bound to, else 0. Without the shim that is exactly what the kernel reports in the sandbox for
+224.0.0.251, since `route_multicast_to_loopback` sends 224/4 to `lo`. Before, it answered `''`, which
+nothing could use. No request changes and nothing new reaches the network.
+
+| | Prediction | Where, criterion |
+|---|---|---|
+| R1 | New `selftest_udp` case 9 — under the shim, a socket connected to 224.0.0.251 reports `('127.0.0.1', 0)`; Home Assistant's single-target lookup for 224.0.0.251 returns `'127.0.0.1'`; a socket bound to 5353 reports port 5353; the multicast socket is still relayed — **fails before** (9a–9c; 9d passes either way), passes after; case 8 still passes | laptop and Pi |
+| R2 | Every suite still passes | Pi, fresh clone |
+| R3 | `compat --profile declared --egress`: `zeroconf` sets up for `sonoff` and `xiaomi_home` (it did not in `f65_20261025/post`), and **every component's setup result, for all 37, equals the final rerun's** (which had no shim); every level equals it too | Pi, same clone |
+| R4 | `endtoend_egress --subject waste_collection_schedule`: as Q5 — calendar published confined, no source-IP message, the harness's checks all pass | Pi, same clone |
+
+R3's second clause is the strongest statement available: with the shim on, the platform components
+each integration needs set up exactly as they did without it. A difference is reported, not
+explained away. Outcome appended below.

@@ -12,6 +12,8 @@ earlier draft used to recommend refusing it. This is what serving them costs and
   6  payload bounds are enforced before allocation, not after
   8  a datagram `connect` to the sandbox's own loopback is not relayed, so Home Assistant's
      `http` can find a source address (F65)
+  9  a relayed socket's `getsockname()` reports the sandbox's own address, so `zeroconf` can
+     find one too (F65, second route)
 
 The asymmetry with TCP is the point of the whole file. TCP hands over a connected descriptor
 because a connected TCP socket cannot be re-pointed; UDP cannot, and `selftest_socket_pinning`
@@ -608,6 +610,51 @@ def case_source_address(root: Path) -> None:
         relay.close()
 
 
+def case_relayed_name(root: Path) -> None:
+    """F65's second route: `zeroconf` asks for its address towards the mDNS group alone.
+
+    `network.async_get_announce_addresses` looks up the source address for 224.0.0.251 only. A
+    multicast destination is discovery, served by the mediator, so the socket stays relayed; what
+    changes is that its `getsockname()` answers what the sandbox's only interface would, where it
+    answered `''`. `notes/f65_source_ip_prediction_20261025.md`, second route."""
+    shim, relay, decisions = wire(root, "demo_relayed_name", {})
+
+    def name_of(sock: socket.socket):
+        try:
+            return sock.getsockname()
+        except Exception as err:  # noqa: BLE001
+            return f"{type(err).__name__}: {err}"
+
+    try:
+        shim.install()
+        group = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        group.setblocking(False)
+        group.connect(("224.0.0.251", 1))
+        name = name_of(group)
+        relayed = (shim._dgram.get(group, {}).get("writer") is not None
+                   and ("peer", "224.0.0.251", 1) in shim._routes)
+        try:
+            lookup = group.getsockname()[0]
+        except Exception:  # noqa: BLE001
+            lookup = None
+        group.close()
+        check(name == ("127.0.0.1", 0),
+              "9a. a relayed socket connected to the mDNS group reports the sandbox's own address",
+              f"{name!r}")
+        check(lookup == "127.0.0.1",
+              "9b. so Home Assistant's lookup for 224.0.0.251 alone finds an address", f"{lookup!r}")
+        bound = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        bound.bind(("0.0.0.0", 5353))
+        port_name = name_of(bound)
+        bound.close()
+        check(port_name == ("127.0.0.1", 5353),
+              "9c. a relayed socket bound to a port reports that port", f"{port_name!r}")
+        check(relayed, "9d. and the multicast socket is still relayed, not let through")
+    finally:
+        shim.uninstall()
+        relay.close()
+
+
 def main() -> int:
     print(__doc__.strip().splitlines()[0])
     print("=" * 78)
@@ -619,6 +666,7 @@ def main() -> int:
         case_bounds(root)
         case_no_relay_fails_closed(root)
         case_source_address(root)
+        case_relayed_name(root)
     passed = sum(1 for ok, _ in _results if ok)
     print("=" * 78)
     print(f"{passed}/{len(_results)} checks passed")
