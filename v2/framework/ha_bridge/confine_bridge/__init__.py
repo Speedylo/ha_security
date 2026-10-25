@@ -7,8 +7,8 @@ a `unique_id`, an entity-registry row, a device, a config entry, and a state tha
 restart. Publishing over `/api/states` gives none of those (§6.10.2), and 83% of integrations
 publish through the path that does (§5.6.1).
 
-Adapted from the 2026-08 spike's `sandbox_bridge` (`00_METHOD.md` §5 permits reusing its code;
-its *finding* is re-measured in §7.37, not cited). Two changes from the spike:
+Adapted from the 2026-08 spike's `sandbox_bridge` (its code is reused; its *finding* is
+re-measured in §7.37, not cited). Two changes from the spike:
 
   - **Publishing is a WebSocket command, not a service.** A service appears in the instance's
     service list, where any automation, script or dashboard button could call it and publish as a

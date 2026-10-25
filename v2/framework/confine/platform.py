@@ -16,7 +16,8 @@ entry, no device, and nothing that survives a restart. Its `sandbox_bridge` comp
 close that gap by owning a config entry and creating registry-backed entities on a sandboxed
 integration's behalf. That finding is **orthogonal to the R1/R2 divergence** — it constrains
 step 5 either way — and it is cited here as prior work with its date rather than relied on,
-per `00_METHOD.md` §2. Chapter 7 re-derives it or drops it.
+since the spike's findings are not carried into this project unchecked. Chapter 7 re-derives it
+or drops it.
 
 **One rule this file had to make explicit, which Chapter 5 implies but does not state.**
 §5.10.2 makes an integration's own things ambient — its own config entry, its own storage,

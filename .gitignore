@@ -33,3 +33,12 @@ spike/.ha_token
 
 # F59: an integration's kept .storage, by default under its config root (supervise.py --keep-dir)
 v2/experiments/**/confine/kept/
+
+# Local working files, never committed (2026-10-25 cleanup): the AI tool's settings and the
+# agent's working state, the working plan and method notes, and copies of cited papers, which
+# are other people's copyright.
+.claude/
+v2/STATE.md
+v2/00_METHOD.md
+v2/01_PLAN.md
+v2/refs/

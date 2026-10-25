@@ -1,42 +1,36 @@
-# Confining unmodified community integrations in Home Assistant
+# Confining Unmodified Community Integrations in Home Assistant
 
-This directory is the capstone project: *Confining Unmodified Third-Party Integrations in Home
-Assistant — A Declared-Authority Architecture and Its Measured Cost*. Everything outside `v2/` in this
-repository is the earlier feasibility spike, which is prior work and is not imported here.
-
-Every community integration runs inside Home Assistant's own process with all of its authority. This
-project runs each one, unmodified, in its own sandbox on the Raspberry Pi the platform usually lives
-on. Anything the integration does outside its sandbox goes through a mediator. The mediator decides
-each request against what the integration declared in its manifest, records the decision durably
-before acting on it, and then acts on the house's real Home Assistant.
+Every community integration runs inside Home Assistant's own process with all of the platform's authority. This project runs each one, unmodified, in its own sandbox on the Raspberry Pi the platform usually lives on. Anything the integration does outside its sandbox goes through a mediator, which decides each request against what the integration declared in its manifest, records the decision durably before acting on it, and then acts on the house's real Home Assistant.
 
 ## Where to start
 
 | If you want | Read |
 |---|---|
-| The argument and the results | `report/`, from `00_front_matter.md` (abstract and contents) to `08_conclusions.md` |
-| To reproduce the results | `REPRODUCE.md`: the environment from a blank Pi, then every suite |
-| One experiment's command and its raw results | `experiments/<name>/README.md`; `REPRODUCE.md` §11 maps each to its report section |
-| The code | `framework/README.md`; the modules follow Chapter 6's sections |
-| How every claim was checked before submission | §7.45, `notes/verification_plan_20261005.md` and `verify/claims_register.md` |
-| A plain-language overview | `PROJECT_OVERVIEW.md` (dated 2026-09-06; its notes at the top say what has changed) |
-| Where the work stands today | the top of `STATE.md` |
+| The argument and the results | The final report, `submission/capstone_report.pdf` (sources: `submission/*.md`) |
+| A shorter account | The interim report, `interim/interim_report.pdf` (sources: `interim/*.md`) |
+| To reproduce the results | `REPRODUCE.md`: the environment from a blank Raspberry Pi, then every suite and experiment |
+| One experiment's command and raw results | `experiments/<name>/README.md` |
+| The code | `framework/README.md` |
+| How every claim was checked | `verify/claims_register.md` and `notes/verification_plan_20261005.md` |
+| How AI assistance was used and checked | The interim report's Section 6 and Appendix B, and the full log in `notes/ai_use_log.md` |
 
 ## Layout
 
 | Directory | What it holds |
 |---|---|
-| `report/` | the report, one file per chapter; `toc.py --check` verifies the contents page and its counts |
-| `framework/confine/` | the framework: sandbox, mediator, manifest, audit log, and the 27 self-test suites |
-| `framework/ha_bridge/` | the bridge integration installed in the house's Home Assistant |
-| `experiments/` | one directory per measurement: its script, README and committed results |
-| `figures/` | figure sources, the corpus fetcher and the API-surface measurement |
-| `verify/` | the verification campaign's scripts and claim register |
-| `notes/` | working notes, including each experiment's predictions, committed before it ran |
-| `submission/` | the draft in the programme's template, *stale until phase R* |
-| `proposal/` | the programme proposal |
+| `framework/confine/` | The framework: sandbox, mediator, manifest, audit log, and the self-test suites |
+| `framework/ha_bridge/` | The bridge integration installed in the house's own Home Assistant |
+| `experiments/` | One directory per measurement: its script, README and committed results |
+| `figures/` | Figure sources, the corpus fetcher and the platform-interface measurement |
+| `verify/` | The verification campaign's scripts and claim register |
+| `notes/` | Each experiment's predictions, committed before it ran, and the project's working notes |
+| `report/` | The working report against which every claim was registered and checked; the verification scripts read it |
+| `submission/` | The final report in the programme's template, and its build |
+| `interim/` | The interim report, and its build |
+| `proposal/` | The project proposal |
 
-**Conventions worth knowing before reading the report.** Predictions are committed before the
-measurement they predict, and are never revised. A section that later turns out to be wrong keeps its
-text and gains a dated pointer to the correction, so the record of what was believed, and when, is
-part of the result (§8.4).
+The two diaries submitted during the semester are `Diary1.docx` and `Diary2.docx`.
+
+## Conventions
+
+Predictions are committed before the measurement they predict and are never revised. A statement that later turns out to be wrong keeps its text and gains a dated pointer to the correction, so the record of what was believed, and when, is part of the result.
