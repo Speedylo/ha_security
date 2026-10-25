@@ -49,7 +49,7 @@ Results: `experiments/real_platform/results/bridge_types_20261025/` (`s1-pre/`, 
 
 | | Outcome |
 |---|---|
-| T6 | Held: before the change, 2/16 — T1–T4 failed with *"the bridge cannot stand in for a button entity"* (and text, select, number); T5 and the chain check passed |
+| T6 | Held: before the change, 2/16 — T1–T4 failed with *"the bridge cannot stand in for a button entity"* (and text, select, number); T5 and the chain check passed. T6 named only T1–T3; T4 failed too, since there was no entity to command |
 | T1–T5 | Held: after the change, **16/16**. Each type is a registry row of its own domain owned by the bridge; (A) holds the state, the select's options, the number's range, step, mode and unit, the text's limits and mode; the button reads `unknown`; republishes change the state; `number.set_value` is refused by the mediator under `COMMAND_SERVICES`, recorded, and the user's call fails at once with the reason; a light is still refused |
 | T7 | Held: 30 of 30 suites exit 0 (the new suite included), with (A) up |
 
