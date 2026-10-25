@@ -21,6 +21,9 @@ in (A), described well enough for Home Assistant to draw its control. Operating 
     W3   a weather's forecast, asked for in (A), comes from the sandbox's answer
     W4   a malformed answer fails the question, and nothing of it reaches (A)
     W5   the events' titles are not in the durable log
+    U1   a numeric sensor published `unknown` is accepted and shows `unknown` in (A) (F66)
+    U2   then a number, then `unavailable`, each shown as such
+    U3   a switch published `unavailable` shows `unavailable`
 
 Requires (A) running: `python3 -m confine.house_a up --fresh` on the Pi.
 
@@ -362,6 +365,29 @@ def main() -> int:
         print("\nW5 — the events' titles are not in the durable log\n")
         check("W5 'Dentist, Dr Example' appears nowhere in the run's durable log",
               "Dentist, Dr Example" not in (root / "audit" / "decisions.jsonl").read_text())
+
+        print("\nU — unknown and unavailable states (F66)\n")
+        POWER = "sensor.selftest_lamp_power"
+        power_attributes = {"friendly_name": "Selftest lamp power", "device_class": "power",
+                            "state_class": "measurement", "unit_of_measurement": "W"}
+        answer = sandbox.ask({"op": "entity.publish", "entity": POWER, "state": "unknown",
+                              "attributes": power_attributes})
+        landed[POWER] = platform.published.get(("selftest", POWER)) or ""
+        shown = platform.read(landed[POWER])[0] if landed[POWER] else None
+        check("U1 a numeric sensor published 'unknown' is accepted, and (A) shows unknown",
+              answer.get("ok") is True and shown == "unknown",
+              f"{answer.get('reason') or ''} {shown!r}")
+        for state in ("12.5", "unavailable"):
+            sandbox.ask({"op": "entity.publish", "entity": POWER, "state": state,
+                         "attributes": power_attributes})
+            shown = platform.read(landed[POWER])[0] if landed[POWER] else None
+            check(f"U2 republished {state!r}, (A) shows it", shown == state, f"{shown!r}")
+        DOWN = "switch.selftest_unreachable"
+        answer = sandbox.ask({"op": "entity.publish", "entity": DOWN, "state": "unavailable"})
+        landed[DOWN] = platform.published.get(("selftest", DOWN)) or ""
+        shown = platform.read(landed[DOWN])[0] if landed[DOWN] else None
+        check("U3 a switch published 'unavailable' shows unavailable in (A)",
+              answer.get("ok") is True and shown == "unavailable", f"{shown!r}")
 
         print("\nT5 — a type still unsupported is refused\n")
         light = sandbox.ask({"op": "entity.publish", "entity": "light.selftest_probe",
