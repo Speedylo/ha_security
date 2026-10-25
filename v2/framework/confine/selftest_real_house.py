@@ -75,7 +75,8 @@ def main() -> int:
         humidity = platform.read("sensor.living_room_humidity")[0]
         check("H1 the reset puts the world back: light on at 180, 21.4 °C, 48 %",
               state == "on" and attributes.get("brightness") == 180
-              and temperature == "21.4" and humidity == "48",
+              # As numbers: (A) writes a value set by `input_number.set_value` as 48.0 (step 5).
+              and float(temperature or "nan") == 21.4 and float(humidity or "nan") == 48,
               f"{state} {attributes.get('brightness')} {temperature} {humidity}")
     except ImportError as err:
         check("H1 the reset puts the world back: light on at 180, 21.4 °C, 48 %", False, str(err))

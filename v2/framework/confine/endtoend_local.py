@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import socket
 import subprocess
 import sys
 import tempfile
@@ -40,7 +41,24 @@ from .provenance import record_run
 HERE = Path(__file__).resolve().parent
 FAKES = HERE.parent.parent / "experiments" / "local_tcp"
 MIDEA_SRC = Path.home() / "r2exp" / "t2" / "midea-src"
-LAN = "10.126.83.113"
+
+
+def _lan_address() -> str:
+    """This host's address on the home network: the source of a route to a LAN-wide address.
+
+    Was the literal `10.126.83.113` until 2026-10-25, when DHCP had moved the Pi to another address
+    and the fake device could no longer bind (bridge step 5's first complete run). A UDP `connect`
+    sends nothing; it only picks the route.
+    """
+    probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        probe.connect(("10.255.255.255", 9))
+        return probe.getsockname()[0]
+    finally:
+        probe.close()
+
+
+LAN = _lan_address()
 DEVICE_ID = 151732605161920
 
 SUBJECTS = {
