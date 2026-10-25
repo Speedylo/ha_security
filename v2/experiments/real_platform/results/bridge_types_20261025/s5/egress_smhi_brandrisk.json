@@ -1,0 +1,3294 @@
+{
+  "integration": "smhi_brandrisk",
+  "egress": [
+    "opendata-download-metfcst.smhi.se:443",
+    "opendata-download-warnings.smhi.se:443"
+  ],
+  "partial": [
+    "opendata-download-metfcst.smhi.se:443"
+  ],
+  "flow_input": {
+    "latitude": 59.33,
+    "longitude": 18.07
+  },
+  "select_first": null,
+  "settle_seconds": 40.0,
+  "unreachable_before_run": {},
+  "reports": {
+    "unconfined": {
+      "domain": "smhi_brandrisk",
+      "arm": "unconfined",
+      "egress_attempts": [
+        {
+          "kind": "connect",
+          "host": "224.0.0.251",
+          "port": 1,
+          "phase": "platform"
+        },
+        {
+          "kind": "connect",
+          "host": "8.8.8.8",
+          "port": 1,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "239.255.255.250",
+          "port": 1900,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "10.126.85.243",
+          "port": 0,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "ff02::c%3",
+          "port": 1900,
+          "phase": "platform"
+        },
+        {
+          "kind": "resolve",
+          "host": "fe80::9ba0:68cd:7165:a581%3",
+          "port": 0,
+          "phase": "platform"
+        },
+        {
+          "kind": "connect",
+          "host": "/var/run/dbus/system_bus_socket",
+          "port": null,
+          "phase": "platform"
+        },
+        {
+          "kind": "connect",
+          "host": "91.192.30.41",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "91.192.30.46",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "resolve",
+          "host": "fe80::9ba0:68cd:7165:a581%3",
+          "port": 48071,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "104.26.4.238",
+          "port": 443,
+          "phase": "integration"
+        },
+        {
+          "kind": "resolve",
+          "host": "192.168.1.128",
+          "port": null,
+          "phase": "integration"
+        },
+        {
+          "kind": "connect",
+          "host": "10.255.255.255",
+          "port": 1,
+          "phase": "integration"
+        }
+      ],
+      "components_setup": {
+        "homeassistant": true,
+        "default_config": false
+      },
+      "setup_errors": [],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "latitude",
+              "longitude",
+              "name"
+            ]
+          }
+        ],
+        "type": "create_entry",
+        "errors": null,
+        "reason": null
+      },
+      "entries": [
+        {
+          "title": "Brandrisk hemma",
+          "state": "ConfigEntryState.LOADED",
+          "loaded": true
+        }
+      ],
+      "loaded": true,
+      "own_entities": [
+        "conversation.home_assistant",
+        "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong",
+        "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass",
+        "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text",
+        "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang",
+        "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt",
+        "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium",
+        "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle",
+        "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index",
+        "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass",
+        "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet",
+        "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning",
+        "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord",
+        "sensor.sun_next_dawn",
+        "sensor.sun_next_dusk",
+        "sensor.sun_next_midnight",
+        "sensor.sun_next_noon",
+        "sensor.sun_next_rising",
+        "sensor.sun_next_setting",
+        "sun.sun",
+        "zone.home"
+      ],
+      "published": [
+        {
+          "entity": "conversation.home_assistant",
+          "state": "unknown",
+          "platform": null
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong",
+          "state": "Brands\u00e4song",
+          "platform": "smhi_brandrisk"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass",
+          "state": "1.0",
+          "platform": "smhi_brandrisk"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text",
+          "state": "Mycket l\u00e5g",
+          "platform": "smhi_brandrisk"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang",
+          "state": "1.3",
+          "platform": "smhi_brandrisk"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt",
+          "state": "314.8",
+          "platform": "smhi_brandrisk"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium",
+          "state": "0.7",
+          "platform": "smhi_brandrisk"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle",
+          "state": "76.3",
+          "platform": "smhi_brandrisk"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index",
+          "state": "0.8",
+          "platform": "smhi_brandrisk"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass",
+          "state": "0",
+          "platform": "smhi_brandrisk"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet",
+          "state": "2.7",
+          "platform": "smhi_brandrisk"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning",
+          "state": "Ingen varning",
+          "platform": "smhi_brandrisk"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord",
+          "state": "unknown",
+          "platform": "smhi_brandrisk"
+        },
+        {
+          "entity": "sensor.sun_next_dawn",
+          "state": "2026-10-26T06:08:21+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_dusk",
+          "state": "2026-10-26T17:19:38+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_midnight",
+          "state": "2026-10-25T23:44:25+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_noon",
+          "state": "2026-10-26T11:44:27+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_rising",
+          "state": "2026-10-26T06:43:35+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sensor.sun_next_setting",
+          "state": "2026-10-26T16:44:27+00:00",
+          "platform": "sun"
+        },
+        {
+          "entity": "sun.sun",
+          "state": "below_horizon",
+          "platform": null
+        },
+        {
+          "entity": "zone.home",
+          "state": "0",
+          "platform": null
+        }
+      ],
+      "probe": null,
+      "timed_out": false
+    },
+    "confined_declared": {
+      "domain": "smhi_brandrisk",
+      "egress": {
+        "installed": true,
+        "resolved": [
+          "opendata-download-metfcst.smhi.se",
+          "opendata-download-warnings.smhi.se"
+        ],
+        "connected": [
+          [
+            "opendata-download-metfcst.smhi.se",
+            443
+          ],
+          [
+            "opendata-download-warnings.smhi.se",
+            443
+          ],
+          [
+            "opendata-download-metfcst.smhi.se",
+            443
+          ],
+          [
+            "opendata-download-warnings.smhi.se",
+            443
+          ]
+        ],
+        "datagrams_delivered": 0,
+        "refused_listens": [
+          5353
+        ]
+      },
+      "setup_errors": [],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "latitude",
+              "longitude",
+              "name"
+            ]
+          }
+        ],
+        "type": "create_entry",
+        "errors": null,
+        "reason": null
+      },
+      "entries": [
+        {
+          "title": "Brandrisk hemma",
+          "state": "ConfigEntryState.LOADED",
+          "loaded": true
+        }
+      ],
+      "loaded": true,
+      "local_entities": [
+        "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong",
+        "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass",
+        "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text",
+        "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang",
+        "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt",
+        "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium",
+        "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle",
+        "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index",
+        "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass",
+        "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet",
+        "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning",
+        "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord"
+      ],
+      "mirrored": [],
+      "published": [
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index",
+          "state": "0.8",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle",
+          "state": "76.3",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium",
+          "state": "0.7",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt",
+          "state": "314.8",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet",
+          "state": "2.7",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang",
+          "state": "1.3",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass",
+          "state": "0",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text",
+          "state": "Mycket l\u00e5g",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong",
+          "state": "Brands\u00e4song",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord",
+          "state": "unknown",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning",
+          "state": "Ingen varning",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass",
+          "state": "1.0",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "refused": [],
+      "push": {
+        "subscribed": [],
+        "received": [],
+        "unexpected": [],
+        "commands": []
+      },
+      "probe": null,
+      "arm": "confined_declared",
+      "in_house": [
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index",
+          "published_state": "0.8",
+          "house_state": "0.8",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle",
+          "published_state": "76.3",
+          "house_state": "76.3",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium",
+          "published_state": "0.7",
+          "house_state": "0.7",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt",
+          "published_state": "314.8",
+          "house_state": "314.8",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet",
+          "published_state": "2.7",
+          "house_state": "2.7",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang",
+          "published_state": "1.3",
+          "house_state": "1.3",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass",
+          "published_state": "0",
+          "house_state": "0",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text",
+          "published_state": "Mycket l\u00e5g",
+          "house_state": "Mycket l\u00e5g",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong",
+          "published_state": "Brands\u00e4song",
+          "house_state": "Brands\u00e4song",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord",
+          "published_state": "unknown",
+          "house_state": null,
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": false
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning",
+          "published_state": "Ingen varning",
+          "house_state": "Ingen varning",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass",
+          "published_state": "1.0",
+          "house_state": "1.0",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        }
+      ],
+      "platform": "real",
+      "timed_out": false,
+      "data_inspection": null,
+      "install": {
+        "ok": true,
+        "installed": [
+          "acme",
+          "aiodhcpwatcher",
+          "aiodiscover",
+          "aiodns",
+          "aiohappyeyeballs",
+          "aiohasupervisor",
+          "aiohttp",
+          "aiooui",
+          "aiosignal",
+          "aiousbwatcher",
+          "annotated_types",
+          "anyio",
+          "async_interrupt",
+          "async_timeout",
+          "async_upnp_client",
+          "asyncinotify",
+          "atomicwrites_homeassistant",
+          "attrs",
+          "av",
+          "awesomeversion",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "boto3",
+          "botocore",
+          "btsocket",
+          "cached_ipaddress",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "ciso8601",
+          "cronsim",
+          "cryptography",
+          "dacite",
+          "dbus_fast",
+          "defusedxml",
+          "distro",
+          "envs",
+          "file_read_backwards",
+          "fnv_hash_fast",
+          "fnvhash",
+          "frozenlist",
+          "go2rtc_client",
+          "greenlet",
+          "grpcio",
+          "h11",
+          "ha_ffmpeg",
+          "habluetooth",
+          "hass_nabucasa",
+          "hassil",
+          "home_assistant_frontend",
+          "home_assistant_intents",
+          "httpcore",
+          "httpx",
+          "icmplib",
+          "idna",
+          "ifaddr",
+          "jiter",
+          "jmespath",
+          "josepy",
+          "mashumaro",
+          "matter_ble_proxy",
+          "matter_python_client",
+          "multidict",
+          "mutagen",
+          "numpy",
+          "openai",
+          "orjson",
+          "pillow",
+          "propcache",
+          "psutil",
+          "psutil_home_assistant",
+          "pycares",
+          "pycognito",
+          "pycparser",
+          "pydantic",
+          "pydantic_core",
+          "pyjwt",
+          "pymicro_vad",
+          "pynacl",
+          "pyopenssl",
+          "pyrfc3339",
+          "pyric",
+          "pyroute2",
+          "pyspeex_noise",
+          "python_dateutil",
+          "python_didl_lite",
+          "pyturbojpeg",
+          "pyyaml",
+          "regex",
+          "requests",
+          "s3transfer",
+          "scapy",
+          "securetar",
+          "sentence_stream",
+          "serialx",
+          "six",
+          "sniffio",
+          "snitun",
+          "sqlalchemy",
+          "tqdm",
+          "typing_extensions",
+          "typing_inspection",
+          "uart_devices",
+          "unicode_rbnf",
+          "urllib3",
+          "usb_devices",
+          "voluptuous",
+          "webrtc_models",
+          "yarl",
+          "zeroconf"
+        ],
+        "resolved_before": "2026-10-06T00:00:00Z",
+        "resolved": [
+          "acme-5.4.0",
+          "aiodhcpwatcher-1.2.7",
+          "aiodiscover-3.3.2",
+          "aiodns-4.0.4",
+          "aiohappyeyeballs-2.7.1",
+          "aiohasupervisor-0.6.0",
+          "aiohttp-3.14.4",
+          "aiooui-0.1.11",
+          "aiosignal-1.4.0",
+          "aiousbwatcher-1.1.2",
+          "annotated_types-0.8.0",
+          "anyio-4.15.1",
+          "async_interrupt-1.2.2",
+          "async_timeout-5.0.1",
+          "async_upnp_client-0.47.1",
+          "asyncinotify-4.4.4",
+          "atomicwrites_homeassistant-1.4.1",
+          "attrs-26.1.0",
+          "av-17.0.1",
+          "awesomeversion-25.8.0",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "boto3-1.43.108",
+          "botocore-1.43.108",
+          "btsocket-0.3.0",
+          "cached_ipaddress-1.1.2",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.2",
+          "ciso8601-2.3.3",
+          "cronsim-2.7",
+          "cryptography-50.0.2",
+          "dacite-1.9.2",
+          "dbus_fast-5.0.22",
+          "defusedxml-0.7.1",
+          "distro-1.9.0",
+          "envs-1.4",
+          "file_read_backwards-2.0.0",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "frozenlist-1.8.0",
+          "go2rtc_client-0.4.0",
+          "greenlet-3.5.6",
+          "grpcio-1.84.0",
+          "h11-0.16.0",
+          "ha_ffmpeg-3.2.2",
+          "habluetooth-6.26.5",
+          "hass_nabucasa-2.2.0",
+          "hassil-3.11.0",
+          "home_assistant_frontend-20260729.7",
+          "home_assistant_intents-2026.7.30",
+          "httpcore-1.0.9",
+          "httpx-0.28.1",
+          "icmplib-3.0.4",
+          "idna-3.20",
+          "ifaddr-0.2.0",
+          "jiter-0.17.0",
+          "jmespath-1.1.0",
+          "josepy-2.2.0",
+          "mashumaro-3.23",
+          "matter_ble_proxy-0.7.1",
+          "matter_python_client-1.3.0",
+          "multidict-6.9.1",
+          "mutagen-1.48.1",
+          "numpy-2.3.2",
+          "openai-2.45.0",
+          "orjson-3.12.0",
+          "pillow-12.3.0",
+          "propcache-0.5.4",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pycares-5.1.0",
+          "pycognito-2024.5.1",
+          "pycparser-3.0",
+          "pydantic-2.13.5",
+          "pydantic_core-2.46.5",
+          "pyjwt-2.15.1",
+          "pymicro_vad-1.0.1",
+          "pynacl-1.6.2",
+          "pyopenssl-26.4.0",
+          "pyrfc3339-2.1.0",
+          "pyric-0.1.6.3",
+          "pyroute2-0.9.6",
+          "pyspeex_noise-1.0.2",
+          "python_dateutil-2.9.0.post0",
+          "python_didl_lite-1.5.1",
+          "pyturbojpeg-1.8.3",
+          "pyyaml-6.0.3",
+          "regex-2026.9.29",
+          "requests-2.34.2",
+          "s3transfer-0.19.2",
+          "scapy-2.8.0",
+          "securetar-2026.4.1",
+          "sentence_stream-1.3.0",
+          "serialx-1.8.2",
+          "six-1.17.0",
+          "sniffio-1.3.1",
+          "snitun-0.45.1",
+          "sqlalchemy-2.0.51",
+          "tqdm-4.70.1",
+          "typing_extensions-4.16.0",
+          "typing_inspection-0.4.4",
+          "uart_devices-0.1.1",
+          "unicode_rbnf-2.4.0",
+          "urllib3-2.8.0",
+          "usb_devices-0.5.1",
+          "voluptuous-0.16.0",
+          "webrtc_models-0.3.0",
+          "yarl-1.25.1",
+          "zeroconf-0.150.0"
+        ]
+      },
+      "audit": [
+        {
+          "identity": "smhi_brandrisk",
+          "op": "discover.listen",
+          "allowed": false,
+          "clause": "/permissions/network/discover/listen"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "network.egress",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "network.egress",
+          "allowed": true,
+          "clause": "/permissions/network/egress/1"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "network.egress",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "network.egress",
+          "allowed": true,
+          "clause": "/permissions/network/egress/1"
+        }
+      ],
+      "logged": [
+        {
+          "op": "discover.listen",
+          "target": "5353",
+          "allowed": false,
+          "clause": "/permissions/network/discover/listen"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata-download-warnings.smhi.se:443",
+          "allowed": true,
+          "clause": "/permissions/network/egress/1"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata-download-warnings.smhi.se:443",
+          "allowed": true,
+          "clause": "/permissions/network/egress/1"
+        }
+      ],
+      "audit_breaks": [],
+      "reconcile": [],
+      "durable_raw": [
+        {
+          "hash": "6c1dc37a2840c77a461ed76edd41cc2dcf030e816093ea271712685b9d459ae6",
+          "identity": {
+            "composite": "ed09d4d69d264311ee09ce0b185b282f2e20b8637fd97936db99642c9873f1dc",
+            "domain": "smhi_brandrisk",
+            "manifest": "56317d3b91c4c85537436d6aae9d79bc2030995acb32029a5cbf511028e01b19",
+            "requirements": "bcc5ecf8ca2dfeb07799bb861569afce6d17747c4f378578c26e9284e3eeec08",
+            "resolved": [
+              "PyJWT==2.15.1",
+              "PyNaCl==1.6.2",
+              "PyRIC==0.1.6.3",
+              "PyTurboJPEG==1.8.3",
+              "PyYAML==6.0.3",
+              "SQLAlchemy==2.0.51",
+              "acme==5.4.0",
+              "aiodhcpwatcher==1.2.7",
+              "aiodiscover==3.3.2",
+              "aiodns==4.0.4",
+              "aiohappyeyeballs==2.7.1",
+              "aiohasupervisor==0.6.0",
+              "aiohttp==3.14.4",
+              "aiooui==0.1.11",
+              "aiosignal==1.4.0",
+              "aiousbwatcher==1.1.2",
+              "annotated-types==0.8.0",
+              "anyio==4.15.1",
+              "async-timeout==5.0.1",
+              "async_interrupt==1.2.2",
+              "async_upnp_client==0.47.1",
+              "asyncinotify==4.4.4",
+              "atomicwrites-homeassistant==1.4.1",
+              "attrs==26.1.0",
+              "av==17.0.1",
+              "awesomeversion==25.8.0",
+              "bleak-retry-connector==4.6.3",
+              "bleak==3.0.2",
+              "bluetooth-adapters==2.4.0",
+              "bluetooth-auto-recovery==1.6.4",
+              "bluetooth-data-tools==1.29.18",
+              "boto3==1.43.108",
+              "botocore==1.43.108",
+              "btsocket==0.3.0",
+              "cached-ipaddress==1.1.2",
+              "certifi==2026.7.22",
+              "cffi==2.1.1",
+              "charset-normalizer==3.5.2",
+              "ciso8601==2.3.3",
+              "cronsim==2.7",
+              "cryptography==50.0.2",
+              "dacite==1.9.2",
+              "dbus-fast==5.0.22",
+              "defusedxml==0.7.1",
+              "distro==1.9.0",
+              "envs==1.4",
+              "file-read-backwards==2.0.0",
+              "fnv-hash-fast==2.0.3",
+              "fnvhash==0.2.1",
+              "frozenlist==1.8.0",
+              "go2rtc-client==0.4.0",
+              "greenlet==3.5.6",
+              "grpcio==1.84.0",
+              "h11==0.16.0",
+              "ha-ffmpeg==3.2.2",
+              "habluetooth==6.26.5",
+              "hass-nabucasa==2.2.0",
+              "hassil==3.11.0",
+              "home-assistant-frontend==20260729.7",
+              "home-assistant-intents==2026.7.30",
+              "httpcore==1.0.9",
+              "httpx==0.28.1",
+              "icmplib==3.0.4",
+              "idna==3.20",
+              "ifaddr==0.2.0",
+              "jiter==0.17.0",
+              "jmespath==1.1.0",
+              "josepy==2.2.0",
+              "mashumaro==3.23",
+              "matter-ble-proxy==0.7.1",
+              "matter-python-client==1.3.0",
+              "multidict==6.9.1",
+              "mutagen==1.48.1",
+              "numpy==2.3.2",
+              "openai==2.45.0",
+              "orjson==3.12.0",
+              "pillow==12.3.0",
+              "propcache==0.5.4",
+              "psutil-home-assistant==0.0.1",
+              "psutil==7.2.2",
+              "pyOpenSSL==26.4.0",
+              "pyRFC3339==2.1.0",
+              "pycares==5.1.0",
+              "pycognito==2024.5.1",
+              "pycparser==3.0",
+              "pydantic==2.13.5",
+              "pydantic_core==2.46.5",
+              "pymicro_vad==1.0.1",
+              "pyroute2==0.9.6",
+              "pyspeex_noise==1.0.2",
+              "python-dateutil==2.9.0.post0",
+              "python-didl-lite==1.5.1",
+              "regex==2026.9.29",
+              "requests==2.34.2",
+              "s3transfer==0.19.2",
+              "scapy==2.8.0",
+              "securetar==2026.4.1",
+              "sentence_stream==1.3.0",
+              "serialx==1.8.2",
+              "six==1.17.0",
+              "sniffio==1.3.1",
+              "snitun==0.45.1",
+              "tqdm==4.70.1",
+              "typing-inspection==0.4.4",
+              "typing_extensions==4.16.0",
+              "uart-devices==0.1.1",
+              "unicode-rbnf==2.4.0",
+              "urllib3==2.8.0",
+              "usb-devices==0.5.1",
+              "voluptuous==0.16.0",
+              "webrtc-models==0.3.0",
+              "yarl==1.25.1",
+              "zeroconf==0.150.0"
+            ],
+            "source": "53f89ce1fac0539420685abb3ce739116fbcec9087bd3432204ab4dbf437ad52"
+          },
+          "integration": "smhi_brandrisk",
+          "kind": "run",
+          "mac": "e683f9e209e5e6a3d843f4ce232a8aae4310fbd4552410bea4d0ae7d28550c83",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "prev_mac": "0000000000000000000000000000000000000000000000000000000000000000",
+          "provenance": "author-declared",
+          "run": "8f8bf6ecc28980d4",
+          "seq": 0,
+          "time": 1792956012.0214777
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/discover/listen",
+          "hash": "d7b9bfb33450959771ed00a009111653d9a574c2059423a0c55db36066c4fb5c",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "f63e827514c33187a3710457b323903e047c73ec006f8fcdfffc3486ffc5f626",
+          "op": "discover.listen",
+          "prev_hash": "6c1dc37a2840c77a461ed76edd41cc2dcf030e816093ea271712685b9d459ae6",
+          "prev_mac": "e683f9e209e5e6a3d843f4ce232a8aae4310fbd4552410bea4d0ae7d28550c83",
+          "reason": "nothing is declared at /permissions/network/discover/listen",
+          "requested": {
+            "port": 5353
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 1,
+          "target": "5353",
+          "time": 1792956014.483796
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "/permissions/network/egress/0",
+          "hash": "56556c2a8447722eae52eb31fe23958cf74b3da0c64b024f6f889dd6fd274844",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "abbd6651e54dd44e66752b666fc6d148cb4bf046d15d4f52c9efdc02f798847a",
+          "op": "network.egress",
+          "prev_hash": "d7b9bfb33450959771ed00a009111653d9a574c2059423a0c55db36066c4fb5c",
+          "prev_mac": "f63e827514c33187a3710457b323903e047c73ec006f8fcdfffc3486ffc5f626",
+          "reason": "declared",
+          "requested": {
+            "host": "opendata-download-metfcst.smhi.se",
+            "port": 443
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 2,
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "time": 1792956014.4868164
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "/permissions/network/egress/1",
+          "hash": "c1fe544eb60c744c9e575afdc14f399426d9b42f293709c78ee1d080843c4923",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "1e3c65408680a5588529826ea2417781942df3ad6f08be6fa8c9d03ed1d26b1b",
+          "op": "network.egress",
+          "prev_hash": "56556c2a8447722eae52eb31fe23958cf74b3da0c64b024f6f889dd6fd274844",
+          "prev_mac": "abbd6651e54dd44e66752b666fc6d148cb4bf046d15d4f52c9efdc02f798847a",
+          "reason": "declared",
+          "requested": {
+            "host": "opendata-download-warnings.smhi.se",
+            "port": 443
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 3,
+          "target": "opendata-download-warnings.smhi.se:443",
+          "time": 1792956014.9890866
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "5cc04d97d911b056d2d49e9705d2f16e6803afe604602111893d0eb4296afb3d",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "cd15269d0f73002cc9ab5b0e8b2ab07f2d8d2c0260ad5f182b487d8094531bed",
+          "op": "entity.publish",
+          "prev_hash": "c1fe544eb60c744c9e575afdc14f399426d9b42f293709c78ee1d080843c4923",
+          "prev_mac": "1e3c65408680a5588529826ea2417781942df3ad6f08be6fa8c9d03ed1d26b1b",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index"
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 4,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index",
+          "time": 1792956015.2922053
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "6a9ae1f1826e546720125d184656e7db063d979c9877cffe8e977cb8cb5b88c8",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "8f1f4a1b7f5e3d1933698f7fd0977866dfca578888ebca7b7dfcf61d23094b16",
+          "op": "entity.publish",
+          "prev_hash": "5cc04d97d911b056d2d49e9705d2f16e6803afe604602111893d0eb4296afb3d",
+          "prev_mac": "cd15269d0f73002cc9ab5b0e8b2ab07f2d8d2c0260ad5f182b487d8094531bed",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle"
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 5,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle",
+          "time": 1792956015.294964
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "4d99f56942d670c70dec3717835d050ceab315a722abd03072afbc798cf69aff",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "a396fec876d05addcb9ddf346d0520ca050881e2e940fe4de2e012a45c0c85d0",
+          "op": "entity.publish",
+          "prev_hash": "6a9ae1f1826e546720125d184656e7db063d979c9877cffe8e977cb8cb5b88c8",
+          "prev_mac": "8f1f4a1b7f5e3d1933698f7fd0977866dfca578888ebca7b7dfcf61d23094b16",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium"
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 6,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium",
+          "time": 1792956015.297339
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "914d90d3fab9988a4e83edee3272a2e4f1f1cd9445e831fb1e2bcf23ba055912",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "4a9858dfce9c64e94bcedff75f0991e2af26ec0d6ecfd9dac505920a4d2cb6bc",
+          "op": "entity.publish",
+          "prev_hash": "4d99f56942d670c70dec3717835d050ceab315a722abd03072afbc798cf69aff",
+          "prev_mac": "a396fec876d05addcb9ddf346d0520ca050881e2e940fe4de2e012a45c0c85d0",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt"
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 7,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt",
+          "time": 1792956015.2993875
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "38f7d1bcc8339708560b005fbc73371a2102f7e4fd23dd076c5c419d6e162e3a",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "3ec0f2799324fb979acf5b9c0621272cf8c8639cb633c8f677aa9e88ff934a8a",
+          "op": "entity.publish",
+          "prev_hash": "914d90d3fab9988a4e83edee3272a2e4f1f1cd9445e831fb1e2bcf23ba055912",
+          "prev_mac": "4a9858dfce9c64e94bcedff75f0991e2af26ec0d6ecfd9dac505920a4d2cb6bc",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet"
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 8,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet",
+          "time": 1792956015.3013253
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "554fc78d516381253f675e82a07d1ff3f44dc12e010cf3e95eee5691ab0a4663",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "beb1a7254185789c48fb2bce3eb4e661d9231d05bb06f949fa74c1087ee71fad",
+          "op": "entity.publish",
+          "prev_hash": "38f7d1bcc8339708560b005fbc73371a2102f7e4fd23dd076c5c419d6e162e3a",
+          "prev_mac": "3ec0f2799324fb979acf5b9c0621272cf8c8639cb633c8f677aa9e88ff934a8a",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang"
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 9,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang",
+          "time": 1792956015.303196
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "dbb70f7449d031ce81ebba7dfd180d17df931f959ed059e4e8ac809402dd2de4",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "e293bf74c0c5a63817696f9c7ea0f0e2c67880edccb83a5e2f20ae8fd28ddb81",
+          "op": "entity.publish",
+          "prev_hash": "554fc78d516381253f675e82a07d1ff3f44dc12e010cf3e95eee5691ab0a4663",
+          "prev_mac": "beb1a7254185789c48fb2bce3eb4e661d9231d05bb06f949fa74c1087ee71fad",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass"
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 10,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass",
+          "time": 1792956015.3050642
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "969498a3baa6ec07194030c655c8b383ba7664f5e6472fc1c76f31b67441e894",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "ee650dccb6640adfcab0c362c72c1ef38551bdcf31fbb343b45f2a3ff5d18d4a",
+          "op": "entity.publish",
+          "prev_hash": "dbb70f7449d031ce81ebba7dfd180d17df931f959ed059e4e8ac809402dd2de4",
+          "prev_mac": "e293bf74c0c5a63817696f9c7ea0f0e2c67880edccb83a5e2f20ae8fd28ddb81",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text"
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 11,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text",
+          "time": 1792956015.3069775
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "86317c61c772353f411d297435bed9766b4e08fe308e149811b826a3ec551b00",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "5054286b0d31e4ae83d5c9f6cba5fe79d6552d0061c35803023889038c6fdee3",
+          "op": "entity.publish",
+          "prev_hash": "969498a3baa6ec07194030c655c8b383ba7664f5e6472fc1c76f31b67441e894",
+          "prev_mac": "ee650dccb6640adfcab0c362c72c1ef38551bdcf31fbb343b45f2a3ff5d18d4a",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong"
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 12,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong",
+          "time": 1792956015.3088124
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "0b9671129cffbcbe389d3ef0464ddee32ba3bc9dc9a9bc6dc8994d9ae608d476",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "5821f93c0d32a193662f1c41622096555067160dd6d2fb711f1c6d5a2ad06a75",
+          "op": "entity.publish",
+          "prev_hash": "86317c61c772353f411d297435bed9766b4e08fe308e149811b826a3ec551b00",
+          "prev_mac": "5054286b0d31e4ae83d5c9f6cba5fe79d6552d0061c35803023889038c6fdee3",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord"
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 13,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord",
+          "time": 1792956015.3106074
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "e24e072e21700195aeb8efa17540af23a6f8487aace46fd53dd14e7d7a0e32a0",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "6653292320f3a1a43e50f808ca882faaa3ce1a123b77caa26bab01eafc84503b",
+          "op": "entity.publish",
+          "prev_hash": "0b9671129cffbcbe389d3ef0464ddee32ba3bc9dc9a9bc6dc8994d9ae608d476",
+          "prev_mac": "5821f93c0d32a193662f1c41622096555067160dd6d2fb711f1c6d5a2ad06a75",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning"
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 14,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning",
+          "time": 1792956015.3148577
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "33b2d3f2c30680cb3f95bbf465b1f745a9fccceb0aa5f73e69e2f27668b9909d",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "ce2ef4b8a87de50303a0ca683203b5a43b566f632ef6471ee6d4d5ce0ed2cfad",
+          "op": "entity.publish",
+          "prev_hash": "e24e072e21700195aeb8efa17540af23a6f8487aace46fd53dd14e7d7a0e32a0",
+          "prev_mac": "6653292320f3a1a43e50f808ca882faaa3ce1a123b77caa26bab01eafc84503b",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass"
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 15,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass",
+          "time": 1792956015.656245
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "/permissions/network/egress/0",
+          "hash": "8eb77a5eb21ad9ae85cabc1a4b0dff209fb66dfc4d2c7054a2e26c8e4621d2b2",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "9c316dbc775726681c920e1b81dffd996d567fa401cc5884ac2b4862e3787208",
+          "op": "network.egress",
+          "prev_hash": "33b2d3f2c30680cb3f95bbf465b1f745a9fccceb0aa5f73e69e2f27668b9909d",
+          "prev_mac": "ce2ef4b8a87de50303a0ca683203b5a43b566f632ef6471ee6d4d5ce0ed2cfad",
+          "reason": "declared",
+          "requested": {
+            "host": "opendata-download-metfcst.smhi.se",
+            "port": 443
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 16,
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "time": 1792956025.657724
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "/permissions/network/egress/1",
+          "hash": "84048fc8bb96d9a847e62a9d9d4f9bd4bc6c7ec0e07a100d37bb89a3797c6b35",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "90723b85f07c905971651a0a905cba9c275fb7ae86a1170d550e53414128c05e",
+          "op": "network.egress",
+          "prev_hash": "8eb77a5eb21ad9ae85cabc1a4b0dff209fb66dfc4d2c7054a2e26c8e4621d2b2",
+          "prev_mac": "9c316dbc775726681c920e1b81dffd996d567fa401cc5884ac2b4862e3787208",
+          "reason": "declared",
+          "requested": {
+            "host": "opendata-download-warnings.smhi.se",
+            "port": 443
+          },
+          "run": "8f8bf6ecc28980d4",
+          "seq": 17,
+          "target": "opendata-download-warnings.smhi.se:443",
+          "time": 1792956026.1134248
+        }
+      ],
+      "oom_kill": 0
+    },
+    "confined_undeclared": {
+      "domain": "smhi_brandrisk",
+      "egress": {
+        "installed": true,
+        "resolved": [
+          "opendata-download-metfcst.smhi.se"
+        ],
+        "connected": [],
+        "datagrams_delivered": 0,
+        "refused_listens": [
+          5353
+        ]
+      },
+      "setup_errors": [],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "latitude",
+              "longitude",
+              "name"
+            ]
+          }
+        ],
+        "type": "create_entry",
+        "errors": null,
+        "reason": null
+      },
+      "entries": [
+        {
+          "title": "Brandrisk hemma",
+          "state": "ConfigEntryState.SETUP_RETRY",
+          "loaded": false
+        }
+      ],
+      "loaded": false,
+      "local_entities": [],
+      "mirrored": [],
+      "published": [],
+      "refused": [],
+      "push": {
+        "subscribed": [],
+        "received": [],
+        "unexpected": [],
+        "commands": []
+      },
+      "probe": null,
+      "arm": "confined_undeclared",
+      "in_house": [],
+      "platform": "real",
+      "timed_out": false,
+      "data_inspection": null,
+      "install": {
+        "ok": true,
+        "installed": [
+          "acme",
+          "aiodhcpwatcher",
+          "aiodiscover",
+          "aiodns",
+          "aiohappyeyeballs",
+          "aiohasupervisor",
+          "aiohttp",
+          "aiooui",
+          "aiosignal",
+          "aiousbwatcher",
+          "annotated_types",
+          "anyio",
+          "async_interrupt",
+          "async_timeout",
+          "async_upnp_client",
+          "asyncinotify",
+          "atomicwrites_homeassistant",
+          "attrs",
+          "av",
+          "awesomeversion",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "boto3",
+          "botocore",
+          "btsocket",
+          "cached_ipaddress",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "ciso8601",
+          "cronsim",
+          "cryptography",
+          "dacite",
+          "dbus_fast",
+          "defusedxml",
+          "distro",
+          "envs",
+          "file_read_backwards",
+          "fnv_hash_fast",
+          "fnvhash",
+          "frozenlist",
+          "go2rtc_client",
+          "greenlet",
+          "grpcio",
+          "h11",
+          "ha_ffmpeg",
+          "habluetooth",
+          "hass_nabucasa",
+          "hassil",
+          "home_assistant_frontend",
+          "home_assistant_intents",
+          "httpcore",
+          "httpx",
+          "icmplib",
+          "idna",
+          "ifaddr",
+          "jiter",
+          "jmespath",
+          "josepy",
+          "mashumaro",
+          "matter_ble_proxy",
+          "matter_python_client",
+          "multidict",
+          "mutagen",
+          "numpy",
+          "openai",
+          "orjson",
+          "pillow",
+          "propcache",
+          "psutil",
+          "psutil_home_assistant",
+          "pycares",
+          "pycognito",
+          "pycparser",
+          "pydantic",
+          "pydantic_core",
+          "pyjwt",
+          "pymicro_vad",
+          "pynacl",
+          "pyopenssl",
+          "pyrfc3339",
+          "pyric",
+          "pyroute2",
+          "pyspeex_noise",
+          "python_dateutil",
+          "python_didl_lite",
+          "pyturbojpeg",
+          "pyyaml",
+          "regex",
+          "requests",
+          "s3transfer",
+          "scapy",
+          "securetar",
+          "sentence_stream",
+          "serialx",
+          "six",
+          "sniffio",
+          "snitun",
+          "sqlalchemy",
+          "tqdm",
+          "typing_extensions",
+          "typing_inspection",
+          "uart_devices",
+          "unicode_rbnf",
+          "urllib3",
+          "usb_devices",
+          "voluptuous",
+          "webrtc_models",
+          "yarl",
+          "zeroconf"
+        ],
+        "resolved_before": "2026-10-06T00:00:00Z",
+        "resolved": [
+          "acme-5.4.0",
+          "aiodhcpwatcher-1.2.7",
+          "aiodiscover-3.3.2",
+          "aiodns-4.0.4",
+          "aiohappyeyeballs-2.7.1",
+          "aiohasupervisor-0.6.0",
+          "aiohttp-3.14.4",
+          "aiooui-0.1.11",
+          "aiosignal-1.4.0",
+          "aiousbwatcher-1.1.2",
+          "annotated_types-0.8.0",
+          "anyio-4.15.1",
+          "async_interrupt-1.2.2",
+          "async_timeout-5.0.1",
+          "async_upnp_client-0.47.1",
+          "asyncinotify-4.4.4",
+          "atomicwrites_homeassistant-1.4.1",
+          "attrs-26.1.0",
+          "av-17.0.1",
+          "awesomeversion-25.8.0",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "boto3-1.43.108",
+          "botocore-1.43.108",
+          "btsocket-0.3.0",
+          "cached_ipaddress-1.1.2",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.2",
+          "ciso8601-2.3.3",
+          "cronsim-2.7",
+          "cryptography-50.0.2",
+          "dacite-1.9.2",
+          "dbus_fast-5.0.22",
+          "defusedxml-0.7.1",
+          "distro-1.9.0",
+          "envs-1.4",
+          "file_read_backwards-2.0.0",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "frozenlist-1.8.0",
+          "go2rtc_client-0.4.0",
+          "greenlet-3.5.6",
+          "grpcio-1.84.0",
+          "h11-0.16.0",
+          "ha_ffmpeg-3.2.2",
+          "habluetooth-6.26.5",
+          "hass_nabucasa-2.2.0",
+          "hassil-3.11.0",
+          "home_assistant_frontend-20260729.7",
+          "home_assistant_intents-2026.7.30",
+          "httpcore-1.0.9",
+          "httpx-0.28.1",
+          "icmplib-3.0.4",
+          "idna-3.20",
+          "ifaddr-0.2.0",
+          "jiter-0.17.0",
+          "jmespath-1.1.0",
+          "josepy-2.2.0",
+          "mashumaro-3.23",
+          "matter_ble_proxy-0.7.1",
+          "matter_python_client-1.3.0",
+          "multidict-6.9.1",
+          "mutagen-1.48.1",
+          "numpy-2.3.2",
+          "openai-2.45.0",
+          "orjson-3.12.0",
+          "pillow-12.3.0",
+          "propcache-0.5.4",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pycares-5.1.0",
+          "pycognito-2024.5.1",
+          "pycparser-3.0",
+          "pydantic-2.13.5",
+          "pydantic_core-2.46.5",
+          "pyjwt-2.15.1",
+          "pymicro_vad-1.0.1",
+          "pynacl-1.6.2",
+          "pyopenssl-26.4.0",
+          "pyrfc3339-2.1.0",
+          "pyric-0.1.6.3",
+          "pyroute2-0.9.6",
+          "pyspeex_noise-1.0.2",
+          "python_dateutil-2.9.0.post0",
+          "python_didl_lite-1.5.1",
+          "pyturbojpeg-1.8.3",
+          "pyyaml-6.0.3",
+          "regex-2026.9.29",
+          "requests-2.34.2",
+          "s3transfer-0.19.2",
+          "scapy-2.8.0",
+          "securetar-2026.4.1",
+          "sentence_stream-1.3.0",
+          "serialx-1.8.2",
+          "six-1.17.0",
+          "sniffio-1.3.1",
+          "snitun-0.45.1",
+          "sqlalchemy-2.0.51",
+          "tqdm-4.70.1",
+          "typing_extensions-4.16.0",
+          "typing_inspection-0.4.4",
+          "uart_devices-0.1.1",
+          "unicode_rbnf-2.4.0",
+          "urllib3-2.8.0",
+          "usb_devices-0.5.1",
+          "voluptuous-0.16.0",
+          "webrtc_models-0.3.0",
+          "yarl-1.25.1",
+          "zeroconf-0.150.0"
+        ]
+      },
+      "audit": [
+        {
+          "identity": "smhi_brandrisk",
+          "op": "discover.listen",
+          "allowed": false,
+          "clause": "/permissions/network/discover/listen"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        }
+      ],
+      "logged": [
+        {
+          "op": "discover.listen",
+          "target": "5353",
+          "allowed": false,
+          "clause": "/permissions/network/discover/listen"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        }
+      ],
+      "audit_breaks": [],
+      "reconcile": [],
+      "durable_raw": [
+        {
+          "hash": "27b82ca92adc69b0b9af3a018bd4c54543fddf5a9a7a7acd0abc2e70c5f392c6",
+          "identity": {
+            "composite": "ed09d4d69d264311ee09ce0b185b282f2e20b8637fd97936db99642c9873f1dc",
+            "domain": "smhi_brandrisk",
+            "manifest": "56317d3b91c4c85537436d6aae9d79bc2030995acb32029a5cbf511028e01b19",
+            "requirements": "bcc5ecf8ca2dfeb07799bb861569afce6d17747c4f378578c26e9284e3eeec08",
+            "resolved": [
+              "PyJWT==2.15.1",
+              "PyNaCl==1.6.2",
+              "PyRIC==0.1.6.3",
+              "PyTurboJPEG==1.8.3",
+              "PyYAML==6.0.3",
+              "SQLAlchemy==2.0.51",
+              "acme==5.4.0",
+              "aiodhcpwatcher==1.2.7",
+              "aiodiscover==3.3.2",
+              "aiodns==4.0.4",
+              "aiohappyeyeballs==2.7.1",
+              "aiohasupervisor==0.6.0",
+              "aiohttp==3.14.4",
+              "aiooui==0.1.11",
+              "aiosignal==1.4.0",
+              "aiousbwatcher==1.1.2",
+              "annotated-types==0.8.0",
+              "anyio==4.15.1",
+              "async-timeout==5.0.1",
+              "async_interrupt==1.2.2",
+              "async_upnp_client==0.47.1",
+              "asyncinotify==4.4.4",
+              "atomicwrites-homeassistant==1.4.1",
+              "attrs==26.1.0",
+              "av==17.0.1",
+              "awesomeversion==25.8.0",
+              "bleak-retry-connector==4.6.3",
+              "bleak==3.0.2",
+              "bluetooth-adapters==2.4.0",
+              "bluetooth-auto-recovery==1.6.4",
+              "bluetooth-data-tools==1.29.18",
+              "boto3==1.43.108",
+              "botocore==1.43.108",
+              "btsocket==0.3.0",
+              "cached-ipaddress==1.1.2",
+              "certifi==2026.7.22",
+              "cffi==2.1.1",
+              "charset-normalizer==3.5.2",
+              "ciso8601==2.3.3",
+              "cronsim==2.7",
+              "cryptography==50.0.2",
+              "dacite==1.9.2",
+              "dbus-fast==5.0.22",
+              "defusedxml==0.7.1",
+              "distro==1.9.0",
+              "envs==1.4",
+              "file-read-backwards==2.0.0",
+              "fnv-hash-fast==2.0.3",
+              "fnvhash==0.2.1",
+              "frozenlist==1.8.0",
+              "go2rtc-client==0.4.0",
+              "greenlet==3.5.6",
+              "grpcio==1.84.0",
+              "h11==0.16.0",
+              "ha-ffmpeg==3.2.2",
+              "habluetooth==6.26.5",
+              "hass-nabucasa==2.2.0",
+              "hassil==3.11.0",
+              "home-assistant-frontend==20260729.7",
+              "home-assistant-intents==2026.7.30",
+              "httpcore==1.0.9",
+              "httpx==0.28.1",
+              "icmplib==3.0.4",
+              "idna==3.20",
+              "ifaddr==0.2.0",
+              "jiter==0.17.0",
+              "jmespath==1.1.0",
+              "josepy==2.2.0",
+              "mashumaro==3.23",
+              "matter-ble-proxy==0.7.1",
+              "matter-python-client==1.3.0",
+              "multidict==6.9.1",
+              "mutagen==1.48.1",
+              "numpy==2.3.2",
+              "openai==2.45.0",
+              "orjson==3.12.0",
+              "pillow==12.3.0",
+              "propcache==0.5.4",
+              "psutil-home-assistant==0.0.1",
+              "psutil==7.2.2",
+              "pyOpenSSL==26.4.0",
+              "pyRFC3339==2.1.0",
+              "pycares==5.1.0",
+              "pycognito==2024.5.1",
+              "pycparser==3.0",
+              "pydantic==2.13.5",
+              "pydantic_core==2.46.5",
+              "pymicro_vad==1.0.1",
+              "pyroute2==0.9.6",
+              "pyspeex_noise==1.0.2",
+              "python-dateutil==2.9.0.post0",
+              "python-didl-lite==1.5.1",
+              "regex==2026.9.29",
+              "requests==2.34.2",
+              "s3transfer==0.19.2",
+              "scapy==2.8.0",
+              "securetar==2026.4.1",
+              "sentence_stream==1.3.0",
+              "serialx==1.8.2",
+              "six==1.17.0",
+              "sniffio==1.3.1",
+              "snitun==0.45.1",
+              "tqdm==4.70.1",
+              "typing-inspection==0.4.4",
+              "typing_extensions==4.16.0",
+              "uart-devices==0.1.1",
+              "unicode-rbnf==2.4.0",
+              "urllib3==2.8.0",
+              "usb-devices==0.5.1",
+              "voluptuous==0.16.0",
+              "webrtc-models==0.3.0",
+              "yarl==1.25.1",
+              "zeroconf==0.150.0"
+            ],
+            "source": "53f89ce1fac0539420685abb3ce739116fbcec9087bd3432204ab4dbf437ad52"
+          },
+          "integration": "smhi_brandrisk",
+          "kind": "run",
+          "mac": "c8be869ea389c4522a76629cd346ee5addeeaac9b7662dad8413c80bbf28719c",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "prev_mac": "0000000000000000000000000000000000000000000000000000000000000000",
+          "provenance": "author-declared",
+          "run": "f1e87b812fa27105",
+          "seq": 0,
+          "time": 1792956058.1307936
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/discover/listen",
+          "hash": "9b381caa22fee3ac4dc1193f4d5573b398a8e946688674d8173235717fc2975b",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "e30fd9a5e1106b11d00b4fbce17886c04a0440c9bebcc2535e5fbd659109d7e3",
+          "op": "discover.listen",
+          "prev_hash": "27b82ca92adc69b0b9af3a018bd4c54543fddf5a9a7a7acd0abc2e70c5f392c6",
+          "prev_mac": "c8be869ea389c4522a76629cd346ee5addeeaac9b7662dad8413c80bbf28719c",
+          "reason": "nothing is declared at /permissions/network/discover/listen",
+          "requested": {
+            "port": 5353
+          },
+          "run": "f1e87b812fa27105",
+          "seq": 1,
+          "target": "5353",
+          "time": 1792956060.5567636
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "60ed58de972cb97f3a16489f324eb8e256bdf3ce5f8e99f6c6a1cf00381c8021",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "a5542179394b6eebcc30e012e82d41b17bdf639f0d8016e0d962b35b65f8d533",
+          "op": "network.egress",
+          "prev_hash": "9b381caa22fee3ac4dc1193f4d5573b398a8e946688674d8173235717fc2975b",
+          "prev_mac": "e30fd9a5e1106b11d00b4fbce17886c04a0440c9bebcc2535e5fbd659109d7e3",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "opendata-download-metfcst.smhi.se",
+            "port": 443
+          },
+          "run": "f1e87b812fa27105",
+          "seq": 2,
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "time": 1792956060.5597467
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "3ac17e0dd004b28460cd5de3405b824beb258467f4023ee4ed58e8d8f6110f92",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "bc40ed91f91da9177f2fe5c2abc2391fd27f6025a75e986bc8859c94323fd541",
+          "op": "network.egress",
+          "prev_hash": "60ed58de972cb97f3a16489f324eb8e256bdf3ce5f8e99f6c6a1cf00381c8021",
+          "prev_mac": "a5542179394b6eebcc30e012e82d41b17bdf639f0d8016e0d962b35b65f8d533",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "opendata-download-metfcst.smhi.se",
+            "port": 443
+          },
+          "run": "f1e87b812fa27105",
+          "seq": 3,
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "time": 1792956060.5629942
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "af7a080998a761c87e35a7f198c8bc9e90f42ce778c8cb789024fe94c9ec387c",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "b58b361370eb6d56c5bdb4ffcfd34cc3e7453737edde4521fd08821b62d1045b",
+          "op": "network.egress",
+          "prev_hash": "3ac17e0dd004b28460cd5de3405b824beb258467f4023ee4ed58e8d8f6110f92",
+          "prev_mac": "bc40ed91f91da9177f2fe5c2abc2391fd27f6025a75e986bc8859c94323fd541",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "opendata-download-metfcst.smhi.se",
+            "port": 443
+          },
+          "run": "f1e87b812fa27105",
+          "seq": 4,
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "time": 1792956071.0550482
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "9102c912e8c655fb1a7b63276286bdde005ec8ee96644ad5eb86ccc5d3fbaf87",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "0d9aba9e74821b2f9d3552fda8af45257c27bf0dddcd78fd126f6c5babde0894",
+          "op": "network.egress",
+          "prev_hash": "af7a080998a761c87e35a7f198c8bc9e90f42ce778c8cb789024fe94c9ec387c",
+          "prev_mac": "b58b361370eb6d56c5bdb4ffcfd34cc3e7453737edde4521fd08821b62d1045b",
+          "reason": "nothing is declared at /permissions/network/egress",
+          "requested": {
+            "host": "opendata-download-metfcst.smhi.se",
+            "port": 443
+          },
+          "run": "f1e87b812fa27105",
+          "seq": 5,
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "time": 1792956091.2838411
+        }
+      ],
+      "oom_kill": 0
+    },
+    "confined_partial": {
+      "domain": "smhi_brandrisk",
+      "egress": {
+        "installed": true,
+        "resolved": [
+          "opendata-download-metfcst.smhi.se",
+          "opendata-download-warnings.smhi.se"
+        ],
+        "connected": [
+          [
+            "opendata-download-metfcst.smhi.se",
+            443
+          ],
+          [
+            "opendata-download-metfcst.smhi.se",
+            443
+          ]
+        ],
+        "datagrams_delivered": 0,
+        "refused_listens": [
+          5353
+        ]
+      },
+      "setup_errors": [],
+      "flow": {
+        "steps": [
+          {
+            "step": "user",
+            "sent": [
+              "latitude",
+              "longitude",
+              "name"
+            ]
+          }
+        ],
+        "type": "create_entry",
+        "errors": null,
+        "reason": null
+      },
+      "entries": [
+        {
+          "title": "Brandrisk hemma",
+          "state": "ConfigEntryState.LOADED",
+          "loaded": true
+        }
+      ],
+      "loaded": true,
+      "local_entities": [
+        "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong",
+        "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass",
+        "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text",
+        "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang",
+        "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt",
+        "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium",
+        "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle",
+        "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index",
+        "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass",
+        "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet",
+        "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning",
+        "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord"
+      ],
+      "mirrored": [],
+      "published": [
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index",
+          "state": "0.8",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle",
+          "state": "76.3",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium",
+          "state": "0.7",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt",
+          "state": "314.8",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet",
+          "state": "2.7",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang",
+          "state": "1.3",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass",
+          "state": "0",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text",
+          "state": "Mycket l\u00e5g",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong",
+          "state": "Brands\u00e4song",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord",
+          "state": "unknown",
+          "accepted": false,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning",
+          "state": "Ingen varning",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass",
+          "state": "1.0",
+          "accepted": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        }
+      ],
+      "refused": [],
+      "push": {
+        "subscribed": [],
+        "received": [],
+        "unexpected": [],
+        "commands": []
+      },
+      "probe": null,
+      "arm": "confined_partial",
+      "in_house": [
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index",
+          "published_state": "0.8",
+          "house_state": "0.8",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle",
+          "published_state": "76.3",
+          "house_state": "76.3",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium",
+          "published_state": "0.7",
+          "house_state": "0.7",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt",
+          "published_state": "314.8",
+          "house_state": "314.8",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet",
+          "published_state": "2.7",
+          "house_state": "2.7",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang",
+          "published_state": "1.3",
+          "house_state": "1.3",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass",
+          "published_state": "0",
+          "house_state": "0",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text",
+          "published_state": "Mycket l\u00e5g",
+          "house_state": "Mycket l\u00e5g",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong",
+          "published_state": "Brands\u00e4song",
+          "house_state": "Brands\u00e4song",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning",
+          "published_state": "Ingen varning",
+          "house_state": "Ingen varning",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        },
+        {
+          "entity": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass",
+          "in_house": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass",
+          "published_state": "1.0",
+          "house_state": "1.0",
+          "owned_by_bridge": true,
+          "same_domain": true,
+          "state_matches": true
+        }
+      ],
+      "platform": "real",
+      "timed_out": false,
+      "data_inspection": null,
+      "install": {
+        "ok": true,
+        "installed": [
+          "acme",
+          "aiodhcpwatcher",
+          "aiodiscover",
+          "aiodns",
+          "aiohappyeyeballs",
+          "aiohasupervisor",
+          "aiohttp",
+          "aiooui",
+          "aiosignal",
+          "aiousbwatcher",
+          "annotated_types",
+          "anyio",
+          "async_interrupt",
+          "async_timeout",
+          "async_upnp_client",
+          "asyncinotify",
+          "atomicwrites_homeassistant",
+          "attrs",
+          "av",
+          "awesomeversion",
+          "bleak",
+          "bleak_retry_connector",
+          "bluetooth_adapters",
+          "bluetooth_auto_recovery",
+          "bluetooth_data_tools",
+          "boto3",
+          "botocore",
+          "btsocket",
+          "cached_ipaddress",
+          "certifi",
+          "cffi",
+          "charset_normalizer",
+          "ciso8601",
+          "cronsim",
+          "cryptography",
+          "dacite",
+          "dbus_fast",
+          "defusedxml",
+          "distro",
+          "envs",
+          "file_read_backwards",
+          "fnv_hash_fast",
+          "fnvhash",
+          "frozenlist",
+          "go2rtc_client",
+          "greenlet",
+          "grpcio",
+          "h11",
+          "ha_ffmpeg",
+          "habluetooth",
+          "hass_nabucasa",
+          "hassil",
+          "home_assistant_frontend",
+          "home_assistant_intents",
+          "httpcore",
+          "httpx",
+          "icmplib",
+          "idna",
+          "ifaddr",
+          "jiter",
+          "jmespath",
+          "josepy",
+          "mashumaro",
+          "matter_ble_proxy",
+          "matter_python_client",
+          "multidict",
+          "mutagen",
+          "numpy",
+          "openai",
+          "orjson",
+          "pillow",
+          "propcache",
+          "psutil",
+          "psutil_home_assistant",
+          "pycares",
+          "pycognito",
+          "pycparser",
+          "pydantic",
+          "pydantic_core",
+          "pyjwt",
+          "pymicro_vad",
+          "pynacl",
+          "pyopenssl",
+          "pyrfc3339",
+          "pyric",
+          "pyroute2",
+          "pyspeex_noise",
+          "python_dateutil",
+          "python_didl_lite",
+          "pyturbojpeg",
+          "pyyaml",
+          "regex",
+          "requests",
+          "s3transfer",
+          "scapy",
+          "securetar",
+          "sentence_stream",
+          "serialx",
+          "six",
+          "sniffio",
+          "snitun",
+          "sqlalchemy",
+          "tqdm",
+          "typing_extensions",
+          "typing_inspection",
+          "uart_devices",
+          "unicode_rbnf",
+          "urllib3",
+          "usb_devices",
+          "voluptuous",
+          "webrtc_models",
+          "yarl",
+          "zeroconf"
+        ],
+        "resolved_before": "2026-10-06T00:00:00Z",
+        "resolved": [
+          "acme-5.4.0",
+          "aiodhcpwatcher-1.2.7",
+          "aiodiscover-3.3.2",
+          "aiodns-4.0.4",
+          "aiohappyeyeballs-2.7.1",
+          "aiohasupervisor-0.6.0",
+          "aiohttp-3.14.4",
+          "aiooui-0.1.11",
+          "aiosignal-1.4.0",
+          "aiousbwatcher-1.1.2",
+          "annotated_types-0.8.0",
+          "anyio-4.15.1",
+          "async_interrupt-1.2.2",
+          "async_timeout-5.0.1",
+          "async_upnp_client-0.47.1",
+          "asyncinotify-4.4.4",
+          "atomicwrites_homeassistant-1.4.1",
+          "attrs-26.1.0",
+          "av-17.0.1",
+          "awesomeversion-25.8.0",
+          "bleak-3.0.2",
+          "bleak_retry_connector-4.6.3",
+          "bluetooth_adapters-2.4.0",
+          "bluetooth_auto_recovery-1.6.4",
+          "bluetooth_data_tools-1.29.18",
+          "boto3-1.43.108",
+          "botocore-1.43.108",
+          "btsocket-0.3.0",
+          "cached_ipaddress-1.1.2",
+          "certifi-2026.7.22",
+          "cffi-2.1.1",
+          "charset_normalizer-3.5.2",
+          "ciso8601-2.3.3",
+          "cronsim-2.7",
+          "cryptography-50.0.2",
+          "dacite-1.9.2",
+          "dbus_fast-5.0.22",
+          "defusedxml-0.7.1",
+          "distro-1.9.0",
+          "envs-1.4",
+          "file_read_backwards-2.0.0",
+          "fnv_hash_fast-2.0.3",
+          "fnvhash-0.2.1",
+          "frozenlist-1.8.0",
+          "go2rtc_client-0.4.0",
+          "greenlet-3.5.6",
+          "grpcio-1.84.0",
+          "h11-0.16.0",
+          "ha_ffmpeg-3.2.2",
+          "habluetooth-6.26.5",
+          "hass_nabucasa-2.2.0",
+          "hassil-3.11.0",
+          "home_assistant_frontend-20260729.7",
+          "home_assistant_intents-2026.7.30",
+          "httpcore-1.0.9",
+          "httpx-0.28.1",
+          "icmplib-3.0.4",
+          "idna-3.20",
+          "ifaddr-0.2.0",
+          "jiter-0.17.0",
+          "jmespath-1.1.0",
+          "josepy-2.2.0",
+          "mashumaro-3.23",
+          "matter_ble_proxy-0.7.1",
+          "matter_python_client-1.3.0",
+          "multidict-6.9.1",
+          "mutagen-1.48.1",
+          "numpy-2.3.2",
+          "openai-2.45.0",
+          "orjson-3.12.0",
+          "pillow-12.3.0",
+          "propcache-0.5.4",
+          "psutil-7.2.2",
+          "psutil_home_assistant-0.0.1",
+          "pycares-5.1.0",
+          "pycognito-2024.5.1",
+          "pycparser-3.0",
+          "pydantic-2.13.5",
+          "pydantic_core-2.46.5",
+          "pyjwt-2.15.1",
+          "pymicro_vad-1.0.1",
+          "pynacl-1.6.2",
+          "pyopenssl-26.4.0",
+          "pyrfc3339-2.1.0",
+          "pyric-0.1.6.3",
+          "pyroute2-0.9.6",
+          "pyspeex_noise-1.0.2",
+          "python_dateutil-2.9.0.post0",
+          "python_didl_lite-1.5.1",
+          "pyturbojpeg-1.8.3",
+          "pyyaml-6.0.3",
+          "regex-2026.9.29",
+          "requests-2.34.2",
+          "s3transfer-0.19.2",
+          "scapy-2.8.0",
+          "securetar-2026.4.1",
+          "sentence_stream-1.3.0",
+          "serialx-1.8.2",
+          "six-1.17.0",
+          "sniffio-1.3.1",
+          "snitun-0.45.1",
+          "sqlalchemy-2.0.51",
+          "tqdm-4.70.1",
+          "typing_extensions-4.16.0",
+          "typing_inspection-0.4.4",
+          "uart_devices-0.1.1",
+          "unicode_rbnf-2.4.0",
+          "urllib3-2.8.0",
+          "usb_devices-0.5.1",
+          "voluptuous-0.16.0",
+          "webrtc_models-0.3.0",
+          "yarl-1.25.1",
+          "zeroconf-0.150.0"
+        ]
+      },
+      "audit": [
+        {
+          "identity": "smhi_brandrisk",
+          "op": "discover.listen",
+          "allowed": false,
+          "clause": "/permissions/network/discover/listen"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "network.egress",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": false,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "entity.publish",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "network.egress",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "identity": "smhi_brandrisk",
+          "op": "network.egress",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        }
+      ],
+      "logged": [
+        {
+          "op": "discover.listen",
+          "target": "5353",
+          "allowed": false,
+          "clause": "/permissions/network/discover/listen"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata-download-warnings.smhi.se:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord",
+          "allowed": false,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata-download-warnings.smhi.se:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        },
+        {
+          "op": "entity.publish",
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass",
+          "allowed": true,
+          "clause": "(ambient: \u00a75.10.2)"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "allowed": true,
+          "clause": "/permissions/network/egress/0"
+        },
+        {
+          "op": "network.egress",
+          "target": "opendata-download-warnings.smhi.se:443",
+          "allowed": false,
+          "clause": "/permissions/network/egress"
+        }
+      ],
+      "audit_breaks": [],
+      "reconcile": [],
+      "durable_raw": [
+        {
+          "hash": "9f349a8bbf82eb20816028df5343ece303e9d4b39cde21417dd254ddf7edcf4b",
+          "identity": {
+            "composite": "ed09d4d69d264311ee09ce0b185b282f2e20b8637fd97936db99642c9873f1dc",
+            "domain": "smhi_brandrisk",
+            "manifest": "56317d3b91c4c85537436d6aae9d79bc2030995acb32029a5cbf511028e01b19",
+            "requirements": "bcc5ecf8ca2dfeb07799bb861569afce6d17747c4f378578c26e9284e3eeec08",
+            "resolved": [
+              "PyJWT==2.15.1",
+              "PyNaCl==1.6.2",
+              "PyRIC==0.1.6.3",
+              "PyTurboJPEG==1.8.3",
+              "PyYAML==6.0.3",
+              "SQLAlchemy==2.0.51",
+              "acme==5.4.0",
+              "aiodhcpwatcher==1.2.7",
+              "aiodiscover==3.3.2",
+              "aiodns==4.0.4",
+              "aiohappyeyeballs==2.7.1",
+              "aiohasupervisor==0.6.0",
+              "aiohttp==3.14.4",
+              "aiooui==0.1.11",
+              "aiosignal==1.4.0",
+              "aiousbwatcher==1.1.2",
+              "annotated-types==0.8.0",
+              "anyio==4.15.1",
+              "async-timeout==5.0.1",
+              "async_interrupt==1.2.2",
+              "async_upnp_client==0.47.1",
+              "asyncinotify==4.4.4",
+              "atomicwrites-homeassistant==1.4.1",
+              "attrs==26.1.0",
+              "av==17.0.1",
+              "awesomeversion==25.8.0",
+              "bleak-retry-connector==4.6.3",
+              "bleak==3.0.2",
+              "bluetooth-adapters==2.4.0",
+              "bluetooth-auto-recovery==1.6.4",
+              "bluetooth-data-tools==1.29.18",
+              "boto3==1.43.108",
+              "botocore==1.43.108",
+              "btsocket==0.3.0",
+              "cached-ipaddress==1.1.2",
+              "certifi==2026.7.22",
+              "cffi==2.1.1",
+              "charset-normalizer==3.5.2",
+              "ciso8601==2.3.3",
+              "cronsim==2.7",
+              "cryptography==50.0.2",
+              "dacite==1.9.2",
+              "dbus-fast==5.0.22",
+              "defusedxml==0.7.1",
+              "distro==1.9.0",
+              "envs==1.4",
+              "file-read-backwards==2.0.0",
+              "fnv-hash-fast==2.0.3",
+              "fnvhash==0.2.1",
+              "frozenlist==1.8.0",
+              "go2rtc-client==0.4.0",
+              "greenlet==3.5.6",
+              "grpcio==1.84.0",
+              "h11==0.16.0",
+              "ha-ffmpeg==3.2.2",
+              "habluetooth==6.26.5",
+              "hass-nabucasa==2.2.0",
+              "hassil==3.11.0",
+              "home-assistant-frontend==20260729.7",
+              "home-assistant-intents==2026.7.30",
+              "httpcore==1.0.9",
+              "httpx==0.28.1",
+              "icmplib==3.0.4",
+              "idna==3.20",
+              "ifaddr==0.2.0",
+              "jiter==0.17.0",
+              "jmespath==1.1.0",
+              "josepy==2.2.0",
+              "mashumaro==3.23",
+              "matter-ble-proxy==0.7.1",
+              "matter-python-client==1.3.0",
+              "multidict==6.9.1",
+              "mutagen==1.48.1",
+              "numpy==2.3.2",
+              "openai==2.45.0",
+              "orjson==3.12.0",
+              "pillow==12.3.0",
+              "propcache==0.5.4",
+              "psutil-home-assistant==0.0.1",
+              "psutil==7.2.2",
+              "pyOpenSSL==26.4.0",
+              "pyRFC3339==2.1.0",
+              "pycares==5.1.0",
+              "pycognito==2024.5.1",
+              "pycparser==3.0",
+              "pydantic==2.13.5",
+              "pydantic_core==2.46.5",
+              "pymicro_vad==1.0.1",
+              "pyroute2==0.9.6",
+              "pyspeex_noise==1.0.2",
+              "python-dateutil==2.9.0.post0",
+              "python-didl-lite==1.5.1",
+              "regex==2026.9.29",
+              "requests==2.34.2",
+              "s3transfer==0.19.2",
+              "scapy==2.8.0",
+              "securetar==2026.4.1",
+              "sentence_stream==1.3.0",
+              "serialx==1.8.2",
+              "six==1.17.0",
+              "sniffio==1.3.1",
+              "snitun==0.45.1",
+              "tqdm==4.70.1",
+              "typing-inspection==0.4.4",
+              "typing_extensions==4.16.0",
+              "uart-devices==0.1.1",
+              "unicode-rbnf==2.4.0",
+              "urllib3==2.8.0",
+              "usb-devices==0.5.1",
+              "voluptuous==0.16.0",
+              "webrtc-models==0.3.0",
+              "yarl==1.25.1",
+              "zeroconf==0.150.0"
+            ],
+            "source": "53f89ce1fac0539420685abb3ce739116fbcec9087bd3432204ab4dbf437ad52"
+          },
+          "integration": "smhi_brandrisk",
+          "kind": "run",
+          "mac": "b21e96c9d00f5f2f4bc0f3383f4af560182845eaf7241e789f24e41691f2de05",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "prev_mac": "0000000000000000000000000000000000000000000000000000000000000000",
+          "provenance": "author-declared",
+          "run": "31e01630505a9e92",
+          "seq": 0,
+          "time": 1792956102.0687478
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/discover/listen",
+          "hash": "afa07398edb7bbee0b13d31ab1a7d3b737d2049b767c62e3d35baf960ec529c6",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "1666cceb7684db4059d6a40bd5f6ff10cc3a87f37e9b99c67dd60a351d8bfd5a",
+          "op": "discover.listen",
+          "prev_hash": "9f349a8bbf82eb20816028df5343ece303e9d4b39cde21417dd254ddf7edcf4b",
+          "prev_mac": "b21e96c9d00f5f2f4bc0f3383f4af560182845eaf7241e789f24e41691f2de05",
+          "reason": "nothing is declared at /permissions/network/discover/listen",
+          "requested": {
+            "port": 5353
+          },
+          "run": "31e01630505a9e92",
+          "seq": 1,
+          "target": "5353",
+          "time": 1792956104.540851
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "/permissions/network/egress/0",
+          "hash": "0061a19492c375015bda095733a4b4b35fdcd798124211edc6e9f7488318f2aa",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "3e093cdc119e1776eb6aa9283e4b820477106851cbb8b7ad70c6b45d0596c646",
+          "op": "network.egress",
+          "prev_hash": "afa07398edb7bbee0b13d31ab1a7d3b737d2049b767c62e3d35baf960ec529c6",
+          "prev_mac": "1666cceb7684db4059d6a40bd5f6ff10cc3a87f37e9b99c67dd60a351d8bfd5a",
+          "reason": "declared",
+          "requested": {
+            "host": "opendata-download-metfcst.smhi.se",
+            "port": 443
+          },
+          "run": "31e01630505a9e92",
+          "seq": 2,
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "time": 1792956104.5438879
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "d953a82ea35022f2bf60f2c9d5ed29124bb13e166bf3726018d8293aedeaa325",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "d238c2b077c8610541ab7a1d22c4e672f8cfb92c2252e794e0cec04de941c9f1",
+          "op": "network.egress",
+          "prev_hash": "0061a19492c375015bda095733a4b4b35fdcd798124211edc6e9f7488318f2aa",
+          "prev_mac": "3e093cdc119e1776eb6aa9283e4b820477106851cbb8b7ad70c6b45d0596c646",
+          "reason": "'opendata-download-warnings.smhi.se:443' matches no clause at /permissions/network/egress",
+          "requested": {
+            "host": "opendata-download-warnings.smhi.se",
+            "port": 443
+          },
+          "run": "31e01630505a9e92",
+          "seq": 3,
+          "target": "opendata-download-warnings.smhi.se:443",
+          "time": 1792956105.0682163
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "53e164a4d99fc01bc372ea7f0a93d2050e8db47a44af02e8aa4a16db6137b8ba",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "cdd625d0ba411c53d7650a1eeea7cfc70912889063bb07c38cf95b718c1b0d4b",
+          "op": "entity.publish",
+          "prev_hash": "d953a82ea35022f2bf60f2c9d5ed29124bb13e166bf3726018d8293aedeaa325",
+          "prev_mac": "d238c2b077c8610541ab7a1d22c4e672f8cfb92c2252e794e0cec04de941c9f1",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index"
+          },
+          "run": "31e01630505a9e92",
+          "seq": 4,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_fwi_index",
+          "time": 1792956105.0854664
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "00d3ef05890202ab6a211f89ba78f6ae72470a0a8a8a8bec4fa5cbda3b6bd138",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "9a05e173f830d3cb76fc26867dc08c3cda8660442cb953012aff7aabe2d72fcd",
+          "op": "entity.publish",
+          "prev_hash": "53e164a4d99fc01bc372ea7f0a93d2050e8db47a44af02e8aa4a16db6137b8ba",
+          "prev_mac": "cdd625d0ba411c53d7650a1eeea7cfc70912889063bb07c38cf95b718c1b0d4b",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle"
+          },
+          "run": "31e01630505a9e92",
+          "seq": 5,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_ffmc_fuktighet_finbransle",
+          "time": 1792956105.087153
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "3ed8420926a660d0f52cb17d540624f9f61cf849e3e03f1f56d904ec0c66f37b",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "fce9d30915643c2f2d33b13c193ef48ec0cf642f07fd123316a82fdbc441f55c",
+          "op": "entity.publish",
+          "prev_hash": "00d3ef05890202ab6a211f89ba78f6ae72470a0a8a8a8bec4fa5cbda3b6bd138",
+          "prev_mac": "9a05e173f830d3cb76fc26867dc08c3cda8660442cb953012aff7aabe2d72fcd",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium"
+          },
+          "run": "31e01630505a9e92",
+          "seq": 6,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_dmc_fuktighet_medium",
+          "time": 1792956105.0883548
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "70160ab686b34df319d8bdc3b983563ed0bd17d12f4b75622844df33ae65b34a",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "5e70547f8e36ac2a9292d7ed987ec7db02274f36b3795c27c5a97157ba624835",
+          "op": "entity.publish",
+          "prev_hash": "3ed8420926a660d0f52cb17d540624f9f61cf849e3e03f1f56d904ec0c66f37b",
+          "prev_mac": "fce9d30915643c2f2d33b13c193ef48ec0cf642f07fd123316a82fdbc441f55c",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt"
+          },
+          "run": "31e01630505a9e92",
+          "seq": 7,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_dc_torka_djupt",
+          "time": 1792956105.0894096
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "6425f4abdba19a471b942ca73c42026417618fb355f38f23002e7eb349d93f91",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "799f8901af086c8fd5aa3b5bbd987c90bba376917163453331db88c1b9c5571a",
+          "op": "entity.publish",
+          "prev_hash": "70160ab686b34df319d8bdc3b983563ed0bd17d12f4b75622844df33ae65b34a",
+          "prev_mac": "5e70547f8e36ac2a9292d7ed987ec7db02274f36b3795c27c5a97157ba624835",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet"
+          },
+          "run": "31e01630505a9e92",
+          "seq": 8,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_isi_spridningshastighet",
+          "time": 1792956105.090404
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "e3fc1571d37dfbece99f9ac3552b9bd715df69de57793bdfae14e6421b216065",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "4fc626108404f4f8a562019c76e8c8780a50a281dfe8dbe2679199d75da814cd",
+          "op": "entity.publish",
+          "prev_hash": "6425f4abdba19a471b942ca73c42026417618fb355f38f23002e7eb349d93f91",
+          "prev_mac": "799f8901af086c8fd5aa3b5bbd987c90bba376917163453331db88c1b9c5571a",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang"
+          },
+          "run": "31e01630505a9e92",
+          "seq": 9,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_bui_bransletillgang",
+          "time": 1792956105.0913553
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "17c06f92d5f7063c8798cc3061405b28a7b0896e74ec0fefec51d5900896b821",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "1d1958b8f681756632f4eab6095abb5caad0cfefb5f694568866c7cba771f19a",
+          "op": "entity.publish",
+          "prev_hash": "e3fc1571d37dfbece99f9ac3552b9bd715df69de57793bdfae14e6421b216065",
+          "prev_mac": "4fc626108404f4f8a562019c76e8c8780a50a281dfe8dbe2679199d75da814cd",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass"
+          },
+          "run": "31e01630505a9e92",
+          "seq": 10,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_grasbrandsrisk_klass",
+          "time": 1792956105.092308
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "05b96972cd76b3f01d6688b63dba8e5b45f6a82f3fb1a83ab1a297ddda327f73",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "2d8525321b0f48a4c93528deb4079e983b1aebfa43d203b883d5cc7d4eef8668",
+          "op": "entity.publish",
+          "prev_hash": "17c06f92d5f7063c8798cc3061405b28a7b0896e74ec0fefec51d5900896b821",
+          "prev_mac": "1d1958b8f681756632f4eab6095abb5caad0cfefb5f694568866c7cba771f19a",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text"
+          },
+          "run": "31e01630505a9e92",
+          "seq": 11,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_idag_text",
+          "time": 1792956105.0933428
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "fd025655d315292e29e283e5719e09104bfd4e1b109a9466af93d7afdda37269",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "6f1e68aa3b06de85d5a510aa02d073a87a7c47cf30a1b4a7b65e8ec3079838ee",
+          "op": "entity.publish",
+          "prev_hash": "05b96972cd76b3f01d6688b63dba8e5b45f6a82f3fb1a83ab1a297ddda327f73",
+          "prev_mac": "2d8525321b0f48a4c93528deb4079e983b1aebfa43d203b883d5cc7d4eef8668",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong"
+          },
+          "run": "31e01630505a9e92",
+          "seq": 12,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_aktiv_sasong",
+          "time": 1792956105.0942738
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "778a4b77f990fce606a8975cddacd3df8324182d53f6fecf546cf66ca5889bcb",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "ed015ebd7183c87c222f95c7629af6750680b90cb48c08e6fba86e2fd6bfaec4",
+          "op": "entity.publish",
+          "prev_hash": "fd025655d315292e29e283e5719e09104bfd4e1b109a9466af93d7afdda37269",
+          "prev_mac": "6f1e68aa3b06de85d5a510aa02d073a87a7c47cf30a1b4a7b65e8ec3079838ee",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord"
+          },
+          "run": "31e01630505a9e92",
+          "seq": 13,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord",
+          "time": 1792956105.0951781
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "3da893a9434c35ac34daf98e291ac3651c8e01c75f3cbc388393d0687d2cdb38",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "6fdbdf5d82eec721caad80c42b50d4e1e66d3d2a56b52bb761f5bf5bb45fe442",
+          "op": "entity.publish",
+          "prev_hash": "778a4b77f990fce606a8975cddacd3df8324182d53f6fecf546cf66ca5889bcb",
+          "prev_mac": "ed015ebd7183c87c222f95c7629af6750680b90cb48c08e6fba86e2fd6bfaec4",
+          "reason": "the platform refused: confine_bridge/publish: {'code': 'unknown_error', 'message': 'Unknown error'}",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord"
+          },
+          "run": "31e01630505a9e92",
+          "seq": 14,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_vinterrisk_fruset_nederbord",
+          "time": 1792956105.0997207
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "918cc2565507a9b0815368a58bf360aedef13391738321d92491dc47e25f4e3f",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "c42cb96f2086af52eb22c126751f1bdac89d1b4654512d3d9af5df07d5a617d5",
+          "op": "entity.publish",
+          "prev_hash": "3da893a9434c35ac34daf98e291ac3651c8e01c75f3cbc388393d0687d2cdb38",
+          "prev_mac": "6fdbdf5d82eec721caad80c42b50d4e1e66d3d2a56b52bb761f5bf5bb45fe442",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning"
+          },
+          "run": "31e01630505a9e92",
+          "seq": 15,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_vadervarning",
+          "time": 1792956105.100609
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "7e1b3d347af08c4a00b7824e9b8407a08f2fac82d22931b806f546a69f17e01b",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "0a5f1d5f933b6bb9b80010e3e8767caf5c61402fcadbdf5c5e03d38431a7097c",
+          "op": "network.egress",
+          "prev_hash": "918cc2565507a9b0815368a58bf360aedef13391738321d92491dc47e25f4e3f",
+          "prev_mac": "c42cb96f2086af52eb22c126751f1bdac89d1b4654512d3d9af5df07d5a617d5",
+          "reason": "'opendata-download-warnings.smhi.se:443' matches no clause at /permissions/network/egress",
+          "requested": {
+            "host": "opendata-download-warnings.smhi.se",
+            "port": 443
+          },
+          "run": "31e01630505a9e92",
+          "seq": 16,
+          "target": "opendata-download-warnings.smhi.se:443",
+          "time": 1792956105.3394692
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "(ambient: \u00a75.10.2)",
+          "hash": "0531d5e98d196d949997801e60c2fca636db0b55a4eee29cf1d4326792516d31",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "e947bca4b32874a97e69a7a095f6344f63dc3b04edb6b0d4c9380679d1769061",
+          "op": "entity.publish",
+          "prev_hash": "7e1b3d347af08c4a00b7824e9b8407a08f2fac82d22931b806f546a69f17e01b",
+          "prev_mac": "0a5f1d5f933b6bb9b80010e3e8767caf5c61402fcadbdf5c5e03d38431a7097c",
+          "reason": "its own entity",
+          "requested": {
+            "entity": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass"
+          },
+          "run": "31e01630505a9e92",
+          "seq": 17,
+          "target": "sensor.smhi_brandrisk_brandrisk_hemma_brandrisk_fwi_klass",
+          "time": 1792956105.341714
+        },
+        {
+          "allowed": true,
+          "claimed": null,
+          "clause": "/permissions/network/egress/0",
+          "hash": "91e3e3cb27ad8cddd6e31605f6d4197ee6edbbbcd26d25a4d1cc77f8f27b0d91",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "ef4ea784e56bca8e7da8ba662299e233c5687d7d63c730ee1e7f7e5f57735d48",
+          "op": "network.egress",
+          "prev_hash": "0531d5e98d196d949997801e60c2fca636db0b55a4eee29cf1d4326792516d31",
+          "prev_mac": "e947bca4b32874a97e69a7a095f6344f63dc3b04edb6b0d4c9380679d1769061",
+          "reason": "declared",
+          "requested": {
+            "host": "opendata-download-metfcst.smhi.se",
+            "port": 443
+          },
+          "run": "31e01630505a9e92",
+          "seq": 18,
+          "target": "opendata-download-metfcst.smhi.se:443",
+          "time": 1792956115.3435092
+        },
+        {
+          "allowed": false,
+          "claimed": null,
+          "clause": "/permissions/network/egress",
+          "hash": "a616929beea7e97cb7b1f2a44b62f3817834a97e7edc1af2f2a3f4329325b3aa",
+          "integration": "smhi_brandrisk",
+          "kind": "decision",
+          "mac": "aeb1ac566d1234dfacae7005e8a4bb9caa409c4ba916f7df32a395d41207e810",
+          "op": "network.egress",
+          "prev_hash": "91e3e3cb27ad8cddd6e31605f6d4197ee6edbbbcd26d25a4d1cc77f8f27b0d91",
+          "prev_mac": "ef4ea784e56bca8e7da8ba662299e233c5687d7d63c730ee1e7f7e5f57735d48",
+          "reason": "'opendata-download-warnings.smhi.se:443' matches no clause at /permissions/network/egress",
+          "requested": {
+            "host": "opendata-download-warnings.smhi.se",
+            "port": 443
+          },
+          "run": "31e01630505a9e92",
+          "seq": 19,
+          "target": "opendata-download-warnings.smhi.se:443",
+          "time": 1792956115.7711744
+        }
+      ],
+      "oom_kill": 0
+    }
+  },
+  "checks": {
+    "passed": 20,
+    "total": 20
+  }
+}

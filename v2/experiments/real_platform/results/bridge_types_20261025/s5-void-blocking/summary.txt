@@ -1,0 +1,9 @@
+start 2026-10-25T20:01:05+01:00 pre commit 609794bc76e96862d20b2a8358da796013fd56e1 tag bridge-s5-pre dirty=0
+house_a_down_pre exit=0 seconds=2 2026-10-25T20:01:07+01:00
+house_a_up_pre exit=0 seconds=5 2026-10-25T20:01:12+01:00
+real_house_pre exit=1 seconds=0 2026-10-25T20:01:12+01:00
+post commit d4e95fe834d6f46d480ca5070c9d3bf240e31f79 tag bridge-s5 dirty=0
+house_a_down exit=0 seconds=2 2026-10-25T20:01:14+01:00
+house_a_up exit=0 seconds=4 2026-10-25T20:01:18+01:00
+real_house exit=1 seconds=0 2026-10-25T20:01:18+01:00
+function exit=1 seconds=59 2026-10-25T20:02:17+01:00

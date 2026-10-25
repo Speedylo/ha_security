@@ -1,0 +1,24 @@
+  powercalc                      unconfined loaded
+  powercalc                      confined   Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/younes/r2exp/bridge-s5/v2/framework/confine/endtoend_function.py", line 425, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/younes/r2exp/bridge-s5/v2/framework/confine/endtoend_function.py", line 408, in main
+    report = run_confined(name, variant, component, python, delegation, uv,
+                          platform_deps, real=real)
+  File "/home/younes/r2exp/bridge-s5/v2/framework/confine/endtoend_function.py", line 192, in run_confined
+    reset_world(platform)
+    ~~~~~~~~~~~^^^^^^^^^^
+  File "/home/younes/r2exp/bridge-s5/v2/framework/confine/real_house.py", line 36, in reset_world
+    _service(platform, "input_number", "set_value", {"entity_id": helper, "value": value})
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/bridge-s5/v2/framework/confine/real_house.py", line 27, in _service
+    platform.call({"type": "call_service", "domain": domain, "service": service,
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                   "service_data": data, "blocking": True})
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/bridge-s5/v2/framework/confine/real_platform.py", line 160, in call
+    raise PlatformError(f"{message.get('type')}: {answer.get('error')}")
+confine.real_platform.PlatformError: call_service: {'code': 'invalid_format', 'message': "extra keys not allowed @ data['blocking']. Got True"}

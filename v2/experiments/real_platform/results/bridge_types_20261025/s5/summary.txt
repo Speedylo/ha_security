@@ -1,0 +1,22 @@
+start 2026-10-25T20:04:24+01:00 (rerun after the void first run; pre-change measured there)
+commit e88010aa8ddf1d0577f8ab89ce9f4266b2cd9e8e tag bridge-s5b dirty=0
+house_a_down exit=0 seconds=2 2026-10-25T20:04:26+01:00
+house_a_up exit=0 seconds=4 2026-10-25T20:04:30+01:00
+real_house exit=1 seconds=5 2026-10-25T20:04:35+01:00
+function exit=1 seconds=264 2026-10-25T20:08:59+01:00
+egress_nordpool exit=0 seconds=113 2026-10-25T20:10:52+01:00
+egress_dwd_weather exit=1 seconds=221 2026-10-25T20:14:33+01:00
+egress_pirateweather exit=1 seconds=149 2026-10-25T20:17:02+01:00
+egress_waste_collection_schedule exit=0 seconds=128 2026-10-25T20:19:10+01:00
+egress_smhi_brandrisk exit=0 seconds=196 2026-10-25T20:22:26+01:00
+egress_regensburg_transport exit=1 seconds=479 2026-10-25T20:30:25+01:00
+local_midea_ac_lan exit=1 seconds=1 2026-10-25T20:30:26+01:00
+local_localtuya exit=0 seconds=120 2026-10-25T20:32:26+01:00
+oauth_trakt exit=0 seconds=24 2026-10-25T20:32:50+01:00
+house_a before suites: up
+suites exit=0 seconds=153 2026-10-25T20:35:23+01:00
+suites failed=1 of 33
+bridge errors in (A) log: 8
+bridge-s5b dirty after=0
+end 2026-10-25T20:35:23+01:00
+ALLDONE

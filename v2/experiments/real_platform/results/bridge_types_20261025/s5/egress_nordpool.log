@@ -1,0 +1,34 @@
+F2 against a real integration's real API — nordpool → dataportal-api.nordpoolgroup.com:443
+
+  A  unconfined baseline ...
+  B  confined, every host declared ...
+  C  confined, clause absent ...
+
+  arm                          entry            published  fetched  egress decisions
+  unconfined                   LOADED                  10        1  —
+  confined_declared            LOADED                   1        1  TTT
+  confined_undeclared          LOADED                   1        0  FFF
+  confined_undeclared: flow=create_entry errors=None error=None setup=['homeassistant.components.sensor: Error adding entity sensor.nordpool_kwh_se1_eur_3_10_025 for domain sensor with platform nordpool ||                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<7 lines>...\n    )\n    ^\n  File "/sandbox/deps/aiohttp/connector.py", line 1345, in _wrap_create_connection\n    raise client_error(req.connection_key, exc) from exc\naiohttp.client_exceptions.ClientConnectorError: Cannot connect to host dataportal-api.nordpoolgroup.com:443 ssl:default [nothing is declared at /permissions/network/egress]\n']
+
+  A resolved, attributed to the integration: ['192.168.1.128', 'fe80::9ba0:68cd:7165:a581%3']
+
+  ok   A — nordpool loads unconfined on this release, so there is something to confine
+  ok   A — and publishes a fetched value unconfined
+  ok   B — the confined arm stayed inside its memory limit
+  ok   **F2** — a real community integration's config entry reached LOADED while confined
+  ok   **F2** — it published a fetched value through the mediator, from its own call to its own API
+       sensor.nordpool_kwh_se1_eur_3_10_025 = 0.004  (A: 0.004)
+  ok   **F2** — and at least one value equals arm A's, fetched from the same API minutes apart
+  ok   B — the mediator's own durable record shows it granted a declared destination
+  ok   B — every granted destination is one the manifest names, host **and port**
+  ok   B — and nothing the integration asked for was refused (the declared set is complete)
+  ok   B — that record's hash and MAC chains both verify (S7)
+  ok   declared — the durable record matches the in-memory one, decision by decision, and every decision names its run (T4)
+  ok   undeclared — the durable record matches the in-memory one, decision by decision, and every decision names its run (T4)
+  ok   **C** — with the clause removed, no fetched value crosses the boundary
+  ok   **C** — and the mediator refused the destinations it granted in B
+  ok   **C** — each refusal names the clause, S6's denial by absence
+  ok   **the difference between B and C is the mediated path and nothing else** — same integration, flow, profile, host and minute
+
+  16/16 checks passed
+  wrote /home/younes/r2exp/bridge-run/s5/egress_nordpool.json

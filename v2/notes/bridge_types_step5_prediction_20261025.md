@@ -58,3 +58,34 @@ run). Values change between runs (prices, weather, collection dates), so E3 uses
 comparisons (B against A within one run), not values from earlier runs.
 
 Outcome appended below; no run is repeated to obtain a pass.
+
+---
+
+## Outcome of the first complete run (appended 2026-10-25, after the run)
+
+Two runs, results in `experiments/real_platform/results/bridge_types_20261025/` (`s5-void-blocking/`,
+`s5/`, with (A)'s two logs `s5/a_s5.log*`).
+
+**The first run is void** (`bridge-s5`, `d4e95fe`, 20:01). `real_house._service` and the house's test
+sent `"blocking": true` with a WebSocket `call_service`, which (A) refuses (*"extra keys not allowed"*);
+every world reset failed. Fixed in `e88010a` (`bridge-s5b`): a WebSocket call already waits. Before it
+stopped, the pre-change arm measured **H3: held** — (A)'s old light reported `supported_color_modes`
+`["onoff"]` and no brightness.
+
+**The second run** (`bridge-s5b`, `e88010a`, 20:04–20:35, clean before and after). Verdicts:
+`verify/bridge_step5_verdicts.py`, 21/24.
+
+| | Outcome |
+|---|---|
+| H1 | **3 of 4.** The light dims (180, then 51, then off). The reset check missed as written: humidity reads `48.0` after `input_number.set_value`, `48` at (A)'s start; the test compared strings, the value is restored |
+| H2 | Held: (A) stopped (port 8123 free) and started again, with its bridge entry and the mediator's user |
+| E1 | Held as measured in every confined-declared arm (no publish recorded as refused). **But E1 is weaker than intended:** the sandbox records a publish as accepted when (A)'s bridge answered, and (A) can fail to *add* the entity afterwards; E2 is the check that caught that |
+| E2 | **Missed: 21 of 24 held.** The three misses are two bridge defects, both found by this run: **F66** — a numeric sensor published `unknown` gets the string as its value and (A) refuses it (`powercalc`'s `sensor.all_standby_energy`, `smhi_brandrisk`'s `…fruset_nederbord`; also on (A)'s restart, when the roster is restored); **F67** — a timestamp sensor's state is passed as a string and (A) refuses to add it, *"Invalid datetime"* (`dwd_weather`'s two time sensors). Every other entity of every subject is in (A), owned by the bridge, of its type, in the published state — `nordpool`, `pirateweather` (weather and sensor), `regensburg_transport`, eleven of `smhi_brandrisk`'s twelve, `waste_collection_schedule` (six sensors **and its calendar**), `trakt_tv` |
+| E3 | **Incomplete.** The function set stopped after `powercalc`: before `watchman`'s unconfined arm, (A) did not stop within 60 s (cause not established; (A)'s log ends 20:07:13 with nothing about stopping), so `retest_e2e_verdicts` and alarmo's checks were not reached. Of the others: `nordpool`, `waste_collection_schedule`, `smhi_brandrisk`, `trakt_tv` passed their own checks. `dwd_weather` missed one: arm B was refused `www.dwd.de:443`, a second host the integration now reaches, outside the clause read from its source — reported as such, not added. `pirateweather` and `regensburg_transport` each missed the "one value equals arm A's" check, on values that do not involve the bridge (the sandbox's own record): `10.1` against `10.1111111111111` (the confined arm's state rounded to the sensor's display precision), and a departure at 21:34 against 21:35. `midea_ac_lan` did not run: its fake device could not bind `10.126.83.113`, the Pi's LAN address hard-coded in `endtoend_local.py`, which DHCP has since changed to `10.126.85.243`; for the same reason `localtuya`'s device saw nothing in any arm, so its run shows loading only |
+| E4 | 32 of 33 suites: `selftest_real_house` (H1's string comparison). `selftest_bridge_types` and `selftest_commands` passed, so step 2's button check and steps 3–4's quoted code search hold on a reused (A) |
+
+(A)'s log has eight bridge errors, all F66 or F67.
+
+**Before a complete run:** F66's fix (`55d8d6d`) and F67's, each with its fails-first test; the house
+test's reset check compared as numbers; `endtoend_local` given the Pi's current LAN address. The
+comparison fragility (`pirateweather`'s rounding) and the timetable minute are recorded, not changed.

@@ -1,0 +1,35 @@
+F2 against a real integration's real API — regensburg_transport → efa.rvv.de:443
+
+  A  unconfined baseline ...
+  B  confined, every host declared ...
+  C  confined, clause absent ...
+
+  arm                          entry            published  fetched  egress decisions
+  unconfined                   LOADED                  11        1  —
+  confined_declared            LOADED                   4        1  TTT
+  confined_undeclared          —                        0        0  F
+  confined_undeclared: flow=None errors=None error=ConnectionError: HTTPSConnectionPool(host='efa.rvv.de', port=443): Max retries exceeded with url: /efa/XML_STOPFINDER_REQUEST?commonMacro=stopfinder&outputFormat=rapidJSON&type_sf=any&name_sf=Arnulfsplatz (Caused by NewConnectionError("HTTPSConnection(host='efa.rvv.de', port=443): Failed to establis setup=[]
+
+  A resolved, attributed to the integration: ['192.168.1.128', 'efa.rvv.de', 'fe80::9ba0:68cd:7165:a581%3']
+
+  ok   A — regensburg_transport loads unconfined on this release, so there is something to confine
+  ok   A — and publishes a fetched value unconfined
+  ok   B — the confined arm stayed inside its memory limit
+  ok   **F2** — a real community integration's config entry reached LOADED while confined
+  ok   **F2** — it published a fetched value through the mediator, from its own call to its own API
+       sensor.regensburg_arnulfsplatz_next_departure_arnulfsplatz = 2 Schwabenstraße - (Umleitung) at 21:34  (A: 2 Schwabenstraße - (Umleitung) at 21:35)
+  FAIL **F2** — and at least one value equals arm A's, fetched from the same API minutes apart
+       B=[('sensor.regensburg_arnulfsplatz_next_departure_arnulfsplatz', '2 Schwabenstraße - (Umleitung) at 21:34')] A=[('sensor.regensburg_arnulfsplatz_next_departure_arnulfsplatz', '2 Schwabenstraße - (Umleitung) at 21:35')]
+  ok   B — the mediator's own durable record shows it granted a declared destination
+  ok   B — every granted destination is one the manifest names, host **and port**
+  ok   B — and nothing the integration asked for was refused (the declared set is complete)
+  ok   B — that record's hash and MAC chains both verify (S7)
+  ok   declared — the durable record matches the in-memory one, decision by decision, and every decision names its run (T4)
+  ok   undeclared — the durable record matches the in-memory one, decision by decision, and every decision names its run (T4)
+  ok   **C** — with the clause removed, no fetched value crosses the boundary
+  ok   **C** — and the mediator refused the destinations it granted in B
+  ok   **C** — each refusal names the clause, S6's denial by absence
+  ok   **the difference between B and C is the mediated path and nothing else** — same integration, flow, profile, host and minute
+
+  15/16 checks passed
+  wrote /home/younes/r2exp/bridge-run/s5/egress_regensburg_transport.json

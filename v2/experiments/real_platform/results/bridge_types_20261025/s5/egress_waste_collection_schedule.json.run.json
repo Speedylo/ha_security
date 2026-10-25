@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/home/younes/r2exp/bridge-s5b/v2/framework/confine/endtoend_egress.py",
+    "--subject",
+    "waste_collection_schedule",
+    "--corpus",
+    "/home/younes/r2exp/corpus",
+    "--python",
+    "/home/younes/r2exp/ha314/bin/python",
+    "--platform",
+    "real",
+    "--json",
+    "/home/younes/r2exp/bridge-run/s5/egress_waste_collection_schedule.json"
+  ],
+  "cwd": "/home/younes/r2exp/bridge-s5b/v2/framework",
+  "executable": "/usr/bin/python3",
+  "python": "3.13.5",
+  "host": "raspberrypi",
+  "machine": "aarch64",
+  "time": "2026-10-25T20:19:10+0100",
+  "commit": "e88010aa8ddf1d0577f8ab89ce9f4266b2cd9e8e",
+  "uncommitted_changes": false,
+  "resolve_before": "2026-10-06T00:00:00Z"
+}
