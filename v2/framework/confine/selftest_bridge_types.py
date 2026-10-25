@@ -16,6 +16,11 @@ in (A), described well enough for Home Assistant to draw its control. Operating 
     T7'  each is operated from a user in (A), its data reaching the sandbox exactly
     T8   a house in US customary units sends a climate temperature to the sandbox in °C
     T9   an alarm code typed in (A) is not in the durable log
+    W1   a calendar and a weather are entities of their own type in (A), described (step 4)
+    W2   a calendar's events, asked for in (A), come from the sandbox's answer
+    W3   a weather's forecast, asked for in (A), comes from the sandbox's answer
+    W4   a malformed answer fails the question, and nothing of it reaches (A)
+    W5   the events' titles are not in the durable log
 
 Requires (A) running: `python3 -m confine.house_a up --fresh` on the Pi.
 
@@ -261,6 +266,100 @@ def main() -> int:
         print("\nT9 — the alarm code is not in the durable log\n")
         check("T9 '4917' appears nowhere in the run's durable log",
               "4917" not in (root / "audit" / "decisions.jsonl").read_text())
+
+        print("\nW1 — a calendar and a weather, described (step 4)\n")
+        CAL, WEATHER = "calendar.selftest_bins", "weather.selftest_home"
+        cal_attributes = {"friendly_name": "Selftest bins", "message": "Bio bin", "all_day": True,
+                          "start_time": "2026-10-28 00:00:00", "end_time": "2026-10-29 00:00:00",
+                          "location": "", "description": ""}
+        weather_attributes = {"friendly_name": "Selftest home", "temperature": 12.5,
+                              "temperature_unit": "°C", "humidity": 80, "pressure": 1012,
+                              "pressure_unit": "hPa", "wind_speed": 14.4,
+                              "wind_speed_unit": "km/h", "visibility_unit": "km",
+                              "precipitation_unit": "mm",
+                              # FORECAST_DAILY | FORECAST_HOURLY
+                              "supported_features": 1 | 2}
+        for entity, state, attributes, wanted in (
+                (CAL, "off", cal_attributes, {"message": "Bio bin"}),
+                (WEATHER, "rainy", weather_attributes,
+                 {"temperature": 12.5, "temperature_unit": "°C"})):
+            answer = sandbox.ask({"op": "entity.publish", "entity": entity, "state": state,
+                                  "attributes": attributes})
+            landed[entity] = platform.published.get(("selftest", entity)) or ""
+            row = registry(platform).get(landed[entity], {})
+            domain = entity.partition(".")[0]
+            check(f"W1 {domain}: a registry row of its domain owned by the bridge",
+                  answer.get("ok") is True and row.get("platform") == "confine_bridge"
+                  and landed[entity].startswith(f"{domain}."),
+                  answer.get("reason") or landed[entity])
+            shown, shown_attributes = platform.read(landed[entity]) if landed[entity] else (None, {})
+            missing = {k: (v, (shown_attributes or {}).get(k)) for k, v in wanted.items()
+                       if (shown_attributes or {}).get(k) != v}
+            check(f"W1 {domain}: (A) holds its state and the attributes that describe it",
+                  shown == state and not missing, f"{shown!r} {missing or ''}")
+
+        def question(entity: str, service: str, data: dict, payload: object) -> tuple[dict, dict]:
+            """A user in (A) asks; the in-process sandbox answers with `payload`."""
+            sandbox.received.clear()
+            user = User()
+            pressed = user.press(landed[entity] or entity, service, data, return_response=True)
+            arrived = serve_until(mediator, lambda: (sandbox.drain(), [
+                m for m in sandbox.received if m.get("push") == "entity.command"])[1])
+            asked = next((m for m in sandbox.received if m.get("push") == "entity.command"), {})
+            if arrived:
+                sandbox.ask({"op": "entity.command_result", "command": asked.get("command"),
+                             "ok": True, "answer": payload})
+            serve_until(mediator, lambda: not pressed.is_alive())
+            pressed.join()
+            user.close()
+            return asked, user.outcome
+
+        print("\nW2 — a calendar's events come from the sandbox's answer\n")
+        events = [{"summary": "Dentist, Dr Example", "start": "2026-10-27T09:00:00+01:00",
+                   "end": "2026-10-27T10:00:00+01:00", "location": "Darmstadt"},
+                  {"summary": "Bio bin", "start": "2026-10-28", "end": "2026-10-29"}]
+        asked, outcome = question(CAL, "get_events",
+                                  {"start_date_time": "2026-10-26 00:00:00",
+                                   "end_date_time": "2026-11-02 00:00:00"}, events)
+        check("W2 the sandbox is asked get_events with a start and an end, and nothing else",
+              asked.get("service") == "get_events"
+              and set(asked.get("data") or {}) == {"start", "end"}, f"{asked or outcome}")
+        listed = ((outcome.get("response") or {}).get(landed[CAL] or CAL) or {}).get("events") or []
+        check("W2 the user's response lists the two events the sandbox answered",
+              outcome.get("success") is True
+              and [e.get("summary") for e in listed] == ["Dentist, Dr Example", "Bio bin"],
+              f"{outcome.get('error') or ''} {listed}")
+
+        print("\nW3 — a weather's forecast comes from the sandbox's answer\n")
+        forecast = [{"datetime": "2026-10-26T12:00:00+00:00", "condition": "rainy",
+                     "temperature": 12.5, "templow": 6.0, "precipitation": 3.2},
+                    {"datetime": "2026-10-27T12:00:00+00:00", "condition": "cloudy",
+                     "temperature": 11.0, "templow": 5.0},
+                    {"datetime": "2026-10-28T12:00:00+00:00", "condition": "sunny",
+                     "temperature": 14.0, "templow": 7.5}]
+        asked, outcome = question(WEATHER, "get_forecasts", {"type": "daily"}, forecast)
+        check("W3 the sandbox is asked get_forecasts {type: daily}",
+              asked.get("service") == "get_forecasts" and asked.get("data") == {"type": "daily"},
+              f"{asked or outcome}")
+        entries = ((outcome.get("response") or {}).get(landed[WEATHER] or WEATHER)
+                   or {}).get("forecast") or []
+        check("W3 the user's response has the three entries, with their temperatures",
+              outcome.get("success") is True
+              and [e.get("temperature") for e in entries] == [12.5, 11.0, 14.0],
+              f"{outcome.get('error') or ''} {entries}")
+
+        print("\nW4 — a malformed answer fails the question\n")
+        asked, outcome = question(CAL, "get_events",
+                                  {"start_date_time": "2026-10-26 00:00:00",
+                                   "end_date_time": "2026-11-02 00:00:00"},
+                                  [{**events[1], "script": "alert(1)"}])
+        check("W4 the user's call fails, and the answer did not reach (A)",
+              bool(asked) and outcome.get("success") is False
+              and "alert(1)" not in str(outcome), f"{outcome}")
+
+        print("\nW5 — the events' titles are not in the durable log\n")
+        check("W5 'Dentist, Dr Example' appears nowhere in the run's durable log",
+              "Dentist, Dr Example" not in (root / "audit" / "decisions.jsonl").read_text())
 
         print("\nT5 — a type still unsupported is refused\n")
         light = sandbox.ask({"op": "entity.publish", "entity": "light.selftest_probe",

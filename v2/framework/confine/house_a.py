@@ -493,17 +493,20 @@ class User:
         self.ws.receive()
         self.outcome: dict = {}
 
-    def press(self, entity_id: str, service: str, data: dict | None = None) -> threading.Thread:
+    def press(self, entity_id: str, service: str, data: dict | None = None,
+              return_response: bool = False) -> threading.Thread:
         def run() -> None:
             start = time.perf_counter()
             self.ws.send({"id": 1, "type": "call_service", "domain": entity_id.partition(".")[0],
                           "service": service,
-                          "service_data": {"entity_id": entity_id, **(data or {})}})
+                          "service_data": {"entity_id": entity_id, **(data or {})},
+                          **({"return_response": True} if return_response else {})})
             answer: list = []
             while not answer:
                 answer = [m for m in self.ws.receive() if m.get("id") == 1]
             self.outcome = {"success": answer[0].get("success"),
                             "error": (answer[0].get("error") or {}).get("message"),
+                            "response": (answer[0].get("result") or {}).get("response"),
                             "seconds": time.perf_counter() - start}
         thread = threading.Thread(target=run)
         thread.start()
