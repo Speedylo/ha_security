@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/home/younes/r2exp/f65-fix/v2/framework/confine/endtoend_egress.py",
+    "--subject",
+    "waste_collection_schedule",
+    "--corpus",
+    "/home/younes/r2exp/corpus",
+    "--python",
+    "/home/younes/r2exp/ha314/bin/python",
+    "--json",
+    "/home/younes/r2exp/f65-run/post/waste.json"
+  ],
+  "cwd": "/home/younes/r2exp/f65-fix/v2/framework",
+  "executable": "/usr/bin/python3",
+  "python": "3.13.5",
+  "host": "raspberrypi",
+  "machine": "aarch64",
+  "time": "2026-10-25T18:14:45+0100",
+  "commit": "a20661cc0687d67a1310f73c1c2648dace108fe6",
+  "uncommitted_changes": false,
+  "resolve_before": "2026-10-06T00:00:00Z"
+}

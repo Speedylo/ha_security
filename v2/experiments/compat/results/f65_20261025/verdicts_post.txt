@@ -1,0 +1,11 @@
+Q4 — after the fix, with the shim: compat_egress.json
+  PASS  Q4 http sets up in all 15   [15/15; not: []]
+        record — levels that differ from the final rerun: none
+  PASS  Q4 all 37 reach the final rerun's level   [[]]
+
+Q5 — waste_collection_schedule after the fix: waste.json
+  PASS  Q5 the confined arm publishes the calendar entity   [['calendar.waste_collection_schedule_ead_darmstadt']]
+  PASS  Q5 no 'Could not determine source ip' in its log
+  PASS  Q5 the harness's own checks all pass   [16/16]
+
+5/5 held

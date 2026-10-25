@@ -63,3 +63,36 @@ Q3 failing means F65's mechanism is not the one stated here, and the fix is not 
 is. Q4 or Q5 failing is reported with the unconfined arm consulted first. Levels in Q3 that differ
 from the final rerun are recorded, not predicted. No run is repeated to obtain a pass. The outcome
 is appended to this note.
+
+---
+
+## Outcome (appended 2026-10-25, after the runs)
+
+Pi, fresh clones of `f65-pre` (`c2b7719`) and `f65-fix` (`a20661c`), each clean before and after,
+18:05–18:15. Results: `experiments/compat/results/f65_20261025/` (`pre/`, `post/`, `verdicts_pre.txt`,
+`verdicts_post.txt`, the drivers).
+
+| | Outcome |
+|---|---|
+| Q1 | Held. Laptop: 22/25 before (8a `''`, 8b `None`, 8c), 25/25 after. Pi, after: 25/25 |
+| Q2 | Held: 29 of 29 suites exit 0 |
+| Q3 | **Half held.** `http` failed in all 15 (15/15). The setup-log criterion missed as written: the message is in 2 of the 15 logs. In the other 13 the runtime keeps only a component's first three warnings, one of them is "a custom integration … has not been tested", and the third is the network component's *"Because the system does not have any enabled IPv4 addresses…"*, logged on the same path immediately before the raise. The harness cut the line off; the log as kept does not show it. Levels: none differ from the final rerun |
+| Q4 | Held: `http` set up in all 15; all 37 at the final rerun's level |
+| Q5 | Held: the confined arm published `calendar.waste_collection_schedule_ead_darmstadt`; no source-IP message; the harness's checks 16/16 |
+
+Q4 is what settles the mechanism Q3 could not show in 13 logs: the only change between the two runs
+is the fix, and `http` went from 0/15 to 15/15.
+
+**Not predicted — the same failure by a second route (still open).** Comparing every component's
+setup with the final rerun, after the fix: `zeroconf` sets up for neither `sonoff` nor `xiaomi_home`
+under the shim (in the final rerun, without it, it did for both). Its log: *"Error during setup of
+component zeroconf: Could not determine source ip …"*. `zeroconf` asks for its announce addresses
+(`network.async_get_announce_addresses`, `network/__init__.py:161`) with **one** target, the mDNS
+group 224.0.0.251, not the three. Without the shim that connect succeeds, because
+`namespaces.route_multicast_to_loopback` routes 224/4 to `lo`; under the shim it is still relayed, and
+the fix covers loopback only. Before the fix the same two failed earlier, at `api` → `http`. The
+levels do not change (both are `platforms_clean`), but a confined integration that relies on
+`zeroconf` for discovery would not get it under the supervisor. Extending the fall-through to
+multicast connects is the obvious fix, and it is not made here: it lets a socket send to the
+multicast group without the mediator, which `route_multicast_to_loopback` argues reaches only the
+sandbox itself — a decision for Younes, with its own prediction.

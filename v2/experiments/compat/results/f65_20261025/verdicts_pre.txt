@@ -1,0 +1,6 @@
+Q3 — before the fix, with the shim: compat_egress.json (15 set up http in the final rerun)
+  PASS  Q3 http fails in all 15   [15/15 failed; set up: []]
+  FAIL  Q3 each with 'Could not determine source ip' in its setup log   [2/15; without it: ['alarmo', 'bambu_lab', 'browser_mod', 'frigate', 'hacs', 'homematicip_local', 'llmvision', 'nordpool', 'scheduler', 'sonoff', 'webrtc', 'xiaomi_home', 'xiaomi_miot']]
+        record — levels that differ from the final rerun: none
+
+1/2 held; missed: ["Q3 each with 'Could not determine source ip' in its setup log"]
