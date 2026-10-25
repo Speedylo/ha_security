@@ -279,6 +279,28 @@ def keep(config: Path) -> int:
               f"starting it again", flush=True)
 
 
+def alive(pid: int) -> bool:
+    """Whether `pid` is a running process. A zombie has exited and is not (F69).
+
+    `os.kill(pid, 0)` succeeds on a zombie. An end-to-end harness is a subreaper, so an (A) it
+    restarted (bridge step 5) is re-parented to it and, once stopped, stays its zombie: `stop`
+    waited its full 60 s for a process that had already exited, and raised. One that is this
+    process's own child is reaped here.
+    """
+    try:
+        with open(f"/proc/{pid}/stat") as stat:
+            state = stat.read().rpartition(")")[2].split()[0]
+    except (FileNotFoundError, ProcessLookupError, IndexError):
+        return False
+    if state != "Z":
+        return True
+    try:
+        os.waitpid(pid, os.WNOHANG)
+    except ChildProcessError:
+        pass
+    return False
+
+
 def stop(config: Path, seconds: float = 60) -> None:
     pid_file = config / "hass.pid"
     if not pid_file.exists():
@@ -291,9 +313,7 @@ def stop(config: Path, seconds: float = 60) -> None:
         return
     deadline = time.monotonic() + seconds
     while time.monotonic() < deadline:
-        try:
-            os.kill(pid, 0)
-        except ProcessLookupError:
+        if not alive(pid):
             break
         time.sleep(0.5)
     else:
