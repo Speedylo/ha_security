@@ -98,6 +98,16 @@ SCHEDULER = {
                         "repeat_type": "single", "name": "retest"}}],
     "record_services": ["light.turn_on"],
 }
+# 2026-10-25 extension (`notes/e2e_extension_prediction_20261025.md`). Alarmo's first setup creates
+# one area, "Alarmo", with Away (60 s exit delay) and Home enabled and no code required, so the
+# stimulus is its own alarm panel armed and then disarmed. It needs nothing from (A).
+ALARMO = {
+    "domain": "alarmo", "flow_input": {}, "settle": 100,
+    "steps": [{"kind": "service", "at": 5, "domain": "alarm_control_panel",
+               "service": "alarm_arm_away", "data": {"entity_id": "alarm_control_panel.alarmo"}},
+              {"kind": "service", "at": 85, "domain": "alarm_control_panel",
+               "service": "alarm_disarm", "data": {"entity_id": "alarm_control_panel.alarmo"}}],
+}
 THERMAL = {
     "domain": "thermal_comfort", "settle": 10,
     "flow_input": {"name": "living room", "temperature_sensor": TEMPERATURE,
@@ -128,6 +138,7 @@ VARIANTS: dict[str, dict] = {
                              "permissions": {"entities": {"read": [LIGHT]}}},
     "thermal_comfort": {**THERMAL, "permissions": {
         "entities": {"read": [TEMPERATURE, HUMIDITY]}}},
+    "alarmo": {**ALARMO, "permissions": {}},
 }
 
 

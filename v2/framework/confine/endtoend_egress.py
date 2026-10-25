@@ -166,6 +166,21 @@ SUBJECTS: dict[str, dict] = {
         # which exist only if the download succeeded (arm C: `ForecastDownloadError`).
         "evidence": "_time_", "numeric": False, "settle": 60.0,
     },
+    "waste_collection_schedule": {
+        # 2026-10-25 extension (`notes/e2e_extension_prediction_20261025.md`). `requests` in an
+        # executor, *during the flow* (its argument check fetches the schedule) and after setup.
+        # Source `ead_darmstadt_de`, whose only URL is `ead.darmstadt.de`; a street is its one
+        # argument. With no sensor configured, the flow's `finish()` creates one sensor per
+        # collection type it fetched, each stating the next date ("on Tue, 27.10.2026"): that
+        # text exists only if the fetch succeeded, so only `sensor.` entities count as evidence
+        # (the calendar's state is "off" whether or not anything was fetched).
+        "egress": ["ead.darmstadt.de:443"],
+        "flow_input": {"country": "Germany",
+                       "name": "ead_darmstadt_de\tEAD Darmstadt\tead_darmstadt_de",
+                       "street": "Stresemannstraße",
+                       "show_customize_config": False, "show_sensor_config": False},
+        "evidence": "sensor.", "numeric": False, "settle": 30.0,
+    },
 }
 
 
