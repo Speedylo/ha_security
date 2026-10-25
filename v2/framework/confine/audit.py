@@ -372,6 +372,10 @@ class AuditLog:
         data = request.get("data")
         if request.get("op") == "service.call" and isinstance(data, dict):
             requested.update({k: data[k] for k in SERVICE_TARGETS if k in data})
+        # A user's command, with what it set (bridge step 2). The mediator has already replaced
+        # the data of a command it refused for its shape by each value's type and length.
+        if request.get("op") == "entity.command" and isinstance(data, dict):
+            requested["data"] = data
         return self._append({
             "kind": "decision", "run": run_id, "integration": identity,
             "op": request.get("op"), "target": target, "requested": requested,

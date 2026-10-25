@@ -348,7 +348,9 @@ class Bridge:
             try:
                 await self.hass.services.async_call(
                     domain, str(message.get("service")),
-                    {"entity_id": entity_id, **(message.get("data") or {})}, blocking=True)
+                    # The target last, so nothing in the data can replace it. The mediator
+                    # already refuses any key not listed for the service (bridge step 2).
+                    {**(message.get("data") or {}), "entity_id": entity_id}, blocking=True)
             except Exception as err:  # noqa: BLE001 — the user is told, as a native call would
                 ok, error = False, f"{type(err).__name__}: {err}"[:300]
         self.commands.append({"entity": entity_id, "service": message.get("service"),

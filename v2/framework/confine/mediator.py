@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import array
 import collections
+import math
 import os
 import selectors
 import socket
@@ -193,10 +194,46 @@ MAX_COMMANDS = 32
 #: command is ambient, not declared (§5.10.2): these are the mediator's own conditions on it, and
 #: the clause names which one refused.
 COMMAND_NO_SANDBOX = "(command: the integration has a running sandbox)"
-COMMAND_SERVICES = "(command: turn_on and turn_off only, §7.38)"
+COMMAND_SERVICES = "(command: only the services listed for the entity's type)"
+COMMAND_DATA = "(command: only the data listed for that service, of its kind)"
 COMMAND_QUEUE = f"(command: at most {MAX_COMMANDS} queued)"
 COMMAND_ANSWER = "(command: answered only on the channel it was sent to)"
 AMBIENT = "(ambient: §5.10.2)"
+
+#: Home Assistant's own limit on a state's length (`MAX_LENGTH_STATE_STATE`), and so on any text
+#: value or option a user can set.
+MAX_COMMAND_TEXT = 255
+
+
+def _text(value: object) -> bool:
+    return isinstance(value, str) and len(value) <= MAX_COMMAND_TEXT
+
+
+def _number(value: object) -> bool:
+    # `bool` is an `int` in Python, and True would arrive as 1.
+    return (isinstance(value, (int, float)) and not isinstance(value, bool)
+            and math.isfinite(value))
+
+
+#: What the mediator forwards from the household to a confined integration (bridge step 2,
+#: approved by Younes 2026-10-25): per entity type, the services, and for each **exactly** the data
+#: keys it carries, with the kind of value each must be. Shape only: whether a value is inside a
+#: number's range or among a select's options is checked by (A) before the command is sent.
+#: Home Assistant's other services on these types (`toggle`, `select_next`, `increment`, ...)
+#: are worked out in (A) and arrive as one of these.
+COMMANDS: dict[str, dict[str, dict[str, Callable[[object], bool]]]] = {
+    "switch": {"turn_on": {}, "turn_off": {}},
+    "button": {"press": {}},
+    "text": {"set_value": {"value": _text}},
+    "select": {"select_option": {"option": _text}},
+    "number": {"set_value": {"value": _number}},
+}
+
+
+def _kinds(data: dict) -> dict[str, str]:
+    """A refused command's data as each value's type and length — never the value itself."""
+    return {str(k)[:64]: f"{type(v).__name__}, length {len(v)}" if hasattr(v, "__len__")
+            else type(v).__name__ for k, v in list(data.items())[:16]}
 #: A request the policy or its act could not handle: a field of the wrong type, a peer that answered
 #: a datagram with "port unreachable". Refused under this rule, and counted like any other refusal
 #: (verification 4.7, finding F33).
@@ -469,9 +506,15 @@ class Mediator:
         identity = str(command.get("integration") or "")
         entity_id = str(command.get("entity_id") or "")
         service = str(command.get("service") or "")
-        request = {"op": "entity.command", "entity": entity_id,
-                   "service": f"{entity_id.partition('.')[0]}.{service}",
-                   "data": dict(command.get("data") or {})}
+        data = command.get("data") or {}
+        if not isinstance(data, dict):
+            data = {"(not a mapping)": data}
+        kind = entity_id.partition(".")[0]
+        listed = COMMANDS.get(kind, {})
+        # Decided on the values as sent; recorded at most 255 characters of each, so an absurd
+        # name cannot fill the log. A truncated copy never decides anything.
+        request = {"op": "entity.command", "entity": entity_id[:MAX_COMMAND_TEXT],
+                   "service": f"{kind}.{service}"[:MAX_COMMAND_TEXT], "data": dict(data)}
         channels = [fd for fd, (who, _) in self._by_fd.items() if who == identity]
         owner = self._platform.owners.get(entity_id) if self._platform else None  # type: ignore
 
@@ -481,15 +524,23 @@ class Mediator:
         elif owner != identity:
             decision = Decision(False, f"{entity_id} belongs to {owner}, not {identity}",
                                 clause=AMBIENT)
-        elif service not in ("turn_on", "turn_off"):
-            decision = Decision(False, f"{service} is not a command the bridge forwards",
-                                clause=COMMAND_SERVICES)
+        elif service not in listed:
+            decision = Decision(False, f"{service[:64]} is not a command the bridge forwards "
+                                       f"for a {kind[:64]}", clause=COMMAND_SERVICES)
+        elif (set(data) != set(listed[service])
+              or not all(valid(data[key]) for key, valid in listed[service].items())):
+            decision = Decision(False, f"{kind}.{service} carries exactly "
+                                       f"{sorted(listed[service]) or 'no data'}, of its kind",
+                                clause=COMMAND_DATA)
         elif len(self._out[channels[0]].commands) >= MAX_COMMANDS:
             decision = Decision(False, f"{MAX_COMMANDS} commands are already queued for "
                                        f"{identity}", clause=COMMAND_QUEUE)
         else:
             decision = Decision(True, "the platform operating the integration's own entity",
                                 clause=AMBIENT)
+        if decision.clause == COMMAND_DATA:
+            # Recorded by kind: a value refused for its shape is not written into the log.
+            request["data"] = _kinds(data)
         self._record(identity, request, decision)
         if not decision.allowed:
             self._platform.command_result(ident, False, decision.reason)  # type: ignore

@@ -2,13 +2,15 @@
 
 Step 1 of extending the bridge (`notes/bridge_types_step1_prediction_20261025.md`): button, text,
 select and number. Each published entity must become a registry-backed entity **of its own type**
-in (A), described well enough for Home Assistant to draw its control. Operating them is step 2, so
-a command on one is still refused by the mediator, and that refusal must reach the user.
+in (A), described well enough for Home Assistant to draw its control. Operating them is step 2
+(`notes/bridge_types_step2_prediction_20261025.md`).
 
     T1   each of the four publishes to an entity-registry row of its domain, owned by the bridge
     T2   (A) holds the state and the attributes that describe the control
     T3   a republish from the sandbox changes the state in (A)
-    T4   a command on one is refused by the mediator, recorded, and fails the user's call
+    T4'  each is operated from a user in (A): the command reaches the sandbox with exactly
+         its data, and the result shows in (A) (bridge step 2)
+    T4'' a value (A) rejects never reaches the mediator
     T5   a type still unsupported (light) is refused at publish
 
 Requires (A) running: `python3 -m confine.house_a up --fresh` on the Pi.
@@ -25,7 +27,7 @@ from pathlib import Path
 from . import house_a
 from .audit import AuditLog
 from .house_a import User
-from .mediator import COMMAND_SERVICES, Mediator
+from .mediator import Mediator
 from .platform import ActingPolicy
 from .real_platform import RealPlatform
 from .selftest_push import Sandbox
@@ -94,25 +96,55 @@ def main() -> int:
             shown = platform.read(landed[entity])[0] if landed[entity] else None
             check(f"T3 {entity.partition('.')[0]}: now {state}", shown == state, f"{shown!r}")
 
-        print("\nT4 — operating one is step 2: refused, recorded, and the user is told\n")
+        print("\nT4' — operating each one, from a user in (A) (step 2)\n")
+        # The happy path, played by hand as `selftest_real_platform` does: the in-process sandbox
+        # receives the command, publishes what its own handler would have set, and answers.
+        for entity, service, data, after in (
+                ("button.selftest_report", "press", {}, None),
+                ("text.selftest_ignored", "set_value", {"value": "*.log"}, "*.log"),
+                ("select.selftest_mode", "select_option", {"option": "comfort"}, "comfort"),
+                ("number.selftest_target", "set_value", {"value": 22}, "22.0")):
+            domain = entity.partition(".")[0]
+            sandbox.received.clear()
+            user = User()
+            pressed = user.press(landed[entity] or entity, service, data)
+            arrived = serve_until(mediator, lambda: (sandbox.drain(), [
+                m for m in sandbox.received if m.get("push") == "entity.command"])[1])
+            command = next((m for m in sandbox.received if m.get("push") == "entity.command"), {})
+            sent = command.get("data")
+            check(f"T4' {domain}.{service}: reaches the sandbox with exactly its data",
+                  bool(arrived) and command.get("entity") == entity
+                  and command.get("service") == service
+                  and (sent == data if domain != "number" else sent == {"value": 22.0}),
+                  f"{command}")
+            if after is not None:
+                sandbox.ask({"op": "entity.publish", "entity": entity, "state": after,
+                             "attributes": ENTITIES[entity][1]})
+            sandbox.ask({"op": "entity.command_result", "command": command.get("command"),
+                         "ok": True})
+            serve_until(mediator, lambda: not pressed.is_alive())
+            pressed.join()
+            user.close()
+            shown = platform.read(landed[entity])[0] if landed[entity] else None
+            check(f"T4' {domain}.{service}: the user's call succeeds and (A) shows the result",
+                  user.outcome.get("success") is True
+                  and (shown == after if after is not None
+                       else shown not in (None, "unknown", "unavailable")),
+                  f"{user.outcome.get('error') or ''} {shown!r}")
+
+        print("\nT4'' — a value (A) rejects never reaches the mediator\n")
+        before = len([r for r in log.records() if r.get("op") == "entity.command"])
         user = User()
         pressed = user.press(landed["number.selftest_target"] or "number.selftest_target",
-                             "set_value", {"value": 22})
+                             "set_value", {"value": 99})
         serve_until(mediator, lambda: not pressed.is_alive(), seconds=15)
         pressed.join()
         user.close()
-        refused = [r for r in log.records() if r["kind"] == "decision"
-                   and r["op"] == "entity.command" and not r["allowed"]]
-        check("T4 the user's call fails, at once, with the mediator's reason",
-              user.outcome.get("success") is False and user.outcome.get("seconds", 99) < 2
-              and "set_value" in str(user.outcome.get("error")),
-              f"{user.outcome.get('seconds', 0):.1f} s: {user.outcome.get('error')}")
-        check("T4 and it is a recorded refusal under the command rule",
-              len(refused) == 1 and refused[0].get("clause") == COMMAND_SERVICES,
-              f"{[(r.get('target'), r.get('clause')) for r in refused]}")
-        check("T4 and the value in (A) is unchanged",
-              platform.read(landed["number.selftest_target"])[0] == UPDATES["number.selftest_target"]
-              if landed["number.selftest_target"] else False)
+        after_count = len([r for r in log.records() if r.get("op") == "entity.command"])
+        check("T4'' number.set_value 99 (range 5-30) fails in (A)",
+              user.outcome.get("success") is False, str(user.outcome.get("error")))
+        check("T4'' and no command decision was recorded: it never left (A)",
+              after_count == before, f"{after_count - before} new")
 
         print("\nT5 — a type still unsupported is refused\n")
         light = sandbox.ask({"op": "entity.publish", "entity": "light.selftest_probe",
