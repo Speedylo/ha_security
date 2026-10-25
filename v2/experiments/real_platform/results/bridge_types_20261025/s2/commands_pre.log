@@ -1,0 +1,38 @@
+
+K1 — each listed command is forwarded with exactly its data
+
+  ok    K1 switch.turn_on : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 1, 'entity': 'switch.demo_power', 'service': 'turn_on', 'data': {}}
+  ok    K1 switch.turn_off : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 2, 'entity': 'switch.demo_power', 'service': 'turn_off', 'data': {}}
+  FAIL  K1 button.press : allowed and pushed as sent  — (command: turn_on and turn_off only, §7.38) None
+  FAIL  K1 text.set_value {'value': '*.tmp; rm -rf /'}: allowed and pushed as sent  — (command: turn_on and turn_off only, §7.38) None
+  FAIL  K1 select.select_option {'option': 'away'}: allowed and pushed as sent  — (command: turn_on and turn_off only, §7.38) None
+  FAIL  K1 number.set_value {'value': 22}: allowed and pushed as sent  — (command: turn_on and turn_off only, §7.38) None
+  FAIL  K1 number.set_value {'value': 19.5}: allowed and pushed as sent  — (command: turn_on and turn_off only, §7.38) None
+
+K2 — a service not listed for the entity's type
+
+  FAIL  K2 number.turn_on: refused under COMMAND_SERVICES, not pushed  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 8, 'entity': 'number.demo_target', 'service': 'turn_on', 'data': {}}
+  ok    K2 switch.press: refused under COMMAND_SERVICES, not pushed  — (command: turn_on and turn_off only, §7.38) None
+  ok    K2 switch.unlock: refused under COMMAND_SERVICES, not pushed  — (command: turn_on and turn_off only, §7.38) None
+  ok    K2 select.set_value: refused under COMMAND_SERVICES, not pushed  — (command: turn_on and turn_off only, §7.38) None
+
+K3 — data that is not exactly the listed keys, of the listed kind
+
+  FAIL  K3 switch turn_on with any data: refused under COMMAND_DATA, not pushed  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 12, 'entity': 'switch.demo_power', 'service': 'turn_on', 'data': {'brightness': 1}}
+  FAIL  K3 text set_value redirected with entity_id: refused under COMMAND_DATA, not pushed  — (command: turn_on and turn_off only, §7.38) None
+  FAIL  K3 text set_value with no value: refused under COMMAND_DATA, not pushed  — (command: turn_on and turn_off only, §7.38) None
+  FAIL  K3 text set_value with a dict: refused under COMMAND_DATA, not pushed  — (command: turn_on and turn_off only, §7.38) None
+  FAIL  K3 text set_value with 256 characters: refused under COMMAND_DATA, not pushed  — (command: turn_on and turn_off only, §7.38) None
+  FAIL  K3 number set_value with a string: refused under COMMAND_DATA, not pushed  — (command: turn_on and turn_off only, §7.38) None
+  FAIL  K3 number set_value with a boolean: refused under COMMAND_DATA, not pushed  — (command: turn_on and turn_off only, §7.38) None
+  FAIL  K3 number set_value with NaN: refused under COMMAND_DATA, not pushed  — (command: turn_on and turn_off only, §7.38) None
+  FAIL  K3 number set_value with infinity: refused under COMMAND_DATA, not pushed  — (command: turn_on and turn_off only, §7.38) None
+  FAIL  K3 select select_option with a list: refused under COMMAND_DATA, not pushed  — (command: turn_on and turn_off only, §7.38) None
+
+K4 — a refused value is recorded by its kind, never itself
+
+  FAIL  K4 a 10,000-character value is refused under COMMAND_DATA  — (command: turn_on and turn_off only, §7.38)
+  FAIL  K4 and the durable record holds its type and length, not the value  — {'entity': 'text.demo_note', 'service': 'text.set_value'}
+  ok    every chain verifies
+
+6/24 checks passed

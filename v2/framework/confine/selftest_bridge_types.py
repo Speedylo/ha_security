@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import sys
 import tempfile
+from datetime import datetime
 from pathlib import Path
 
 from . import house_a
@@ -56,6 +57,14 @@ UPDATES = {"text.selftest_ignored": "*.bak", "select.selftest_mode": "away",
            "number.selftest_target": "19.0"}
 
 
+def _iso_time(value: object) -> bool:
+    try:
+        datetime.fromisoformat(str(value))
+    except ValueError:
+        return False
+    return True
+
+
 def main() -> int:
     if not house_a.running():
         print("(A) is not running: python3 -m confine.house_a up --fresh")
@@ -86,8 +95,15 @@ def main() -> int:
             wanted = DESCRIBED.get(entity, {})
             missing = {k: (v, (shown_attributes or {}).get(k)) for k, v in wanted.items()
                        if (shown_attributes or {}).get(k) != v}
+            # A button's state is the time it was last pressed in (A), which (A) keeps: `unknown`
+            # only until the first press. A second run against the same (A) finds that time (the
+            # step-2 run inside suites_all did, 2026-10-25).
+            if domain == "button":
+                held = shown == "unknown" or _iso_time(shown)
+            else:
+                held = shown == state
             check(f"T2 {domain}: (A) holds the state and the attributes that describe it",
-                  shown == state and not missing, f"{shown!r} {missing or ''}")
+                  held and not missing, f"{shown!r} {missing or ''}")
 
         print("\nT3 — a republish changes the state in (A)\n")
         for entity, state in UPDATES.items():

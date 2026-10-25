@@ -59,3 +59,27 @@ a new `COMMAND_DATA`, "only the data listed for that service, of its kind".
 | T7 | Every suite passes, with (A) up; `selftest_audit`'s F3 check still names `COMMAND_SERVICES` for `unlock` on a switch |
 
 Outcome appended below.
+
+---
+
+## Outcome (appended 2026-10-25, after the runs)
+
+Pi, fresh clones of `bridge-s2-pre` (`2bf559c`) and `bridge-s2` (`b7a2d69`), clean before and after,
+19:08–19:10; (A) `down` then `up --fresh`. Results:
+`experiments/real_platform/results/bridge_types_20261025/s2/`.
+
+| | Outcome |
+|---|---|
+| K5 | Held: before the change, 6/24 (laptop and Pi). It also showed two holes in the old rule: `turn_on` on a number, and a switch `turn_on` carrying arbitrary data, were both **allowed and pushed** |
+| K1–K4 | Held: 24/24 after (laptop and Pi). Every listed command pushed with exactly its data; four wrong services refused under `COMMAND_SERVICES`; ten malformed payloads (an `entity_id` redirect, a dict, 256 characters, a string number, a boolean, NaN, infinity, a list, no value, data on a switch) refused under `COMMAND_DATA`; a 10,000-character value recorded as `str, length 10000` |
+| T4′ | Held: from a user in (A), press, set_value (text), select_option and set_value (number) each reached the sandbox with exactly its data (the number as `22.0`); each call succeeded and (A) showed the result (the button its press time) |
+| T4″ | Held: `number.set_value` 99 failed in (A) (*"outside valid range 5.0 - 30.0"*) and no command decision was recorded |
+| T7 | **Missed as written: 30 of 31 suites.** `selftest_bridge_types` passed alone (23/23), then failed one check inside `suites_all`, which runs it again against the same (A): T2 expected the button to read `unknown`, and it read the time T4′ had pressed it. (A) was right — a button's state is its last press, kept — and the test's assumption of a fresh (A) was wrong. `selftest_audit` passed, with `COMMAND_SERVICES` for `unlock` on a switch |
+
+(A)'s log: no error from the bridge. The test is corrected (`T2` accepts `unknown` or a valid
+last-pressed time for a button) and is verified in step 3's runs, not by repeating this one.
+
+**Process, recorded.** The rule's code was written before the prediction and the failing suite were
+committed. Both were written, and the suite run against the old code (6/24), before any code; they
+were then committed alone (`2bf559c`) ahead of the code (`b7a2d69`). The sandbox-side ordering
+(`entity_id` last) is not separately tested, as predicted.

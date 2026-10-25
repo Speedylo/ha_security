@@ -1,0 +1,79 @@
+
+R1 — identity: a registry row, against a bare state
+
+  ok    the publish is allowed as the integration's own entity  — (ambient: §5.10.2)
+  ok    it has an entity-registry row in (A)  — entity_id=sensor.selftest_dew_point
+  ok    with the bridge as platform and a unique_id naming the integration  — selftest:sensor.selftest_dew_point
+  ok    and a config entry and a device
+  ok    and (A) holds its state, with its unit  — 9.96 {'unit_of_measurement': '°C', 'device_class': 'temperature', 'friendly_name': 'selftest Dew point'}
+  ok    the same state posted to /api/states exists in (A)
+  ok    but has no registry row at all — the spike's finding, re-measured
+
+ownership — against what (A) already has
+
+  ok    publishing an entity id (A) already has is refused without entities.write  — sensor.living_room_temperature belongs to the platform; nothing is declared at /permissions/entities/write
+  ok    and (A)'s own entity is untouched  — sensor.living_room_temperature=21.4
+
+R6 — service calls execute in (A), refusals never arrive
+
+  ok    a permitted call executes: (A)'s humidity is now 55  — 55.0
+  ok    a refused call never reaches (A): still 55
+  ok    and (A) executed exactly one call on the mediator's behalf  — [('input_number', 'set_value', {'entity_id': 'input_number.living_room_humidity', 'value': 55})]
+
+R4 — what (A) is asked to send, and what reaches the sandbox
+
+  ok    the subscription is granted
+  ok    (A) is asked for exactly the subscribed entities  — watched=['sensor.living_room_temperature']
+  ok    the subscribed entity's real change arrives  — {('sensor.living_room_temperature', '23.0'), ('sensor.living_room_temperature', '21.4')}
+  ok    the humidity change, unsubscribed, does not
+  ok    R5: a real change reaches the mediator's push in milliseconds  — median 0.74 ms, max 2.27 ms over 30 changes
+  ok    and each of the 30 changes reached the sandbox
+  ok    no delivery wrote a record; the log holds decisions only  — 5 decisions
+  ok    every chain verifies
+
+W1 step 2b — commands from (A) into a sandbox
+
+  ok    a published switch is a switch entity in (A), owned through the bridge  — switch.selftest_sleep_mode
+  ok    C2: the user's command reaches the owning sandbox  — {'push': 'entity.command', 'command': 1, 'entity': 'switch.selftest_sleep_mode', 'service': 'turn_on', 'data': {}}
+  ok    C2: and not the other sandbox
+  ok    C3: the command is a durable decision, written before the push arrived  — [('switch.selftest_sleep_mode', {'data': {}, 'entity': 'switch.selftest_sleep_mode', 'service': 'switch.turn_on'}, True)]
+  ok    C1 (in process): the user's call succeeds once the sandbox answers  — {'success': True, 'error': None, 'seconds': 0.3142272839995712}
+  ok    and the switch reads on in (A), published back the ordinary way
+
+  ok    C7: an answer to a command never sent is refused  — answer to command 424242, which was not sent to this channel
+  ok    C7: and recorded, and the channel survives it
+  ok    C5: a sandbox that never answers fails the user's call at the timeout  — 10.0 s: switch.selftest_sleep_mode: the confined integration did not answer within 10 s
+  ok    C5: while the mediator kept answering another sandbox  — 0.9 ms
+  ok    C4: a command for an integration with no sandbox fails at once  — 3 ms: switch.selftest_sleep_mode: selftest has no running sandbox
+  ok    C4: and the refusal is recorded too  — 1
+
+W1 review — a refusal by (A) is a refusal, not a crash
+
+  ok    a publish (A) refuses is answered to the sandbox as a refusal  — the platform refused: confine_bridge/publish: {'code': 'unsupported', 'message': 'the bridge cannot stand in for a light entity'}
+  ok    and the mediator still serves
+  ok    and the sandbox is not recorded as owning what was never published
+  ok    the log shows the grant and then the refusal, so the refusal is the last word  — [True, False]
+
+F7 — a cut-off reaches the household, and the way back
+
+  ok    the fifth refusal cuts the integration off, and (A) is not left untold  — []
+  ok    F7: a Repairs issue for it is in (A) within 1 s of the cut-off  — 302 ms
+  ok    an error the user can fix, worded from the bridge's own strings, naming it  — {'severity': 'error', 'translation_key': 'cut_off'}
+  ok    opening it shows one confirm step, as the Repairs panel would  — {'type': 'form', 'flow_id': '504cf01f16e615b7aaddbce3443a46ca', 'handler': 'confine_bridge', 'data_schema': [], 'errors': None, 'description_placeholders': {'name': 'flooder'}, 'last_step': None, 'preview': None, 'step_id': 'confirm'}
+  ok    submitting it reinstates the integration in the mediator  — create_entry
+  ok    the reinstatement is durable, and says it came from the user  — reinstated by a user, from the Repairs panel
+  ok    and the issue is gone from (A)
+  ok    the integration can be registered again
+  ok    every chain still verifies
+
+F45 — the mediator's token is an ordinary user's
+
+  ok    the mediator's user is not an admin  — confine-mediator, is_admin=False
+  ok    it may not list the house's users  — config/auth/list: {'code': 'unauthorized', 'message': 'Unauthorized'}
+  ok    it may not see integrations being added  — config_entries/flow/progress: {'code': 'unauthorized', 'message': 'Una
+  ok    it may not subscribe to every service call  — subscribe_events: {'code': 'unauthorized', 'message': 'Unauthorized'}
+  ok    it may not call an admin-only service (check_config)  — call_service: {'code': 'home_assistant_error', 'message': 'Unauthorize
+  ok    another ordinary user, not the designated one, is refused by the bridge  — user 03f903b7…: confine_bridge/commands: {'code': 'unauthorized', 'message': 'Unauthor
+  ok    and it may not designate itself as the mediator  — unauthorized
+
+52/52 checks passed

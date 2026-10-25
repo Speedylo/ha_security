@@ -1,0 +1,14 @@
+start 2026-10-25T19:08:05+01:00 pre commit 2bf559cdf0d210d785b4b7f28b1c190eaa6943bc tag bridge-s2-pre dirty=0
+commands_pre exit=1 seconds=9
+post commit b7a2d69a06225fb99e7991a2186cbd15f79726bc tag bridge-s2 dirty=0
+commands exit=0 seconds=8
+house_a_down exit=0 seconds=2
+house_a_up exit=0 seconds=4
+bridge_types exit=0 seconds=5
+suites exit=0 seconds=129
+suites failed=1 of 31
+bridge errors in (A) log: 0
+bridge-s2-pre dirty after=0
+bridge-s2 dirty after=0
+end 2026-10-25T19:10:42+01:00
+ALLDONE
