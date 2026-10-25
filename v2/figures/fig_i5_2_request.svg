@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1280" viewBox="0 0 1400 1280">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a1a1a"/></marker></defs>
+<rect x="30" y="40" width="650" height="1220" rx="5" fill="#f3f3f3" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="9 5"/>
+<text x="42" y="56" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">INSIDE THE SANDBOX</text>
+<rect x="45" y="70" width="190" height="44" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="140" y="92" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Integration</text>
+<path d="M 140,114 L 140,1240" fill="none" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="6 4"/>
+<rect x="255" y="70" width="190" height="44" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="350" y="92" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Minimal copy (B)</text>
+<path d="M 350,114 L 350,1240" fill="none" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="6 4"/>
+<rect x="465" y="70" width="190" height="44" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="560" y="92" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Bridge (sandbox side)</text>
+<path d="M 560,114 L 560,1240" fill="none" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="6 4"/>
+<rect x="725" y="70" width="190" height="44" rx="5" fill="#e2e2e2" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="820" y="92" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Mediator</text>
+<path d="M 820,114 L 820,1240" fill="none" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="6 4"/>
+<rect x="965" y="70" width="190" height="44" rx="5" fill="#e2e2e2" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="1060" y="92" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Audit log</text>
+<path d="M 1060,114 L 1060,1240" fill="none" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="6 4"/>
+<rect x="1185" y="70" width="190" height="44" rx="5" fill="#e2e2e2" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="1280" y="92" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Home Assistant (A)</text>
+<path d="M 1280,114 L 1280,1240" fill="none" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="6 4"/>
+<path d="M 30,140 L 1370,140" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+<text x="40" y="158" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">THE INTEGRATION SWITCHES ON A LIGHT</text>
+<path d="M 140,220 L 350,220" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="148" y="183" width="195" height="34" fill="#ffffff"/>
+<text x="245" y="192" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">switch on the light, exactly</text>
+<text x="245" y="208" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">as it would unconfined</text>
+<path d="M 350,275 L 560,275" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="394" y="238" width="122" height="34" fill="#ffffff"/>
+<text x="455" y="248" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">not handled here:</text>
+<text x="455" y="262" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">pass it on</text>
+<path d="M 560,335 L 820,335" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="612" y="298" width="155" height="34" fill="#ffffff"/>
+<text x="690" y="308" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the request, sent down</text>
+<text x="690" y="322" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">its private channel</text>
+<rect x="695" y="367.0" width="250" height="46" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="820" y="382" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">1  identify: by the channel it came</text>
+<text x="820" y="398" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">on, never by what it claims</text>
+<rect x="695" y="422.0" width="250" height="46" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="820" y="445" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">2  look up its approved permissions</text>
+<rect x="695" y="477.0" width="250" height="46" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="820" y="492" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">3  decide: allow or refuse, naming</text>
+<text x="820" y="508" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the permission that decided</text>
+<path d="M 820,580 L 1060,580" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="862" y="543" width="155" height="34" fill="#ffffff"/>
+<text x="940" y="552" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">4  record the decision</text>
+<text x="940" y="568" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">on disk</text>
+<path d="M 820,640 L 1280,640" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="949" y="603" width="201" height="34" fill="#ffffff"/>
+<text x="1050" y="612" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">5  carry out the action, with</text>
+<text x="1050" y="628" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the mediator's credential</text>
+<path d="M 1280,685 L 820,685" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+<rect x="1025" y="663" width="50" height="19" fill="#ffffff"/>
+<text x="1050" y="672" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">result</text>
+<path d="M 820,735 L 560,735" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+<rect x="560" y="713" width="261" height="19" fill="#ffffff"/>
+<text x="690" y="722" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">answer, naming the deciding permission</text>
+<path d="M 560,780 L 140,780" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+<rect x="196" y="758" width="307" height="19" fill="#ffffff"/>
+<text x="350" y="768" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the call succeeds, or fails if it was refused</text>
+<rect x="1089" y="438" width="162" height="64" fill="#ffffff"/>
+<text x="1170" y="448" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">a refused request skips</text>
+<text x="1170" y="462" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">step 5: it is recorded</text>
+<text x="1170" y="478" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">and answered, and</text>
+<text x="1170" y="492" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">nothing is done</text>
+<path d="M 30,810 L 1370,810" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+<text x="40" y="828" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">A DEVICE THE INTEGRATION FOLLOWS CHANGES IN (A)</text>
+<path d="M 1280,870 L 820,870" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="972" y="848" width="155" height="19" fill="#ffffff"/>
+<text x="1050" y="858" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the device's new state</text>
+<path d="M 820,930 L 560,930" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="563" y="893" width="254" height="34" fill="#ffffff"/>
+<text x="690" y="902" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">sent to each sandbox that follows it;</text>
+<text x="690" y="918" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">not recorded every time</text>
+<path d="M 560,990 L 350,990" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="371" y="968" width="168" height="19" fill="#ffffff"/>
+<text x="455" y="978" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">update the device in (B)</text>
+<rect x="1099" y="936" width="142" height="49" fill="#ffffff"/>
+<text x="1170" y="945" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">recorded once, when</text>
+<text x="1170" y="960" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">following the device</text>
+<text x="1170" y="975" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">was allowed</text>
+<path d="M 30,1030 L 1370,1030" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+<text x="40" y="1048" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">THE HOUSEHOLD USES A DEVICE THE INTEGRATION PROVIDES</text>
+<path d="M 1280,1080 L 820,1080" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="966" y="1043" width="168" height="34" fill="#ffffff"/>
+<text x="1050" y="1052" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">command, from the bridge</text>
+<text x="1050" y="1068" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">in (A)</text>
+<path d="M 820,1130 L 1060,1130" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="905" y="1108" width="69" height="19" fill="#ffffff"/>
+<text x="940" y="1118" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">record it</text>
+<path d="M 820,1180 L 560,1180" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="609" y="1158" width="162" height="19" fill="#ffffff"/>
+<text x="690" y="1168" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">pass it to that sandbox</text>
+<path d="M 560,1225 L 140,1225" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="259" y="1203" width="182" height="19" fill="#ffffff"/>
+<text x="350" y="1212" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the integration handles it</text>
+</svg>

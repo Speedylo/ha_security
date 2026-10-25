@@ -8,7 +8,7 @@ The project combines an engineering method, which produces the confinement frame
 
 The framework that this method produced has three kinds of component, shown in Figure 5.1. The household's own Home Assistant installation, referred to as (A), runs as it always has, with one addition: a bridge integration through which confined integrations publish their devices and receive the household's commands. Each community integration runs in its own sandbox, inside a minimal private copy of the platform referred to as (B). Between them sits the mediator, the only component that holds a credential to the house. It connects to (A) as an ordinary, non-administrator user, and no sandbox holds any credential at all.
 
-![Figure 5.1](../figures/fig_9_1_system.png)
+![Figure 5.1](../figures/fig_i5_1_system.png)
 
 **Figure 5.1**
 *The confinement framework*
@@ -21,7 +21,7 @@ The sandbox is then built so that what the integration must not reach is absent 
 
 When the integration acts on the home, for example by switching on a light, it makes the same call it would make unconfined, and the minimal platform passes it down the channel to the mediator (Figure 5.2). The mediator then takes five steps in a fixed order. It identifies the integration from the channel the request arrived on, never from what the request claims; looks up the permissions bound to that identity; decides whether the request is permitted, naming the clause that decided; writes the decision to the audit log on disk; and only then performs the call on (A) with its own credential. A denied request is recorded and answered, and nothing is performed. Because the record is written before the act, even an action that crashes the mediator remains attributable.
 
-![Figure 5.2](../figures/fig_9_3_request.png)
+![Figure 5.2](../figures/fig_i5_2_request.png)
 
 **Figure 5.2**
 *The life of a request*
