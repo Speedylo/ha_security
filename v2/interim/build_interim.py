@@ -46,8 +46,7 @@ STATEMENT = (f"I, {STUDENT}, have applied ethics to the design process and in th
 ACKNOWLEDGEMENTS = (f"I would like to thank my supervisor, {SUPERVISOR}, for the guidance and "
                     "feedback given throughout this project, and the School of Science and "
                     "Engineering for the opportunity to carry it out.")
-# Owed by the author; highlighted in the document so that it cannot be missed.
-TODO_REPO = "[Repository URL: to be provided once the repository has been cleaned up]"
+REPOSITORY = "https://github.com/Speedylo/ha_security"
 
 SECTIONS = ["01_introduction.md", "02_problem_statement.md", "03_objectives.md",
             "04_literature_review.md", "05_methodology.md", "06_ai_use.md", "07_results.md",
@@ -361,7 +360,8 @@ def appendices(doc, anchor, appendix_b: str) -> None:
     par = body_par(anchor)
     add_runs(par, "The framework, the experiments, their predictions and results, and the AI-use "
                   "log are kept in the project's repository: ")
-    run = par.add_run(TODO_REPO); font(run); run.font.highlight_color = WD_COLOR_INDEX.YELLOW
+    run = par.add_run(REPOSITORY); font(run)
+    run = par.add_run("."); font(run)
     # Appendix B's eight columns need a landscape page: the body's section ends here, and the
     # document's last section (the anchor) is turned on its side.
     brk = body_par(anchor, after=0, line=1.0)
