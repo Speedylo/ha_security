@@ -1,4 +1,20 @@
-# The bridge stands in for three entity types only (found 2026-10-25) — TO REMEDIATE
+# The bridge stands in for three entity types only (found 2026-10-25) — REMEDIATED 2026-10-25
+
+**Status (2026-10-25, end of day): remediated in five steps, each with its own prediction note.** The bridge now
+stands in for 11 types: sensor, binary_sensor, switch, button, text, select, number, climate,
+alarm_control_panel, calendar, weather. Notes: `bridge_types_step1..5_prediction_20261025.md`.
+- Step 1 display of button/text/select/number; step 2 the mediator's command rule per type (exact data,
+  injection-checked, refused data logged by kind); step 3 climate and alarm panel (codes never logged);
+  step 4 questions with answers (calendar events, weather forecasts; answers shape-checked, logged by shape);
+  step 5 the fifteen end to end against the real (A): E2 37/38, the miss `scheduler`'s `triggered` switch.
+- Findings on the way: F66 (unknown numeric state), F67 (timestamp/date sensors), F69 (house_a zombie,
+  harness), all fixed; F68 (designate_mediator check not awaited) open.
+- Still not bridged (future work): camera, image, media_player, vacuum, notify, remote, fan, cover, lock,
+  light, water_heater, humidifier, siren, valve, update, event, time, date, datetime, device_tracker, scene.
+  Coverage of the 37 head integrations by platform file name (rough): **11 of 37** provide only bridged
+  types (5 of 37 before), and 156 of their 257 type uses are bridged (75 before). Lights, covers, fans and
+  locks would add most next (20 of 37 with them); the media tier is needed for all 37.
+
 
 **Status: open, to be remediated (Younes, 2026-10-25).** For now (option 1) the limit is stated in
 the reports and the extra end-to-end runs record, for each integration, which of its entity types
