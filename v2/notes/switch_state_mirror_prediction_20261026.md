@@ -51,3 +51,21 @@ Then, from the change's tag with (A) fresh:
 | X7 | Every suite passes, 34 of 34 |
 
 Outcome appended below.
+
+---
+
+## Outcome (appended 2026-10-26)
+
+Pi, from fresh clones of `switch-mirror-pre` and `switch-mirror`, (A) fresh before each step
+(`experiments/real_platform/results/switch_mirror_20261026/`). **Every prediction held.**
+
+- X4: at `-pre`, 59/63, the four failures exactly those predicted, (A) showing `off` each time.
+- X1–X3: after the change, `selftest_bridge_types --restart` 63/63; the switch shows `triggered`,
+  `on`, `off`, `completed`, `unknown`, `triggered`, and `triggered` again after (A) restarts.
+- X5: `bridge_step5_verdicts` 12/12 on the function set against (A), so E2 is 38 of 38.
+- X6: `retest_e2e_verdicts` 43 of 45, the same two P4 rows. Confined, the switch is `triggered` at
+  the end, as before. Unconfined, the row's detail differs from step 5's run D: the switch's history
+  is the same (`unknown`, `on`, `triggered`), but this time it is absent from the end-of-run snapshot,
+  where run D had it `triggered`. That arm does not use the bridge; the likely reading, not
+  established, is that `scheduler` removed the finished one-off schedule within the settle window.
+- X7: every suite passed, 34 of 34.
