@@ -27,16 +27,21 @@ in (A), described well enough for Home Assistant to draw its control. Operating 
     V1   a timestamp sensor published with a space shows the same instant in (A) (F67)
     V2   one published with a `T` shows it; then `unknown`
     V3   a date sensor shows its date
+    X1   a switch published `triggered` (as `scheduler`'s is, after a slot fires) shows it in (A)
+    X2   then `on`, `off`, `completed`, `unknown`, `triggered`, each shown as such
+    X3   with `--restart`: after (A) restarts, the switch shows its last published state
 
 Requires (A) running: `python3 -m confine.house_a up --fresh` on the Pi.
 
-Run:  python3 -m confine.selftest_bridge_types
+Run:  python3 -m confine.selftest_bridge_types [--restart]
 """
 
 from __future__ import annotations
 
+import argparse
 import sys
 import tempfile
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -45,7 +50,7 @@ from .audit import AuditLog
 from .house_a import User
 from .mediator import Mediator
 from .platform import ActingPolicy
-from .real_platform import RealPlatform
+from .real_platform import PlatformStarting, RealPlatform
 from .selftest_push import Sandbox
 from .selftest_real_platform import check, manifest, registry, results, serve_until
 
@@ -81,6 +86,10 @@ def _iso_time(value: object) -> bool:
 
 
 def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--restart", action="store_true",
+                    help="also restart (A) and check the switch's state survives it (X3)")
+    args = ap.parse_args()
     if not house_a.running():
         print("(A) is not running: python3 -m confine.house_a up --fresh")
         return 2
@@ -412,6 +421,20 @@ def main() -> int:
         shown = platform.read(landed[MEASURED])[0] if landed[MEASURED] else None
         check("V2 republished 'unknown', (A) shows unknown", shown == "unknown", f"{shown!r}")
 
+        print("\nX — a switch shows the state its integration published\n")
+        SCHEDULE = "switch.selftest_schedule"
+        answer = sandbox.ask({"op": "entity.publish", "entity": SCHEDULE, "state": "triggered"})
+        landed[SCHEDULE] = platform.published.get(("selftest", SCHEDULE)) or ""
+        row = registry(platform).get(landed[SCHEDULE], {})
+        shown = platform.read(landed[SCHEDULE])[0] if landed[SCHEDULE] else None
+        check("X1 a switch published 'triggered' is the bridge's switch, and (A) shows triggered",
+              answer.get("ok") is True and row.get("platform") == "confine_bridge"
+              and landed[SCHEDULE].startswith("switch.") and shown == "triggered", f"{shown!r}")
+        for state in ("on", "off", "completed", "unknown", "triggered"):
+            sandbox.ask({"op": "entity.publish", "entity": SCHEDULE, "state": state})
+            shown = platform.read(landed[SCHEDULE])[0] if landed[SCHEDULE] else None
+            check(f"X2 republished {state!r}, (A) shows it", shown == state, f"{shown!r}")
+
         print("\nT5 — a type still unsupported is refused\n")
         light = sandbox.ask({"op": "entity.publish", "entity": "light.selftest_probe",
                              "state": "on"})
@@ -419,6 +442,26 @@ def main() -> int:
               light.get("reason", ""))
         check("every chain verifies", log.verify() == [])
         platform.close()
+
+    if args.restart:
+        print("\nX3 — (A) restarts, and the switch keeps its published state\n")
+        time.sleep(6)  # past the bridge's delayed save of its roster (5 s)
+        house_a.stop(house_a.DEFAULT_CONFIG)
+        house_a.start(house_a.DEFAULT_CONFIG)
+        time.sleep(5)
+        # (A) answers before it has finished starting, and RealPlatform waits for it (F35 R7).
+        for _ in range(60):
+            try:
+                after = RealPlatform()
+                break
+            except PlatformStarting:
+                time.sleep(2)
+        else:
+            after = RealPlatform()
+        shown = after.read(landed["switch.selftest_schedule"])[0]
+        check("X3 after a restart (A) shows the switch triggered", shown == "triggered",
+              f"{shown!r}")
+        after.close()
 
     print(f"\n{sum(results)}/{len(results)} checks passed")
     return 0 if all(results) else 1
