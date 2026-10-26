@@ -451,6 +451,21 @@ def main() -> int:
         house_a.ensure_mediator_user(house_a.TOKEN_FILE.read_text().strip())
     check("and it may not designate itself as the mediator", not seized.get("success"),
           (seized.get("error") or {}).get("code", "it was accepted"))
+    # F68: an admin naming an id with no user behind it is told so. Until 2026-10-26 the bridge
+    # never awaited the lookup, accepted the id, and so cut the real mediator off.
+    ghost = house_a._ws_call(house_a.TOKEN_FILE.read_text().strip(),
+                             {"type": "confine_bridge/designate_mediator", "user_id": "0" * 32})
+    if ghost.get("success"):
+        house_a.ensure_mediator_user(house_a.TOKEN_FILE.read_text().strip())
+    code = (ghost.get("error") or {}).get("code", "it was accepted")
+    check("an admin designating a user who does not exist is refused", not ghost.get("success"), code)
+    check("and told there is no such user", code == "no_such_user", code)
+    try:
+        RealPlatform().close()
+        kept, why = True, "it subscribed"
+    except PlatformError as err:
+        kept, why = False, str(err)[:70]
+    check("while the real mediator is still the designated one", kept, why)
 
     if args.restart:
         print("\nR2 — (A) restarts, and the bridged entity is still there\n")
