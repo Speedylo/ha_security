@@ -156,15 +156,15 @@ class BridgeData:
     vol.Required("type"): "confine_bridge/designate_mediator",
     vol.Required("user_id"): cv.string,
 })
-@callback
-def ws_designate_mediator(hass: HomeAssistant, connection: websocket_api.ActiveConnection,
-                          msg: dict[str, Any]) -> None:
+@websocket_api.async_response
+async def ws_designate_mediator(hass: HomeAssistant, connection: websocket_api.ActiveConnection,
+                                msg: dict[str, Any]) -> None:
     """An admin names the user the mediator runs as (F45). Only an admin can, by design."""
     entries = hass.config_entries.async_entries(DOMAIN)
     if not entries:
         connection.send_error(msg["id"], "not_set_up", "the bridge has no config entry")
         return
-    if hass.auth.async_get_user(msg["user_id"]) is None:
+    if await hass.auth.async_get_user(msg["user_id"]) is None:
         connection.send_error(msg["id"], "no_such_user", "no user has that id")
         return
     hass.config_entries.async_update_entry(
