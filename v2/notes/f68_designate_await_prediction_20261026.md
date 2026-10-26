@@ -35,3 +35,14 @@ New checks in `selftest_real_platform`'s F45 block (Pi, (A) fresh):
 Then every suite on the Pi from the fix's tag (33 expected to pass), with (A) fresh, and (A)'s log
 checked for the `never awaited` warning: present at `-pre`, absent after the fix. Outcome appended
 below.
+
+---
+
+## Outcome (appended 2026-10-26)
+
+Pi, from fresh clones of `f68-pre` and `f68-fix`, (A) fresh before each
+(`experiments/real_platform/results/f68_20261026/`). **Every prediction held.** At `f68-pre`,
+`selftest_real_platform` 53/55, the two failures G1 and G2 ("it was accepted"), and (A)'s log has the
+`never awaited` warning once. After the fix, 55/55: the refusal is `no_such_user` and the mediator
+still subscribes (G3); the warning is absent. Every suite passed, 34 of 34 (one more than bridge step
+5's 33: `selftest_house_a`, added with F69).

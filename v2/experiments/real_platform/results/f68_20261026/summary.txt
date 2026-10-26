@@ -1,0 +1,18 @@
+start 2026-10-26T21:57:35+01:00
+f68-pre commit 43ea8c59ab98241c3c3a672bbc307b48c1276a0e dirty=0
+house_a_down_pre exit=0 seconds=0 2026-10-26T21:57:35+01:00
+house_a_up_pre exit=0 seconds=8 2026-10-26T21:57:43+01:00
+real_platform_pre exit=1 seconds=18 2026-10-26T21:58:01+01:00
+pre never-awaited lines in (A)'s log: 1
+f68-fix commit 9581179634eade03f308747263329c8d32534b12 dirty=0 lan 10.126.85.243 100.86.243.57 172.17.0.1 fd7a:115c:a1e0::ea32:f33a 
+house_a_down_fix exit=0 seconds=2 2026-10-26T21:58:03+01:00
+house_a_up_fix exit=0 seconds=4 2026-10-26T21:58:07+01:00
+real_platform_fix exit=0 seconds=18 2026-10-26T21:58:25+01:00
+fix never-awaited lines in (A)'s log: 0
+suites exit=0 seconds=156 2026-10-26T22:01:01+01:00
+suites never-awaited lines in (A)'s log: 0
+suites failed=0 of 34
+f68-pre dirty after=0
+f68-fix dirty after=0
+end 2026-10-26T22:01:01+01:00
+ALLDONE

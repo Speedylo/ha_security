@@ -1,0 +1,6 @@
+  ok    Z1 a running child is alive  — 2911
+  ok    Z1 an exited child not yet reaped is a zombie (the case)  — Z
+  ok    Z1 and a zombie is not alive  — 2912
+  ok    Z1 a pid that does not exist is not alive
+
+4/4 checks passed
