@@ -23,8 +23,10 @@ def esc(s):
 class Canvas:
     """An SVG under construction. Coordinates are pixels from the top left."""
 
-    def __init__(self, width, height):
+    def __init__(self, width, height, text_scale=1.0):
+        """`text_scale` enlarges every text size; the interim figures use it, the final's do not."""
         self.width, self.height = width, height
+        self.text_scale = text_scale
         self.parts = [
             f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
             f'viewBox="0 0 {width} {height}">',
@@ -38,12 +40,13 @@ class Canvas:
              italic=False):
         """One or more lines, split on newlines, centred vertically on y."""
         lines = label.split("\n")
+        size = size * self.text_scale
         step = size + 4
         start = y - (len(lines) - 1) * step / 2
         style = ' font-style="italic"' if italic else ""
         for i, line in enumerate(lines):
             self.parts.append(
-                f'<text x="{x:.0f}" y="{start + i * step:.0f}" font-size="{size}" '
+                f'<text x="{x:.0f}" y="{start + i * step:.0f}" font-size="{size:g}" '
                 f'font-family="{FONT}" font-weight="{weight}" fill="{fill}"{style} '
                 f'text-anchor="{anchor}" dominant-baseline="middle">{esc(line)}</text>')
 
@@ -55,7 +58,8 @@ class Canvas:
             f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="5" fill="{FILL[fill]}" '
             f'stroke="{INK}" stroke-width="{stroke}"{dash}/>')
         if title:
-            self.text(x + 12, y + 16, title, size=title_size, weight="bold", anchor="start")
+            top = y + 16 + 0.85 * title_size * (self.text_scale - 1)
+            self.text(x + 12, top, title, size=title_size, weight="bold", anchor="start")
         if label:
             self.text(x + w / 2, y + h / 2 + (8 if title else 0), label, size=size,
                       weight=weight)
@@ -71,8 +75,9 @@ class Canvas:
     def label(self, x, y, text, size=12, anchor="middle"):
         """Text on a white ground, so that it stays legible where it crosses a line."""
         lines = text.split("\n")
-        w = 0.6 * size * max(len(s) for s in lines) + 10
-        h = (size + 4) * len(lines) + 4
+        shown = size * self.text_scale
+        w = 0.6 * shown * max(len(s) for s in lines) + 10
+        h = (shown + 4) * len(lines) + 4
         left = {"middle": x - w / 2, "start": x - 5, "end": x - w + 5}[anchor]
         self.parts.append(f'<rect x="{left:.0f}" y="{y - h / 2:.0f}" width="{w:.0f}" '
                           f'height="{h:.0f}" fill="#ffffff"/>')

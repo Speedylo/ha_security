@@ -21,7 +21,7 @@ from svg9 import Canvas
 
 OUT = Path(__file__).parent / "fig_i5_1_system.svg"
 
-c = Canvas(1500, 1010)
+c = Canvas(1500, 1010, text_scale=1.3)
 
 # --- (A), the house's own instance -------------------------------------------------------
 c.box(40, 130, 380, 500, fill="light", dashed=True,

@@ -2,98 +2,98 @@
 <rect width="100%" height="100%" fill="#ffffff"/>
 <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a1a1a"/></marker></defs>
 <rect x="40" y="130" width="380" height="500" rx="5" fill="#f3f3f3" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="9 5"/>
-<text x="52" y="146" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">THE HOUSEHOLD'S HOME ASSISTANT (A)</text>
+<text x="52" y="149" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">THE HOUSEHOLD'S HOME ASSISTANT (A)</text>
 <rect x="70" y="200" width="320" height="120" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
-<text x="230" y="234" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Bridge integration</text>
-<text x="230" y="252" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">shows confined devices as</text>
-<text x="230" y="268" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">ordinary devices; explains</text>
-<text x="230" y="286" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">any stop in Repairs</text>
+<text x="230" y="229" font-size="16.9" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Bridge integration</text>
+<text x="230" y="250" font-size="16.9" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">shows confined devices as</text>
+<text x="230" y="270" font-size="16.9" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">ordinary devices; explains</text>
+<text x="230" y="291" font-size="16.9" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">any stop in Repairs</text>
 <rect x="70" y="400" width="320" height="120" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
-<text x="230" y="443" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Home Assistant</text>
-<text x="230" y="460" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">devices · actions</text>
-<text x="230" y="477" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">users · automations</text>
+<text x="230" y="439" font-size="16.9" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Home Assistant</text>
+<text x="230" y="460" font-size="16.9" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">devices · actions</text>
+<text x="230" y="481" font-size="16.9" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">users · automations</text>
 <path d="M 230,320 L 230,400" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
-<rect x="185" y="342" width="89" height="36" fill="#ffffff"/>
-<text x="230" y="352" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">devices and</text>
-<text x="230" y="368" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">commands</text>
+<rect x="174" y="338" width="113" height="43" fill="#ffffff"/>
+<text x="230" y="350" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">devices and</text>
+<text x="230" y="370" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">commands</text>
 <rect x="90" y="720" width="280" height="64" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
-<text x="230" y="744" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Household</text>
-<text x="230" y="760" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">web interface and app</text>
+<text x="230" y="742" font-size="16.9" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Household</text>
+<text x="230" y="762" font-size="16.9" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">web interface and app</text>
 <path d="M 230,720 L 230,520" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
 <rect x="560" y="130" width="440" height="640" rx="5" fill="#f3f3f3" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="9 5"/>
-<text x="572" y="146" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">FRAMEWORK — RUNS AS AN ORDINARY USER</text>
+<text x="572" y="149" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">FRAMEWORK — RUNS AS AN ORDINARY USER</text>
 <rect x="590" y="170" width="380" height="90" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
-<text x="780" y="199" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Supervisor</text>
-<text x="780" y="215" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">builds each sandbox, stops it if needed,</text>
-<text x="780" y="231" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">starts it again when the household asks</text>
+<text x="780" y="195" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Supervisor</text>
+<text x="780" y="215" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">builds each sandbox, stops it if needed,</text>
+<text x="780" y="235" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">starts it again when the household asks</text>
 <rect x="590" y="290" width="380" height="450" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
-<text x="602" y="306" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">Mediator</text>
+<text x="602" y="309" font-size="16.9" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">Mediator</text>
 <rect x="610" y="330" width="340" height="80" rx="5" fill="#c8c8c8" stroke="#1a1a1a" stroke-width="1.5"/>
-<text x="780" y="354" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">The only credential to the house,</text>
-<text x="780" y="370" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">as an ordinary (non-administrator)</text>
-<text x="780" y="386" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Home Assistant user</text>
+<text x="780" y="350" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">The only credential to the house,</text>
+<text x="780" y="370" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">as an ordinary (non-administrator)</text>
+<text x="780" y="390" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Home Assistant user</text>
 <rect x="610" y="430" width="340" height="100" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
-<text x="780" y="464" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">For every request: identify the sender,</text>
-<text x="780" y="480" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">check its approved permissions,</text>
-<text x="780" y="496" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">record, and only then act</text>
+<text x="780" y="460" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">For every request: identify the sender,</text>
+<text x="780" y="480" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">check its approved permissions,</text>
+<text x="780" y="500" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">record, and only then act</text>
 <rect x="610" y="550" width="340" height="80" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
-<text x="780" y="574" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Network gatekeeper</text>
-<text x="780" y="590" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">opens each permitted connection</text>
-<text x="780" y="606" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">for the integration</text>
+<text x="780" y="570" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Network gatekeeper</text>
+<text x="780" y="590" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">opens each permitted connection</text>
+<text x="780" y="610" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">for the integration</text>
 <rect x="610" y="650" width="340" height="70" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
-<text x="780" y="677" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Passes device updates and</text>
-<text x="780" y="693" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">household commands into a sandbox</text>
+<text x="780" y="675" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Passes device updates and</text>
+<text x="780" y="695" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">household commands into a sandbox</text>
 <path d="M 590,310 L 390,310" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
-<rect x="426" y="263" width="129" height="34" fill="#ffffff"/>
-<text x="490" y="272" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">devices;</text>
-<text x="490" y="288" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">household commands</text>
+<rect x="408" y="260" width="164" height="41" fill="#ffffff"/>
+<text x="490" y="271" font-size="14.3" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">devices;</text>
+<text x="490" y="289" font-size="14.3" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">household commands</text>
 <path d="M 590,460 L 390,460" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="442" y="413" width="96" height="34" fill="#ffffff"/>
-<text x="490" y="422" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">actions,</text>
-<text x="490" y="438" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">device states</text>
+<rect x="429" y="410" width="122" height="41" fill="#ffffff"/>
+<text x="490" y="421" font-size="14.3" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">actions,</text>
+<text x="490" y="439" font-size="14.3" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">device states</text>
 <rect x="600" y="860" width="300" height="90" rx="5" fill="#e2e2e2" stroke="#1a1a1a" stroke-width="1.5"/>
-<text x="750" y="889" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Audit log</text>
-<text x="750" y="905" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">tamper-evident;</text>
-<text x="750" y="921" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">outside every sandbox</text>
+<text x="750" y="885" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Audit log</text>
+<text x="750" y="905" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">tamper-evident;</text>
+<text x="750" y="925" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">outside every sandbox</text>
 <path d="M 750,740 L 750,860" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="699" y="795" width="102" height="34" fill="#ffffff"/>
-<text x="750" y="804" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">written before</text>
-<text x="750" y="820" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the action</text>
+<rect x="685" y="792" width="130" height="41" fill="#ffffff"/>
+<text x="750" y="803" font-size="14.3" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">written before</text>
+<text x="750" y="821" font-size="14.3" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the action</text>
 <rect x="1110" y="150" width="360" height="190" rx="5" fill="#f3f3f3" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="9 5"/>
-<text x="1122" y="166" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">SANDBOX — electricity prices</text>
+<text x="1122" y="169" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">SANDBOX — electricity prices</text>
 <rect x="1130" y="185" width="320" height="50" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
-<text x="1290" y="210" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Unmodified integration</text>
+<text x="1290" y="210" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Unmodified integration</text>
 <rect x="1130" y="245" width="320" height="80" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
-<text x="1290" y="269" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Minimal Home Assistant (B)</text>
-<text x="1290" y="285" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">holding only the devices</text>
-<text x="1290" y="301" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the integration declared</text>
+<text x="1290" y="265" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Minimal Home Assistant (B)</text>
+<text x="1290" y="285" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">holding only the devices</text>
+<text x="1290" y="305" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the integration declared</text>
 <rect x="1110" y="370" width="360" height="190" rx="5" fill="#f3f3f3" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="9 5"/>
-<text x="1122" y="386" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">SANDBOX — adaptive lighting</text>
+<text x="1122" y="389" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">SANDBOX — adaptive lighting</text>
 <rect x="1130" y="405" width="320" height="50" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
-<text x="1290" y="430" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Unmodified integration</text>
+<text x="1290" y="430" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Unmodified integration</text>
 <rect x="1130" y="465" width="320" height="80" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
-<text x="1290" y="489" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Minimal Home Assistant (B)</text>
-<text x="1290" y="505" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">holding only the devices</text>
-<text x="1290" y="521" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the integration declared</text>
+<text x="1290" y="485" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Minimal Home Assistant (B)</text>
+<text x="1290" y="505" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">holding only the devices</text>
+<text x="1290" y="525" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the integration declared</text>
 <rect x="1110" y="590" width="360" height="110" rx="5" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="9 5"/>
-<text x="1290" y="629" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">… one sandbox for each</text>
-<text x="1290" y="645" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">community integration;</text>
-<text x="1290" y="661" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">none holds a credential</text>
+<text x="1290" y="625" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">… one sandbox for each</text>
+<text x="1290" y="645" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">community integration;</text>
+<text x="1290" y="665" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">none holds a credential</text>
 <path d="M 970,370 L 1110,245" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
 <path d="M 970,470 L 1110,465" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
 <path d="M 970,520 L 1110,645" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
-<rect x="999" y="276" width="83" height="49" fill="#ffffff"/>
-<text x="1040" y="285" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">one private</text>
-<text x="1040" y="300" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">channel</text>
-<text x="1040" y="315" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">each</text>
+<rect x="988" y="271" width="104" height="59" fill="#ffffff"/>
+<text x="1040" y="282" font-size="14.3" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">one private</text>
+<text x="1040" y="300" font-size="14.3" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">channel</text>
+<text x="1040" y="318" font-size="14.3" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">each</text>
 <rect x="1110" y="860" width="360" height="90" rx="5" fill="#e2e2e2" stroke="#1a1a1a" stroke-width="1.5"/>
-<text x="1290" y="889" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Internet and home network</text>
-<text x="1290" y="905" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">reached only through the gatekeeper,</text>
-<text x="1290" y="921" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">never from a sandbox directly</text>
+<text x="1290" y="885" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Internet and home network</text>
+<text x="1290" y="905" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">reached only through the gatekeeper,</text>
+<text x="1290" y="925" font-size="15.6" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">never from a sandbox directly</text>
 <path d="M 950,615 L 1060,615 L 1060,905 L 1110,905" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="1019" y="773" width="83" height="34" fill="#ffffff"/>
-<text x="1060" y="782" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">permitted</text>
-<text x="1060" y="798" font-size="11" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">connections</text>
-<text x="750" y="32" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" font-style="italic" text-anchor="middle" dominant-baseline="middle">Only the mediator holds a credential to the house. A sandbox's only way out is its channel,</text>
-<text x="750" y="48" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" font-style="italic" text-anchor="middle" dominant-baseline="middle">so nothing inside it can reach the house, the log or the network except through the mediator.</text>
+<rect x="1008" y="770" width="104" height="41" fill="#ffffff"/>
+<text x="1060" y="781" font-size="14.3" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">permitted</text>
+<text x="1060" y="799" font-size="14.3" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">connections</text>
+<text x="750" y="30" font-size="16.9" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" font-style="italic" text-anchor="middle" dominant-baseline="middle">Only the mediator holds a credential to the house. A sandbox's only way out is its channel,</text>
+<text x="750" y="50" font-size="16.9" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" font-style="italic" text-anchor="middle" dominant-baseline="middle">so nothing inside it can reach the house, the log or the network except through the mediator.</text>
 </svg>

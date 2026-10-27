@@ -20,26 +20,26 @@ LANES = {  # name: (x, heading)
 SANDBOX = ("int", "b", "half")
 TOP, BOTTOM = 110, 1240
 
-c = Canvas(1400, 1280)
-c.box(30, 40, 650, BOTTOM - 20, fill="light", dashed=True, title="INSIDE THE SANDBOX")
+c = Canvas(1400, 1280, text_scale=1.3)
+c.box(30, 40, 640, BOTTOM - 20, fill="light", dashed=True, title="INSIDE THE SANDBOX")
 for key, (x, heading) in LANES.items():
-    c.box(x - 95, 70, 190, 44, heading, fill="white" if key in SANDBOX else "mid", size=12,
+    c.box(x - 100, 76, 200, 44, heading, fill="white" if key in SANDBOX else "mid", size=11,
           weight="bold")
-    c.line([(x, 114), (x, BOTTOM)], arrow=False, dashed=True, width=1)
+    c.line([(x, 120), (x, BOTTOM)], arrow=False, dashed=True, width=1)
 
 
 def msg(a, b, y, text, dashed=False):
     """A message from lane a to lane b, its label just above the arrow."""
     xa, xb = LANES[a][0], LANES[b][0]
     c.line([(xa, y), (xb, y)], dashed=dashed)
-    lift = (15 * (text.count("\n") + 1) + 4) / 2 + 3
+    lift = ((11 * c.text_scale + 4) * (text.count("\n") + 1) + 4) / 2 + 3
     c.label((xa + xb) / 2, y - lift, text, size=11)
 
 
 def step(lane, y, text, h=46):
     """Work a lane does itself: a box on its lifeline."""
     x = LANES[lane][0]
-    c.box(x - 125, y - h / 2, 250, h, text, fill="white", size=11)
+    c.box(x - 138, y - h / 2, 276, h, text, fill="white", size=11)
 
 
 def panel(y, title):
