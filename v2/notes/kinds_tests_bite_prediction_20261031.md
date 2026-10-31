@@ -113,3 +113,25 @@ tag. M63 is included because T24's helper changed. The other 23 mutants are not 
 - M76: killed by the new T11 check.
 - M77: killed by both new T16' checks.
 - M79: killed by the new T23 check.
+
+## Outcome, run 2 (2026-10-31, 17:37–17:49, tag `kinds-bite-2-pre`)
+
+Results: `experiments/verify/results/kinds_bite_20261031_run2/`. **Every prediction held.**
+
+- **Control:** `selftest_commands` 251/251, `selftest_bridge_types` 170/170. The four new checks pass
+  on the pristine tree: the fan shows `on`; the lock offers no format and `unlock` arrives as
+  `{'code': '5822'}`, then succeeds; the scanner's `in_zones` is `['zone.home']`; the publish is
+  answered ok.
+- **M51b:** killed by `selftest_commands` (227/251); `selftest_bridge_types` passes (170/170), as
+  predicted. The 24 failures are every redirect check (K3, K7, K13, K19, K24, K30) and every
+  extra-key check. They also include four bad-code checks (K7 and K13: a numeric code, a 65-character
+  code), which were not predicted. A coded service lists an empty shape `{}` beside
+  `{"code": …}` (`_CODED`), so with the code key skipped a bad code fits the empty shape.
+- **M63:** killed by T24 (republish), 169/170, as in run 1.
+- **M64, M76, M77, M79:** each killed by its new check alone: 169/170, and 168/170 for M77 (both
+  T16' checks; in (A), "unterminated character set", Python's `re.error` for `[0-9`).
+
+**Result.** Of 30 mutants (M51–M79, M51b), the tests now catch 29. M51 counts only as a crash, and
+M51b replaces it as the measure. Every behaviour in B1–B4a has a check shown to fail without it.
+Not rerun after the new checks: M52–M62 and M65–M75, M78. Their killing checks are unchanged, but the
+Pi has no room for a full run beside run 1's work copies (`~/r2exp/km/work`, 1.9 GB, 2.3 GB free).

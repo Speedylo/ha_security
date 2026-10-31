@@ -1,0 +1,10 @@
+start 2026-10-31T17:37:23+01:00 pristine 9ccddbd0e2503d49dd3626246ea5e5ae1ce58e3a kinds-bite-2-pre
+control commands exit=0 house_a_up exit=0 bridge_types exit=0 
+M51b failed=1 commands exit=1 house_a_up exit=0 bridge_types exit=0  fails: K3 switch turn_on with any data: refused under COMMAND_DATA, not pushe|K3 text set_value redirected with entity_id: refused under COMMAND_DAT|K7 temperature and a range together: refused under COMMAND_DATA, not p|
+M63 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T24 republishing the same event does not fire it again  — '2026-10-3|
+M64 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T24 and (A) accepts that publish: the bridge does not fail on it  — |
+M76 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T11 a fan published on with no speed and no preset: (A) shows on  — |
+M77 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T16' a lock published with the format '[0-9': (A) offers none, and unl|T16' the call succeeds and (A) shows unlocked  — unterminated charac|
+M79 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T23 a scanner at home is in (A)'s home zone, as a native scanner is  �|
+end 2026-10-31T17:49:45+01:00
+ALLDONE
