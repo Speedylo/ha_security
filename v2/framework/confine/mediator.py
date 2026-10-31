@@ -265,6 +265,31 @@ def _white(value: object) -> bool:
     return value is None or _number(value)
 
 
+#: A vacuum's raw command parameters and a remote's commands (batch B2, decisions 1 and 2): free
+#: in content, bounded in size, because an allowed command's data is written to the log as sent.
+MAX_COMMAND_PARAMS, MAX_REMOTE_COMMAND, MAX_REMOTE_COMMANDS = 4096, 4096, 64
+
+
+def _params(value: object) -> bool:
+    """A mapping or a list of plain JSON data, at most 4 KiB serialised; its content unchecked."""
+    if not isinstance(value, (dict, list)):
+        return False
+    try:
+        return len(json.dumps(value, allow_nan=False)) <= MAX_COMMAND_PARAMS
+    except (TypeError, ValueError):
+        return False
+
+
+def _commands(value: object) -> bool:
+    """A remote's commands: 1 to 64 strings, each at most 4096 characters (raw codes can be long)."""
+    return (isinstance(value, list) and 1 <= len(value) <= MAX_REMOTE_COMMANDS
+            and all(isinstance(v, str) and len(v) <= MAX_REMOTE_COMMAND for v in value))
+
+
+def _tone(value: object) -> bool:
+    return (isinstance(value, int) and not isinstance(value, bool)) or _text(value)
+
+
 class _Optional:
     """A key a shape may leave out (batch B1): a light's turn_on carries any of eleven."""
 
@@ -338,6 +363,45 @@ COMMANDS: dict[str, dict[str, list[Shape]]] = {
         "set_cover_tilt_position": [{"tilt_position": _number}],
     },
     "lock": {service: _CODED for service in ("lock", "unlock", "open")},
+    # Batch B2 (`notes/bridge_kinds_b2_prediction_20261031.md`). A vacuum's `clean_area` is not
+    # here: (A) turns it into segment ids that no service in the sandbox takes (decision 4).
+    "humidifier": {
+        "turn_on": [{}], "turn_off": [{}],
+        "set_mode": [{"mode": _text}],
+        "set_humidity": [{"humidity": _number}],
+    },
+    "water_heater": {
+        "turn_on": [{}], "turn_off": [{}],
+        "set_temperature": [{"temperature": _number, "operation_mode": _Optional(_text)}],
+        "set_operation_mode": [{"operation_mode": _text}],
+        "set_away_mode": [{"away_mode": _flag}],
+    },
+    "vacuum": {
+        **{service: [{}] for service in (
+            "start", "pause", "stop", "return_to_base", "clean_spot", "locate")},
+        "set_fan_speed": [{"fan_speed": _text}],
+        "send_command": [{"command": _text, "params": _Optional(_params)}],
+    },
+    "valve": {
+        **{service: [{}] for service in ("open_valve", "close_valve", "stop_valve")},
+        "set_valve_position": [{"position": _number}],
+    },
+    "siren": {
+        "turn_on": [{"tone": _Optional(_tone), "duration": _Optional(_number),
+                     "volume_level": _Optional(_number)}],
+        "turn_off": [{}],
+    },
+    "remote": {
+        "turn_on": [{"activity": _Optional(_text)}],
+        "turn_off": [{"activity": _Optional(_text)}],
+        "send_command": [{"command": _commands, "device": _Optional(_text),
+                          "num_repeats": _Optional(_number), "delay_secs": _Optional(_number),
+                          "hold_secs": _Optional(_number)}],
+        "learn_command": [{"device": _Optional(_text), "command": _Optional(_commands),
+                           "command_type": _Optional(_text), "alternative": _Optional(_flag),
+                           "timeout": _Optional(_number)}],
+        "delete_command": [{"command": _commands, "device": _Optional(_text)}],
+    },
     # Questions (bridge step 4): answered with a list, which `ANSWERS` checks.
     "calendar": {"get_events": [{"start": _iso, "end": _iso}]},
     "weather": {"get_forecasts": [{"type": _forecast_type}]},
