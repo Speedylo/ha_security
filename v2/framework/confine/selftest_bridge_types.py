@@ -31,21 +31,25 @@ in (A), described well enough for Home Assistant to draw its control. Operating 
     X1   a switch published `triggered` (as `scheduler`'s is, after a slot fires) shows it in (A)
     X2   then `on`, `off`, `completed`, `unknown`, `triggered`, each shown as such
     X3   with `--restart`: after (A) restarts, the switch shows its last published state
-    T11  a light, fan, cover and lock are entities of their own type in (A), described (batch B1)
+    T11  a light, fan, cover and lock are entities of their own type in (A), described (batch B1);
+         a fan published on with neither a speed nor a preset shows on
     T12  each is operated from a user in (A), and the sandbox receives what (A) worked out:
          brightness_pct as brightness, a colour name as rgb_color, toggle as turn_off,
          increase_speed as set_percentage, a cover's toggle as open_cover, a lock code as typed
     T13  a fan preset mode the fan does not offer fails in (A) and never reaches the mediator
     T14  a lock code typed in (A) is not in the durable log
     T16  a default code stored for the lock in (A) reaches the sandbox, and not the log
+    T16' a lock whose code format (A) cannot compile offers no format, and its codes still pass
     T17  a humidifier, water heater, vacuum, valve, siren and remote, described (batch B2)
     T18  each operated from a user in (A), the sandbox receiving what (A) worked out: away mode as
          set_away_mode, a positioned valve's open as position 100, a siren tone by name, a remote's
          command with (A)'s defaults, and a water heater's °F as °C
     T19  a humidity above the published maximum fails in (A) and never reaches the mediator
     T22  an update, time, notify, event, GPS tracker and scanner, described (batch B3)
-    T23  (A) works out a GPS tracker's home or away from its own zones; a scanner shows its state
-    T24  a published event fires once in (A); a republish does not fire it again
+    T23  (A) works out a GPS tracker's home or away from its own zones; a scanner shows its state,
+         and at home it is in (A)'s home zone, as a native scanner is
+    T24  a published event fires once in (A); a republish does not fire it again; an unlisted
+         event type is accepted and changes nothing
     T25  update skip and clear_skipped stay in (A); install, a time and a message reach the sandbox
     T26  a notification's text is not in the durable log
     T28  a media player, described, without artwork, browsing, searching or grouping (batch B4a)
@@ -497,6 +501,16 @@ def main() -> int:
                        if (shown_attributes or {}).get(k) != v}
             check(f"T11 {domain}: (A) holds its state and the attributes that describe it",
                   shown == state and not missing, f"{shown!r} {missing or ''}")
+        # Home Assistant's own rule (`fan/__init__.py`, `is_on`: a percentage above 0, or a preset)
+        # would show this fan off; (A) shows what the integration published. Then back to the
+        # fan T12 operates.
+        sandbox.ask({"op": "entity.publish", "entity": FAN, "state": "on",
+                     "attributes": {**fan_attributes, "percentage": None}})
+        shown = platform.read(landed[FAN])[0] if landed[FAN] else None
+        check("T11 a fan published on with no speed and no preset: (A) shows on", shown == "on",
+              f"{shown!r}")
+        sandbox.ask({"op": "entity.publish", "entity": FAN, "state": "on",
+                     "attributes": fan_attributes})
 
         def operate(entity: str, service: str, data: dict) -> tuple[dict, dict]:
             """A user in (A) calls `service`: what reached the sandbox, and the call in flight,
@@ -574,6 +588,27 @@ def main() -> int:
         outcome, shown = finish(DOOR, command, pending, "locked", door_attributes)
         check("T16 the call succeeds and (A) shows locked",
               outcome.get("success") is True and shown == "locked",
+              f"{outcome.get('error') or ''} {shown!r}")
+
+        print("\nT16' — a code format (A) cannot compile is not used\n")
+        # (A) compiles a lock's code format to check every code against it (`lock/__init__.py`,
+        # `code_format_cmp`); one that does not compile would make every lock and unlock fail.
+        GATE = "lock.selftest_gate"
+        gate_attributes = {"friendly_name": "Selftest gate", "code_format": "[0-9",
+                           "supported_features": 0}
+        sandbox.ask({"op": "entity.publish", "entity": GATE, "state": "locked",
+                     "attributes": gate_attributes})
+        landed[GATE] = platform.published.get(("selftest", GATE)) or ""
+        shown_attributes = (platform.read(landed[GATE])[1] if landed[GATE] else None) or {}
+        command, pending = operate(GATE, "unlock", {"code": "5822"})
+        check("T16' a lock published with the format '[0-9': (A) offers none, and unlock with a "
+              "code reaches the sandbox",
+              bool(landed[GATE]) and "code_format" not in shown_attributes and pending["arrived"]
+              and command.get("service") == "unlock" and command.get("data") == {"code": "5822"},
+              f"{shown_attributes.get('code_format')!r} {command or pending['user'].outcome}")
+        outcome, shown = finish(GATE, command, pending, "unlocked", gate_attributes)
+        check("T16' the call succeeds and (A) shows unlocked",
+              outcome.get("success") is True and shown == "unlocked",
               f"{outcome.get('error') or ''} {shown!r}")
 
         print("\nT14 — the lock codes are not in the durable log\n")
@@ -761,13 +796,24 @@ def main() -> int:
         check("T23 the scanner's MAC is an attribute, and its unique id is the bridge's",
               (shown_attributes or {}).get("mac") == "AA:BB:CC:DD:EE:FF"
               and row.get("unique_id") == f"selftest:{TAG}", f"{row.get('unique_id')}")
+        # A scanner at home is in (A)'s home zone (`device_tracker/entity.py`, BaseScannerEntity
+        # `state_attributes`); built as a GPS tracker with no coordinates it would be in none.
+        sandbox.ask({"op": "entity.publish", "entity": TAG, "state": "home",
+                     "attributes": {"friendly_name": "Selftest tag", "source_type": "bluetooth_le",
+                                    "mac": "AA:BB:CC:DD:EE:FF"}})
+        shown, shown_attributes = platform.read(landed[TAG]) if landed[TAG] else (None, {})
+        in_zones = (shown_attributes or {}).get("in_zones")
+        check("T23 a scanner at home is in (A)'s home zone, as a native scanner is",
+              shown == "home" and "zone.home" in (in_zones or []), f"{shown!r} {in_zones!r}")
 
         print("\nT24 — events fire once in (A)\n")
 
+        answers: dict[str, dict] = {}
+
         def bell(state: str, event_type: str) -> tuple[str | None, dict]:
-            sandbox.ask({"op": "entity.publish", "entity": BELL, "state": state,
-                         "attributes": {**bell_attributes, "event_type": event_type,
-                                        "button": "1"}})
+            answers[state] = sandbox.ask({"op": "entity.publish", "entity": BELL, "state": state,
+                                          "attributes": {**bell_attributes,
+                                                         "event_type": event_type, "button": "1"}})
             shown, shown_attributes = platform.read(landed[BELL]) if landed[BELL] else (None, {})
             return shown, shown_attributes or {}
 
@@ -789,6 +835,11 @@ def main() -> int:
         check("T24 an event type the entity does not list leaves (A)'s state, and the bridge works",
               unlisted == second and still.get("ok") is True
               and platform.read(landed[WAKE])[0] == "06:50:00", f"{unlisted!r}")
+        # Home Assistant raises for an event type the entity does not list (`event/__init__.py`,
+        # `_trigger_event`); raised through the bridge, (A) would answer the publish with an error.
+        answered = answers.get("2026-10-31T13:00:09.000+00:00") or {}
+        check("T24 and (A) accepts that publish: the bridge does not fail on it",
+              answered.get("ok") is True, f"{answered.get('reason') or answered}")
 
         print("\nT25 — update skip stays in (A); install, a time and a message reach the sandbox\n")
         for service, state in (("skip", "off"), ("clear_skipped", "on")):

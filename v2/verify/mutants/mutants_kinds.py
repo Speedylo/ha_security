@@ -24,6 +24,13 @@ MUTANTS = [
     ("M51", "K13", "a command's data may carry keys the shape does not list", MEDIATOR,
      "    return (set(data) <= set(shape) and required <= set(data)",
      "    return (True and required <= set(data)"),
+    # M51 crashed both suites (a KeyError on the unlisted key) instead of accepting it; M51b,
+    # added after the run, accepts the extra keys and skips them (kinds_tests_bite note, outcome).
+    ("M51b", "K13", "a command's data may carry keys the shape does not list, skipped", MEDIATOR,
+     "    return (set(data) <= set(shape) and required <= set(data)\n"
+     "            and all(shape[k](v) for k, v in data.items()))",
+     "    return (True and required <= set(data)\n"
+     "            and all(shape[k](v) for k, v in data.items() if k in shape))"),
     ("M52", "K13", "every key of a shape is optional", MEDIATOR,
      "    required = {k for k, valid in shape.items() if not isinstance(valid, _Optional)}",
      "    required = set()"),

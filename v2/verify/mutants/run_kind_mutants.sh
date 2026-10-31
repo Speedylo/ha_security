@@ -4,7 +4,8 @@
 # The two suites that test the new kinds run against each mutant: selftest_commands (offline) and
 # selftest_bridge_types against an (A) brought up fresh from the mutated tree, so (A) runs the
 # mutated bridge. The pristine tree runs first, as the control. A mutant is killed when either suite
-# exits non-zero; its FAIL lines are kept.
+# exits non-zero; its FAIL lines are kept, or, if a suite crashed, its error line.
+# MUT_ONLY="M51b M64 ..." runs only those (MUT_WORK then names a fresh work directory).
 SRC=${1:?pristine v2}; OUT=${2:?outdir}
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 WORK=${MUT_WORK:-~/r2exp/km/work}
@@ -24,7 +25,9 @@ two_suites() {  # $1 framework dir, $2 log dir
 echo "start $(date -Is) pristine $(git -C "$SRC" rev-parse HEAD) $(git -C "$SRC" describe --tags)" > "$OUT/run.txt"
 two_suites "$SRC/framework" "$OUT/control"
 echo "control $(tr '\n' ' ' < "$OUT/control/summary.txt")" >> "$OUT/run.txt"
-for patch in "$HERE"/${MUT_ONLY:-M[5-7][0-9]}.patch; do
+if [ -n "$MUT_ONLY" ]; then patches=$(for m in $MUT_ONLY; do echo "$HERE/$m.patch"; done)
+else patches=$(ls "$HERE"/M[5-7][0-9]*.patch); fi
+for patch in $patches; do
   m=$(basename "$patch" .patch); case $m in M5[0]) continue ;; esac; dest="$WORK/$m"
   [ -e "$dest" ] && { echo "$m: $dest exists, skipped" >> "$OUT/run.txt"; continue; }
   mkdir -p "$dest" && cp -r "$SRC/framework" "$SRC/experiments" "$dest/"
@@ -36,7 +39,7 @@ for patch in "$HERE"/${MUT_ONLY:-M[5-7][0-9]}.patch; do
       && echo "bridge_in_A=mutated" >> "$o/summary.txt" || echo "bridge_in_A=NOT_MUTATED" >> "$o/summary.txt"
   fi
   failed=$(grep -c 'exit=[1-9]' "$o/summary.txt")
-  echo "$m failed=$failed $(tr '\n' ' ' < "$o/summary.txt") fails: $(grep -h FAIL "$o/commands.log" "$o/bridge_types.log" | sed 's/^ *FAIL *//' | cut -c1-70 | head -3 | tr '\n' '|')" >> "$OUT/run.txt"
+  echo "$m failed=$failed $(tr '\n' ' ' < "$o/summary.txt") fails: $(grep -h FAIL "$o/commands.log" "$o/bridge_types.log" | sed 's/^ *FAIL *//' | cut -c1-70 | head -3 | tr '\n' '|')$(grep -h -m1 -E '^[A-Za-z]+(Error|Exception):' "$o/commands.log" "$o/bridge_types.log" | sed 's/^/crash: /' | tr '\n' '|')" >> "$OUT/run.txt"
 done
 ( cd "$SRC/framework" && python3 -m confine.house_a down && python3 -m confine.house_a up --fresh ) > "$OUT/restore.log" 2>&1
 echo "end $(date -Is)" >> "$OUT/run.txt"; echo ALLDONE >> "$OUT/run.txt"

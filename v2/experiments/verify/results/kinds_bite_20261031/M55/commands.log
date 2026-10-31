@@ -1,0 +1,319 @@
+
+K1 — each listed command is forwarded with exactly its data
+
+  ok    K1 switch.turn_on : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 1, 'entity': 'switch.demo_power', 'service': 'turn_on', 'data': {}}
+  ok    K1 switch.turn_off : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 2, 'entity': 'switch.demo_power', 'service': 'turn_off', 'data': {}}
+  ok    K1 button.press : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 3, 'entity': 'button.demo_report', 'service': 'press', 'data': {}}
+  ok    K1 text.set_value {'value': '*.tmp; rm -rf /'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 4, 'entity': 'text.demo_note', 'service': 'set_value', 'data': {'value': '*.tmp; rm -rf /'}}
+  ok    K1 select.select_option {'option': 'away'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 5, 'entity': 'select.demo_mode', 'service': 'select_option', 'data': {'option': 'away'}}
+  ok    K1 number.set_value {'value': 22}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 6, 'entity': 'number.demo_target', 'service': 'set_value', 'data': {'value': 22}}
+  ok    K1 number.set_value {'value': 19.5}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 7, 'entity': 'number.demo_target', 'service': 'set_value', 'data': {'value': 19.5}}
+
+K2 — a service not listed for the entity's type
+
+  ok    K2 number.turn_on: refused under COMMAND_SERVICES, not pushed  — (command: only the services listed for the entity's type) None
+  ok    K2 switch.press: refused under COMMAND_SERVICES, not pushed  — (command: only the services listed for the entity's type) None
+  ok    K2 switch.unlock: refused under COMMAND_SERVICES, not pushed  — (command: only the services listed for the entity's type) None
+  ok    K2 select.set_value: refused under COMMAND_SERVICES, not pushed  — (command: only the services listed for the entity's type) None
+
+K3 — data that is not exactly the listed keys, of the listed kind
+
+  ok    K3 switch turn_on with any data: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 text set_value redirected with entity_id: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 text set_value with no value: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 text set_value with a dict: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 text set_value with 256 characters: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 number set_value with a string: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 number set_value with a boolean: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 number set_value with NaN: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 number set_value with infinity: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K3 select select_option with a list: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+
+K4 — a refused value is recorded by its kind, never itself
+
+  ok    K4 a 10,000-character value is refused under COMMAND_DATA  — (command: only the data listed for that service, of its kind)
+  ok    K4 and the durable record holds its type and length, not the value  — {'data': {'value': 'str, length 10000'}, 'entity': 'text.demo_note', 'service': 'text.set_value'}
+
+K6 — climate and alarm panel: each allowed shape (bridge step 3)
+
+  ok    K6 climate.turn_on : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 23, 'entity': 'climate.demo_ac', 'service': 'turn_on', 'data': {}}
+  ok    K6 climate.turn_off : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 24, 'entity': 'climate.demo_ac', 'service': 'turn_off', 'data': {}}
+  ok    K6 climate.set_hvac_mode {'hvac_mode': 'cool'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 25, 'entity': 'climate.demo_ac', 'service': 'set_hvac_mode', 'data': {'hvac_mode': 'cool'}}
+  ok    K6 climate.set_temperature {'temperature': 23.0}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 26, 'entity': 'climate.demo_ac', 'service': 'set_temperature', 'data': {'temperature': 23.0}}
+  ok    K6 climate.set_temperature {'temperature': 21, 'hvac_mode': 'heat'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 27, 'entity': 'climate.demo_ac', 'service': 'set_temperature', 'data': {'temperature': 21, 'hvac_mode': 'heat'}}
+  ok    K6 climate.set_temperature {'target_temp_low': 19.0, 'target_temp_high': 24.0}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 28, 'entity': 'climate.demo_ac', 'service': 'set_temperature', 'data': {'target_temp_low': 19.0, 'target_temp_high': 24.0}}
+  ok    K6 climate.set_fan_mode {'fan_mode': 'auto'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 29, 'entity': 'climate.demo_ac', 'service': 'set_fan_mode', 'data': {'fan_mode': 'auto'}}
+  ok    K6 climate.set_preset_mode {'preset_mode': 'eco'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 30, 'entity': 'climate.demo_ac', 'service': 'set_preset_mode', 'data': {'preset_mode': 'eco'}}
+  ok    K6 climate.set_swing_mode {'swing_mode': 'vertical'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 31, 'entity': 'climate.demo_ac', 'service': 'set_swing_mode', 'data': {'swing_mode': 'vertical'}}
+  ok    K6 climate.set_humidity {'humidity': 45}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 32, 'entity': 'climate.demo_ac', 'service': 'set_humidity', 'data': {'humidity': 45}}
+  ok    K6 alarm_control_panel.alarm_disarm {'code': '1234'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 33, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_disarm', 'data': {'code': '1234'}}
+  ok    K6 alarm_control_panel.alarm_arm_away : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 34, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_arm_away', 'data': {}}
+  ok    K6 alarm_control_panel.alarm_arm_home : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 35, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_arm_home', 'data': {}}
+  ok    K6 alarm_control_panel.alarm_arm_night : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 36, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_arm_night', 'data': {}}
+  ok    K6 alarm_control_panel.alarm_arm_vacation : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 37, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_arm_vacation', 'data': {}}
+  ok    K6 alarm_control_panel.alarm_arm_custom_bypass : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 38, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_arm_custom_bypass', 'data': {}}
+  ok    K6 alarm_control_panel.alarm_trigger : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 39, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_trigger', 'data': {}}
+
+K7 — data matching none of the allowed shapes
+
+  ok    K7 hvac_mode plasma: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 temperature and a range together: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 a low without a high: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 a string temperature: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 a NaN temperature: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 an extra key on set_fan_mode: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 a numeric code: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 a 65-character code: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K7 disarm redirected with entity_id: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+
+K8 — a service of the other type
+
+  ok    K8 climate.alarm_disarm: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K8 alarm_control_panel.set_temperature: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K8 alarm_control_panel.turn_on: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K8 a command refused for its service has its data recorded by kind  — {'note': 'str, length 11'}
+
+K9 — an alarm code never reaches the durable log
+
+  ok    K9 the allowed disarm reached the sandbox with its code  — {'push': 'entity.command', 'command': 53, 'entity': 'alarm_control_panel.demo_alarm', 'service': 'alarm_disarm', 'data': {'code': '4917'}}
+  ok    K9 neither code is in the log file
+  ok    K9 and both records say the code was withheld  — {'code': '(withheld)'} {'code': '(withheld)'}
+
+K12 — light, fan, cover and lock: each allowed shape (batch B1)
+
+  ok    K12 light.turn_on : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 55, 'entity': 'light.demo_lamp', 'service': 'turn_on', 'data': {}}
+  ok    K12 light.turn_on {'brightness': 128}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 56, 'entity': 'light.demo_lamp', 'service': 'turn_on', 'data': {'brightness': 128}}
+  ok    K12 light.turn_on {'brightness': 200, 'rgb_color': [255, 0, 0], 'transition': 2}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 57, 'entity': 'light.demo_lamp', 'service': 'turn_on', 'data': {'brightness': 200, 'rgb_color': [255, 0, 0], 'transition': 2}}
+  ok    K12 light.turn_on {'color_temp_kelvin': 2700}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 58, 'entity': 'light.demo_lamp', 'service': 'turn_on', 'data': {'color_temp_kelvin': 2700}}
+  ok    K12 light.turn_on {'hs_color': [30.0, 80.0]}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 59, 'entity': 'light.demo_lamp', 'service': 'turn_on', 'data': {'hs_color': [30.0, 80.0]}}
+  ok    K12 light.turn_on {'rgb_color': [255, 128, 0]}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 60, 'entity': 'light.demo_lamp', 'service': 'turn_on', 'data': {'rgb_color': [255, 128, 0]}}
+  ok    K12 light.turn_on {'rgbw_color': [255, 128, 0, 10]}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 61, 'entity': 'light.demo_lamp', 'service': 'turn_on', 'data': {'rgbw_color': [255, 128, 0, 10]}}
+  ok    K12 light.turn_on {'rgbww_color': [255, 128, 0, 10, 20]}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 62, 'entity': 'light.demo_lamp', 'service': 'turn_on', 'data': {'rgbww_color': [255, 128, 0, 10, 20]}}
+  ok    K12 light.turn_on {'xy_color': [0.3, 0.4]}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 63, 'entity': 'light.demo_lamp', 'service': 'turn_on', 'data': {'xy_color': [0.3, 0.4]}}
+  ok    K12 light.turn_on {'white': 150}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 64, 'entity': 'light.demo_lamp', 'service': 'turn_on', 'data': {'white': 150}}
+  FAIL  K12 light.turn_on {'white': None}: allowed and pushed as sent  — (command: only the data listed for that service, of its kind) None
+  ok    K12 light.turn_on {'effect': 'colorloop'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 66, 'entity': 'light.demo_lamp', 'service': 'turn_on', 'data': {'effect': 'colorloop'}}
+  ok    K12 light.turn_on {'flash': 'short'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 67, 'entity': 'light.demo_lamp', 'service': 'turn_on', 'data': {'flash': 'short'}}
+  ok    K12 light.turn_off : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 68, 'entity': 'light.demo_lamp', 'service': 'turn_off', 'data': {}}
+  ok    K12 light.turn_off {'transition': 1.5}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 69, 'entity': 'light.demo_lamp', 'service': 'turn_off', 'data': {'transition': 1.5}}
+  ok    K12 light.turn_off {'flash': 'long'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 70, 'entity': 'light.demo_lamp', 'service': 'turn_off', 'data': {'flash': 'long'}}
+  ok    K12 fan.turn_on : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 71, 'entity': 'fan.demo_fan', 'service': 'turn_on', 'data': {}}
+  ok    K12 fan.turn_on {'percentage': 50}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 72, 'entity': 'fan.demo_fan', 'service': 'turn_on', 'data': {'percentage': 50}}
+  ok    K12 fan.turn_on {'preset_mode': 'sleep'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 73, 'entity': 'fan.demo_fan', 'service': 'turn_on', 'data': {'preset_mode': 'sleep'}}
+  ok    K12 fan.turn_on {'percentage': 50, 'preset_mode': 'sleep'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 74, 'entity': 'fan.demo_fan', 'service': 'turn_on', 'data': {'percentage': 50, 'preset_mode': 'sleep'}}
+  ok    K12 fan.turn_off : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 75, 'entity': 'fan.demo_fan', 'service': 'turn_off', 'data': {}}
+  ok    K12 fan.set_percentage {'percentage': 75}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 76, 'entity': 'fan.demo_fan', 'service': 'set_percentage', 'data': {'percentage': 75}}
+  ok    K12 fan.set_preset_mode {'preset_mode': 'auto'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 77, 'entity': 'fan.demo_fan', 'service': 'set_preset_mode', 'data': {'preset_mode': 'auto'}}
+  ok    K12 fan.oscillate {'oscillating': True}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 78, 'entity': 'fan.demo_fan', 'service': 'oscillate', 'data': {'oscillating': True}}
+  ok    K12 fan.set_direction {'direction': 'reverse'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 79, 'entity': 'fan.demo_fan', 'service': 'set_direction', 'data': {'direction': 'reverse'}}
+  ok    K12 cover.open_cover : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 80, 'entity': 'cover.demo_blind', 'service': 'open_cover', 'data': {}}
+  ok    K12 cover.close_cover : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 81, 'entity': 'cover.demo_blind', 'service': 'close_cover', 'data': {}}
+  ok    K12 cover.stop_cover : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 82, 'entity': 'cover.demo_blind', 'service': 'stop_cover', 'data': {}}
+  ok    K12 cover.open_cover_tilt : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 83, 'entity': 'cover.demo_blind', 'service': 'open_cover_tilt', 'data': {}}
+  ok    K12 cover.close_cover_tilt : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 84, 'entity': 'cover.demo_blind', 'service': 'close_cover_tilt', 'data': {}}
+  ok    K12 cover.stop_cover_tilt : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 85, 'entity': 'cover.demo_blind', 'service': 'stop_cover_tilt', 'data': {}}
+  ok    K12 cover.set_cover_position {'position': 40}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 86, 'entity': 'cover.demo_blind', 'service': 'set_cover_position', 'data': {'position': 40}}
+  ok    K12 cover.set_cover_tilt_position {'tilt_position': 60}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 87, 'entity': 'cover.demo_blind', 'service': 'set_cover_tilt_position', 'data': {'tilt_position': 60}}
+  ok    K12 lock.lock : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 88, 'entity': 'lock.demo_door', 'service': 'lock', 'data': {}}
+  ok    K12 lock.lock {'code': '1234'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 89, 'entity': 'lock.demo_door', 'service': 'lock', 'data': {'code': '1234'}}
+  ok    K12 lock.unlock : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 90, 'entity': 'lock.demo_door', 'service': 'unlock', 'data': {}}
+  ok    K12 lock.unlock {'code': '1234'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 91, 'entity': 'lock.demo_door', 'service': 'unlock', 'data': {'code': '1234'}}
+  ok    K12 lock.open : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 92, 'entity': 'lock.demo_door', 'service': 'open', 'data': {}}
+  ok    K12 lock.open {'code': '1234'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 93, 'entity': 'lock.demo_door', 'service': 'open', 'data': {'code': '1234'}}
+
+K13 — B1 data matching no allowed shape
+
+  ok    K13 light profile (resolved in (A), never reaches the entity): refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 light color_name (resolved in (A)): refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 light brightness_pct (resolved in (A)): refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 light brightness_step (resolved in (A)): refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 light rgb_color of 2 numbers: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 light rgb_color of 4 numbers: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 light a string in a colour: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 light flash medium: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 light NaN brightness: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 light a 256-character effect: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 light turn_off with a brightness: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 light turn_on redirected with entity_id: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 fan set_percentage with no percentage: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 fan oscillate 'yes': refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 fan set_direction with no direction: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 cover set_cover_position with a string: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 cover open_cover with a position: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 lock a numeric code: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K13 lock a 65-character code: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+
+K14 — services worked out in (A), or of another kind
+
+  ok    K14 light.toggle: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K14 fan.toggle: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K14 fan.increase_speed: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K14 fan.decrease_speed: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K14 cover.toggle: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K14 cover.toggle_tilt: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K14 lock.turn_on: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K14 light.set_percentage: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+
+K15 — a lock code never reaches the durable log
+
+  ok    K15 the allowed unlock reached the sandbox with its code  — {'push': 'entity.command', 'command': 121, 'entity': 'lock.demo_door', 'service': 'unlock', 'data': {'code': '5820'}}
+  ok    K15 neither code is in the log file
+  ok    K15 and both records say the code was withheld  — {'code': '(withheld)'} {'code': '(withheld)'}
+
+K18 — humidifier, water heater, vacuum, valve, siren, remote (batch B2)
+
+  ok    K18 humidifier.turn_on : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 123, 'entity': 'humidifier.demo_air', 'service': 'turn_on', 'data': {}}
+  ok    K18 humidifier.turn_off : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 124, 'entity': 'humidifier.demo_air', 'service': 'turn_off', 'data': {}}
+  ok    K18 humidifier.set_mode {'mode': 'eco'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 125, 'entity': 'humidifier.demo_air', 'service': 'set_mode', 'data': {'mode': 'eco
+  ok    K18 humidifier.set_humidity {'humidity': 45}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 126, 'entity': 'humidifier.demo_air', 'service': 'set_humidity', 'data': {'humidit
+  ok    K18 water_heater.turn_on : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 127, 'entity': 'water_heater.demo_boiler', 'service': 'turn_on', 'data': {}}
+  ok    K18 water_heater.turn_off : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 128, 'entity': 'water_heater.demo_boiler', 'service': 'turn_off', 'data': {}}
+  ok    K18 water_heater.set_temperature {'temperature': 50.0}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 129, 'entity': 'water_heater.demo_boiler', 'service': 'set_temperature', 'data': {
+  ok    K18 water_heater.set_temperature {'temperature': 50.0, 'operation_mode': 'eco'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 130, 'entity': 'water_heater.demo_boiler', 'service': 'set_temperature', 'data': {
+  ok    K18 water_heater.set_operation_mode {'operation_mode': 'electric'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 131, 'entity': 'water_heater.demo_boiler', 'service': 'set_operation_mode', 'data'
+  ok    K18 water_heater.set_away_mode {'away_mode': True}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 132, 'entity': 'water_heater.demo_boiler', 'service': 'set_away_mode', 'data': {'a
+  ok    K18 vacuum.start : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 133, 'entity': 'vacuum.demo_robot', 'service': 'start', 'data': {}}
+  ok    K18 vacuum.pause : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 134, 'entity': 'vacuum.demo_robot', 'service': 'pause', 'data': {}}
+  ok    K18 vacuum.stop : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 135, 'entity': 'vacuum.demo_robot', 'service': 'stop', 'data': {}}
+  ok    K18 vacuum.return_to_base : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 136, 'entity': 'vacuum.demo_robot', 'service': 'return_to_base', 'data': {}}
+  ok    K18 vacuum.clean_spot : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 137, 'entity': 'vacuum.demo_robot', 'service': 'clean_spot', 'data': {}}
+  ok    K18 vacuum.locate : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 138, 'entity': 'vacuum.demo_robot', 'service': 'locate', 'data': {}}
+  ok    K18 vacuum.set_fan_speed {'fan_speed': 'turbo'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 139, 'entity': 'vacuum.demo_robot', 'service': 'set_fan_speed', 'data': {'fan_spee
+  ok    K18 vacuum.send_command {'command': 'app_segment_clean'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 140, 'entity': 'vacuum.demo_robot', 'service': 'send_command', 'data': {'command':
+  ok    K18 vacuum.send_command {'command': 'app_segment_clean', 'params': [16, 17]}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 141, 'entity': 'vacuum.demo_robot', 'service': 'send_command', 'data': {'command':
+  ok    K18 vacuum.send_command {'command': 'set_mop', 'params': {'level': 2, 'zones': [[1, : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 142, 'entity': 'vacuum.demo_robot', 'service': 'send_command', 'data': {'command':
+  ok    K18 valve.open_valve : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 143, 'entity': 'valve.demo_tap', 'service': 'open_valve', 'data': {}}
+  ok    K18 valve.close_valve : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 144, 'entity': 'valve.demo_tap', 'service': 'close_valve', 'data': {}}
+  ok    K18 valve.stop_valve : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 145, 'entity': 'valve.demo_tap', 'service': 'stop_valve', 'data': {}}
+  ok    K18 valve.set_valve_position {'position': 100}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 146, 'entity': 'valve.demo_tap', 'service': 'set_valve_position', 'data': {'positi
+  ok    K18 siren.turn_on : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 147, 'entity': 'siren.demo_alarm', 'service': 'turn_on', 'data': {}}
+  ok    K18 siren.turn_on {'tone': 'fire'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 148, 'entity': 'siren.demo_alarm', 'service': 'turn_on', 'data': {'tone': 'fire'}}
+  ok    K18 siren.turn_on {'tone': 2, 'duration': 10, 'volume_level': 0.5}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 149, 'entity': 'siren.demo_alarm', 'service': 'turn_on', 'data': {'tone': 2, 'dura
+  ok    K18 siren.turn_off : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 150, 'entity': 'siren.demo_alarm', 'service': 'turn_off', 'data': {}}
+  ok    K18 remote.turn_on : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 151, 'entity': 'remote.demo_tv', 'service': 'turn_on', 'data': {}}
+  ok    K18 remote.turn_on {'activity': 'Music'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 152, 'entity': 'remote.demo_tv', 'service': 'turn_on', 'data': {'activity': 'Music
+  ok    K18 remote.turn_off {'activity': 'Music'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 153, 'entity': 'remote.demo_tv', 'service': 'turn_off', 'data': {'activity': 'Musi
+  ok    K18 remote.send_command {'command': ['power'], 'num_repeats': 1, 'hold_secs': 0}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 154, 'entity': 'remote.demo_tv', 'service': 'send_command', 'data': {'command': ['
+  ok    K18 remote.send_command {'command': ['b64:JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 155, 'entity': 'remote.demo_tv', 'service': 'send_command', 'data': {'command': ['
+  ok    K18 remote.learn_command {'device': 'tv', 'command': ['mute'], 'command_type': 'ir', : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 156, 'entity': 'remote.demo_tv', 'service': 'learn_command', 'data': {'device': 't
+  ok    K18 remote.delete_command {'command': ['mute'], 'device': 'tv'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 157, 'entity': 'remote.demo_tv', 'service': 'delete_command', 'data': {'command': 
+
+K19 — B2 data matching no allowed shape
+
+  ok    K19 humidity as a string: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 set_mode with no mode: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 set_temperature with no temperature: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 away_mode 'yes': refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 set_fan_speed with a list: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 send_command params of 5 KiB: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 send_command params holding NaN: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 send_command params as a string: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 set_valve_position with a string: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 siren volume_level as a string: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 siren tone as a boolean: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 remote command as a string, not a list: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 remote a number among the commands: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 remote 65 commands: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 remote no commands: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 remote a 4097-character command: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 remote delete_command with no command: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 humidifier redirected with entity_id: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 water_heater redirected with entity_id: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 vacuum redirected with entity_id: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 valve redirected with entity_id: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 siren redirected with entity_id: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K19 remote redirected with entity_id: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+
+K20 — services worked out in (A), or with no service in the sandbox
+
+  ok    K20 humidifier.toggle: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K20 valve.toggle: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K20 siren.toggle: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K20 remote.toggle: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K20 vacuum.clean_area: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K20 vacuum.turn_on: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K20 water_heater.turn_away_mode_on: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+
+K23 — update, time and notify (batch B3)
+
+  ok    K23 update.install {'backup': False}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 188, 'entity': 'update.demo_firmware', 'service': 'install', 'data': {'backup': False}}
+  ok    K23 update.install {'version': '1.2.3', 'backup': True}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 189, 'entity': 'update.demo_firmware', 'service': 'install', 'data': {'version': '1.2.3', 'backup': True}}
+  ok    K23 time.set_value {'time': '07:30:00'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 190, 'entity': 'time.demo_wake', 'service': 'set_value', 'data': {'time': '07:30:00'}}
+  ok    K23 time.set_value {'time': '07:30'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 191, 'entity': 'time.demo_wake', 'service': 'set_value', 'data': {'time': '07:30'}}
+  ok    K23 notify.send_message {'message': 'Washing machine done'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 192, 'entity': 'notify.demo_panel', 'service': 'send_message', 'data': {'message': 'Washing machine done'}}
+  ok    K23 notify.send_message {'message': 'Washing machine done', 'title': 'Home'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 193, 'entity': 'notify.demo_panel', 'service': 'send_message', 'data': {'message': 'Washing machine done', 'title': 'Home'}}
+
+K24 — B3 data matching no allowed shape
+
+  ok    K24 time 25:00: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K24 time as a number: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K24 install with a numeric version: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K24 install with backup 'no': refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K24 install redirected with entity_id: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K24 a 4097-character message: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K24 a 256-character title: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K24 a numeric title: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K24 send_message with no message: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+
+K25 — services kept in (A), or for display-only kinds
+
+  ok    K25 update.skip: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K25 update.clear_skipped: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K25 device_tracker.see: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K25 event.trigger: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K25 notify.send: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+
+K26 — a notification's text never reaches the durable log
+
+  ok    K26 the allowed message reached the sandbox with its text  — {'push': 'entity.command', 'command': 208, 'entity': 'notify.demo_panel', 'service': 'send_message', 'data': {'message': 'Front door left open', 'title': 'Evening check'}}
+  ok    K26 no message or title is in the log file
+  ok    K26 and the records say the text was withheld  — {'message': '(withheld)', 'title': '(withheld)'} {'message': '(withheld)'}
+
+K29 — media player (batch B4a)
+
+  ok    K29 media_player.turn_on : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 210, 'entity': 'media_player.demo_speaker', 'service': 'turn_on', 'data': {}}
+  ok    K29 media_player.turn_off : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 211, 'entity': 'media_player.demo_speaker', 'service': 'turn_off', 'data': {}}
+  ok    K29 media_player.toggle : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 212, 'entity': 'media_player.demo_speaker', 'service': 'toggle', 'data': {}}
+  ok    K29 media_player.media_play : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 213, 'entity': 'media_player.demo_speaker', 'service': 'media_play', 'data': {}}
+  ok    K29 media_player.media_pause : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 214, 'entity': 'media_player.demo_speaker', 'service': 'media_pause', 'data': {}}
+  ok    K29 media_player.media_play_pause : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 215, 'entity': 'media_player.demo_speaker', 'service': 'media_play_pause', 'data': {}}
+  ok    K29 media_player.media_stop : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 216, 'entity': 'media_player.demo_speaker', 'service': 'media_stop', 'data': {}}
+  ok    K29 media_player.media_next_track : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 217, 'entity': 'media_player.demo_speaker', 'service': 'media_next_track', 'data': {}}
+  ok    K29 media_player.media_previous_track : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 218, 'entity': 'media_player.demo_speaker', 'service': 'media_previous_track', 'data': {}}
+  ok    K29 media_player.clear_playlist : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 219, 'entity': 'media_player.demo_speaker', 'service': 'clear_playlist', 'data': {}}
+  ok    K29 media_player.volume_up : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 220, 'entity': 'media_player.demo_speaker', 'service': 'volume_up', 'data': {}}
+  ok    K29 media_player.volume_down : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 221, 'entity': 'media_player.demo_speaker', 'service': 'volume_down', 'data': {}}
+  ok    K29 media_player.volume_set {'volume_level': 0.4}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 222, 'entity': 'media_player.demo_speaker', 'service': 'volume_set', 'data': {'volume_level': 0.4}}
+  ok    K29 media_player.volume_mute {'is_volume_muted': True}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 223, 'entity': 'media_player.demo_speaker', 'service': 'volume_mute', 'data': {'is_volume_muted': True}}
+  ok    K29 media_player.media_seek {'seek_position': 30.0}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 224, 'entity': 'media_player.demo_speaker', 'service': 'media_seek', 'data': {'seek_position': 30.0}}
+  ok    K29 media_player.select_source {'source': 'AUX'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 225, 'entity': 'media_player.demo_speaker', 'service': 'select_source', 'data': {'source': 'AUX'}}
+  ok    K29 media_player.select_sound_mode {'sound_mode': 'Movie'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 226, 'entity': 'media_player.demo_speaker', 'service': 'select_sound_mode', 'data': {'sound_mode': 'Movie'}}
+  ok    K29 media_player.shuffle_set {'shuffle': False}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 227, 'entity': 'media_player.demo_speaker', 'service': 'shuffle_set', 'data': {'shuffle': False}}
+  ok    K29 media_player.repeat_set {'repeat': 'all'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 228, 'entity': 'media_player.demo_speaker', 'service': 'repeat_set', 'data': {'repeat': 'all'}}
+  ok    K29 media_player.play_media {'media_content_type': 'music', 'media_content_id': 'spotify: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 229, 'entity': 'media_player.demo_speaker', 'service': 'play_media', 'data': {'media_content_type': 'music', 'media_content_id': 'spotify:track:1', 'extra': {}}}
+  ok    K29 media_player.play_media {'media_content_type': 'music', 'media_content_id': 'spotify: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 230, 'entity': 'media_player.demo_speaker', 'service': 'play_media', 'data': {'media_content_type': 'music', 'media_content_id': 'spotify:track:1', 'enqueue': 'add', 'extra': {}}}
+  ok    K29 media_player.play_media {'media_content_type': 'music', 'media_content_id': 'spotify: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 231, 'entity': 'media_player.demo_speaker', 'service': 'play_media', 'data': {'media_content_type': 'music', 'media_content_id': 'spotify:track:1', 'announce': True, 'extra': {}}}
+  ok    K29 media_player.play_media {'media_content_type': 'music', 'media_content_id': 'spotify: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 232, 'entity': 'media_player.demo_speaker', 'service': 'play_media', 'data': {'media_content_type': 'music', 'media_content_id': 'spotify:track:1', 'extra': {'volume': 0.6, 'duration': 2}}}
+  ok    K29 media_player.play_media {'media_content_type': 'music', 'media_content_id': 'https:/: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 233, 'entity': 'media_player.demo_speaker', 'service': 'play_media', 'data': {'media_content_type': 'music', 'media_content_id': 'https://example.org/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'}}
+
+K30 — media player data matching no allowed shape
+
+  ok    K30 volume_level as a string: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K30 is_volume_muted 'yes': refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K30 repeat 'twice': refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K30 enqueue 'later': refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K30 play_media with no id: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K30 a 4097-character id: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K30 extra over 4 KiB: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K30 extra as a string: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    K30 play_media redirected with entity_id: refused under COMMAND_DATA, not pushed  — (command: only the data listed for that service, of its kind) None
+
+K31 — grouping, browsing and searching
+
+  ok    K31 media_player.join: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K31 media_player.unjoin: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K31 media_player.browse_media: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    K31 media_player.search_media: refused under COMMAND_SERVICES  — (command: only the services listed for the entity's type) None
+  ok    every chain verifies
+
+250/251 checks passed

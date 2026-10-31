@@ -1,0 +1,12 @@
+# M51b (expected: K13): a command's data may carry keys the shape does not list, skipped
+--- a/framework/confine/mediator.py
++++ b/framework/confine/mediator.py
+@@ -535,6 +535,6 @@
+     """Only the shape's keys, every one it requires, each value of its kind."""
+     required = {k for k, valid in shape.items() if not isinstance(valid, _Optional)}
+-    return (set(data) <= set(shape) and required <= set(data)
+-            and all(shape[k](v) for k, v in data.items()))
++    return (True and required <= set(data)
++            and all(shape[k](v) for k, v in data.items() if k in shape))
+ 
+ 

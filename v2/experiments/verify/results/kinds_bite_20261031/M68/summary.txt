@@ -1,0 +1,4 @@
+commands exit=0
+house_a_up exit=0
+bridge_types exit=1
+bridge_in_A=mutated

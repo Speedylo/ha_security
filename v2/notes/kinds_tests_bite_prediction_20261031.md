@@ -68,3 +68,48 @@ is not the mutated file is void.
 
 **Then:** every survivor gets a check that fails under its mutant and passes on the pristine tree,
 shown both ways, before it is counted as covered. Outcome appended below.
+
+## Outcome, run 1 (2026-10-31, 16:18–17:09, tag `kinds-bite-pre`)
+
+Results: `experiments/verify/results/kinds_bite_20261031/` (`run.txt`, one directory per mutant).
+**Control** passed both suites. Every bridge mutant ran with (A)'s copy of the file mutated.
+
+- **Killed as predicted (24):** M52–M63, M65–M73, M75 (also T11), M78. M58 was also caught in
+  (A)'s durable log (T26).
+- **Killed by another check (1):** M74 by T17 ((A)'s description of the valve: no `current_position`),
+  before T18 runs.
+- **Survived, as predicted (4):** M64, M76, M77, M79.
+- **M51: killed, but not as intended.** Deleting the "only listed keys" test leaves the next line
+  looking every key up in the shape, so an extra key raised a `KeyError` and both suites crashed with
+  no FAIL line. That shows the test is what turns an extra key into a refusal rather than a crash. It
+  does not show that K13 notices extra keys being accepted. The mutant was wrong as written (AI-use
+  log 34). Added: **M51b**, the extra keys accepted and skipped.
+
+## Run 2: the survivors' checks — prediction (before the run)
+
+New checks in `selftest_bridge_types`, read from Home Assistant 2026.8.3; no framework code changed:
+
+| Check | What it reads | Pristine | Mutant |
+|---|---|---|---|
+| T11 a fan published on with no speed and no preset shows on | `fan/__init__.py` `is_on`: a percentage above 0 or a preset | on | M76: off |
+| T16' a lock published with the format `[0-9`: (A) offers none, and unlock with a code reaches the sandbox; the call succeeds | `lock/__init__.py` `code_format_cmp` compiles the format for every lock and unlock | passes | M77: `re.error` in (A), the call fails, nothing arrives (both checks) |
+| T23 a scanner at home is in (A)'s home zone | `device_tracker/entity.py`: a scanner's `in_zones` is its associated zone (`zone.home` by default); a GPS tracker with no coordinates has none | `["zone.home"]` | M79: `[]` |
+| T24 (A) accepts the unlisted event type's publish | `event/__init__.py` `_trigger_event` raises `ValueError`; raised inside `ws_publish`, Home Assistant answers the publish with an error, which the mediator returns as a refusal | ok | M64: refused |
+
+(M64's earlier reason, that the exception would only be logged, was wrong: it reaches the publish
+answer, which T24 had not read.)
+
+**Run:** the control and M51b, M63, M64, M76, M77, M79 (`MUT_ONLY`), from a fresh clone of the new
+tag. M63 is included because T24's helper changed. The other 23 mutants are not rerun: the Pi has
+2.3 GB free and run 1's work copies take 1.9 GB.
+
+**Predicted:**
+
+- control: `selftest_commands` 251/251, `selftest_bridge_types` 170/170 (165 + 5).
+- M51b: killed by the redirect checks (K3 text, K7 disarm, K13 light, K19/K24/K30), as FAIL lines.
+  `selftest_bridge_types` passes, since no check there sends unlisted keys.
+- M63: killed by T24 (republish).
+- M64: killed by the new T24 check.
+- M76: killed by the new T11 check.
+- M77: killed by both new T16' checks.
+- M79: killed by the new T23 check.
