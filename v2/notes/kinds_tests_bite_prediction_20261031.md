@@ -135,3 +135,13 @@ Results: `experiments/verify/results/kinds_bite_20261031_run2/`. **Every predict
 M51b replaces it as the measure. Every behaviour in B1–B4a has a check shown to fail without it.
 Not rerun after the new checks: M52–M62 and M65–M75, M78. Their killing checks are unchanged, but the
 Pi has no room for a full run beside run 1's work copies (`~/r2exp/km/work`, 1.9 GB, 2.3 GB free).
+
+## Run 3: all 30 against the final checks — prediction (before the run)
+
+Younes, 2026-10-31: "delete the work copies and rerun all 30". Run 1's and 2's work copies were
+deleted (their results are committed above), which leaves 4.0 GB free. Same tree as run 2 (tag `kinds-bite-2-pre`; tests
+unchanged since), all of M51–M79 and M51b, fresh work directory.
+
+**Predicted:** control 251/251 and 170/170. M51 again crashes both suites (`KeyError`). Every other
+mutant is killed by the same checks as in runs 1 and 2: M52–M62 and M51b offline; M63–M79 against
+(A), each bridge mutant with (A)'s copy mutated. No mutant survives.
