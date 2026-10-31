@@ -11,7 +11,7 @@ in (A), described well enough for Home Assistant to draw its control. Operating 
     T4'  each is operated from a user in (A): the command reaches the sandbox with exactly
          its data, and the result shows in (A) (bridge step 2)
     T4'' a value (A) rejects never reaches the mediator
-    T5   a type still unsupported (light) is refused at publish
+    T5   a type still unsupported (vacuum; a light until batch B1) is refused at publish
     T6   a climate and an alarm panel are entities of their own type in (A), described (step 3)
     T7'  each is operated from a user in (A), its data reaching the sandbox exactly
     T8   a house in US customary units sends a climate temperature to the sandbox in °C
@@ -30,6 +30,13 @@ in (A), described well enough for Home Assistant to draw its control. Operating 
     X1   a switch published `triggered` (as `scheduler`'s is, after a slot fires) shows it in (A)
     X2   then `on`, `off`, `completed`, `unknown`, `triggered`, each shown as such
     X3   with `--restart`: after (A) restarts, the switch shows its last published state
+    T11  a light, fan, cover and lock are entities of their own type in (A), described (batch B1)
+    T12  each is operated from a user in (A), and the sandbox receives what (A) worked out:
+         brightness_pct as brightness, a colour name as rgb_color, toggle as turn_off,
+         increase_speed as set_percentage, a cover's toggle as open_cover, a lock code as typed
+    T13  a fan preset mode the fan does not offer fails in (A) and never reaches the mediator
+    T14  a lock code typed in (A) is not in the durable log
+    T16  a default code stored for the lock in (A) reaches the sandbox, and not the log
 
 Requires (A) running: `python3 -m confine.house_a up --fresh` on the Pi.
 
@@ -435,11 +442,135 @@ def main() -> int:
             shown = platform.read(landed[SCHEDULE])[0] if landed[SCHEDULE] else None
             check(f"X2 republished {state!r}, (A) shows it", shown == state, f"{shown!r}")
 
+        print("\nT11 — a light, fan, cover and lock, described (batch B1)\n")
+        # `notes/bridge_kinds_b1_prediction_20261031.md`. Feature numbers from Home Assistant
+        # 2026.8.3: fan SET_SPEED 1 | OSCILLATE 2 | DIRECTION 4 | PRESET_MODE 8 | TURN_OFF 16 |
+        # TURN_ON 32; cover OPEN 1 | CLOSE 2 | SET_POSITION 4 | STOP 8. A light with no features
+        # gets neither effect, flash nor transition from (A).
+        LAMP, FAN = "light.selftest_lamp", "fan.selftest_fan"
+        BLIND, DOOR = "cover.selftest_blind", "lock.selftest_door"
+        lamp_attributes = {"friendly_name": "Selftest lamp", "supported_color_modes": ["rgb"],
+                           "color_mode": "rgb", "brightness": 200, "rgb_color": [255, 255, 255],
+                           "supported_features": 0}
+        fan_attributes = {"friendly_name": "Selftest fan", "percentage": 50,
+                          "percentage_step": 25.0, "preset_modes": ["auto", "sleep"],
+                          "preset_mode": None, "oscillating": False, "direction": "forward",
+                          "supported_features": 63}
+        blind_attributes = {"friendly_name": "Selftest blind", "current_position": 0,
+                            "supported_features": 15}
+        door_attributes = {"friendly_name": "Selftest door", "code_format": "^\\d{4}$",
+                           "supported_features": 0}
+        for entity, state, attributes, wanted in (
+                (LAMP, "on", lamp_attributes,
+                 {"supported_color_modes": ["rgb"], "brightness": 200}),
+                (FAN, "on", fan_attributes,
+                 {"percentage": 50, "percentage_step": 25.0, "preset_modes": ["auto", "sleep"],
+                  "oscillating": False, "direction": "forward"}),
+                (BLIND, "closed", blind_attributes, {"current_position": 0}),
+                (DOOR, "locked", door_attributes, {"code_format": "^\\d{4}$"})):
+            answer = sandbox.ask({"op": "entity.publish", "entity": entity, "state": state,
+                                  "attributes": attributes})
+            landed[entity] = platform.published.get(("selftest", entity)) or ""
+            row = registry(platform).get(landed[entity], {})
+            domain = entity.partition(".")[0]
+            check(f"T11 {domain}: a registry row of its domain owned by the bridge",
+                  answer.get("ok") is True and row.get("platform") == "confine_bridge"
+                  and landed[entity].startswith(f"{domain}."),
+                  answer.get("reason") or landed[entity])
+            shown, shown_attributes = platform.read(landed[entity]) if landed[entity] else (None, {})
+            missing = {k: (v, (shown_attributes or {}).get(k)) for k, v in wanted.items()
+                       if (shown_attributes or {}).get(k) != v}
+            check(f"T11 {domain}: (A) holds its state and the attributes that describe it",
+                  shown == state and not missing, f"{shown!r} {missing or ''}")
+
+        def operate(entity: str, service: str, data: dict) -> tuple[dict, dict]:
+            """A user in (A) calls `service`: what reached the sandbox, and the call in flight,
+            which `finish` completes as the integration's own handler would."""
+            sandbox.received.clear()
+            user = User()
+            pressed = user.press(landed[entity] or entity, service, data)
+            arrived = serve_until(mediator, lambda: (sandbox.drain(), [
+                m for m in sandbox.received if m.get("push") == "entity.command"])[1])
+            command = next((m for m in sandbox.received if m.get("push") == "entity.command"), {})
+            return command, {"user": user, "pressed": pressed, "arrived": bool(arrived)}
+
+        def finish(entity: str, command: dict, pending: dict, state: str, attributes: dict) -> tuple:
+            if pending["arrived"]:
+                sandbox.ask({"op": "entity.publish", "entity": entity, "state": state,
+                             "attributes": attributes})
+                sandbox.ask({"op": "entity.command_result", "command": command.get("command"),
+                             "ok": True})
+            serve_until(mediator, lambda: not pending["pressed"].is_alive())
+            pending["pressed"].join()
+            pending["user"].close()
+            shown = platform.read(landed[entity])[0] if landed[entity] else None
+            return pending["user"].outcome, shown
+
+        print("\nT12 — operating them: the sandbox receives what (A) worked out\n")
+        for entity, service, data, expected_service, expected, state, attributes in (
+                (LAMP, "turn_on", {"brightness_pct": 50}, "turn_on", {"brightness": 128}, "on",
+                 {**lamp_attributes, "brightness": 128}),
+                (LAMP, "turn_on", {"color_name": "red"}, "turn_on", {"rgb_color": [255, 0, 0]},
+                 "on", {**lamp_attributes, "brightness": 128, "rgb_color": [255, 0, 0]}),
+                (LAMP, "toggle", {}, "turn_off", {}, "off", lamp_attributes),
+                (FAN, "increase_speed", {}, "set_percentage", {"percentage": 75}, "on",
+                 {**fan_attributes, "percentage": 75}),
+                (BLIND, "toggle", {}, "open_cover", {}, "open",
+                 {**blind_attributes, "current_position": 100}),
+                (DOOR, "unlock", {"code": "5820"}, "unlock", {"code": "5820"}, "unlocked",
+                 door_attributes)):
+            domain = entity.partition(".")[0]
+            command, pending = operate(entity, service, data)
+            check(f"T12 {domain}.{service} {data or ''}: reaches the sandbox as "
+                  f"{expected_service} {expected}",
+                  pending["arrived"] and command.get("entity") == entity
+                  and command.get("service") == expected_service
+                  and command.get("data") == expected, f"{command or pending['user'].outcome}")
+            outcome, shown = finish(entity, command, pending, state, attributes)
+            check(f"T12 {domain}.{service}: the call succeeds and (A) shows {state}",
+                  outcome.get("success") is True and shown == state,
+                  f"{outcome.get('error') or ''} {shown!r}")
+
+        print("\nT13 — a preset the fan does not offer never reaches the mediator\n")
+        before = len([r for r in log.records() if r.get("op") == "entity.command"])
+        user = User()
+        pressed = user.press(landed[FAN] or FAN, "set_preset_mode", {"preset_mode": "turbo"})
+        serve_until(mediator, lambda: not pressed.is_alive(), seconds=15)
+        pressed.join()
+        user.close()
+        after_count = len([r for r in log.records() if r.get("op") == "entity.command"])
+        check("T13 fan.set_preset_mode turbo (offered: auto, sleep) fails in (A)",
+              user.outcome.get("success") is False, str(user.outcome.get("error")))
+        check("T13 and no command decision was recorded: it never left (A)",
+              after_count == before, f"{after_count - before} new")
+
+        print("\nT16 — a default code stored in (A) reaches the sandbox, not the log\n")
+        # (A) adds the lock's stored default code to a command that has none, if it matches the
+        # lock's code format (`lock/__init__.py`, `add_default_code`, `_async_read_entity_options`).
+        stored = house_a._ws_call(admin, {"type": "config/entity_registry/update",
+                                          "entity_id": landed[DOOR] or DOOR,
+                                          "options_domain": "lock",
+                                          "options": {"default_code": "5821"}})
+        command, pending = operate(DOOR, "lock", {})
+        check("T16 lock.lock with no code reaches the sandbox with the stored code",
+              bool(stored.get("success")) and pending["arrived"]
+              and command.get("service") == "lock" and command.get("data") == {"code": "5821"},
+              f"{command or pending['user'].outcome} {stored.get('error') or ''}")
+        outcome, shown = finish(DOOR, command, pending, "locked", door_attributes)
+        check("T16 the call succeeds and (A) shows locked",
+              outcome.get("success") is True and shown == "locked",
+              f"{outcome.get('error') or ''} {shown!r}")
+
+        print("\nT14 — the lock codes are not in the durable log\n")
+        decisions = (root / "audit" / "decisions.jsonl").read_text()
+        check("T14 '5820' (typed) and '5821' (stored) appear nowhere in the run's durable log",
+              '"5820"' not in decisions and '"5821"' not in decisions)
+
         print("\nT5 — a type still unsupported is refused\n")
-        light = sandbox.ask({"op": "entity.publish", "entity": "light.selftest_probe",
-                             "state": "on"})
-        check("T5 a light is refused at publish", light.get("ok") is False,
-              light.get("reason", ""))
+        vacuum = sandbox.ask({"op": "entity.publish", "entity": "vacuum.selftest_probe",
+                              "state": "docked"})
+        check("T5 a vacuum is refused at publish", vacuum.get("ok") is False,
+              vacuum.get("reason", ""))
         check("every chain verifies", log.verify() == [])
         platform.close()
 

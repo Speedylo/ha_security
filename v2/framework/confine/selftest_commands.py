@@ -15,6 +15,10 @@ type, as `selftest_audit`'s F3 check does.
     K7   data matching none of the allowed shapes is refused under COMMAND_DATA
     K8   a service of the other type is refused under COMMAND_SERVICES
     K9   an alarm code is never written to the durable log, allowed or refused
+    K12  light, fan, cover and lock commands, each allowed shape, pushed exactly (batch B1)
+    K13  B1 data matching no allowed shape is refused under COMMAND_DATA
+    K14  B1 services worked out in (A), or of another kind, are refused under COMMAND_SERVICES
+    K15  a lock code is never written to the durable log, allowed or refused
 
 Run:  python3 -m confine.selftest_commands
 """
@@ -39,7 +43,9 @@ except ImportError:  # before step 2 there is no such rule; every K3 case then f
 results: list[bool] = []
 OWNED = {"switch.demo_power": "demo", "button.demo_report": "demo", "text.demo_note": "demo",
          "select.demo_mode": "demo", "number.demo_target": "demo",
-         "climate.demo_ac": "demo", "alarm_control_panel.demo_alarm": "demo"}
+         "climate.demo_ac": "demo", "alarm_control_panel.demo_alarm": "demo",
+         "light.demo_lamp": "demo", "fan.demo_fan": "demo", "cover.demo_blind": "demo",
+         "lock.demo_door": "demo"}
 
 
 def check(claim: str, condition: bool, detail: str = "") -> None:
@@ -216,6 +222,106 @@ def main() -> int:
               '"4917"' not in log_text and f'"{long_code}"' not in log_text
               and '"1234"' not in log_text)
         check("K9 and both records say the code was withheld",
+              (allowed_record.get("requested") or {}).get("data") == {"code": "(withheld)"}
+              and (refused_record.get("requested") or {}).get("data") == {"code": "(withheld)"},
+              f"{(allowed_record.get('requested') or {}).get('data')} "
+              f"{(refused_record.get('requested') or {}).get('data')}")
+
+        # Batch B1 (`notes/bridge_kinds_b1_prediction_20261031.md`): what reaches each entity's
+        # method in (A), as Home Assistant 2026.8.3 processes the call. Colours arrive as lists.
+        LAMP, FAN, BLIND, DOOR = "light.demo_lamp", "fan.demo_fan", "cover.demo_blind", "lock.demo_door"
+        print("\nK12 — light, fan, cover and lock: each allowed shape (batch B1)\n")
+        for entity, service, data in (
+                (LAMP, "turn_on", None),
+                (LAMP, "turn_on", {"brightness": 128}),
+                (LAMP, "turn_on", {"brightness": 200, "rgb_color": [255, 0, 0], "transition": 2}),
+                (LAMP, "turn_on", {"color_temp_kelvin": 2700}),
+                (LAMP, "turn_on", {"hs_color": [30.0, 80.0]}),
+                (LAMP, "turn_on", {"rgb_color": [255, 128, 0]}),
+                (LAMP, "turn_on", {"rgbw_color": [255, 128, 0, 10]}),
+                (LAMP, "turn_on", {"rgbww_color": [255, 128, 0, 10, 20]}),
+                (LAMP, "turn_on", {"xy_color": [0.3, 0.4]}),
+                (LAMP, "turn_on", {"white": 150}),
+                (LAMP, "turn_on", {"white": None}),
+                (LAMP, "turn_on", {"effect": "colorloop"}),
+                (LAMP, "turn_on", {"flash": "short"}),
+                (LAMP, "turn_off", None),
+                (LAMP, "turn_off", {"transition": 1.5}),
+                (LAMP, "turn_off", {"flash": "long"}),
+                (FAN, "turn_on", None),
+                (FAN, "turn_on", {"percentage": 50}),
+                (FAN, "turn_on", {"preset_mode": "sleep"}),
+                (FAN, "turn_on", {"percentage": 50, "preset_mode": "sleep"}),
+                (FAN, "turn_off", None),
+                (FAN, "set_percentage", {"percentage": 75}),
+                (FAN, "set_preset_mode", {"preset_mode": "auto"}),
+                (FAN, "oscillate", {"oscillating": True}),
+                (FAN, "set_direction", {"direction": "reverse"}),
+                (BLIND, "open_cover", None), (BLIND, "close_cover", None),
+                (BLIND, "stop_cover", None), (BLIND, "open_cover_tilt", None),
+                (BLIND, "close_cover_tilt", None), (BLIND, "stop_cover_tilt", None),
+                (BLIND, "set_cover_position", {"position": 40}),
+                (BLIND, "set_cover_tilt_position", {"tilt_position": 60}),
+                (DOOR, "lock", None), (DOOR, "lock", {"code": "1234"}),
+                (DOOR, "unlock", None), (DOOR, "unlock", {"code": "1234"}),
+                (DOOR, "open", None), (DOOR, "open", {"code": "1234"})):
+            record, pushed = send(entity, service, data)
+            check(f"K12 {entity.partition('.')[0]}.{service} {data or ''}: allowed and pushed as sent",
+                  record.get("allowed") is True and record.get("clause") == AMBIENT
+                  and pushed is not None and pushed.get("entity") == entity
+                  and pushed.get("service") == service and pushed.get("data") == (data or {}),
+                  f"{record.get('clause')} {pushed}")
+
+        print("\nK13 — B1 data matching no allowed shape\n")
+        for label, entity, service, data in (
+                ("light profile (resolved in (A), never reaches the entity)", LAMP, "turn_on",
+                 {"profile": "relax"}),
+                ("light color_name (resolved in (A))", LAMP, "turn_on", {"color_name": "red"}),
+                ("light brightness_pct (resolved in (A))", LAMP, "turn_on", {"brightness_pct": 50}),
+                ("light brightness_step (resolved in (A))", LAMP, "turn_on", {"brightness_step": 10}),
+                ("light rgb_color of 2 numbers", LAMP, "turn_on", {"rgb_color": [255, 0]}),
+                ("light rgb_color of 4 numbers", LAMP, "turn_on", {"rgb_color": [255, 0, 0, 0]}),
+                ("light a string in a colour", LAMP, "turn_on", {"hs_color": ["30", 80]}),
+                ("light flash medium", LAMP, "turn_on", {"flash": "medium"}),
+                ("light NaN brightness", LAMP, "turn_on", {"brightness": math.nan}),
+                ("light a 256-character effect", LAMP, "turn_on", {"effect": "e" * 256}),
+                ("light turn_off with a brightness", LAMP, "turn_off", {"brightness": 10}),
+                ("light turn_on redirected with entity_id", LAMP, "turn_on",
+                 {"brightness": 10, "entity_id": "light.someone_else"}),
+                ("fan set_percentage with no percentage", FAN, "set_percentage", {}),
+                ("fan oscillate 'yes'", FAN, "oscillate", {"oscillating": "yes"}),
+                ("fan set_direction with no direction", FAN, "set_direction", {}),
+                ("cover set_cover_position with a string", BLIND, "set_cover_position",
+                 {"position": "40"}),
+                ("cover open_cover with a position", BLIND, "open_cover", {"position": 40}),
+                ("lock a numeric code", DOOR, "unlock", {"code": 1234}),
+                ("lock a 65-character code", DOOR, "unlock", {"code": "8" * 65})):
+            record, pushed = send(entity, service, data)
+            check(f"K13 {label}: refused under COMMAND_DATA, not pushed",
+                  record.get("allowed") is False and record.get("clause") == COMMAND_DATA
+                  and pushed is None, f"{record.get('clause')} {pushed}")
+
+        print("\nK14 — services worked out in (A), or of another kind\n")
+        for entity, service in ((LAMP, "toggle"), (FAN, "toggle"), (FAN, "increase_speed"),
+                                (FAN, "decrease_speed"), (BLIND, "toggle"),
+                                (BLIND, "toggle_tilt"), (DOOR, "turn_on"),
+                                (LAMP, "set_percentage")):
+            record, pushed = send(entity, service, None)
+            check(f"K14 {entity.partition('.')[0]}.{service}: refused under COMMAND_SERVICES",
+                  record.get("allowed") is False and record.get("clause") == COMMAND_SERVICES
+                  and pushed is None, f"{record.get('clause')} {pushed}")
+
+        print("\nK15 — a lock code never reaches the durable log\n")
+        allowed_record, allowed_pushed = send(DOOR, "unlock", {"code": "5820"})
+        long_lock_code = "6" * 65
+        refused_record, _ = send(DOOR, "unlock", {"code": long_lock_code})
+        log_text = (root / "commands.jsonl").read_text()
+        check("K15 the allowed unlock reached the sandbox with its code",
+              allowed_record.get("allowed") is True
+              and (allowed_pushed or {}).get("data") == {"code": "5820"}, str(allowed_pushed))
+        check("K15 neither code is in the log file",
+              '"5820"' not in log_text and f'"{long_lock_code}"' not in log_text)
+        check("K15 and both records say the code was withheld",
               (allowed_record.get("requested") or {}).get("data") == {"code": "(withheld)"}
               and (refused_record.get("requested") or {}).get("data") == {"code": "(withheld)"},
               f"{(allowed_record.get('requested') or {}).get('data')} "
