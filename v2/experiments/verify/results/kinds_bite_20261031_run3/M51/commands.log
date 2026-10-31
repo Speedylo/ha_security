@@ -1,0 +1,47 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/younes/r2exp/km3/work/M51/framework/confine/selftest_commands.py", line 563, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/younes/r2exp/km3/work/M51/framework/confine/selftest_commands.py", line 154, in main
+    record, pushed = send(entity, service, data)
+                     ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/km3/work/M51/framework/confine/selftest_commands.py", line 100, in send
+    mediator.command(command)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/home/younes/r2exp/km3/work/M51/framework/confine/mediator.py", line 847, in command
+    elif not _matches(data, listed[service]):
+             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/km3/work/M51/framework/confine/mediator.py", line 542, in _matches
+    return any(_fits(data, shape) for shape in shapes)
+  File "/home/younes/r2exp/km3/work/M51/framework/confine/mediator.py", line 542, in <genexpr>
+    return any(_fits(data, shape) for shape in shapes)
+               ~~~~~^^^^^^^^^^^^^
+  File "/home/younes/r2exp/km3/work/M51/framework/confine/mediator.py", line 538, in _fits
+    and all(shape[k](v) for k, v in data.items()))
+        ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/km3/work/M51/framework/confine/mediator.py", line 538, in <genexpr>
+    and all(shape[k](v) for k, v in data.items()))
+            ~~~~~^^^
+KeyError: 'brightness'
+
+K1 — each listed command is forwarded with exactly its data
+
+  ok    K1 switch.turn_on : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 1, 'entity': 'switch.demo_power', 'service': 'turn_on', 'data': {}}
+  ok    K1 switch.turn_off : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 2, 'entity': 'switch.demo_power', 'service': 'turn_off', 'data': {}}
+  ok    K1 button.press : allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 3, 'entity': 'button.demo_report', 'service': 'press', 'data': {}}
+  ok    K1 text.set_value {'value': '*.tmp; rm -rf /'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 4, 'entity': 'text.demo_note', 'service': 'set_value', 'data': {'value': '*.tmp; rm -rf /'}}
+  ok    K1 select.select_option {'option': 'away'}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 5, 'entity': 'select.demo_mode', 'service': 'select_option', 'data': {'option': 'away'}}
+  ok    K1 number.set_value {'value': 22}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 6, 'entity': 'number.demo_target', 'service': 'set_value', 'data': {'value': 22}}
+  ok    K1 number.set_value {'value': 19.5}: allowed and pushed as sent  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 7, 'entity': 'number.demo_target', 'service': 'set_value', 'data': {'value': 19.5}}
+
+K2 — a service not listed for the entity's type
+
+  ok    K2 number.turn_on: refused under COMMAND_SERVICES, not pushed  — (command: only the services listed for the entity's type) None
+  ok    K2 switch.press: refused under COMMAND_SERVICES, not pushed  — (command: only the services listed for the entity's type) None
+  ok    K2 switch.unlock: refused under COMMAND_SERVICES, not pushed  — (command: only the services listed for the entity's type) None
+  ok    K2 select.set_value: refused under COMMAND_SERVICES, not pushed  — (command: only the services listed for the entity's type) None
+
+K3 — data that is not exactly the listed keys, of the listed kind
+

@@ -145,3 +145,12 @@ unchanged since), all of M51–M79 and M51b, fresh work directory.
 **Predicted:** control 251/251 and 170/170. M51 again crashes both suites (`KeyError`). Every other
 mutant is killed by the same checks as in runs 1 and 2: M52–M62 and M51b offline; M63–M79 against
 (A), each bridge mutant with (A)'s copy mutated. No mutant survives.
+
+## Outcome, run 3 (2026-10-31, 17:55–18:49)
+
+Results: `experiments/verify/results/kinds_bite_20261031_run3/`. **The prediction held.** Control
+251/251 and 170/170. Every bridge mutant ran with (A)'s copy mutated. M51 crashed both suites
+(`KeyError: 'brightness'` offline, `KeyError: 'code'` against (A)), now recorded by the runner. The other
+29 were each killed by the same checks as in runs 1 and 2 (M74 by T17, M75 by T11 and T12). None
+survived. **Final: 29 of 30 mutants caught by a check, against the final tests; M51 by a crash only,
+with M51b standing in for it.**

@@ -1,0 +1,34 @@
+start 2026-10-31T17:55:31+01:00 pristine 9ccddbd0e2503d49dd3626246ea5e5ae1ce58e3a kinds-bite-2-pre
+control commands exit=0 house_a_up exit=0 bridge_types exit=0 
+M51b failed=1 commands exit=1 house_a_up exit=0 bridge_types exit=0  fails: K3 switch turn_on with any data: refused under COMMAND_DATA, not pushe|K3 text set_value redirected with entity_id: refused under COMMAND_DAT|K7 temperature and a range together: refused under COMMAND_DATA, not p|
+M51 failed=2 commands exit=1 house_a_up exit=0 bridge_types exit=1  fails: crash: KeyError: 'brightness'|crash: KeyError: 'code'|
+M52 failed=1 commands exit=1 house_a_up exit=0 bridge_types exit=0  fails: K3 text set_value with no value: refused under COMMAND_DATA, not pushe|K7 a low without a high: refused under COMMAND_DATA, not pushed  — (|K13 fan set_percentage with no percentage: refused under COMMAND_DATA,|
+M53 failed=1 commands exit=1 house_a_up exit=0 bridge_types exit=0  fails: K13 light rgb_color of 2 numbers: refused under COMMAND_DATA, not push|K13 light rgb_color of 4 numbers: refused under COMMAND_DATA, not push|
+M54 failed=1 commands exit=1 house_a_up exit=0 bridge_types exit=0  fails: K13 light flash medium: refused under COMMAND_DATA, not pushed  — (a|
+M55 failed=1 commands exit=1 house_a_up exit=0 bridge_types exit=0  fails: K12 light.turn_on {'white': None}: allowed and pushed as sent  — (co|
+M56 failed=1 commands exit=1 house_a_up exit=0 bridge_types exit=0  fails: K7 a 65-character code: refused under COMMAND_DATA, not pushed  — (a|K13 lock a 65-character code: refused under COMMAND_DATA, not pushed  |
+M57 failed=1 commands exit=1 house_a_up exit=0 bridge_types exit=0  fails: K19 send_command params of 5 KiB: refused under COMMAND_DATA, not push|K19 remote 65 commands: refused under COMMAND_DATA, not pushed  — (a|K19 remote a 4097-character command: refused under COMMAND_DATA, not p|
+M58 failed=2 commands exit=1 house_a_up exit=0 bridge_types exit=1  fails: K26 no message or title is in the log file|K26 and the records say the text was withheld  — {'message': 'Front |T26 'Door left open' appears nowhere in the run's durable log|
+M59 failed=1 commands exit=1 house_a_up exit=0 bridge_types exit=0  fails: K24 time 25:00: refused under COMMAND_DATA, not pushed  — (ambient: |
+M60 failed=1 commands exit=1 house_a_up exit=0 bridge_types exit=0  fails: K14 light.toggle: refused under COMMAND_SERVICES  — (ambient: §5.10|
+M61 failed=1 commands exit=1 house_a_up exit=0 bridge_types exit=0  fails: K25 update.skip: refused under COMMAND_SERVICES  — (ambient: §5.10.|
+M62 failed=1 commands exit=1 house_a_up exit=0 bridge_types exit=0  fails: K31 media_player.join: refused under COMMAND_SERVICES  — (ambient: �|
+M63 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T24 republishing the same event does not fire it again  — '2026-10-3|
+M64 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T24 and (A) accepts that publish: the bridge does not fail on it  — |
+M65 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T28 (A) shows it playing, described, with no artwork and none of the d|
+M66 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T28 (A) shows it playing, described, with no artwork and none of the d|
+M67 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T30 an id naming a source (A) does not have reaches the sandbox unchan|
+M68 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T30 an id in (A)'s own media library reaches it as a signed link to (A|
+M69 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T29 media_player.volume_up : reaches the sandbox as {}  — {'success'|T29 media_player.volume_up: the call succeeds  — unsupported operand|
+M70 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T22 update: (A) shows on and the attributes that describe it  — 'on'|
+M71 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T18 siren.turn_on {'tone': 'fire'}: reaches the sandbox as turn_on {'t|
+M72 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T18 water_heater.set_temperature 122 °F reaches the sandbox as 50 °C|
+M73 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T18 water_heater.set_away_mode {'away_mode': True}: reaches the sandbo|
+M74 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T17 valve: (A) holds its state and the attributes that describe it  �|
+M75 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T11 fan: (A) holds its state and the attributes that describe it  — |T12 fan.increase_speed : reaches the sandbox as set_percentage {'perce|
+M76 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T11 a fan published on with no speed and no preset: (A) shows on  — |
+M77 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T16' a lock published with the format '[0-9': (A) offers none, and unl|T16' the call succeeds and (A) shows unlocked  — unterminated charac|
+M78 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T23 gps tracker published 'not_home' at 52.37: (A) shows home  — its|T23 gps tracker published 'home' at 53.37: (A) shows not_home  — its|
+M79 failed=1 commands exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T23 a scanner at home is in (A)'s home zone, as a native scanner is  �|
+end 2026-10-31T18:49:05+01:00
+ALLDONE

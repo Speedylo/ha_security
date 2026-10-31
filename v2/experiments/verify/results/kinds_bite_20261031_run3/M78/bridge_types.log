@@ -1,0 +1,277 @@
+
+T1, T2 — each type is an entity of its own type in (A), described
+
+  ok    T1 button: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 button: (A) holds the state and the attributes that describe it  — 'unknown' 
+  ok    T1 text: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 text: (A) holds the state and the attributes that describe it  — '*.tmp' 
+  ok    T1 select: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 select: (A) holds the state and the attributes that describe it  — 'eco' 
+  ok    T1 number: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 number: (A) holds the state and the attributes that describe it  — '21.5' 
+
+T3 — a republish changes the state in (A)
+
+  ok    T3 text: now *.bak  — '*.bak'
+  ok    T3 select: now away  — 'away'
+  ok    T3 number: now 19.0  — '19.0'
+
+T4' — operating each one, from a user in (A) (step 2)
+
+  ok    T4' button.press: reaches the sandbox with exactly its data  — {'push': 'entity.command', 'command': 1, 'entity': 'button.selftest_report', 'service': 'press', 'data': {}}
+  ok    T4' button.press: the user's call succeeds and (A) shows the result  —  '2026-10-31T17:46:35.597156+00:00'
+  ok    T4' text.set_value: reaches the sandbox with exactly its data  — {'push': 'entity.command', 'command': 2, 'entity': 'text.selftest_ignored', 'service': 'set_value', 'data': {'value': '*.log'}}
+  ok    T4' text.set_value: the user's call succeeds and (A) shows the result  —  '*.log'
+  ok    T4' select.select_option: reaches the sandbox with exactly its data  — {'push': 'entity.command', 'command': 3, 'entity': 'select.selftest_mode', 'service': 'select_option', 'data': {'option': 'comfort'}}
+  ok    T4' select.select_option: the user's call succeeds and (A) shows the result  —  'comfort'
+  ok    T4' number.set_value: reaches the sandbox with exactly its data  — {'push': 'entity.command', 'command': 4, 'entity': 'number.selftest_target', 'service': 'set_value', 'data': {'value': 22.0}}
+  ok    T4' number.set_value: the user's call succeeds and (A) shows the result  —  '22.0'
+
+T4'' — a value (A) rejects never reaches the mediator
+
+  ok    T4'' number.set_value 99 (range 5-30) fails in (A)  — Validation error: Value 99.0 for number.selftest_target is outside valid range 5.0 - 30.0
+  ok    T4'' and no command decision was recorded: it never left (A)  — 0 new
+
+T6 — a climate and an alarm panel, described (step 3)
+
+  ok    T6 climate: a registry row of its domain owned by the bridge  — its own entity
+  ok    T6 climate: (A) holds its state and the attributes that describe it  — 'cool' 
+  ok    T6 alarm_control_panel: a registry row of its domain owned by the bridge  — its own entity
+  ok    T6 alarm_control_panel: (A) holds its state and the attributes that describe it  — 'disarmed' 
+
+T7' — operating them from a user in (A)
+
+  ok    T7' climate.set_temperature: reaches the sandbox as {'temperature': 23.0}  — {'push': 'entity.command', 'command': 5, 'entity': 'climate.selftest_ac', 'service': 'set_temperature', 'data': {'temperature': 23.0}}
+  ok    T7' climate.set_temperature: the call succeeds and (A) shows cool  —  'cool'
+  ok    T7' climate.set_hvac_mode: reaches the sandbox as {'hvac_mode': 'heat'}  — {'push': 'entity.command', 'command': 6, 'entity': 'climate.selftest_ac', 'service': 'set_hvac_mode', 'data': {'hvac_mode': 'heat'}}
+  ok    T7' climate.set_hvac_mode: the call succeeds and (A) shows heat  —  'heat'
+  ok    T7' alarm_control_panel.alarm_arm_away: reaches the sandbox as {'code': '4917'}  — {'push': 'entity.command', 'command': 7, 'entity': 'alarm_control_panel.selftest_alarm', 'service': 'alarm_arm_away', 'data': {'code': '4917'}}
+  ok    T7' alarm_control_panel.alarm_arm_away: the call succeeds and (A) shows armed_away  —  'armed_away'
+  ok    T7' alarm_control_panel.alarm_trigger: reaches the sandbox as {}  — {'push': 'entity.command', 'command': 8, 'entity': 'alarm_control_panel.selftest_alarm', 'service': 'alarm_trigger', 'data': {}}
+  ok    T7' alarm_control_panel.alarm_trigger: the call succeeds and (A) shows triggered  —  'triggered'
+
+T8 — a house in °F sends the sandbox °C
+
+  ok    T8 73.4 °F typed in (A) reaches the sandbox as 23.0 °C  — 23.000000000000004 
+  ok    T8 and (A) is back in metric units
+
+T9 — the alarm code is not in the durable log
+
+  ok    T9 '4917' appears nowhere in the run's durable log
+
+W1 — a calendar and a weather, described (step 4)
+
+  ok    W1 calendar: a registry row of its domain owned by the bridge  — its own entity
+  ok    W1 calendar: (A) holds its state and the attributes that describe it  — 'off' 
+  ok    W1 weather: a registry row of its domain owned by the bridge  — its own entity
+  ok    W1 weather: (A) holds its state and the attributes that describe it  — 'rainy' 
+
+W2 — a calendar's events come from the sandbox's answer
+
+  ok    W2 the sandbox is asked get_events with a start and an end, and nothing else  — {'push': 'entity.command', 'command': 10, 'entity': 'calendar.selftest_bins', 'service': 'get_events', 'data': {'start': '2026-10-26T00:00:00+00:00', 'end': '2026-11-02T00:00:00+00:00'}}
+  ok    W2 the user's response lists the two events the sandbox answered  —  [{'start': '2026-10-27T09:00:00+01:00', 'end': '2026-10-27T10:00:00+01:00', 'summary': 'Dentist, Dr Example', 'location': 'Darmstadt'}, {'start': '2026-10-28', 'end': '2026-10-29', 'summary': 'Bio bin'}]
+
+W3 — a weather's forecast comes from the sandbox's answer
+
+  ok    W3 the sandbox is asked get_forecasts {type: daily}  — {'push': 'entity.command', 'command': 11, 'entity': 'weather.selftest_home', 'service': 'get_forecasts', 'data': {'type': 'daily'}}
+  ok    W3 the user's response has the three entries, with their temperatures  —  [{'datetime': '2026-10-26T12:00:00+00:00', 'condition': 'rainy', 'temperature': 12.5, 'templow': 6.0, 'precipitation': 3.2}, {'datetime': '2026-10-27T12:00:00+00:00', 'condition': 'cloudy', 'temperature': 11.0, 'templow': 5.0}, {'datetime': '2026-10-28T12:00:00+00:00', 'condition': 'sunny', 'temperature': 14.0, 'templow': 7.5}]
+
+W4 — a malformed answer fails the question
+
+  ok    W4 the user's call fails, and the answer did not reach (A)  — {'success': False, 'error': 'calendar.selftest_bins: the answer was refused: item 0 does not have exactly the listed fields', 'response': None, 'seconds': 0.012447624998458195}
+
+W5 — the events' titles are not in the durable log
+
+  ok    W5 'Dentist, Dr Example' appears nowhere in the run's durable log
+
+U — unknown and unavailable states (F66)
+
+  ok    U1 a numeric sensor published 'unknown' is accepted, and (A) shows unknown  — its own entity 'unknown'
+  ok    U2 republished '12.5', (A) shows it  — '12.5'
+  ok    U2 republished 'unavailable', (A) shows it  — 'unavailable'
+  ok    U3 a switch published 'unavailable' shows unavailable in (A)  — 'unavailable'
+
+V — timestamp and date sensors (F67)
+
+  ok    V1 a timestamp sensor published '2026-10-25 15:00:00+00:00' shows '2026-10-25T15:00:00+00:00' in (A)  — '2026-10-25T15:00:00+00:00'
+  ok    V2 a timestamp sensor published '2026-10-25T18:00:00+00:00' shows '2026-10-25T18:00:00+00:00' in (A)  — '2026-10-25T18:00:00+00:00'
+  ok    V3 a date sensor published '2026-10-28' shows '2026-10-28' in (A)  — '2026-10-28'
+  ok    V2 republished 'unknown', (A) shows unknown  — 'unknown'
+
+X — a switch shows the state its integration published
+
+  ok    X1 a switch published 'triggered' is the bridge's switch, and (A) shows triggered  — 'triggered'
+  ok    X2 republished 'on', (A) shows it  — 'on'
+  ok    X2 republished 'off', (A) shows it  — 'off'
+  ok    X2 republished 'completed', (A) shows it  — 'completed'
+  ok    X2 republished 'unknown', (A) shows it  — 'unknown'
+  ok    X2 republished 'triggered', (A) shows it  — 'triggered'
+
+T11 — a light, fan, cover and lock, described (batch B1)
+
+  ok    T11 light: a registry row of its domain owned by the bridge  — its own entity
+  ok    T11 light: (A) holds its state and the attributes that describe it  — 'on' 
+  ok    T11 fan: a registry row of its domain owned by the bridge  — its own entity
+  ok    T11 fan: (A) holds its state and the attributes that describe it  — 'on' 
+  ok    T11 cover: a registry row of its domain owned by the bridge  — its own entity
+  ok    T11 cover: (A) holds its state and the attributes that describe it  — 'closed' 
+  ok    T11 lock: a registry row of its domain owned by the bridge  — its own entity
+  ok    T11 lock: (A) holds its state and the attributes that describe it  — 'locked' 
+  ok    T11 a fan published on with no speed and no preset: (A) shows on  — 'on'
+
+T12 — operating them: the sandbox receives what (A) worked out
+
+  ok    T12 light.turn_on {'brightness_pct': 50}: reaches the sandbox as turn_on {'brightness': 128}  — {'push': 'entity.command', 'command': 13, 'entity': 'light.selftest_lamp', 'service': 'turn_on', 'data': {'brightness': 128}}
+  ok    T12 light.turn_on: the call succeeds and (A) shows on  —  'on'
+  ok    T12 light.turn_on {'color_name': 'red'}: reaches the sandbox as turn_on {'rgb_color': [255, 0, 0]}  — {'push': 'entity.command', 'command': 14, 'entity': 'light.selftest_lamp', 'service': 'turn_on', 'data': {'rgb_color': [255, 0, 0]}}
+  ok    T12 light.turn_on: the call succeeds and (A) shows on  —  'on'
+  ok    T12 light.toggle : reaches the sandbox as turn_off {}  — {'push': 'entity.command', 'command': 15, 'entity': 'light.selftest_lamp', 'service': 'turn_off', 'data': {}}
+  ok    T12 light.toggle: the call succeeds and (A) shows off  —  'off'
+  ok    T12 fan.increase_speed : reaches the sandbox as set_percentage {'percentage': 75}  — {'push': 'entity.command', 'command': 16, 'entity': 'fan.selftest_fan', 'service': 'set_percentage', 'data': {'percentage': 75}}
+  ok    T12 fan.increase_speed: the call succeeds and (A) shows on  —  'on'
+  ok    T12 cover.toggle : reaches the sandbox as open_cover {}  — {'push': 'entity.command', 'command': 17, 'entity': 'cover.selftest_blind', 'service': 'open_cover', 'data': {}}
+  ok    T12 cover.toggle: the call succeeds and (A) shows open  —  'open'
+  ok    T12 lock.unlock {'code': '5820'}: reaches the sandbox as unlock {'code': '5820'}  — {'push': 'entity.command', 'command': 18, 'entity': 'lock.selftest_door', 'service': 'unlock', 'data': {'code': '5820'}}
+  ok    T12 lock.unlock: the call succeeds and (A) shows unlocked  —  'unlocked'
+
+T13 — a preset the fan does not offer never reaches the mediator
+
+  ok    T13 fan.set_preset_mode turbo (offered: auto, sleep) fails in (A)  — Validation error: Preset mode turbo is not valid, valid preset modes are: auto, sleep
+  ok    T13 and no command decision was recorded: it never left (A)  — 0 new
+
+T16 — a default code stored in (A) reaches the sandbox, not the log
+
+  ok    T16 lock.lock with no code reaches the sandbox with the stored code  — {'push': 'entity.command', 'command': 19, 'entity': 'lock.selftest_door', 'service': 'lock', 'data': {'code': '5821'}} 
+  ok    T16 the call succeeds and (A) shows locked  —  'locked'
+
+T16' — a code format (A) cannot compile is not used
+
+  ok    T16' a lock published with the format '[0-9': (A) offers none, and unlock with a code reaches the sandbox  — None {'push': 'entity.command', 'command': 20, 'entity': 'lock.selftest_gate', 'service': 'unlock', 'data': {'code': '5822'}}
+  ok    T16' the call succeeds and (A) shows unlocked  —  'unlocked'
+
+T14 — the lock codes are not in the durable log
+
+  ok    T14 '5820' (typed) and '5821' (stored) appear nowhere in the run's durable log
+
+T17 — humidifier, water heater, vacuum, valve, siren, remote (batch B2)
+
+  ok    T17 humidifier: a registry row of its domain owned by the bridge  — its own entity
+  ok    T17 humidifier: (A) holds its state and the attributes that describe it  — 'on' 
+  ok    T17 water_heater: a registry row of its domain owned by the bridge  — its own entity
+  ok    T17 water_heater: (A) holds its state and the attributes that describe it  — 'eco' 
+  ok    T17 vacuum: a registry row of its domain owned by the bridge  — its own entity
+  ok    T17 vacuum: (A) holds its state and the attributes that describe it  — 'docked' 
+  ok    T17 valve: a registry row of its domain owned by the bridge  — its own entity
+  ok    T17 valve: (A) holds its state and the attributes that describe it  — 'closed' 
+  ok    T17 siren: a registry row of its domain owned by the bridge  — its own entity
+  ok    T17 siren: (A) holds its state and the attributes that describe it  — 'off' 
+  ok    T17 remote: a registry row of its domain owned by the bridge  — its own entity
+  ok    T17 remote: (A) holds its state and the attributes that describe it  — 'on' 
+
+T18 — operating them: the sandbox receives what (A) worked out
+
+  ok    T18 humidifier.set_humidity {'humidity': 45}: reaches the sandbox as set_humidity {'humidity': 45}  — {'push': 'entity.command', 'command': 21, 'entity': 'humidifier.selftest_air', 'service': 'set_humidity', 'data': {'humidity': 45}}
+  ok    T18 humidifier.set_humidity: the call succeeds and (A) shows on  —  'on'
+  ok    T18 water_heater.set_away_mode {'away_mode': True}: reaches the sandbox as set_away_mode {'away_mode': True}  — {'push': 'entity.command', 'command': 22, 'entity': 'water_heater.selftest_boiler', 'service': 'set_away_mode', 'data': {'away_mode': True}}
+  ok    T18 water_heater.set_away_mode: the call succeeds and (A) shows eco  —  'eco'
+  ok    T18 valve.open_valve : reaches the sandbox as set_valve_position {'position': 100}  — {'push': 'entity.command', 'command': 23, 'entity': 'valve.selftest_tap', 'service': 'set_valve_position', 'data': {'position': 100}}
+  ok    T18 valve.open_valve: the call succeeds and (A) shows open  —  'open'
+  ok    T18 siren.turn_on {'tone': 'fire'}: reaches the sandbox as turn_on {'tone': 'fire'}  — {'push': 'entity.command', 'command': 24, 'entity': 'siren.selftest_alarm', 'service': 'turn_on', 'data': {'tone': 'fire'}}
+  ok    T18 siren.turn_on: the call succeeds and (A) shows on  —  'on'
+  ok    T18 vacuum.start : reaches the sandbox as start {}  — {'push': 'entity.command', 'command': 25, 'entity': 'vacuum.selftest_robot', 'service': 'start', 'data': {}}
+  ok    T18 vacuum.start: the call succeeds and (A) shows cleaning  —  'cleaning'
+  ok    T18 remote.send_command {'command': 'power'}: reaches the sandbox as send_command {'command': ['power'], 'num_repeats': 1, 'hold_secs': 0}  — {'push': 'entity.command', 'command': 26, 'entity': 'remote.selftest_tv', 'service': 'send_command', 'data': {'command': ['power'], 'num_repeats': 1, 'hold_secs': 0.0}}
+  ok    T18 remote.send_command: the call succeeds and (A) shows on  —  'on'
+  ok    T18 water_heater.set_temperature 122 °F reaches the sandbox as 50 °C  — {'push': 'entity.command', 'command': 27, 'entity': 'water_heater.selftest_boiler', 'service': 'set_temperature', 'data': {'temperature': 50.0}} 
+  ok    T18 and (A) is back in metric units
+
+T19 — a humidity above the published maximum never reaches the mediator
+
+  ok    T19 humidifier.set_humidity 95 (published 30-80) fails in (A)  — Validation error: Provided humidity 95 is not valid. Accepted range is 30 to 80
+  ok    T19 and no command decision was recorded: it never left (A)  — 0 new
+
+T22 — update, time, notify, event, trackers (batch B3)
+
+  ok    T22 update: a registry row of its domain owned by the bridge  — its own entity
+  ok    T22 update: (A) shows on and the attributes that describe it  — 'on' 
+  ok    T22 time: a registry row of its domain owned by the bridge  — its own entity
+  ok    T22 time: (A) shows 06:45:00 and the attributes that describe it  — '06:45:00' 
+  ok    T22 notify: a registry row of its domain owned by the bridge  — its own entity
+  ok    T22 notify: (A) shows unknown and the attributes that describe it  — 'unknown' 
+  ok    T22 event: a registry row of its domain owned by the bridge  — its own entity
+  ok    T22 event: (A) shows unknown and the attributes that describe it  — 'unknown' 
+
+T23 — trackers: (A) works out home or away from its own zones
+
+  FAIL  T23 gps tracker published 'not_home' at 52.37: (A) shows home  — its own entity 'not_home'
+  FAIL  T23 gps tracker published 'home' at 53.37: (A) shows not_home  — its own entity 'home'
+  ok    T23 bluetooth_le tracker published 'home' at -: (A) shows home  — its own entity 'home'
+  ok    T23 bluetooth_le tracker published 'not_home' at -: (A) shows not_home  — its own entity 'not_home'
+  ok    T23 the scanner's MAC is an attribute, and its unique id is the bridge's  — selftest:device_tracker.selftest_tag
+  ok    T23 a scanner at home is in (A)'s home zone, as a native scanner is  — 'home' ['zone.home']
+
+T24 — events fire once in (A)
+
+  ok    T24 a press event fires in (A): a new time, its type and its attribute  — '2026-10-31T17:47:02.953+00:00' {'event_types': ['press', 'double_press'], 'event_type': 'press', 'button': '1', 'friendly_name': 'selftest Doorbell'}
+  ok    T24 republishing the same event does not fire it again  — '2026-10-31T17:47:02.953+00:00' -> '2026-10-31T17:47:02.953+00:00'
+  ok    T24 a later double_press fires again  — '2026-10-31T17:47:03.557+00:00' double_press
+  ok    T24 an event type the entity does not list leaves (A)'s state, and the bridge works  — '2026-10-31T17:47:03.557+00:00'
+  ok    T24 and (A) accepts that publish: the bridge does not fail on it  — its own entity
+
+T25 — update skip stays in (A); install, a time and a message reach the sandbox
+
+  ok    T25 update.skip: succeeds, (A) shows off, no command decision  —  'off' 0 new
+  ok    T25 update.clear_skipped: succeeds, (A) shows on, no command decision  —  'on' 0 new
+  ok    T25 update.install : reaches the sandbox as {'backup': False}  — {'push': 'entity.command', 'command': 28, 'entity': 'update.selftest_firmware', 'service': 'install', 'data': {'backup': False}}
+  ok    T25 update.install: the call succeeds and (A) shows off  —  'off'
+  ok    T25 time.set_value {'time': '07:30'}: reaches the sandbox as {'time': '07:30:00'}  — {'push': 'entity.command', 'command': 29, 'entity': 'time.selftest_wake', 'service': 'set_value', 'data': {'time': '07:30:00'}}
+  ok    T25 time.set_value: the call succeeds and (A) shows 07:30:00  —  '07:30:00'
+  ok    T25 notify.send_message {'message': 'Door left open', 'title': 'Home'}: reaches the sandbox as {'message': 'Door left open', 'title': 'Home'}  — {'push': 'entity.command', 'command': 30, 'entity': 'notify.selftest_panel', 'service': 'send_message', 'data': {'message': 'Door left open', 'title': 'Home'}}
+  ok    T25 notify.send_message: the call succeeds and (A) shows the time it was sent  —  '2026-10-31T17:47:06.044045+00:00'
+
+T26 — the notification's text is not in the durable log
+
+  ok    T26 'Door left open' appears nowhere in the run's durable log
+
+T28 — a media player (batch B4a)
+
+  ok    T28 media_player: a registry row of its domain owned by the bridge  — its own entity
+  ok    T28 (A) shows it playing, described, with no artwork and none of the dropped features  — 'playing'  
+
+T29 — operating it: the service's own field names reach the sandbox
+
+  ok    T29 media_player.volume_set {'volume_level': 0.4}: reaches the sandbox as {'volume_level': 0.4}  — {'push': 'entity.command', 'command': 31, 'entity': 'media_player.selftest_speaker', 'service': 'volume_set', 'data': {'volume_level': 0.4}}
+  ok    T29 media_player.volume_set: the call succeeds
+  ok    T29 media_player.volume_mute {'is_volume_muted': True}: reaches the sandbox as {'is_volume_muted': True}  — {'push': 'entity.command', 'command': 32, 'entity': 'media_player.selftest_speaker', 'service': 'volume_mute', 'data': {'is_volume_muted': True}}
+  ok    T29 media_player.volume_mute: the call succeeds
+  ok    T29 media_player.media_seek {'seek_position': 30}: reaches the sandbox as {'seek_position': 30.0}  — {'push': 'entity.command', 'command': 33, 'entity': 'media_player.selftest_speaker', 'service': 'media_seek', 'data': {'seek_position': 30.0}}
+  ok    T29 media_player.media_seek: the call succeeds
+  ok    T29 media_player.media_play_pause : reaches the sandbox as {}  — {'push': 'entity.command', 'command': 34, 'entity': 'media_player.selftest_speaker', 'service': 'media_play_pause', 'data': {}}
+  ok    T29 media_player.media_play_pause: the call succeeds
+  ok    T29 media_player.volume_up : reaches the sandbox as {}  — {'push': 'entity.command', 'command': 35, 'entity': 'media_player.selftest_speaker', 'service': 'volume_up', 'data': {}}
+  ok    T29 media_player.volume_up: the call succeeds
+  ok    T29 media_player.toggle : reaches the sandbox as {}  — {'push': 'entity.command', 'command': 36, 'entity': 'media_player.selftest_speaker', 'service': 'toggle', 'data': {}}
+  ok    T29 media_player.toggle: the call succeeds
+  ok    T29 media_player.select_source {'source': 'AUX'}: reaches the sandbox as {'source': 'AUX'}  — {'push': 'entity.command', 'command': 37, 'entity': 'media_player.selftest_speaker', 'service': 'select_source', 'data': {'source': 'AUX'}}
+  ok    T29 media_player.select_source: the call succeeds
+  ok    T29 media_player.repeat_set {'repeat': 'all'}: reaches the sandbox as {'repeat': 'all'}  — {'push': 'entity.command', 'command': 38, 'entity': 'media_player.selftest_speaker', 'service': 'repeat_set', 'data': {'repeat': 'all'}}
+  ok    T29 media_player.repeat_set: the call succeeds
+  ok    T29 media_player.play_media {'media_content_type': 'music', 'media_content_id': 'spotify:track:1'}: reaches the sandbox as {'media_content_type': 'music', 'media_content_id': 'spotify:track:1', 'extra': {}}  — {'push': 'entity.command', 'command': 39, 'entity': 'media_player.selftest_speaker', 'service': 'play_media', 'data': {'media_content_type': 'music', 'media_content_id': 'spotify:track:1', 'extra': {}}}
+  ok    T29 media_player.play_media: the call succeeds
+
+T30 — play_media: (A) resolves only its own media sources
+
+  ok    T30 an id naming a source (A) does not have reaches the sandbox unchanged  — {'push': 'entity.command', 'command': 40, 'entity': 'media_player.selftest_speaker', 'service': 'play_media', 'data': {'media_content_type': 'music', 'media_content_id': 'media-source://ring/ring5.mp3', 'extra': {}}}
+  ok    T30 an id in (A)'s own media library reaches it as a signed link to (A)  — http://10.126.85.243:8123/media/local/selftest.mp3?authSig=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJp 
+
+T31 — grouping is not offered
+
+  ok    T31 media_player.join fails in (A)  — Validation error: Entity media_player.selftest_speaker does not support action media_player.join
+  ok    T31 and no command decision was recorded  — 0 new
+
+T5 — a kind the bridge does not stand in for is refused
+
+  ok    T5 a to-do list is refused at publish  — the platform refused: confine_bridge/publish: {'code': 'unsupported', 'message': 'the bridge cannot stand in for a todo entity'}
+  ok    every chain verifies
+
+168/170 checks passed
