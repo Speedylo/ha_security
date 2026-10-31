@@ -14,7 +14,8 @@ SIGNAL_NEW_ENTITY = f"{DOMAIN}_new_entity_{{}}"
 SUPPORTED = ("sensor", "binary_sensor", "switch", "button", "text", "select", "number",
              "climate", "alarm_control_panel", "calendar", "weather",
              "light", "fan", "cover", "lock",
-             "humidifier", "water_heater", "vacuum", "valve", "siren", "remote")
+             "humidifier", "water_heater", "vacuum", "valve", "siren", "remote",
+             "update", "event", "time", "device_tracker", "notify")
 
 #: How long a user's command waits for the confined integration to answer (W1 step 2b).
 COMMAND_TIMEOUT = 10

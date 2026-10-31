@@ -27,7 +27,7 @@ import array
 import collections
 import json
 import math
-from datetime import datetime
+from datetime import datetime, time as dt_time
 import os
 import selectors
 import socket
@@ -286,6 +286,25 @@ def _commands(value: object) -> bool:
             and all(isinstance(v, str) and len(v) <= MAX_REMOTE_COMMAND for v in value))
 
 
+#: A notification's text (batch B3, decision 4).
+MAX_MESSAGE = 4096
+
+
+def _message(value: object) -> bool:
+    return isinstance(value, str) and len(value) <= MAX_MESSAGE
+
+
+def _clock(value: object) -> bool:
+    """A time of day, "HH:MM" or "HH:MM:SS", as Home Assistant's own `time.set_value` takes it."""
+    if not (isinstance(value, str) and len(value) <= 15):
+        return False
+    try:
+        dt_time.fromisoformat(value)
+    except ValueError:
+        return False
+    return True
+
+
 def _tone(value: object) -> bool:
     return (isinstance(value, int) and not isinstance(value, bool)) or _text(value)
 
@@ -402,6 +421,11 @@ COMMANDS: dict[str, dict[str, list[Shape]]] = {
                            "timeout": _Optional(_number)}],
         "delete_command": [{"command": _commands, "device": _Optional(_text)}],
     },
+    # Batch B3 (`notes/bridge_kinds_b3_prediction_20261031.md`). An update's `skip` and
+    # `clear_skipped` are kept in (A) itself; events and device trackers are display only.
+    "update": {"install": [{"backup": _flag, "version": _Optional(_text)}]},
+    "time": {"set_value": [{"time": _clock}]},
+    "notify": {"send_message": [{"message": _message, "title": _Optional(_text)}]},
     # Questions (bridge step 4): answered with a list, which `ANSWERS` checks.
     "calendar": {"get_events": [{"start": _iso, "end": _iso}]},
     "weather": {"get_forecasts": [{"type": _forecast_type}]},
@@ -465,8 +489,9 @@ def check_answer(question: tuple[str, str], answer: object) -> tuple[str | None,
             return f"item {index} has a field of the wrong kind", shape
     return None, shape
 
-#: Data never written to the durable log, allowed or refused: the alarm code the user typed.
-WITHHELD = frozenset({"code"})
+#: Data never written to the durable log, allowed or refused: an alarm or lock code, and a
+#: notification's text (batch B3, decision 4). The record keeps that the key was there.
+WITHHELD = frozenset({"code", "message", "title"})
 
 
 def _fits(data: dict, shape: Shape) -> bool:
