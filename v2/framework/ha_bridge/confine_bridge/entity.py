@@ -24,6 +24,11 @@ from .const import DOMAIN, SIGNAL_NEW_ENTITY
 #: extra attributes as well would duplicate them, and `friendly_name` would fight the device name.
 RESERVED = {"friendly_name", "unit_of_measurement", "device_class", "state_class", "icon",
             "options"}
+#: Never passed on, whatever the kind (F71, `notes/bridge_kinds_b5_prediction_20261031.md`). (A)'s
+#: frontend draws an entity's icon from these links, so whoever opens (A)'s UI would have their
+#: browser fetch an address the integration chose: a path past its egress allowlist. (A) shows the
+#: kind's own icon instead.
+NOT_PASSED = {"entity_picture", "entity_picture_local"}
 
 
 class BridgedEntity(RestoreEntity):
@@ -69,7 +74,8 @@ class BridgedEntity(RestoreEntity):
                            else attributes.get("friendly_name")
                            or self._published_id.partition(".")[2])
         self._attr_extra_state_attributes = {k: v for k, v in attributes.items()
-                                             if k not in RESERVED and k not in self._described}
+                                             if k not in RESERVED and k not in NOT_PASSED
+                                             and k not in self._described}
         # Unavailable in (A) while it is unavailable to the integration, whatever its type (F66).
         self._attr_available = definition.get("state") != "unavailable"
         self._take_state(definition.get("state"), attributes)
