@@ -48,6 +48,10 @@ in (A), described well enough for Home Assistant to draw its control. Operating 
     T24  a published event fires once in (A); a republish does not fire it again
     T25  update skip and clear_skipped stay in (A); install, a time and a message reach the sandbox
     T26  a notification's text is not in the durable log
+    T28  a media player, described, without artwork, browsing, searching or grouping (batch B4a)
+    T29  each operated from a user in (A), the sandbox receiving the service's own field names
+    T30  play_media: an id (A) can resolve becomes a signed link to (A); any other goes unchanged
+    T31  grouping is not offered in (A), and nothing reaches the mediator
 
 Requires (A) running: `python3 -m confine.house_a up --fresh` on the Pi.
 
@@ -825,6 +829,96 @@ def main() -> int:
         print("\nT26 — the notification's text is not in the durable log\n")
         check("T26 'Door left open' appears nowhere in the run's durable log",
               "Door left open" not in (root / "audit" / "decisions.jsonl").read_text())
+
+        print("\nT28 — a media player (batch B4a)\n")
+        # `notes/bridge_kinds_b4a_prediction_20261031.md`. Every feature of Home Assistant
+        # 2026.8.3's MediaPlayerEntityFeature; the bridge drops BROWSE_MEDIA 131072, GROUPING
+        # 524288 and SEARCH_MEDIA 4194304.
+        SPEAKER = "media_player.selftest_speaker"
+        every_feature = sum((1, 2, 4, 8, 16, 32, 128, 256, 512, 1024, 2048, 4096, 8192, 16384,
+                             32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304))
+        dropped = 131072 | 524288 | 4194304
+        speaker_attributes = {"friendly_name": "Selftest speaker", "volume_level": 0.5,
+                              "is_volume_muted": False, "media_title": "Selftest song",
+                              "media_content_type": "music", "source": "Radio",
+                              "source_list": ["Radio", "AUX"], "repeat": "off",
+                              "shuffle": False,
+                              "entity_picture": "/api/media_player_proxy/media_player.x?token=t",
+                              "supported_features": every_feature}
+        answer = sandbox.ask({"op": "entity.publish", "entity": SPEAKER, "state": "playing",
+                              "attributes": speaker_attributes})
+        landed[SPEAKER] = platform.published.get(("selftest", SPEAKER)) or ""
+        row = registry(platform).get(landed[SPEAKER], {})
+        check("T28 media_player: a registry row of its domain owned by the bridge",
+              answer.get("ok") is True and row.get("platform") == "confine_bridge"
+              and landed[SPEAKER].startswith("media_player."),
+              answer.get("reason") or landed[SPEAKER])
+        shown, shown_attributes = platform.read(landed[SPEAKER]) if landed[SPEAKER] else (None, {})
+        shown_attributes = shown_attributes or {}
+        wanted = {"volume_level": 0.5, "media_title": "Selftest song",
+                  "source_list": ["Radio", "AUX"],
+                  "supported_features": every_feature & ~dropped}
+        missing = {k: (v, shown_attributes.get(k)) for k, v in wanted.items()
+                   if shown_attributes.get(k) != v}
+        check("T28 (A) shows it playing, described, with no artwork and none of the dropped "
+              "features", shown == "playing" and not missing
+              and "entity_picture" not in shown_attributes,
+              f"{shown!r} {missing or ''} {shown_attributes.get('entity_picture') or ''}")
+
+        print("\nT29 — operating it: the service's own field names reach the sandbox\n")
+        for service, data, expected in (
+                ("volume_set", {"volume_level": 0.4}, {"volume_level": 0.4}),
+                ("volume_mute", {"is_volume_muted": True}, {"is_volume_muted": True}),
+                ("media_seek", {"seek_position": 30}, {"seek_position": 30.0}),
+                ("media_play_pause", {}, {}),
+                ("volume_up", {}, {}),
+                ("toggle", {}, {}),
+                ("select_source", {"source": "AUX"}, {"source": "AUX"}),
+                ("repeat_set", {"repeat": "all"}, {"repeat": "all"}),
+                ("play_media", {"media_content_type": "music",
+                                "media_content_id": "spotify:track:1"},
+                 {"media_content_type": "music", "media_content_id": "spotify:track:1",
+                  "extra": {}})):
+            command, pending = operate(SPEAKER, service, data)
+            check(f"T29 media_player.{service} {data or ''}: reaches the sandbox as {expected}",
+                  pending["arrived"] and command.get("service") == service
+                  and command.get("data") == expected, f"{command or pending['user'].outcome}")
+            outcome, _ = finish(SPEAKER, command, pending, "playing", speaker_attributes)
+            check(f"T29 media_player.{service}: the call succeeds",
+                  outcome.get("success") is True, f"{outcome.get('error') or ''}")
+
+        print("\nT30 — play_media: (A) resolves only its own media sources\n")
+        command, pending = operate(SPEAKER, "play_media",
+                                   {"media_content_type": "music",
+                                    "media_content_id": "media-source://ring/ring5.mp3"})
+        check("T30 an id naming a source (A) does not have reaches the sandbox unchanged",
+              pending["arrived"] and (command.get("data") or {}).get("media_content_id")
+              == "media-source://ring/ring5.mp3", f"{command or pending['user'].outcome}")
+        finish(SPEAKER, command, pending, "playing", speaker_attributes)
+        command, pending = operate(SPEAKER, "play_media",
+                                   {"media_content_type": "music",
+                                    "media_content_id":
+                                    "media-source://media_source/local/selftest.mp3"})
+        link = str((command.get("data") or {}).get("media_content_id"))
+        check("T30 an id in (A)'s own media library reaches it as a signed link to (A)",
+              pending["arrived"] and link.startswith("http")
+              and "/media/local/selftest.mp3?authSig=" in link,
+              f"{link[:100]} {'' if command else pending['user'].outcome}")
+        finish(SPEAKER, command, pending, "playing", speaker_attributes)
+
+        print("\nT31 — grouping is not offered\n")
+        before = len([r for r in log.records() if r.get("op") == "entity.command"])
+        user = User()
+        pressed = user.press(landed[SPEAKER] or SPEAKER, "join",
+                             {"group_members": ["media_player.living_room_tv"]})
+        serve_until(mediator, lambda: not pressed.is_alive(), seconds=15)
+        pressed.join()
+        user.close()
+        after_count = len([r for r in log.records() if r.get("op") == "entity.command"])
+        check("T31 media_player.join fails in (A)", user.outcome.get("success") is False,
+              str(user.outcome.get("error")))
+        check("T31 and no command decision was recorded", after_count == before,
+              f"{after_count - before} new")
 
         print("\nT5 — a kind the bridge does not stand in for is refused\n")
         todo = sandbox.ask({"op": "entity.publish", "entity": "todo.selftest_probe",

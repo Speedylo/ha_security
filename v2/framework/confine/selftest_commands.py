@@ -26,6 +26,9 @@ type, as `selftest_audit`'s F3 check does.
     K24  B3 data matching no allowed shape is refused under COMMAND_DATA
     K25  B3 services kept in (A), or for display-only kinds, are refused under COMMAND_SERVICES
     K26  a notification's text is never written to the durable log, allowed or refused
+    K29  media player: each allowed shape (batch B4a)
+    K30  media player data matching no allowed shape is refused under COMMAND_DATA
+    K31  grouping, browsing and searching are refused under COMMAND_SERVICES
 
 Run:  python3 -m confine.selftest_commands
 """
@@ -56,7 +59,8 @@ OWNED = {"switch.demo_power": "demo", "button.demo_report": "demo", "text.demo_n
          "water_heater.demo_boiler": "demo", "vacuum.demo_robot": "demo",
          "valve.demo_tap": "demo", "siren.demo_alarm": "demo", "remote.demo_tv": "demo",
          "update.demo_firmware": "demo", "time.demo_wake": "demo", "notify.demo_panel": "demo",
-         "device_tracker.demo_phone": "demo", "event.demo_doorbell": "demo"}
+         "device_tracker.demo_phone": "demo", "event.demo_doorbell": "demo",
+         "media_player.demo_speaker": "demo"}
 
 
 def check(claim: str, condition: bool, detail: str = "") -> None:
@@ -496,6 +500,59 @@ def main() -> int:
               == {"message": "(withheld)"},
               f"{(allowed_record.get('requested') or {}).get('data')} "
               f"{(refused_record.get('requested') or {}).get('data')}")
+
+        # Batch B4a (`notes/bridge_kinds_b4a_prediction_20261031.md`).
+        SPEAKER = "media_player.demo_speaker"
+        song = {"media_content_type": "music", "media_content_id": "spotify:track:1"}
+        print("\nK29 — media player (batch B4a)\n")
+        for service, data in (
+                *((service, None) for service in (
+                    "turn_on", "turn_off", "toggle", "media_play", "media_pause",
+                    "media_play_pause", "media_stop", "media_next_track", "media_previous_track",
+                    "clear_playlist", "volume_up", "volume_down")),
+                ("volume_set", {"volume_level": 0.4}),
+                ("volume_mute", {"is_volume_muted": True}),
+                ("media_seek", {"seek_position": 30.0}),
+                ("select_source", {"source": "AUX"}),
+                ("select_sound_mode", {"sound_mode": "Movie"}),
+                ("shuffle_set", {"shuffle": False}),
+                ("repeat_set", {"repeat": "all"}),
+                ("play_media", {**song, "extra": {}}),
+                ("play_media", {**song, "enqueue": "add", "extra": {}}),
+                ("play_media", {**song, "announce": True, "extra": {}}),
+                ("play_media", {**song, "extra": {"volume": 0.6, "duration": 2}}),
+                ("play_media", {"media_content_type": "music",
+                                "media_content_id": "https://example.org/" + "a" * 4076})):
+            record, pushed = send(SPEAKER, service, data)
+            check(f"K29 media_player.{service} {str(data or '')[:60]}: allowed and pushed as sent",
+                  record.get("allowed") is True and record.get("clause") == AMBIENT
+                  and pushed is not None and pushed.get("service") == service
+                  and pushed.get("data") == (data or {}), f"{record.get('clause')} {pushed}")
+
+        print("\nK30 — media player data matching no allowed shape\n")
+        for label, service, data in (
+                ("volume_level as a string", "volume_set", {"volume_level": "0.4"}),
+                ("is_volume_muted 'yes'", "volume_mute", {"is_volume_muted": "yes"}),
+                ("repeat 'twice'", "repeat_set", {"repeat": "twice"}),
+                ("enqueue 'later'", "play_media", {**song, "enqueue": "later"}),
+                ("play_media with no id", "play_media", {"media_content_type": "music"}),
+                ("a 4097-character id", "play_media",
+                 {"media_content_type": "music", "media_content_id": "i" * 4097}),
+                ("extra over 4 KiB", "play_media", {**song, "extra": {"x": "e" * 4100}}),
+                ("extra as a string", "play_media", {**song, "extra": "volume=0.6"}),
+                ("play_media redirected with entity_id", "play_media",
+                 {**song, "entity_id": "media_player.someone_else"})):
+            record, pushed = send(SPEAKER, service, data)
+            check(f"K30 {label}: refused under COMMAND_DATA, not pushed",
+                  record.get("allowed") is False and record.get("clause") == COMMAND_DATA
+                  and pushed is None, f"{record.get('clause')} {pushed}")
+
+        print("\nK31 — grouping, browsing and searching\n")
+        for service in ("join", "unjoin", "browse_media", "search_media"):
+            record, pushed = send(SPEAKER, service, None)
+            check(f"K31 media_player.{service}: refused under COMMAND_SERVICES",
+                  record.get("allowed") is False and record.get("clause") == COMMAND_SERVICES
+                  and pushed is None, f"{record.get('clause')} {pushed}")
         check("every chain verifies", mediator.log.verify() == [])
 
     print(f"\n{sum(results)}/{len(results)} checks passed")
