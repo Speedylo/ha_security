@@ -163,3 +163,36 @@ kind outside its eleven. Outcome appended below after the runs.
 **Not tested here.** None of the fifteen end-to-end integrations is known to publish one of these
 kinds in its runs (`midea_ac_lan` ships light, fan and lock platforms, but its run published a
 climate only). The real-integration check comes in B5's rerun.
+
+---
+
+## Outcome (appended 2026-10-31, after the runs)
+
+Pi, fresh clones of `bridge-b1-pre` (`f2ab825`) and `bridge-b1` (`fb6e017`), clean before and after,
+14:07–14:13; (A) `down` and `up --fresh` before each arm. Then a fresh clone of `bridge-b1b`
+(`6012ee5`), 14:15–14:19. Results: `experiments/real_platform/results/bridge_kinds_20261031/`
+(`b1/`, `b1b/`). **Every B1 prediction held; T15 missed at first, for a test that was not updated.**
+
+| | Outcome |
+|---|---|
+| K16 | Held: before, `selftest_commands` 67/126 (laptop and Pi) |
+| K12–K15, K17 | Held: 126/126 after (laptop and Pi) |
+| Fails first, T | Held: `selftest_bridge_types` 64/87 against (A) with the old bridge; the 23 failures are T11 (8), T12 (12), T13's first check and T16 (2), all because (A) refused the four kinds. T13's second check, T14 and T5 passed before, as expected (nothing was forwarded; a vacuum was already refused) |
+| T11 | Held: a light, fan, cover and lock, each a registry row of its domain owned by the bridge, with its state and the attributes that describe it |
+| T12 | Held, the source reading confirmed: `brightness_pct` 50 reached the sandbox as `turn_on {"brightness": 128}`; `color_name: red` as `{"rgb_color": [255, 0, 0]}`; `light.toggle` on a light that was on as `turn_off {}`; `fan.increase_speed` from 50 % on a 4-speed fan as `set_percentage {"percentage": 75}`; `cover.toggle` on a closed cover as `open_cover {}`; `lock.unlock` with 5820 as `{"code": "5820"}`. Each call succeeded and (A) showed the new state |
+| T13 | Held: `set_preset_mode turbo` failed in (A) ("Preset mode turbo is not valid"), and no command decision was recorded |
+| T16 | Held: with `5821` stored as the lock's default code in (A), `lock.lock` with no code reached the sandbox as `{"code": "5821"}`; the call succeeded and (A) showed locked |
+| T14 | Held: neither `"5820"` nor `"5821"` is in the run's durable log |
+| T5 | Held: a vacuum is refused at publish |
+| T15 | **Missed at `bridge-b1`: 33 of 34 suites.** `selftest_real_platform` (52/55) also used a light as its example of a publish (A) refuses (the W1-review check that such a refusal does not stop the mediator); with lights bridged, the light was accepted. Not predicted: only T5 had been moved (AI-use log 32). The probe became a vacuum (`6012ee5`, tag `bridge-b1b`); rerun from a fresh clone: **34 of 34 suites**, `selftest_real_platform` 55/55, `selftest_bridge_types` 87/87 alone and inside the suites, `selftest_commands` 126/126 |
+
+(A)'s log: no error from the bridge in either run.
+
+**Not shown here, as stated before the run:** no real integration published one of these kinds;
+that check is B5's real-house rerun.
+
+**Recorded, not changed: a lock's code format is a regular expression the integration supplies.**
+(A) matches a typed or stored code against it. The bridged lock drops a format that does not compile
+(so a broken one cannot make every lock command fail), but a format that compiles and backtracks
+badly would still run in (A) on each code. Codes are short, so the cost is bounded in practice;
+raised with Younes before B5.
