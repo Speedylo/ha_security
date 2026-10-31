@@ -62,6 +62,16 @@ TEXT = """(() => { const out = [];
     if (n.shadowRoot) walk(n.shadowRoot); for (const c of n.childNodes) walk(c); };
   walk(document); return out.join(' '); })()"""
 
+# Focuses the inner input of the page's search box, so that typing goes into it. The entity list has
+# two; the one drawn is the last.
+SEARCH = """(() => { const out = [];
+  const walk = e => { if (e.tagName === 'INPUT' && e.getRootNode().host
+      && e.getRootNode().host.getRootNode().host
+      && e.getRootNode().host.getRootNode().host.tagName === 'HA-INPUT-SEARCH') out.push(e);
+    if (e.shadowRoot) walk(e.shadowRoot); for (const c of e.children || []) walk(c); };
+  walk(document.documentElement); if (out.length) out[out.length - 1].focus();
+  return out.length; })()"""
+
 # Opens the dialog's details (its menu's "Details" item), where the attributes are shown.
 DETAILS = """(() => { let n = 0;
   const walk = e => { if (e.tagName === 'HA-DROPDOWN-ITEM' && e.textContent.trim() === 'Details') {
@@ -235,9 +245,15 @@ def main() -> int:
             marker.seen.clear()
 
             def page(label: str, url: str | None, more_info: str | None = None,
-                     details: bool = False) -> str:
+                     details: bool = False, search: bool = False) -> str:
                 if url is not None:
                     browser.go(url)
+                if search:
+                    # The entity list draws only the rows in view; with many entities in (A) the
+                    # published one is found as a person finds it, by typing its name.
+                    time.sleep(3)
+                    check(f"{label}: the list's search box is found", browser.evaluate(SEARCH) >= 1)
+                    browser.call("Input.insertText", text=NAME)
                 if more_info is not None:
                     browser.text_once(NAME, seconds=20)
                     browser.evaluate(
@@ -262,7 +278,7 @@ def main() -> int:
             pages["dialog"] = page("dialog", None, more_info=hostile)
             pages["details"] = page("details", DEVICES, more_info=hostile, details=True)
             pages["switch_dialog"] = page("switch_dialog", DEVICES, more_info=switch)
-            pages["entities"] = page("entities", f"{house_a.BASE}/config/entities")
+            pages["entities"] = page("entities", f"{house_a.BASE}/config/entities", search=True)
 
             print("\nD2 — what was published appears as text\n")
             dialog, details = pages["dialog"], pages["details"]
