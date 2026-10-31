@@ -1,0 +1,10 @@
+# M66 (expected: T28, T31): a media player offers browsing, searching and grouping
+--- a/framework/ha_bridge/confine_bridge/media_player.py
++++ b/framework/ha_bridge/confine_bridge/media_player.py
+@@ -64,5 +64,5 @@
+         self._attr_supported_features = (
+             MediaPlayerEntityFeature(int(attributes.get("supported_features") or 0))
+-            & ~_NOT_OFFERED)
++            )
+ 
+     def _restorable_empty(self) -> bool:

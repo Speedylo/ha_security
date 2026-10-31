@@ -1,0 +1,10 @@
+# M65 (expected: T28): a media player shows the sandbox's own picture link
+--- a/framework/ha_bridge/confine_bridge/media_player.py
++++ b/framework/ha_bridge/confine_bridge/media_player.py
+@@ -46,5 +46,5 @@
+ 
+     _described = frozenset({*_PLAIN, "media_position_updated_at", "repeat", "group_members",
+-                            "entity_picture", "entity_picture_local", "supported_features"})
++                            "entity_picture_local", "supported_features"})
+ 
+     def _take_state(self, state: Any, attributes: dict[str, Any]) -> None:

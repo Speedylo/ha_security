@@ -1,0 +1,10 @@
+# M71 (expected: T18): a siren's tone goes on by key, not by name
+--- a/framework/ha_bridge/confine_bridge/siren.py
++++ b/framework/ha_bridge/confine_bridge/siren.py
+@@ -38,5 +38,5 @@
+         tones = self._attr_available_tones
+         if isinstance(tones, dict) and data.get("tone") in tones:
+-            data["tone"] = tones[data["tone"]]
++            pass
+         await self._data.command(self._integration, self._published_id, "turn_on", data)
+ 

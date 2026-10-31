@@ -1,0 +1,10 @@
+# M69 (expected: T29): volume_up is worked out in (A) instead of forwarded
+--- a/framework/ha_bridge/confine_bridge/media_player.py
++++ b/framework/ha_bridge/confine_bridge/media_player.py
+@@ -105,5 +105,5 @@
+         await self._send("clear_playlist")
+ 
+-    async def async_volume_up(self) -> None:
++    async def _unused_volume_up(self) -> None:
+         await self._send("volume_up")
+ 

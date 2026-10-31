@@ -1,0 +1,10 @@
+# M79 (expected: survives): every tracker is built as a GPS tracker, scanners included
+--- a/framework/ha_bridge/confine_bridge/device_tracker.py
++++ b/framework/ha_bridge/confine_bridge/device_tracker.py
+@@ -78,5 +78,5 @@
+ def _tracker(definition: dict[str, Any], data) -> BridgedEntity:
+     source = (definition.get("attributes") or {}).get("source_type")
+-    if source in (None, SourceType.GPS, "gps"):
++    if True:
+         return BridgedTracker(definition, data)
+     return BridgedScanner(definition, data)

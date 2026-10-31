@@ -1,0 +1,10 @@
+# M54 (expected: K13): a light's flash may be any string
+--- a/framework/confine/mediator.py
++++ b/framework/confine/mediator.py
+@@ -251,5 +251,5 @@
+ 
+ def _flash(value: object) -> bool:
+-    return value in ("short", "long")
++    return isinstance(value, str)
+ 
+ 

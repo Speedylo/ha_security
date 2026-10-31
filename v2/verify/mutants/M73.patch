@@ -1,0 +1,10 @@
+# M73 (expected: T18): away mode on is sent as off
+--- a/framework/ha_bridge/confine_bridge/water_heater.py
++++ b/framework/ha_bridge/confine_bridge/water_heater.py
+@@ -68,5 +68,5 @@
+ 
+     async def async_turn_away_mode_on(self) -> None:
+-        await self._send("set_away_mode", {"away_mode": True})
++        await self._send("set_away_mode", {"away_mode": False})
+ 
+     async def async_turn_away_mode_off(self) -> None:

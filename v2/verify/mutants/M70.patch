@@ -1,0 +1,10 @@
+# M70 (expected: T22): an update offers release notes
+--- a/framework/ha_bridge/confine_bridge/update.py
++++ b/framework/ha_bridge/confine_bridge/update.py
+@@ -35,5 +35,5 @@
+         self._attr_supported_features = (
+             UpdateEntityFeature(int(attributes.get("supported_features") or 0))
+-            & ~UpdateEntityFeature.RELEASE_NOTES)
++            )
+ 
+     def _restorable_empty(self) -> bool:

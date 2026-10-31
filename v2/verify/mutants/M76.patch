@@ -1,0 +1,10 @@
+# M76 (expected: survives): a fan's on/off follows Home Assistant's rule, not what was published
+--- a/framework/ha_bridge/confine_bridge/fan.py
++++ b/framework/ha_bridge/confine_bridge/fan.py
+@@ -38,5 +38,5 @@
+ 
+     @property
+-    def is_on(self) -> bool | None:
++    def _unused_is_on(self) -> bool | None:
+         # As published: Home Assistant's own rule (a percentage above 0, or a preset) would show
+         # a fan with neither as off.

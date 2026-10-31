@@ -1,0 +1,10 @@
+# M63 (expected: T24): an event republished by the sandbox fires again
+--- a/framework/ha_bridge/confine_bridge/event.py
++++ b/framework/ha_bridge/confine_bridge/event.py
+@@ -31,5 +31,5 @@
+             self._seen = state
+             return
+-        if state in (None, "unknown", "unavailable") or state == self._seen:
++        if state in (None, "unknown", "unavailable"):
+             return
+         self._seen = state
