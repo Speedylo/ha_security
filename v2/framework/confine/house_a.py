@@ -8,7 +8,9 @@ actual platform to act on. The instance is deliberately small and quiet:
     probing the network, which is noise in every measurement and nothing the mediator touches.
     What is loaded is what the experiment needs: `http` on loopback only, `api` and
     `websocket_api` for the mediator, `onboarding` and `config` to create the owner and the
-    bridge's entry headlessly, and the house's own entities.
+    bridge's entry headlessly, `media_source` so that a confined media player can be sent the
+    house's own media (bridge batch B4a; `default_config` loads it in a real house), and the
+    house's own entities.
   - **The house's entities are real and change through real services.** Two `input_number`
     helpers, and template sensors over them carrying the device classes `thermal_comfort` needs.
     A pushed change is then caused by `input_number.set_value` — a service call into (A) — and
@@ -97,6 +99,7 @@ api:
 websocket_api:
 onboarding:
 config:
+media_source:
 
 input_number:
   living_room_temperature:

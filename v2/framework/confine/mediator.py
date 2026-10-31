@@ -294,6 +294,22 @@ def _message(value: object) -> bool:
     return isinstance(value, str) and len(value) <= MAX_MESSAGE
 
 
+#: A media id can be a long link (batch B4a, decision 2).
+MAX_MEDIA_ID = 4096
+
+
+def _media_id(value: object) -> bool:
+    return isinstance(value, str) and len(value) <= MAX_MEDIA_ID
+
+
+def _repeat(value: object) -> bool:
+    return value in ("off", "all", "one")
+
+
+def _enqueue(value: object) -> bool:
+    return value in ("add", "next", "play", "replace")
+
+
 def _clock(value: object) -> bool:
     """A time of day, "HH:MM" or "HH:MM:SS", as Home Assistant's own `time.set_value` takes it."""
     if not (isinstance(value, str) and len(value) <= 15):
@@ -426,6 +442,27 @@ COMMANDS: dict[str, dict[str, list[Shape]]] = {
     "update": {"install": [{"backup": _flag, "version": _Optional(_text)}]},
     "time": {"set_value": [{"time": _clock}]},
     "notify": {"send_message": [{"message": _message, "title": _Optional(_text)}]},
+    # Batch B4a (`notes/bridge_kinds_b4a_prediction_20261031.md`). `toggle`, `volume_up`,
+    # `volume_down` and `media_play_pause` go on as themselves: Home Assistant runs the
+    # integration's own method for them when it has one (decision 1). Grouping, browsing and
+    # searching are not offered (decisions 3, 4). The renamed services carry the service's own
+    # field names, because the sandbox runs the service again.
+    "media_player": {
+        **{service: [{}] for service in (
+            "turn_on", "turn_off", "toggle", "media_play", "media_pause", "media_play_pause",
+            "media_stop", "media_next_track", "media_previous_track", "clear_playlist",
+            "volume_up", "volume_down")},
+        "volume_set": [{"volume_level": _number}],
+        "volume_mute": [{"is_volume_muted": _flag}],
+        "media_seek": [{"seek_position": _number}],
+        "select_source": [{"source": _text}],
+        "select_sound_mode": [{"sound_mode": _text}],
+        "shuffle_set": [{"shuffle": _flag}],
+        "repeat_set": [{"repeat": _repeat}],
+        "play_media": [{"media_content_type": _text, "media_content_id": _media_id,
+                        "enqueue": _Optional(_enqueue), "announce": _Optional(_flag),
+                        "extra": _Optional(_params)}],
+    },
     # Questions (bridge step 4): answered with a list, which `ANSWERS` checks.
     "calendar": {"get_events": [{"start": _iso, "end": _iso}]},
     "weather": {"get_forecasts": [{"type": _forecast_type}]},

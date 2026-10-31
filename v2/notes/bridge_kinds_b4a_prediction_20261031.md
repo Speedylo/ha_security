@@ -144,3 +144,10 @@ media players), except T31's second check (nothing is sent). Outcome appended af
 
 **Not tested here**: the five integrations themselves (none is in the end-to-end set); the
 per-integration readings in decision 2 come from their code.
+
+**Before the run (2026-10-31, after `bridge-b4a-pre`):** writing the bridged player showed that
+(A) loads no media sources: `house_a.py` deliberately has no `default_config`, and `media_source`
+comes with it. T30's second case would then have found nothing to resolve. `media_source:` is added
+to (A)'s configuration in the same commit as the code (it has no discovery, the reason for leaving
+out `default_config`; a real house has it). The predictions stand as written; the fails-first arm
+at `bridge-b4a-pre` runs with (A) as it was there.
