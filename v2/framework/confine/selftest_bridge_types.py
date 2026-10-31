@@ -43,6 +43,11 @@ in (A), described well enough for Home Assistant to draw its control. Operating 
          set_away_mode, a positioned valve's open as position 100, a siren tone by name, a remote's
          command with (A)'s defaults, and a water heater's °F as °C
     T19  a humidity above the published maximum fails in (A) and never reaches the mediator
+    T22  an update, time, notify, event, GPS tracker and scanner, described (batch B3)
+    T23  (A) works out a GPS tracker's home or away from its own zones; a scanner shows its state
+    T24  a published event fires once in (A); a republish does not fire it again
+    T25  update skip and clear_skipped stay in (A); install, a time and a message reach the sandbox
+    T26  a notification's text is not in the durable log
 
 Requires (A) running: `python3 -m confine.house_a up --fresh` on the Pi.
 
@@ -681,6 +686,138 @@ def main() -> int:
               user.outcome.get("success") is False, str(user.outcome.get("error")))
         check("T19 and no command decision was recorded: it never left (A)",
               after_count == before, f"{after_count - before} new")
+
+        print("\nT22 — update, time, notify, event, trackers (batch B3)\n")
+        # `notes/bridge_kinds_b3_prediction_20261031.md`. Update features from Home Assistant
+        # 2026.8.3: INSTALL 1 | PROGRESS 4 | BACKUP 8 | RELEASE_NOTES 16 (the bridge drops 16).
+        FIRMWARE, WAKE = "update.selftest_firmware", "time.selftest_wake"
+        PANEL, BELL = "notify.selftest_panel", "event.selftest_doorbell"
+        PHONE, TAG = "device_tracker.selftest_phone", "device_tracker.selftest_tag"
+        firmware_attributes = {"friendly_name": "Selftest firmware", "installed_version": "1.0.0",
+                               "latest_version": "1.1.0", "in_progress": False,
+                               "release_summary": "Fixes", "auto_update": False,
+                               "supported_features": 1 | 4 | 8 | 16}
+        bell_attributes = {"friendly_name": "Selftest doorbell",
+                           "event_types": ["press", "double_press"]}
+        home = (house_a._ws_call(admin, {"type": "get_config"}).get("result") or {})
+        home_lat, home_lon = home.get("latitude"), home.get("longitude")
+        for entity, state, attributes, wanted, shown_state in (
+                (FIRMWARE, "on", firmware_attributes,
+                 {"installed_version": "1.0.0", "latest_version": "1.1.0",
+                  "supported_features": 13}, "on"),
+                (WAKE, "06:45:00", {"friendly_name": "Selftest wake"}, {}, "06:45:00"),
+                (PANEL, "unknown", {"friendly_name": "Selftest panel"}, {}, "unknown"),
+                (BELL, "unknown", bell_attributes, {"event_types": ["press", "double_press"]},
+                 "unknown")):
+            answer = sandbox.ask({"op": "entity.publish", "entity": entity, "state": state,
+                                  "attributes": attributes})
+            landed[entity] = platform.published.get(("selftest", entity)) or ""
+            row = registry(platform).get(landed[entity], {})
+            domain = entity.partition(".")[0]
+            check(f"T22 {domain}: a registry row of its domain owned by the bridge",
+                  answer.get("ok") is True and row.get("platform") == "confine_bridge"
+                  and landed[entity].startswith(f"{domain}."),
+                  answer.get("reason") or landed[entity])
+            shown, shown_attributes = platform.read(landed[entity]) if landed[entity] else (None, {})
+            missing = {k: (v, (shown_attributes or {}).get(k)) for k, v in wanted.items()
+                       if (shown_attributes or {}).get(k) != v}
+            check(f"T22 {domain}: (A) shows {shown_state} and the attributes that describe it",
+                  shown == shown_state and not missing, f"{shown!r} {missing or ''}")
+
+        print("\nT23 — trackers: (A) works out home or away from its own zones\n")
+        for entity, state, attributes, expected in (
+                (PHONE, "not_home", {"friendly_name": "Selftest phone", "source_type": "gps",
+                                     "latitude": home_lat, "longitude": home_lon,
+                                     "gps_accuracy": 10}, "home"),
+                (PHONE, "home", {"friendly_name": "Selftest phone", "source_type": "gps",
+                                 "latitude": (home_lat or 0) + 1, "longitude": home_lon,
+                                 "gps_accuracy": 10}, "not_home"),
+                (TAG, "home", {"friendly_name": "Selftest tag", "source_type": "bluetooth_le",
+                               "mac": "AA:BB:CC:DD:EE:FF"}, "home"),
+                (TAG, "not_home", {"friendly_name": "Selftest tag",
+                                   "source_type": "bluetooth_le",
+                                   "mac": "AA:BB:CC:DD:EE:FF"}, "not_home")):
+            answer = sandbox.ask({"op": "entity.publish", "entity": entity, "state": state,
+                                  "attributes": attributes})
+            landed[entity] = platform.published.get(("selftest", entity)) or ""
+            shown, shown_attributes = platform.read(landed[entity]) if landed[entity] else (None, {})
+            check(f"T23 {attributes['source_type']} tracker published {state!r} at "
+                  f"{attributes.get('latitude', '-')}: (A) shows {expected}",
+                  answer.get("ok") is True and home_lat is not None and shown == expected,
+                  f"{answer.get('reason') or ''} {shown!r}")
+        row = registry(platform).get(landed[TAG], {})
+        shown_attributes = platform.read(landed[TAG])[1] if landed[TAG] else {}
+        check("T23 the scanner's MAC is an attribute, and its unique id is the bridge's",
+              (shown_attributes or {}).get("mac") == "AA:BB:CC:DD:EE:FF"
+              and row.get("unique_id") == f"selftest:{TAG}", f"{row.get('unique_id')}")
+
+        print("\nT24 — events fire once in (A)\n")
+
+        def bell(state: str, event_type: str) -> tuple[str | None, dict]:
+            sandbox.ask({"op": "entity.publish", "entity": BELL, "state": state,
+                         "attributes": {**bell_attributes, "event_type": event_type,
+                                        "button": "1"}})
+            shown, shown_attributes = platform.read(landed[BELL]) if landed[BELL] else (None, {})
+            return shown, shown_attributes or {}
+
+        first, first_attributes = bell("2026-10-31T13:00:00.000+00:00", "press")
+        check("T24 a press event fires in (A): a new time, its type and its attribute",
+              _iso_time(first) and first_attributes.get("event_type") == "press"
+              and first_attributes.get("button") == "1", f"{first!r} {first_attributes}")
+        again, _ = bell("2026-10-31T13:00:00.000+00:00", "press")
+        check("T24 republishing the same event does not fire it again", again == first,
+              f"{first!r} -> {again!r}")
+        second, second_attributes = bell("2026-10-31T13:00:05.000+00:00", "double_press")
+        check("T24 a later double_press fires again",
+              _iso_time(second) and second != first
+              and second_attributes.get("event_type") == "double_press",
+              f"{second!r} {second_attributes.get('event_type')}")
+        unlisted, _ = bell("2026-10-31T13:00:09.000+00:00", "triple_press")
+        still = sandbox.ask({"op": "entity.publish", "entity": WAKE, "state": "06:50:00",
+                             "attributes": {"friendly_name": "Selftest wake"}})
+        check("T24 an event type the entity does not list leaves (A)'s state, and the bridge works",
+              unlisted == second and still.get("ok") is True
+              and platform.read(landed[WAKE])[0] == "06:50:00", f"{unlisted!r}")
+
+        print("\nT25 — update skip stays in (A); install, a time and a message reach the sandbox\n")
+        for service, state in (("skip", "off"), ("clear_skipped", "on")):
+            before = len([r for r in log.records() if r.get("op") == "entity.command"])
+            user = User()
+            pressed = user.press(landed[FIRMWARE] or FIRMWARE, service, {})
+            serve_until(mediator, lambda: not pressed.is_alive(), seconds=15)
+            pressed.join()
+            user.close()
+            after_count = len([r for r in log.records() if r.get("op") == "entity.command"])
+            shown = platform.read(landed[FIRMWARE])[0] if landed[FIRMWARE] else None
+            check(f"T25 update.{service}: succeeds, (A) shows {state}, no command decision",
+                  user.outcome.get("success") is True and shown == state
+                  and after_count == before,
+                  f"{user.outcome.get('error') or ''} {shown!r} {after_count - before} new")
+        for entity, service, data, expected, state, attributes in (
+                (FIRMWARE, "install", {}, {"backup": False}, "off",
+                 {**firmware_attributes, "installed_version": "1.1.0"}),
+                (WAKE, "set_value", {"time": "07:30"}, {"time": "07:30:00"}, "07:30:00",
+                 {"friendly_name": "Selftest wake"}),
+                (PANEL, "send_message", {"message": "Door left open", "title": "Home"},
+                 {"message": "Door left open", "title": "Home"}, None,
+                 {"friendly_name": "Selftest panel"})):
+            domain = entity.partition(".")[0]
+            command, pending = operate(entity, service, data)
+            check(f"T25 {domain}.{service} {data or ''}: reaches the sandbox as {expected}",
+                  pending["arrived"] and command.get("entity") == entity
+                  and command.get("service") == service and command.get("data") == expected,
+                  f"{command or pending['user'].outcome}")
+            outcome, shown = finish(entity, command, pending, state or "unknown", attributes)
+            # A notify entity's state is the time (A) last sent a message, kept by (A).
+            check(f"T25 {domain}.{service}: the call succeeds and (A) shows "
+                  f"{state or 'the time it was sent'}",
+                  outcome.get("success") is True
+                  and (shown == state if state else _iso_time(shown)),
+                  f"{outcome.get('error') or ''} {shown!r}")
+
+        print("\nT26 — the notification's text is not in the durable log\n")
+        check("T26 'Door left open' appears nowhere in the run's durable log",
+              "Door left open" not in (root / "audit" / "decisions.jsonl").read_text())
 
         print("\nT5 — a kind the bridge does not stand in for is refused\n")
         todo = sandbox.ask({"op": "entity.publish", "entity": "todo.selftest_probe",

@@ -22,6 +22,10 @@ type, as `selftest_audit`'s F3 check does.
     K18  humidifier, water heater, vacuum, valve, siren and remote: each allowed shape (batch B2)
     K19  B2 data matching no allowed shape is refused under COMMAND_DATA
     K20  B2 services worked out in (A), or with no service in the sandbox, are refused
+    K23  update install, time set_value and notify send_message, each allowed shape (batch B3)
+    K24  B3 data matching no allowed shape is refused under COMMAND_DATA
+    K25  B3 services kept in (A), or for display-only kinds, are refused under COMMAND_SERVICES
+    K26  a notification's text is never written to the durable log, allowed or refused
 
 Run:  python3 -m confine.selftest_commands
 """
@@ -50,7 +54,9 @@ OWNED = {"switch.demo_power": "demo", "button.demo_report": "demo", "text.demo_n
          "light.demo_lamp": "demo", "fan.demo_fan": "demo", "cover.demo_blind": "demo",
          "lock.demo_door": "demo", "humidifier.demo_air": "demo",
          "water_heater.demo_boiler": "demo", "vacuum.demo_robot": "demo",
-         "valve.demo_tap": "demo", "siren.demo_alarm": "demo", "remote.demo_tv": "demo"}
+         "valve.demo_tap": "demo", "siren.demo_alarm": "demo", "remote.demo_tv": "demo",
+         "update.demo_firmware": "demo", "time.demo_wake": "demo", "notify.demo_panel": "demo",
+         "device_tracker.demo_phone": "demo", "event.demo_doorbell": "demo"}
 
 
 def check(claim: str, condition: bool, detail: str = "") -> None:
@@ -422,6 +428,74 @@ def main() -> int:
             check(f"K20 {entity.partition('.')[0]}.{service}: refused under COMMAND_SERVICES",
                   record.get("allowed") is False and record.get("clause") == COMMAND_SERVICES
                   and pushed is None, f"{record.get('clause')} {pushed}")
+
+        # Batch B3 (`notes/bridge_kinds_b3_prediction_20261031.md`).
+        FIRMWARE, WAKE, PANEL = "update.demo_firmware", "time.demo_wake", "notify.demo_panel"
+        print("\nK23 — update, time and notify (batch B3)\n")
+        for entity, service, data in (
+                (FIRMWARE, "install", {"backup": False}),
+                (FIRMWARE, "install", {"version": "1.2.3", "backup": True}),
+                (WAKE, "set_value", {"time": "07:30:00"}),
+                (WAKE, "set_value", {"time": "07:30"}),
+                (PANEL, "send_message", {"message": "Washing machine done"}),
+                (PANEL, "send_message", {"message": "Washing machine done", "title": "Home"})):
+            record, pushed = send(entity, service, data)
+            check(f"K23 {entity.partition('.')[0]}.{service} {data}: allowed and pushed as sent",
+                  record.get("allowed") is True and record.get("clause") == AMBIENT
+                  and pushed is not None and pushed.get("entity") == entity
+                  and pushed.get("service") == service and pushed.get("data") == data,
+                  f"{record.get('clause')} {pushed}")
+
+        print("\nK24 — B3 data matching no allowed shape\n")
+        for label, entity, service, data in (
+                ("time 25:00", WAKE, "set_value", {"time": "25:00"}),
+                ("time as a number", WAKE, "set_value", {"time": 730}),
+                ("install with a numeric version", FIRMWARE, "install",
+                 {"version": 1.2, "backup": False}),
+                ("install with backup 'no'", FIRMWARE, "install", {"backup": "no"}),
+                ("install redirected with entity_id", FIRMWARE, "install",
+                 {"backup": False, "entity_id": "update.someone_else"}),
+                ("a 4097-character message", PANEL, "send_message", {"message": "m" * 4097}),
+                ("a 256-character title", PANEL, "send_message",
+                 {"message": "x", "title": "t" * 256}),
+                ("a numeric title", PANEL, "send_message", {"message": "x", "title": 7}),
+                ("send_message with no message", PANEL, "send_message", {"title": "Home"})):
+            record, pushed = send(entity, service, data)
+            check(f"K24 {label}: refused under COMMAND_DATA, not pushed",
+                  record.get("allowed") is False and record.get("clause") == COMMAND_DATA
+                  and pushed is None, f"{record.get('clause')} {pushed}")
+
+        print("\nK25 — services kept in (A), or for display-only kinds\n")
+        for entity, service in ((FIRMWARE, "skip"), (FIRMWARE, "clear_skipped"),
+                                ("device_tracker.demo_phone", "see"),
+                                ("event.demo_doorbell", "trigger"), (PANEL, "send")):
+            record, pushed = send(entity, service, None)
+            check(f"K25 {entity.partition('.')[0]}.{service}: refused under COMMAND_SERVICES",
+                  record.get("allowed") is False and record.get("clause") == COMMAND_SERVICES
+                  and pushed is None, f"{record.get('clause')} {pushed}")
+
+        print("\nK26 — a notification's text never reaches the durable log\n")
+        allowed_record, allowed_pushed = send(PANEL, "send_message",
+                                              {"message": "Front door left open",
+                                               "title": "Evening check"})
+        long_message = "q" * 4097
+        refused_record, _ = send(PANEL, "send_message", {"message": long_message})
+        log_text = (root / "commands.jsonl").read_text()
+        check("K26 the allowed message reached the sandbox with its text",
+              allowed_record.get("allowed") is True
+              and (allowed_pushed or {}).get("data") == {"message": "Front door left open",
+                                                         "title": "Evening check"},
+              str(allowed_pushed))
+        check("K26 no message or title is in the log file",
+              "Front door left open" not in log_text and "Evening check" not in log_text
+              and "Washing machine done" not in log_text and long_message not in log_text)
+        check("K26 and the records say the text was withheld",
+              (allowed_record.get("requested") or {}).get("data")
+              == {"message": "(withheld)", "title": "(withheld)"}
+              and (refused_record.get("requested") or {}).get("data")
+              == {"message": "(withheld)"},
+              f"{(allowed_record.get('requested') or {}).get('data')} "
+              f"{(refused_record.get('requested') or {}).get('data')}")
         check("every chain verifies", mediator.log.verify() == [])
 
     print(f"\n{sum(results)}/{len(results)} checks passed")
