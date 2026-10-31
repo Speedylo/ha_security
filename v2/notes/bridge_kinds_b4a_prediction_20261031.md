@@ -151,3 +151,24 @@ comes with it. T30's second case would then have found nothing to resolve. `medi
 to (A)'s configuration in the same commit as the code (it has no discovery, the reason for leaving
 out `default_config`; a real house has it). The predictions stand as written; the fails-first arm
 at `bridge-b4a-pre` runs with (A) as it was there.
+
+---
+
+## Outcome (appended 2026-10-31, after the runs)
+
+Pi, fresh clones of `bridge-b4a-pre` (`9918a04`) and `bridge-b4a` (`d72391b`), clean before and
+after, 15:36–15:45; (A) `down` and `up --fresh` before each arm. Results:
+`experiments/real_platform/results/bridge_kinds_20261031/b4a/`. **Every prediction held.**
+
+| | Outcome |
+|---|---|
+| K32 | Held: before, `selftest_commands` 218/251 (laptop and Pi) |
+| K29–K31 | Held: 251/251 after (laptop and Pi) |
+| Fails first, T | Held for every routing check: `selftest_bridge_types` 151/165 against (A) with the old bridge; the 14 failures are T28 (2), T29's nine "reaches the sandbox" checks, T30 (2) and T31's first. **Not predicted, and not evidence either way:** T29's nine "the call succeeds" checks passed before too — a call naming an entity (A) does not have succeeds silently in Home Assistant. They carry meaning only alongside the routing check before them (the same held in B1–B3) |
+| T28 | Held: the player is a registry row owned by the bridge; (A) shows it playing with volume, title and source list, no `entity_picture`, and its features without browse, search and grouping |
+| T29 | Held: `volume_set` 0.4 as `{"volume_level": 0.4}`; `volume_mute` as `{"is_volume_muted": true}`; `media_seek` 30 as `{"seek_position": 30.0}`; `media_play_pause`, `volume_up` and `toggle` as themselves; `select_source` AUX; `repeat_set` all; `play_media` as type, id and `extra: {}`. Each call succeeded |
+| T30 | Held: `media-source://ring/ring5.mp3` reached the sandbox unchanged; `media-source://media_source/local/selftest.mp3` reached it as `http://10.126.85.243:8123/media/local/selftest.mp3?authSig=…` — signed, and absolute on (A)'s **LAN address**, which Home Assistant chose itself although (A)'s `http` listens on loopback only (in a real house the device then fetches it from there) |
+| T31 | Held: `join` failed in (A) ("does not support action media_player.join"), and no command decision was recorded |
+| T32 | Held: **34 of 34 suites**; `selftest_bridge_types` 165/165 alone and inside the suites |
+
+(A)'s log: no error from the bridge.
