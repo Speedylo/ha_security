@@ -137,3 +137,66 @@ confinement that the framework does not see.
 
 **The recount** is computed, not predicted. It is done offline from the corpus with the rule of
 decision 3, and only the file check changes the figures. `alarmo` loses `event`.
+
+## Outcome (2026-10-31, 19:41–21:11)
+
+Runs:
+- `bridge-b5-pre` (`0470c7f`), then `bridge-b5` (`32787e7`), each from a fresh clone with (A)
+  fresh. Results in `experiments/real_platform/results/bridge_kinds_20261031/b5/`, with
+  screenshots (`shots_pre/`, `shots/`) and the verdict outputs (`verdicts_*.txt`).
+- `bridge-b5b` (`7b8be15`, the display suite's fix, below), on the (A) the B5 run left. Results in
+  `b5b/`.
+
+| | Predicted | Measured |
+|---|---|---|
+| Fails first | bridge 170/173 (T32 ×3), display 13/14 (D4) | **Held**: 170/173, the three T32 checks showing the published `entity_picture` / `entity_picture_local`; 13/14, D4 with `/picture/sensor…` and `/picture/switch` requested |
+| After the fix | bridge 173/173, display 14/14, house test passes | **Held**: 173/173, 14/14 (no `/picture/` request), `selftest_real_house` 6/6 |
+| E1, E2 | every publish accepted; "38 of 38" | **Held, but the figure was mine wrong**: `bridge_step5_verdicts` **36 of 36**, 65 entity rows each in (A) as published, nothing refused. Step 5's 38 was a count of checks, not entities: 26 in run C, which included 2 from its unfinished function set, plus run D's 12. One complete run therefore has 24 + 12 = 36. I carried the figure over without recomputing it (AI-use log 37) |
+| E3 | 43/45, alarmo 8/8, the egress/local/OAuth subjects as in run C | **Held** (details below) |
+| dwd camera | none published | **Held**: `dwd_weather` published `sensor` and `weather` only |
+| E4 | suites 35/35 | **Missed: 34 of 35** (below). After `bridge-b5b`: 35 of 35 |
+| (A)'s log | no bridge error | **Held**: no ERROR from `confine_bridge`. The only warnings are the cut-off and not-approved notices the suites cause on purpose |
+
+**E3 in detail:**
+- `retest_e2e_verdicts` gave 43 of 45, the same two `scheduler` P4 rows.
+- alarmo's P1–P4 passed 8/8. (`e2e_ext_verdicts` also checks waste's P7 against the date predicted
+  on 2026-10-25, `27.10.2026`; that date has passed, so 8/10. P7 is not a B5 prediction.)
+- `nordpool`, `waste_collection_schedule` and `regensburg_transport` passed 16/16 each, and
+  `smhi_brandrisk` 20/20.
+- `localtuya` found both simulated devices, unconfined and confined-declared, and none
+  undeclared.
+- `midea_ac_lan` reached its device in both arms; both timed out, as before.
+- `trakt_tv` behaved as before.
+- `dwd_weather` and `pirateweather` failed only on the two known misses: `www.dwd.de` refused (the
+  clause miss), and the A-vs-B value.
+
+**The miss, E4.** In `suites_all`, `selftest_display` failed D1 on the settings page's entity
+list. The list draws only the rows in view. By then (A) held 121 entities, the fifteen's included,
+so the published row was not drawn. Every other check of that suite passed, D3 and D4 included. On
+a fresh (A) it had passed (14/14). This is the third check this week to assume a fresh (A) (AI-use
+log 32, 33, 36).
+
+The suite now types the name into the list's search box, as a person would (`bridge-b5b`). It
+focuses the second of the list's two search inputs, the one drawn: focusing the first did not filter.
+
+On the reused (A), with the bridge in (A) identical to `bridge-b5`'s: `selftest_display` passed
+15/15 alone and 15/15 in `suites_all`, and `suites_all` passed 35 of 35.
+
+**Recount** (committed in `5ac29ae`, `b5/recount.txt`):
+- The file rule reproduces 2026-10-27's 249 kind uses.
+- The platform rule gives 248 kind uses, 236 bridged (95%), and **28 of 37** integrations whose
+  every kind is bridged.
+- The unbridged kinds are camera (8), image (3) and legacy notify (1, `alexa_media`).
+- `alarmo/event.py` is not a platform.
+- "29 of 37" (B4a) was one too many (AI-use log 35). With camera and image, the most is 36.
+
+**Seen, not checked:** after T18 switches (A) to °F and back, the bridged water heater shows its
+last °F figures with a °C unit (`shots/devices.png`, "Eco 122 °C") until the sandbox publishes
+again. A native water heater keeps its last written state the same way.
+
+**Limits for the report:**
+- An update's `release_url` remains a link the user may click.
+- The display check covers the overview's devices page, the dialog and its details, and the
+  settings entity list. It does not cover history or logbook, which (A) does not load, or cards a
+  user writes, such as markdown.
+- Links are not clicked.

@@ -1,0 +1,29 @@
+start 2026-10-31T19:41:08+01:00
+pre commit 0470c7fc1122620b52e57cbd28e9b1a3dac3d522 tag bridge-b5-pre dirty=0
+house_a_down_pre exit=0 seconds=2 2026-10-31T19:41:10+01:00
+house_a_up_pre exit=0 seconds=4 2026-10-31T19:41:14+01:00
+bridge_types_pre exit=1 seconds=42 2026-10-31T19:41:56+01:00
+display_pre exit=1 seconds=33 2026-10-31T19:42:29+01:00
+post commit 32787e7002bc1d6486a223e0e3857e2df4e98e1e tag bridge-b5 dirty=0 lan 10.126.85.243 100.86.243.57 172.17.0.1 fd7a:115c:a1e0::ea32:f33a 
+house_a_down_main exit=0 seconds=1 2026-10-31T19:42:30+01:00
+house_a_up_main exit=0 seconds=5 2026-10-31T19:42:35+01:00
+real_house exit=0 seconds=4 2026-10-31T19:42:39+01:00
+bridge_types exit=0 seconds=42 2026-10-31T19:43:21+01:00
+display exit=0 seconds=33 2026-10-31T19:43:54+01:00
+function exit=0 seconds=1379 2026-10-31T20:06:53+01:00
+egress_nordpool exit=0 seconds=138 2026-10-31T20:09:11+01:00
+egress_dwd_weather exit=1 seconds=233 2026-10-31T20:13:04+01:00
+egress_pirateweather exit=1 seconds=152 2026-10-31T20:15:36+01:00
+egress_waste_collection_schedule exit=0 seconds=133 2026-10-31T20:17:49+01:00
+egress_smhi_brandrisk exit=0 seconds=200 2026-10-31T20:21:09+01:00
+egress_regensburg_transport exit=0 seconds=476 2026-10-31T20:29:05+01:00
+local_midea_ac_lan exit=0 seconds=1329 2026-10-31T20:51:14+01:00
+local_localtuya exit=0 seconds=186 2026-10-31T20:54:20+01:00
+oauth_trakt exit=0 seconds=28 2026-10-31T20:54:48+01:00
+house_a before suites: up
+suites exit=0 seconds=297 2026-10-31T20:59:45+01:00
+suites failed=1 of 35
+bridge-b5-pre dirty after=0
+bridge-b5 dirty after=0
+end 2026-10-31T20:59:45+01:00
+ALLDONE

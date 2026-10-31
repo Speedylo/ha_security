@@ -1,0 +1,8 @@
+start 2026-10-31T21:06:21+01:00 commit 7b8be158067c696e83644cc3ac5b8f654144be72 tag bridge-b5b dirty=0
+bridge in (A) same as this clone: 0 differences
+display exit=0 seconds=37 2026-10-31T21:06:59+01:00
+suites exit=0 seconds=265 2026-10-31T21:11:24+01:00
+suites failed=0 of 35
+dirty after=0
+end 2026-10-31T21:11:24+01:00
+ALLDONE
