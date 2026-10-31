@@ -1,0 +1,11 @@
+start 2026-10-31T15:02:08+01:00 commit ea5cea41bf9151b21d6468191fae5ce8613306c4 tag bridge-b3b dirty=0
+commands exit=0 seconds=52
+house_a_down exit=0 seconds=2
+house_a_up exit=0 seconds=4
+bridge_types exit=0 seconds=32
+suites exit=0 seconds=210
+suites failed=0 of 34
+bridge errors in (A) log: 0
+bridge-b3b dirty after=0
+end 2026-10-31T15:07:08+01:00
+ALLDONE

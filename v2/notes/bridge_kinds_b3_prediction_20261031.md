@@ -126,3 +126,26 @@ these kinds), except T26, which passes before (nothing is sent). Outcome appende
 
 **Not tested here**: no real integration publishes these kinds in the end-to-end set (B5); the
 F57 argument in decision 1.
+
+---
+
+## Outcome (appended 2026-10-31, after the runs)
+
+Pi, fresh clones of `bridge-b3-pre` (`ab9a7b9`) and `bridge-b3` (`2d2e724`), 14:52–14:59, then of
+`bridge-b3b` (`ea5cea4`), 15:02–15:07; clean before and after; (A) `down` and `up --fresh` before
+each arm. Results: `experiments/real_platform/results/bridge_kinds_20261031/` (`b3/`, `b3b/`).
+**Every prediction held against a fresh (A); T27 missed at first, on a test assumption.**
+
+| | Outcome |
+|---|---|
+| K27 | Held: before, `selftest_commands` 197/214 (laptop and Pi) |
+| K23–K26, K28 | Held: 214/214 after (laptop and Pi) |
+| Fails first, T | Held: `selftest_bridge_types` 117/141 against (A) with the old bridge; the 24 failures are T22 (8), T23 (5), T24's three firing checks, T25 (8), all because (A) refused the five kinds. T24's republish check and T26 passed before, as expected |
+| T22 | Held: an update, time, notify and event, each a registry row owned by the bridge; the update `on` with 1.0.0 and 1.1.0 and features 13 (release notes dropped); the time `06:45:00`; notify and event `unknown`, the event with its two types |
+| T23 | Held: a GPS tracker at (A)'s home coordinates (52.37), published `not_home` by the sandbox, shows `home` in (A); one degree north, `not_home`. A Bluetooth scanner shows `home`, then `not_home`; its MAC is an attribute and its unique id the bridge's (`selftest:device_tracker.selftest_tag`) |
+| T24 | Held: the `press` published as 13:00:00 fired in (A) stamped by (A) (14:03:34.350), with `event_type` press and `button` 1; the same event republished left the state unchanged; a `double_press` fired again (14:03:34.955); `triple_press`, not listed, left the state and the bridge as they were |
+| T25 | Held: `update.skip` turned it `off` and `clear_skipped` back `on`, with no command decision either time; `install` reached the sandbox as `{"backup": false}` and (A) showed `off` once 1.1.0 was installed; `time.set_value` "07:30" as `{"time": "07:30:00"}`; `notify.send_message` as `{"message": "Door left open", "title": "Home"}`, and (A)'s notify state became the time it was sent |
+| T26 | Held: "Door left open" is not in the run's durable log |
+| T27 | **Missed at `bridge-b3`: 33 of 34 suites.** Inside `suites_all`, `selftest_bridge_types` runs a second time against the same (A), which keeps a notify's last-sent time and an event's last event; T22 expected `unknown` (139/141). Correct behaviour, a test assumption: the same trap as step 2's button (AI-use log 33). T22 accepts `unknown` or a time for these two (`ea5cea4`, tag `bridge-b3b`); rerun from a fresh clone: **34 of 34 suites**, `selftest_bridge_types` 141/141 alone and inside the suites |
+
+(A)'s log: no error from the bridge.

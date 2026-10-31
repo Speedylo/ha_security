@@ -1,0 +1,18 @@
+start 2026-10-31T14:52:36+01:00 pre commit ab9a7b95dc19d2e8dfa59f486a70cd021bc79928 tag bridge-b3-pre dirty=0
+commands_pre exit=1 seconds=56
+house_a_down_pre exit=0 seconds=1
+house_a_up_pre exit=0 seconds=5
+bridge_types_pre exit=1 seconds=65
+post commit 2d2e7247c7b4c485515c2fc168a479b658e0444f tag bridge-b3 dirty=0
+commands exit=0 seconds=52
+house_a_down exit=0 seconds=1
+house_a_up exit=0 seconds=5
+bridge_types exit=0 seconds=31
+suites exit=0 seconds=210
+suites failed=1 of 34
+bridge errors in (A) log: 0
+unit system now: up
+bridge-b3-pre dirty after=0
+bridge-b3 dirty after=0
+end 2026-10-31T14:59:43+01:00
+ALLDONE
