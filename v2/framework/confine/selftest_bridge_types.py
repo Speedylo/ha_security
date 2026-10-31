@@ -11,7 +11,8 @@ in (A), described well enough for Home Assistant to draw its control. Operating 
     T4'  each is operated from a user in (A): the command reaches the sandbox with exactly
          its data, and the result shows in (A) (bridge step 2)
     T4'' a value (A) rejects never reaches the mediator
-    T5   a type still unsupported (vacuum; a light until batch B1) is refused at publish
+    T5   a type the bridge does not stand in for (a to-do list; a light until B1, a vacuum until
+         B2) is refused at publish
     T6   a climate and an alarm panel are entities of their own type in (A), described (step 3)
     T7'  each is operated from a user in (A), its data reaching the sandbox exactly
     T8   a house in US customary units sends a climate temperature to the sandbox in °C
@@ -37,6 +38,11 @@ in (A), described well enough for Home Assistant to draw its control. Operating 
     T13  a fan preset mode the fan does not offer fails in (A) and never reaches the mediator
     T14  a lock code typed in (A) is not in the durable log
     T16  a default code stored for the lock in (A) reaches the sandbox, and not the log
+    T17  a humidifier, water heater, vacuum, valve, siren and remote, described (batch B2)
+    T18  each operated from a user in (A), the sandbox receiving what (A) worked out: away mode as
+         set_away_mode, a positioned valve's open as position 100, a siren tone by name, a remote's
+         command with (A)'s defaults, and a water heater's °F as °C
+    T19  a humidity above the published maximum fails in (A) and never reaches the mediator
 
 Requires (A) running: `python3 -m confine.house_a up --fresh` on the Pi.
 
@@ -566,11 +572,121 @@ def main() -> int:
         check("T14 '5820' (typed) and '5821' (stored) appear nowhere in the run's durable log",
               '"5820"' not in decisions and '"5821"' not in decisions)
 
-        print("\nT5 — a type still unsupported is refused\n")
-        vacuum = sandbox.ask({"op": "entity.publish", "entity": "vacuum.selftest_probe",
-                              "state": "docked"})
-        check("T5 a vacuum is refused at publish", vacuum.get("ok") is False,
-              vacuum.get("reason", ""))
+        print("\nT17 — humidifier, water heater, vacuum, valve, siren, remote (batch B2)\n")
+        # `notes/bridge_kinds_b2_prediction_20261031.md`. Features from Home Assistant 2026.8.3:
+        # humidifier MODES 1; water heater TARGET_TEMPERATURE 1 | OPERATION_MODE 2 | AWAY_MODE 4 |
+        # ON_OFF 8; vacuum PAUSE 4 | STOP 8 | RETURN_HOME 16 | FAN_SPEED 32 | SEND_COMMAND 256 |
+        # LOCATE 512 | CLEAN_SPOT 1024 | STATE 4096 | START 8192; valve OPEN 1 | CLOSE 2 |
+        # SET_POSITION 4 | STOP 8; siren TURN_ON 1 | TURN_OFF 2 | TONES 4 | VOLUME_SET 8 |
+        # DURATION 16; remote ACTIVITY 4.
+        AIR, BOILER = "humidifier.selftest_air", "water_heater.selftest_boiler"
+        ROBOT, TAP = "vacuum.selftest_robot", "valve.selftest_tap"
+        SIREN, TV = "siren.selftest_alarm", "remote.selftest_tv"
+        air_attributes = {"friendly_name": "Selftest air", "min_humidity": 30, "max_humidity": 80,
+                          "humidity": 50, "available_modes": ["normal", "eco"], "mode": "normal",
+                          "supported_features": 1}
+        boiler_attributes = {"friendly_name": "Selftest boiler", "min_temp": 40, "max_temp": 60,
+                             "temperature": 45, "current_temperature": 44,
+                             "operation_list": ["eco", "electric", "off"],
+                             "operation_mode": "eco", "away_mode": "off",
+                             "supported_features": 15}
+        robot_attributes = {"friendly_name": "Selftest robot", "fan_speed": "standard",
+                            "fan_speed_list": ["quiet", "standard", "turbo"],
+                            "supported_features": 4 | 8 | 16 | 32 | 256 | 512 | 1024 | 4096 | 8192}
+        tap_attributes = {"friendly_name": "Selftest tap", "current_position": 0,
+                          "supported_features": 15}
+        siren_attributes = {"friendly_name": "Selftest alarm",
+                            "available_tones": {"1": "fire", "2": "burglar"},
+                            "supported_features": 31}
+        tv_attributes = {"friendly_name": "Selftest TV", "activity_list": ["TV", "Music"],
+                         "current_activity": "TV", "supported_features": 4}
+        for entity, state, attributes, wanted in (
+                (AIR, "on", air_attributes, {"min_humidity": 30, "max_humidity": 80,
+                                             "available_modes": ["normal", "eco"]}),
+                (BOILER, "eco", boiler_attributes, {"operation_list": ["eco", "electric", "off"],
+                                                    "temperature": 45}),
+                (ROBOT, "docked", robot_attributes,
+                 {"fan_speed_list": ["quiet", "standard", "turbo"], "fan_speed": "standard"}),
+                (TAP, "closed", tap_attributes, {"current_position": 0}),
+                (SIREN, "off", siren_attributes,
+                 {"available_tones": {"1": "fire", "2": "burglar"}}),
+                (TV, "on", tv_attributes, {"activity_list": ["TV", "Music"],
+                                           "current_activity": "TV"})):
+            answer = sandbox.ask({"op": "entity.publish", "entity": entity, "state": state,
+                                  "attributes": attributes})
+            landed[entity] = platform.published.get(("selftest", entity)) or ""
+            row = registry(platform).get(landed[entity], {})
+            domain = entity.partition(".")[0]
+            check(f"T17 {domain}: a registry row of its domain owned by the bridge",
+                  answer.get("ok") is True and row.get("platform") == "confine_bridge"
+                  and landed[entity].startswith(f"{domain}."),
+                  answer.get("reason") or landed[entity])
+            shown, shown_attributes = platform.read(landed[entity]) if landed[entity] else (None, {})
+            missing = {k: (v, (shown_attributes or {}).get(k)) for k, v in wanted.items()
+                       if (shown_attributes or {}).get(k) != v}
+            check(f"T17 {domain}: (A) holds its state and the attributes that describe it",
+                  shown == state and not missing, f"{shown!r} {missing or ''}")
+
+        print("\nT18 — operating them: the sandbox receives what (A) worked out\n")
+        for entity, service, data, expected_service, expected, state, attributes in (
+                (AIR, "set_humidity", {"humidity": 45}, "set_humidity", {"humidity": 45}, "on",
+                 {**air_attributes, "humidity": 45}),
+                (BOILER, "set_away_mode", {"away_mode": True}, "set_away_mode",
+                 {"away_mode": True}, "eco", {**boiler_attributes, "away_mode": "on"}),
+                (TAP, "open_valve", {}, "set_valve_position", {"position": 100}, "open",
+                 {**tap_attributes, "current_position": 100}),
+                (SIREN, "turn_on", {"tone": "fire"}, "turn_on", {"tone": "fire"}, "on",
+                 siren_attributes),
+                (ROBOT, "start", {}, "start", {}, "cleaning", robot_attributes),
+                (TV, "send_command", {"command": "power"}, "send_command",
+                 {"command": ["power"], "num_repeats": 1, "hold_secs": 0}, "on", tv_attributes)):
+            domain = entity.partition(".")[0]
+            command, pending = operate(entity, service, data)
+            check(f"T18 {domain}.{service} {data or ''}: reaches the sandbox as "
+                  f"{expected_service} {expected}",
+                  pending["arrived"] and command.get("entity") == entity
+                  and command.get("service") == expected_service
+                  and command.get("data") == expected, f"{command or pending['user'].outcome}")
+            outcome, shown = finish(entity, command, pending, state, attributes)
+            check(f"T18 {domain}.{service}: the call succeeds and (A) shows {state}",
+                  outcome.get("success") is True and shown == state,
+                  f"{outcome.get('error') or ''} {shown!r}")
+
+        switched = house_a._ws_call(admin, {"type": "config/core/update",
+                                            "unit_system": "us_customary"})
+        try:
+            command, pending = operate(BOILER, "set_temperature", {"temperature": 122})
+            sent = (command.get("data") or {}).get("temperature")
+            check("T18 water_heater.set_temperature 122 °F reaches the sandbox as 50 °C",
+                  bool(switched.get("success")) and command.get("service") == "set_temperature"
+                  and isinstance(sent, (int, float)) and abs(sent - 50.0) < 0.01
+                  and set(command.get("data") or {}) == {"temperature"},
+                  f"{command or pending['user'].outcome} {switched.get('error') or ''}")
+            finish(BOILER, command, pending, "eco", {**boiler_attributes, "temperature": 50})
+        finally:
+            restored = house_a._ws_call(admin, {"type": "config/core/update",
+                                                "unit_system": "metric"})
+        check("T18 and (A) is back in metric units", bool(restored.get("success")),
+              str(restored.get("error") or ""))
+
+        print("\nT19 — a humidity above the published maximum never reaches the mediator\n")
+        before = len([r for r in log.records() if r.get("op") == "entity.command"])
+        user = User()
+        pressed = user.press(landed[AIR] or AIR, "set_humidity", {"humidity": 95})
+        serve_until(mediator, lambda: not pressed.is_alive(), seconds=15)
+        pressed.join()
+        user.close()
+        after_count = len([r for r in log.records() if r.get("op") == "entity.command"])
+        check("T19 humidifier.set_humidity 95 (published 30-80) fails in (A)",
+              user.outcome.get("success") is False, str(user.outcome.get("error")))
+        check("T19 and no command decision was recorded: it never left (A)",
+              after_count == before, f"{after_count - before} new")
+
+        print("\nT5 — a kind the bridge does not stand in for is refused\n")
+        todo = sandbox.ask({"op": "entity.publish", "entity": "todo.selftest_probe",
+                            "state": "3"})
+        check("T5 a to-do list is refused at publish", todo.get("ok") is False,
+              todo.get("reason", ""))
         check("every chain verifies", log.verify() == [])
         platform.close()
 

@@ -19,6 +19,9 @@ type, as `selftest_audit`'s F3 check does.
     K13  B1 data matching no allowed shape is refused under COMMAND_DATA
     K14  B1 services worked out in (A), or of another kind, are refused under COMMAND_SERVICES
     K15  a lock code is never written to the durable log, allowed or refused
+    K18  humidifier, water heater, vacuum, valve, siren and remote: each allowed shape (batch B2)
+    K19  B2 data matching no allowed shape is refused under COMMAND_DATA
+    K20  B2 services worked out in (A), or with no service in the sandbox, are refused
 
 Run:  python3 -m confine.selftest_commands
 """
@@ -45,7 +48,9 @@ OWNED = {"switch.demo_power": "demo", "button.demo_report": "demo", "text.demo_n
          "select.demo_mode": "demo", "number.demo_target": "demo",
          "climate.demo_ac": "demo", "alarm_control_panel.demo_alarm": "demo",
          "light.demo_lamp": "demo", "fan.demo_fan": "demo", "cover.demo_blind": "demo",
-         "lock.demo_door": "demo"}
+         "lock.demo_door": "demo", "humidifier.demo_air": "demo",
+         "water_heater.demo_boiler": "demo", "vacuum.demo_robot": "demo",
+         "valve.demo_tap": "demo", "siren.demo_alarm": "demo", "remote.demo_tv": "demo"}
 
 
 def check(claim: str, condition: bool, detail: str = "") -> None:
@@ -326,6 +331,97 @@ def main() -> int:
               and (refused_record.get("requested") or {}).get("data") == {"code": "(withheld)"},
               f"{(allowed_record.get('requested') or {}).get('data')} "
               f"{(refused_record.get('requested') or {}).get('data')}")
+
+        # Batch B2 (`notes/bridge_kinds_b2_prediction_20261031.md`).
+        AIR, BOILER, ROBOT = "humidifier.demo_air", "water_heater.demo_boiler", "vacuum.demo_robot"
+        TAP, SIREN, TV = "valve.demo_tap", "siren.demo_alarm", "remote.demo_tv"
+        raw_code = "b64:" + "J" * 996
+        print("\nK18 — humidifier, water heater, vacuum, valve, siren, remote (batch B2)\n")
+        for entity, service, data in (
+                (AIR, "turn_on", None), (AIR, "turn_off", None),
+                (AIR, "set_mode", {"mode": "eco"}), (AIR, "set_humidity", {"humidity": 45}),
+                (BOILER, "turn_on", None), (BOILER, "turn_off", None),
+                (BOILER, "set_temperature", {"temperature": 50.0}),
+                (BOILER, "set_temperature", {"temperature": 50.0, "operation_mode": "eco"}),
+                (BOILER, "set_operation_mode", {"operation_mode": "electric"}),
+                (BOILER, "set_away_mode", {"away_mode": True}),
+                (ROBOT, "start", None), (ROBOT, "pause", None), (ROBOT, "stop", None),
+                (ROBOT, "return_to_base", None), (ROBOT, "clean_spot", None),
+                (ROBOT, "locate", None), (ROBOT, "set_fan_speed", {"fan_speed": "turbo"}),
+                (ROBOT, "send_command", {"command": "app_segment_clean"}),
+                (ROBOT, "send_command", {"command": "app_segment_clean", "params": [16, 17]}),
+                (ROBOT, "send_command", {"command": "set_mop", "params": {"level": 2,
+                                                                           "zones": [[1, 2]]}}),
+                (TAP, "open_valve", None), (TAP, "close_valve", None), (TAP, "stop_valve", None),
+                (TAP, "set_valve_position", {"position": 100}),
+                (SIREN, "turn_on", None), (SIREN, "turn_on", {"tone": "fire"}),
+                (SIREN, "turn_on", {"tone": 2, "duration": 10, "volume_level": 0.5}),
+                (SIREN, "turn_off", None),
+                (TV, "turn_on", None), (TV, "turn_on", {"activity": "Music"}),
+                (TV, "turn_off", {"activity": "Music"}),
+                (TV, "send_command", {"command": ["power"], "num_repeats": 1, "hold_secs": 0}),
+                (TV, "send_command", {"command": [raw_code], "device": "tv", "num_repeats": 2,
+                                      "delay_secs": 0.4, "hold_secs": 0.0}),
+                (TV, "learn_command", {"device": "tv", "command": ["mute"],
+                                       "command_type": "ir", "alternative": False,
+                                       "timeout": 30}),
+                (TV, "delete_command", {"command": ["mute"], "device": "tv"})):
+            record, pushed = send(entity, service, data)
+            check(f"K18 {entity.partition('.')[0]}.{service} {str(data or '')[:60]}: "
+                  "allowed and pushed as sent",
+                  record.get("allowed") is True and record.get("clause") == AMBIENT
+                  and pushed is not None and pushed.get("entity") == entity
+                  and pushed.get("service") == service and pushed.get("data") == (data or {}),
+                  f"{record.get('clause')} {str(pushed)[:120]}")
+
+        print("\nK19 — B2 data matching no allowed shape\n")
+        for label, entity, service, data in (
+                ("humidity as a string", AIR, "set_humidity", {"humidity": "45"}),
+                ("set_mode with no mode", AIR, "set_mode", {}),
+                ("set_temperature with no temperature", BOILER, "set_temperature",
+                 {"operation_mode": "eco"}),
+                ("away_mode 'yes'", BOILER, "set_away_mode", {"away_mode": "yes"}),
+                ("set_fan_speed with a list", ROBOT, "set_fan_speed", {"fan_speed": ["turbo"]}),
+                ("send_command params of 5 KiB", ROBOT, "send_command",
+                 {"command": "x", "params": ["p" * 5120]}),
+                ("send_command params holding NaN", ROBOT, "send_command",
+                 {"command": "x", "params": {"level": math.nan}}),
+                ("send_command params as a string", ROBOT, "send_command",
+                 {"command": "x", "params": "16,17"}),
+                ("set_valve_position with a string", TAP, "set_valve_position",
+                 {"position": "100"}),
+                ("siren volume_level as a string", SIREN, "turn_on", {"volume_level": "loud"}),
+                ("siren tone as a boolean", SIREN, "turn_on", {"tone": True}),
+                ("remote command as a string, not a list", TV, "send_command",
+                 {"command": "power"}),
+                ("remote a number among the commands", TV, "send_command",
+                 {"command": ["power", 7]}),
+                ("remote 65 commands", TV, "send_command", {"command": ["c"] * 65}),
+                ("remote no commands", TV, "send_command", {"command": []}),
+                ("remote a 4097-character command", TV, "send_command",
+                 {"command": ["c" * 4097]}),
+                ("remote delete_command with no command", TV, "delete_command", {"device": "tv"}),
+                *((f"{entity.partition('.')[0]} redirected with entity_id", entity, service,
+                   {**data, "entity_id": "x.someone_else"}) for entity, service, data in (
+                    (AIR, "set_humidity", {"humidity": 45}),
+                    (BOILER, "set_away_mode", {"away_mode": True}),
+                    (ROBOT, "send_command", {"command": "x"}),
+                    (TAP, "set_valve_position", {"position": 10}),
+                    (SIREN, "turn_on", {"tone": "fire"}),
+                    (TV, "send_command", {"command": ["power"]})))):
+            record, pushed = send(entity, service, data)
+            check(f"K19 {label}: refused under COMMAND_DATA, not pushed",
+                  record.get("allowed") is False and record.get("clause") == COMMAND_DATA
+                  and pushed is None, f"{record.get('clause')} {pushed}")
+
+        print("\nK20 — services worked out in (A), or with no service in the sandbox\n")
+        for entity, service in ((AIR, "toggle"), (TAP, "toggle"), (SIREN, "toggle"),
+                                (TV, "toggle"), (ROBOT, "clean_area"), (ROBOT, "turn_on"),
+                                (BOILER, "turn_away_mode_on")):
+            record, pushed = send(entity, service, None)
+            check(f"K20 {entity.partition('.')[0]}.{service}: refused under COMMAND_SERVICES",
+                  record.get("allowed") is False and record.get("clause") == COMMAND_SERVICES
+                  and pushed is None, f"{record.get('clause')} {pushed}")
         check("every chain verifies", mediator.log.verify() == [])
 
     print(f"\n{sum(results)}/{len(results)} checks passed")

@@ -194,5 +194,5 @@ that check is B5's real-house rerun.
 **Recorded, not changed: a lock's code format is a regular expression the integration supplies.**
 (A) matches a typed or stored code against it. The bridged lock drops a format that does not compile
 (so a broken one cannot make every lock command fail), but a format that compiles and backtracks
-badly would still run in (A) on each code. Codes are short, so the cost is bounded in practice;
-raised with Younes before B5.
+badly would still run in (A) on each code. Codes are short, so the cost is bounded in practice.
+**Younes, 2026-10-31: stated as a limit** (the report names it; no cap on the pattern).

@@ -323,8 +323,9 @@ def main() -> int:
         # Found reviewing W1 (2026-10-04): the bridge refuses domains it cannot stand in for, the
         # refusal reached the mediator as an exception nothing caught, and one sandbox publishing
         # a light stopped the mediator for every sandbox — after recording it as the light's owner.
-        # A vacuum since batch B1 (2026-10-31), which made lights a kind the bridge stands in for.
-        refused_publish = other.ask({"op": "entity.publish", "entity": "vacuum.probe",
+        # A to-do list since batch B2 (2026-10-31): lights (B1) and vacuums (B2) are bridged now, and
+        # none of the 37 integrations provides a to-do list.
+        refused_publish = other.ask({"op": "entity.publish", "entity": "todo.probe",
                                      "state": "on"})
         check("a publish (A) refuses is answered to the sandbox as a refusal",
               refused_publish.get("ok") is False
@@ -333,9 +334,9 @@ def main() -> int:
         check("and the mediator still serves", other.ask(
             {"op": "entity.publish", "entity": OTHER_SWITCH, "state": "off"}).get("ok") is True)
         check("and the sandbox is not recorded as owning what was never published",
-              platform.owners.get("vacuum.probe") is None)
+              platform.owners.get("todo.probe") is None)
         both = [r["allowed"] for r in log.records() if r["kind"] == "decision"
-                and r.get("target") == "vacuum.probe"]
+                and r.get("target") == "todo.probe"]
         check("the log shows the grant and then the refusal, so the refusal is the last word",
               both == [True, False], f"{both}")
 
