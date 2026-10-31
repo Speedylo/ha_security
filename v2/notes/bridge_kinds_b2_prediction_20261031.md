@@ -137,3 +137,28 @@ iterates `service.data`, l. 428), so the bridged water heater forwards only `tem
 these kinds). Outcome appended after the runs.
 
 **Not tested here**: no real integration publishes these kinds in the end-to-end set; that is B5.
+
+---
+
+## Outcome (appended 2026-10-31, after the runs)
+
+Pi, fresh clones of `bridge-b2-pre` (`5ace7d4`) and `bridge-b2` (`d0e5af1`), clean before and after,
+14:33–14:40; (A) `down` and `up --fresh` before each arm. Results:
+`experiments/real_platform/results/bridge_kinds_20261031/b2/`. **Every prediction held.**
+
+| | Outcome |
+|---|---|
+| K21 | Held: before, `selftest_commands` 133/191 (laptop and Pi) |
+| K18–K20, K22 | Held: 191/191 after (laptop and Pi) |
+| Fails first, T | Held: `selftest_bridge_types` 89/115 against (A) with the old bridge; the 26 failures are T17 (12), T18 (13, the °F case included) and T19's first check, all because (A) refused the six kinds. T19's second check and T20 passed before, as expected |
+| T17 | Held: a humidifier, water heater, vacuum, valve, siren and remote, each a registry row of its domain owned by the bridge, with its state and the attributes that describe it |
+| T18 | Held: `set_humidity` 45 reached the sandbox as `{"humidity": 45}`; `set_away_mode` true as `set_away_mode {"away_mode": true}`; `open_valve` on a valve with a position as `set_valve_position {"position": 100}`; a siren tone `"fire"` from tones `{"1": "fire", "2": "burglar"}` as `{"tone": "fire"}` (by name, decision 5); `vacuum.start` as `start {}`; `remote.send_command` "power" as `{"command": ["power"], "num_repeats": 1, "hold_secs": 0}`; with (A) in US units, 122 °F as 50 °C and nothing else in the data. Each call succeeded and (A) showed the new state; (A) back in metric afterwards |
+| T19 | Held: `set_humidity` 95 (published 30–80) failed in (A), and no command decision was recorded |
+| T20 | Held: a to-do list is refused at publish, here and in `selftest_real_platform` (55/55) |
+| T21 | Held: **34 of 34 suites**; `selftest_bridge_types` 115/115 alone and inside the suites |
+
+(A)'s log: no error from the bridge.
+
+**Recorded, for the report:** an allowed command's data is logged as sent, so the largest remote
+command the rule allows (64 × 4096 characters) makes a record of about 256 KiB. The bound still
+caps every record; it is a looser cap than the 255-character strings elsewhere.
