@@ -56,6 +56,7 @@ in (A), described well enough for Home Assistant to draw its control. Operating 
     T29  each operated from a user in (A), the sandbox receiving the service's own field names
     T30  play_media: an id (A) can resolve becomes a signed link to (A); any other goes unchanged
     T31  grouping is not offered in (A), and nothing reaches the mediator
+    T32  no kind shows a picture link its integration published (F71, batch B5)
 
 Requires (A) running: `python3 -m confine.house_a up --fresh` on the Pi.
 
@@ -970,6 +971,31 @@ def main() -> int:
               str(user.outcome.get("error")))
         check("T31 and no command decision was recorded", after_count == before,
               f"{after_count - before} new")
+
+        print("\nT32 — no picture link the integration published (F71, batch B5)\n")
+        # `notes/bridge_kinds_b5_prediction_20261031.md`. (A)'s frontend draws an entity's icon from
+        # `entity_picture_local`, else `entity_picture`, and the household's browser fetches it.
+        for entity, state, picture in (
+                ("sensor.selftest_pictured", "12", "entity_picture"),
+                ("switch.selftest_pictured", "on", "entity_picture"),
+                ("light.selftest_pictured", "on", "entity_picture_local")):
+            answer = sandbox.ask({"op": "entity.publish", "entity": entity, "state": state,
+                                  "attributes": {"friendly_name": "Selftest pictured",
+                                                 picture: "http://marker.invalid/read-by-it",
+                                                 "note": "kept",
+                                                 **({"supported_color_modes": ["onoff"],
+                                                     "color_mode": "onoff"}
+                                                    if entity.startswith("light.") else {})}})
+            landed[entity] = platform.published.get(("selftest", entity)) or ""
+            shown, shown_attributes = platform.read(landed[entity]) if landed[entity] else (None, {})
+            shown_attributes = shown_attributes or {}
+            pictures = {k: v for k, v in shown_attributes.items()
+                        if k in ("entity_picture", "entity_picture_local")}
+            check(f"T32 {entity.partition('.')[0]} published with {picture}: (A) shows it, its "
+                  "other attributes, and no picture link",
+                  answer.get("ok") is True and shown == state
+                  and shown_attributes.get("note") == "kept" and not pictures,
+                  f"{shown!r} {pictures or ''}")
 
         print("\nT5 — a kind the bridge does not stand in for is refused\n")
         todo = sandbox.ask({"op": "entity.publish", "entity": "todo.selftest_probe",
