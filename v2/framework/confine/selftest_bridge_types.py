@@ -721,8 +721,15 @@ def main() -> int:
             shown, shown_attributes = platform.read(landed[entity]) if landed[entity] else (None, {})
             missing = {k: (v, (shown_attributes or {}).get(k)) for k, v in wanted.items()
                        if (shown_attributes or {}).get(k) != v}
+            # A notify's state is when (A) last sent through it, an event's when it last fired;
+            # (A) keeps both, so a second run against the same (A) finds a time, not `unknown`
+            # (as for the button in T2; found running inside suites_all, 2026-10-31).
+            if domain in ("notify", "event"):
+                held = shown == "unknown" or _iso_time(shown)
+            else:
+                held = shown == shown_state
             check(f"T22 {domain}: (A) shows {shown_state} and the attributes that describe it",
-                  shown == shown_state and not missing, f"{shown!r} {missing or ''}")
+                  held and not missing, f"{shown!r} {missing or ''}")
 
         print("\nT23 — trackers: (A) works out home or away from its own zones\n")
         for entity, state, attributes, expected in (
