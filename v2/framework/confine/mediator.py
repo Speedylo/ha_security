@@ -245,15 +245,51 @@ def _forecast_type(value: object) -> bool:
     return value in ("daily", "hourly", "twice_daily")
 
 
+def _flag(value: object) -> bool:
+    return isinstance(value, bool)
+
+
+def _flash(value: object) -> bool:
+    return value in ("short", "long")
+
+
+def _colour(length: int) -> Callable[[object], bool]:
+    """A colour as Home Assistant hands it to a light: `length` numbers, arriving as a list."""
+    return lambda value: (isinstance(value, list) and len(value) == length
+                          and all(_number(v) for v in value))
+
+
+def _white(value: object) -> bool:
+    # A brightness; empty when (A) turned `white: true` into a brightness it does not know
+    # (`light/__init__.py`, process_turn_on_params; decided 2026-10-31).
+    return value is None or _number(value)
+
+
+class _Optional:
+    """A key a shape may leave out (batch B1): a light's turn_on carries any of eleven."""
+
+    def __init__(self, valid: Callable[[object], bool]) -> None:
+        self.valid = valid
+
+    def __call__(self, value: object) -> bool:
+        return self.valid(value)
+
+
 Shape = dict[str, Callable[[object], bool]]
-_ALARM: list[Shape] = [{}, {"code": _code}]
+#: No data, or a code: an alarm panel's and a lock's services.
+_CODED: list[Shape] = [{}, {"code": _code}]
 
 #: What the mediator forwards from the household to a confined integration (bridge steps 2 and 3,
 #: approved by Younes 2026-10-25): per entity type, the services, and for each the shapes its data
 #: may take — **exactly** one shape's keys, each value of the listed kind. Shape only: whether a
 #: value is inside a range, among the options, or the right alarm code is checked by (A) or by the
 #: integration. Home Assistant's other services on these types (`toggle`, `select_next`,
-#: `increment`, ...) are worked out in (A) and arrive as one of these.
+#: `increment`, a fan's `increase_speed`, a cover's `toggle_tilt`, ...) are worked out in (A) and
+#: arrive as one of these. Light, fan, cover and lock (batch B1,
+#: `notes/bridge_kinds_b1_prediction_20261031.md`) list what Home Assistant 2026.8.3 hands the
+#: entity's own method, which is narrower than the service: (A) has already turned
+#: `brightness_pct`, `color_name` and `profile` into brightness and colour, and dropped what the
+#: light does not support. Keys wrapped in `_Optional` may be left out.
 COMMANDS: dict[str, dict[str, list[Shape]]] = {
     "switch": {"turn_on": [{}], "turn_off": [{}]},
     "button": {"press": [{}]},
@@ -275,9 +311,33 @@ COMMANDS: dict[str, dict[str, list[Shape]]] = {
         "set_humidity": [{"humidity": _number}],
     },
     "alarm_control_panel": {
-        service: _ALARM for service in (
+        service: _CODED for service in (
             "alarm_disarm", "alarm_arm_home", "alarm_arm_away", "alarm_arm_night",
             "alarm_arm_vacation", "alarm_arm_custom_bypass", "alarm_trigger")},
+    "light": {
+        "turn_on": [{key: _Optional(valid) for key, valid in (
+            ("brightness", _number), ("color_temp_kelvin", _number), ("hs_color", _colour(2)),
+            ("rgb_color", _colour(3)), ("rgbw_color", _colour(4)), ("rgbww_color", _colour(5)),
+            ("xy_color", _colour(2)), ("white", _white), ("effect", _text), ("flash", _flash),
+            ("transition", _number))}],
+        "turn_off": [{"transition": _Optional(_number), "flash": _Optional(_flash)}],
+    },
+    "fan": {
+        "turn_on": [{"percentage": _Optional(_number), "preset_mode": _Optional(_text)}],
+        "turn_off": [{}],
+        "set_percentage": [{"percentage": _number}],
+        "set_preset_mode": [{"preset_mode": _text}],
+        "oscillate": [{"oscillating": _flag}],
+        "set_direction": [{"direction": _text}],
+    },
+    "cover": {
+        **{service: [{}] for service in (
+            "open_cover", "close_cover", "stop_cover",
+            "open_cover_tilt", "close_cover_tilt", "stop_cover_tilt")},
+        "set_cover_position": [{"position": _number}],
+        "set_cover_tilt_position": [{"tilt_position": _number}],
+    },
+    "lock": {service: _CODED for service in ("lock", "unlock", "open")},
     # Questions (bridge step 4): answered with a list, which `ANSWERS` checks.
     "calendar": {"get_events": [{"start": _iso, "end": _iso}]},
     "weather": {"get_forecasts": [{"type": _forecast_type}]},
@@ -345,9 +405,15 @@ def check_answer(question: tuple[str, str], answer: object) -> tuple[str | None,
 WITHHELD = frozenset({"code"})
 
 
+def _fits(data: dict, shape: Shape) -> bool:
+    """Only the shape's keys, every one it requires, each value of its kind."""
+    required = {k for k, valid in shape.items() if not isinstance(valid, _Optional)}
+    return (set(data) <= set(shape) and required <= set(data)
+            and all(shape[k](v) for k, v in data.items()))
+
+
 def _matches(data: dict, shapes: list[Shape]) -> bool:
-    return any(set(data) == set(shape) and all(valid(data[k]) for k, valid in shape.items())
-               for shape in shapes)
+    return any(_fits(data, shape) for shape in shapes)
 
 
 def _kinds(data: dict) -> dict[str, str]:
