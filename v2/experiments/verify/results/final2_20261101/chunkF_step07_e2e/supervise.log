@@ -1,0 +1,8 @@
+19:35:58  supervising demo_flood; durable log /home/younes/r2exp/final2-run/out/chunkF_step07_e2e/supervise-audit/decisions-20261101T193558-104310.jsonl; Ctrl-C to stop
+19:35:58  demo_flood started (run 1, pid 104325)
+19:35:58  demo_flood run 1 folder /tmp/supervise-demo_flood-a7fetzci/.confine/demo_flood-start1
+19:36:23  demo_flood cut off by the mediator; killing its sandbox
+19:36:23  demo_flood reinstated (recorded); starting it again
+19:36:23  demo_flood started (run 2, pid 104345)
+19:36:23  demo_flood run 2 folder /tmp/supervise-demo_flood-a7fetzci/.confine/demo_flood-start2
+19:36:24  stopped

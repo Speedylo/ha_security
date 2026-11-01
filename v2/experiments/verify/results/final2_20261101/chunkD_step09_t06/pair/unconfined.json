@@ -1,0 +1,16 @@
+{
+  "arm": "unconfined",
+  "ha_version": "2026.8.3",
+  "host": "raspberrypi",
+  "declared_delivered": true,
+  "undeclared_delivered": [
+    "lock.front_door",
+    "person.younes",
+    "sensor.bedroom_occupancy"
+  ],
+  "undeclared": [
+    "sensor.bedroom_occupancy",
+    "lock.front_door",
+    "person.younes"
+  ]
+}

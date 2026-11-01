@@ -1,0 +1,448 @@
+[
+  {
+    "arm": "unconfined",
+    "level": null,
+    "timed_out": true,
+    "loaded": true,
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "action"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "error": null,
+    "published": [
+      {
+        "entity": "climate.151732605161920_climate",
+        "state": "unavailable",
+        "platform": "midea_ac_lan"
+      },
+      {
+        "entity": "conversation.home_assistant",
+        "state": "unknown",
+        "platform": null
+      },
+      {
+        "entity": "sensor.sun_next_dawn",
+        "state": "2026-11-02T06:19:54+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_dusk",
+        "state": "2026-11-02T17:07:19+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_midnight",
+        "state": "2026-11-01T23:44:00+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_noon",
+        "state": "2026-11-02T11:44:00+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_rising",
+        "state": "2026-11-02T06:55:54+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sensor.sun_next_setting",
+        "state": "2026-11-02T16:31:23+00:00",
+        "platform": "sun"
+      },
+      {
+        "entity": "sun.sun",
+        "state": "below_horizon",
+        "platform": null
+      },
+      {
+        "entity": "zone.home",
+        "state": "0",
+        "platform": null
+      }
+    ],
+    "in_house": null,
+    "platform": null,
+    "device_saw": {
+      "udp": 2,
+      "tcp_connections": 8,
+      "tcp_bytes": 7616,
+      "peers": [
+        "10.126.85.243"
+      ],
+      "sent": 0
+    },
+    "decisions": [],
+    "probe": null,
+    "audit_breaks": null,
+    "reconcile": null
+  },
+  {
+    "arm": "confined_declared",
+    "level": null,
+    "timed_out": true,
+    "loaded": true,
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "action"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        }
+      ],
+      "type": "create_entry",
+      "errors": null,
+      "reason": null
+    },
+    "error": null,
+    "published": [
+      {
+        "entity": "climate.151732605161920_climate",
+        "state": "unavailable",
+        "accepted": true,
+        "clause": "(ambient: \u00a75.10.2)"
+      }
+    ],
+    "in_house": [
+      {
+        "entity": "climate.151732605161920_climate",
+        "in_house": "climate.151732605161920_climate",
+        "published_state": "unavailable",
+        "house_state": "unavailable",
+        "owned_by_bridge": true,
+        "same_domain": true,
+        "state_matches": true
+      }
+    ],
+    "platform": "real",
+    "device_saw": {
+      "udp": 2,
+      "tcp_connections": 6,
+      "tcp_bytes": 4352,
+      "peers": [
+        "10.126.85.243"
+      ],
+      "sent": 0
+    },
+    "decisions": [
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": true,
+        "clause": "/permissions/network/local/udp/0"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "20086",
+        "allowed": true,
+        "clause": "/permissions/network/local/udp/1"
+      },
+      {
+        "op": "network.tcp.local",
+        "target": "6444",
+        "allowed": true,
+        "clause": "/permissions/network/local/tcp/0"
+      },
+      {
+        "op": "network.tcp.local",
+        "target": "6444",
+        "allowed": true,
+        "clause": "/permissions/network/local/tcp/0"
+      },
+      {
+        "op": "network.tcp.local",
+        "target": "6444",
+        "allowed": true,
+        "clause": "/permissions/network/local/tcp/0"
+      },
+      {
+        "op": "network.tcp.local",
+        "target": "6444",
+        "allowed": true,
+        "clause": "/permissions/network/local/tcp/0"
+      },
+      {
+        "op": "network.tcp.local",
+        "target": "6444",
+        "allowed": true,
+        "clause": "/permissions/network/local/tcp/0"
+      },
+      {
+        "op": "network.tcp.local",
+        "target": "6444",
+        "allowed": true,
+        "clause": "/permissions/network/local/tcp/0"
+      }
+    ],
+    "probe": null,
+    "audit_breaks": [],
+    "reconcile": []
+  },
+  {
+    "arm": "confined_undeclared",
+    "level": null,
+    "timed_out": false,
+    "loaded": false,
+    "flow": {
+      "steps": [
+        {
+          "step": "user",
+          "sent": [
+            "action"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        },
+        {
+          "step": "manually",
+          "sent": [
+            "device_id",
+            "ip_address",
+            "key",
+            "model",
+            "name",
+            "port",
+            "protocol",
+            "subtype",
+            "token",
+            "type"
+          ]
+        }
+      ],
+      "type": "form",
+      "errors": {
+        "base": "invalid_device_ip"
+      },
+      "reason": null,
+      "step_id": "manually"
+    },
+    "error": null,
+    "published": [],
+    "in_house": [],
+    "platform": "real",
+    "device_saw": {
+      "udp": 0,
+      "tcp_connections": 0,
+      "tcp_bytes": 0,
+      "peers": [],
+      "sent": 0
+    },
+    "decisions": [
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      },
+      {
+        "op": "network.udp.send",
+        "target": "6445",
+        "allowed": false,
+        "clause": "/permissions/network/local/udp"
+      }
+    ],
+    "probe": null,
+    "audit_breaks": [],
+    "reconcile": []
+  }
+]

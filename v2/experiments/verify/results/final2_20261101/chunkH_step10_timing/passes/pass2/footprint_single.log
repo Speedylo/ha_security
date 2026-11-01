@@ -1,0 +1,19 @@
+We found a custom integration probe_sensor which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you experience issues with Home Assistant
+R2 feasibility — aarch64, Python 3.14.7, corrected builder
+stage                                                  RSS   elapsed
+  bare interpreter                                 24.1 MB     0.00s
+  + import homeassistant.const                     29.5 MB     0.03s
+  + import homeassistant.core                      46.5 MB     0.16s
+  + import helper layer + sensor platform         108.6 MB     0.83s
+  + minimal hass constructed and running          108.7 MB     0.83s
+  + base 'homeassistant' component                160.9 MB     1.49s
+  + probe integration set up                      161.1 MB     1.50s
+  after hass.async_stop()                         161.3 MB     1.50s
+
+Q1  minimal instance builds : YES
+Q2  integration runs        : YES  (entry ConfigEntryState.LOADED, entities ['sensor.ticks'])
+    core state RUNNING; start event fired: True; listeners still waiting for it: 1
+Q3  RSS with integration up : 161.1 MB   (peak 161.3 MB, ready in 1.5s)
+    host has 4050 MB — one sandbox is 4.0% of it, about 15 sandboxes in 60% of RAM
+
+wrote /home/younes/r2exp/final2/v2/experiments/verify/results/phase3_timing/final2_pass2/footprint_single.json

@@ -1,0 +1,29 @@
+cp: error copying '/home/younes/r2exp/final2/v2/experiments/verify/results/phase4/coverage/deps_after.sha256' to '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/coverage/deps_after.sha256': No space left on device
+cp: error copying '/home/younes/r2exp/final2/v2/experiments/verify/results/phase4/coverage/deps_after_cleanup.sha256' to '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/coverage/deps_after_cleanup.sha256': No space left on device
+cp: error copying '/home/younes/r2exp/final2/v2/experiments/verify/results/phase4/coverage/deps_before.sha256' to '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/coverage/deps_before.sha256': No space left on device
+cp: error copying '/home/younes/r2exp/final2/v2/experiments/verify/results/phase4/coverage/report.txt' to '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/coverage/report.txt': No space left on device
+cp: error copying '/home/younes/r2exp/final2/v2/experiments/verify/results/phase4/coverage/run.txt' to '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/coverage/run.txt': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/coverage/suites': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/f16': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/faults': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/final': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/mutants': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/mutants_f45': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/pin_corpus': No space left on device
+cp: error copying '/home/younes/r2exp/final2/v2/experiments/verify/results/phase4/prereg.txt' to '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/prereg.txt': No space left on device
+cp: error copying '/home/younes/r2exp/final2/v2/experiments/verify/results/phase4/readme_coverage.txt' to '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/readme_coverage.txt': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/recompute': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/regress_f03': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/regress_f08': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/regress_f45': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/regress_faults': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/regress_minor': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/regress_review': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/regress_tests': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/phase4/review': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/prereg_20261015': No space left on device
+cp: cannot create directory '/home/younes/r2exp/final2-run/km/M72/experiments/verify/results/prereg_20261016': No space left on device
+mkdir: 
+mkdir: 
+mkdir: 
+mkdir: 

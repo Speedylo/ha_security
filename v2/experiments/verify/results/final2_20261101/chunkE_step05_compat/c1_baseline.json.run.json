@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/home/younes/r2exp/final2/v2/framework/confine/compat.py",
+    "--corpus",
+    "/home/younes/r2exp/corpus",
+    "--python",
+    "/home/younes/r2exp/ha314/bin/python",
+    "--profile",
+    "baseline",
+    "--platform-deps",
+    "/home/younes/r2exp/platform-deps",
+    "--json",
+    "/home/younes/r2exp/final2-run/out/chunkE_step05_compat/c1_baseline.json"
+  ],
+  "cwd": "/home/younes/r2exp/final2/v2/framework",
+  "executable": "/usr/bin/python3",
+  "python": "3.13.5",
+  "host": "raspberrypi",
+  "machine": "aarch64",
+  "time": "2026-11-01T19:25:23+0100",
+  "commit": "a3ba4a10552ee95e0837bbf4347825faa83ad112",
+  "uncommitted_changes": false,
+  "resolve_before": "2026-10-06T00:00:00Z"
+}

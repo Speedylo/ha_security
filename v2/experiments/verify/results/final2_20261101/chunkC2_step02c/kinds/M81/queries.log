@@ -1,0 +1,81 @@
+
+Q1 — the listed questions
+
+  ok    Q1 calendar.get_events {'start': '2026-10-26T00:00:00+01:00', 'end': '2026-11-02T00:00:00+01:00'}: allowed and pushed exactly  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 1, 'entity': 'calendar.demo_bins', 'service': 'get_events', 'data': {'start': '2026-10-26T00:00:00+01:00', 'end': '2026-11-02T00:00:00+01:00'}}
+  ok    Q1 weather.get_forecasts {'type': 'daily'}: allowed and pushed exactly  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 2, 'entity': 'weather.demo_home', 'service': 'get_forecasts', 'data': {'type': 'daily'}}
+  ok    Q1 weather.get_forecasts {'type': 'hourly'}: allowed and pushed exactly  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 3, 'entity': 'weather.demo_home', 'service': 'get_forecasts', 'data': {'type': 'hourly'}}
+  ok    Q1 weather.get_forecasts {'type': 'twice_daily'}: allowed and pushed exactly  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 4, 'entity': 'weather.demo_home', 'service': 'get_forecasts', 'data': {'type': 'twice_daily'}}
+
+Q2 — any other question, or data
+
+  ok    Q2 get_events with an extra key: refused, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    Q2 get_events with a non-ISO start: refused, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    Q2 get_events with a 41-character start: refused, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    Q2 get_forecasts monthly: refused, not pushed  — (command: only the data listed for that service, of its kind) None
+  ok    Q2 get_forecasts on a calendar: refused, not pushed  — (command: only the services listed for the entity's type) None
+  ok    Q2 get_events on a weather: refused, not pushed  — (command: only the services listed for the entity's type) None
+  ok    Q2 get_events on a sensor: refused, not pushed  — (command: only the services listed for the entity's type) None
+
+Q3 — a well-formed answer is relayed unchanged
+
+  ok    Q3 calendar: 2 items relayed unchanged  —  [{'summary': 'Dentist, Dr Example', 'start': '2026-10-27T09:
+  ok    Q3 weather: 3 items relayed unchanged  —  [{'datetime': '2026-10-26T12:00:00+00:00', 'condition': 'rai
+
+Q4 — a malformed answer is refused and not relayed
+
+  ok    Q4 an event with no summary: refused under QUERY_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: item 0 does not have exactly the listed fields', 'answer': None} (answer: only the listed shape, at most 500 items and 256 KiB)
+  ok    Q4 an event with an extra key: refused under QUERY_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: item 0 does not have exactly the listed fields', 'answer': None} (answer: only the listed shape, at most 500 items and 256 KiB)
+  ok    Q4 a 256-character summary: refused under QUERY_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: item 0 has a field of the wrong kind', 'answer': None} (answer: only the listed shape, at most 500 items and 256 KiB)
+  ok    Q4 a 4,097-character description: refused under QUERY_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: item 0 has a field of the wrong kind', 'answer': None} (answer: only the listed shape, at most 500 items and 256 KiB)
+  ok    Q4 a non-ISO start: refused under QUERY_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: item 0 has a field of the wrong kind', 'answer': None} (answer: only the listed shape, at most 500 items and 256 KiB)
+  ok    Q4 501 events: refused under QUERY_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: it has more than 500 items', 'answer': None} (answer: only the listed shape, at most 500 items and 256 KiB)
+  ok    Q4 300 events over 256 KiB: refused under QUERY_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: it is larger than 262144 bytes', 'answer': None} (answer: only the listed shape, at most 500 items and 256 KiB)
+  ok    Q4 a forecast entry with no datetime: refused under QUERY_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: item 0 does not have exactly the listed fields', 'answer': None} (answer: only the listed shape, at most 500 items and 256 KiB)
+  ok    Q4 a string temperature: refused under QUERY_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: item 0 has a field of the wrong kind', 'answer': None} (answer: only the listed shape, at most 500 items and 256 KiB)
+  ok    Q4 a NaN temperature: refused under QUERY_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: item 0 has a field of the wrong kind', 'answer': None} (answer: only the listed shape, at most 500 items and 256 KiB)
+  ok    Q4 a forecast entry with an extra key: refused under QUERY_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: item 0 does not have exactly the listed fields', 'answer': None} (answer: only the listed shape, at most 500 items and 256 KiB)
+  ok    Q4 an answer that is not a list: refused under QUERY_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: it is not a list', 'answer': None} (answer: only the listed shape, at most 500 items and 256 KiB)
+
+Q5 — no answer's content reaches the durable log
+
+  ok    Q5 no event title, description or forecast value is in the log
+  ok    Q5 each answer's record gives its item count and size  — 14 records; {'answer': {'bytes': 249, 'items': 2}, 'entity': 'calendar.demo_bins', 'service': 'calendar.get_events'}
+
+Q6 — an answer attached to an ordinary command is not relayed
+
+  ok    Q6 a switch's result carrying an answer: the platform receives no answer  — {'ok': True, 'error': None, 'answer': None}
+
+Q7 — a picture of a listed type, matching its signature, is relayed
+
+  ok    Q7 a JPEG with Exif (FF D8 FF E1): relayed unchanged  —  (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+  ok    Q7 a JPEG starting FF D8 FF E8: relayed unchanged  —  (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+  ok    Q7 a PNG: relayed unchanged  —  (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+  ok    Q7 a GIF89a: relayed unchanged  —  (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+  ok    Q7 a WebP: relayed unchanged  —  (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+  ok    Q7 an image entity's PNG: relayed unchanged
+
+Q8 — exactly 512 KiB
+
+  ok    Q8 a 512 KiB JPEG is relayed  —  (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+
+Q9 — any other picture answer is refused
+
+  FAIL  Q9 an HTML page labelled image/png: refused under PICTURE_ANSWER, not relayed  — {'ok': True, 'error': None, 'answer': {'content_type': 'image/png', 'data': 'PGh0bWw+PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0PjwvaHRtbD4='}} (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+  FAIL  Q9 JPEG bytes labelled image/png: refused under PICTURE_ANSWER, not relayed  — {'ok': True, 'error': None, 'answer': {'content_type': 'image/png', 'data': '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'}} (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+  ok    Q9 image/svg+xml: refused under PICTURE_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: its type is not one of the listed picture types', 'answer': None} (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+  ok    Q9 image/tiff: refused under PICTURE_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: its type is not one of the listed picture types', 'answer': None} (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+  FAIL  Q9 a RIFF WAVE labelled image/webp: refused under PICTURE_ANSWER, not relayed  — {'ok': True, 'error': None, 'answer': {'content_type': 'image/webp', 'data': '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'}} (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+  ok    Q9 512 KiB + 1: refused under PICTURE_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: it is larger than 524288 bytes', 'answer': None} (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+  ok    Q9 data that is not base64: refused under PICTURE_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: its data is not base64', 'answer': None} (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+  ok    Q9 an extra key: refused under PICTURE_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: it is not exactly a content_type and its data', 'answer': None} (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+  ok    Q9 no content_type: refused under PICTURE_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: it is not exactly a content_type and its data', 'answer': None} (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+  ok    Q9 a list: refused under PICTURE_ANSWER, not relayed  — {'ok': False, 'error': 'the answer was refused: it is not exactly a content_type and its data', 'answer': None} (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+  FAIL  Q9 empty data: refused under PICTURE_ANSWER, not relayed  — {'ok': True, 'error': None, 'answer': {'content_type': 'image/jpeg', 'data': ''}} (answer: one picture of a listed type, its bytes starting with that type's signature, at most 512 KiB)
+
+Q10 — no picture reaches the durable log
+
+  ok    Q10 no picture's base64 is in the log
+  ok    Q10 each picture's record gives its type and size  — 18 records; {'answer': {'bytes': 2054, 'content_type': 'image/jpeg'}, 'entity': 'camera.demo_door', 'service': 'camera.camera_image'}
+  ok    every chain verifies
+
+45/49 checks passed

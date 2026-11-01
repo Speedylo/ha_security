@@ -1,0 +1,6 @@
+start 2026-11-01T12:40:23+01:00 uptime up 1 hour, 29 minutes commit a3ba4a10552ee95e0837bbf4347825faa83ad112 tag final-2026-11 dirty=0 host raspberrypi kernel 6.12.47+rpt-rpi-2712
+framework mutants: 50 run, survived (failed_suites=0): M25 , patch failed: 0
+bridge: M18a house_a_up exit=0;M18a bridge_in_A=mutated;M18a failed_suites=1;M18b house_a_up exit=0;M18b bridge_in_A=mutated;M18b failed_suites=1;M18c house_a_up exit=0;M18c bridge_in_A=mutated;M18c failed_suites=1;control house_a_up exit=0;control failed_suites=0;
+dirty after=0
+end 2026-11-01T17:33:57+01:00
+ALLDONE

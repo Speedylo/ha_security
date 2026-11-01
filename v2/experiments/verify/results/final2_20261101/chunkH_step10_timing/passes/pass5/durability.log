@@ -1,0 +1,15 @@
+Phase C — durability and the cost of S9  (aarch64, Python 3.13.5)
+  scratch: /home/younes/r2exp/disktmp  (must not be tmpfs)
+
+  §6.8.3 — what one audited decision costs, durable and not
+                               median µs       p95       p99       max
+    with fsync (as built)         3700.5    4467.2   71042.4   85405.5
+    without fsync                   59.1      64.1      71.5     193.7
+    durability costs 3641.4 us per decision (63x the non-durable write)
+
+  §6.9.4 / P5 — a legitimate integration reading a file larger than its cap
+    cap   64 MB, file 512 MB   completed  peak    6.4 MB   rc=0
+    cap  128 MB, file 512 MB   completed  peak    7.3 MB   rc=0
+    cap  256 MB, file 512 MB   completed  peak    7.3 MB   rc=0
+
+wrote /home/younes/r2exp/final2/v2/experiments/verify/results/phase3_timing/final2_pass5/durability.json

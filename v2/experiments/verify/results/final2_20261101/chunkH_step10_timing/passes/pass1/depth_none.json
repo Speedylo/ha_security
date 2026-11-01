@@ -1,0 +1,15 @@
+{
+  "profile": "minimal",
+  "setup_components": [],
+  "count": 3,
+  "per_sandbox_pss_mb": [
+    59.1,
+    59.1,
+    59.1
+  ],
+  "sum_rss_mb": 226.1,
+  "sum_pss_mb": 177.2,
+  "pss_per_sandbox_mb": 59.1,
+  "capacity": 41,
+  "mem_total_mb": 4050
+}

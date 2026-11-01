@@ -231,3 +231,69 @@ infrastructure reason is run again whole (rule 5), its failed attempt kept.
 | I | 13 (the record), on the laptop, after the results are committed | minutes | all others |
 
 Drivers are kept outside the clone, so the tagged tree stays clean, and copied into the results.
+
+## 7. Outcome (chunks A–H, 2026-11-01; I to follow)
+
+Every chunk ran from `~/r2exp/final2` at `a3ba4a1` (`final-2026-11`), tree clean before and after.
+Results in `experiments/verify/results/final2_20261101/<chunk>_<step>/`, drivers in `drivers/`.
+
+| Step | Prediction | Outcome |
+|---|---|---|
+| 1 | 35/35 twice | **held**: preflight 0; 35/35, 35/35 (chunk A) |
+| 2a | 52 killed, M25 survives, no offset | **held**: M01–M50 49 killed (M25 failed_suites=0), M18a–c killed with the bridge loaded mutated in (A); control 0 failed; no patch failed, no offset or fuzz in any log (chunk B, 12:40–17:34) |
+| 2b | control 268/49/194; 29 killed, M65 equivalent | **held**: control 268/268, 49/49, 194/194 (C and C2); M51–M79 and M51b killed except M65 (failed=0, bridge loaded mutated) |
+| 2c | M80–M88 each killed by the check named; M87 also by Q5 | **held**: each killed by its named check (M81 and M82 also T36; M87 by Q5 and Q10) (C2) |
+| 3 | 11/11 on both hosts | **held**: laptop 11/11 (`step03_faults_laptop`), Pi 11/11; FI1, FI4, F30 all ok |
+| 4 | 0 escapes, 4,864 requests | **held** |
+| 5 | 31/37 and 37/40 both arms, same members and messages; C1 zero | **held**: failing members bambu_lab, bermuda, eufy_security, hacs, spook, tapo_control / bermuda, lightwave2, next_rocket_launch, each with the same message in both arms and as on 16 October; C1 0 files, 0 lines |
+| 6 | all hold | **held** (from chunk A's suites): unconfined walk reaches the credential, 2/2 canaries; confined 8,942 objects all the attacker's, credential live in the mediator, 0/2; reads 36/36 → 1/36, 20/20 → 0/20 |
+| 7 | as 16 October; dwd 15/16, pirateweather 16/17, unless a live service changed | **held, one live value moved**: nordpool 16/16, dwd 15/16 (the kept `www.dwd.de` refusal), pirateweather **17/17**, waste 16/16, smhi 20/20, **regensburg_transport 15/16**; stand-in, real-platform, local and OAuth subjects identical to 16 October in every outcome field except the readings themselves; flood demo cut off and reinstated once |
+| 7–8 (added) | alarmo 8/8; waste's arms agree; P7 stale | **held**: alarmo 8/8; both arms read 10.11.2026; P7 A and B fail on the 27.10.2026 named on 2026-10-25 |
+| 8 | 43/45, the same two scheduler rows | **held** |
+| 8b | real house passes; 36/36, 65 entities; 43/45; alarmo 8/8; egress, local, OAuth as B5 | **held, one live value moved**: real house 6/6; `bridge_step5_verdicts` 36/36, 65 entities; 43/45 (same rows); alarmo 8/8; waste P7 stale; egress as B5 except **regensburg_transport 15/16** (B5 16/16) |
+| 9 | P1–P6 hold | **held**: unconfined 3/3 undeclared delivered, confined 0/3, declared delivered both arms, control 3/3, one decision, no delivery record, no chain break, both 2026.8.3 on the Pi |
+| 12 | both parses identical | **held**: 144 of 144 fetched at their commits; hacs and uniform IDENTICAL |
+| 10 | each timing ±20% of Table 12.5, each memory figure ±5%; ranges in §2 | **held against the criterion; two predicted memory ranges 0.1–0.2 MB low** (see below) |
+| 11 | 57.0, 92.9, 112.0, 135.6 MB ±5%, monotonic, spread ≤ 0.1 | **held**: 57.2, 93.0–93.1, 112.1, 135.8 MB in all three rounds; monotonic; spread ≤ 0.1 MB; about 17 sandboxes fit at ten components |
+| 14 | as `b4b/recount.txt` | **held**: identical |
+
+**The live check F2.** F2's third line asks that at least one value the confined arm publishes equal
+the unconfined arm's, fetched from the same API minutes apart. On `regensburg_transport` it failed
+twice, in steps 7 and 8b, each time by one minute of the real-time departure (`… at 21:02` against
+`21:03`; `22:33` against `22:32`); on 16 October and in B5 it held. `pirateweather` held it today and
+failed it on 16 October (12.41 against 12.39 °C). Both are the service's value moving between arms,
+which the line cannot tell apart from a wrong value; the other two F2 lines (LOADED while confined,
+a fetched value published through the mediator) held for both. Recorded as on 16 October, not run
+again (rule 5); in the report, a limit of that check, not of confinement.
+
+**Run deviation (chunk C).** The Pi's card filled (chunk B's mutant work copies, 3.8 GB) while chunk C
+copied M72; the runner recorded M72–M88 as "patch failed" without running them, and a non-ASCII byte
+cut off M62's line in the printed summary (its own record shows it killed). The work copies were
+deleted by path and M72–M88 run again as chunk C2 (`chunkC2_step02c`, same runner and code, disk
+recorded before and after: 5.8 GB and 4.5 GB free). Chunk C's attempt is kept. The resources suite's
+"No space left on device" lines in chunk B are its own 8 MB cap, as in chunk A.
+
+**Step 10 in detail** (chunk H, after Younes rebooted the Pi: start 22:06, "up 1 minute"; five passes
+22:06–22:29, each exit 0). Judged with `verify/timing_stats.py` over these five passes only, in a scratch
+tree, as on 16 October; read against Table 12.5 / the interim's Table 7.5 and §2's ranges.
+
+| Figure | Median (passes) | Against | Predicted | |
+|---|---|---|---|---|
+| mediation latency, one sandbox | 42.1 µs (40.9–43.4) | 43 µs, −2.1% | 40–47 | held |
+| mediation latency, 26 sandboxes | 802 µs (797–814) | 800 | 794–816 | held |
+| durable record | 3.69 ms (3.68–3.71) | 3.67, +0.4% | 3.6–3.8 | held |
+| push, mediator cost | 11.4 µs (11.4–11.7) | 10.9 | 11.3–11.7 | held |
+| a change in (A) reaching the sandbox | 0.49 ms (0.49, 0.49, 0.49, 0.68, 0.50) | 0.5–0.9 ms | about 0.50 | at the range's lower edge (0.5 at the table's one decimal); F62's gap to 0.71 persists |
+| a user's command reaching the integration | 12.5 ms (12.0–12.9) | 11–16 ms | 11–16 | held |
+| flood to cut-off | 0.816 s (0.807–1.07) | 0.81 | 0.80–0.82 | held; the first two passes after boot 1.01 and 1.07 s |
+| `powercalc` start-up, compiled | 1.89 s (1.88–1.89) | 1.87, +1.1% | 1.87–1.94 | held |
+| memory, no components (PSS) | 59.1 MB (all five) | 56.5, +4.6% | 58.6–59.0 | inside ±5%; predicted range 0.1 MB low |
+| memory, two components | 95.2 MB (95.1–95.2) | 92.3, +3.1% | 94.7–95.0 | inside ±5%; predicted range 0.2 MB low |
+| memory, ten components | 141.2 MB (141.1–141.2) | 135.6, +4.1% | 141 | held |
+
+Not criteria, recorded: one sandbox's RSS 161 MB (−0.2% against §7.35); marginal memory per added
+sandbox median 133 MB (126–139; +6.6% against §7.35's 124.4; 16 October 130, 127–134); `powercalc`
+default install 2.27 s (first pass after boot 3.0 s). No memory figure crossed 5%, so D3 does not
+apply and Table 7.5 keeps its figures; the 17-sandbox floor holds (step 11: about 17 fit at ten).
+The timing passes write their outputs into the clone (`phase3_timing/final2_pass1–5` and
+`mediation_latency/_manifest`, all untracked), hence "dirty after=6", as on 16 October; no tracked file changed.

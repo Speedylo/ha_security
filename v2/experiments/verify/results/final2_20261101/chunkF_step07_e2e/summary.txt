@@ -1,0 +1,23 @@
+start 2026-11-01T19:35:27+01:00 uptime up 8 hours, 24 minutes commit a3ba4a10552ee95e0837bbf4347825faa83ad112 tag final-2026-11 dirty=0 host raspberrypi kernel 6.12.47+rpt-rpi-2712
+house_a_down_first exit=0 seconds=0 2026-11-01T19:35:27+01:00
+house_a_up exit=0 seconds=4 2026-11-01T19:35:31+01:00
+real_platform_restart exit=0 seconds=26 2026-11-01T19:35:57+01:00
+approval exit=0
+supervisor pid 104310
+drive_demo exit=0 seconds=1 2026-11-01T19:36:24+01:00
+e2e_real_thermal exit=0 seconds=22 2026-11-01T19:36:51+01:00
+e2e_real_adaptive exit=0 seconds=22 2026-11-01T19:37:13+01:00
+house_a_down exit=0 seconds=1 2026-11-01T19:37:14+01:00
+e2e_standin exit=0 seconds=11 2026-11-01T19:37:25+01:00
+egress_nordpool exit=0 seconds=123 2026-11-01T19:39:28+01:00
+egress_dwd_weather exit=1 seconds=245 2026-11-01T19:43:33+01:00
+egress_pirateweather exit=0 seconds=176 2026-11-01T19:46:29+01:00
+egress_waste_collection_schedule exit=0 seconds=147 2026-11-01T19:48:56+01:00
+egress_smhi_brandrisk exit=0 seconds=211 2026-11-01T19:52:27+01:00
+egress_regensburg_transport exit=1 seconds=481 2026-11-01T20:00:28+01:00
+local_midea_ac_lan exit=0 seconds=1334 2026-11-01T20:22:42+01:00
+local_localtuya exit=0 seconds=127 2026-11-01T20:24:49+01:00
+oauth_trakt exit=0 seconds=34 2026-11-01T20:25:23+01:00
+dirty after=0
+end 2026-11-01T20:25:23+01:00
+ALLDONE

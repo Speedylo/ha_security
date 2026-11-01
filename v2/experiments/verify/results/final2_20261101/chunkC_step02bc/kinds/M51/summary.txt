@@ -1,0 +1,4 @@
+commands exit=1
+queries exit=1
+house_a_up exit=0
+bridge_types exit=1

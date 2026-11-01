@@ -1,0 +1,62 @@
+<unknown>:203: SyntaxWarning: "\S" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\S"? A raw string is also an option.
+API surface — corpus 'hacs-top150', 144 integrations, 4628 files (0 unparseable)
+
+handle             integrations   share   what it confers
+  hass.data                 124    86.1%   Shared mutable store — every integration's r
+  hass.bus                   70    48.6%   Event bus — fire any event, subscribe to all
+  hass.services              93    64.6%   Service registry — call any registered servi
+  hass.states                59    41.0%   State machine — read and write every entity
+  hass.config                89    61.8%   Config, including config.path() into the con
+  hass.auth                   8     5.6%   Auth manager — users and tokens
+  hass.http                  28    19.4%   HTTP component — register routes on the runn
+  hass.config_entries        136    94.4%   Every integration's stored configuration and
+  hass.loop                 113    78.5%   Event loop / executor — schedule on the plat
+
+most-used members (share of integrations using each):
+  hass.config_entries.async_forward_entry_setups   128   88.9%
+  hass.config_entries.async_update_entry    115   79.9%
+  hass.config_entries.async_unload_platforms   104   72.2%
+  hass.config_entries.async_reload           98   68.1%
+  hass.data.setdefault                       88   61.1%
+  hass.loop.async_add_executor_job           83   57.6%
+  hass.services.async_register               77   53.5%
+  hass.loop.async_create_task                74   51.4%
+  hass.data.get                              68   47.2%
+  hass.config_entries.async_entries          59   41.0%
+  hass.states.get                            56   38.9%
+  hass.config_entries.async_get_entry        50   34.7%
+  hass.config.path                           48   33.3%
+  hass.bus.async_listen_once                 42   29.2%
+  hass.config_entries.flow                   32   22.2%
+
+calls services               32   22.2%
+registers services           81   56.2%
+imports another component   103   71.5%
+
+service domains called (by literal first argument):
+  climate                   15
+  homeassistant             13
+  number                    11
+  persistent_notification     8
+  media_player               7
+  switch                     6
+  cover                      6
+  weather                    4
+  notify                     3
+  todo                       3
+  lock                       2
+  select                     2
+
+most-imported other components:
+  diagnostics               40
+  http                      28
+  repairs                   17
+  recorder                  15
+  homeassistant             13
+  device_automation         12
+  persistent_notification    11
+  frontend                  11
+  lovelace                   9
+  mqtt                       8
+
+wrote /home/younes/r2exp/final2-run/out/chunkD_step12_api_surface/api_surface_hacs.json

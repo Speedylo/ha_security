@@ -1,0 +1,16 @@
+start 2026-11-01T22:30:05+01:00 uptime up 25 minutes commit a3ba4a10552ee95e0837bbf4347825faa83ad112 tag final-2026-11 dirty=6 host raspberrypi kernel 6.12.47+rpt-rpi-2712
+depth_none_r1 exit=0 seconds=9 2026-11-01T22:30:14+01:00
+depth_two_r1 exit=0 seconds=11 2026-11-01T22:30:45+01:00
+depth_four_r1 exit=0 seconds=13 2026-11-01T22:31:18+01:00
+depth_ten_r1 exit=0 seconds=15 2026-11-01T22:31:53+01:00
+depth_none_r2 exit=0 seconds=10 2026-11-01T22:32:23+01:00
+depth_two_r2 exit=0 seconds=10 2026-11-01T22:32:53+01:00
+depth_four_r2 exit=0 seconds=13 2026-11-01T22:33:26+01:00
+depth_ten_r2 exit=0 seconds=16 2026-11-01T22:34:02+01:00
+depth_none_r3 exit=0 seconds=10 2026-11-01T22:34:32+01:00
+depth_two_r3 exit=0 seconds=11 2026-11-01T22:35:03+01:00
+depth_four_r3 exit=0 seconds=12 2026-11-01T22:35:35+01:00
+depth_ten_r3 exit=0 seconds=16 2026-11-01T22:36:11+01:00
+dirty after=6
+end 2026-11-01T22:36:31+01:00
+ALLDONE

@@ -1,0 +1,67 @@
+{
+  "host": "aarch64",
+  "python": "3.13.5",
+  "iterations_per_client": 2000,
+  "levels": [
+    {
+      "n": 2000,
+      "median": 43.4,
+      "p95": 45.4,
+      "p99": 50.3,
+      "max": 677.1,
+      "concurrency": 1,
+      "wall_s": 0.09,
+      "throughput_rps": 22644
+    },
+    {
+      "n": 4000,
+      "median": 66.6,
+      "p95": 71.6,
+      "p99": 77.7,
+      "max": 1368.7,
+      "concurrency": 2,
+      "wall_s": 0.14,
+      "throughput_rps": 29311
+    },
+    {
+      "n": 8000,
+      "median": 94.6,
+      "p95": 193.1,
+      "p99": 202.1,
+      "max": 3819.4,
+      "concurrency": 4,
+      "wall_s": 0.26,
+      "throughput_rps": 30354
+    },
+    {
+      "n": 16000,
+      "median": 218.3,
+      "p95": 440.8,
+      "p99": 453.0,
+      "max": 8629.2,
+      "concurrency": 8,
+      "wall_s": 0.52,
+      "throughput_rps": 30879
+    },
+    {
+      "n": 32000,
+      "median": 474.1,
+      "p95": 944.7,
+      "p99": 964.4,
+      "max": 19047.5,
+      "concurrency": 16,
+      "wall_s": 1.06,
+      "throughput_rps": 30298
+    },
+    {
+      "n": 52000,
+      "median": 796.7,
+      "p95": 851.1,
+      "p99": 1608.4,
+      "max": 31760.4,
+      "concurrency": 26,
+      "wall_s": 1.68,
+      "throughput_rps": 30957
+    }
+  ]
+}

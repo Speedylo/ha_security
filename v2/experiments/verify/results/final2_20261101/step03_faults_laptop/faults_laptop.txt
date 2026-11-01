@@ -1,0 +1,5 @@
+Step 3, laptop half, at final-2026-11 — run on 2026-11-01 while chunk A ran on the Pi (log file time: 2026-11-01T11:40:56+00:00); this record written after it
+host: DESKTOP-6OPV9NM (WSL laptop), Python 3.12.3, kernel 6.18.54.1-microsoft-standard-WSL2
+tree: fresh clone of final-2026-11 (a3ba4a10552ee95e0837bbf4347825faa83ad112), clean before the run (the run's own out/ folder is the only untracked entry after it)
+command (from v2/framework): python3 ../verify/faults.py --json ../out/faults_laptop.json
+exit: 0 — 11/11 criteria held; log faults_laptop.log, results faults_laptop.json

@@ -1,0 +1,27 @@
+start 2026-11-01T18:33:12+01:00 uptime up 7 hours, 22 minutes commit a3ba4a10552ee95e0837bbf4347825faa83ad112 tag final-2026-11 dirty=0 host raspberrypi kernel 6.12.47+rpt-rpi-2712
+disk before /dev/mmcblk0p2   29G   22G  5.8G  80% /
+kinds exit=0 seconds=2291 2026-11-01T19:11:23+01:00
+start 2026-11-01T18:33:12+01:00 pristine a3ba4a10552ee95e0837bbf4347825faa83ad112 final-2026-11
+control commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=0 
+M72 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T18 water_heater.set_temperature 122 °F reaches the sandbox as 50 °C|
+M73 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T18 water_heater.set_away_mode {'away_mode': True}: reaches the sandbo|
+M74 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T17 valve: (A) holds its state and the attributes that describe it  �|
+M75 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T11 fan: (A) holds its state and the attributes that describe it  — |T12 fan.increase_sp
+M76 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T11 a fan published on with no speed and no preset: (A) shows on  — |
+M77 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T16' a lock published with the format '[0-9': (A) offers none, and unl|T16' the call succe
+M78 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T23 gps tracker published 'not_home' at 52.37: (A) shows home  — its|T23 gps tracker pub
+M79 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T23 a scanner at home is in (A)'s home zone, as a native scanner is  �|
+M80 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T32 sensor published with entity_picture: (A) shows it, its other attr|T32 switch publishe
+M81 failed=2 commands exit=0 queries exit=1 house_a_up exit=0 bridge_types exit=1  fails: Q9 an HTML page labelled image/png: refused under PICTURE_ANSWER, not |Q9 JPEG bytes labelled image/png: refus
+M82 failed=2 commands exit=0 queries exit=1 house_a_up exit=0 bridge_types exit=1  fails: Q9 512 KiB + 1: refused under PICTURE_ANSWER, not relayed  — {'ok': |T36 a 600 KiB JPEG: (A) answers an erro
+M83 failed=1 commands exit=0 queries exit=1 house_a_up exit=0 bridge_types exit=0  fails: Q9 image/svg+xml: refused under PICTURE_ANSWER, not relayed  — {'ok'|
+M84 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T33 (A) shows it idle, described, without STREAM or frontend_stream_ty|
+M85 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T35 a second fetch within 2 s asks the sandbox nothing, and gets the s|
+M86 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T38 fetching again, after 2 s, with the same time, asks nothing  — {|
+M87 failed=2 commands exit=0 queries exit=1 house_a_up exit=0 bridge_types exit=1  fails: Q5 no event title, description or forecast value is in the log|Q5 each answer's record gives its item count an
+M88 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T33 its picture link is (A)'s own proxy, with a token that is not the |
+end 2026-11-01T19:11:23+01:00
+disk after /dev/mmcblk0p2   29G   23G  4.5G  84% /
+dirty after=0
+end 2026-11-01T19:11:23+01:00
+ALLDONE

@@ -1,0 +1,83 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/selftest_bridge_types.py", line 1227, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/selftest_bridge_types.py", line 272, in main
+    arrived = serve_until(mediator, lambda: (sandbox.drain(), [
+        m for m in sandbox.received if m.get("push") == "entity.command"])[1])
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/selftest_real_platform.py", line 98, in serve_until
+    mediator.serve(timeout=0.01)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/mediator.py", line 832, in serve
+    dispatch()
+    ~~~~~~~~^^
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/real_platform.py", line 177, in dispatch
+    self._apply_events()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/real_platform.py", line 208, in _apply_events
+    handler(command)
+    ~~~~~~~^^^^^^^^^
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/mediator.py", line 908, in command
+    elif not _matches(data, listed[service]):
+             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/mediator.py", line 603, in _matches
+    return any(_fits(data, shape) for shape in shapes)
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/mediator.py", line 603, in <genexpr>
+    return any(_fits(data, shape) for shape in shapes)
+               ~~~~~^^^^^^^^^^^^^
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/mediator.py", line 599, in _fits
+    and all(shape[k](v) for k, v in data.items()))
+        ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/mediator.py", line 599, in <genexpr>
+    and all(shape[k](v) for k, v in data.items()))
+            ~~~~~^^^
+KeyError: 'code'
+
+T1, T2 — each type is an entity of its own type in (A), described
+
+  ok    T1 button: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 button: (A) holds the state and the attributes that describe it  — 'unknown' 
+  ok    T1 text: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 text: (A) holds the state and the attributes that describe it  — '*.tmp' 
+  ok    T1 select: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 select: (A) holds the state and the attributes that describe it  — 'eco' 
+  ok    T1 number: published, and a registry row of its domain owned by the bridge  — its own entity
+  ok    T2 number: (A) holds the state and the attributes that describe it  — '21.5' 
+
+T3 — a republish changes the state in (A)
+
+  ok    T3 text: now *.bak  — '*.bak'
+  ok    T3 select: now away  — 'away'
+  ok    T3 number: now 19.0  — '19.0'
+
+T4' — operating each one, from a user in (A) (step 2)
+
+  ok    T4' button.press: reaches the sandbox with exactly its data  — {'push': 'entity.command', 'command': 1, 'entity': 'button.selftest_report', 'service': 'press', 'data': {}}
+  ok    T4' button.press: the user's call succeeds and (A) shows the result  —  '2026-11-01T16:46:43.431448+00:00'
+  ok    T4' text.set_value: reaches the sandbox with exactly its data  — {'push': 'entity.command', 'command': 2, 'entity': 'text.selftest_ignored', 'service': 'set_value', 'data': {'value': '*.log'}}
+  ok    T4' text.set_value: the user's call succeeds and (A) shows the result  —  '*.log'
+  ok    T4' select.select_option: reaches the sandbox with exactly its data  — {'push': 'entity.command', 'command': 3, 'entity': 'select.selftest_mode', 'service': 'select_option', 'data': {'option': 'comfort'}}
+  ok    T4' select.select_option: the user's call succeeds and (A) shows the result  —  'comfort'
+  ok    T4' number.set_value: reaches the sandbox with exactly its data  — {'push': 'entity.command', 'command': 4, 'entity': 'number.selftest_target', 'service': 'set_value', 'data': {'value': 22.0}}
+  ok    T4' number.set_value: the user's call succeeds and (A) shows the result  —  '22.0'
+
+T4'' — a value (A) rejects never reaches the mediator
+
+  ok    T4'' number.set_value 99 (range 5-30) fails in (A)  — Validation error: Value 99.0 for number.selftest_target is outside valid range 5.0 - 30.0
+  ok    T4'' and no command decision was recorded: it never left (A)  — 0 new
+
+T6 — a climate and an alarm panel, described (step 3)
+
+  ok    T6 climate: a registry row of its domain owned by the bridge  — its own entity
+  ok    T6 climate: (A) holds its state and the attributes that describe it  — 'cool' 
+  ok    T6 alarm_control_panel: a registry row of its domain owned by the bridge  — its own entity
+  ok    T6 alarm_control_panel: (A) holds its state and the attributes that describe it  — 'disarmed' 
+
+T7' — operating them from a user in (A)
+
+  ok    T7' climate.set_temperature: reaches the sandbox as {'temperature': 23.0}  — {'push': 'entity.command', 'command': 5, 'entity': 'climate.selftest_ac', 'service': 'set_temperature', 'data': {'temperature': 23.0}}
+  ok    T7' climate.set_temperature: the call succeeds and (A) shows cool  —  'cool'
+  ok    T7' climate.set_hvac_mode: reaches the sandbox as {'hvac_mode': 'heat'}  — {'push': 'entity.command', 'command': 6, 'entity': 'climate.selftest_ac', 'service': 'set_hvac_mode', 'data': {'hvac_mode': 'heat'}}
+  ok    T7' climate.set_hvac_mode: the call succeeds and (A) shows heat  —  'heat'

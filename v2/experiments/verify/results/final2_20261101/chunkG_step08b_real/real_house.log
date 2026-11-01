@@ -1,0 +1,14 @@
+
+H1 — (A)'s light dims
+
+  ok    H1 the light's colour mode is brightness, and it starts on at 180  — on {'supported_color_modes': ['brightness'], 'color_mode': 'brightness', 'brightness': 180, 'friendly_name': 'Living room', 'supported_features': 0}
+  ok    H1 turned on at brightness 51, it is on at 51  — on 51
+  ok    H1 turned off, it is off  — off
+  ok    H1 the reset puts the world back: light on at 180, 21.4 °C, 48 %  — on 180 21.4 48.0
+
+H2 — (A) stops for an unconfined arm and starts again
+
+  ok    H2 stopping (A) frees port 8123  — (A) stopped
+  ok    H2 started again (not fresh), it has its bridge entry and accepts the mediator  — fig/capstone/house_a.token, the mediator's own (non-admin) token in /home/younes/.config/capstone/house_a_mediator.token
+
+6/6 checks passed

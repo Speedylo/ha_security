@@ -1,0 +1,37 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/selftest_queries.py", line 301, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/selftest_queries.py", line 160, in main
+    record, pushed = ask(entity, service, data)
+                     ~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/selftest_queries.py", line 97, in ask
+    mediator.command(question)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/mediator.py", line 908, in command
+    elif not _matches(data, listed[service]):
+             ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/mediator.py", line 603, in _matches
+    return any(_fits(data, shape) for shape in shapes)
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/mediator.py", line 603, in <genexpr>
+    return any(_fits(data, shape) for shape in shapes)
+               ~~~~~^^^^^^^^^^^^^
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/mediator.py", line 599, in _fits
+    and all(shape[k](v) for k, v in data.items()))
+        ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/younes/r2exp/final2-run/km/M51/framework/confine/mediator.py", line 599, in <genexpr>
+    and all(shape[k](v) for k, v in data.items()))
+            ~~~~~^^^
+KeyError: 'limit'
+
+Q1 — the listed questions
+
+  ok    Q1 calendar.get_events {'start': '2026-10-26T00:00:00+01:00', 'end': '2026-11-02T00:00:00+01:00'}: allowed and pushed exactly  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 1, 'entity': 'calendar.demo_bins', 'service': 'get_events', 'data': {'start': '2026-10-26T00:00:00+01:00', 'end': '2026-11-02T00:00:00+01:00'}}
+  ok    Q1 weather.get_forecasts {'type': 'daily'}: allowed and pushed exactly  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 2, 'entity': 'weather.demo_home', 'service': 'get_forecasts', 'data': {'type': 'daily'}}
+  ok    Q1 weather.get_forecasts {'type': 'hourly'}: allowed and pushed exactly  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 3, 'entity': 'weather.demo_home', 'service': 'get_forecasts', 'data': {'type': 'hourly'}}
+  ok    Q1 weather.get_forecasts {'type': 'twice_daily'}: allowed and pushed exactly  — (ambient: §5.10.2) {'push': 'entity.command', 'command': 4, 'entity': 'weather.demo_home', 'service': 'get_forecasts', 'data': {'type': 'twice_daily'}}
+
+Q2 — any other question, or data
+

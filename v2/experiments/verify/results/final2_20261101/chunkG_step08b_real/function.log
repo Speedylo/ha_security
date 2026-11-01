@@ -1,0 +1,20 @@
+  powercalc                      unconfined loaded
+  powercalc                      confined   loaded
+  powercalc-no-subscribe         confined   loaded
+  powercalc-no-read              confined   loaded
+  watchman                       unconfined loaded
+  watchman                       confined   loaded
+  watchman-both-declared         confined   loaded
+  adaptive_lighting              unconfined loaded
+  adaptive_lighting              confined   loaded
+  adaptive_lighting-no-service   confined   loaded
+  scheduler                      unconfined loaded
+  scheduler                      confined   loaded
+  scheduler-no-read              confined   loaded
+  scheduler-no-service           confined   loaded
+  thermal_comfort                unconfined loaded
+  thermal_comfort                confined   loaded
+  alarmo                         unconfined loaded
+  alarmo                         confined   loaded
+
+wrote /home/younes/r2exp/final2-run/out/chunkG_step08b_real/function.json

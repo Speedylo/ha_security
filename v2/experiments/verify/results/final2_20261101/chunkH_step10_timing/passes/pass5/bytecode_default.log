@@ -1,0 +1,13 @@
+N2's second number — 1 integrations through their own config flows, confined
+
+  [1] ok  powercalc            entry LOADED                       own entities  4  published  5
+
+  config entry LOADED           1/1
+  published through the mediator 1/1
+  durable log (T4)               6 decisions, 1 runs; failing: none
+
+  Reported as a named set, never as a rate (§3.6 N2). The denominator for any
+  end-to-end measurement of this corpus is 11, not 37: 26 of the 37 need a
+  credential or a device before any config flow can complete.
+
+wrote /home/younes/r2exp/final2/v2/experiments/verify/results/phase3_timing/final2_pass5/bytecode_default.json

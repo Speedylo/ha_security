@@ -1,0 +1,17 @@
+<unknown>:203: SyntaxWarning: "\S" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\S"? A raw string is also an option.
+corpus /home/younes/r2exp/corpus: 37 integrations; kinds bridged: 29
+
+== file rule (2026-10-27's), today's bridge
+kind uses 249, bridged 249 (100%)
+only bridged kinds: 37 of 37: adaptive_lighting, alarmo, alexa_media, bambu_lab, battery_notes, bermuda, ble_monitor, browser_mod, dreame_vacuum, dwd_weather, eufy_security, frigate, govee, hacs, homematicip_local, llmvision, localtuya, meross_lan, midea_ac_lan, nodered, nordpool, octopus_energy, pirateweather, powercalc, scheduler, smartthinq_sensors, solarman, solcast_solar, sonoff, spook, tapo_control, thermal_comfort, waste_collection_schedule, watchman, webrtc, xiaomi_home, xiaomi_miot
+unbridged kinds: 0
+
+== platform rule (B5), today's bridge
+kind uses 248, bridged 247 (100%)
+only bridged kinds: 36 of 37: adaptive_lighting, alarmo, bambu_lab, battery_notes, bermuda, ble_monitor, browser_mod, dreame_vacuum, dwd_weather, eufy_security, frigate, govee, hacs, homematicip_local, llmvision, localtuya, meross_lan, midea_ac_lan, nodered, nordpool, octopus_energy, pirateweather, powercalc, scheduler, smartthinq_sensors, solarman, solcast_solar, sonoff, spook, tapo_control, thermal_comfort, waste_collection_schedule, watchman, webrtc, xiaomi_home, xiaomi_miot
+unbridged kinds: 1
+  notify (legacy)      1: alexa_media
+
+files named after a kind that set up no platform of it:
+  alarmo/event.py
+  alexa_media/notify.py  (a legacy notify platform)

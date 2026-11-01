@@ -1,0 +1,46 @@
+start 2026-11-01T17:42:38+01:00 uptime up 6 hours, 31 minutes commit a3ba4a10552ee95e0837bbf4347825faa83ad112 tag final-2026-11 dirty=0 host raspberrypi kernel 6.12.47+rpt-rpi-2712
+kinds exit=0 seconds=2773 2026-11-01T18:28:51+01:00
+start 2026-11-01T17:42:38+01:00 pristine a3ba4a10552ee95e0837bbf4347825faa83ad112 final-2026-11
+control commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=0 
+M51b failed=2 commands exit=1 queries exit=1 house_a_up exit=0 bridge_types exit=0  fails: K3 switch turn_on with any data: refused under COMMAND_DATA, not pushe|K3 text set_value redirected with enti
+M51 failed=3 commands exit=1 queries exit=1 house_a_up exit=0 bridge_types exit=1  fails: crash: KeyError: 'brightness'|crash: KeyError: 'limit'|crash: KeyError: 'code'|
+M52 failed=1 commands exit=1 queries exit=0 house_a_up exit=0 bridge_types exit=0  fails: K3 text set_value with no value: refused under COMMAND_DATA, not pushe|K7 a low without a high: refused under 
+M53 failed=1 commands exit=1 queries exit=0 house_a_up exit=0 bridge_types exit=0  fails: K13 light rgb_color of 2 numbers: refused under COMMAND_DATA, not push|K13 light rgb_color of 4 numbers: refus
+M54 failed=1 commands exit=1 queries exit=0 house_a_up exit=0 bridge_types exit=0  fails: K13 light flash medium: refused under COMMAND_DATA, not pushed  — (a|
+M55 failed=1 commands exit=1 queries exit=0 house_a_up exit=0 bridge_types exit=0  fails: K12 light.turn_on {'white': None}: allowed and pushed as sent  — (co|
+M56 failed=1 commands exit=1 queries exit=0 house_a_up exit=0 bridge_types exit=0  fails: K7 a 65-character code: refused under COMMAND_DATA, not pushed  — (a|K13 lock a 65-character code: refused u
+M57 failed=1 commands exit=1 queries exit=0 house_a_up exit=0 bridge_types exit=0  fails: K19 send_command params of 5 KiB: refused under COMMAND_DATA, not push|K19 remote 65 commands: refused under C
+M58 failed=2 commands exit=1 queries exit=0 house_a_up exit=0 bridge_types exit=1  fails: K26 no message or title is in the log file|K26 and the records say the text was withheld  — {'message': 'Fro
+M59 failed=1 commands exit=1 queries exit=0 house_a_up exit=0 bridge_types exit=0  fails: K24 time 25:00: refused under COMMAND_DATA, not pushed  — (ambient: |
+M60 failed=1 commands exit=1 queries exit=0 house_a_up exit=0 bridge_types exit=0  fails: K14 light.toggle: refused under COMMAND_SERVICES  — (ambient: §5.10|
+M61 failed=1 commands exit=1 queries exit=0 house_a_up exit=0 bridge_types exit=0  fails: K25 update.skip: refused under COMMAND_SERVICES  — (ambient: §5.10.|
+M63 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T24 republishing the same event does not fire it again  — '2026-11-0|
+M64 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T24 and (A) accepts that publish: the bridge does not fail on it  — |
+M65 failed=0 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=0 bridge_in_A=mutated  fails: 
+M66 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T28 (A) shows it playing, described, with no artwork and none of the d|
+M67 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T30 an id naming a source (A) does not have reaches the sandbox unchan|
+M68 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T30 an id in (A)'s own media library reaches it as a signed link to (A|
+M69 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T29 media_player.volume_up : reaches the sandbox as {}  — {'success'|T29 media_player.vo
+M70 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T22 update: (A) shows on and the attributes that describe it  — 'on'|
+M71 failed=1 commands exit=0 queries exit=0 house_a_up exit=0 bridge_types exit=1 bridge_in_A=mutated  fails: T18 siren.turn_on {'tone': 'fire'}: reaches the sandbox as turn_on {'t|
+M72: patch failed
+M73: patch failed
+M74: patch failed
+M75: patch failed
+M76: patch failed
+M77: patch failed
+M78: patch failed
+M79: patch failed
+M80: patch failed
+M81: patch failed
+M82: patch failed
+M83: patch failed
+M84: patch failed
+M85: patch failed
+M86: patch failed
+M87: patch failed
+M88: patch failed
+end 2026-11-01T18:28:51+01:00
+dirty after=0
+end 2026-11-01T18:28:51+01:00
+ALLDONE

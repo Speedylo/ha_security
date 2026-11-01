@@ -1,0 +1,16 @@
+latency_scale exit=0 seconds=4
+durability exit=0 seconds=29
+footprint_single exit=0 seconds=2
+footprint_scale exit=0 seconds=12
+depth_none exit=0 seconds=5
+depth_two exit=0 seconds=5
+depth_four exit=0 seconds=6
+depth_ten exit=0 seconds=8
+push_suite exit=0 seconds=6
+real_platform exit=0 seconds=17
+flood_disk exit=0 seconds=9
+bytecode_default exit=0 seconds=3
+bytecode_compile exit=0 seconds=5
+bytecode_cold exit=0 seconds=9
+e2e_real_adaptive exit=0 seconds=22
+ALLDONE

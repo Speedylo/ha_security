@@ -1,0 +1,16 @@
+scale — 6 sandboxes, http,websocket_api
+
+  sandbox 1: RSS  112.6 MB   PSS  100.1 MB   machine + 107.0 MB
+  sandbox 2: RSS  112.6 MB   PSS   96.8 MB   machine + 207.2 MB
+  sandbox 3: RSS  112.6 MB   PSS   95.2 MB   machine + 285.5 MB
+  sandbox 4: RSS  112.6 MB   PSS   94.2 MB   machine + 387.2 MB
+  sandbox 5: RSS  112.6 MB   PSS   93.5 MB   machine + 469.0 MB
+  sandbox 6: RSS  112.6 MB   PSS   93.0 MB   machine + 583.0 MB
+
+  sum of RSS               675.5 MB
+  sum of PSS               558.3 MB
+  PSS per sandbox           93.0 MB   <- the §6.3.2 figure's successor
+
+  4050 MB machine; in 60% of it (2430 MB), about 26 sandboxes fit
+
+wrote /home/younes/r2exp/final2-run/out/chunkH_step11_depth/depth_two_r1.json

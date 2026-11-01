@@ -1,0 +1,16 @@
+scale — 6 sandboxes, unstripped
+
+  sandbox 1: RSS  175.0 MB   PSS  157.3 MB   machine + 125.1 MB
+  sandbox 2: RSS  175.0 MB   PSS  145.9 MB   machine + 244.6 MB
+  sandbox 3: RSS  175.0 MB   PSS  141.2 MB   machine + 391.4 MB
+  sandbox 4: RSS  175.0 MB   PSS  138.6 MB   machine + 527.4 MB
+  sandbox 5: RSS  175.0 MB   PSS  137.0 MB   machine + 661.5 MB
+  sandbox 6: RSS  175.0 MB   PSS  135.8 MB   machine + 787.8 MB
+
+  sum of RSS              1049.9 MB
+  sum of PSS               814.9 MB
+  PSS per sandbox          135.8 MB   <- the §6.3.2 figure's successor
+
+  4050 MB machine; in 60% of it (2430 MB), about 17 sandboxes fit
+
+wrote /home/younes/r2exp/final2-run/out/chunkH_step11_depth/depth_ten_r2.json

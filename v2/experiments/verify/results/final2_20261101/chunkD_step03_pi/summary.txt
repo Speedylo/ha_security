@@ -1,0 +1,8 @@
+start 2026-11-01T19:12:29+01:00 uptime up 8 hours, 1 minute commit a3ba4a10552ee95e0837bbf4347825faa83ad112 tag final-2026-11 dirty=0 host raspberrypi kernel 6.12.47+rpt-rpi-2712
+house_a_down exit=0 seconds=2 2026-11-01T19:12:31+01:00
+house_a_up exit=0 seconds=5 2026-11-01T19:12:36+01:00
+faults_py exit=0 seconds=1 2026-11-01T19:12:37+01:00
+faults_pi_fixed exit=0 seconds=66 2026-11-01T19:13:43+01:00
+dirty after=0
+end 2026-11-01T19:13:43+01:00
+ALLDONE

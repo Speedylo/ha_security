@@ -1,0 +1,7 @@
+start 2026-11-01T20:25:23+01:00 uptime up 9 hours, 14 minutes commit a3ba4a10552ee95e0837bbf4347825faa83ad112 tag final-2026-11 dirty=0 host raspberrypi kernel 6.12.47+rpt-rpi-2712
+endtoend_function exit=0 seconds=1337 2026-11-01T20:47:40+01:00
+verdicts_retest exit=1
+verdicts_e2e_ext exit=1
+dirty after=0
+end 2026-11-01T20:47:41+01:00
+ALLDONE

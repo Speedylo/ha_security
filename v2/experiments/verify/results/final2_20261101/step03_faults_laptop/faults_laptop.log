@@ -1,0 +1,30 @@
+
+FI2, FI6 — a sandbox that dies mid-frame, and one that declares a frame too large
+
+  ok    FI2  a frame cut off by the sandbox's death drops only that channel, recorded  — escaped: None; protocol_error records: ['truncated frame']
+  ok    FI6  a frame declaring more than MAX_FRAME is refused before any read, recorded  — 7.2 ms, nothing waited for; escaped: None
+  ok    FI2  and another sandbox is still served after both  — {'id': 1, 'ok': True, 'reason': 'declared', 'clause': '/permissions/entities/read/0', 'state': '1', 'attributes': {}}
+  ok    FI2  the durable log still verifies  — []
+
+FI9 — the wall clock jumps an hour back, then two forward, during a flood
+
+  ok    FI9  the cut-off comes after exactly the limit, whatever the wall clock did  — 6 refusals recorded, 5 answered before the cut-off
+  ok    FI9  and the audit chain verifies across the jumps  — []
+  ..    FI9  record times are not monotonic across a jump, as predicted (cosmetic)  — min step -3600 s
+
+FI3 — the audit log's filesystem fills (24 KiB tmpfs, 8 KiB of it held back)
+
+  ok    FI3  no act ran without its record durable first  — 25 acts, 25 complete decision records; filled after 26 requests
+  ..    FI3  what left the mediator when the write failed  — OSError: [Errno 28] No space left on device
+  ..    FI3  the log's last line after the failure  — complete: the failed record left nothing
+  ok    FI3  the log still verifies after the failure  — []
+  ..    FI3  space freed by deleting the filler  — 0 → 2 free blocks
+  ..    FI3  the next request after space is freed  — {'id': 999, 'ok': True, 'reason': 'acted', 'clause': '/permissions/services/call/0'}
+  ok    FI3  and the log verifies once records are written again  — []
+
+FI8 — an egress request with no network at all (empty network namespace)
+
+  ok    FI8  refused with a stated reason, within the connect timeout  — 16 ms: no permitted address for api.example.org:443 — 93.184.216.34: Network is unreachable
+  ok    FI8  recorded as granted, then refused when acting found no route  — [(True, 'declared'), (False, 'no permitted address for api.example.org:443 — 93.')]
+
+11/11 criteria held

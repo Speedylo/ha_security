@@ -1,0 +1,20 @@
+{
+  "profile": null,
+  "setup_components": [
+    "frontend",
+    "http",
+    "websocket_api",
+    "lovelace"
+  ],
+  "count": 3,
+  "per_sandbox_pss_mb": [
+    114.8,
+    114.8,
+    114.9
+  ],
+  "sum_rss_mb": 408.7,
+  "sum_pss_mb": 344.5,
+  "pss_per_sandbox_mb": 114.8,
+  "capacity": 21,
+  "mem_total_mb": 4050
+}
