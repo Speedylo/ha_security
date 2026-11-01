@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Mutants of the bridge's new kinds (batches B1–B4a, 2026-10-31): do their tests bite?
 
+M80–M88 (2026-11-01) do the same for F71 and batch B4b (`notes/final_rerun2_prediction_20261101.md`,
+D1). Run with names (`mutants_kinds.py M80 M81 ...`) to write only those patches: the others were
+written against earlier code and are kept as they ran.
+
 `notes/kinds_tests_bite_prediction_20261031.md`. Same method as `mutants.py` (phase 4.3): each mutant
 is one exact `old → new` replacement that must match once, written as `Mxx.patch` beside this file
 (applied with `patch -p1` from `v2/`). Kept apart from `mutants.py` so that M01–M50's patches, made
@@ -126,11 +130,46 @@ MUTANTS = [
      BRIDGE + "device_tracker.py",
      '    if source in (None, SourceType.GPS, "gps"):',
      "    if True:"),
+    # F71 and batch B4b (2026-11-01).
+    ("M80", "T32", "the sandbox's picture link is passed on for every kind", BRIDGE + "entity.py",
+     'NOT_PASSED = {"entity_picture", "entity_picture_local"}',
+     "NOT_PASSED: set[str] = set()"),
+    ("M81", "Q9", "a picture's bytes need not begin as its type does", MEDIATOR,
+     "    if not SIGNATURES[content_type](content):",
+     "    if False:"),
+    ("M82", "Q9", "a picture may be 1 MiB, not 512 KiB", MEDIATOR,
+     "MAX_PICTURE_BYTES = 512 * 1024",
+     "MAX_PICTURE_BYTES = 1024 * 1024"),
+    ("M83", "Q9", "image/svg+xml is a listed picture type", MEDIATOR,
+     '    "image/webp": lambda b: b[:4] == b"RIFF" and b[8:12] == b"WEBP",\n}',
+     '    "image/webp": lambda b: b[:4] == b"RIFF" and b[8:12] == b"WEBP",\n'
+     '    "image/svg+xml": lambda b: True,\n}'),
+    ("M84", "T33", "a camera keeps the stream feature", BRIDGE + "camera.py",
+     "            int(attributes.get(\"supported_features\") or 0) & CameraEntityFeature.ON_OFF)",
+     "            int(attributes.get(\"supported_features\") or 0))"),
+    ("M85", "T35", "a camera asks for every picture", BRIDGE + "camera.py",
+     "        if kept is not None and now - kept[0] < REUSE_SECONDS:",
+     "        if False:"),
+    ("M86", "T38", "an image asks again after 2 s even if its published time is the same",
+     BRIDGE + "image.py",
+     "        if kept is not None and (kept[0] == published\n",
+     "        if kept is not None and (False\n"),
+    ("M87", "Q10", "an answer is recorded in full, pictures included", MEDIATOR,
+     '                                "service": f"{kind}.{service}", "answer": shape}, decision)',
+     '                                "service": f"{kind}.{service}", "answer": payload}, decision)'),
+    ("M88", "T33", "a camera passes on the sandbox's access token", BRIDGE + "camera.py",
+     '    _described = frozenset({"brand", "model_name", "motion_detection", "supported_features",\n'
+     '                            "access_token", "frontend_stream_type"})',
+     '    _described = frozenset({"brand", "model_name", "motion_detection", "supported_features",\n'
+     '                            "frontend_stream_type"})'),
 ]
 
 
 def main() -> int:
+    only = set(sys.argv[1:])
     for ident, killer, what, path, old, new in MUTANTS:
+        if only and ident not in only:
+            continue
         source = (V2 / path).read_text()
         count = source.count(old)
         if count != 1:

@@ -1,0 +1,10 @@
+# M80 (expected: T32): the sandbox's picture link is passed on for every kind
+--- a/framework/ha_bridge/confine_bridge/entity.py
++++ b/framework/ha_bridge/confine_bridge/entity.py
+@@ -29,5 +29,5 @@
+ #: browser fetch an address the integration chose: a path past its egress allowlist. (A) shows the
+ #: kind's own icon instead.
+-NOT_PASSED = {"entity_picture", "entity_picture_local"}
++NOT_PASSED: set[str] = set()
+ 
+ 

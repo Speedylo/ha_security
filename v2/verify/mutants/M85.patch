@@ -1,0 +1,10 @@
+# M85 (expected: T35): a camera asks for every picture
+--- a/framework/ha_bridge/confine_bridge/camera.py
++++ b/framework/ha_bridge/confine_bridge/camera.py
+@@ -60,5 +60,5 @@
+         now = time.monotonic()
+         kept = self._pictures.get(size)
+-        if kept is not None and now - kept[0] < REUSE_SECONDS:
++        if False:
+             self.content_type = kept[1]
+             return kept[2]

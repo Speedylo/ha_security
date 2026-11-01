@@ -1,0 +1,10 @@
+# M87 (expected: Q10): an answer is recorded in full, pictures included
+--- a/framework/confine/mediator.py
++++ b/framework/confine/mediator.py
+@@ -983,5 +983,5 @@
+                     Decision(False, f"the answer was refused: {why}", clause=clause))
+         self._record(identity, {"op": "entity.answer", "entity": entity,
+-                                "service": f"{kind}.{service}", "answer": shape}, decision)
++                                "service": f"{kind}.{service}", "answer": payload}, decision)
+         if decision.allowed:
+             self._platform.command_result(ident, True, None, answer=payload)  # type: ignore
