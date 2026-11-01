@@ -24,6 +24,8 @@ returns; the push loop's subscription table and outbox are also here. See
 from __future__ import annotations
 
 import array
+import base64
+import binascii
 import collections
 import json
 import math
@@ -199,6 +201,8 @@ COMMAND_NO_SANDBOX = "(command: the integration has a running sandbox)"
 COMMAND_SERVICES = "(command: only the services listed for the entity's type)"
 COMMAND_DATA = "(command: only the data listed for that service, of its kind)"
 QUERY_ANSWER = "(answer: only the listed shape, at most 500 items and 256 KiB)"
+PICTURE_ANSWER = ("(answer: one picture of a listed type, its bytes starting with that type's "
+                  "signature, at most 512 KiB)")
 COMMAND_QUEUE = f"(command: at most {MAX_COMMANDS} queued)"
 COMMAND_ANSWER = "(command: answered only on the channel it was sent to)"
 AMBIENT = "(ambient: §5.10.2)"
@@ -296,6 +300,11 @@ def _message(value: object) -> bool:
 
 #: A media id can be a long link (batch B4a, decision 2).
 MAX_MEDIA_ID = 4096
+
+
+def _pixels(value: object) -> bool:
+    """A picture's width or height as (A)'s proxy reads it from a request: a whole number."""
+    return isinstance(value, int) and not isinstance(value, bool) and 1 <= value <= 16384
 
 
 def _media_id(value: object) -> bool:
@@ -466,6 +475,16 @@ COMMANDS: dict[str, dict[str, list[Shape]]] = {
     # Questions (bridge step 4): answered with a list, which `ANSWERS` checks.
     "calendar": {"get_events": [{"start": _iso, "end": _iso}]},
     "weather": {"get_forecasts": [{"type": _forecast_type}]},
+    # Batch B4b (`notes/bridge_kinds_b4b_prediction_20261031.md`). `camera_image` and `image` are
+    # questions only the bridged entity asks (no such service exists in (A)), answered with one
+    # picture, which `check_picture` checks. `snapshot` stays in (A); streams and recording are
+    # not offered (decisions 3, 4).
+    "camera": {
+        **{service: [{}] for service in (
+            "turn_on", "turn_off", "enable_motion_detection", "disable_motion_detection")},
+        "camera_image": [{"width": _Optional(_pixels), "height": _Optional(_pixels)}],
+    },
+    "image": {"image": [{}]},
 }
 
 #: An answer is a list of at most this many items, and at most this many bytes as JSON.
@@ -525,6 +544,48 @@ def check_answer(question: tuple[str, str], answer: object) -> tuple[str | None,
         if not all({**required, **optional}[k](v) for k, v in item.items()):
             return f"item {index} has a field of the wrong kind", shape
     return None, shape
+
+#: Questions answered with one picture (batch B4b), and the most bytes a picture may have:
+#: 512 KiB, about 683 KiB as base64, inside the channel's 1 MiB frame (decision 1).
+PICTURES = frozenset({("camera", "camera_image"), ("image", "image")})
+MAX_PICTURE_BYTES = 512 * 1024
+
+#: The first bytes every file of each picture type begins with, by the format's own definition.
+#: Not Home Assistant's table (`image.MAP_MAGIC_NUMBERS_TO_CONTENT_TYPE`): it lists only some JPEG
+#: markers, and takes any RIFF file (a WAV, an AVI) for a WebP.
+SIGNATURES: dict[str, Callable[[bytes], bool]] = {
+    "image/jpeg": lambda b: b[:3] == b"\xff\xd8\xff",
+    "image/png": lambda b: b[:8] == b"\x89PNG\r\n\x1a\n",
+    "image/gif": lambda b: b[:6] in (b"GIF87a", b"GIF89a"),
+    "image/webp": lambda b: b[:4] == b"RIFF" and b[8:12] == b"WEBP",
+}
+
+
+def check_picture(answer: object) -> tuple[str | None, dict]:
+    """Why a picture answer is refused (None if it is not), and its type and size for the record.
+
+    The picture itself is never recorded: a camera's picture is of the inside of a house.
+    """
+    shape: dict = {"content_type": None, "bytes": None}
+    if not isinstance(answer, dict) or set(answer) != {"content_type", "data"}:
+        return "it is not exactly a content_type and its data", shape
+    content_type, data = answer["content_type"], answer["data"]
+    if not isinstance(content_type, str) or content_type not in SIGNATURES:
+        return "its type is not one of the listed picture types", shape
+    shape["content_type"] = content_type
+    if not isinstance(data, str) or len(data) > (MAX_PICTURE_BYTES + 2) // 3 * 4:
+        return f"it is not a string of base64 within {MAX_PICTURE_BYTES} bytes", shape
+    try:
+        content = base64.b64decode(data, validate=True)
+    except (binascii.Error, ValueError):
+        return "its data is not base64", shape
+    shape["bytes"] = len(content)
+    if len(content) > MAX_PICTURE_BYTES:
+        return f"it is larger than {MAX_PICTURE_BYTES} bytes", shape
+    if not SIGNATURES[content_type](content):
+        return f"its bytes do not begin as a {content_type} does", shape
+    return None, shape
+
 
 #: Data never written to the durable log, allowed or refused: an alarm or lock code, and a
 #: notification's text (batch B3, decision 4). The record keeps that the key was there.
@@ -868,7 +929,7 @@ class Mediator:
             return
         fd = channels[-1]   # the newest: an older one can only be a sandbox not yet seen to end
         self._sent_commands[ident] = fd
-        if (kind, service) in ANSWERS:
+        if (kind, service) in ANSWERS or (kind, service) in PICTURES:
             self._questions[ident] = (kind, service, entity_id)
         self._out[fd].commands.append({"push": "entity.command", "command": ident,
                                        "entity": entity_id, "service": service,
@@ -911,10 +972,15 @@ class Mediator:
         events can be private, and an answer that was refused is still the integration's text.
         """
         kind, service, entity = question
-        why, shape = check_answer((kind, service), payload)
-        decision = (Decision(True, "an answer of the listed shape", clause=QUERY_ANSWER)
+        if (kind, service) in PICTURES:
+            why, shape = check_picture(payload)
+            clause = PICTURE_ANSWER
+        else:
+            why, shape = check_answer((kind, service), payload)
+            clause = QUERY_ANSWER
+        decision = (Decision(True, "an answer of the listed shape", clause=clause)
                     if why is None else
-                    Decision(False, f"the answer was refused: {why}", clause=QUERY_ANSWER))
+                    Decision(False, f"the answer was refused: {why}", clause=clause))
         self._record(identity, {"op": "entity.answer", "entity": entity,
                                 "service": f"{kind}.{service}", "answer": shape}, decision)
         if decision.allowed:

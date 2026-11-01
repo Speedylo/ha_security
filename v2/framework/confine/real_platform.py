@@ -256,7 +256,7 @@ class RealPlatform:
         self.calls.append((domain, service, data))
 
     def command_result(self, command: int, ok: bool, error: str | None = None,
-                       answer: list | None = None) -> None:
+                       answer: list | dict | None = None) -> None:
         """The confined integration's answer, back to the bridge, which returns or raises.
 
         `answer` only for a question (bridge step 4), and only once the mediator has checked it.

@@ -15,7 +15,8 @@ SUPPORTED = ("sensor", "binary_sensor", "switch", "button", "text", "select", "n
              "climate", "alarm_control_panel", "calendar", "weather",
              "light", "fan", "cover", "lock",
              "humidifier", "water_heater", "vacuum", "valve", "siren", "remote",
-             "update", "event", "time", "device_tracker", "notify", "media_player")
+             "update", "event", "time", "device_tracker", "notify", "media_player",
+             "camera", "image")
 
 #: How long a user's command waits for the confined integration to answer (W1 step 2b).
 COMMAND_TIMEOUT = 10

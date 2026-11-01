@@ -94,7 +94,7 @@ class BridgeData:
         self._ids = itertools.count(1)
 
     async def command(self, integration: str, entity_id: str, service: str,
-                      data: dict[str, Any]) -> list | None:
+                      data: dict[str, Any]) -> list | dict | None:
         """Send a user's command to the confined integration, and wait for its answer.
 
         Raises `HomeAssistantError`, which the user sees, if no mediator is listening, if the
@@ -304,8 +304,9 @@ def ws_commands(hass: HomeAssistant, connection: websocket_api.ActiveConnection,
     vol.Required("command"): int,
     vol.Required("ok"): bool,
     vol.Optional("error"): vol.Any(cv.string, None),
-    # A question's answer (bridge step 4), already checked by the mediator.
-    vol.Optional("answer"): vol.Any(list, None),
+    # A question's answer (bridge step 4), already checked by the mediator: a list, or one
+    # picture's type and data (batch B4b).
+    vol.Optional("answer"): vol.Any(list, dict, None),
 })
 @callback
 def ws_command_result(hass: HomeAssistant, connection: websocket_api.ActiveConnection,

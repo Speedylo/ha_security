@@ -34,6 +34,7 @@ A bridge that trusted its copy of the manifest would be an in-process enforcemen
 from __future__ import annotations
 
 import asyncio
+import base64
 import array
 import collections
 import json
@@ -254,6 +255,23 @@ QUESTIONS = {
     ("weather", "get_forecasts"): (lambda data: {"type": data["type"]}, "forecast"),
 }
 
+#: Questions answered with one picture (batch B4b): Home Assistant's own getters, which this
+#: instance runs on its own entity (a JPEG camera's picture is scaled here, if (A) asked a width
+#: and a height). The answer is the picture's type and its bytes as base64; the mediator checks it.
+PICTURE_QUESTIONS = frozenset({("camera", "camera_image"), ("image", "image")})
+
+
+async def _picture(hass, domain: str, entity_id: str, data: dict) -> dict:
+    if domain == "camera":
+        from homeassistant.components.camera import async_get_image
+        image = await async_get_image(hass, entity_id, width=data.get("width"),
+                                      height=data.get("height"))
+    else:
+        from homeassistant.components.image import async_get_image
+        image = await async_get_image(hass, entity_id)
+    return {"content_type": image.content_type,
+            "data": base64.b64encode(image.content).decode()}
+
 
 class Bridge:
     """Everything that crosses the sandbox boundary, in one object."""
@@ -356,6 +374,11 @@ class Bridge:
         ok, error, answer = True, None, None
         if entity_id not in self.published_ids:
             ok, error = False, f"{entity_id} is not an entity this integration published"
+        elif (domain, service) in PICTURE_QUESTIONS:
+            try:
+                answer = await _picture(self.hass, domain, entity_id, data)
+            except Exception as err:  # noqa: BLE001 — the user is told, as a native call would
+                ok, error = False, f"{type(err).__name__}: {err}"[:300]
         elif (domain, service) in QUESTIONS:
             # A question (bridge step 4): Home Assistant's own response service, on this entity,
             # and the list it returns is the answer. The mediator checks its shape before (A)
