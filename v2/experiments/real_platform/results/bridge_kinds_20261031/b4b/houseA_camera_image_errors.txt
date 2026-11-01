@@ -1,0 +1,4 @@
+2:2026-11-01 11:50:49.231 WARNING (SyncWorker_0) [homeassistant.loader] We found a custom integration confine_bridge which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you experience issues with Home Assistant
+120:2026-11-01 11:51:02.980 WARNING (MainThread) [custom_components.confine_bridge] confine_bridge: demo_stubborn was cut off by the mediator (100 refusals within 10 s)
+121:2026-11-01 11:51:03.271 WARNING (MainThread) [custom_components.confine_bridge] confine_bridge: demo_flood was not started (not_approved) 
+123:2026-11-01 11:51:04.228 WARNING (MainThread) [custom_components.confine_bridge] confine_bridge: demo_flood was not started (not_approved) 

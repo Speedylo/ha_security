@@ -144,3 +144,30 @@ is sent). Exact counts in the outcome, from the runs.
 **255/268** (K33's 7 and K34's 6 fail, each refused under `COMMAND_SERVICES`; K35's 4 pass);
 `selftest_queries` **30/49** (Q7's 6, Q8, Q9's 11 and Q10's count fail; Q10's first check passes
 with nothing to find, as before any picture is logged).
+
+## Outcome (2026-11-01, Pi, fresh clones of both tags, (A) `down` then `up --fresh` before each)
+
+Results: `experiments/real_platform/results/bridge_kinds_20261031/b4b/`.
+
+| | `bridge-b4b-pre` (`2394446`) | `bridge-b4b` (`f1f4053`) |
+|---|---|---|
+| `selftest_commands` | 255/268 (K33, K34 fail as predicted) | **268/268** |
+| `selftest_queries` | 30/49 (Q7–Q9, Q10's count fail as predicted) | **49/49** |
+| `selftest_bridge_types` | 176/194 | **194/194** |
+| every suite (`suites_all`, on the same (A)) | — | **35/35**; no bridge error in (A)'s log |
+
+**One prediction did not hold as written.** Before the code, 18 of T33–T38's 21 checks failed,
+not 20: besides T37's last check (nothing recorded), T37's two "the call succeeds" checks passed.
+With no camera in (A), Home Assistant accepts `camera.turn_off` on an entity that does not exist
+and reports success. Alone, those checks show nothing; they mean something only beside the
+"reaches the sandbox" check before them, which failed as predicted (AI-use log 39).
+
+Every other prediction held: (A)'s own picture link and token (not the sandbox's), no STREAM and no
+`frontend_stream_type`; exactly the sandbox's bytes through (A)'s proxy; width and height passed on;
+no question within 2 s, a question after; a 600 KiB picture and an HTML page labelled image/png give
+an error without the content, and the next picture is served; `play_stream` fails in (A) with no
+decision recorded; the image asked once, not again for the same time, again for a new time.
+
+**Bridge now 29 kinds; 36 of 37 integrations by kind, of which 3 (`frigate`, `eufy_security`,
+`tapo_control`) lose their main use, live video, and `bambu_lab`'s pictures are unchecked.** The
+limitations above stand as written; none was tested away.

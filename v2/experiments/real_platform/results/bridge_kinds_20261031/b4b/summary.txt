@@ -1,0 +1,20 @@
+start 2026-11-01T11:41:41+01:00 pre commit 2394446a4e65bfb241f53fc5686f4404330472a4 tag bridge-b4b-pre dirty=0
+commands_pre exit=1 seconds=67
+queries_pre exit=1 seconds=13
+house_a_down_pre exit=0 seconds=0
+house_a_up_pre exit=0 seconds=7
+bridge_types_pre exit=1 seconds=73
+post commit f1f40531e1f718293d41c76dddf58e005079bd56 tag bridge-b4b dirty=0
+commands exit=0 seconds=64
+queries exit=0 seconds=5
+house_a_down exit=0 seconds=1
+house_a_up exit=0 seconds=5
+bridge_types exit=0 seconds=50
+suites exit=0 seconds=284
+suites failed=0 of 35
+bridge errors in (A) log: 0
+unit system now: up
+bridge-b4b-pre dirty after=0
+bridge-b4b dirty after=0
+end 2026-11-01T11:51:11+01:00
+ALLDONE
