@@ -168,6 +168,6 @@ no question within 2 s, a question after; a 600 KiB picture and an HTML page lab
 an error without the content, and the next picture is served; `play_stream` fails in (A) with no
 decision recorded; the image asked once, not again for the same time, again for a new time.
 
-**Bridge now 29 kinds; 36 of 37 integrations by kind, of which 3 (`frigate`, `eufy_security`,
+**Bridge now 29 kinds; 36 of 37 integrations by kind (recount with `bridge-b4b`, `b4b/recount.txt`: 247 of 248 kind uses; left: `alexa_media`'s legacy notify), of which 3 (`frigate`, `eufy_security`,
 `tapo_control`) lose their main use, live video, and `bambu_lab`'s pictures are unchecked.** The
 limitations above stand as written; none was tested away.
