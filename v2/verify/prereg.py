@@ -47,6 +47,11 @@ RESULTS = {
     # verify results directory; item12_20261003/depth.sh, re-issued by step 11), which the path
     # search took for its own. Their first results are step 1's run and F61's laptop run.
     "final_rerun": "0c771fa", "f61_fault_harness_approval": "c41eafd",
+    # Added 2026-11-01 after the second final rerun's step 13, for the same reason: each cites an
+    # older results path (B1's shared bridge_kinds_20261031 directory; bridge step 1's results; the
+    # first final rerun's), which the path search took for its own. Their first results are B3's
+    # outcome, step 5's first complete run and the second rerun's chunks A-H.
+    "bridge_kinds_b3": "62e889f", "bridge_types_step5": "8454f8a", "final_rerun2": "b24bf00",
 }
 #: The checks registered without results of their own yet, or registered for this campaign.
 SKIP = {"integrity_consistency"}

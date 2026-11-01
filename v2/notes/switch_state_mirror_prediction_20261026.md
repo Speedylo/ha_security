@@ -1,4 +1,4 @@
-# F70: a bridged switch shows the state its integration published — prediction (2026-10-26)
+# A bridged switch shows the state its integration published — prediction (2026-10-26)
 
 Numbered F70 by Younes on 2026-10-26, after the outcome below.
 

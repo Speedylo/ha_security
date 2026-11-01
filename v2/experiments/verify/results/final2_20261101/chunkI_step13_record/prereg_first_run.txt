@@ -1,0 +1,11 @@
+prereg.py's first run at b24bf00 (laptop, 2026-11-01), before RESULTS gained three entries and the
+switch_state_mirror heading was restored. Copied from its output; the run's own file was overwritten
+by the second run (prereg.txt). The four "CHECK" lines, the rest "ok":
+
+CHECK      bridge_kinds_b3: note ab9a7b9 → results 7a22dbb (+-30 min); 0 prediction line(s) changed after
+CHECK      bridge_types_step5: note 609794b → results b5c673b (+-58 min); 0 prediction line(s) changed after
+CHECK      final_rerun2: note a3ba4a1 → results e9ec2b1 (+-41377 min); 0 prediction line(s) changed after
+CHECK      switch_state_mirror: note d3db019 → results 3db5dd2 (+30 min); 1 prediction line(s) changed after
+           - # A bridged switch shows the state its integration published — prediction (2026-10-26)  [last touched e1ed30d 2026-10-26]
+
+4 note(s) to look at

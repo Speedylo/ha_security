@@ -1,0 +1,5 @@
+commit b24bf00e980e988bf86876f39a7eee8bb4601ca8 dirty=2 2026-11-01T21:44:10+00:00 (laptop: prereg, consistency); recompute with corpora on the Pi clone at a3ba4a1
+prereg first run: 4 to look at (prereg_first_run.txt); second run exit=0, 0 to look at
+consistency exit=0 (0 problems)
+recompute laptop (no corpus) exit=1: DIFFERS 1, EQUAL 37, SKIPPED 2
+recompute Pi (both corpora) exit=1: DIFFERS 1 (A1.25 suites 34 vs abstract's Twenty-six), EQUAL 39

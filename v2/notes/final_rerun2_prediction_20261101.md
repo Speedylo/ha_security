@@ -232,7 +232,7 @@ infrastructure reason is run again whole (rule 5), its failed attempt kept.
 
 Drivers are kept outside the clone, so the tagged tree stays clean, and copied into the results.
 
-## 7. Outcome (chunks A–H, 2026-11-01; I to follow)
+## 7. Outcome (chunks A–I, 2026-11-01)
 
 Every chunk ran from `~/r2exp/final2` at `a3ba4a1` (`final-2026-11`), tree clean before and after.
 Results in `experiments/verify/results/final2_20261101/<chunk>_<step>/`, drivers in `drivers/`.
@@ -255,6 +255,7 @@ Results in `experiments/verify/results/final2_20261101/<chunk>_<step>/`, drivers
 | 12 | both parses identical | **held**: 144 of 144 fetched at their commits; hacs and uniform IDENTICAL |
 | 10 | each timing ±20% of Table 12.5, each memory figure ±5%; ranges in §2 | **held against the criterion; two predicted memory ranges 0.1–0.2 MB low** (see below) |
 | 11 | 57.0, 92.9, 112.0, 135.6 MB ±5%, monotonic, spread ≤ 0.1 | **held**: 57.2, 93.0–93.1, 112.1, 135.8 MB in all three rounds; monotonic; spread ≤ 0.1 MB; about 17 sandboxes fit at ten components |
+| 13 | prereg 0 to look at; consistency passes; recompute EQUAL or each difference explained | **held after three pairings were registered and one heading restored** (see below): prereg 0; consistency 0 problems; recompute 39 EQUAL, 1 DIFFERS (A1.25: 34 suites against the abstract's "Twenty-six", as on 16 October with 28) |
 | 14 | as `b4b/recount.txt` | **held**: identical |
 
 **The live check F2.** F2's third line asks that at least one value the confined arm publishes equal
@@ -297,3 +298,19 @@ default install 2.27 s (first pass after boot 3.0 s). No memory figure crossed 5
 apply and Table 7.5 keeps its figures; the 17-sandbox floor holds (step 11: about 17 fit at ten).
 The timing passes write their outputs into the clone (`phase3_timing/final2_pass1–5` and
 `mediation_latency/_manifest`, all untracked), hence "dirty after=6", as on 16 October; no tracked file changed.
+
+**Step 13 in detail** (chunk I, laptop, after the results were committed at `b24bf00`). `prereg.py`'s
+first run reported four notes to look at (`chunkI_step13_record/prereg_first_run.txt`). Three were the
+path search taking an older results path the note cites for the note's own first result, the case
+`RESULTS` was given entries for on 16 October: `bridge_kinds_b3` (took B1's `7a22dbb`; its own is
+B3's outcome `62e889f`, 18 min after the note), `bridge_types_step5` (took step 1's `b5c673b`; its own is
+`8454f8a`, the first complete run, 1.6 h after) and this note (took `e9ec2b1` of 2026-10-03; its own is
+`b24bf00`). They are now registered in `verify/prereg.py`'s `RESULTS`, each checked by its commit
+message. The fourth was a changed line: `switch_state_mirror`'s heading gained "F70:" after its outcome
+(`e1ed30d`, with the dated line "Numbered F70 by Younes on 2026-10-26, after the outcome below"). No
+prediction changed; the heading is restored word for word and the dated line kept. Second run: 0 to
+look at. `recompute.py` was run twice: on the laptop without the corpora (37 EQUAL, 2 SKIPPED, the
+same DIFFERS) and on the Pi's clone with both (39 EQUAL, 1 DIFFERS), the latter the result.
+
+**Prediction not fully held for step 13:** "0 notes to look at" needed the registrations above; none
+of the four was a prediction changed after its results.
