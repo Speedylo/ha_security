@@ -122,6 +122,14 @@ default, so the stand-in arm should be unaffected. `trakt_tv` must keep its data
 **Step 8 — functional retest.** *Criterion:* the 45 predictions, judged by `retest_e2e_verdicts.py`.
 *Prediction:* 43 of 45, the same two `scheduler` rows.
 
+**Steps 7–8, the two integrations added on 2026-10-25** (added before the first chunk ran):
+16 October's steps predate `alarmo` and `waste_collection_schedule` (`e2e-ext-2026-10`). Chunk F
+also runs `endtoend_egress --subject waste_collection_schedule` (both arms, (A) down) and judges
+`alarmo` from step 8's `endtoend_function` run, both with `verify/e2e_ext_verdicts.py`.
+*Criterion:* alarmo P1–P4 in both arms; waste's two arms read the same next collection date.
+*Prediction:* alarmo 8 of 8; waste's two arms agree; the script's P7 rows fail, as in B5, because P7
+names the date predicted on 2026-10-25 (27.10.2026), which has passed: a stale expectation, not a finding.
+
 **Step 8b — the fifteen against the real (A).** *Criterion and prediction,* as B5's outcome:
 `selftest_real_house` passes; every publish of every confined-declared arm accepted;
 `bridge_step5_verdicts` **36 of 36** with 65 entity rows each in (A) as published; `retest_e2e_verdicts`
