@@ -29,6 +29,9 @@ type, as `selftest_audit`'s F3 check does.
     K29  media player: each allowed shape (batch B4a)
     K30  media player data matching no allowed shape is refused under COMMAND_DATA
     K31  grouping, browsing and searching are refused under COMMAND_SERVICES
+    K33  camera and image: each allowed command and question (batch B4b)
+    K34  camera and image data matching no allowed shape is refused under COMMAND_DATA
+    K35  snapshot, streams and recording are refused under COMMAND_SERVICES
 
 Run:  python3 -m confine.selftest_commands
 """
@@ -60,7 +63,8 @@ OWNED = {"switch.demo_power": "demo", "button.demo_report": "demo", "text.demo_n
          "valve.demo_tap": "demo", "siren.demo_alarm": "demo", "remote.demo_tv": "demo",
          "update.demo_firmware": "demo", "time.demo_wake": "demo", "notify.demo_panel": "demo",
          "device_tracker.demo_phone": "demo", "event.demo_doorbell": "demo",
-         "media_player.demo_speaker": "demo"}
+         "media_player.demo_speaker": "demo", "camera.demo_door": "demo",
+         "image.demo_map": "demo"}
 
 
 def check(claim: str, condition: bool, detail: str = "") -> None:
@@ -551,6 +555,43 @@ def main() -> int:
         for service in ("join", "unjoin", "browse_media", "search_media"):
             record, pushed = send(SPEAKER, service, None)
             check(f"K31 media_player.{service}: refused under COMMAND_SERVICES",
+                  record.get("allowed") is False and record.get("clause") == COMMAND_SERVICES
+                  and pushed is None, f"{record.get('clause')} {pushed}")
+        # Batch B4b (`notes/bridge_kinds_b4b_prediction_20261031.md`). A picture is a question,
+        # asked only by the bridged entity; the answer is checked by `selftest_queries` Q7-Q10.
+        DOOR, MAP = "camera.demo_door", "image.demo_map"
+        print("\nK33 — camera and image (batch B4b)\n")
+        for entity, service, data in (
+                *((DOOR, service, None) for service in (
+                    "turn_on", "turn_off", "enable_motion_detection",
+                    "disable_motion_detection")),
+                (DOOR, "camera_image", None),
+                (DOOR, "camera_image", {"width": 640, "height": 360}),
+                (MAP, "image", None)):
+            record, pushed = send(entity, service, data)
+            check(f"K33 {entity.partition('.')[0]}.{service} {data or ''}: allowed and pushed "
+                  "as sent", record.get("allowed") is True and record.get("clause") == AMBIENT
+                  and pushed is not None and pushed.get("service") == service
+                  and pushed.get("data") == (data or {}), f"{record.get('clause')} {pushed}")
+
+        print("\nK34 — camera and image data matching no allowed shape\n")
+        for label, entity, service, data in (
+                ("width as a string", DOOR, "camera_image", {"width": "640"}),
+                ("width 0", DOOR, "camera_image", {"width": 0}),
+                ("width 16385", DOOR, "camera_image", {"width": 16385}),
+                ("an extra key", DOOR, "camera_image", {"width": 640, "filename": "/tmp/x"}),
+                ("image with data", MAP, "image", {"url": "http://example.org/x.png"}),
+                ("turn_on with data", DOOR, "turn_on", {"entity_id": "camera.someone_else"})):
+            record, pushed = send(entity, service, data)
+            check(f"K34 {label}: refused under COMMAND_DATA, not pushed",
+                  record.get("allowed") is False and record.get("clause") == COMMAND_DATA
+                  and pushed is None, f"{record.get('clause')} {pushed}")
+
+        print("\nK35 — snapshot, streams and recording\n")
+        for entity, service in ((DOOR, "snapshot"), (DOOR, "play_stream"), (DOOR, "record"),
+                                (MAP, "camera_image")):
+            record, pushed = send(entity, service, None)
+            check(f"K35 {entity.partition('.')[0]}.{service}: refused under COMMAND_SERVICES",
                   record.get("allowed") is False and record.get("clause") == COMMAND_SERVICES
                   and pushed is None, f"{record.get('clause')} {pushed}")
         check("every chain verifies", mediator.log.verify() == [])

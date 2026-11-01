@@ -57,6 +57,12 @@ in (A), described well enough for Home Assistant to draw its control. Operating 
     T30  play_media: an id (A) can resolve becomes a signed link to (A); any other goes unchanged
     T31  grouping is not offered in (A), and nothing reaches the mediator
     T32  no kind shows a picture link its integration published (F71, batch B5)
+    T33  a camera, described, with (A)'s own picture link and no stream (batch B4b)
+    T34  (A)'s camera proxy serves exactly the picture the sandbox answered
+    T35  within 2 s (A) reuses the picture and asks nothing; after 2 s it asks again
+    T36  an oversized or mislabelled picture gives an error, and the next one is served
+    T37  camera commands reach the sandbox; play_stream is not offered
+    T38  an image: (A)'s own link, asked once, asked again only for a new published time
 
 Requires (A) running: `python3 -m confine.house_a up --fresh` on the Pi.
 
@@ -66,7 +72,11 @@ Run:  python3 -m confine.selftest_bridge_types [--restart]
 from __future__ import annotations
 
 import argparse
+import base64
 import sys
+import threading
+import urllib.error
+import urllib.request
 import tempfile
 import time
 from datetime import datetime
@@ -996,6 +1006,190 @@ def main() -> int:
                   answer.get("ok") is True and shown == state
                   and shown_attributes.get("note") == "kept" and not pictures,
                   f"{shown!r} {pictures or ''}")
+
+        # Batch B4b (`notes/bridge_kinds_b4b_prediction_20261031.md`). A picture is a question:
+        # (A)'s proxy asks the bridged entity, which asks the sandbox through the mediator.
+        def fetch(path: str) -> dict:
+            """GET `path` from (A) on a thread, so this one can serve the mediator meanwhile."""
+            got: dict = {}
+
+            def run() -> None:
+                try:
+                    with urllib.request.urlopen(house_a.BASE + path, timeout=20) as response:
+                        got.update(status=response.status, body=response.read(),
+                                   type=response.headers.get("Content-Type", ""))
+                except urllib.error.HTTPError as err:
+                    got.update(status=err.code, body=err.read(), type="")
+                except OSError as err:
+                    got.update(status=None, body=b"", type="", error=str(err))
+
+            sandbox.received.clear()
+            thread = threading.Thread(target=run)
+            thread.start()
+            got["thread"] = thread
+            return got
+
+        def asked_of(got: dict, payload: dict | None, seconds: float = 12) -> dict:
+            """Serve until (A) asks or the fetch ends; answer with `payload`; finish the fetch."""
+            serve_until(mediator, lambda: (sandbox.drain(), not got["thread"].is_alive() or [
+                m for m in sandbox.received if m.get("push") == "entity.command"])[1],
+                seconds=seconds)
+            question = next((m for m in sandbox.received if m.get("push") == "entity.command"),
+                            {})
+            if question and payload is not None:
+                # From a thread as well: a picture does not fit the socket pair's buffer.
+                replying = threading.Thread(target=sandbox.channel.request, args=(
+                    {"op": "entity.command_result", "command": question.get("command"),
+                     "ok": True, "answer": payload},))
+                replying.start()
+                serve_until(mediator, lambda: not replying.is_alive(), seconds=seconds)
+                replying.join(1)
+            serve_until(mediator, lambda: not got["thread"].is_alive(), seconds=seconds)
+            got["thread"].join(1)
+            return question
+
+        def picture(content_type: str, content: bytes) -> dict:
+            return {"content_type": content_type, "data": base64.b64encode(content).decode()}
+
+        jpeg = b"\xff\xd8\xff\xe1" + bytes(range(256)) * 16 + b"\xff\xd9"
+        png = b"\x89PNG\r\n\x1a\n" + bytes(range(256)) * 8
+
+        print("\nT33 — a camera (batch B4b)\n")
+        DOOR = "camera.selftest_door"
+        door_attributes = {"friendly_name": "Selftest door", "brand": "Selftest",
+                           "model_name": "Door 1", "motion_detection": True,
+                           "supported_features": 3, "access_token": "sandboxtoken",
+                           "entity_picture": f"/api/camera_proxy/{DOOR}?token=sandboxtoken",
+                           "frontend_stream_type": "hls"}
+        answer = sandbox.ask({"op": "entity.publish", "entity": DOOR, "state": "idle",
+                              "attributes": door_attributes})
+        landed[DOOR] = platform.published.get(("selftest", DOOR)) or ""
+        row = registry(platform).get(landed[DOOR], {})
+        check("T33 camera: a registry row of its domain owned by the bridge",
+              answer.get("ok") is True and row.get("platform") == "confine_bridge"
+              and landed[DOOR].startswith("camera."), answer.get("reason") or landed[DOOR])
+        shown, shown_attributes = platform.read(landed[DOOR]) if landed[DOOR] else (None, {})
+        shown_attributes = shown_attributes or {}
+        wanted = {"brand": "Selftest", "model_name": "Door 1", "motion_detection": True,
+                  "supported_features": 1}
+        missing = {k: (v, shown_attributes.get(k)) for k, v in wanted.items()
+                   if shown_attributes.get(k) != v}
+        door_picture = str(shown_attributes.get("entity_picture") or "")
+        check("T33 (A) shows it idle, described, without STREAM or frontend_stream_type",
+              shown == "idle" and not missing
+              and "frontend_stream_type" not in shown_attributes, f"{shown!r} {missing or ''}")
+        check("T33 its picture link is (A)'s own proxy, with a token that is not the sandbox's",
+              door_picture.startswith(f"/api/camera_proxy/{landed[DOOR]}?token=")
+              and "sandboxtoken" not in door_picture
+              and shown_attributes.get("access_token") not in (None, "sandboxtoken"),
+              door_picture)
+
+        print("\nT34 — (A)'s camera proxy serves exactly the sandbox's picture\n")
+        got = fetch(door_picture)
+        question = asked_of(got, picture("image/jpeg", jpeg))
+        check("T34 the sandbox is asked camera_image with no data",
+              question.get("service") == "camera_image" and question.get("data") == {},
+              str(question or got.get("status")))
+        check("T34 (A) answers with exactly those bytes, as image/jpeg",
+              got.get("status") == 200 and got.get("body") == jpeg
+              and got.get("type", "").startswith("image/jpeg"),
+              f"{got.get('status')} {len(got.get('body') or b'')} {got.get('type')}")
+        sized = door_picture + "&width=640&height=360"
+        got = fetch(sized)
+        question = asked_of(got, picture("image/jpeg", jpeg))
+        check("T34 with a width and a height, the sandbox is asked with those two",
+              question.get("data") == {"width": 640, "height": 360} and got.get("status") == 200,
+              str(question or got.get("status")))
+
+        print("\nT35 — reused for 2 s, asked again after\n")
+        got = fetch(sized)
+        question = asked_of(got, None, seconds=4)
+        check("T35 a second fetch within 2 s asks the sandbox nothing, and gets the same bytes",
+              not question and got.get("status") == 200 and got.get("body") == jpeg,
+              f"{question or ''} {got.get('status')}")
+        time.sleep(2.2)
+        got = fetch(sized)
+        question = asked_of(got, picture("image/jpeg", jpeg))
+        check("T35 after 2 s, the sandbox is asked again",
+              question.get("service") == "camera_image" and got.get("status") == 200,
+              str(question or got.get("status")))
+
+        print("\nT36 — an oversized or mislabelled picture\n")
+        time.sleep(2.2)
+        html = b"<html><script>alert(1)</script></html>"
+        for label, payload in (
+                ("a 600 KiB JPEG", picture("image/jpeg", jpeg[:4] + b"j" * (600 * 1024))),
+                ("an HTML page labelled image/png", picture("image/png", html))):
+            got = fetch(door_picture)
+            question = asked_of(got, payload)
+            check(f"T36 {label}: (A) answers an error, not the content",
+                  bool(question) and got.get("status") not in (None, 200)
+                  and b"alert(1)" not in (got.get("body") or b""),
+                  f"{got.get('status')} {(got.get('body') or b'')[:60]!r}")
+        got = fetch(door_picture)
+        question = asked_of(got, picture("image/png", png))
+        check("T36 the next valid picture is served",
+              bool(question) and got.get("status") == 200 and got.get("body") == png,
+              f"{got.get('status')}")
+
+        print("\nT37 — camera commands; no stream\n")
+        for service in ("turn_off", "enable_motion_detection"):
+            command, pending = operate(DOOR, service, {})
+            check(f"T37 camera.{service}: reaches the sandbox as itself, with no data",
+                  pending["arrived"] and command.get("service") == service
+                  and command.get("data") == {}, f"{command or pending['user'].outcome}")
+            outcome, _ = finish(DOOR, command, pending, "idle", door_attributes)
+            check(f"T37 camera.{service}: the call succeeds", outcome.get("success") is True,
+                  f"{outcome.get('error') or ''}")
+        before = len([r for r in log.records() if r.get("op") == "entity.command"])
+        user = User()
+        pressed = user.press(landed[DOOR] or DOOR, "play_stream",
+                             {"media_player": "media_player.living_room_tv"})
+        serve_until(mediator, lambda: not pressed.is_alive(), seconds=15)
+        pressed.join()
+        user.close()
+        after_count = len([r for r in log.records() if r.get("op") == "entity.command"])
+        check("T37 camera.play_stream fails in (A)", user.outcome.get("success") is False,
+              str(user.outcome.get("error")))
+        check("T37 and no command decision was recorded", after_count == before,
+              f"{after_count - before} new")
+
+        print("\nT38 — an image\n")
+        MAP = "image.selftest_map"
+        first, later = "2026-11-01T10:00:00+00:00", "2026-11-01T10:05:00+00:00"
+        map_attributes = {"friendly_name": "Selftest map", "access_token": "sandboxtoken",
+                          "entity_picture": f"/api/image_proxy/{MAP}?token=sandboxtoken"}
+        answer = sandbox.ask({"op": "entity.publish", "entity": MAP, "state": first,
+                              "attributes": map_attributes})
+        landed[MAP] = platform.published.get(("selftest", MAP)) or ""
+        shown, shown_attributes = platform.read(landed[MAP]) if landed[MAP] else (None, {})
+        map_picture = str((shown_attributes or {}).get("entity_picture") or "")
+        check("T38 image: its published time is its state, and its link is (A)'s own",
+              answer.get("ok") is True and shown == first
+              and map_picture.startswith(f"/api/image_proxy/{landed[MAP]}?token=")
+              and "sandboxtoken" not in map_picture,
+              f"{answer.get('reason') or ''} {shown!r} {map_picture}")
+        got = fetch(map_picture)
+        question = asked_of(got, picture("image/png", png))
+        check("T38 fetching it asks `image` with no data, and returns the bytes",
+              question.get("service") == "image" and question.get("data") == {}
+              and got.get("status") == 200 and got.get("body") == png,
+              f"{question or ''} {got.get('status')}")
+        time.sleep(2.2)
+        got = fetch(map_picture)
+        question = asked_of(got, None, seconds=4)
+        check("T38 fetching again, after 2 s, with the same time, asks nothing",
+              not question and got.get("status") == 200 and got.get("body") == png,
+              f"{question or ''} {got.get('status')}")
+        sandbox.ask({"op": "entity.publish", "entity": MAP, "state": later,
+                     "attributes": map_attributes})
+        shown, shown_attributes = platform.read(landed[MAP]) if landed[MAP] else (None, {})
+        got = fetch(str((shown_attributes or {}).get("entity_picture") or map_picture))
+        question = asked_of(got, picture("image/jpeg", jpeg))
+        check("T38 republished with a new time, the next fetch asks again",
+              shown == later and question.get("service") == "image"
+              and got.get("status") == 200 and got.get("body") == jpeg,
+              f"{shown!r} {question or ''} {got.get('status')}")
 
         print("\nT5 — a kind the bridge does not stand in for is refused\n")
         todo = sandbox.ask({"op": "entity.publish", "entity": "todo.selftest_probe",
