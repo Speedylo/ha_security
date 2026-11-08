@@ -36,7 +36,7 @@ for i, (title, body) in enumerate(RECORDS):
     c.box(x + 15, Y + 220, W - 30, 42, fill="light")
     c.text(x + 30, Y + 241, "prev_hash, prev_mac: the record before", size=12, anchor="start")
     c.box(x + 15, Y + 272, W - 30, 42, fill="mid")
-    c.text(x + 30, Y + 293, "hash, mac: over this record and those", size=12, anchor="start")
+    c.text(x + 30, Y + 293, "hash, mac: of this record and prev_hash, prev_mac", size=12, anchor="start")
     if i:
         # The previous record's links are carried into this one.
         px = x - GAP - 15
@@ -47,18 +47,19 @@ c.text(750, 60, "Each record names its run, its operation and target, its verdic
        "acted, and which clause allowed it.", size=13, italic=True)
 
 # --- what each link detects ----------------------------------------------------------------------
-c.box(40, 500, 700, 210, fill="light", title="THE HASH CHAIN  (sha256)")
-c.text(60, 615, "Anyone can verify it.\n\nDetects a record changed, deleted or reordered: every "
-       "later\nhash stops matching.\n\nDoes not survive a complete rewrite of the file, "
-       "because\nanyone can recompute every hash.", size=12, anchor="start")
-c.box(760, 500, 700, 210, fill="light", title="THE MAC CHAIN  (HMAC-SHA256, key in the "
-      "mediator's memory only)")
-c.text(780, 615, "Verifiable only with the key, which is never written to disk.\n\nDetects a "
-       "complete rewrite by someone who can write the file\nbut cannot read the mediator's "
-       "memory.\n\nThe cost: a record from an earlier run of the mediator stays\nhash-"
-       "verifiable and is no longer MAC-verifiable.", size=12, anchor="start")
+c.box(40, 500, 700, 210, fill="light", title="THE HASH CHAIN  (SHA-256 fingerprints)")
+c.text(60, 615, "Anyone can check it: no secret is needed.\n\nCatches a record changed, deleted "
+       "or moved: from that record on,\nno fingerprint matches.\n\nMisses a whole file "
+       "rewritten with new fingerprints,\nbecause anyone can compute them.", size=12,
+       anchor="start")
+c.box(760, 500, 700, 210, fill="light", title="THE MAC CHAIN  (HMAC-SHA256, a secret key)")
+c.text(780, 615, "The key exists only in the mediator's memory, never on disk.\n\nCatches a whole "
+       "file rewritten by someone who can change the file\nbut cannot read that memory: "
+       "without the key, no MAC matches.\n\nThe cost: after the mediator restarts, older "
+       "records can still be\nchecked by hash, but no longer by MAC.", size=12, anchor="start")
 
-c.text(750, 750, "Neither chain survives an attacker who controls the host; against one, the "
-       "two give evidence and not protection.", size=12, italic=True)
+c.text(750, 750, "Neither chain stops an attacker who controls the whole device, the mediator's "
+       "memory included;\nagainst one, the chains are evidence of tampering, not protection.",
+       size=12, italic=True)
 
 c.save(OUT)
