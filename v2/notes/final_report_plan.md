@@ -15,7 +15,7 @@
 - One-page **AI Evidence Box** (tool, task, representative prompts, output, how checked, accepted /
   modified / rejected, ethical and reliability considerations).
 - **AI Use Disclosure** appendix (tool and model, prompts, how output was used and modified).
-- The **full AI-use log** (`notes/ai_use_log.md`, 39 rows on 2026-11-04).
+- The **full AI-use log** (`notes/ai_use_log.md`, 40 rows on 2026-11-06).
 - A description of the problem, approach, results and implications; supervisor's signature; one PDF,
   title in Title Case; similarity under 20%.
 
@@ -42,11 +42,23 @@
 | 16 | Conclusion | 631 | 400 | |
 | App | Code/repository; AI Use Disclosure; full AI-use log; supporting tables | 15,988 | above 6,000, set at rewrite | |
 
+## Method for every section (Younes, 2026-11-06)
+
+Applies to all sections, **including those already approved** (§13, and the October drafts); the word budgets above are ceilings, not targets.
+
+1. Read the matching section in at least two past reports (`~/capstone/.claude/*.pdf`).
+2. Compare length, level of detail, what is mentioned and omitted, and readability; give Younes the gaps and the proposed shape.
+3. Rework: one thread per subsection; figures and a worked example from real output; no finding codes or process accounting in the body; limits gathered in one place.
+4. Move detail to an appendix, and keep the old text in `submission/before_final/`.
+5. Check every number against its result file and every sentence for overclaiming before showing it.
+
+§12 is the worked model. §13 has no past equivalent: compare it with the interim's §6 and the syllabus.
+
 ## Order of work
 
-1. §13 and the AI appendices (Evidence Box, Disclosure, log).
+1. §13 and the AI appendices (Disclosure, log).
 2. §12 Results, §9 Architecture, §8 Methodology (most new material).
-3. The rest, front to back; abstract and résumé last.
+3. The rest, front to back; abstract and résumé, then the AI Evidence Box as the last thing written (Younes, 2026-11-06).
 4. References in APA 7 as each section is written; build in the template; Word render.
 5. Number check (consistency + recompute), similarity check, supervisor's signature; `REPRODUCE.md` 29 → 35 suites.
 
@@ -56,6 +68,9 @@ every number checked against its result file, Younes reviews before the next one
 ## Progress
 
 - 2026-11-04: §13 drafted (`submission/13_ai_use_and_evaluation.md`; second rerun = Younes's idea; mutation wording confirmed (a)); AI Use Disclosure drafted (`submission/appendix_ai_use_disclosure.md`; "no other AI tool" confirmed by Younes); AI-use log appendix built (`submission/appendix_ai_use_log.md`: interim rows 1–30 + 31–39 in plain words). §13 APPROVED by Younes (2026-11-04); the Disclosure and log appendix await his read. Still owed: the one-page AI Evidence Box.
+- 2026-11-06: AI Use Disclosure and AI-use log appendix APPROVED by Younes. Next: §12 (the Evidence Box is written last).
+- 2026-11-06: §13.5 reworded and log row 40 added (Evidence Boxes in git history only); Younes approved. §12 started.
+- 2026-11-06: §12 drafted, then reworked against the past reports (Younes): about 1,900 words, 4 tables, 2 figures (`figures/fig_12_1_states`, `fig_12_2_capacity`), one worked example, limits gathered in §12.5, no finding codes in the body. Detail moved to `submission/appendix_results_detail.md` (Appendix [R], about 3,100 words, not yet tidied: its old linking sentences remain). Earlier versions in `submission/before_final/`. APPROVED by Younes (2026-11-06). F64–F71 still to be added to App F, with ratings.
 
 ## Decided 2026-11-06 (Younes)
 
