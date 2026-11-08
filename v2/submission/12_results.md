@@ -12,7 +12,7 @@ Four attacks were run from inside an integration, once unconfined and once confi
 | Attack | Unconfined | Confined |
 |---|---|---|
 | The garbage-collector technique, aimed at another integration's credential (Corno & Mannella, 2022) | Credential reached | Nothing found |
-| The 2021 path-traversal pattern, aimed at two planted secrets (Home Assistant, 2021) | 2 of 2 recovered | 0 of 2 |
+| The 2021 path-traversal pattern, aimed at two planted secrets (Home Assistant, 2021a) | 2 of 2 recovered | 0 of 2 |
 | Reading another process's environment variables | Contents read | Nothing to read |
 | Reading devices the integration was not granted | 36 of 36 | Only the 1 declared |
 

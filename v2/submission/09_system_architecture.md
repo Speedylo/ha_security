@@ -38,7 +38,7 @@ Each sandbox is built so that what an integration must not reach is absent from 
 
 *Note.* The control group bounds everything the sandbox runs, the namespaces decide what it can see, and the seccomp filter sits on its system calls. The channel is its only way out.
 
-From inside, the result is a small and empty machine: the project's self-test finds that the integration is root only within its own namespace, sees no process but its own, has a network with no route anywhere, and can write to its data folder but not to its own code. The house's secrets file and stored configuration are not locked away; they are simply not there, because the sandbox's filesystem is assembled from only what is allowed. This removes the target of the file-theft technique used in the 2021 disclosures (Home Assistant, 2021).
+From inside, the result is a small and empty machine: the project's self-test finds that the integration is root only within its own namespace, sees no process but its own, has a network with no route anywhere, and can write to its data folder but not to its own code. The house's secrets file and stored configuration are not locked away; they are simply not there, because the sandbox's filesystem is assembled from only what is allowed. This removes the target of the file-theft technique used in the 2021 disclosures (Home Assistant, 2021a).
 
 The runtime inside sets up only the platform components the integration uses, so a sandbox needs between 56.5 and 135.6 MB of memory (Section 12.3). The sandbox's contribution is a boundary that rests on the kernel and on absence, rather than on code that inspects each request.
 

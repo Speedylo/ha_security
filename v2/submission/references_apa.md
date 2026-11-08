@@ -9,6 +9,8 @@ Anthropic. (2026). *Claude Code* [Computer software]. https://claude.com/claude-
 
 Barth, A., Felt, A. P., Saxena, P., & Boodman, A. (2010). Protecting browsers from extension vulnerabilities. In *Proceedings of the Network and Distributed System Security Symposium (NDSS 2010)*. Internet Society. https://www.adambarth.com/papers/2010/barth-felt-saxena-boodman.pdf — [14]
 
+Cohen, T. (2026, May 12). *Remote integration execution* [Online forum post]. Home Assistant Community. https://community.home-assistant.io/t/remote-integration-execution/1010130 — [11]
+
 Common Criteria Recognition Arrangement. (2017). *Common Criteria for information technology security evaluation, Part 2: Security functional components* (Version 3.1, Revision 5, CCMB-2017-04-002). — [30]
 
 Corno, F., & Mannella, L. (2022). A threat model for extensible smart home gateways. In *2022 7th International Conference on Smart and Sustainable Technologies (SpliTech)* (pp. 1–6). IEEE. https://doi.org/10.23919/SpliTech55088.2022.9854235 — [5]
@@ -41,7 +43,9 @@ Home Assistant. (n.d.-e). *Security*. Retrieved October 16, 2026, from https://w
 
 Home Assistant. (n.d.-f). *Service actions*. Home Assistant Developer Documentation. Retrieved October 16, 2026, from https://developers.home-assistant.io/docs/dev_101_services/ — [2]
 
-Home Assistant. (2021, January 22). *Disclosure: Security vulnerabilities in custom integrations HACS, Dwains Dashboard, Font Awesome and others*. Home Assistant Blog. https://www.home-assistant.io/blog/2021/01/22/security-disclosure/ — [3]
+Home Assistant. (2021a, January 22). *Disclosure: Security vulnerabilities in custom integrations HACS, Dwains Dashboard, Font Awesome and others*. Home Assistant Blog. https://www.home-assistant.io/blog/2021/01/22/security-disclosure/ — [3]
+
+Home Assistant. (2021b, January 23). *Security disclosure 2: Vulnerabilities in custom integrations HACS, Font Awesome and others*. Home Assistant Blog. https://www.home-assistant.io/blog/2021/01/23/security-disclosure2/ — [7]
 
 Home Assistant. (2026). *Home Assistant Core* (Version 2026.8.3) [Computer software]. GitHub. https://github.com/home-assistant/core/tree/2026.8.3 — [55]
 

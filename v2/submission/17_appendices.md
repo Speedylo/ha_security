@@ -43,7 +43,7 @@ Each requirement was traced to a source in the problem statement or the literatu
 | S5 | Separate operations of unequal risk | Physical operations are asymmetric in risk, and a permission granted per domain grants both directions [38] | A manifest permitting `lock.lock` is shown not to permit `lock.unlock`, and the refusal is structural rather than a check |
 | S6 | Deny by default | An allow-by-default policy bounds nothing, and a malicious author may simply omit the manifest (C3) | An integration with no manifest and one with an unparseable manifest are each denied all mediated capability, each refusal naming its rule |
 | S7 | Record every decision in a tamper-evident log | Users cannot detect afterwards what an integration accessed, and a systematic review found that unauthenticated extensions reduce the ability to audit logs and locate malicious ones [25] | Decisions appear in the log bearing the integration's three-part identity, and modification, deletion and reordering are each detected independently by a hash chain and a keyed chain |
-| S8 | Isolate files and processes | The platform states that an integration can read any file the Home Assistant process can, including stored credentials, which is what the 2021 disclosures exploited [3], [7] | The 2021 file-theft pattern succeeds against an unconfined baseline installation and is blocked under the framework, on the same host and release |
+| S8 | Isolate files and processes | An integration runs in the Home Assistant process and can read any file that process can, stored credentials included; the 2021 disclosures showed flawed integrations exposing exactly those files [3], [7] | The 2021 file-theft pattern succeeds against an unconfined baseline installation and is blocked under the framework, on the same host and release |
 | S9 | Bound processor, memory and disk use | No source in the problem statement or literature; added when the threat model rated resource exhaustion (T16) | An integration deliberately exhausting processor, memory and disk in turn does not make the gateway unresponsive, demonstrated without administrator privileges, with the boot-time precondition stated |
 | N1 | Report overhead against an unconfined baseline | On a constrained device, a control that halves the number of integrations a user can run will not be adopted (C4) | Added latency, per-integration memory and the maximum number of concurrent integrations are reported against an unconfined baseline on the target hardware; no threshold is set in advance |
 | N2 | Report compatibility as measured, not asserted | No prior work reports what fraction of real, unmodified extensions still work under confinement | "Imports clean" and "executed end to end" are reported as two separate numbers, never combined, with the first labelled an upper bound wherever it appears |
@@ -231,6 +231,23 @@ T07's treatment also leaves a residual, and it falls within R2. Confinement stop
 Eight of the eleven are mapped, five without qualification. The two registers differ in both directions: theirs reaches consequences this design does not touch, delay, partial loss and physical damage, while this register separates the update channel (TB4) and the host (TB5) into boundaries that a gateway-level model folds together. T16's control plausibly reaches T5 and T6 as well, since a gateway being exhausted is delayed and partially lost before it is lost entirely, but the register maps T16 only to T7, and the table reports that mapping as it stands.
 
 ---
+
+### C.6 What an integration can reach today
+
+Table C.7 gives the authority that Section 2.1 summarises, with the source for each row. The last column separates what is deduced from how the platform loads an integration from what has been shown in practice, because the two carry different weight as evidence.
+
+**Table C.7**
+*Authority held by any community integration in Home Assistant 2026.8.3*
+
+| Asset | Reach | Consequence of abuse | Basis |
+|---|---|---|---|
+| Entity states | Every entity in the installation | Occupancy, presence, sleep patterns, absence from home | Deduced from the loading model (Home Assistant, n.d.-f) |
+| Service calls | Any service, including unlocking a door and disarming an alarm | Physical access to the dwelling | Deduced from the loading model (Home Assistant, n.d.-f); the platform's per-user check lets through a call that carries no user (Home Assistant, 2026) |
+| Stored credentials | Any file the process can read, including stored secrets | Compromise of every linked cloud account | Deduced from the loading model; shown for flawed integrations in 2021, where the platform noted that the exposed files include stored credentials (Home Assistant, 2021a) |
+| File system | Whatever the process's user can read | Configuration, history database, tokens | Deduced from the loading model; shown for flawed integrations in 2021 (Home Assistant, 2021a) |
+| Network | Unrestricted outbound access and the home network | Exfiltration; a foothold inside the home | Deduced from the loading model (Home Assistant, n.d.-f) |
+| Web endpoints | Can add its own HTTP endpoints to the platform's web server, with the login check switched off | An unauthenticated way into the home | Reported for an integration shipped with the platform (CVE-2023-27482) (elttam, 2023) |
+| Other integrations' live objects | Any object in the shared interpreter | Theft or alteration of another integration's secrets | Demonstrated experimentally (Corno & Mannella, 2022) |
 
 ## Appendix D — Full compatibility results
 
