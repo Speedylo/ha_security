@@ -43,8 +43,10 @@ v2/00_METHOD.md
 v2/01_PLAN.md
 v2/refs/
 
-# The final report, until it is finished in the interim report's template
-v2/submission/
+# The final report: sources tracked (2026-11-08); built documents and caches not
+v2/submission/*.docx
+v2/submission/*.pdf
+v2/submission/__pycache__/
 
 # The working report and the proposal: kept locally, not published (2026-11-08)
 v2/report/
