@@ -53,7 +53,7 @@
             },
             "attrs": {
               "text": {
-                "text": "Integration author\n+ HACS channel"
+                "text": "Integration author\n+ community store"
               },
               "body": {
                 "stroke": "#333333",
@@ -150,7 +150,7 @@
             "data": {
               "type": "tm.Actor",
               "providesAuthentication": false,
-              "name": "Integration author\n+ HACS channel",
+              "name": "Integration author\n+ community store",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -517,7 +517,7 @@
             },
             "attrs": {
               "text": {
-                "text": "Home Assistant core\nbus · states · services\nconfig_entries · auth · http"
+                "text": "Home Assistant core\nevents · states · services\nsettings · logins · web"
               },
               "body": {
                 "stroke": "#333333",
@@ -617,7 +617,7 @@
               "handlesGoodsOrServices": false,
               "isWebApplication": false,
               "privilegeLevel": "",
-              "name": "Home Assistant core\nbus · states · services\nconfig_entries · auth · http",
+              "name": "Home Assistant core\nevents · states · services\nsettings · logins · web",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -636,7 +636,7 @@
             },
             "attrs": {
               "text": {
-                "text": "Integration A\n(third-party)"
+                "text": "Integration A\n(community)"
               },
               "body": {
                 "stroke": "#333333",
@@ -736,7 +736,7 @@
               "handlesGoodsOrServices": false,
               "isWebApplication": false,
               "privilegeLevel": "",
-              "name": "Integration A\n(third-party)",
+              "name": "Integration A\n(community)",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -755,7 +755,7 @@
             },
             "attrs": {
               "text": {
-                "text": "Integration B\n(third-party)"
+                "text": "Integration B\n(community)"
               },
               "body": {
                 "stroke": "#333333",
@@ -855,7 +855,7 @@
               "handlesGoodsOrServices": false,
               "isWebApplication": false,
               "privilegeLevel": "",
-              "name": "Integration B\n(third-party)",
+              "name": "Integration B\n(community)",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -874,7 +874,7 @@
             },
             "attrs": {
               "text": {
-                "text": "In-memory shared state\nhass.data · states (A2, A6)"
+                "text": "Shared memory\ndevice states · data (A2, A6)"
               },
               "topLine": {
                 "strokeWidth": 1.5,
@@ -978,7 +978,7 @@
               "isSigned": false,
               "storesCredentials": false,
               "storesInventory": false,
-              "name": "In-memory shared state\nhass.data · states (A2, A6)",
+              "name": "Shared memory\ndevice states · data (A2, A6)",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -997,7 +997,7 @@
             },
             "attrs": {
               "text": {
-                "text": "secrets.yaml\n+ config directory (A3)"
+                "text": "Secrets file\n+ configuration (A3)"
               },
               "topLine": {
                 "strokeWidth": 1.5,
@@ -1101,7 +1101,7 @@
               "isSigned": false,
               "storesCredentials": false,
               "storesInventory": false,
-              "name": "secrets.yaml\n+ config directory (A3)",
+              "name": "Secrets file\n+ configuration (A3)",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -1120,7 +1120,7 @@
             },
             "attrs": {
               "text": {
-                "text": "Config entry store\nevery integration's\ncredentials (A3, A6)"
+                "text": "Stored settings\nevery integration's\ncredentials (A3, A6)"
               },
               "topLine": {
                 "strokeWidth": 1.5,
@@ -1224,7 +1224,7 @@
               "isSigned": false,
               "storesCredentials": false,
               "storesInventory": false,
-              "name": "Config entry store\nevery integration's\ncredentials (A3, A6)",
+              "name": "Stored settings\nevery integration's\ncredentials (A3, A6)",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -1251,7 +1251,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "TB4 · EXISTS — structure, not behaviour",
+                    "text": "TB4 · EXISTS — checks structure only",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -1275,7 +1275,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Boundary",
-              "name": "TB4 · EXISTS — structure, not behaviour",
+              "name": "TB4 · EXISTS — checks structure only",
               "description": "",
               "isTrustBoundary": true,
               "hasOpenThreats": false
@@ -1319,7 +1319,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "TB2 · EXISTS — unscoped API surface",
+                    "text": "TB2 · EXISTS — the platform's interface, unscoped",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -1343,7 +1343,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Boundary",
-              "name": "TB2 · EXISTS — unscoped API surface",
+              "name": "TB2 · EXISTS — the platform's interface, unscoped",
               "description": "",
               "isTrustBoundary": true,
               "hasOpenThreats": false
@@ -1383,7 +1383,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "TB1 · ABSENT — required by S1",
+                    "text": "TB1 · ABSENT — nothing between integration and platform",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -1407,7 +1407,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Boundary",
-              "name": "TB1 · ABSENT — required by S1",
+              "name": "TB1 · ABSENT — nothing between integration and platform",
               "description": "",
               "isTrustBoundary": true,
               "hasOpenThreats": false
@@ -1447,7 +1447,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "TB3 · ABSENT — required by F2/S4",
+                    "text": "TB3 · ABSENT — network unrestricted",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -1471,7 +1471,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Boundary",
-              "name": "TB3 · ABSENT — required by F2/S4",
+              "name": "TB3 · ABSENT — network unrestricted",
               "description": "",
               "isTrustBoundary": true,
               "hasOpenThreats": false
@@ -1515,7 +1515,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "TB5 · ABSENT — required by S8",
+                    "text": "TB5 · ABSENT — host files open",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -1539,7 +1539,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Boundary",
-              "name": "TB5 · ABSENT — required by S8",
+              "name": "TB5 · ABSENT — host files open",
               "description": "",
               "isTrustBoundary": true,
               "hasOpenThreats": false
@@ -1579,7 +1579,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "TB6 · ABSENT — demonstrated crossable",
+                    "text": "TB6 · ABSENT — integrations not separated",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -1603,7 +1603,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Boundary",
-              "name": "TB6 · ABSENT — demonstrated crossable",
+              "name": "TB6 · ABSENT — integrations not separated",
               "description": "",
               "isTrustBoundary": true,
               "hasOpenThreats": false
@@ -1655,7 +1655,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "F1  installs / updates integration source",
+                    "text": "(a) installs or updates the integration's code",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -1679,7 +1679,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F1  installs / updates integration source",
+              "name": "(a) installs or updates the integration's code",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -1737,7 +1737,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "F2  import_module → async_setup(hass, …) passes the hass reference",
+                    "text": "(b) the platform loads the integration and hands it its core object",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -1761,7 +1761,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F2  import_module → async_setup(hass, …) passes the hass reference",
+              "name": "(b) the platform loads the integration and hands it its core object",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -1814,7 +1814,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "F3  service calls · state writes event subscription",
+                    "text": "(c) service calls · state writes event subscriptions",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -1838,7 +1838,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F3  service calls · state writes event subscription",
+              "name": "(c) service calls · state writes event subscriptions",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -1896,7 +1896,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "F4  direct read/write of hass.data (all domains)",
+                    "text": "(d) reads and writes the shared memory directly",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -1920,7 +1920,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F4  direct read/write of hass.data (all domains)",
+              "name": "(d) reads and writes the shared memory directly",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -1973,7 +1973,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "F4b  the same shared dict, from another integration",
+                    "text": "(e) the same shared memory, from another integration",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -1997,7 +1997,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F4b  the same shared dict, from another integration",
+              "name": "(e) the same shared memory, from another integration",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -2059,7 +2059,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "F5  reads any integration's stored credentials",
+                    "text": "(f) reads any integration's stored credentials",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -2083,7 +2083,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F5  reads any integration's stored credentials",
+              "name": "(f) reads any integration's stored credentials",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -2145,7 +2145,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "F6  arbitrary file read via hass.config.path()",
+                    "text": "(g) reads any file, the secrets file included",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -2169,7 +2169,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F6  arbitrary file read via hass.config.path()",
+              "name": "(g) reads any file, the secrets file included",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -2231,7 +2231,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "F7  unrestricted outbound",
+                    "text": "(h) connects anywhere",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -2255,7 +2255,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F7  unrestricted outbound",
+              "name": "(h) connects anywhere",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -2313,7 +2313,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "F8  direct object access",
+                    "text": "(i) reaches its objects directly",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -2337,7 +2337,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F8  direct object access",
+              "name": "(i) reaches its objects directly",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -2390,7 +2390,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "F9  local network access",
+                    "text": "(j) home network access",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -2414,7 +2414,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F9  local network access",
+              "name": "(j) home network access",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -2476,7 +2476,7 @@
                 ],
                 "attrs": {
                   "labelText": {
-                    "text": "F10  web UI",
+                    "text": "(k) web interface",
                     "textAnchor": "middle",
                     "textVerticalAnchor": "middle"
                   },
@@ -2500,7 +2500,7 @@
             "connector": "smooth",
             "data": {
               "type": "tm.Flow",
-              "name": "F10  web UI",
+              "name": "(k) web interface",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -2533,7 +2533,7 @@
             },
             "attrs": {
               "text": {
-                "text": "Integrations are drawn as separate elements because they are separate CODE. They are not separate processes:\nno boundary exists between the elements inside the box, and nothing in the platform enforces one."
+                "text": "Integrations are drawn as separate elements because they are separate code. They are not separate processes:\nno boundary exists between the elements inside the box, and nothing in the platform enforces one."
               }
             },
             "visible": true,
@@ -2542,7 +2542,7 @@
             "id": "994c4157-0c16-5752-9380-df96c0ca5d8e",
             "data": {
               "type": "tm.Text",
-              "name": "Integrations are drawn as separate elements because they are separate CODE. They are not separate processes:\nno boundary exists between the elements inside the box, and nothing in the platform enforces one.",
+              "name": "Integrations are drawn as separate elements because they are separate code. They are not separate processes:\nno boundary exists between the elements inside the box, and nothing in the platform enforces one.",
               "hasOpenThreats": false
             }
           },
@@ -2557,7 +2557,7 @@
             },
             "attrs": {
               "text": {
-                "text": "TB1 and TB2 meet at a single interface today. No component stands between them — the integration calls the\nplatform directly, and the gap between those two curves is empty."
+                "text": "TB1 and TB2 meet at a single interface today. No component stands between them: the integration calls the\nplatform directly, and the gap between those two curves is empty."
               }
             },
             "visible": true,
@@ -2566,7 +2566,7 @@
             "id": "ea4ab975-6a27-5485-90a8-35fec0becc9a",
             "data": {
               "type": "tm.Text",
-              "name": "TB1 and TB2 meet at a single interface today. No component stands between them — the integration calls the\nplatform directly, and the gap between those two curves is empty.",
+              "name": "TB1 and TB2 meet at a single interface today. No component stands between them: the integration calls the\nplatform directly, and the gap between those two curves is empty.",
               "hasOpenThreats": false
             }
           }

@@ -40,20 +40,20 @@ TD_VERSION = "2.3.0"
 # id: (kind, label, x, y, width, height)
 NODES = [
     # --- outside the machine ------------------------------------------------------
-    ("author",   "actor", "Integration author\n+ HACS channel",              60,   60, 215,  75),
+    ("author",   "actor", "Integration author\n+ community store",              60,   60, 215,  75),
     ("extnet",   "actor", "External network\nendpoints",                   1240,   90, 190,  85),
     ("user",     "actor", "Home occupant\n/ user",                           60,  420, 175,  75),
     ("devices",  "actor", "Home devices, LAN\n(A1, A4, A8)",               1240,  700, 190,  85),
     # --- inside the one process ---------------------------------------------------
-    ("ha_core",  "process", "Home Assistant core\nbus · states · services\nconfig_entries · auth · http",
+    ("ha_core",  "process", "Home Assistant core\nevents · states · services\nsettings · logins · web",
                                                                             370,  340, 190, 150),
-    ("integ_a",  "process", "Integration A\n(third-party)",                  760,  357, 180, 115),
-    ("integ_b",  "process", "Integration B\n(third-party)",                  760,  585, 180, 115),
-    ("mem",      "store",   "In-memory shared state\nhass.data · states (A2, A6)",
+    ("integ_a",  "process", "Integration A\n(community)",                  760,  357, 180, 115),
+    ("integ_b",  "process", "Integration B\n(community)",                  760,  585, 180, 115),
+    ("mem",      "store",   "Shared memory\ndevice states · data (A2, A6)",
                                                                             960,  300, 175,  85),
     # --- on disk ------------------------------------------------------------------
-    ("secrets",  "store", "secrets.yaml\n+ config directory (A3)",           420,  830, 215,  85),
-    ("entries",  "store", "Config entry store\nevery integration's\ncredentials (A3, A6)",
+    ("secrets",  "store", "Secrets file\n+ configuration (A3)",           420,  830, 215,  85),
+    ("entries",  "store", "Stored settings\nevery integration's\ncredentials (A3, A6)",
                                                                             760,  830, 215, 100),
 ]
 
@@ -68,53 +68,53 @@ BOUNDARY_BOX = {
 # `exists` drives colour in the SVG only. The words EXISTS / ABSENT are what always
 # survive — a greyscale printout, a Threat Dragon PNG export, a font without ✓ and ✗.
 BOUNDARIES = [
-    ("tb4", "TB4 · EXISTS — structure, not behaviour",
+    ("tb4", "TB4 · EXISTS — checks structure only",
      (25, 240), (335, 25), [(210, 245), (300, 195)], True, (185, 212)),
-    ("tb2", "TB2 · EXISTS — unscoped API surface",
+    ("tb2", "TB2 · EXISTS — the platform's interface, unscoped",
      (620, 350), (620, 480), [(640, 425)], True, (600, 262)),
-    ("tb1", "TB1 · ABSENT — required by S1",
+    ("tb1", "TB1 · ABSENT — nothing between integration and platform",
      (690, 350), (690, 480), [(710, 425)], False, (600, 292)),
-    ("tb3", "TB3 · ABSENT — required by F2/S4",
+    ("tb3", "TB3 · ABSENT — network unrestricted",
      (1215, 30), (1215, 900), [(1225, 400), (1215, 650)], False, (1260, 470)),
-    ("tb5", "TB5 · ABSENT — required by S8",
+    ("tb5", "TB5 · ABSENT — host files open",
      (300, 770), (1160, 770), [(700, 780)], False, (700, 780)),
-    ("tb6", "TB6 · ABSENT — demonstrated crossable",
+    ("tb6", "TB6 · ABSENT — integrations not separated",
      (720, 528), (1000, 528), [(860, 528)], False, (1145, 528)),
 ]
 
 # (id, source, target, label, source_port, target_port, bidirectional, [vertices], label_xy)
 FLOWS = [
-    ("f1",  "author",  "secrets", "F1  installs / updates\nintegration source",
+    ("f1",  "author",  "secrets", "(a) installs or updates\nthe integration's code",
      "bottom", "left",  False, [(180, 760)], (250, 730)),
-    ("f2",  "ha_core", "integ_a", "F2  import_module →\nasync_setup(hass, …)\npasses the hass reference",
+    ("f2",  "ha_core", "integ_a", "(b) the platform loads the\nintegration and hands it\nits core object",
      "right",  "left",  False, [], (655, 340)),
-    ("f3",  "integ_a", "ha_core", "F3  service calls · state writes\nevent subscription",
+    ("f3",  "integ_a", "ha_core", "(c) service calls · state writes\nevent subscriptions",
      "left",   "right", False, [(660, 478)], (620, 540)),
-    ("f4",  "integ_a", "mem",     "F4  direct read/write of hass.data\n(all domains)",
+    ("f4",  "integ_a", "mem",     "(d) reads and writes the\nshared memory directly",
      "right",  "left",  True,  [], (1030, 465)),
-    ("f4b", "integ_b", "mem",     "F4b  the same shared dict,\nfrom another integration",
+    ("f4b", "integ_b", "mem",     "(e) the same shared memory,\nfrom another integration",
      "right",  "bottom", True, [(1100, 642), (1100, 430)], (1030, 600)),
-    ("f5",  "integ_a", "entries", "F5  reads any integration's\nstored credentials",
+    ("f5",  "integ_a", "entries", "(f) reads any integration's\nstored credentials",
      "bottom", "top",   False, [(1030, 500), (960, 740)], (1000, 690)),
-    ("f6",  "integ_a", "secrets", "F6  arbitrary file read via\nhass.config.path()",
+    ("f6",  "integ_a", "secrets", "(g) reads any file,\nthe secrets file included",
      "bottom", "top",   False, [(620, 560), (560, 740)], (420, 745)),
-    ("f7",  "integ_a", "extnet",  "F7  unrestricted outbound",
+    ("f7",  "integ_a", "extnet",  "(h) connects anywhere",
      "top",    "left",  False, [(1030, 230)], (1080, 195)),
-    ("f8",  "integ_a", "integ_b", "F8  direct object access",
+    ("f8",  "integ_a", "integ_b", "(i) reaches its objects directly",
      "bottom", "top",   True,  [], (935, 495)),
-    ("f9",  "integ_a", "devices", "F9  local network access",
+    ("f9",  "integ_a", "devices", "(j) home network access",
      "right",  "left",  False, [(1170, 414), (1170, 742)], (1170, 600)),
-    ("f10", "user",    "ha_core", "F10  web UI",
+    ("f10", "user",    "ha_core", "(k) web interface",
      "right",  "left",  True,  [], (292, 435)),
 ]
 
 # Kept off the canvas and set below it: on-diagram prose competes with flow labels, and
 # these two sentences are the ones a reader most needs undisturbed.
 NOTES = [
-    "Integrations are drawn as separate elements because they are separate CODE. They are"
+    "Integrations are drawn as separate elements because they are separate code. They are"
     " not separate processes:\nno boundary exists between the elements inside the box, and"
     " nothing in the platform enforces one.",
-    "TB1 and TB2 meet at a single interface today. No component stands between them — the"
+    "TB1 and TB2 meet at a single interface today. No component stands between them: the"
     " integration calls the\nplatform directly, and the gap between those two curves is empty.",
 ]
 

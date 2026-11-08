@@ -41,13 +41,13 @@ TD_VERSION = "2.3.0"
 # Positions are identical to Figure 4.1 wherever the element survives, and must stay so.
 NODES = [
     # --- outside the machine — all four kept at their Figure 4.1 positions --------
-    ("author",   "actor", "Integration author\n+ HACS channel",              60,   60, 215,  75),
+    ("author",   "actor", "Integration author\n+ community store",              60,   60, 215,  75),
     ("extnet",   "actor", "External network\nendpoints",                   1240,   90, 190,  85),
     ("user",     "actor", "Home occupant\n/ user",                           60,  420, 175,  75),
     ("devices",  "actor", "Home devices, LAN (A1, A4, A8)\nnon-public destinations are\n"
-                          "denied by default (T10)",                       1240,  690, 190, 105),
+                          "denied by default",                       1240,  690, 190, 105),
     # --- the platform, now alone in its process — kept ----------------------------
-    ("ha_core",  "process", "Home Assistant core\nbus · states · services\nconfig_entries · auth · http",
+    ("ha_core",  "process", "Home Assistant core\nevents · states · services\nsettings · logins · web",
                                                                             370,  340, 190, 150),
     # --- the framework, new in this figure ----------------------------------------
     ("supervisor", "process", "Supervisor\nbuilds each sandbox ·\nchecks the approval",
@@ -57,15 +57,15 @@ NODES = [
     # --- inside sandbox A — the integration kept at its Figure 4.1 position -------
     ("integ_a",  "process", "Integration A\n(community)",                  760,  357, 180, 115),
     ("ha_min_a", "process", "Stripped Home Assistant\nthe real helper layer · its own\n"
-                            "bus, state machine and hass.data,\nempty at start",
+                            "events, states and memory,\nempty at start",
                                                                             960,  325, 190, 120),
     # --- inside sandbox B — the integration kept ---------------------------------
     ("integ_b",  "process", "Integration B\n(community)",                  760,  585, 180, 115),
     ("ha_min_b", "process", "Stripped Home Assistant\na separate instance,\nseparately empty",
                                                                             960,  595, 190, 110),
     # --- on disk — secrets and entries kept; two stores are new ------------------
-    ("secrets",  "store", "secrets.yaml\n+ config directory (A3)",           420,  830, 215,  85),
-    ("entries",  "store", "Config entry store\nevery integration's\ncredentials (A3, A6)",
+    ("secrets",  "store", "Secrets file\n+ configuration (A3)",           420,  830, 215,  85),
+    ("entries",  "store", "Stored settings\nevery integration's\ncredentials (A3, A6)",
                                                                             760,  830, 215, 100),
     ("manifest", "store", "Manifest store\nthe author's, in the integration\n"
                           "directory, + the operator's,\nordered",  140,  830, 215, 100),
@@ -80,7 +80,7 @@ BOXES = [
     # Home Assistant ellipse, where the title used to be.
     {"id": "ha_proc",   "label": "HOME ASSISTANT PROCESS",
      "x": 348, "y": 318, "width": 222, "height": 200, "label_at": "bottom"},
-    {"id": "sandbox_a", "label": "SANDBOX A — its own namespaces, seccomp, cgroup v2",
+    {"id": "sandbox_a", "label": "SANDBOX A — its own view, system-call filter, limits",
      "x": 750, "y": 285, "width": 405, "height": 205},
     {"id": "sandbox_b", "label": "SANDBOX B — identically constructed, sharing nothing",
      "x": 750, "y": 552, "width": 405, "height": 200},
@@ -90,15 +90,15 @@ BOXES = [
 # All six now read EXISTS or UNCHANGED. `exists` still drives colour in the SVG only; the
 # words are what survive a greyscale printout.
 BOUNDARIES = [
-    ("tb4", "TB4 · UNCHANGED — structure, not behaviour",
+    ("tb4", "TB4 · UNCHANGED — checks structure only",
      (25, 240), (335, 25), [(210, 245), (300, 195)], True, (185, 212)),
-    ("tb2", "TB2 · NARROWED — an ordinary user (R3)",
+    ("tb2", "TB2 · NARROWED — an ordinary user",
      (570, 330), (570, 520), [(562, 425)], True, (592, 300)),
-    ("tb1", "TB1 · EXISTS — the socket",
+    ("tb1", "TB1 · EXISTS — the channel",
      (749, 300), (749, 745), [(741, 520)], True, (1330, 250)),
-    ("tb3", "TB3 · EXISTS — proxied egress",
+    ("tb3", "TB3 · EXISTS — connections via the mediator",
      (1195, 30), (1195, 900), [(1205, 400), (1195, 650)], True, (1300, 470)),
-    ("tb5", "TB5 · EXISTS — mount namespace",
+    ("tb5", "TB5 · EXISTS — host files absent",
      (740, 800), (1195, 800), [(960, 810)], True, (960, 775)),
     ("tb6", "TB6 · EXISTS — separate processes",
      (748, 520), (1160, 520), [(950, 512)], True, (950, 520)),
@@ -108,56 +108,54 @@ BOUNDARIES = [
 # A primed name — F2′, F3′ — replaces the same-numbered flow in Figure 4.1. Figure 4.1's
 # F4b, F5, F6, F8 and F9 have no counterpart here, and that is the point.
 FLOWS = [
-    ("f1",  "author",  "secrets", "F1  installs / updates integration\nsource, the author manifest with it",
+    ("f1",  "author",  "secrets", "(a) installs or updates the integration's\ncode, with the author's manifest",
      "bottom", "left",  False, [(180, 760)], (270, 640)),
-    ("f10", "user",    "ha_core", "F10  web UI",
+    ("f10", "user",    "ha_core", "(k) web interface",
      "right",  "left",  True,  [], (292, 435)),
-    ("fsup", "supervisor", "ha_min_a", "S  constructs the sandbox before any integration\n"
-                                       "code runs: namespaces, mounts, cgroup, and the\n"
-                                       "socket pair — identity precedes execution",
+    ("fsup", "supervisor", "ha_min_a", "(l) builds the sandbox before any integration\n"
+                                       "code runs, with its own channel, so the\n"
+                                       "identity is fixed before the code starts",
      "right", "top", False, [(1055, 213)], (960, 215)),
-    ("f2p", "integ_a", "mediator", "F2′  the socket — every mediated request (T02)",
+    ("f2p", "integ_a", "mediator", "(b′) the channel: every mediated request",
      "left", "right", True, [], (770, 332)),
-    ("f2pp", "integ_b", "mediator", "F2′′  B's own socket pair: a different\nsocket, therefore a different identity",
+    ("f2pp", "integ_b", "mediator", "(b″) B's own channel: a different\nchannel, therefore a different identity",
      "left", "bottom", True, [(700, 642), (700, 505)], (620, 662)),
-    ("f3p", "mediator", "ha_core", "F3′  the mediator applies permitted effects\n"
-                                   "using its OWN credential (S2)",
+    ("f3p", "mediator", "ha_core", "(c′) the mediator performs permitted requests\n"
+                                   "with its own credential",
      "left", "right", False, [], (460, 560)),
-    ("f7p", "mediator", "extnet", "F7′  proxied egress — the mediator resolves,\n"
-                                  "pins the address, then connects (T11)",
+    ("f7p", "mediator", "extnet", "(h′) the mediator resolves the name,\n"
+                                  "checks the address, then connects",
      "top", "left", False, [(652, 115)], (900, 90)),
-    ("f4p", "integ_a", "ha_min_a", "F4′  imports the REAL helper layer;\nthe hass it gets is local and empty",
+    ("f4p", "integ_a", "ha_min_a", "(d′) uses the real platform code;\nthe platform it gets is local and empty",
      "right", "left", True, [], (1040, 468)),
-    ("f4pp", "integ_b", "ha_min_b", "F4′′  the same, privately",
+    ("f4pp", "integ_b", "ha_min_b", "(d″) the same, privately",
      "right", "left", True, [], (1050, 725)),
-    ("fapp", "ha_core", "supervisor", "A  approval: an administrator allows\nexactly the grant shown, in Repairs,\nor the operator at the device (F57)",
+    ("fapp", "ha_core", "supervisor", "(m) approval: an administrator allows\nexactly the grant shown, in Repairs,\nor the operator at the device",
      "top", "bottom", False, [], (212, 300)),
-    ("fman", "manifest", "mediator", "F  manifest read at\nsandbox construction",
+    ("fman", "manifest", "mediator", "(n) manifest read when\nthe sandbox is built",
      "top", "bottom", False, [(247, 690), (600, 690), (600, 530)], (350, 730)),
-    ("faud", "mediator", "audit", "F  every decision recorded:\nintegration, capability, verdict\n(S7)",
+    ("faud", "mediator", "audit", "(o) every decision recorded:\nintegration, request, verdict",
      "bottom", "left", False, [(690, 780), (90, 780), (90, 1010)], (560, 802)),
 ]
 
 NOTES = [
-    "Compare with Figure 8.1. Five flows drawn there are absent here — F4b (the shared"
-    " hass.data dict), F5 (reads any integration's stored credentials), F6 (arbitrary file read"
-    " via hass.config.path),\nF8 (direct object access between integrations) and F9 (local"
-    " network access). None of the five is refused by a check. The config entry store and"
-    " secrets.yaml are not in the sandbox's\nmount namespace, the two integrations are separate"
-    " processes, and non-public destinations are denied by default, so there is no request to"
-    " make.",
+    "Compare with Figure 8.1. Five flows drawn there are absent here: (e) the shared memory,"
+    " (f) reading any integration's stored credentials, (g) reading any file,\n(i) reaching another"
+    " integration's objects and (j) home network access. None of the five is refused by a check."
+    " The stored settings and the secrets file are not in the\nsandbox's view, the two integrations"
+    " are separate processes, and addresses in the home are refused by default, so there is no"
+    " request to make.",
 
     "TB5 and TB6 are crossed by no flow at all, and that is deliberate rather than an omission:"
-    " in Figure 8.1 those same two locations carried F5, F6, F8, F4b and F9. A boundary nothing"
+    " in Figure 8.1 those same two places carried (e), (f), (g), (i) and (j). A boundary nothing"
     " crosses is the\nstrongest form this design produces, because nothing has to decide"
     " correctly for it to hold.",
 
     "TB2 is narrowed, not closed. The mediator connects as an ordinary Home Assistant user that the"
     " bridge designates, so it can no longer create users, change the configuration or install"
-    " integrations,\nbut it can still operate every device, because the platform's per-domain policy"
-    " cannot be configured through a supported interface. That is residual risk R3, High, narrowed."
-    " Flow A is new: no grant reaches\na sandbox until a person has approved exactly what was shown"
-    " (F57).",
+    " integrations,\nbut it can still operate every device, because the platform cannot limit a user"
+    " to some devices through a supported interface. That is residual risk R3, High, narrowed."
+    " Flow (m) is new:\nno grant reaches a sandbox until a person has approved exactly what was shown.",
 ]
 
 # --------------------------------------------------------------------------------------
@@ -441,10 +439,10 @@ def render_svg():
     p.append(f'<line x1="{lx + 16}" y1="{ly + 66}" x2="{lx + 56}" y2="{ly + 66}" '
              f'stroke="{PRESENT}" stroke-width="2.5" stroke-dasharray="10 7"/>')
     p.append(text_lines(lx + 66, ly + 66, "UNCHANGED / NARROWED — existed in Figure 8.1; TB4 "
-                        "is as it was, TB2 is narrowed (R3)", size=11, fill=MUTED,
+                        "is as it was, TB2 is narrowed", size=11, fill=MUTED,
                         anchor="start"))
-    p.append(text_lines(lx + 66, ly + 86, "F2\u2032 \u00b7 F3\u2032 \u00b7 F4\u2032 \u00b7 "
-                        "F7\u2032 — a primed flow replaces the same-numbered flow of Figure 8.1; A is new",
+    p.append(text_lines(lx + 66, ly + 86, "(b\u2032) \u00b7 (c\u2032) \u00b7 (d\u2032) \u00b7 (h\u2032) — a primed flow replaces the "
+                        "same-letter flow of Figure 8.1; (l) to (o) are new",
                         size=11, fill=INK, anchor="start"))
 
     # notes, below the drawing where they cannot collide with a flow label
