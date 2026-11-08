@@ -76,12 +76,24 @@ every number checked against its result file, Younes reviews before the next one
 - 2026-11-08: §9 compared with r2 (Blokbustr §9, ~930 words, 1 figure, components + one data-flow walkthrough) and r1 (LucidLink 8.1.3, ~4,200, 12 figures, per-module flows); r4/r6 keep design inside Methodology. Younes chose ~2,500 words, three limits in a closing paragraph (§9.9), a light command as the worked example (§9.8). §9 rewritten: about 2,600 words with tables, 5 figures kept, 3 tables (decisions; clauses; the 29 bridge kinds by what the mediator checks), APA citations, no finding codes. Detail moved to `submission/appendix_architecture_detail.md` (Appendix [S], about 5,200 words: decisions, sandbox, manifest, mediator, services per kind from `COMMANDS`, egress, record, failure, the eleven limits with codes). Old text `before_final/09_system_architecture_20261108.md`. Final APA list started: `submission/references_apa.md` (Home Assistant n.d. letters re-lettered; §12's analytics citation now n.d.-c). AI-use log row 41. APPROVED by Younes (2026-11-08).
 - 2026-11-08: §8 compared with r2 (~350), r1 (~1,000), r5 (~2,500), r6 (~3,400): past methodology = what was done and with what; none has a threat model. Younes: threat model stays (~1,300); Figure 8.2 → Appendix C as Figure C.1; new 8.5 at method level; no overlap with §13. §8 rewritten: about 2,170 words, Figure 8.1 + 2 tables; verification (old 8.6) dropped as [R].6 and §12.4 cover it with current numbers; ethics from interim §5.5 (seven live services now, five public, two accounts); bridge example and the independence reason left to §13. Figures 8.1/C.1 relabelled (community; flows (a)–(o); no codes or jargon), `1f9a4fd`. Appendix C: Figure C.1, residual Table C.5 + R3 note moved in, old C.5 → C.6 (lit review updated); front matter M01–M50 now points to §12.4. Appendix C still has IEEE citations: convert at the appendix rewrite. Old text `before_final/08_methodology_and_design_20261108.md`. After his read: Popper dropped from 8.1 (kept in §11), the third rule narrowed to the prediction records (the reports are rewritten, not corrected by dated note); Table 8.2 shows impact, likelihood and risk, with the scales and bands in the text; "engineering cut-off" and its date removed from 8.5. AI-use log row 42. APPROVED by Younes (2026-11-08).
 
-## To see in practice before submission (Younes, 2026-11-08)
+## To see in practice before submission (Younes, 2026-11-08) — DONE 2026-11-08
 
 The report describes these, and Younes has not seen them himself; run them on the Pi with him before the final build, and adjust the text to what the screen actually shows:
 
 - The approval in (A)'s Repairs panel: the plain-language account of a grant (§9.3), including what the integration cannot do and the not-declared-by-author mark.
 - The *Allow and start* action (§9.3, §9.7): an approval recorded, and refused when the code or grant changed after the screen was opened.
+
+**Seen with Younes, 2026-11-08** (Pi, `final-2026-11` at `~/r2exp/final2`, `demo_flood` with §9.3's grant; logs in `~/r2exp/demo_approval_20261108/`):
+
+- Grant A, never approved: the issue "demo_flood was not started" appeared in Repairs; Younes pressed *Allow and start*; the supervisor logged "allowed by an administrator, from the Repairs panel", recorded the approval and started run 1. **As described.**
+- Grant B (adds `light.turn_off`): refused at start, and the screen said "What this integration is allowed to do has changed since you approved it. Its code has not changed", then the not-declared-by-author line, then the full can / cannot lists. **As described.**
+- Grant C (adds `switch.turn_on`) loaded while Younes had B's screen open; he pressed *Allow and start*: the supervisor logged "its permissions changed after they were shown; nothing was approved", the approvals file still held only A's approval, nothing started, and a new issue appeared listing `switch.turn_on`. **As described.**
+- Noticed, and **not for the report** (Younes, 2026-11-08: not important enough to mention); kept here for the defence or a later version:
+  1. Home Assistant reported the refused approval as **repaired**: the bridge's flow finishes once it has passed the click to the supervisor, and the refusal shows only as a new issue.
+  2. The screen says *that* the grant changed, not *what*: the whole grant is listed again, the new permission unmarked.
+  3. "allowed to … ask other integrations to do specific things: light.turn_on" next to "NOT allowed to … change the state of any of your devices" reads as a contradiction to a householder (the second means writing a device's state directly, not calling a service).
+  4. "If you install this" on an integration already installed and waiting for approval.
+  Items 1–4 are wording or display, not security. No change to the report or the code.
 
 ## Decided 2026-11-06 (Younes)
 
