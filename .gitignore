@@ -46,6 +46,10 @@ v2/refs/
 # The final report, until it is finished in the interim report's template
 v2/submission/
 
+# The working report and the proposal: kept locally, not published (2026-11-08)
+v2/report/
+v2/proposal/
+
 # Course deliverables, submitted separately (2026-10-25)
 v2/interim/
 v2/Diary1.docx

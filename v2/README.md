@@ -22,8 +22,6 @@ Every community integration runs inside Home Assistant's own process with all of
 | `figures/` | Figure sources, the corpus fetcher and the platform-interface measurement |
 | `verify/` | The verification campaign's scripts and claim register |
 | `notes/` | Each experiment's predictions, committed before it ran, and the project's working notes |
-| `report/` | The working report against which every claim was registered and checked; the verification scripts read it |
-| `proposal/` | The project proposal |
 
 The reports and diaries are submitted to the programme separately; this repository holds the work they describe.
 
