@@ -21,6 +21,8 @@ Douceur, J. R. (2002). The Sybil attack. In P. Druschel, F. Kaashoek, & A. Rowst
 
 elttam. (2023, May 9). *PwnAssistant: Controlling /home's via a Home Assistant RCE*. https://www.elttam.com/blog/pwnassistant — [4] (read in full 2026-10-25)
 
+Felt, A. P., Ha, E., Egelman, S., Haney, A., Chin, E., & Wagner, D. (2012). Android permissions: User attention, comprehension, and behavior. In *Proceedings of the Eighth Symposium on Usable Privacy and Security (SOUPS '12)* (Article 3). ACM. https://doi.org/10.1145/2335356.2335360 — [26]
+
 Fernandes, E., Jung, J., & Prakash, A. (2016). Security analysis of emerging smart home applications. In *2016 IEEE Symposium on Security and Privacy (SP)* (pp. 636–654). IEEE. https://doi.org/10.1109/SP.2016.44 — [34]
 
 Fernandes, E., Paupore, J., Rahmati, A., Simionato, D., Conti, M., & Prakash, A. (2016). FlowFence: Practical data protection for emerging IoT application frameworks. In *25th USENIX Security Symposium (USENIX Security 16)* (pp. 531–548). USENIX Association. — [35]
@@ -86,6 +88,8 @@ Popper, K. R. (1959). *The logic of scientific discovery*. Hutchinson. — [44]
 Przymus, P., & Durieux, T. (2025). Wolves in the repository: A software engineering analysis of the XZ Utils supply chain attack. In *2025 IEEE/ACM 22nd International Conference on Mining Software Repositories (MSR)* (pp. 91–102). IEEE. https://doi.org/10.1109/MSR66628.2025.00026 — [8]
 
 Rahmati, A., Fernandes, E., Eykholt, K., & Prakash, A. (2018). Tyche: A risk-based permission model for smart homes. In *2018 IEEE Cybersecurity Development (SecDev)* (pp. 29–36). IEEE. https://doi.org/10.1109/SecDev.2018.00012 — [38]
+
+Regulation (EU) 2024/2847 of the European Parliament and of the Council of 23 October 2024 on horizontal cybersecurity requirements for products with digital elements and amending Regulations (EU) No 168/2013 and (EU) 2019/1020 and Directive (EU) 2020/1828 (Cyber Resilience Act). (2024). *Official Journal of the European Union*, L, 2024/2847. http://data.europa.eu/eli/reg/2024/2847/oj — [23]
 
 Rekhter, Y., Moskowitz, B., Karrenberg, D., de Groot, G. J., & Lear, E. (1996). *Address allocation for private internets* (RFC 1918). Internet Engineering Task Force. https://www.rfc-editor.org/rfc/rfc1918 — [31]
 
