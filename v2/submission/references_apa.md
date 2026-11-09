@@ -21,6 +21,8 @@ Douceur, J. R. (2002). The Sybil attack. In P. Druschel, F. Kaashoek, & A. Rowst
 
 elttam. (2023, May 9). *PwnAssistant: Controlling /home's via a Home Assistant RCE*. https://www.elttam.com/blog/pwnassistant — [4] (read in full 2026-10-25)
 
+ETSI. (2024). *CYBER; Cyber security for consumer Internet of Things: Baseline requirements* (ETSI EN 303 645 V3.1.3). European Telecommunications Standards Institute. https://www.etsi.org/deliver/etsi_en/303600_303699/303645/03.01.03_60/en_303645v030103p.pdf — [28]
+
 Felt, A. P., Ha, E., Egelman, S., Haney, A., Chin, E., & Wagner, D. (2012). Android permissions: User attention, comprehension, and behavior. In *Proceedings of the Eighth Symposium on Usable Privacy and Security (SOUPS '12)* (Article 3). ACM. https://doi.org/10.1145/2335356.2335360 — [26]
 
 Fernandes, E., Jung, J., & Prakash, A. (2016). Security analysis of emerging smart home applications. In *2016 IEEE Symposium on Security and Privacy (SP)* (pp. 636–654). IEEE. https://doi.org/10.1109/SP.2016.44 — [34]
