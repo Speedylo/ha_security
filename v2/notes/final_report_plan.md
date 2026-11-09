@@ -60,6 +60,12 @@ Applies to all sections, **including those already approved** (§13, and the Oct
 2. §12 Results, §9 Architecture, §8 Methodology (most new material).
 3. The rest, front to back; abstract and résumé, then the AI Evidence Box as the last thing written (Younes, 2026-11-06).
 4. References in APA 7 as each section is written; build in the template; Word render.
+   - **Before the build, check against the source** (added as sections are written; tick when done):
+     - [ ] Cyber Resilience Act: full title, incl. "and amending Regulations (EU) No 168/2013 …" (§4; from memory)
+     - [ ] Felt et al. (2012): article number in the SOUPS '12 proceedings (§4; "Article 3" from memory)
+     - [ ] NIST SP 800-53 Rev. 5: AC-6 is *Least Privilege* (§5; the annotation records only AU-5)
+     - [ ] Re-letter every Home Assistant n.d. entry by title once all sections are written (Add-ons, now n.d.-g, becomes n.d.-a) and update every in-text citation
+     - [ ] Every other entry in `submission/references_apa.md` against its source; drop any no final section cites
 5. Number check (consistency + recompute), similarity check, supervisor's signature; `REPRODUCE.md` 29 → 35 suites.
    - Before it runs: `verify/recompute.py` and `verify/consistency.py` read `v2/report/` (the old working report), not `submission/`. Point them at `submission/` (`RECOMPUTE_REPORT` sets the folder) and move each lookup to the final file names (e.g. `07_evaluation.md` → `12_results.md`); settle `recompute.py`'s 34 suites against the summary's 35 at the same time.
    - `report/` and `proposal/` are untracked since `95bc730` (2026-11-08), so the check runs only on the laptop, where they and `submission/` are on disk; `REPRODUCE.md` says so.
