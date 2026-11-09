@@ -43,6 +43,8 @@ Home Assistant. (n.d.-e). *Security*. Retrieved October 16, 2026, from https://w
 
 Home Assistant. (n.d.-f). *Service actions*. Home Assistant Developer Documentation. Retrieved October 16, 2026, from https://developers.home-assistant.io/docs/dev_101_services/ — [2]
 
+Home Assistant. (n.d.-g). *Add-ons*. Home Assistant Developer Documentation. Retrieved October 16, 2026, from https://developers.home-assistant.io/docs/add-ons — [12] (added for §3, 2026-11-09; out of title order: re-letter all n.d. entries once every section is written, "Add-ons" then becomes n.d.-a)
+
 Home Assistant. (2021a, January 22). *Disclosure: Security vulnerabilities in custom integrations HACS, Dwains Dashboard, Font Awesome and others*. Home Assistant Blog. https://www.home-assistant.io/blog/2021/01/22/security-disclosure/ — [3]
 
 Home Assistant. (2021b, January 23). *Security disclosure 2: Vulnerabilities in custom integrations HACS, Font Awesome and others*. Home Assistant Blog. https://www.home-assistant.io/blog/2021/01/23/security-disclosure2/ — [7]
