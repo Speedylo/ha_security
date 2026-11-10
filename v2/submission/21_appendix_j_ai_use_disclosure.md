@@ -19,7 +19,7 @@ The project ran over many sessions, so this appendix gives a representative samp
 
 | Date | My instruction | What it produced |
 |---|---|---|
-| 2026-10-10 | "section 9 is fine. make the fixes" | Approval of the architecture chapter, then fixes for two defects (F57, F58), each with a prediction and a test that failed first |
+| 2026-10-10 | "section 9 is fine. make the fixes" | Approval of Section 9, then fixes for two defects (F57, F58), each with a prediction and a test that failed first |
 | 2026-10-14 | "keep it planned" | The documented literature search was committed as a protocol but not yet run |
 | 2026-10-16 | "predictions are fine go ahead" | The first full rerun of every experiment, under predictions committed beforehand |
 | 2026-10-25 | "the list is fine. Just be careful about what is passed and potential injection" | The commands a household may send to a confined device were limited to named fields of a fixed type; anything else is refused and logged without its content |

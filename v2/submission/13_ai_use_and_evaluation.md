@@ -34,14 +34,14 @@ The first check is part of the method itself. Every experiment's predictions and
 
 The second check is human review, and the literature search shows how it was structured. Claude screened 642 distinct records, excluded 590 on their titles and, of the 52 screened on their abstracts, classed five as adjacent to the project's research gap. I reviewed all five and kept one, which shows that the AI's relevance judgements were too generous. I checked the exclusions the other way, through a random sample of 20 drawn with a fixed seed, and agreed with all 20. The sample does not prove that no relevant paper was missed, but it limits the risk. I adopted the same approach, full review of positive judgements and a seeded sample of negative ones, for any later bulk judgement made by the AI.
 
-The third check is a log of every correction made to AI output, kept since 23 October 2026, with six earlier entries reconstructed from the project's records. It holds 60 entries (Table 13.2). One records a risk rather than an error: the 590 title exclusions were the AI's alone, apart from the sample.
+The third check is a log of every correction made to AI output, kept since 23 October 2026, with six earlier entries reconstructed from the project's records. It holds 61 entries (Table 13.2). One records a risk rather than an error: the 590 title exclusions were the AI's alone, apart from the sample.
 
 **Table 13.2**
-*The 60 entries of the AI-use log, by kind*
+*The 61 entries of the AI-use log, by kind*
 
 | Kind | Entries | Example |
 |---|---|---|
-| Errors of fact, count or code | 17 | A count of 38 integrations "declaring permissions" had counted configuration files; re-measured on the device, the true figure was 0 of 75 |
+| Errors of fact, count or code | 18 | A count of 38 integrations "declaring permissions" had counted configuration files; re-measured on the device, the true figure was 0 of 75 |
 | Test assumptions that were wrong while the code was right | 5 | A check expected a new device to show no state, which holds only on a freshly installed platform |
 | Errors of judgement, method or writing | 13 | The project's claims were narrowed to fit a paper of which only the abstract had been read; the change was rolled back |
 | Overclaims about my role, a source or a result | 20 | "I reviewed every screening decision", when I had reviewed the adjacent records and a sample, not all 590 title exclusions |

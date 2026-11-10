@@ -78,6 +78,18 @@ def table(doc, anchor, rows: list[list[str]], **kw) -> None:
                     ppr.insert(0, OxmlElement("w:keepNext"))
 
 
+def renumber(text: str, mapping: dict[str, str]) -> str:
+    """The interim build's renumbering, extended to a plural list: in "Tables 12.2 and 12.3" the
+    second number has no word of its own before it, so the interim's pattern left it unchanged."""
+    def plural(m):
+        kind = m.group(1)
+        nums = re.sub(r"\d+\.\d+", lambda n: mapping.get(f"{kind} {n.group(0)}", f"{kind} {n.group(0)}").split()[1],
+                      m.group(2))
+        return f"{kind}s {nums}"
+    text = re.sub(r"\b(Table|Figure)s ((?:\d+\.\d+)(?:(?:,| and| or| to) \d+\.\d+)+)", plural, text)
+    return B.renumber(text, mapping)
+
+
 def letter_caption(anchor, kind: str, label: str, title: str) -> None:
     """An appendix caption ("Table C.1"): APA's form, without the SEQ field that would put it in
     the body's lists and numbering."""
@@ -204,7 +216,7 @@ def build(out: pathlib.Path) -> None:
     names = SECTIONS + APPENDICES + [LOG]
     texts = {n: (HERE / n).read_text() for n in names}
     mapping = B.numbering([texts[n] for n in SECTIONS])
-    texts = {n: B.renumber(t, mapping) for n, t in texts.items()}
+    texts = {n: renumber(t, mapping) for n, t in texts.items()}
 
     doc = Document(str(B.TEMPLATE))
     B.PARENT = doc._body
