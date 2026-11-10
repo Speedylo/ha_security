@@ -29,7 +29,7 @@ The project ran over many sessions, so this appendix gives a representative samp
 | 2026-11-01 | Freeze the code | Only defects found while writing may be fixed; no new features or experiments |
 | 2026-11-04 | "the new work done for extending device types won't be included in the interim report. They will be included in the final report." | The interim report kept its 27 October figures; the bridge extension is reported here |
 
-My instructions also included questions, and one of them changed how the project was tested. I asked whether the test suites did more than confirm what the code already did, and the answer was a campaign of deliberate defects planted in the code to check that the suites catch them (§13.2).
+My instructions also included questions, and one of them changed how the project was tested. I asked whether the test suites did more than confirm what the code already did, and the answer was a campaign of deliberate defects planted in the code to check that the suites catch them (Section 13.2).
 
 ### J.4 How the output was used and modified
 
@@ -39,7 +39,7 @@ For **code**, I approved each design before it was written, usually by choosing 
 
 For **measurements**, the pass criteria were committed before each run, and each figure in this report was checked against its raw result file. The tool's reading of a result was not accepted on its own: two complete reruns of every experiment, on 16 October and 1 November 2026, recomputed the reported figures from the raw data.
 
-For the **literature search**, the tool screened the records, and I reviewed every record it classed as relevant or adjacent and a seeded random sample of 20 exclusions (§13.3).
+For the **literature search**, the tool screened the records, and I reviewed every record it classed as relevant or adjacent and a seeded random sample of 20 exclusions (Section 13.3).
 
 For **text**, the tool drafted each section of this report from the project's records. I reviewed each section and either approved it, rewrote parts of it myself or sent it back with changes, and no section was started until the one before it was approved. Some of my changes were edits of my own, such as two clauses I cut from the methodology chapter and a phrase I added to the conclusion. Others were rejections, such as the replacement of the interim report's examples of my role and the removal of sentences I judged unnecessary. Every case in which the tool's text was wrong, overstated or rejected is recorded in the AI-use log (Appendix K).
 

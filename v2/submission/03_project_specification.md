@@ -24,7 +24,7 @@ The project addresses community integrations, the Python packages that a househo
 
 Four constraints follow from the situation rather than from choice, and together they rule out most of the mechanisms used in earlier work.
 
-**C1: Integrations run with their code unmodified.** Browser vendors could require extension authors to adopt a new permission model because the extension platform was new (Barth et al., 2010). Home Assistant cannot, because 4,220 custom integrations already report through its analytics (Home Assistant, n.d.-d), written by volunteers for an interface that gives them full authority. "Unmodified" refers to the code. Confinement still needs a permissions manifest for each integration, and since none ships one today, every manifest in the evaluation was written by the project.
+**C1: Integrations run with their code unmodified.** Browser vendors could require extension authors to adopt a new permission model because the extension platform was new (Barth et al., 2010). Home Assistant cannot, because 4,220 community integrations already report through its analytics (Home Assistant, n.d.-d), written by volunteers for an interface that gives them full authority. "Unmodified" refers to the code. Confinement still needs a permissions manifest for each integration, and since none ships one today, every manifest in the evaluation was written by the project.
 
 **C2: Home Assistant is not modified.** The project has no authority over the platform, so a mechanism that needed a platform change would be a proposal rather than a control that a household could install.
 

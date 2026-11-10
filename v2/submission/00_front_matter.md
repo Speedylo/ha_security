@@ -4,14 +4,7 @@
 
 **Younes Rahati**
 
-| | |
-|---|---|
-| Degree and programme | *[to be supplied — handbook]* |
-| Institution | *[to be supplied]* |
-| Supervisor | *[to be supplied]* |
-| Submitted | *[to be supplied]* |
-
----
+The title page, the student statement and the supervisor's approval come from the programme's template, which `build_final.py` fills.
 
 ## Abstract
 
@@ -30,26 +23,6 @@ Home Assistant, une plateforme domotique open source comptant 669 743 installati
 ## Acknowledgements
 
 I would like to thank my supervisor for the guidance and feedback given throughout this project. I am grateful to my family and friends for their support and patience during the months this work took. I also thank the developers and contributors of Home Assistant and its community integrations, whose open-source work this project builds on.
-
-## Declaration
-
-*[Wording to be supplied from the programme handbook.]* The factual content it will need:
-
-- The design, implementation, measurements and text of this report are the author's own work. Sources are cited at every use and listed in the References.
-- An earlier two-week feasibility study by the same author preceded this project. Nothing learned in it is relied on here unless it was established again within this project.
-- Generative AI was used as a working tool throughout, for writing code, drafting prose and reviewing arguments. Every measurement reported here was run on the reference device, and every figure can be reproduced from the scripts and result files in the repository (Appendix A).
-
-## Contents
-
-*[Generated at typeset time.]*
-
-## List of Figures
-
-*[Generated at typeset time.]*
-
-## List of Tables
-
-*[Generated at typeset time.]*
 
 ## Abbreviations and identifiers
 
