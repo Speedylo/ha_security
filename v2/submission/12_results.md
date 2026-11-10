@@ -1,6 +1,6 @@
 # 12. Simulations, Results and Interpretation
 
-This section answers three questions in turn: whether confinement protects the household (Assertion A), whether integrations still work when confined (Assertion B), and whether a home device can afford it (Assertion C). Each question was given a test before any measurement was made, which named the result that would show the answer to be no (Section 11). Every security and compatibility result compares a confined run with an unconfined run on the same device and the same Home Assistant release, 2026.8.3, so any difference comes from the framework. Unless stated otherwise, the figures come from the final rerun of 1 November 2026, which repeated every experiment on the finished code. Appendix I gives the detailed results.
+This section answers three questions in turn: whether confinement protects the household (Assertion A), whether integrations still work when confined (Assertion B), and whether a home device can afford it (Assertion C). Each question was given a test before any measurement was made, which named the result that would show the answer to be no (Section 11). Every security and compatibility result compares a confined run with an unconfined run on the same device and the same Home Assistant release, 2026.8.3, so any difference comes from the framework. Unless stated otherwise, the figures come from the final rerun of 1 November 2026, which repeated every experiment on the finished code. Appendix F gives the detailed results.
 
 ## 12.1 Does confinement protect the household?
 
@@ -53,7 +53,7 @@ The simplest test is whether an integration loads at all. Two samples were used:
 
 The two runs failed on exactly the same integrations, with the same error messages, so confinement caused none of the failures. The 84% figure therefore describes the integrations and the platform release, not the framework. The random sample was predicted to do worse, because less popular integrations are less well maintained, but it did 8 points better. A typical integration in that sample needs less from the platform, so it has less that can go missing.
 
-Loading is not the same as working, so fifteen integrations were also run from start to finish. Each was set up through its own unmodified configuration steps and given a task whose correct result was predicted beforehand. All fifteen worked confined. Table 12.3 shows five of them, and Appendix I gives all fifteen. They are reported by name rather than as a rate because most integrations need an account or a physical device before they can do anything, with or without confinement.
+Loading is not the same as working, so fifteen integrations were also run from start to finish. Each was set up through its own unmodified configuration steps and given a task whose correct result was predicted beforehand. All fifteen worked confined. Table 12.3 shows five of them, and Appendix F gives all fifteen. They are reported by name rather than as a rate because most integrations need an account or a physical device before they can do anything, with or without confinement.
 
 **Table 12.3**
 *Five of the fifteen integrations run end to end*
@@ -97,13 +97,13 @@ Delay is not a constraint either. Writing each decision to disk is the slowest s
 
 ## 12.4 How the results were checked
 
-These results are only as good as the evaluation behind them, so the evaluation was tested too. Pass criteria were committed before each experiment ran, and all the experiments were repeated in full twice on tagged code, the second time on the finished version. In that rerun, all 35 test suites passed twice, and every step met its criterion. To check that the tests themselves could fail, 92 defects were planted in the code one at a time, and the tests caught 90. The other two change nothing the code does, so no test could detect them. This work produced 71 findings, listed in Appendix F, of which one was critical. All but four are resolved, and none changed the three answers above. The AI-specific checks are described in Section 13.
+These results are only as good as the evaluation behind them, so the evaluation was tested too. Pass criteria were committed before each experiment ran, and all the experiments were repeated in full twice on tagged code, the second time on the finished version. In that rerun, all 35 test suites passed twice, and every step met its criterion. To check that the tests themselves could fail, 92 defects were planted in the code one at a time, and the tests caught 90. The other two change nothing the code does, so no test could detect them. This work produced 71 findings, summarised in Appendix D, of which one was critical. All but four are resolved, and none changed the three answers above. The AI-specific checks are described in Section 13.
 
 ## 12.5 Limits of the results
 
 Each answer has limits that the results do not remove. The security result rests on attacks written within the project, because no independent tester has attacked the framework. A line-by-line reading of the code found a route out of the sandbox that no automated test had detected. That route was closed, but its discovery suggests that attacks the builders did not anticipate may remain. Confinement also controls where an integration connects, not what it sends, and it honours a permission the user has approved, even an over-broad one.
 
-The compatibility result is complete for loading but checked in depth for only fifteen named integrations. Coverage by kind also does not mean full function. Cameras are confined to still pictures, so three integrations, `frigate`, `eufy_security` and `tapo_control`, lose live video, which is their main use. Appendix I lists the smaller limits of other device kinds.
+The compatibility result is complete for loading but checked in depth for only fifteen named integrations. Coverage by kind also does not mean full function. Cameras are confined to still pictures, so three integrations, `frigate`, `eufy_security` and `tapo_control`, lose live video, which is their main use. Appendix F lists the smaller limits of other device kinds.
 
 The affordability result rests on an average, because the platform does not publish how the number of integrations varies between installations, and on memory measured while integrations were at rest. All the results come from a single release of Home Assistant on one device, and the reproduction guide has not yet been followed on a freshly installed device.
 

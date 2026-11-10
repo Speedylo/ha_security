@@ -7,7 +7,7 @@ and tables, abstract and French résumé), Times New Roman, APA captions, tables
 in one sequence through the body. The template handling is the interim build's
 (`interim/build_interim.py`), reused here; this file adds what the final report has and the interim
 did not: code blocks, block quotes, the abbreviations list, lettered appendix captions, the
-reference list as Section 17, and Appendix K on landscape pages.
+reference list as Section 17, and Appendix H on landscape pages.
 
     python3 submission/build_final.py [-o OUT.docx]
 
@@ -41,9 +41,9 @@ SECTIONS = ["01_introduction.md", "02_problem_statement.md", "03_project_specifi
             "13_ai_use_and_evaluation.md", "14_learning_strategies.md", "15_future_work.md",
             "16_conclusion.md"]
 REFERENCES = "17_references.md"
-APPENDICES = ["18_appendices.md", "19_appendix_h_architecture_detail.md",
-              "20_appendix_i_results_detail.md", "21_appendix_j_ai_use_disclosure.md"]
-LOG = "22_appendix_k_ai_use_log.md"  # on landscape pages, as in the interim
+APPENDICES = ["18_appendices.md", "19_appendix_e_architecture_detail.md",
+              "20_appendix_f_results_detail.md", "21_appendix_g_ai_use_disclosure.md"]
+LOG = "22_appendix_h_ai_use_log.md"  # on landscape pages, as in the interim
 
 
 def front(name: str) -> str:
@@ -198,7 +198,7 @@ def references(anchor, text: str) -> None:
 
 
 def landscape_log(doc, anchor, text: str) -> None:
-    """Appendix K's eight columns on landscape pages: the portrait section ends here."""
+    """Appendix H's eight columns on landscape pages: the portrait section ends here."""
     brk = B.body_par(anchor, after=0, line=1.0)
     portrait = copy.deepcopy(anchor)
     brk._p.get_or_add_pPr().append(portrait)

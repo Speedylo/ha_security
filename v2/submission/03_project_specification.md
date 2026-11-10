@@ -36,7 +36,7 @@ C1 and C3 together define the central difficulty. Confinement has to be imposed 
 
 ## 3.4 Requirements
 
-Twenty requirements state what that confinement must achieve: the four constraints, four functional requirements (F), nine security requirements (S) and three non-functional requirements (N). Table 3.2 gives each one with the test it had to pass, shortened from the criteria fixed on 2 September 2026, before the evaluation ran. Appendix B gives the full criteria, where each requirement comes from, and its verdict.
+Twenty requirements state what that confinement must achieve: the four constraints, four functional requirements (F), nine security requirements (S) and three non-functional requirements (N). Table 3.2 gives each one with the test it had to pass, shortened from the criteria fixed on 2 September 2026, before the evaluation ran. Appendix B gives each requirement's verdict with its evidence.
 
 **Table 3.2**
 *Requirements and how each was to be judged*
