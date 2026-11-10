@@ -36,7 +36,7 @@ The short-term outcomes are achieved and measured (Section 12). The two publishe
 
 ### 6.6.2 Intermediate outcomes
 
-The intermediate outcomes are plausible but not yet shown. Integrations beyond the evaluation would need manifests, written by their authors or supplied with the installation; the framework would have to run a household's integrations for months; limits on disk and network bandwidth would need a step with administrator rights at installation; and an independent adversary would have to attack it. None of these needs a new research result.
+The intermediate outcomes are plausible but not yet shown. Integrations beyond the evaluation would need manifests, written by their authors or supplied with the installation; the framework would have to run a household's integrations for months; a limit on disk bandwidth would need a step with administrator rights at installation; and an independent adversary would have to attack it. None of these needs a new research result.
 
 ### 6.6.3 Long-term outcomes
 
