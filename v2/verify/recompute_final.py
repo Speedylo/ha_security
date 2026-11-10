@@ -269,59 +269,41 @@ def _():
     return word(int(round(v, -1)))
 
 
-@check("N20", "reported costs: one request, the durable record, push cost, flood, powercalc compiled",
+@check("N20", "reported costs: one request, the durable record",
        [("12_results.md", r"\| Delay added to one request \| ([\d.]+ µs)"),
-        ("20_appendix_f_results_detail.md", r"\| Delay added by the mediator to one request \| ([\d.]+ µs)"),
-        ("12_results.md", r"\| Writing the decision record to disk \| ([\d.]+ ms)"),
-        ("20_appendix_f_results_detail.md", r"\| Writing the decision record to disk, before the action \| ([\d.]+ ms)"),
-        ("20_appendix_f_results_detail.md", r"\| Mediator cost of one change delivered to a sandbox \| ([\d.]+ µs)"),
-        ("20_appendix_f_results_detail.md", r"\| A flooding sandbox, from first request to cut-off \| ([\d.]+ s)"),
-        ("20_appendix_f_results_detail.md", r"compiled at installation \| ([\d.]+ s)")])
+        ("12_results.md", r"\| Writing the decision record to disk \| ([\d.]+ ms)")])
 def _():
     lat, rec = legacy("A1.18"), legacy("A1.19")
-    return [lat, lat, rec, rec, legacy("8.2.3d"), R.Num(float(legacy("7.44")[0].split()[0]), "s"),
-            R.Num(float(legacy("7.39")[1].split()[0]), "s")]
+    return [lat, rec]
 
 
 @check("N21", "reported range of a household command",
-       [("12_results.md", r"\| A household command reaching an integration \| (\d+–\d+ ms)"),
-        ("20_appendix_f_results_detail.md", r"\| A household command reaching the integration \| (\d+–\d+ ms)")])
+       [("12_results.md", r"\| A household command reaching an integration \| (\d+–\d+ ms)")])
 def _():
     return legacy("A1.23").replace(" to ", "–")
 
 
 @check("N22", "the final rerun's column (medians of its five passes)",
        [("12_results.md", r"using no platform components \| [^|]+ \| ([\d.]+ MB)"),
-        ("20_appendix_f_results_detail.md", r"no platform components \| [^|]+ \| ([\d.]+ MB)"),
         ("12_results.md", r"using all ten components measured \| [^|]+ \| ([\d.]+ MB)"),
-        ("20_appendix_f_results_detail.md", r"all ten components measured \| [^|]+ \| ([\d.]+ MB)"),
         ("12_results.md", r"\| Delay added to one request \| [^|]+ \| ([\d.]+ µs)"),
-        ("20_appendix_f_results_detail.md", r"\| Delay added by the mediator to one request \| [^|]+ \| ([\d.]+ µs)"),
         ("12_results.md", r"\| Writing the decision record to disk \| [^|]+ \| ([\d.]+ ms)"),
-        ("20_appendix_f_results_detail.md", r"to disk, before the action \| [^|]+ \| ([\d.]+ ms)"),
         ("12_results.md", r"reaching an integration \| 0\.5–0\.9 ms \| ([\d.]+ ms)"),
-        ("20_appendix_f_results_detail.md", r"reaching a confined integration \| [^|]+ \| ([\d.]+ ms)"),
-        ("12_results.md", r"command reaching an integration \| [^|]+ \| ([\d.]+ ms)"),
-        ("20_appendix_f_results_detail.md", r"command reaching the integration \| [^|]+ \| ([\d.]+ ms)"),
-        ("20_appendix_f_results_detail.md", r"delivered to a sandbox \| [^|]+ \| ([\d.]+ µs)"),
-        ("20_appendix_f_results_detail.md", r"to cut-off \| [^|]+ \| ([\d.]+ s)"),
-        ("20_appendix_f_results_detail.md", r"compiled at installation \| [^|]+ \| ([\d.]+ s)")])
+        ("12_results.md", r"command reaching an integration \| [^|]+ \| ([\d.]+ ms)")])
 def _():
     none, ten = R.Num(final2_median("depth_none"), "MB"), R.Num(final2_median("depth_ten"), "MB")
     lat = R.Num(final2_median("latency_1"), "µs")
     rec = R.Num(final2_median("durability") / 1000, "ms")
     push = R.Num(final2_median("push_latency"), "ms")
     cmd = R.Num(final2_median("command"), "ms")
-    return [none, none, ten, ten, lat, lat, rec, rec, push, push, cmd, cmd,
-            R.Num(final2_median("push_cost"), "µs"), R.Num(final2_median("flood"), "s"),
-            R.Num(final2_median("bytecode_compiled"), "s")]
+    return [none, ten, lat, rec, push, cmd]
 
 
 # -- how the results were checked ---------------------------------------------------------------
 
 @check("N23", "test suites in the final rerun, both runs",
        [("12_results.md", r"all (\d+) test suites passed twice"),
-        ("20_appendix_f_results_detail.md", r"All (\d+) suites pass, twice")])
+        ("18_appendices.md", r"All (\d+) suites pass, twice")])
 def _():
     runs = re.findall(r"suites_\d failed=0 of (\d+)", (FINAL2 / "chunkA_step01/summary.txt").read_text())
     assert len(runs) == 2 and len(set(runs)) == 1, runs
@@ -348,7 +330,7 @@ def mutants() -> tuple[int, int]:
 
 @check("N24", "deliberate defects planted, and caught",
        [("12_results.md", r"(\d+) defects were planted"), ("12_results.md", r"the tests caught (\d+)"),
-        ("20_appendix_f_results_detail.md", r"(\d+) of \d+ caught"), ("20_appendix_f_results_detail.md", r"\d+ of (\d+) caught")])
+        ("18_appendices.md", r"(\d+) of \d+ caught"), ("18_appendices.md", r"\d+ of (\d+) caught")])
 def _():
     run, killed = mutants()
     return [str(run), str(killed), str(killed), str(run)]

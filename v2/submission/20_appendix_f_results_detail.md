@@ -1,6 +1,6 @@
 ## Appendix F — Detailed results
 
-This appendix holds the detail behind Section 12: two facts about the attacks, the full end-to-end table, the bridge's limits, what integrations ask of the platform and of the network, the complete costs, and what each method of checking the evaluation found. All figures come from the final rerun of 1 November 2026 unless stated otherwise.
+This appendix holds the detail behind Section 12: two facts about the attacks, the full end-to-end table, the bridge's limits, and what integrations ask of the platform and of the network. All figures come from the final rerun of 1 November 2026 unless stated otherwise.
 
 ### F.1 The attacks
 
@@ -53,43 +53,3 @@ Working integrations also show what a permission system has to cover. Following 
 | Calls to another integration's services | 22% | 13% |
 
 The parts an integration needs merely to exist are used about equally in both samples. The parts that widen its reach are not: use of the event bus falls by 31 points in the random sample, and use of the service registry by 27. A study of popular integrations alone would therefore overstate how much of the platform a typical integration touches. The measurement also decides how finely permissions are granted. Almost every integration manages its own configuration entry, but few act on other integrations, so permission is granted per action, and calls to another integration's services are refused unless declared, which affects about one integration in eight in the random sample.
-
-### F.5 The full costs
-
-**Table F.3**
-*The cost of confinement on the reference device, all figures*
-
-| Quantity | Reported figure | Second final rerun |
-|---|---|---|
-| Memory per sandbox, no platform components | 56.5 MB | 59.1 MB |
-| Memory per sandbox, two components | 92.3 MB | 95.2 MB |
-| Memory per sandbox, all ten components measured | 135.6 MB | 141.2 MB |
-| Delay added by the mediator to one request | 43 µs | 42.1 µs |
-| The same, 26 sandboxes saturating the mediator | 800 µs | 802 µs |
-| Writing the decision record to disk, before the action | 3.67 ms | 3.69 ms |
-| Mediator cost of one change delivered to a sandbox | 10.9 µs | 11.4 µs |
-| A change in the house reaching a confined integration | 0.5–0.9 ms | 0.49 ms |
-| A household command reaching the integration | 11–16 ms | 12.5 ms |
-| A flooding sandbox, from first request to cut-off | 0.81 s | 0.82 s |
-| Start-up to first report, `powercalc`, compiled at installation | 1.87 s | 1.89 s |
-
-Section 12.3 discusses these figures. The rows it does not give are the memory with two components, the delay with 26 sandboxes saturating the mediator, the cost of one delivered change, the cut-off of a flooding sandbox and `powercalc`'s start-up.
-
-### F.6 How the evaluation was checked
-
-The evaluation fails on its own terms if it reports a requirement as passed without demonstrating it, or reports an aggregate that conceals a breakdown it possesses. This happened twice during development, and both times the fault was found by reading the report as a whole rather than by any test: a requirement was reported as verified two months before the comparison that supports it existed, and a promised scoring of the security results was missing. These two failures led to the checking methods in Table F.4, and the claim register in Appendix D.
-
-**Table F.4**
-*What each verification method found*
-
-| Method | Principal findings | Result at the second final rerun |
-|---|---|---|
-| Re-measurement on fixed code | The mediation delay was 43 µs, not the 31.5 µs first stated (F17) | Every figure inside its criterion (Table F.3) |
-| Re-derivation of headline figures from raw records | A stated worst-case delay had no record behind it (F23) | 39 of 40 equal; the other was the abstract's outdated suite count |
-| Fault injection | A full disk left the audit record unverifiable (F28); losing the platform left no recovery (F29) | 11 of 11 on both hosts |
-| Security review and fuzzing | A sandbox could inherit the supervisor's terminal (F34, Critical); malformed requests could stop the mediator (F33) | 4,864 requests, no escape |
-| Deliberate defects (mutation testing) | Three defects survived every suite at first; the supervisor ran in no suite (F48) | 90 of 92 caught; the other two change no behaviour, so no test could detect them. All 35 suites pass, twice |
-| Reproduction from a fresh copy | No reproduction guide existed (F18) | Guide written and followed from a fresh copy; not yet on a freshly installed device |
-| Running real integrations against a real installation | The stand-in hid how few kinds the bridge covered (F64); a picture link could pass the egress allowlist through the household's browser (F71) | 36 of 36 |
-
-The evaluation was repeated in full twice, each time from a fresh copy of a tagged version under predictions committed beforehand, the second at the frozen code of 1 November 2026, and every step of the second met its criterion. Its bounds are stated in Section 12.5: the deliberate defects were chosen by hand, so they show that each tested point is guarded, not that every point is, and the reproduction guide has not yet been followed on a freshly installed device.

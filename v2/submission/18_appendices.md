@@ -21,34 +21,34 @@ The repository is public at https://github.com/Speedylo/ha_security.
 
 ## Appendix B — Requirements register
 
-This appendix gives the verdict on each requirement of Table 3.2, with its evidence. The criteria were fixed on 2 September 2026, before the evaluation ran, and the last column records how a verdict changed after that, because a register that showed only final verdicts would hide the cases in which verification overturned an earlier one. In every such case the criterion stayed as written and the verdict moved. Where each requirement comes from, and its criterion in full, are kept in the repository (Appendix A).
+This appendix gives the verdict on each requirement of Table 3.2, with its evidence, judged against criteria fixed on 2 September 2026, before the evaluation ran. Where each requirement comes from, its criterion in full and how each verdict changed during verification are kept in the repository (Appendix A).
 
-**Table B.1 — Verdicts, evidence and history**
+**Table B.1 — Verdicts and evidence**
 
-| ID | Verdict | Evidence | How the verdict changed |
-|---|---|---|---|
-| C1 | Met | Every source tree hashed before and after its run, in both arms of both corpora and again at both final reruns: no source changed, no line differed | Argued until 6 September 2026: the report had described a difference check that did not exist, and the check was then built and run |
-| C2 | Met | Every arm ran on the unmodified release 2026.8.3, recorded in each result file (Section 11) | — |
-| C3 | Met | Absent, over-broad and mismatched manifests each handled as specified; the over-broad one is honoured, and that residual is stated as R1 (Section 8.4, Table C.5) | — |
-| C4 | Met | Every performance figure measured on the Raspberry Pi 5 (Table 12.4) | — |
-| F1 | Met | A confined integration's fifteen sensors are registry entities in a live Home Assistant instance, keep their names and survive a restart (Appendix F.2) | Bounded to a stand-in platform until 4 October 2026, when the same entities were published into a live instance |
-| F2 | Met | Real integrations polled their own live services confined and matched the unconfined arm's output, across three HTTP libraries and one authenticated service (Table 12.3) | Could not be tested when the criteria were frozen, because egress had not been built; met on 3 September 2026, first by purpose-built integrations and then by a real one |
-| F3 | Met | Seven mismatched behaviours produced seven refusals naming seven distinct clauses; the suite checks that a refusal without a clause cannot be built | Qualified on 6 October 2026: seven code paths could build a refusal with no clause, though none appeared in any record (finding F03), and they were fixed |
-| F4 | Met | The grant renders in plain language with denials at equal weight, in the terminal and on the approval screen | Strengthened later: an approval is now bound to the grant shown (F57, F60) |
-| S1 | Met, paired | The heap walk reached a live credential through 7 objects unconfined and through none of 8,942 objects confined (Table 12.1) | — |
-| S2 | Met, paired | Other processes, whose environment can hold credentials, were visible unconfined and not confined (Table 12.1); the adversary suite recovered no platform credential from the sandbox's file system, process table or memory | — |
-| S3 | Met, paired | Reads: 36 of 36 entity states unconfined, 1 of 36 (the declared one) confined. Subscriptions: 3 of 3 undeclared changes delivered unconfined and 0 of 3 confined, both on the same platform release (Table 12.1; Appendix C, Table C.4) | Partial until 4 October 2026, because no mechanism yet delivered state changes to a sandbox; the subscription half was paired against an unconfined arm on 13 October 2026 |
-| S4 | Met | Two integrations running at once were each denied the host declared only by the other, as the mediator's own record shows | Could not be tested when the criteria were frozen; met on 3 September 2026 |
-| S5 | Met | A manifest declaring `lock.lock` does not permit `lock.unlock`, and `lock.*` is rejected when the manifest is parsed | — |
-| S6 | Met | Absent and unparseable manifests each denied all mediated capability, each refusal naming its rule | — |
-| S7 | Met | Modification, deletion and reordering each detected, the two chains failing independently; every harness that decides writes the durable log | Twice qualified: the identity was recorded only inside the suite until 3 October 2026, and a full disk or a restart could break the chain until 6 October (F28, F31) |
-| S8 | Met, paired | The 2021 pattern recovered 2 of 2 planted secrets unconfined and 0 of 2 confined; the file does not exist inside the sandbox (Table 12.1) | Qualified on 6 October 2026: each sandbox shared the supervisor's terminal, a route out that no file-theft test exercised (F34), since fixed; host paths remain readable without file contents (F11, residual) |
-| S9 | Met, narrowed | Memory exhaustion ended by the kernel, process creation refused at the cap, a 25% processor cap held at 25.1%, writing refused at the disk quota (Appendix C, T16) | Narrowed on evidence: "disk" means space, not I/O bandwidth, because the device's service manager does not delegate that control to an unprivileged user (systemd, n.d.) |
-| N1 | Met | Memory, latency and capacity reported against the unconfined arm, with no threshold (Table 12.4) | — |
-| N2 | Met by reporting | Import-level results for 75 integrations and end-to-end results for 15 are reported separately and never combined (Tables 12.2 and 12.3) | — |
-| N3 | Met | The framework refuses to start without the memory controller or from the wrong control-group position, and fails closed when the mediator stops (Section 9; `selftest_supervise`) | Strengthened during verification: a killed supervisor once left its sandbox running without a mediator (F30), and a sandbox did not restart when the platform returned (F29); both fixed |
+| ID | Verdict | Evidence |
+|---|---|---|
+| C1 | Met | Every source tree hashed before and after its run, in both arms of both corpora and again at both final reruns: no source changed, no line differed |
+| C2 | Met | Every arm ran on the unmodified release 2026.8.3, recorded in each result file (Section 11) |
+| C3 | Met | Absent, over-broad and mismatched manifests each handled as specified; the over-broad one is honoured, and that residual is stated as R1 (Section 8.4, Table C.5) |
+| C4 | Met | Every performance figure measured on the Raspberry Pi 5 (Table 12.4) |
+| F1 | Met | A confined integration's fifteen sensors are registry entities in a live Home Assistant instance, keep their names and survive a restart (Appendix F.2) |
+| F2 | Met | Real integrations polled their own live services confined and matched the unconfined arm's output, across three HTTP libraries and one authenticated service (Table 12.3) |
+| F3 | Met | Seven mismatched behaviours produced seven refusals naming seven distinct clauses; the suite checks that a refusal without a clause cannot be built |
+| F4 | Met | The grant renders in plain language with denials at equal weight, in the terminal and on the approval screen |
+| S1 | Met, paired | The heap walk reached a live credential through 7 objects unconfined and through none of 8,942 objects confined (Table 12.1) |
+| S2 | Met, paired | Other processes, whose environment can hold credentials, were visible unconfined and not confined (Table 12.1); the adversary suite recovered no platform credential from the sandbox's file system, process table or memory |
+| S3 | Met, paired | Reads: 36 of 36 entity states unconfined, 1 of 36 (the declared one) confined. Subscriptions: 3 of 3 undeclared changes delivered unconfined and 0 of 3 confined, both on the same platform release (Table 12.1; Appendix C, Table C.4) |
+| S4 | Met | Two integrations running at once were each denied the host declared only by the other, as the mediator's own record shows |
+| S5 | Met | A manifest declaring `lock.lock` does not permit `lock.unlock`, and `lock.*` is rejected when the manifest is parsed |
+| S6 | Met | Absent and unparseable manifests each denied all mediated capability, each refusal naming its rule |
+| S7 | Met | Modification, deletion and reordering each detected, the two chains failing independently; every harness that decides writes the durable log |
+| S8 | Met, paired | The 2021 pattern recovered 2 of 2 planted secrets unconfined and 0 of 2 confined; the file does not exist inside the sandbox (Table 12.1) |
+| S9 | Met, narrowed | Memory exhaustion ended by the kernel, process creation refused at the cap, a 25% processor cap held at 25.1%, writing refused at the disk quota (Appendix C, T16) |
+| N1 | Met | Memory, latency and capacity reported against the unconfined arm, with no threshold (Table 12.4) |
+| N2 | Met by reporting | Import-level results for 75 integrations and end-to-end results for 15 are reported separately and never combined (Tables 12.2 and 12.3) |
+| N3 | Met | The framework refuses to start without the memory controller or from the wrong control-group position, and fails closed when the mediator stops (Section 9; `selftest_supervise`) |
 
-All twenty requirements are met, eighteen as stated and two in a narrower form. S9 was narrowed by the evidence, and N2 is met by the way results are reported rather than by a measured rate. The history column also bears on how far the verdicts can be trusted. Eleven of the twenty rows changed after the criteria were frozen, and in four of them (C1, F3, S7, S8) verification found that a verdict had claimed more than the code supported. In each of those four, the code or the check was corrected and the criterion was left as written, so no verdict was restored by weakening the test it had failed.
+All twenty requirements are met, eighteen as stated and two in a narrower form: S9 was narrowed by the evidence, and N2 is met by the way results are reported rather than by a measured rate.
 
 ---
 
@@ -221,9 +221,9 @@ Table C.7 gives the authority that Section 2.1 summarises, with the source for e
 | Web endpoints | Can add its own HTTP endpoints to the platform's web server, with the login check switched off | An unauthenticated way into the home | Reported for an integration shipped with the platform (CVE-2023-27482) (elttam, 2023) |
 | Other integrations' live objects | Any object in the shared interpreter | Theft or alteration of another integration's secrets | Demonstrated experimentally (Corno & Mannella, 2022) |
 
-## Appendix D — Verification findings and the claim register
+## Appendix D — How the evaluation was checked
 
-This appendix records the outcome of the verification campaign that Section 12.4 summarises. During development, every claim in the project's working report was registered with its evidence and a pass criterion fixed before the claim was re-tested, and every measurement was repeated on fixed versions of the code. Table D.1 gives the register's outcome, and the paragraph after it summarises the 71 findings the project recorded. The findings one per line, the full register and the detailed log, with the evidence for each entry, are in the repository (Appendix A).
+The evaluation fails on its own terms if it reports a requirement as passed without demonstrating it, or an aggregate that conceals a breakdown it holds. This happened twice during development, and both times the fault was found by reading the report as a whole rather than by any test. Every claim was then registered with its evidence and a pass criterion fixed in advance (Table D.1), and other methods looked for faults the evidence itself might hide (Table D.2). The full register and the 71 findings, one per line, are in the repository (Appendix A).
 
 **Table D.1 — Claim register outcome by tier**
 
@@ -236,6 +236,18 @@ This appendix records the outcome of the verification campaign that Section 12.4
 
 A claim is *Verified* when it held as stated on the frozen code, *Qualified* when it holds only in a narrower form, which the report now states, *Argued* when it rests on reasoning rather than measurement, and *Withdrawn* when the evidence did not support it.
 
+**Table D.2 — What each checking method found**
+
+| Method | Principal findings | Result at the second final rerun |
+|---|---|---|
+| Re-measurement on fixed code | The mediation delay was 43 µs, not the 31.5 µs first stated (F17) | Every figure inside its criterion (Section 12.3) |
+| Re-derivation of headline figures from raw records | A stated worst-case delay had no record behind it (F23) | 39 of 40 equal; the other was the abstract's outdated suite count |
+| Fault injection | A full disk left the audit record unverifiable (F28); losing the platform left no recovery (F29) | 11 of 11 on both hosts |
+| Security review and fuzzing | A sandbox could inherit the supervisor's terminal (F34, Critical); malformed requests could stop the mediator (F33) | 4,864 requests, no escape |
+| Deliberate defects (mutation testing) | Three defects survived every suite at first; the supervisor ran in no suite (F48) | 90 of 92 caught; the other two change no behaviour, so no test could detect them. All 35 suites pass, twice |
+| Reproduction from a fresh copy | No reproduction guide existed (F18) | Guide written and followed from a fresh copy; not yet on a freshly installed device |
+| Running real integrations against a real installation | The stand-in hid how few kinds the bridge covered (F64); a picture link could pass the egress allowlist through the household's browser (F71) | 36 of 36 |
+
 Of the 71 findings, one is Critical, 17 Major, 5 between Minor and Major, 44 Minor, 3 notes and 1 a request to re-measure. F01–F53 come from the verification campaign, F54–F56 from a functional retest, F57–F60 from checking Section 9 against the code and from the fixes that followed, F61 and F62 from the first final rerun, F63 from writing the manifest schema, and F64–F71 from extending the end-to-end runs and the bridge. One remains open (F18), one is retained as a residual risk (F11), and two are carried as stated limitations (F53, F63).
 
----
+The evaluation was repeated in full twice, each time from a fresh copy of a tagged version under predictions committed beforehand, the second at the frozen code of 1 November 2026, and every step of the second met its criterion. Its bounds are stated in Section 12.5: the deliberate defects were chosen by hand, so they show that each tested point is guarded, not that every point is, and the reproduction guide has not yet been followed on a freshly installed device.

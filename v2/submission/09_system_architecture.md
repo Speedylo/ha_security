@@ -13,7 +13,7 @@ A confined installation runs three kinds of process, shown in Figure 9.1, and on
 
 *Note.* A supervisor builds the sandboxes, and the mediator connects to (A) as an ordinary Home Assistant user. No sandbox holds a credential to the house.
 
-Four design decisions fixed this shape. Table 9.1 states each with the alternative it displaced, and Appendix E gives the evidence.
+Four design decisions fixed this shape. Table 9.1 states each with the alternative it displaced; the evidence for each is in the repository (Appendix A).
 
 **Table 9.1**
 *The four design decisions*
