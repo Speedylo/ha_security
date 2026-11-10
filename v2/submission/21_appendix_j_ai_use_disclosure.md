@@ -8,7 +8,7 @@ Claude Code worked inside the project's repository on the development laptop and
 
 ### J.2 How the tool was instructed
 
-The tool was instructed in two ways. The first was conversation: each working session began with my request and continued with my answers to its questions and my decisions on its proposals. The second was a set of persistent instruction files that carried my standing rules from one session to the next. These files recorded, among other things, that the report is written in the third person except for its AI-use material, that it uses APA 7, that the integrations it studies are called "community integrations", that a file is never deleted through a wildcard, that only named files are committed, and that every correction to the AI's output is added to the AI-use log. A hand-over file recorded where the work stood and which decisions were still open.
+The tool was instructed in two ways. The first was conversation: each working session began with my request and continued with my answers to its questions and my decisions on its proposals. The second was a set of persistent instruction files that carried my standing rules from one session to the next. These files recorded, among other things, that the report is written in the third person except for its AI-use material and its learning strategies, that it uses APA 7, that the integrations it studies are called "community integrations", that a file is never deleted through a wildcard, that only named files are committed, and that every correction to the AI's output is added to the AI-use log. A hand-over file recorded where the work stood and which decisions were still open.
 
 ### J.3 Representative instructions
 
@@ -41,7 +41,7 @@ For **measurements**, the pass criteria were committed before each run, and each
 
 For the **literature search**, the tool screened the records, and I reviewed every record it classed as relevant or adjacent and a seeded random sample of 20 exclusions (Section 13.3).
 
-For **text**, the tool drafted each section of this report from the project's records. I reviewed each section and either approved it, rewrote parts of it myself or sent it back with changes, and no section was started until the one before it was approved. Some of my changes were edits of my own, such as two clauses I cut from the methodology chapter and a phrase I added to the conclusion. Others were rejections, such as the replacement of the interim report's examples of my role and the removal of sentences I judged unnecessary. Every case in which the tool's text was wrong, overstated or rejected is recorded in the AI-use log (Appendix K).
+For **text**, the tool drafted each section of this report from the project's records. I reviewed each section and either approved it, rewrote parts of it myself or sent it back with changes, and no section was started until the one before it was approved. Some of my changes were edits of my own, such as the sentence I cut from Section 11, the subsections I dropped from Sections 10 and 14, and my trim of the acknowledgements. Others were rejections, such as the closing paragraph I dropped from Section 7 and the removal of sentences I judged unnecessary. Every case in which the tool's text was wrong, overstated or rejected is recorded in the AI-use log (Appendix K).
 
 ### J.5 Confidentiality and responsibility
 

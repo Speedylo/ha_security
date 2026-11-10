@@ -104,7 +104,7 @@ def render(doc, anchor, text: str, *, appendix: bool = False) -> None:
     size = 9 if appendix else 10
     while i < len(lines):
         line = lines[i]
-        if not line.strip():
+        if not line.strip() or line.strip() == "---":  # a horizontal rule: the headings divide
             i += 1; continue
         if line.startswith("```"):
             j = i + 1
