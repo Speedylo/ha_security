@@ -46,11 +46,12 @@ FILES = [
     "10_feasibility.md",
     "11_data_presentation.md",
     "12_results.md",
-    "13_learning_strategies.md",
-    "14_future_work.md",
-    "15_conclusion.md",
-    "16_references.md",
-    "17_appendices.md",
+    "13_ai_use_and_evaluation.md",
+    "14_learning_strategies.md",
+    "15_future_work.md",
+    "16_conclusion.md",
+    "17_references.md",
+    "18_appendices.md",
 ]
 
 # Typography. Set in one place because every size below is stated relative to
@@ -403,9 +404,9 @@ def render(doc, lines: list[str], *, first_file: bool, name: str = "") -> None:
                 return
             text = rest
         para = doc.add_paragraph()
-        if name == "16_references.md" and re.match(r"^\[\d+\] ", text):
-            # A reference list reads down its left edge: numbers hang, long URLs are not
-            # stretched across the line by justification.
+        if name == "17_references.md":
+            # An APA reference list hangs each entry from its first line, and long URLs are
+            # not stretched across the line by justification.
             para.paragraph_format.left_indent = Cm(1.0)
             para.paragraph_format.first_line_indent = Cm(-1.0)
             para.paragraph_format.space_after = Pt(5)
