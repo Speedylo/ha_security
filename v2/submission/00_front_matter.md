@@ -65,4 +65,4 @@ I would like to thank my supervisor for the guidance and feedback given througho
 | **F1–F4, S1–S9, C1–C4, N1–N3** | Functional, security, constraint and non-functional requirements (Section 3, Appendix B) |
 | **T01–T19, R1–R7** | Threats and residual risks of the threat model (Section 8, Appendix C) |
 | **F01–F71** | Findings of the verification work, written with two digits to distinguish them from requirements (Appendix F) |
-| **M01–M50** | Deliberate defects (mutants) used to test whether the test suites detect a removed check (Section 12.4) |
+| **M01–M88** | Deliberate defects (mutants), 92 in all, used to test whether the test suites detect a removed check (Section 12.4) |
