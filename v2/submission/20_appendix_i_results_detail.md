@@ -11,7 +11,7 @@ This appendix holds the detail behind Section 12: the full end-to-end table, the
 |---|---|---|
 | The garbage-collector technique, aimed at another integration's live credential (Corno & Mannella, 2022) | Credential reached through 7 live objects | 8,942 objects examined, all the attacker's own; the credential alive in the mediator's process |
 | The 2021 path-traversal pattern, aimed at two planted secrets (Home Assistant, 2021a) | 2 of 2 secrets recovered | 0 of 2: the file does not exist inside the sandbox |
-| Reading another process's environment variables | Contents read | Nothing to read |
+| Finding the other processes on the device, whose environment variables can hold credentials | Other processes listed | None to list |
 | Reading the states of devices the integration was not granted | 36 of 36, including all 20 that reveal whether someone is at home | Only the 1 device that was declared; 0 of the 20 |
 
 An absence carries no information on its own, because a broken test also returns nothing. In each row, the unconfined arm therefore shows the attack working on this device and release, which turns the confined result into a measured difference. The pairing also cut against the framework: three further attacks failed in both arms for reasons unrelated to confinement, such as a file readable only by the system administrator, and they are excluded from its results.
