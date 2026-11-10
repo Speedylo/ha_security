@@ -12,7 +12,7 @@ The technological problem is that every integration runs inside the platform wit
 
 ## 4.3 Economic
 
-Most community integrations are small volunteer projects: the median one has 20 installations (Home Assistant, n.d.-c), and no revenue pays for a rewrite. A control that asked authors to change their code would not be adopted, so the framework leaves the code as it is. The cost moves to the household's device, where it is small, and to writing a permissions manifest for each integration, which is the main effort adoption would require.
+Most community integrations are small volunteer projects: the median one has 20 installations (Home Assistant, n.d.-d), and no revenue pays for a rewrite. A control that asked authors to change their code would not be adopted, so the framework leaves the code as it is. The cost moves to the household's device, where it is small, and to writing a permissions manifest for each integration, which is the main effort adoption would require.
 
 ## 4.4 Environmental
 

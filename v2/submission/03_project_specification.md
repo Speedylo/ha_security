@@ -8,7 +8,7 @@ The objective is to design, build and evaluate a mechanism through which the aut
 
 ## 3.2 Scope
 
-The project addresses community integrations, the Python packages that a household installs through HACS, the community catalogue (HACS, n.d.), onto a self-hosted Home Assistant installation running on one machine. Integrations are in scope because they run inside the platform's own process and therefore hold all of its authority. Add-ons are not, because they already run as separate containers (Home Assistant, n.d.-g). Table 3.1 lists what else was excluded.
+The project addresses community integrations, the Python packages that a household installs through HACS, the community catalogue (HACS, n.d.), onto a self-hosted Home Assistant installation running on one machine. Integrations are in scope because they run inside the platform's own process and therefore hold all of its authority. Add-ons are not, because they already run as separate containers (Home Assistant, n.d.-a). Table 3.1 lists what else was excluded.
 
 **Table 3.1**
 *What the project excludes*
@@ -18,13 +18,13 @@ The project addresses community integrations, the Python packages that a househo
 | Deciding whether an integration is malicious | The project bounds what an integration can do; it does not judge intent |
 | Misuse of a granted permission | An integration allowed to unlock the door that unlocks it at night acts within its grant, so this remains a stated risk |
 | Whether the code can be trusted | Supply-chain integrity is a separate question with its own literature (Ladisa et al., 2023) |
-| Several users with different rights | The platform "assumes every user is trusted and does not enforce user privileges" (Home Assistant, n.d.-e), and changing that means changing the platform |
+| Several users with different rights | The platform "assumes every user is trusted and does not enforce user privileges" (Home Assistant, n.d.-f), and changing that means changing the platform |
 
 ## 3.3 Constraints
 
 Four constraints follow from the situation rather than from choice, and together they rule out most of the mechanisms used in earlier work.
 
-**C1: Integrations run with their code unmodified.** Browser vendors could require extension authors to adopt a new permission model because the extension platform was new (Barth et al., 2010). Home Assistant cannot, because 4,220 custom integrations already report through its analytics (Home Assistant, n.d.-c), written by volunteers for an interface that gives them full authority. "Unmodified" refers to the code. Confinement still needs a permissions manifest for each integration, and since none ships one today, every manifest in the evaluation was written by the project.
+**C1: Integrations run with their code unmodified.** Browser vendors could require extension authors to adopt a new permission model because the extension platform was new (Barth et al., 2010). Home Assistant cannot, because 4,220 custom integrations already report through its analytics (Home Assistant, n.d.-d), written by volunteers for an interface that gives them full authority. "Unmodified" refers to the code. Confinement still needs a permissions manifest for each integration, and since none ships one today, every manifest in the evaluation was written by the project.
 
 **C2: Home Assistant is not modified.** The project has no authority over the platform, so a mechanism that needed a platform change would be a proposal rather than a control that a household could install.
 

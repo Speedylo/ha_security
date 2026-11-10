@@ -29,7 +29,7 @@ Home Assistant, une plateforme domotique open source comptant 669 743 installati
 
 ## Acknowledgements
 
-*[To be supplied.]*
+I would like to thank my supervisor for the guidance and feedback given throughout this project, and the faculty and staff of the university for the education that made it possible. I am grateful to my family and friends for their support and patience during the months this work took. I also thank the developers and contributors of Home Assistant and its community integrations, whose open-source work this project builds on.
 
 ## Declaration
 

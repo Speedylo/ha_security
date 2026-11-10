@@ -23,13 +23,13 @@ Four design decisions fixed this shape. Table 9.1 states each with the alternati
 | Enforce outside Home Assistant's process | A permission check inside the platform | Integrations share one Python interpreter, so an integration can reach the platform's credentials (Corno & Mannella, 2022) and could bypass any check written there |
 | Give each sandbox a real Home Assistant runtime that starts empty | A stand-in object that imitates the platform | 91% of the 1,482 integrations shipped with Home Assistant 2026.8.3 build on the platform's helper layer, which expects the genuine platform beneath it |
 | Build the sandbox from Linux's own isolation features | A restricted Python interpreter; WebAssembly; gVisor or a micro virtual machine; a container | In order: shares the interpreter it restricts; cannot run unmodified integrations; costs memory a home device cannot spare; uses the same kernel features, with packaging added |
-| Confine every community integration, and no built-in one | Confining everything | Built-in integrations are reviewed by the platform's maintainers, whose security policy excludes community integrations (Home Assistant, n.d.-e) |
+| Confine every community integration, and no built-in one | Confining everything | Built-in integrations are reviewed by the platform's maintainers, whose security policy excludes community integrations (Home Assistant, n.d.-f) |
 
 The second decision carries most of the security. The runtime in a sandbox starts with no devices and receives only those the integration declared, so a device it was not granted is not refused when the integration asks for it; the device does not exist where the integration can look. An error in a permission check cannot reveal what was never delivered.
 
 ## 9.2 The sandbox
 
-Each sandbox is built so that what an integration must not reach is absent from its view rather than forbidden. The supervisor creates seven Linux namespaces for every integration, each giving it a private copy of one part of the system, such as its users, processes, network or filesystem (Linux man-pages project, n.d.-b). A seccomp filter blocks the system calls that remain dangerous inside any namespace, such as loading kernel modules (Linux man-pages project, n.d.-d), and a control group, the kernel's unit of resource control, caps the sandbox's memory, processes and temporary storage (The kernel development community, n.d.). Figure 9.2 shows these layers.
+Each sandbox is built so that what an integration must not reach is absent from its view rather than forbidden. The supervisor creates seven Linux namespaces for every integration, each giving it a private copy of one part of the system, such as its users, processes, network or filesystem (Linux man-pages project, n.d.-b). A seccomp filter blocks the system calls that remain dangerous inside any namespace, such as loading kernel modules (Linux man-pages project, n.d.-d), and a control group, the kernel's unit of resource control, caps the sandbox's memory, processes and temporary storage (The kernel development community, n.d.-a). Figure 9.2 shows these layers.
 
 ![Figure 9.2](../figures/fig_9_2_sandbox.svg)
 
@@ -67,7 +67,7 @@ Every service is named on its own, because a grant to lock a door must not imply
 }
 ```
 
-A manifest grants nothing until a person has approved it, and the approval is bound to exactly what that person was shown. An administrator reads a plain-language account of the grant in Home Assistant's Repairs panel, the platform's own place for issues that need a user's attention (Home Assistant, n.d.-d), and approves it with a single labelled action, *Allow and start*. A screen opened before an update approves nothing, because the approval must match the code and grant it showed. The manifest thereby turns an integration's authority from something implicit into something a household has read and agreed to.
+A manifest grants nothing until a person has approved it, and the approval is bound to exactly what that person was shown. An administrator reads a plain-language account of the grant in Home Assistant's Repairs panel, the platform's own place for issues that need a user's attention (Home Assistant, n.d.-e), and approves it with a single labelled action, *Allow and start*. A screen opened before an update approves nothing, because the approval must match the code and grant it showed. The manifest thereby turns an integration's authority from something implicit into something a household has read and agreed to.
 
 ## 9.4 The mediator and the bridge
 

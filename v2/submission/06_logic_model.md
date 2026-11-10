@@ -4,7 +4,7 @@ This section traces the project from the people it serves, through what it assum
 
 ## 6.1 Target population
 
-The primary population is the households that run community integrations: 379,326 of the 669,743 installations that report analytics run the Community Store, each with a mean of 4.02 community integrations (Home Assistant, n.d.-c). They carry the risk without any means of acting on it. The second population is the authors of the 4,220 community integrations, most of them volunteers; the framework leaves their code unchanged and asks only for a manifest declaring what an integration needs. The third is the Home Assistant project, which would have to own any lasting fix.
+The primary population is the households that run community integrations: 379,326 of the 669,743 installations that report analytics run the Community Store, each with a mean of 4.02 community integrations (Home Assistant, n.d.-d). They carry the risk without any means of acting on it. The second population is the authors of the 4,220 community integrations, most of them volunteers; the framework leaves their code unchanged and asks only for a manifest declaring what an integration needs. The third is the Home Assistant project, which would have to own any lasting fix.
 
 ## 6.2 Underlying assumptions
 
