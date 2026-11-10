@@ -28,7 +28,7 @@
             },
             "attrs": {
               "label": {
-                "text": "HOME ASSISTANT PROCESS"
+                "text": "HOME ASSISTANT"
               }
             },
             "visible": true,
@@ -53,7 +53,7 @@
             },
             "attrs": {
               "label": {
-                "text": "SANDBOX A — its own view, system-call filter, limits"
+                "text": "SANDBOX A: own view, filter, limits"
               }
             },
             "visible": true,
@@ -78,7 +78,7 @@
             },
             "attrs": {
               "label": {
-                "text": "SANDBOX B — identically constructed, sharing nothing"
+                "text": "SANDBOX B: same build, shares nothing"
               }
             },
             "visible": true,
@@ -442,16 +442,16 @@
           },
           {
             "position": {
-              "x": 1240,
-              "y": 690
+              "x": 1225,
+              "y": 685
             },
             "size": {
-              "width": 190,
-              "height": 105
+              "width": 235,
+              "height": 120
             },
             "attrs": {
               "text": {
-                "text": "Home devices, LAN (A1, A4, A8)\nnon-public destinations are\ndenied by default"
+                "text": "Home devices, LAN\n(A1, A4, A8): non-public\ndestinations denied\nby default"
               },
               "body": {
                 "stroke": "#333333",
@@ -548,7 +548,7 @@
             "data": {
               "type": "tm.Actor",
               "providesAuthentication": false,
-              "name": "Home devices, LAN (A1, A4, A8)\nnon-public destinations are\ndenied by default",
+              "name": "Home devices, LAN\n(A1, A4, A8): non-public\ndestinations denied\nby default",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -567,7 +567,7 @@
             },
             "attrs": {
               "text": {
-                "text": "Home Assistant core\nevents · states · services\nsettings · logins · web"
+                "text": "Home Assistant\ncore: events,\nstates, services,\nlogins, web"
               },
               "body": {
                 "stroke": "#333333",
@@ -667,7 +667,7 @@
               "handlesGoodsOrServices": false,
               "isWebApplication": false,
               "privilegeLevel": "",
-              "name": "Home Assistant core\nevents · states · services\nsettings · logins · web",
+              "name": "Home Assistant\ncore: events,\nstates, services,\nlogins, web",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -686,7 +686,7 @@
             },
             "attrs": {
               "text": {
-                "text": "Supervisor\nbuilds each sandbox ·\nchecks the approval"
+                "text": "Supervisor\nbuilds each\nsandbox; checks\nthe approval"
               },
               "body": {
                 "stroke": "#333333",
@@ -786,7 +786,7 @@
               "handlesGoodsOrServices": false,
               "isWebApplication": false,
               "privilegeLevel": "",
-              "name": "Supervisor\nbuilds each sandbox ·\nchecks the approval",
+              "name": "Supervisor\nbuilds each\nsandbox; checks\nthe approval",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -805,7 +805,7 @@
             },
             "attrs": {
               "text": {
-                "text": "Mediator\nholds the credential ·\ndecides each request"
+                "text": "Mediator\nholds the\ncredential;\ndecides each\nrequest"
               },
               "body": {
                 "stroke": "#333333",
@@ -905,7 +905,7 @@
               "handlesGoodsOrServices": false,
               "isWebApplication": false,
               "privilegeLevel": "",
-              "name": "Mediator\nholds the credential ·\ndecides each request",
+              "name": "Mediator\nholds the\ncredential;\ndecides each\nrequest",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -1043,7 +1043,7 @@
             },
             "attrs": {
               "text": {
-                "text": "Stripped Home Assistant\nthe real helper layer · its own\nevents, states and memory,\nempty at start"
+                "text": "Stripped Home\nAssistant: real\nhelpers, own state,\nempty at start"
               },
               "body": {
                 "stroke": "#333333",
@@ -1143,7 +1143,7 @@
               "handlesGoodsOrServices": false,
               "isWebApplication": false,
               "privilegeLevel": "",
-              "name": "Stripped Home Assistant\nthe real helper layer · its own\nevents, states and memory,\nempty at start",
+              "name": "Stripped Home\nAssistant: real\nhelpers, own state,\nempty at start",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",
@@ -1281,7 +1281,7 @@
             },
             "attrs": {
               "text": {
-                "text": "Stripped Home Assistant\na separate instance,\nseparately empty"
+                "text": "Stripped Home\nAssistant: a\nseparate one,\nalso empty"
               },
               "body": {
                 "stroke": "#333333",
@@ -1381,7 +1381,7 @@
               "handlesGoodsOrServices": false,
               "isWebApplication": false,
               "privilegeLevel": "",
-              "name": "Stripped Home Assistant\na separate instance,\nseparately empty",
+              "name": "Stripped Home\nAssistant: a\nseparate one,\nalso empty",
               "description": "",
               "outOfScope": false,
               "reasonOutOfScope": "",

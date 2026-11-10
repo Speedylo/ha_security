@@ -2,153 +2,159 @@
 <rect width="100%" height="100%" fill="#ffffff"/>
 <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a1a1a"/></marker></defs>
 <rect x="348" y="318" width="222" height="200" fill="#f7f7f7" stroke="#1a1a1a" stroke-width="3" stroke-dasharray="12 6" rx="6"/>
-<text x="364" y="508" font-size="13" fill="#1a1a1a" font-weight="bold" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">HOME ASSISTANT PROCESS</text>
+<text x="364" y="508" font-size="16.9" fill="#1a1a1a" font-weight="bold" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">HOME ASSISTANT</text>
 <rect x="750" y="285" width="405" height="205" fill="#f7f7f7" stroke="#1a1a1a" stroke-width="3" stroke-dasharray="12 6" rx="6"/>
-<text x="766" y="305" font-size="13" fill="#1a1a1a" font-weight="bold" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">SANDBOX A — its own view, system-call filter, limits</text>
+<text x="766" y="305" font-size="16.9" fill="#1a1a1a" font-weight="bold" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">SANDBOX A: own view, filter, limits</text>
 <rect x="750" y="552" width="405" height="200" fill="#f7f7f7" stroke="#1a1a1a" stroke-width="3" stroke-dasharray="12 6" rx="6"/>
-<text x="766" y="572" font-size="13" fill="#1a1a1a" font-weight="bold" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">SANDBOX B — identically constructed, sharing nothing</text>
+<text x="766" y="572" font-size="16.9" fill="#1a1a1a" font-weight="bold" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">SANDBOX B: same build, shares nothing</text>
 <path d="M 25,240 L 210,245 L 300,195 L 335,25" fill="none" stroke="#1f7a4d" stroke-width="2.5" stroke-dasharray="10 7"/>
-<rect x="43" y="201" width="285" height="22" fill="#ffffff" stroke="#1f7a4d" stroke-width="1" rx="4"/>
-<text x="185" y="212" font-size="11" fill="#1f7a4d" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB4 · UNCHANGED — checks structure only</text>
+<rect x="5" y="136" width="370" height="29" fill="#ffffff" stroke="#1f7a4d" stroke-width="1" rx="4"/>
+<text x="190" y="150" font-size="14.3" fill="#1f7a4d" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB4 · UNCHANGED — checks structure only</text>
 <path d="M 570,330 L 562,425 L 570,520" fill="none" stroke="#1f7a4d" stroke-width="2.5" stroke-dasharray="10 7"/>
-<rect x="472" y="289" width="241" height="22" fill="#ffffff" stroke="#1f7a4d" stroke-width="1" rx="4"/>
-<text x="592" y="300" font-size="11" fill="#1f7a4d" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB2 · NARROWED — an ordinary user</text>
+<rect x="435" y="286" width="313" height="29" fill="#ffffff" stroke="#1f7a4d" stroke-width="1" rx="4"/>
+<text x="592" y="300" font-size="14.3" fill="#1f7a4d" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB2 · NARROWED — an ordinary user</text>
 <path d="M 749,300 L 741,520 L 749,745" fill="none" stroke="#1f7a4d" stroke-width="2.5" stroke-dasharray="10 7"/>
-<rect x="1235" y="239" width="190" height="22" fill="#ffffff" stroke="#1f7a4d" stroke-width="1" rx="4"/>
-<text x="1330" y="250" font-size="11" fill="#1f7a4d" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB1 · EXISTS — the channel</text>
+<rect x="1207" y="236" width="247" height="29" fill="#ffffff" stroke="#1f7a4d" stroke-width="1" rx="4"/>
+<text x="1330" y="250" font-size="14.3" fill="#1f7a4d" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB1 · EXISTS — the channel</text>
 <path d="M 1195,30 L 1205,400 L 1195,650 L 1195,900" fill="none" stroke="#1f7a4d" stroke-width="2.5" stroke-dasharray="10 7"/>
-<rect x="1143" y="459" width="314" height="22" fill="#ffffff" stroke="#1f7a4d" stroke-width="1" rx="4"/>
-<text x="1300" y="470" font-size="11" fill="#1f7a4d" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB3 · EXISTS — connections via the mediator</text>
+<rect x="1186" y="456" width="408" height="29" fill="#ffffff" stroke="#1f7a4d" stroke-width="1" rx="4"/>
+<text x="1390" y="470" font-size="14.3" fill="#1f7a4d" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB3 · EXISTS — connections via the mediator</text>
 <path d="M 740,800 L 960,810 L 1195,800" fill="none" stroke="#1f7a4d" stroke-width="2.5" stroke-dasharray="10 7"/>
-<rect x="843" y="764" width="234" height="22" fill="#ffffff" stroke="#1f7a4d" stroke-width="1" rx="4"/>
-<text x="960" y="775" font-size="11" fill="#1f7a4d" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB5 · EXISTS — host files absent</text>
+<rect x="808" y="761" width="304" height="29" fill="#ffffff" stroke="#1f7a4d" stroke-width="1" rx="4"/>
+<text x="960" y="775" font-size="14.3" fill="#1f7a4d" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB5 · EXISTS — host files absent</text>
 <path d="M 748,520 L 950,512 L 1160,520" fill="none" stroke="#1f7a4d" stroke-width="2.5" stroke-dasharray="10 7"/>
-<rect x="830" y="509" width="241" height="22" fill="#ffffff" stroke="#1f7a4d" stroke-width="1" rx="4"/>
-<text x="950" y="520" font-size="11" fill="#1f7a4d" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB6 · EXISTS — separate processes</text>
+<rect x="793" y="506" width="313" height="29" fill="#ffffff" stroke="#1f7a4d" stroke-width="1" rx="4"/>
+<text x="950" y="520" font-size="14.3" fill="#1f7a4d" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB6 · EXISTS — separate processes</text>
 <path d="M 168,135 L 180,760 L 420,872" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="139" y="622" width="262" height="36" fill="#ffffff" fill-opacity="0.93" rx="3"/>
-<text x="270" y="633" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(a) installs or updates the integration's</text>
-<text x="270" y="647" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">code, with the author's manifest</text>
+<rect x="99" y="618" width="341" height="45" fill="#ffffff" fill-opacity="0.93" rx="3"/>
+<text x="270" y="632" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(a) installs or updates the integration's</text>
+<text x="270" y="648" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">code, with the author's manifest</text>
 <path d="M 235,458 L 370,415" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
-<rect x="238" y="424" width="109" height="21" fill="#ffffff" fill-opacity="0.93" rx="3"/>
-<text x="292" y="435" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(k) web interface</text>
+<rect x="221" y="422" width="141" height="26" fill="#ffffff" fill-opacity="0.93" rx="3"/>
+<text x="292" y="435" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(k) web interface</text>
 <path d="M 530,212 L 1055,213 L 1055,325" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="816" y="190" width="288" height="51" fill="#ffffff" fill-opacity="0.93" rx="3"/>
-<text x="960" y="202" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(l) builds the sandbox before any integration</text>
-<text x="960" y="215" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">code runs, with its own channel, so the</text>
-<text x="960" y="228" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">identity is fixed before the code starts</text>
+<rect x="773" y="183" width="374" height="64" fill="#ffffff" fill-opacity="0.93" rx="3"/>
+<text x="960" y="198" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(l) builds the sandbox before any integration</text>
+<text x="960" y="215" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">code runs, with its own channel, so the</text>
+<text x="960" y="232" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">identity is fixed before the code starts</text>
 <path d="M 760,414 L 730,425" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
-<rect x="642" y="322" width="256" height="21" fill="#ffffff" fill-opacity="0.93" rx="3"/>
-<text x="770" y="332" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(b′) the channel: every mediated request</text>
+<rect x="604" y="319" width="333" height="26" fill="#ffffff" fill-opacity="0.93" rx="3"/>
+<text x="770" y="332" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(b′) the channel: every mediated request</text>
 <path d="M 760,642 L 700,642 L 700,505 L 652,490" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
-<rect x="495" y="644" width="250" height="36" fill="#ffffff" fill-opacity="0.93" rx="3"/>
-<text x="620" y="655" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(b″) B's own channel: a different</text>
-<text x="620" y="669" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">channel, therefore a different identity</text>
+<rect x="458" y="640" width="324" height="45" fill="#ffffff" fill-opacity="0.93" rx="3"/>
+<text x="620" y="654" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(b″) B's own channel: a different</text>
+<text x="620" y="670" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">channel, therefore a different identity</text>
 <path d="M 575,425 L 560,415" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="316" y="542" width="288" height="36" fill="#ffffff" fill-opacity="0.93" rx="3"/>
-<text x="460" y="553" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(c′) the mediator performs permitted requests</text>
-<text x="460" y="567" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">with its own credential</text>
+<rect x="273" y="538" width="374" height="45" fill="#ffffff" fill-opacity="0.93" rx="3"/>
+<text x="460" y="552" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(c′) the mediator performs permitted requests</text>
+<text x="460" y="568" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">with its own credential</text>
 <path d="M 652,360 L 652,115 L 1240,132" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="785" y="72" width="230" height="36" fill="#ffffff" fill-opacity="0.93" rx="3"/>
-<text x="900" y="83" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(h′) the mediator resolves the name,</text>
-<text x="900" y="97" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">checks the address, then connects</text>
+<rect x="750" y="68" width="300" height="45" fill="#ffffff" fill-opacity="0.93" rx="3"/>
+<text x="900" y="82" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(h′) the mediator resolves the name,</text>
+<text x="900" y="98" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">checks the address, then connects</text>
 <path d="M 940,414 L 960,385" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
-<rect x="915" y="450" width="250" height="36" fill="#ffffff" fill-opacity="0.93" rx="3"/>
-<text x="1040" y="461" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(d′) uses the real platform code;</text>
-<text x="1040" y="475" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">the platform it gets is local and empty</text>
+<rect x="878" y="446" width="324" height="45" fill="#ffffff" fill-opacity="0.93" rx="3"/>
+<text x="1040" y="460" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(d′) uses the real platform code;</text>
+<text x="1040" y="476" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">the platform it gets is local and empty</text>
 <path d="M 940,642 L 960,650" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
-<rect x="973" y="714" width="154" height="21" fill="#ffffff" fill-opacity="0.93" rx="3"/>
-<text x="1050" y="725" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(d″) the same, privately</text>
+<rect x="950" y="712" width="200" height="26" fill="#ffffff" fill-opacity="0.93" rx="3"/>
+<text x="1050" y="725" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(d″) the same, privately</text>
 <path d="M 465,340 L 430,265" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="94" y="274" width="237" height="51" fill="#ffffff" fill-opacity="0.93" rx="3"/>
-<text x="212" y="286" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(m) approval: an administrator allows</text>
-<text x="212" y="300" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">exactly the grant shown, in Repairs,</text>
-<text x="212" y="314" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">or the operator at the device</text>
+<rect x="58" y="268" width="308" height="64" fill="#ffffff" fill-opacity="0.93" rx="3"/>
+<text x="212" y="283" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(m) approval: an administrator allows</text>
+<text x="212" y="300" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">exactly the grant shown, in Repairs,</text>
+<text x="212" y="317" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">or the operator at the device</text>
 <path d="M 248,830 L 247,690 L 600,690 L 600,530 L 652,490" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="280" y="712" width="141" height="36" fill="#ffffff" fill-opacity="0.93" rx="3"/>
-<text x="350" y="723" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(n) manifest read when</text>
-<text x="350" y="737" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">the sandbox is built</text>
+<rect x="258" y="708" width="183" height="45" fill="#ffffff" fill-opacity="0.93" rx="3"/>
+<text x="350" y="722" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(n) manifest read when</text>
+<text x="350" y="738" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">the sandbox is built</text>
 <path d="M 652,490 L 690,780 L 90,780 L 90,1010 L 140,1010" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="467" y="784" width="186" height="36" fill="#ffffff" fill-opacity="0.93" rx="3"/>
-<text x="560" y="795" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(o) every decision recorded:</text>
-<text x="560" y="809" font-size="10.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">integration, request, verdict</text>
+<rect x="439" y="780" width="241" height="45" fill="#ffffff" fill-opacity="0.93" rx="3"/>
+<text x="560" y="794" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(o) every decision recorded:</text>
+<text x="560" y="810" font-size="13.65" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">integration, request, verdict</text>
 <rect x="60" y="60" width="215" height="75" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
-<text x="168" y="90" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Integration author</text>
-<text x="168" y="105" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">+ community store</text>
+<text x="168" y="89" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Integration author</text>
+<text x="168" y="106" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">+ community store</text>
 <rect x="1240" y="90" width="190" height="85" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
-<text x="1335" y="125" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">External network</text>
-<text x="1335" y="140" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">endpoints</text>
+<text x="1335" y="124" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">External network</text>
+<text x="1335" y="141" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">endpoints</text>
 <rect x="60" y="420" width="175" height="75" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
-<text x="148" y="450" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Home occupant</text>
-<text x="148" y="465" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">/ user</text>
-<rect x="1240" y="690" width="190" height="105" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
-<text x="1335" y="728" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Home devices, LAN (A1, A4, A8)</text>
-<text x="1335" y="742" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">non-public destinations are</text>
-<text x="1335" y="757" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">denied by default</text>
+<text x="148" y="449" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Home occupant</text>
+<text x="148" y="466" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">/ user</text>
+<rect x="1225" y="685" width="235" height="120" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
+<text x="1342" y="718" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Home devices, LAN</text>
+<text x="1342" y="736" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(A1, A4, A8): non-public</text>
+<text x="1342" y="754" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">destinations denied</text>
+<text x="1342" y="772" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">by default</text>
 <ellipse cx="465.0" cy="415.0" rx="95.0" ry="75.0" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
-<text x="465" y="400" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Home Assistant core</text>
-<text x="465" y="415" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">events · states · services</text>
-<text x="465" y="430" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">settings · logins · web</text>
+<text x="465" y="388" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Home Assistant</text>
+<text x="465" y="406" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">core: events,</text>
+<text x="465" y="424" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">states, services,</text>
+<text x="465" y="442" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">logins, web</text>
 <ellipse cx="430.0" cy="212.5" rx="100.0" ry="52.5" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
-<text x="430" y="198" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Supervisor</text>
-<text x="430" y="212" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">builds each sandbox ·</text>
-<text x="430" y="227" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">checks the approval</text>
+<text x="430" y="186" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Supervisor</text>
+<text x="430" y="204" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">builds each</text>
+<text x="430" y="221" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">sandbox; checks</text>
+<text x="430" y="239" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">the approval</text>
 <ellipse cx="652.5" cy="425.0" rx="77.5" ry="65.0" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
-<text x="652" y="410" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Mediator</text>
-<text x="652" y="425" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">holds the credential ·</text>
-<text x="652" y="440" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">decides each request</text>
+<text x="652" y="389" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Mediator</text>
+<text x="652" y="407" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">holds the</text>
+<text x="652" y="425" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">credential;</text>
+<text x="652" y="443" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">decides each</text>
+<text x="652" y="461" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">request</text>
 <ellipse cx="850.0" cy="414.5" rx="90.0" ry="57.5" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
-<text x="850" y="407" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Integration A</text>
-<text x="850" y="422" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(community)</text>
+<text x="850" y="406" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Integration A</text>
+<text x="850" y="423" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(community)</text>
 <ellipse cx="1055.0" cy="385.0" rx="95.0" ry="60.0" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
-<text x="1055" y="363" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Stripped Home Assistant</text>
-<text x="1055" y="378" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">the real helper layer · its own</text>
-<text x="1055" y="392" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">events, states and memory,</text>
-<text x="1055" y="407" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">empty at start</text>
+<text x="1055" y="358" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Stripped Home</text>
+<text x="1055" y="376" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Assistant: real</text>
+<text x="1055" y="394" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">helpers, own state,</text>
+<text x="1055" y="412" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">empty at start</text>
 <ellipse cx="850.0" cy="642.5" rx="90.0" ry="57.5" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
-<text x="850" y="635" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Integration B</text>
-<text x="850" y="650" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(community)</text>
+<text x="850" y="634" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Integration B</text>
+<text x="850" y="651" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(community)</text>
 <ellipse cx="1055.0" cy="650.0" rx="95.0" ry="55.0" fill="#ffffff" stroke="#1a1a1a" stroke-width="2"/>
-<text x="1055" y="636" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Stripped Home Assistant</text>
-<text x="1055" y="650" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">a separate instance,</text>
-<text x="1055" y="664" font-size="11.5" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">separately empty</text>
+<text x="1055" y="623" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Stripped Home</text>
+<text x="1055" y="641" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Assistant: a</text>
+<text x="1055" y="659" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">separate one,</text>
+<text x="1055" y="677" font-size="14.95" fill="#1a1a1a" font-weight="bold" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">also empty</text>
 <rect x="420" y="830" width="215" height="85" fill="#ffffff" stroke="none"/>
 <line x1="420" y1="830" x2="635" y2="830" stroke="#1a1a1a" stroke-width="2"/>
 <line x1="420" y1="915" x2="635" y2="915" stroke="#1a1a1a" stroke-width="2"/>
-<text x="528" y="865" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Secrets file</text>
-<text x="528" y="880" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">+ configuration (A3)</text>
+<text x="528" y="864" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Secrets file</text>
+<text x="528" y="881" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">+ configuration (A3)</text>
 <rect x="760" y="830" width="215" height="100" fill="#ffffff" stroke="none"/>
 <line x1="760" y1="830" x2="975" y2="830" stroke="#1a1a1a" stroke-width="2"/>
 <line x1="760" y1="930" x2="975" y2="930" stroke="#1a1a1a" stroke-width="2"/>
-<text x="868" y="866" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Stored settings</text>
-<text x="868" y="880" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">every integration's</text>
-<text x="868" y="894" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">credentials (A3, A6)</text>
+<text x="868" y="862" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Stored settings</text>
+<text x="868" y="880" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">every integration's</text>
+<text x="868" y="898" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">credentials (A3, A6)</text>
 <rect x="140" y="830" width="215" height="100" fill="#ffffff" stroke="none"/>
 <line x1="140" y1="830" x2="355" y2="830" stroke="#1a1a1a" stroke-width="2"/>
 <line x1="140" y1="930" x2="355" y2="930" stroke="#1a1a1a" stroke-width="2"/>
-<text x="248" y="858" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Manifest store</text>
-<text x="248" y="873" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">the author's, in the integration</text>
-<text x="248" y="887" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">directory, + the operator's,</text>
-<text x="248" y="902" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">ordered</text>
+<text x="248" y="853" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Manifest store</text>
+<text x="248" y="871" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">the author's, in the integration</text>
+<text x="248" y="889" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">directory, + the operator's,</text>
+<text x="248" y="907" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">ordered</text>
 <rect x="140" y="960" width="215" height="100" fill="#ffffff" stroke="none"/>
 <line x1="140" y1="960" x2="355" y2="960" stroke="#1a1a1a" stroke-width="2"/>
 <line x1="140" y1="1060" x2="355" y2="1060" stroke="#1a1a1a" stroke-width="2"/>
-<text x="248" y="996" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Audit record · approvals</text>
-<text x="248" y="1010" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">hash-chained, attributed</text>
-<text x="248" y="1024" font-size="11.5" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(A7)</text>
+<text x="248" y="992" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Audit record · approvals</text>
+<text x="248" y="1010" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">hash-chained, attributed</text>
+<text x="248" y="1028" font-size="14.95" fill="#1a1a1a" font-weight="normal" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(A7)</text>
 <rect x="420" y="952" width="740" height="96" fill="#ffffff" stroke="#666666" stroke-width="1" rx="4"/>
-<text x="436" y="972" font-size="14" fill="#1f7a4d" font-weight="bold" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">6 of 6 boundaries enforced — in Figure 8.1, four of the six were absent</text>
+<text x="436" y="972" font-size="18.2" fill="#1f7a4d" font-weight="bold" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">6 of 6 boundaries enforced — in Figure 8.1, four of the six were absent</text>
 <line x1="436" y1="998" x2="476" y2="998" stroke="#1f7a4d" stroke-width="2.5" stroke-dasharray="10 7"/>
-<text x="486" y="998" font-size="11" fill="#1f7a4d" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">EXISTS — this design puts an enforcement point here; in Figure 8.1 there was none</text>
+<text x="486" y="998" font-size="14.3" fill="#1f7a4d" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">EXISTS — this design puts an enforcement point here; in Figure 8.1 there was none</text>
 <line x1="436" y1="1018" x2="476" y2="1018" stroke="#1f7a4d" stroke-width="2.5" stroke-dasharray="10 7"/>
-<text x="486" y="1018" font-size="11" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">UNCHANGED / NARROWED — existed in Figure 8.1; TB4 is as it was, TB2 is narrowed</text>
-<text x="486" y="1038" font-size="11" fill="#1a1a1a" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(b′) · (c′) · (d′) · (h′) — a primed flow replaces the same-letter flow of Figure 8.1; (l) to (o) are new</text>
-<text x="40" y="1092" font-size="10.5" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Compare with Figure 8.1. Five flows drawn there are absent here: (e) the shared memory, (f) reading any integration's stored credentials, (g) reading any file,</text>
-<text x="40" y="1105" font-size="10.5" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(i) reaching another integration's objects and (j) home network access. None of the five is refused by a check. The stored settings and the secrets file are not in the</text>
-<text x="40" y="1118" font-size="10.5" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">sandbox's view, the two integrations are separate processes, and addresses in the home are refused by default, so there is no request to make.</text>
-<text x="40" y="1160" font-size="10.5" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB5 and TB6 are crossed by no flow at all, and that is deliberate rather than an omission: in Figure 8.1 those same two places carried (e), (f), (g), (i) and (j). A boundary nothing crosses is the</text>
-<text x="40" y="1174" font-size="10.5" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">strongest form this design produces, because nothing has to decide correctly for it to hold.</text>
-<text x="40" y="1216" font-size="10.5" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB2 is narrowed, not closed. The mediator connects as an ordinary Home Assistant user that the bridge designates, so it can no longer create users, change the configuration or install integrations,</text>
-<text x="40" y="1229" font-size="10.5" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">but it can still operate every device, because the platform cannot limit a user to some devices through a supported interface. That is residual risk R3, High, narrowed. Flow (m) is new:</text>
-<text x="40" y="1242" font-size="10.5" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">no grant reaches a sandbox until a person has approved exactly what was shown.</text>
+<text x="486" y="1018" font-size="14.3" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">UNCHANGED / NARROWED — existed in Figure 8.1; TB4 is as it was, TB2 is narrowed</text>
+<text x="486" y="1038" font-size="14.3" fill="#1a1a1a" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(b′) · (c′) · (d′) · (h′) — a primed flow replaces the same-letter flow of Figure 8.1; (l) to (o) are new</text>
+<text x="40" y="1088" font-size="13.65" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">Compare with Figure 8.1. Five flows drawn there are absent here: (e) the shared memory, (f) reading any integration's stored credentials, (g) reading any file,</text>
+<text x="40" y="1105" font-size="13.65" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">(i) reaching another integration's objects and (j) home network access. None of the five is refused by a check. The stored settings and the secrets file are not in the</text>
+<text x="40" y="1122" font-size="13.65" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">sandbox's view, the two integrations are separate processes, and addresses in the home are refused by default, so there is no request to make.</text>
+<text x="40" y="1159" font-size="13.65" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB5 and TB6 are crossed by no flow at all, and that is deliberate rather than an omission: in Figure 8.1 those same two places carried (e), (f), (g), (i) and (j). A boundary nothing crosses is the</text>
+<text x="40" y="1175" font-size="13.65" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">strongest form this design produces, because nothing has to decide correctly for it to hold.</text>
+<text x="40" y="1212" font-size="13.65" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">TB2 is narrowed, not closed. The mediator connects as an ordinary Home Assistant user that the bridge designates, so it can no longer create users, change the configuration or install integrations,</text>
+<text x="40" y="1229" font-size="13.65" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">but it can still operate every device, because the platform cannot limit a user to some devices through a supported interface. That is residual risk R3, High, narrowed. Flow (m) is new:</text>
+<text x="40" y="1246" font-size="13.65" fill="#666666" font-weight="normal" text-anchor="start" font-family="Helvetica,Arial,sans-serif" dominant-baseline="middle">no grant reaches a sandbox until a person has approved exactly what was shown.</text>
 </svg>

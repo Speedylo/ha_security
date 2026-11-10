@@ -29,8 +29,8 @@ LANES = {  # name: (x, heading)
 SANDBOX = ("int", "b", "half")
 TOP, BOTTOM = 110, 1240
 
-c = Canvas(1400, 1280)
-c.box(30, 40, 650, BOTTOM - 20, fill="light", dashed=True, title="INSIDE THE SANDBOX")
+c = Canvas(1400, 1280, text_scale=1.5, fit=True)
+c.box(30, 20, 650, BOTTOM, fill="light", dashed=True, title="INSIDE THE SANDBOX")
 for key, (x, heading) in LANES.items():
     c.box(x - 95, 70, 190, 44, heading, fill="white" if key in SANDBOX else "mid", size=12,
           weight="bold")
@@ -48,12 +48,12 @@ def msg(a, b, y, text, dashed=False):
 def step(lane, y, text, h=46):
     """Work a lane does itself: a box on its lifeline."""
     x = LANES[lane][0]
-    c.box(x - 125, y - h / 2, 250, h, text, fill="white", size=11)
+    c.box(x - 135, y - h / 2, 270, h, text, fill="white", size=11)
 
 
 def panel(y, title):
     c.line([(30, y), (1370, y)], arrow=False, width=1)
-    c.text(40, y + 18, title, size=13, weight="bold", anchor="start")
+    c.text(40, y + 18, title, size=12, weight="bold", anchor="start")
 
 
 # --- a service call from the sandbox --------------------------------------------------------
@@ -61,9 +61,9 @@ panel(140, "A SERVICE CALL FROM THE INTEGRATION")
 msg("int", "b", 220, "light.turn_on, as it\nwould call it unconfined")
 msg("b", "half", 275, "not a service of (B):\nforward it")
 msg("half", "med", 335, "service.call frame on its channel\n(four-byte length, then JSON)")
-step("med", 390, "1  identity: from the channel the\nframe arrived on, never from the frame")
-step("med", 445, "2  the manifest bound to that identity")
-step("med", 500, "3  decide: permit or deny, naming\nthe clause that decided")
+step("med", 385, "1  identity: from the channel,\nnever from the frame", h=54)
+step("med", 445, "2  the manifest bound\nto that identity", h=54)
+step("med", 505, "3  permit or deny, naming\nthe deciding clause", h=54)
 msg("med", "log", 580, "4  record the decision,\nflushed to disk")
 msg("med", "a", 640, "5  perform the call,\nwith the mediator's token")
 msg("a", "med", 685, "result", dashed=True)
@@ -79,7 +79,7 @@ msg("half", "b", 990, "set the state in (B)")
 c.label(1170, 960, "recorded once, when\nthe subscription\nwas decided", size=11)
 
 # --- a household's command into the sandbox ---------------------------------------------------
-panel(1030, "THE HOUSEHOLD OPERATES AN ENTITY THE INTEGRATION OWNS")
+panel(1030, "THE HOUSEHOLD OPERATES A CONFINED ENTITY")
 msg("a", "med", 1080, "command, from the bridge\nintegration in (A)")
 msg("med", "log", 1130, "record it")
 msg("med", "half", 1180, "pass it to the owning sandbox")

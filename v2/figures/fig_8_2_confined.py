@@ -44,24 +44,23 @@ NODES = [
     ("author",   "actor", "Integration author\n+ community store",              60,   60, 215,  75),
     ("extnet",   "actor", "External network\nendpoints",                   1240,   90, 190,  85),
     ("user",     "actor", "Home occupant\n/ user",                           60,  420, 175,  75),
-    ("devices",  "actor", "Home devices, LAN (A1, A4, A8)\nnon-public destinations are\n"
-                          "denied by default",                       1240,  690, 190, 105),
+    ("devices",  "actor", "Home devices, LAN\n(A1, A4, A8): non-public\ndestinations denied\nby default",
+                                                                    1225,  685, 235, 120),
     # --- the platform, now alone in its process — kept ----------------------------
-    ("ha_core",  "process", "Home Assistant core\nevents · states · services\nsettings · logins · web",
+    ("ha_core",  "process", "Home Assistant\ncore: events,\nstates, services,\nlogins, web",
                                                                             370,  340, 190, 150),
     # --- the framework, new in this figure ----------------------------------------
-    ("supervisor", "process", "Supervisor\nbuilds each sandbox ·\nchecks the approval",
+    ("supervisor", "process", "Supervisor\nbuilds each\nsandbox; checks\nthe approval",
                                                                             330,  160, 200, 105),
-    ("mediator",   "process", "Mediator\nholds the credential ·\ndecides each request",
+    ("mediator",   "process", "Mediator\nholds the\ncredential;\ndecides each\nrequest",
                                                                             575,  360, 155, 130),
     # --- inside sandbox A — the integration kept at its Figure 4.1 position -------
     ("integ_a",  "process", "Integration A\n(community)",                  760,  357, 180, 115),
-    ("ha_min_a", "process", "Stripped Home Assistant\nthe real helper layer · its own\n"
-                            "events, states and memory,\nempty at start",
+    ("ha_min_a", "process", "Stripped Home\nAssistant: real\nhelpers, own state,\nempty at start",
                                                                             960,  325, 190, 120),
     # --- inside sandbox B — the integration kept ---------------------------------
     ("integ_b",  "process", "Integration B\n(community)",                  760,  585, 180, 115),
-    ("ha_min_b", "process", "Stripped Home Assistant\na separate instance,\nseparately empty",
+    ("ha_min_b", "process", "Stripped Home\nAssistant: a\nseparate one,\nalso empty",
                                                                             960,  595, 190, 110),
     # --- on disk — secrets and entries kept; two stores are new ------------------
     ("secrets",  "store", "Secrets file\n+ configuration (A3)",           420,  830, 215,  85),
@@ -78,11 +77,11 @@ NODES = [
 BOXES = [
     # Taller than in Figure 5.1, with its title at the bottom: flow A leaves the top of the
     # Home Assistant ellipse, where the title used to be.
-    {"id": "ha_proc",   "label": "HOME ASSISTANT PROCESS",
+    {"id": "ha_proc",   "label": "HOME ASSISTANT",
      "x": 348, "y": 318, "width": 222, "height": 200, "label_at": "bottom"},
-    {"id": "sandbox_a", "label": "SANDBOX A — its own view, system-call filter, limits",
+    {"id": "sandbox_a", "label": "SANDBOX A: own view, filter, limits",
      "x": 750, "y": 285, "width": 405, "height": 205},
-    {"id": "sandbox_b", "label": "SANDBOX B — identically constructed, sharing nothing",
+    {"id": "sandbox_b", "label": "SANDBOX B: same build, shares nothing",
      "x": 750, "y": 552, "width": 405, "height": 200},
 ]
 
@@ -91,13 +90,13 @@ BOXES = [
 # words are what survive a greyscale printout.
 BOUNDARIES = [
     ("tb4", "TB4 · UNCHANGED — checks structure only",
-     (25, 240), (335, 25), [(210, 245), (300, 195)], True, (185, 212)),
+     (25, 240), (335, 25), [(210, 245), (300, 195)], True, (190, 150)),
     ("tb2", "TB2 · NARROWED — an ordinary user",
      (570, 330), (570, 520), [(562, 425)], True, (592, 300)),
     ("tb1", "TB1 · EXISTS — the channel",
      (749, 300), (749, 745), [(741, 520)], True, (1330, 250)),
     ("tb3", "TB3 · EXISTS — connections via the mediator",
-     (1195, 30), (1195, 900), [(1205, 400), (1195, 650)], True, (1300, 470)),
+     (1195, 30), (1195, 900), [(1205, 400), (1195, 650)], True, (1390, 470)),
     ("tb5", "TB5 · EXISTS — host files absent",
      (740, 800), (1195, 800), [(960, 810)], True, (960, 775)),
     ("tb6", "TB6 · EXISTS — separate processes",
@@ -335,7 +334,11 @@ def esc(s):
     return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
 
 
+TS = 1.3  # every text size, and the white ground behind each label, enlarged for print (2026-11-10)
+
+
 def text_lines(x, y, label, size=12, fill=INK, weight="normal", anchor="middle"):
+    size = round(size * TS, 2)
     lines = label.split("\n")
     start = y - (len(lines) - 1) * (size + 3) / 2
     out = []
@@ -385,9 +388,9 @@ def render_svg():
         p.append(f'<path d="{d}" fill="none" stroke="{colour}" stroke-width="2.5" '
                  f'stroke-dasharray="10 7"/>')
         mx, my = lxy
-        width = 7.3 * len(name)
-        p.append(f'<rect x="{mx - width / 2:.0f}" y="{my - 11:.0f}" width="{width:.0f}" '
-                 f'height="22" fill="#ffffff" stroke="{colour}" stroke-width="1" rx="4"/>')
+        width = 7.3 * TS * len(name)
+        p.append(f'<rect x="{mx - width / 2:.0f}" y="{my - 11 * TS:.0f}" width="{width:.0f}" '
+                 f'height="{22 * TS:.0f}" fill="#ffffff" stroke="{colour}" stroke-width="1" rx="4"/>')
         p.append(text_lines(mx, my, name, size=11, fill=colour, weight="bold"))
 
     # flows
@@ -400,8 +403,8 @@ def render_svg():
         p.append(f'<path d="{d}" fill="none" stroke="{INK}" stroke-width="1.6" '
                  f'marker-end="url(#ar)"{extra}/>')
         lines = label.split("\n")
-        w = 6.4 * max(len(x) for x in lines)
-        h = 15 * len(lines) + 6
+        w = 6.4 * TS * max(len(x) for x in lines)
+        h = 15 * TS * len(lines) + 6
         p.append(f'<rect x="{lxy[0] - w / 2:.0f}" y="{lxy[1] - h / 2:.0f}" width="{w:.0f}" '
                  f'height="{h:.0f}" fill="#ffffff" fill-opacity="0.93" rx="3"/>')
         p.append(text_lines(lxy[0], lxy[1], label, size=10.5, fill=INK))

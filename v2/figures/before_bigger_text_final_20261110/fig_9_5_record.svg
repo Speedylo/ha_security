@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="780" viewBox="0 0 1500 780">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a1a1a"/></marker></defs>
+<rect x="40" y="120" width="420" height="330" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="52" y="136" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">RUN RECORD  ·  seq 0</text>
+<text x="60" y="190" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">kind: run</text>
+<text x="60" y="206" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">run: 3f9a…</text>
+<text x="60" y="222" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">integration: adaptive_lighting</text>
+<text x="60" y="238" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">identity: source, manifest and</text>
+<text x="60" y="254" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">requirements, each hashed,</text>
+<text x="60" y="270" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">and one composite hash</text>
+<rect x="55" y="340" width="390" height="42" rx="5" fill="#f3f3f3" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="70" y="361" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">prev_hash, prev_mac: the record before</text>
+<rect x="55" y="392" width="390" height="42" rx="5" fill="#e2e2e2" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="70" y="413" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">hash, mac: of this record and prev_hash, prev_mac</text>
+<rect x="520" y="120" width="420" height="330" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="532" y="136" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">DECISION  ·  seq 1</text>
+<text x="540" y="190" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">kind: decision</text>
+<text x="540" y="206" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">run: 3f9a…</text>
+<text x="540" y="222" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">op: entity.subscribe</text>
+<text x="540" y="238" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">target: light.living_room</text>
+<text x="540" y="254" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">allowed: true</text>
+<text x="540" y="270" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">clause: /permissions/entities/subscribe/0</text>
+<rect x="535" y="340" width="390" height="42" rx="5" fill="#f3f3f3" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="550" y="361" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">prev_hash, prev_mac: the record before</text>
+<rect x="535" y="392" width="390" height="42" rx="5" fill="#e2e2e2" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="550" y="413" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">hash, mac: of this record and prev_hash, prev_mac</text>
+<path d="M 445,413 L 490,413 L 490,361 L 535,361" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="1000" y="120" width="420" height="330" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="1012" y="136" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">DECISION  ·  seq 2</text>
+<text x="1020" y="182" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">kind: decision</text>
+<text x="1020" y="198" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">run: 3f9a…</text>
+<text x="1020" y="214" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">op: service.call</text>
+<text x="1020" y="230" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">target: light.turn_on</text>
+<text x="1020" y="246" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">requested: …, entity_id: light.living_room</text>
+<text x="1020" y="262" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">allowed: true</text>
+<text x="1020" y="278" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">clause: /permissions/services/call/0</text>
+<rect x="1015" y="340" width="390" height="42" rx="5" fill="#f3f3f3" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="1030" y="361" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">prev_hash, prev_mac: the record before</text>
+<rect x="1015" y="392" width="390" height="42" rx="5" fill="#e2e2e2" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="1030" y="413" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">hash, mac: of this record and prev_hash, prev_mac</text>
+<path d="M 925,413 L 970,413 L 970,361 L 1015,361" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="750" y="52" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" font-style="italic" text-anchor="middle" dominant-baseline="middle">Each record names its run, its operation and target, its verdict and the clause that produced it,</text>
+<text x="750" y="68" font-size="13" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" font-style="italic" text-anchor="middle" dominant-baseline="middle">so the log answers both halves of attribution: which code acted, and which clause allowed it.</text>
+<rect x="40" y="500" width="700" height="210" rx="5" fill="#f3f3f3" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="52" y="516" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">THE HASH CHAIN  (SHA-256 fingerprints)</text>
+<text x="60" y="567" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">Anyone can check it: no secret is needed.</text>
+<text x="60" y="583" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle"></text>
+<text x="60" y="599" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">Catches a record changed, deleted or moved: from that record on,</text>
+<text x="60" y="615" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">no fingerprint matches.</text>
+<text x="60" y="631" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle"></text>
+<text x="60" y="647" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">Misses a whole file rewritten with new fingerprints,</text>
+<text x="60" y="663" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">because anyone can compute them.</text>
+<rect x="760" y="500" width="700" height="210" rx="5" fill="#f3f3f3" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="772" y="516" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">THE MAC CHAIN  (HMAC-SHA256, a secret key)</text>
+<text x="780" y="567" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">The key exists only in the mediator's memory, never on disk.</text>
+<text x="780" y="583" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle"></text>
+<text x="780" y="599" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">Catches a whole file rewritten by someone who can change the file</text>
+<text x="780" y="615" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">but cannot read that memory: without the key, no MAC matches.</text>
+<text x="780" y="631" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle"></text>
+<text x="780" y="647" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">The cost: after the mediator restarts, older records can still be</text>
+<text x="780" y="663" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">checked by hash, but no longer by MAC.</text>
+<text x="750" y="742" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" font-style="italic" text-anchor="middle" dominant-baseline="middle">Neither chain stops an attacker who controls the whole device, the mediator's memory included;</text>
+<text x="750" y="758" font-size="12" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" font-style="italic" text-anchor="middle" dominant-baseline="middle">against one, the chains are evidence of tampering, not protection.</text>
+</svg>

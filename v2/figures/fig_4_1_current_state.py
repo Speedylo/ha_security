@@ -46,11 +46,11 @@ NODES = [
     ("devices",  "actor", "Home devices, LAN\n(A1, A4, A8)",               1240,  700, 190,  85),
     # --- inside the one process ---------------------------------------------------
     ("ha_core",  "process", "Home Assistant core\nevents · states · services\nsettings · logins · web",
-                                                                            370,  340, 190, 150),
+                                                                            345,  335, 250, 165),
     ("integ_a",  "process", "Integration A\n(community)",                  760,  357, 180, 115),
     ("integ_b",  "process", "Integration B\n(community)",                  760,  585, 180, 115),
-    ("mem",      "store",   "Shared memory\ndevice states · data (A2, A6)",
-                                                                            960,  300, 175,  85),
+    ("mem",      "store",   "Shared memory\ndevice states,\ndata (A2, A6)",
+                                                                            960,  295, 175, 100),
     # --- on disk ------------------------------------------------------------------
     ("secrets",  "store", "Secrets file\n+ configuration (A3)",           420,  830, 215,  85),
     ("entries",  "store", "Stored settings\nevery integration's\ncredentials (A3, A6)",
@@ -69,13 +69,13 @@ BOUNDARY_BOX = {
 # survive — a greyscale printout, a Threat Dragon PNG export, a font without ✓ and ✗.
 BOUNDARIES = [
     ("tb4", "TB4 · EXISTS — checks structure only",
-     (25, 240), (335, 25), [(210, 245), (300, 195)], True, (185, 212)),
+     (25, 240), (335, 25), [(210, 245), (300, 195)], True, (192, 198)),
     ("tb2", "TB2 · EXISTS — the platform's interface, unscoped",
-     (620, 350), (620, 480), [(640, 425)], True, (600, 262)),
+     (620, 350), (620, 480), [(640, 425)], True, (600, 270)),
     ("tb1", "TB1 · ABSENT — nothing between integration and platform",
-     (690, 350), (690, 480), [(710, 425)], False, (600, 292)),
+     (690, 350), (690, 480), [(710, 425)], False, (600, 302)),
     ("tb3", "TB3 · ABSENT — network unrestricted",
-     (1215, 30), (1215, 900), [(1225, 400), (1215, 650)], False, (1260, 470)),
+     (1215, 30), (1215, 900), [(1225, 400), (1215, 650)], False, (1335, 470)),
     ("tb5", "TB5 · ABSENT — host files open",
      (300, 770), (1160, 770), [(700, 780)], False, (700, 780)),
     ("tb6", "TB6 · ABSENT — integrations not separated",
@@ -85,9 +85,9 @@ BOUNDARIES = [
 # (id, source, target, label, source_port, target_port, bidirectional, [vertices], label_xy)
 FLOWS = [
     ("f1",  "author",  "secrets", "(a) installs or updates\nthe integration's code",
-     "bottom", "left",  False, [(180, 760)], (250, 730)),
+     "bottom", "left",  False, [(180, 760)], (225, 730)),
     ("f2",  "ha_core", "integ_a", "(b) the platform loads the\nintegration and hands it\nits core object",
-     "right",  "left",  False, [], (655, 340)),
+     "right",  "left",  False, [], (675, 355)),
     ("f3",  "integ_a", "ha_core", "(c) service calls · state writes\nevent subscriptions",
      "left",   "right", False, [(660, 478)], (620, 540)),
     ("f4",  "integ_a", "mem",     "(d) reads and writes the\nshared memory directly",
@@ -103,9 +103,9 @@ FLOWS = [
     ("f8",  "integ_a", "integ_b", "(i) reaches its objects directly",
      "bottom", "top",   True,  [], (935, 495)),
     ("f9",  "integ_a", "devices", "(j) home network access",
-     "right",  "left",  False, [(1170, 414), (1170, 742)], (1170, 600)),
+     "right",  "left",  False, [(1170, 414), (1170, 742)], (1205, 645)),
     ("f10", "user",    "ha_core", "(k) web interface",
-     "right",  "left",  True,  [], (292, 435)),
+     "right",  "left",  True,  [], (290, 400)),
 ]
 
 # Kept off the canvas and set below it: on-diagram prose competes with flow labels, and
@@ -296,7 +296,11 @@ def esc(s):
     return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
 
 
+TS = 1.35  # every text size, and the white ground behind each label, enlarged for print (2026-11-10)
+
+
 def text_lines(x, y, label, size=12, fill=INK, weight="normal", anchor="middle"):
+    size = round(size * TS, 2)
     lines = label.split("\n")
     start = y - (len(lines) - 1) * (size + 3) / 2
     out = []
@@ -343,9 +347,9 @@ def render_svg():
         p.append(f'<path d="{d}" fill="none" stroke="{colour}" stroke-width="2.5" '
                  f'stroke-dasharray="10 7"/>')
         mx, my = lxy
-        width = 7.3 * len(name)
-        p.append(f'<rect x="{mx - width / 2:.0f}" y="{my - 11:.0f}" width="{width:.0f}" '
-                 f'height="22" fill="#ffffff" stroke="{colour}" stroke-width="1" rx="4"/>')
+        width = 7.3 * TS * len(name)
+        p.append(f'<rect x="{mx - width / 2:.0f}" y="{my - 11 * TS:.0f}" width="{width:.0f}" '
+                 f'height="{22 * TS:.0f}" fill="#ffffff" stroke="{colour}" stroke-width="1" rx="4"/>')
         p.append(text_lines(mx, my, name, size=11, fill=colour, weight="bold"))
 
     # flows
@@ -358,8 +362,8 @@ def render_svg():
         p.append(f'<path d="{d}" fill="none" stroke="{INK}" stroke-width="1.6" '
                  f'marker-end="url(#ar)"{extra}/>')
         lines = label.split("\n")
-        w = 6.4 * max(len(x) for x in lines)
-        h = 15 * len(lines) + 6
+        w = 6.4 * TS * max(len(x) for x in lines)
+        h = 15 * TS * len(lines) + 6
         p.append(f'<rect x="{lxy[0] - w / 2:.0f}" y="{lxy[1] - h / 2:.0f}" width="{w:.0f}" '
                  f'height="{h:.0f}" fill="#ffffff" fill-opacity="0.93" rx="3"/>')
         p.append(text_lines(lxy[0], lxy[1], label, size=10.5, fill=INK))

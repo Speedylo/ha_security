@@ -22,15 +22,15 @@ OUT = Path(__file__).parent / "fig_9_4_egress.svg"
 LANES = {
     "int": (150, "Integration"),
     "shim": (390, "Egress shim"),
-    "med": (690, "Mediator: egress broker"),
+    "med": (690, "Egress broker"),
     "dns": (940, "Resolver (DNS)"),
     "host": (1150, "Declared host"),
 }
 SANDBOX = ("int", "shim")
 BOTTOM = 820
 
-c = Canvas(1560, 860)
-c.box(30, 40, 520, BOTTOM - 10, fill="light", dashed=True, title="INSIDE THE SANDBOX")
+c = Canvas(1560, 860, text_scale=1.5, fit=True)
+c.box(30, 20, 520, BOTTOM + 10, fill="light", dashed=True, title="INSIDE THE SANDBOX")
 for key, (x, heading) in LANES.items():
     c.box(x - 100, 70, 200, 44, heading, fill="white" if key in SANDBOX else "mid", size=12,
           weight="bold")
@@ -46,18 +46,17 @@ def msg(a, b, y, text, dashed=False):
 
 def step(lane, y, text, h=46):
     x = LANES[lane][0]
-    c.box(x - 125, y - h / 2, 250, h, text, fill="white", size=11)
+    c.box(x - 135, y - h / 2, 270, h, text, fill="white", size=11)
 
 
 msg("int", "shim", 175, "resolve api.example.com")
 msg("shim", "int", 225, "a placeholder from\n240.0.0.0/4 (unroutable)", dashed=True)
 msg("int", "shim", 290, "connect to the\nplaceholder, port 443")
 msg("shim", "med", 350, "connect api.example.com:443,\non its channel")
-step("med", 410, "1  decide against the network.egress\nclauses, and record the decision", h=50)
+step("med", 410, "1  decide against the\negress clauses; record it", h=58)
 msg("med", "dns", 475, "2  resolve the name")
 msg("dns", "med", 520, "addresses", dashed=True)
-step("med", 585, "3  re-check each address: refuse\nprivate, loopback, link-local,\n"
-     "multicast and reserved ones;\na refusal here is recorded too", h=78)
+step("med", 578, "3  re-check each address;\nrefuse private, loopback,\nlink-local and reserved\nones, and record it", h=96)
 msg("med", "host", 670, "4  connect to exactly the\naddress just checked")
 msg("med", "shim", 730, "5  the connected socket,\npassed over the channel", dashed=True)
 msg("shim", "int", 775, "an ordinary connected socket", dashed=True)

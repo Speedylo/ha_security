@@ -23,10 +23,14 @@ def esc(s):
 class Canvas:
     """An SVG under construction. Coordinates are pixels from the top left."""
 
-    def __init__(self, width, height, text_scale=1.0):
-        """`text_scale` enlarges every text size; the interim figures use it, the final's do not."""
+    def __init__(self, width, height, text_scale=1.0, fit=False):
+        """`text_scale` enlarges every text size. With `fit`, a box's label is re-wrapped, line by
+        line, to the box's width at that size, and steps down in size only if the wrapped label
+        still does not fit; a box's title shrinks to fit its width. The interim figures use
+        neither `fit` nor the final's scale, so they regenerate unchanged."""
         self.width, self.height = width, height
         self.text_scale = text_scale
+        self.fit = fit
         self.parts = [
             f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
             f'viewBox="0 0 {width} {height}">',
@@ -35,6 +39,37 @@ class Canvas:
             'markerHeight="7" orient="auto-start-reverse">'
             f'<path d="M0,0 L10,5 L0,10 z" fill="{INK}"/></marker></defs>',
         ]
+
+    @staticmethod
+    def _width(line, size, weight="normal"):
+        """An estimate of a line's width in Helvetica/Arial: about 0.55 em a character, more in bold."""
+        em = sum(0.70 if ch.isupper() else 0.30 if ch in " .,;:'·()" else 0.55 for ch in line)
+        return em * size * (1.08 if weight == "bold" else 1.0)
+
+    def _wrap(self, label, size, width, weight="normal"):
+        out = []
+        for line in label.split("\n"):
+            if self._width(line, size, weight) <= width:
+                out.append(line); continue
+            current = ""
+            for word in line.split(" "):
+                trial = (current + " " + word).strip()
+                if current and self._width(trial, size, weight) > width:
+                    out.append(current); current = word
+                else:
+                    current = trial
+            out.append(current)
+        return out
+
+    def fitted(self, label, size, width, height, weight="normal"):
+        """The label re-wrapped to `width` at the scaled size, stepping down until it fits `height`."""
+        shown = size * self.text_scale
+        while True:
+            lines = self._wrap(label, shown, width, weight)
+            if (len(lines) * (shown + 4) <= height and
+                    max(self._width(l, shown, weight) for l in lines) <= width) or shown <= size:
+                return "\n".join(lines), shown / self.text_scale
+            shown *= 0.95
 
     def text(self, x, y, label, size=13, weight="normal", anchor="middle", fill=INK,
              italic=False):
@@ -57,10 +92,18 @@ class Canvas:
         self.parts.append(
             f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="5" fill="{FILL[fill]}" '
             f'stroke="{INK}" stroke-width="{stroke}"{dash}/>')
+        if title and self.fit:  # shrink the title, never wrap it, so it stays one line at the top
+            room = w - 24
+            while self._width(title, title_size * self.text_scale, "bold") > room and title_size > 6:
+                title_size *= 0.95
         if title:
             top = y + 16 + 0.85 * title_size * (self.text_scale - 1)
             self.text(x + 12, top, title, size=title_size, weight="bold", anchor="start")
-        if label:
+        if label and self.fit:
+            head = (16 + 1.1 * title_size * self.text_scale) if title else 0
+            label, size = self.fitted(label, size, w - 20, h - 12 - head, weight)
+            self.text(x + w / 2, y + head + (h - head) / 2, label, size=size, weight=weight)
+        elif label:
             self.text(x + w / 2, y + h / 2 + (8 if title else 0), label, size=size,
                       weight=weight)
 

@@ -19,13 +19,12 @@ from svg9 import Canvas
 
 OUT = Path(__file__).parent / "fig_9_1_system.svg"
 
-c = Canvas(1500, 1010)
+c = Canvas(1500, 1010, text_scale=1.5, fit=True)
 
 # --- (A), the house's own instance -------------------------------------------------------
 c.box(40, 130, 380, 500, fill="light", dashed=True,
-      title="HOME ASSISTANT (A) — THE HOUSE'S INSTANCE")
-c.box(70, 200, 320, 120, "Bridge integration (confine_bridge)\npublishes confined entities\n"
-      "as real entities; raises the\nRepairs issue after a cut-off")
+      title="HOME ASSISTANT (A)")
+c.box(70, 200, 320, 120, "Bridge integration\npublishes confined entities\nas real ones; raises Repairs\nissues after a cut-off")
 c.box(70, 400, 320, 120, "Platform core\nstates · services · devices\nusers · automations")
 c.line([(230, 320), (230, 400)], both=True)
 c.label(230, 360, "entities and\ncommands")
@@ -34,14 +33,12 @@ c.line([(230, 720), (230, 520)])
 
 # --- the framework: one unprivileged process on the host --------------------------------------
 c.box(560, 130, 440, 640, fill="light", dashed=True,
-      title="FRAMEWORK — ONE UNPRIVILEGED HOST PROCESS")
-c.box(590, 170, 380, 90, "Supervisor\nbuilds each sandbox; kills it after a cut-off;\n"
-      "starts it again when the household asks", size=12)
+      title="FRAMEWORK: UNPRIVILEGED PROCESS")
+c.box(590, 170, 380, 90, "Supervisor: builds each sandbox,\nkills it after a cut-off, starts it\nagain when the household asks", size=12)
 c.box(590, 290, 380, 450, fill="white", title="Mediator", title_size=13)
 c.box(610, 330, 340, 80, "(A)'s access token, as the non-admin\nHome Assistant user "
       "confine-mediator:\nthe only credential to the house", fill="dark", size=12)
-c.box(610, 430, 340, 100, "For every request: identify the sender\nby its channel, decide "
-      "against the\nmanifest, record, and only then act", size=12)
+c.box(610, 430, 340, 100, "For every request: identify\nthe sender by its channel,\ndecide against the manifest,\nrecord, and only then act", size=12)
 c.box(610, 550, 340, 80, "Egress broker\nopens each permitted connection\nand hands it over",
       size=12)
 c.box(610, 650, 340, 70, "Push and command relay\nfrom (A) into a sandbox", size=12)
@@ -63,8 +60,7 @@ SANDBOXES = [(150, "SANDBOX — nordpool"), (370, "SANDBOX — adaptive_lighting
 for y, title in SANDBOXES:
     c.box(1110, y, 360, 190, fill="light", dashed=True, title=title)
     c.box(1130, y + 35, 320, 50, "Unmodified integration", size=12)
-    c.box(1130, y + 95, 320, 80, "Runtime (B): a minimal Home Assistant\nwhose state holds only "
-          "declared\nentities, with the bridge's sandbox half", size=12)
+    c.box(1130, y + 95, 320, 80, "Runtime (B), a minimal\nHome Assistant holding\nonly declared entities", size=12)
 c.box(1110, 590, 360, 110, "… one sandbox for each\ncommunity integration;\nno token to (A) "
       "in any of them", fill="none", dashed=True, size=12)
 

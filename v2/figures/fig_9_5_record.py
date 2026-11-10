@@ -17,7 +17,7 @@ from svg9 import Canvas
 
 OUT = Path(__file__).parent / "fig_9_5_record.svg"
 
-c = Canvas(1500, 780)
+c = Canvas(1500, 780, text_scale=1.5, fit=True)
 
 RECORDS = [
     ("RUN RECORD  ·  seq 0", "kind: run\nrun: 3f9a…\nintegration: adaptive_lighting\n"
@@ -32,11 +32,11 @@ X0, W, GAP, Y, H = 40, 420, 60, 120, 330
 for i, (title, body) in enumerate(RECORDS):
     x = X0 + i * (W + GAP)
     c.box(x, Y, W, H, fill="white", title=title)
-    c.text(x + 20, Y + 110, body, size=12, anchor="start")
+    c.text(x + 20, Y + 122, body, size=12, anchor="start")
     c.box(x + 15, Y + 220, W - 30, 42, fill="light")
     c.text(x + 30, Y + 241, "prev_hash, prev_mac: the record before", size=12, anchor="start")
     c.box(x + 15, Y + 272, W - 30, 42, fill="mid")
-    c.text(x + 30, Y + 293, "hash, mac: of this record and prev_hash, prev_mac", size=12, anchor="start")
+    c.text(x + 30, Y + 293, "hash, mac: over this record and its links", size=12, anchor="start")
     if i:
         # The previous record's links are carried into this one.
         px = x - GAP - 15

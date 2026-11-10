@@ -17,7 +17,7 @@ from svg9 import Canvas
 
 OUT = Path(__file__).parent / "fig_9_2_sandbox.svg"
 
-c = Canvas(1400, 760)
+c = Canvas(1400, 760, text_scale=1.5, fit=True)
 
 c.box(40, 40, 1000, 680, fill="light", dashed=True, stroke=2,
       title="CGROUP V2 SLICE — bounds by default: 640 MB of memory · 64 processes · "
@@ -45,9 +45,7 @@ for i, (path, state) in enumerate(FILES):
 
 c.box(560, 340, 400, 140, "Network (network namespace)\na loopback interface, with multicast "
       "on\nloopback only, and no route anywhere", size=12)
-c.box(560, 500, 400, 160, "Identity and processes\n(user, pid, ipc, uts, cgroup)\nroot inside, "
-      "an unprivileged user outside;\nsees one process; no shared memory,\nhost name or "
-      "position in the cgroup tree", size=12)
+c.box(560, 500, 400, 160, "Identity and processes\nroot inside, an unprivileged\nuser outside; one process;\nno shared memory, host name\nor cgroup position", size=12)
 
 # The one descriptor that leaves.
 c.box(1160, 200, 200, 80, "Mediator\n(outside the sandbox)", fill="mid")
