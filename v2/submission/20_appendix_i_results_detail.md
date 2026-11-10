@@ -65,10 +65,10 @@ Working integrations also show what a permission system has to cover. Following 
 | Its own configuration entry | 94% | 93% |
 | The platform's shared data store | 86% | 80% |
 | The event bus, on which every change in the house is announced | 49% | 18% |
-| Calls to services, the actions that operate devices | 65% | 38% |
+| The service registry, to offer actions or call them | 65% | 38% |
 | Calls to another integration's services | 22% | 13% |
 
-The parts an integration needs merely to exist are used about equally in both samples. The parts that widen its reach are not: use of the event bus falls by 31 points in the random sample, and use of services by 27. A study of popular integrations alone would therefore overstate how much of the platform a typical integration touches. The measurement also decides how finely permissions are granted. Almost every integration manages its own configuration entry, but few act on other integrations, so permission is granted per action, and calls to another integration's services are refused unless declared, which affects about one integration in eight in the random sample.
+The parts an integration needs merely to exist are used about equally in both samples. The parts that widen its reach are not: use of the event bus falls by 31 points in the random sample, and use of the service registry by 27. A study of popular integrations alone would therefore overstate how much of the platform a typical integration touches. The measurement also decides how finely permissions are granted. Almost every integration manages its own configuration entry, but few act on other integrations, so permission is granted per action, and calls to another integration's services are refused unless declared, which affects about one integration in eight in the random sample.
 
 ### I.5 The full costs
 

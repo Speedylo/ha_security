@@ -112,7 +112,7 @@ def code(anchor, lines: list[str]) -> None:
 
 def render(doc, anchor, text: str, *, appendix: bool = False) -> None:
     lines = text.split("\n")
-    i, first, pending_figure = 0, True, None
+    i, first, pending_figure, after_heading = 0, True, None, False
     size = 9 if appendix else 10
     while i < len(lines):
         line = lines[i]
@@ -125,12 +125,16 @@ def render(doc, anchor, text: str, *, appendix: bool = False) -> None:
             code(anchor, lines[i + 1:j])
             i = j + 1; continue
         m = re.match(r"^(#{1,3}) (.*)$", line)
+        if not m:
+            after_heading = False
         if m:
             level, title = len(m.group(1)), m.group(2).strip()
             title = re.sub(r"^(\d+)\.\s+", r"\1 ", title)  # "12. Results" → "12 Results"
-            new_page = first or title.startswith("Appendix ")
+            # A lettered appendix starts a page, unless it follows straight on from the heading
+            # above it ("Appendices", then "Appendix A"), which has just started one.
+            new_page = first or (title.startswith("Appendix ") and not after_heading)
             B.heading(anchor, level, title, new_page=new_page)
-            first = False
+            first, after_heading = False, True
             i += 1; continue
         m = re.match(r"^!\[[^\]]*\]\(([^)]+)\)", line)
         if m:
