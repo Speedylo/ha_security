@@ -381,6 +381,29 @@ def build(out: pathlib.Path) -> None:
         pg = OxmlElement("w:pgNumType"); sect.find(qn("w:cols")).addprevious(pg)
     pg.set(qn("w:start"), "1"); pg.set(qn("w:fmt"), "decimal")
 
+    # (After the template's sample pages are removed, which would otherwise remove the box too.)
+    # The AI Evidence Box the syllabus requires of every deliverable, on its own page after the
+    # résumé and inside the front matter's section, so it keeps a roman page number: the box is
+    # inserted after the "Mots clés" paragraph, which carries the section break, and the break moves
+    # to a paragraph after the box. Set at 12 pt with 1.15 spacing, which fits one page.
+    from docx.text.paragraph import Paragraph
+    resume_head = [p for p in pars if p.text.strip().startswith("RESUME")][0]
+    sect_pr = mc._p.pPr.find(qn("w:sectPr"))
+    holder = OxmlElement("w:p")
+    mc._p.addnext(holder)
+    head = copy.deepcopy(resume_head._p)
+    holder.addprevious(head)
+    head_par = Paragraph(head, B.PARENT)
+    B.set_text(head_par, "AI EVIDENCE BOX")
+    B.page_break_before(head_par)
+    for para in front("AI Evidence Box").split("\n\n"):
+        par = B.body_par(holder, after=6, line=1.15)
+        B.add_runs(par, para.strip(), size=12)
+    mc._p.pPr.remove(sect_pr)
+    holder_ppr = OxmlElement("w:pPr"); holder.append(holder_ppr)
+    holder_ppr.append(sect_pr)
+
+
     for name in SECTIONS:
         render(doc, sect, texts[name])
     references(sect, (HERE / REFERENCES).read_text())
