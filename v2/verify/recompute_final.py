@@ -143,37 +143,31 @@ def _():
 # -- security -----------------------------------------------------------------------------------
 
 @check("N05", "garbage-collector technique: live objects holding the token, unconfined",
-       [("12_results.md", r"YES — (\d+) live objects"),
-        ("20_appendix_f_results_detail.md", r"through (\d+) live objects")])
+       [("12_results.md", r"YES — (\d+) live objects")])
 def _():
     return legacy("8.2.1a")
 
 
 @check("N06", "garbage-collector technique: objects the confined walk examined",
-       [("12_results.md", r"examined ([\d,]+) objects"), ("12_results.md", r"heap\s+: (\d+) objects"),
-        ("20_appendix_f_results_detail.md", r"([\d,]+) objects examined")])
+       [("12_results.md", r"examined ([\d,]+) objects"), ("12_results.md", r"heap\s+: (\d+) objects")])
 def _():
     return legacy("8.2.1b")
 
 
 @check("N07", "2021 pattern: planted secrets recovered, unconfined then confined",
-       [("12_results.md", r"\| (\d of \d) recovered \|"), ("12_results.md", r"recovered \| (\d of \d) \|"),
-        ("20_appendix_f_results_detail.md", r"\| (\d of \d) secrets recovered"),
-        ("20_appendix_f_results_detail.md", r"recovered \| (\d of \d): the file")])
+       [("12_results.md", r"\| (\d of \d) recovered \|"), ("12_results.md", r"recovered \| (\d of \d) \|")])
 def _():
     unconf, conf = legacy("8.2.1c")
-    return [unconf, conf, unconf, conf]
+    return [unconf, conf]
 
 
 @check("N08", "device states readable unconfined: all, and those that reveal presence",
        [("12_results.md", r"returned all (\d+), including"), ("12_results.md", r"including all (\d+) that reveal"),
-        ("12_results.md", r"\| Reading devices the integration was not granted \| (\d+ of \d+) \|"),
-        ("20_appendix_f_results_detail.md", r"\| (\d+ of \d+), including all"),
-        ("20_appendix_f_results_detail.md", r"including all (\d+) that reveal")])
+        ("12_results.md", r"\| Reading devices the integration was not granted \| (\d+ of \d+) \|")])
 def _():
     all_u, pres_u, _c, _pc = legacy("8.2.1e")
     n, p = all_u.split(" of ")[0], pres_u.split(" of ")[0]
-    return [n, p, all_u, all_u, p]
+    return [n, p, all_u]
 
 
 def adversary(log: Path) -> collections.Counter:
@@ -206,22 +200,13 @@ def recount() -> str:
 
 @check("N10", "bridge coverage by kind, of the 37 most-installed (platform rule, final recount)",
        [("abstract", r"device kinds of (\d+) of the 37"), ("resume", r"d'appareils de (\d+) des 37"),
-        ("12_results.md", r"device kinds of (\d+) of the 37"), ("16_conclusion.md", r"device kinds of (\d+) of the 37"),
-        ("20_appendix_f_results_detail.md", r"covers (\d+) of the 37")])
+        ("12_results.md", r"device kinds of (\d+) of the 37"), ("16_conclusion.md", r"device kinds of (\d+) of the 37")])
 def _():
     return re.search(r"only bridged kinds: (\d+) of 37", recount()).group(1)
 
 
-@check("N11", "device-kind uses bridged, of those the 37 provide",
-       [("20_appendix_f_results_detail.md", r"or (\d+ of the \d+) device kinds")])
-def _():
-    m = re.search(r"kind uses (\d+), bridged (\d+)", recount())
-    return f"{m.group(2)} of the {m.group(1)}"
-
-
 @check("N12", "kinds of device the bridge represents",
-       [("12_results.md", r"from 11 kinds of device to (\d+)"),
-        ("20_appendix_f_results_detail.md", r"from 11 kinds of device to (\d+)")])
+       [("12_results.md", r"from 11 kinds of device to (\d+)")])
 def _():
     src = (V2 / "framework/ha_bridge/confine_bridge/const.py").read_text()
     body = re.search(r"SUPPORTED = \((.*?)\)", src, re.S).group(1)
@@ -229,14 +214,12 @@ def _():
 
 
 @check("N13", "the fifteen against a real installation: devices published, checks held",
-       [("12_results.md", r"all (\d+) devices they published"),
-        ("20_appendix_f_results_detail.md", r"All (\d+) devices they published"),
-        ("20_appendix_f_results_detail.md", r"all (\d+) checks passed")])
+       [("12_results.md", r"all (\d+) devices they published")])
 def _():
     v = (FINAL2 / "chunkG_step08b_real/verdicts_bridge_step5.txt").read_text()
     devices = sum(int(n) for n in re.findall(r"\[(\d+) entities", v))
     held = re.search(r"(\d+)/(\d+) held", v)
-    return [str(devices), str(devices), held.group(1)]
+    return [str(devices)]
 
 
 @check("N14", "integrations run end to end (rows of Table [R].2, and every count of them)",
@@ -245,7 +228,7 @@ def _():
         ("11_data_presentation.md", r"reported for (\w+) named integrations")])
 def _():
     t = text("20_appendix_f_results_detail.md")
-    table = t[t.index("**Table F.2**"):t.index("### F.3")]
+    table = t[t.index("**Table F.1**"):t.index("### F.3")]
     return word(len(re.findall(r"^\| `", table, re.M)))
 
 
@@ -260,30 +243,27 @@ def _():
 
 @check("N16", "sandboxes that fit in 60% of 4,050 MB: at ten components, and at none",
        [("12_results.md", r"holds at least (\d+)"), ("abstract", r"holds at least (\d+) sandboxes"),
-        ("16_conclusion.md", r"holds at least (\d+) sandboxes"),
-        ("20_appendix_f_results_detail.md", r"holds between (\d+) sandboxes"),
-        ("20_appendix_f_results_detail.md", r"components, and (\d+), when")])
+        ("16_conclusion.md", r"holds at least (\d+) sandboxes")])
 def _():
     budget = int(0.6 * 4050)
-    return [str(int(budget // 135.6))] * 4 + [str(int(budget // 56.5))]
+    return [str(int(budget // 135.6))] * 3
 
 
 @check("N17", "capacity against the average need, in words",
        [("12_results.md", r"which is (\w+) times what"), ("abstract", r"about (\w+) times what"),
-        ("16_conclusion.md", r"about (\w+) times what"), ("20_appendix_f_results_detail.md", r"case is (\w+) times")])
+        ("16_conclusion.md", r"about (\w+) times what")])
 def _():
     return word(int(int(0.6 * 4050) // 135.6 / 4.02))
 
 
 @check("N18", "mediator capacity with the durable record",
-       [("12_results.md", r"about (\d+) decisions per second"),
-        ("20_appendix_f_results_detail.md", r"about (\d+) decisions per second")])
+       [("12_results.md", r"about (\d+) decisions per second")])
 def _():
     return legacy("8.2.3b")
 
 
 @check("N19", "headroom over realistic demand, in words (to the nearest ten)",
-       [("12_results.md", r"about (\w+) times clear"), ("20_appendix_f_results_detail.md", r"about (\w+) times clear")])
+       [("12_results.md", r"about (\w+) times clear")])
 def _():
     v = float(re.match(r"([\d.]+)", legacy("A1.20")).group(1))
     return word(int(round(v, -1)))
@@ -374,14 +354,14 @@ def _():
     return [str(run), str(killed), str(killed), str(run)]
 
 
-@check("N25", "findings recorded (rows of Table F.2), and the Critical ones",
-       [("12_results.md", r"produced (\d+) findings"), ("20_appendix_f_results_detail.md", r"recorded (\d+) findings"),
+@check("N25", "findings recorded (rows of the full findings list kept in the notes), and the Critical ones",
+       [("12_results.md", r"produced (\d+) findings"),
         ("18_appendices.md", r"Of the (\d+) findings"), ("12_results.md", r"of which (\w+) was critical")])
 def _():
     full = (V2 / "notes/appendices_full_20261110/18_appendices.md").read_text()  # the list left the report
     rows = [l for l in full.splitlines() if re.match(r"^\| F\d\d ", l)]
     crit = sum("Critical" in l.split("|")[3] for l in rows)
-    return [str(len(rows))] * 3 + [{1: "one"}[crit]]
+    return [str(len(rows))] * 2 + [{1: "one"}[crit]]
 
 
 @check("N26", "planted defects that change no behaviour",
