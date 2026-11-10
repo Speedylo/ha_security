@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | Framework | `v2/framework/confine/` — standard library plus `ctypes`, no third-party dependencies, no override flag |
-| Self-tests | **29 suites**, all passing on the test hardware (Appendix E). `selftest.py` and `selftest_*.py` in the same directory; `experiments/selftests/suites_all.sh` runs them |
+| Self-tests | **35 suites**, all passing on the test hardware (Appendix E). `selftest.py` and `selftest_*.py` in the same directory; `experiments/selftests/suites_all.sh` runs them |
 | Experiments | `v2/experiments/` — each with its script, its raw result file and a readable write-up |
 | Figures | `v2/figures/` — each figure and its threat model generated from one source, so they cannot drift |
 | Corpora | `hacs_corpus_manifest.json` — both corpora, redrawable; the uniform draw records its seed (20260902) |
@@ -366,9 +366,9 @@ The same runs also carried the count behind C1. Every source tree was hashed bef
 
 ## Appendix E — Self-test suites
 
-The self-test suites are the evidence on which most verdicts in Appendix B rest, and each was written against a claim stated in the design before the suite existed. A suite is one of the 29 test programs that the suite runner executes: the base sandbox test and 28 suites, each named for what it checks. They were last run in full at the final tag, `final-2026-10`, twice on the Raspberry Pi 5, and all 29 passed both times with the counts below. The count of checks in Table E.1 is the number of lines a suite marks as passed in its log; three suites report a paired comparison instead, because their result is a difference between two arms rather than a list of checks. Section 12.4 reports how the suites were themselves tested, by deliberate defects introduced into the code that some suite had to detect.
+The self-test suites are the evidence on which most verdicts in Appendix B rest, and each was written against a claim stated in the design before the suite existed. A suite is one of the 35 test programs that the suite runner executes: the base sandbox test and 34 suites, each named for what it checks. They were last run in full in the final rerun of 1 November 2026, at the tag `final-2026-11`, twice on the Raspberry Pi 5, and all 35 passed both times with the counts below. The count of checks in Table E.1 is the number of lines a suite marks as passed in its log; three suites report a paired comparison instead, because their result is a difference between two arms rather than a list of checks. Section 12.4 reports how the suites were themselves tested, by deliberate defects introduced into the code that some suite had to detect.
 
-**Table E.1 — The 29 suites, grouped by what they protect**
+**Table E.1 — The 35 suites, grouped by what they protect**
 
 | Suite | What it asserts | Checks passed |
 |---|---|---|
@@ -396,15 +396,22 @@ The self-test suites are the evidence on which most verdicts in Appendix B rest,
 | `selftest_egress_shim` | Unmodified HTTP client libraries reach a declared host, and the sandbox never holds the host's real address | 7 |
 | `selftest_egress_sandboxed` | Two real integrations in real namespaces poll their own hosts at once, and each is refused the other's | 18 |
 | `selftest_local_tcp` | A declared port on a home-network device is reached, and undeclared ports and addresses are refused | 17 |
-| `selftest_udp` | Datagrams reach declared ports through the relay, device discovery works, and the sandbox never holds a socket able to broadcast | 21 |
+| `selftest_udp` | Datagrams reach declared ports through the relay, device discovery works, and the sandbox never holds a socket able to broadcast | 29 |
 | `selftest_netshape` | The instrument that records an integration's network behaviour reports what a deliberately provoked behaviour should produce | 13 |
 | *The platform, the supervisor and the user interface* | | |
 | `selftest_bridge` | An unmodified integration in a sandbox publishes an entity, reads a declared one, finds an undeclared one absent, and has its service calls reach their targets | 14 |
 | `selftest_push` | A state change reaches a sandbox only when its subscription was granted | 28 |
-| `selftest_real_platform` | The mediator, acting as a non-administrator user, publishes into and acts on a live Home Assistant instance | 52 |
+| `selftest_real_platform` | The mediator, acting as a non-administrator user, publishes into and acts on a live Home Assistant instance | 55 |
 | `selftest_ws` | The mediator's WebSocket client reproduces the protocol specification's own example values | 9 |
 | `selftest_supervise` | The supervisor stops a flooding sandbox, restarts one from the Repairs panel, restarts one when the platform returns, clears a dead supervisor's sandbox, and does not restart one that exited by itself | 50 |
 | `selftest_keep` | What an integration stores survives a restart, within its disk bound, and nothing it could run from does | 14 |
+| *The household's devices: the bridge* | | |
+| `selftest_bridge_types` | Each kind of device a confined integration publishes appears in a real Home Assistant installation as a device of its own kind, with its state and the controls that describe it; a household command reaches the sandbox with exactly its data; a kind the bridge does not support is refused | 194 |
+| `selftest_commands` | Every command the mediator forwards, for each kind of device, is passed on exactly as listed; any other service, or data that is not exactly the listed keys of the listed kind, is refused, recorded and never passed on | 268 |
+| `selftest_queries` | A question from the household, for calendar events, a forecast or a camera picture, is passed on exactly, and the integration's answer is relayed only if it has the listed shape and size; no answer's content is written to the record | 49 |
+| `selftest_display` | Opened in a real browser, as the household sees them, a confined integration's names, states and attributes containing markup show as plain text, nothing runs, and no picture link it published is loaded | 15 |
+| `selftest_real_house` | The test installation's devices behave as the end-to-end runs expect, and the installation can be stopped and started again without losing the bridge or the mediator's account | 6 |
+| `selftest_house_a` | The test tooling tells a stopped but unreaped Home Assistant process from a running one | 4 |
 
 Two suites deserve attention from a reader scanning the table, because each records a case in which an assumption failed. The first, `selftest_socket_pinning`, passes when something surprising is true. The network design originally assumed that a connected UDP socket, like a connected TCP socket, could not be redirected to another address; the suite found that it can, the design was changed to relay datagrams, and the suite now passes only while redirection works. A future kernel that pinned UDP sockets would therefore fail the suite and prompt a review, rather than leave a design resting silently on a changed fact. The second, `selftest_netshape`, exists because an instrument once misled the project. The first version of the network recorder reported 23 of 37 integrations attempting to reach the network, and that number reflected what the recorder attributed to the integration rather than what the integration did. Since then the recorder has been tested against behaviours whose answers are known in advance before any of its output is trusted.
 
