@@ -16,7 +16,7 @@ Four attacks were run from inside an integration, once unconfined and once confi
 | Finding the other processes on the device, whose environment variables can hold credentials | Other processes visible | None visible |
 | Reading devices the integration was not granted | 36 of 36 | Only the 1 declared |
 
-The first attack is the one the design was built to defeat. Python gives every program a list of all the objects alive in its process, and when all integrations share one process, that list includes the other integrations' credentials. The test's own output shows what happened in each run:
+The first attack is the one the design was built to defeat. Python gives every program a list of all the objects alive in its process, and when all integrations share one process, that list includes the other integrations' credentials. The test's own output, with its requirement labels removed, shows what happened in each run:
 
 ```
 UNCONFINED — victim integration and adversary in one process
