@@ -52,6 +52,10 @@ FILES = [
     "16_conclusion.md",
     "17_references.md",
     "18_appendices.md",
+    "19_appendix_h_architecture_detail.md",
+    "20_appendix_i_results_detail.md",
+    "21_appendix_j_ai_use_disclosure.md",
+    "22_appendix_k_ai_use_log.md",
 ]
 
 # Typography. Set in one place because every size below is stated relative to

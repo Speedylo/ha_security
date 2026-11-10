@@ -1,4 +1,4 @@
-## Appendix [AI-LOG] — AI-Use Log
+## Appendix K — AI-use log
 
 Each row records one occasion on which output from the AI tool was wrong, overstated or rejected, how the problem was caught and how it was corrected. Rows marked "rebuilt" were reconstructed from the project's records after the log was started on 23 October 2026; the others were recorded as they happened. Rows 1 to 30 also appeared in the interim report. The last column names the AI-use skill the occasion exercised: literacy (recognising how AI output fails), application (deciding when to use the AI and how to check it), ethics, and communication (stating truthfully who did what). All dates are in 2026.
 

@@ -1,8 +1,8 @@
 # The final report
 
 The final report in the programme's template, one Markdown file per section, `00_front_matter.md` to
-`18_appendices.md`; the references are in APA 7 (`17_references.md`), and the detailed appendices are
-the `appendix_*.md` files.
+`22_appendix_k_ai_use_log.md`; the references are in APA 7 (`17_references.md`), Appendices A–G are in
+`18_appendices.md`, and Appendices H–K have a file each.
 
 - `build_docx.py` combines the sections into `capstone_report.docx`.
 - `render_word.ps1` opens that file in Microsoft Word, fills the contents and the lists of figures and

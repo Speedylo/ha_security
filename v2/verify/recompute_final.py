@@ -144,22 +144,22 @@ def _():
 
 @check("N05", "garbage-collector technique: live objects holding the token, unconfined",
        [("12_results.md", r"YES — (\d+) live objects"),
-        ("appendix_results_detail.md", r"through (\d+) live objects")])
+        ("20_appendix_i_results_detail.md", r"through (\d+) live objects")])
 def _():
     return legacy("8.2.1a")
 
 
 @check("N06", "garbage-collector technique: objects the confined walk examined",
        [("12_results.md", r"examined ([\d,]+) objects"), ("12_results.md", r"heap\s+: (\d+) objects"),
-        ("appendix_results_detail.md", r"([\d,]+) objects examined")])
+        ("20_appendix_i_results_detail.md", r"([\d,]+) objects examined")])
 def _():
     return legacy("8.2.1b")
 
 
 @check("N07", "2021 pattern: planted secrets recovered, unconfined then confined",
        [("12_results.md", r"\| (\d of \d) recovered \|"), ("12_results.md", r"recovered \| (\d of \d) \|"),
-        ("appendix_results_detail.md", r"\| (\d of \d) secrets recovered"),
-        ("appendix_results_detail.md", r"recovered \| (\d of \d): the file")])
+        ("20_appendix_i_results_detail.md", r"\| (\d of \d) secrets recovered"),
+        ("20_appendix_i_results_detail.md", r"recovered \| (\d of \d): the file")])
 def _():
     unconf, conf = legacy("8.2.1c")
     return [unconf, conf, unconf, conf]
@@ -168,8 +168,8 @@ def _():
 @check("N08", "device states readable unconfined: all, and those that reveal presence",
        [("12_results.md", r"returned all (\d+), including"), ("12_results.md", r"including all (\d+) that reveal"),
         ("12_results.md", r"\| Reading devices the integration was not granted \| (\d+ of \d+) \|"),
-        ("appendix_results_detail.md", r"\| (\d+ of \d+), including all"),
-        ("appendix_results_detail.md", r"including all (\d+) that reveal")])
+        ("20_appendix_i_results_detail.md", r"\| (\d+ of \d+), including all"),
+        ("20_appendix_i_results_detail.md", r"including all (\d+) that reveal")])
 def _():
     all_u, pres_u, _c, _pc = legacy("8.2.1e")
     n, p = all_u.split(" of ")[0], pres_u.split(" of ")[0]
@@ -185,7 +185,7 @@ def adversary(log: Path) -> collections.Counter:
 @check("N09", "hostile integration, final rerun: attempts, leaked unconfined, confined blocked / empty",
        [("11_data_presentation.md", r"which makes (\d+) attempts"),
         ("12_results.md", r"a suite of (\d+) attacks"),
-        ("appendix_results_detail.md", r"the (\d+) attempts of the adversary suite"),
+        ("20_appendix_i_results_detail.md", r"the (\d+) attempts of the adversary suite"),
         ("11_data_presentation.md", r"(\d+) attempts leaked unconfined"),
         ("11_data_presentation.md", r"Confined, (\d+) were blocked"),
         ("11_data_presentation.md", r"blocked, (\d+) found nothing")])
@@ -207,13 +207,13 @@ def recount() -> str:
 @check("N10", "bridge coverage by kind, of the 37 most-installed (platform rule, final recount)",
        [("abstract", r"device kinds of (\d+) of the 37"), ("resume", r"d'appareils de (\d+) des 37"),
         ("12_results.md", r"device kinds of (\d+) of the 37"), ("16_conclusion.md", r"device kinds of (\d+) of the 37"),
-        ("appendix_results_detail.md", r"covers (\d+) of the 37")])
+        ("20_appendix_i_results_detail.md", r"covers (\d+) of the 37")])
 def _():
     return re.search(r"only bridged kinds: (\d+) of 37", recount()).group(1)
 
 
 @check("N11", "device-kind uses bridged, of those the 37 provide",
-       [("appendix_results_detail.md", r"or (\d+ of the \d+) device kinds")])
+       [("20_appendix_i_results_detail.md", r"or (\d+ of the \d+) device kinds")])
 def _():
     m = re.search(r"kind uses (\d+), bridged (\d+)", recount())
     return f"{m.group(2)} of the {m.group(1)}"
@@ -221,7 +221,7 @@ def _():
 
 @check("N12", "kinds of device the bridge represents",
        [("12_results.md", r"from 11 kinds of device to (\d+)"),
-        ("appendix_results_detail.md", r"from 11 kinds of device to (\d+)")])
+        ("20_appendix_i_results_detail.md", r"from 11 kinds of device to (\d+)")])
 def _():
     src = (V2 / "framework/ha_bridge/confine_bridge/const.py").read_text()
     body = re.search(r"SUPPORTED = \((.*?)\)", src, re.S).group(1)
@@ -230,8 +230,8 @@ def _():
 
 @check("N13", "the fifteen against a real installation: devices published, checks held",
        [("12_results.md", r"all (\d+) devices they published"),
-        ("appendix_results_detail.md", r"All (\d+) devices they published"),
-        ("appendix_results_detail.md", r"all (\d+) checks passed")])
+        ("20_appendix_i_results_detail.md", r"All (\d+) devices they published"),
+        ("20_appendix_i_results_detail.md", r"all (\d+) checks passed")])
 def _():
     v = (FINAL2 / "chunkG_step08b_real/verdicts_bridge_step5.txt").read_text()
     devices = sum(int(n) for n in re.findall(r"\[(\d+) entities", v))
@@ -244,8 +244,8 @@ def _():
         ("16_conclusion.md", r"(\w+) named integrations worked"),
         ("11_data_presentation.md", r"reported for (\w+) named integrations")])
 def _():
-    t = text("appendix_results_detail.md")
-    table = t[t.index("**Table [R].2**"):t.index("### [R].3")]
+    t = text("20_appendix_i_results_detail.md")
+    table = t[t.index("**Table I.2**"):t.index("### I.3")]
     return word(len(re.findall(r"^\| `", table, re.M)))
 
 
@@ -261,8 +261,8 @@ def _():
 @check("N16", "sandboxes that fit in 60% of 4,050 MB: at ten components, and at none",
        [("12_results.md", r"holds at least (\d+)"), ("abstract", r"holds at least (\d+) sandboxes"),
         ("16_conclusion.md", r"holds at least (\d+) sandboxes"),
-        ("appendix_results_detail.md", r"holds between (\d+) sandboxes"),
-        ("appendix_results_detail.md", r"components, and (\d+), when")])
+        ("20_appendix_i_results_detail.md", r"holds between (\d+) sandboxes"),
+        ("20_appendix_i_results_detail.md", r"components, and (\d+), when")])
 def _():
     budget = int(0.6 * 4050)
     return [str(int(budget // 135.6))] * 4 + [str(int(budget // 56.5))]
@@ -270,20 +270,20 @@ def _():
 
 @check("N17", "capacity against the average need, in words",
        [("12_results.md", r"which is (\w+) times what"), ("abstract", r"about (\w+) times what"),
-        ("16_conclusion.md", r"about (\w+) times what"), ("appendix_results_detail.md", r"case is (\w+) times")])
+        ("16_conclusion.md", r"about (\w+) times what"), ("20_appendix_i_results_detail.md", r"case is (\w+) times")])
 def _():
     return word(int(int(0.6 * 4050) // 135.6 / 4.02))
 
 
 @check("N18", "mediator capacity with the durable record",
        [("12_results.md", r"about (\d+) decisions per second"),
-        ("appendix_results_detail.md", r"about (\d+) decisions per second")])
+        ("20_appendix_i_results_detail.md", r"about (\d+) decisions per second")])
 def _():
     return legacy("8.2.3b")
 
 
 @check("N19", "headroom over realistic demand, in words (to the nearest ten)",
-       [("12_results.md", r"about (\w+) times clear"), ("appendix_results_detail.md", r"about (\w+) times clear")])
+       [("12_results.md", r"about (\w+) times clear"), ("20_appendix_i_results_detail.md", r"about (\w+) times clear")])
 def _():
     v = float(re.match(r"([\d.]+)", legacy("A1.20")).group(1))
     return word(int(round(v, -1)))
@@ -291,12 +291,12 @@ def _():
 
 @check("N20", "reported costs: one request, the durable record, push cost, flood, powercalc compiled",
        [("12_results.md", r"\| Delay added to one request \| ([\d.]+ µs)"),
-        ("appendix_results_detail.md", r"\| Delay added by the mediator to one request \| ([\d.]+ µs)"),
+        ("20_appendix_i_results_detail.md", r"\| Delay added by the mediator to one request \| ([\d.]+ µs)"),
         ("12_results.md", r"\| Writing the decision record to disk \| ([\d.]+ ms)"),
-        ("appendix_results_detail.md", r"\| Writing the decision record to disk, before the action \| ([\d.]+ ms)"),
-        ("appendix_results_detail.md", r"\| Mediator cost of one change delivered to a sandbox \| ([\d.]+ µs)"),
-        ("appendix_results_detail.md", r"\| A flooding sandbox, from first request to cut-off \| ([\d.]+ s)"),
-        ("appendix_results_detail.md", r"compiled at installation \| ([\d.]+ s)")])
+        ("20_appendix_i_results_detail.md", r"\| Writing the decision record to disk, before the action \| ([\d.]+ ms)"),
+        ("20_appendix_i_results_detail.md", r"\| Mediator cost of one change delivered to a sandbox \| ([\d.]+ µs)"),
+        ("20_appendix_i_results_detail.md", r"\| A flooding sandbox, from first request to cut-off \| ([\d.]+ s)"),
+        ("20_appendix_i_results_detail.md", r"compiled at installation \| ([\d.]+ s)")])
 def _():
     lat, rec = legacy("A1.18"), legacy("A1.19")
     return [lat, lat, rec, rec, legacy("8.2.3d"), R.Num(float(legacy("7.44")[0].split()[0]), "s"),
@@ -305,27 +305,27 @@ def _():
 
 @check("N21", "reported range of a household command",
        [("12_results.md", r"\| A household command reaching an integration \| (\d+–\d+ ms)"),
-        ("appendix_results_detail.md", r"\| A household command reaching the integration \| (\d+–\d+ ms)")])
+        ("20_appendix_i_results_detail.md", r"\| A household command reaching the integration \| (\d+–\d+ ms)")])
 def _():
     return legacy("A1.23").replace(" to ", "–")
 
 
 @check("N22", "the final rerun's column (medians of its five passes)",
        [("12_results.md", r"using no platform components \| [^|]+ \| ([\d.]+ MB)"),
-        ("appendix_results_detail.md", r"no platform components \| [^|]+ \| ([\d.]+ MB)"),
+        ("20_appendix_i_results_detail.md", r"no platform components \| [^|]+ \| ([\d.]+ MB)"),
         ("12_results.md", r"using all ten components measured \| [^|]+ \| ([\d.]+ MB)"),
-        ("appendix_results_detail.md", r"all ten components measured \| [^|]+ \| ([\d.]+ MB)"),
+        ("20_appendix_i_results_detail.md", r"all ten components measured \| [^|]+ \| ([\d.]+ MB)"),
         ("12_results.md", r"\| Delay added to one request \| [^|]+ \| ([\d.]+ µs)"),
-        ("appendix_results_detail.md", r"\| Delay added by the mediator to one request \| [^|]+ \| ([\d.]+ µs)"),
+        ("20_appendix_i_results_detail.md", r"\| Delay added by the mediator to one request \| [^|]+ \| ([\d.]+ µs)"),
         ("12_results.md", r"\| Writing the decision record to disk \| [^|]+ \| ([\d.]+ ms)"),
-        ("appendix_results_detail.md", r"to disk, before the action \| [^|]+ \| ([\d.]+ ms)"),
+        ("20_appendix_i_results_detail.md", r"to disk, before the action \| [^|]+ \| ([\d.]+ ms)"),
         ("12_results.md", r"reaching an integration \| 0\.5–0\.9 ms \| ([\d.]+ ms)"),
-        ("appendix_results_detail.md", r"reaching a confined integration \| [^|]+ \| ([\d.]+ ms)"),
+        ("20_appendix_i_results_detail.md", r"reaching a confined integration \| [^|]+ \| ([\d.]+ ms)"),
         ("12_results.md", r"command reaching an integration \| [^|]+ \| ([\d.]+ ms)"),
-        ("appendix_results_detail.md", r"command reaching the integration \| [^|]+ \| ([\d.]+ ms)"),
-        ("appendix_results_detail.md", r"delivered to a sandbox \| [^|]+ \| ([\d.]+ µs)"),
-        ("appendix_results_detail.md", r"to cut-off \| [^|]+ \| ([\d.]+ s)"),
-        ("appendix_results_detail.md", r"compiled at installation \| [^|]+ \| ([\d.]+ s)")])
+        ("20_appendix_i_results_detail.md", r"command reaching the integration \| [^|]+ \| ([\d.]+ ms)"),
+        ("20_appendix_i_results_detail.md", r"delivered to a sandbox \| [^|]+ \| ([\d.]+ µs)"),
+        ("20_appendix_i_results_detail.md", r"to cut-off \| [^|]+ \| ([\d.]+ s)"),
+        ("20_appendix_i_results_detail.md", r"compiled at installation \| [^|]+ \| ([\d.]+ s)")])
 def _():
     none, ten = R.Num(final2_median("depth_none"), "MB"), R.Num(final2_median("depth_ten"), "MB")
     lat = R.Num(final2_median("latency_1"), "µs")
@@ -341,7 +341,7 @@ def _():
 
 @check("N23", "test suites in the final rerun, both runs",
        [("12_results.md", r"all (\d+) test suites passed twice"),
-        ("appendix_results_detail.md", r"All (\d+) suites pass, twice")])
+        ("20_appendix_i_results_detail.md", r"All (\d+) suites pass, twice")])
 def _():
     runs = re.findall(r"suites_\d failed=0 of (\d+)", (FINAL2 / "chunkA_step01/summary.txt").read_text())
     assert len(runs) == 2 and len(set(runs)) == 1, runs
@@ -368,14 +368,14 @@ def mutants() -> tuple[int, int]:
 
 @check("N24", "deliberate defects planted, and caught",
        [("12_results.md", r"(\d+) defects were planted"), ("12_results.md", r"the tests caught (\d+)"),
-        ("appendix_results_detail.md", r"(\d+) of \d+ caught"), ("appendix_results_detail.md", r"\d+ of (\d+) caught")])
+        ("20_appendix_i_results_detail.md", r"(\d+) of \d+ caught"), ("20_appendix_i_results_detail.md", r"\d+ of (\d+) caught")])
 def _():
     run, killed = mutants()
     return [str(run), str(killed), str(killed), str(run)]
 
 
 @check("N25", "findings recorded (rows of Table F.2), and the Critical ones",
-       [("12_results.md", r"produced (\d+) findings"), ("appendix_results_detail.md", r"recorded (\d+) findings"),
+       [("12_results.md", r"produced (\d+) findings"), ("20_appendix_i_results_detail.md", r"recorded (\d+) findings"),
         ("18_appendices.md", r"Of the (\d+) findings"), ("12_results.md", r"of which (\w+) was critical")])
 def _():
     rows = [l for l in text("18_appendices.md").splitlines() if re.match(r"^\| F\d\d ", l)]

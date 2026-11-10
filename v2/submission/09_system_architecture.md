@@ -13,7 +13,7 @@ A confined installation runs three kinds of process, shown in Figure 9.1, and on
 
 *Note.* A supervisor builds the sandboxes, and the mediator connects to (A) as an ordinary Home Assistant user. No sandbox holds a credential to the house.
 
-Four design decisions fixed this shape. Table 9.1 states each with the alternative it displaced, and Appendix [S] gives the evidence.
+Four design decisions fixed this shape. Table 9.1 states each with the alternative it displaced, and Appendix H gives the evidence.
 
 **Table 9.1**
 *The four design decisions*
@@ -80,7 +80,7 @@ Every request that crosses the boundary is identified, decided, recorded and onl
 
 *Note.* A service call from the integration passes through the mediator's five steps, with the record written before the act. The lower panels show the two directions that run into the sandbox: a change in the house, and a household's command.
 
-The bridge is the part of the system the household sees. When a confined integration creates a device in its sandbox, the bridge creates a device of the same kind in (A), so the household's dashboard and automations treat it like any other. When someone operates that device, (A) first checks the request and converts it into the call the device itself receives. The mediator then forwards that call only if it is one of the services listed for the device's kind and its data has exactly one of the allowed shapes. A command therefore cannot be redirected to another device, widened to another service or given extra parameters. Table 9.3 groups the 29 supported kinds by what the mediator checks, and Appendix [S] lists every service. A kind the bridge does not support, such as a to-do list, is refused when the integration tries to publish it.
+The bridge is the part of the system the household sees. When a confined integration creates a device in its sandbox, the bridge creates a device of the same kind in (A), so the household's dashboard and automations treat it like any other. When someone operates that device, (A) first checks the request and converts it into the call the device itself receives. The mediator then forwards that call only if it is one of the services listed for the device's kind and its data has exactly one of the allowed shapes. A command therefore cannot be redirected to another device, widened to another service or given extra parameters. Table 9.3 groups the 29 supported kinds by what the mediator checks, and Appendix H lists every service. A kind the bridge does not support, such as a to-do list, is refused when the integration tries to publish it.
 
 **Table 9.3**
 *The 29 kinds of device the bridge supports, by what the mediator checks*
@@ -138,6 +138,6 @@ The refusals are just as informative. A fan preset that the device does not offe
 
 ## 9.9 Limits of the architecture
 
-Appendix [S] lists the architecture's eleven limits, of which three matter most. The kernel is the boundary, so a flaw in the kernel would let an integration escape every sandbox. The mediator's ordinary user can still operate every device, because the platform cannot limit a user to some devices. A local-network clause reaches every device that answers on its port, not only the one the integration was written for. None of these limits gives a confined integration a capability that its manifest withholds.
+Appendix H lists the architecture's eleven limits, of which three matter most. The kernel is the boundary, so a flaw in the kernel would let an integration escape every sandbox. The mediator's ordinary user can still operate every device, because the platform cannot limit a user to some devices. A local-network clause reaches every device that answers on its port, not only the one the integration was written for. None of these limits gives a confined integration a capability that its manifest withholds.
 
 Taken together, the architecture replaces an integration's total and invisible authority with authority that is declared before installation, bounded by the kernel while it runs, and recorded each time it is used, while the household continues to see and operate its devices as before. Whether such a design can be built and run within the project's means is the subject of the next section.

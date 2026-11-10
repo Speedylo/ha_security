@@ -1,20 +1,20 @@
-## Appendix [AI-D] — AI Use Disclosure
+## Appendix J — AI Use Disclosure
 
-### [AI-D].1 Tool and model
+### J.1 Tool and model
 
 All AI assistance in this project came from one tool: Claude Code, Anthropic's command-line agent, running models of the Claude Opus family (Anthropic, 2026). I used it from the start of the rebuild on 21 August 2026 to the submission of this report. No other AI tool produced any part of the code, the measurements or the text.
 
 Claude Code worked inside the project's repository on the development laptop and, over SSH, on the Raspberry Pi 5 used as the reference device. It could read and write files, run commands and commit to the local repository. Its work reached GitHub only when I approved a push, and before every push an exact-value scan checked that none of my credentials appeared in any commit.
 
-### [AI-D].2 How the tool was instructed
+### J.2 How the tool was instructed
 
 The tool was instructed in two ways. The first was conversation: each working session began with my request and continued with my answers to its questions and my decisions on its proposals. The second was a set of persistent instruction files that carried my standing rules from one session to the next. These files recorded, among other things, that the report is written in the third person except for its AI-use material, that it uses APA 7, that the integrations it studies are called "community integrations", that a file is never deleted through a wildcard, that only named files are committed, and that every correction to the AI's output is added to the AI-use log. A hand-over file recorded where the work stood and which decisions were still open.
 
-### [AI-D].3 Representative instructions
+### J.3 Representative instructions
 
-The project ran over many sessions, so this appendix gives a representative sample of my instructions rather than every prompt. Each instruction in Table [AI-D].1 is quoted from the project's records, with its date and what it produced.
+The project ran over many sessions, so this appendix gives a representative sample of my instructions rather than every prompt. Each instruction in Table J.1 is quoted from the project's records, with its date and what it produced.
 
-**Table [AI-D].1**
+**Table J.1**
 *A representative sample of my instructions and what each produced*
 
 | Date | My instruction | What it produced |
@@ -31,7 +31,7 @@ The project ran over many sessions, so this appendix gives a representative samp
 
 My instructions also included questions, and one of them changed how the project was tested. I asked whether the test suites did more than confirm what the code already did, and the answer was a campaign of deliberate defects planted in the code to check that the suites catch them (§13.2).
 
-### [AI-D].4 How the output was used and modified
+### J.4 How the output was used and modified
 
 The output of the tool was never used without a human check, and the check depended on the kind of output.
 
@@ -41,9 +41,9 @@ For **measurements**, the pass criteria were committed before each run, and each
 
 For the **literature search**, the tool screened the records, and I reviewed every record it classed as relevant or adjacent and a seeded random sample of 20 exclusions (§13.3).
 
-For **text**, the tool drafted each section of this report from the project's records. I reviewed each section and either approved it, rewrote parts of it myself or sent it back with changes, and no section was started until the one before it was approved. Some of my changes were edits of my own, such as two clauses I cut from the methodology chapter and a phrase I added to the conclusion. Others were rejections, such as the replacement of the interim report's examples of my role and the removal of sentences I judged unnecessary. Every case in which the tool's text was wrong, overstated or rejected is recorded in the AI-use log (Appendix [AI-LOG]).
+For **text**, the tool drafted each section of this report from the project's records. I reviewed each section and either approved it, rewrote parts of it myself or sent it back with changes, and no section was started until the one before it was approved. Some of my changes were edits of my own, such as two clauses I cut from the methodology chapter and a phrase I added to the conclusion. Others were rejections, such as the replacement of the interim report's examples of my role and the removal of sentences I judged unnecessary. Every case in which the tool's text was wrong, overstated or rejected is recorded in the AI-use log (Appendix K).
 
-### [AI-D].5 Confidentiality and responsibility
+### J.5 Confidentiality and responsibility
 
 The tool worked with the project's code, the public source code of the integrations studied, and my own test accounts with online services. No personal data from anyone else was given to it. The credentials for my test accounts stayed on the reference device, and the scan before each push confirmed that none reached the repository.
 
