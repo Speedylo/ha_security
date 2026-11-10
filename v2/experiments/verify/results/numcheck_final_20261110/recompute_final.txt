@@ -1,0 +1,134 @@
+EQUAL      N01  reporting installations (analytics, 21 August 2026)
+             abstract: 669,743
+             resume: 669 743
+             01_introduction.md: 669,743
+EQUAL      N02  distinct integrations measured (37 + 40, two shared)
+             abstract: 75
+             resume: 75
+             01_introduction.md: 75
+             16_conclusion.md: 75
+EQUAL      N03  Table 11.3: distinct integrations, median installations, installations represented
+             11_data_presentation.md: 37
+             11_data_presentation.md: 40
+             11_data_presentation.md: 16,294
+             11_data_presentation.md: 48
+             11_data_presentation.md: 998,478
+             11_data_presentation.md: 46,979
+             11_data_presentation.md: two
+             11_data_presentation.md: twenty-one
+EQUAL      N04  load rates, Table 12.2 (head unconfined, confined; uniform unconfined, confined) and §14
+             12_results.md: 84%
+             12_results.md: 84%
+             12_results.md: 92%
+             12_results.md: 92%
+             14_learning_strategies.md: 92%
+             14_learning_strategies.md: 84%
+EQUAL      N05  garbage-collector technique: live objects holding the token, unconfined
+             12_results.md: 7
+             appendix_results_detail.md: 7
+EQUAL      N06  garbage-collector technique: objects the confined walk examined
+             12_results.md: 8,942
+             12_results.md: 8942
+             appendix_results_detail.md: 8,942
+EQUAL      N07  2021 pattern: planted secrets recovered, unconfined then confined
+             12_results.md: 2 of 2
+             12_results.md: 0 of 2
+             appendix_results_detail.md: 2 of 2
+             appendix_results_detail.md: 0 of 2
+EQUAL      N08  device states readable unconfined: all, and those that reveal presence
+             12_results.md: 36
+             12_results.md: 20
+             12_results.md: 36 of 36
+             appendix_results_detail.md: 36 of 36
+             appendix_results_detail.md: 20
+EQUAL      N09  hostile integration, final rerun: attempts, leaked unconfined, confined blocked / empty
+             11_data_presentation.md: 39
+             12_results.md: 39
+             appendix_results_detail.md: 39
+             11_data_presentation.md: 11
+             11_data_presentation.md: 29
+             11_data_presentation.md: 10
+EQUAL      N10  bridge coverage by kind, of the 37 most-installed (platform rule, final recount)
+             abstract: 36
+             resume: 36
+             12_results.md: 36
+             16_conclusion.md: 36
+             appendix_results_detail.md: 36
+EQUAL      N11  device-kind uses bridged, of those the 37 provide
+             appendix_results_detail.md: 247 of the 248
+EQUAL      N12  kinds of device the bridge represents
+             12_results.md: 29
+             appendix_results_detail.md: 29
+EQUAL      N13  the fifteen against a real installation: devices published, checks held
+             12_results.md: 65
+             appendix_results_detail.md: 65
+             appendix_results_detail.md: 36
+EQUAL      N14  integrations run end to end (rows of Table [R].2, and every count of them)
+             abstract: fifteen
+             12_results.md: fifteen
+             16_conclusion.md: fifteen
+             11_data_presentation.md: fifteen
+EQUAL      N15  average community integrations per installation
+             12_results.md: 4.02
+             11_data_presentation.md: 4.02
+EQUAL      N16  sandboxes that fit in 60% of 4,050 MB: at ten components, and at none
+             12_results.md: 17
+             abstract: 17
+             16_conclusion.md: 17
+             appendix_results_detail.md: 17
+             appendix_results_detail.md: 43
+EQUAL      N17  capacity against the average need, in words
+             12_results.md: four
+             abstract: four
+             16_conclusion.md: four
+             appendix_results_detail.md: four
+EQUAL      N18  mediator capacity with the durable record
+             12_results.md: 269
+             appendix_results_detail.md: 269
+EQUAL      N19  headroom over realistic demand, in words (to the nearest ten)
+             12_results.md: sixty
+             appendix_results_detail.md: sixty
+EQUAL      N20  reported costs: one request, the durable record, push cost, flood, powercalc compiled
+             12_results.md: 43 µs
+             appendix_results_detail.md: 43 µs
+             12_results.md: 3.67 ms
+             appendix_results_detail.md: 3.67 ms
+             appendix_results_detail.md: 10.9 µs
+             appendix_results_detail.md: 0.81 s
+             appendix_results_detail.md: 1.87 s
+EQUAL      N21  reported range of a household command
+             12_results.md: 11–16 ms
+             appendix_results_detail.md: 11–16 ms
+EQUAL      N22  the final rerun's column (medians of its five passes)
+             12_results.md: 59.1 MB
+             appendix_results_detail.md: 59.1 MB
+             12_results.md: 141.2 MB
+             appendix_results_detail.md: 141.2 MB
+             12_results.md: 42.1 µs
+             appendix_results_detail.md: 42.1 µs
+             12_results.md: 3.69 ms
+             appendix_results_detail.md: 3.69 ms
+             12_results.md: 0.49 ms
+             appendix_results_detail.md: 0.49 ms
+             12_results.md: 12.5 ms
+             appendix_results_detail.md: 12.5 ms
+             appendix_results_detail.md: 11.4 µs
+             appendix_results_detail.md: 0.82 s
+             appendix_results_detail.md: 1.89 s
+EQUAL      N23  test suites in the final rerun, both runs
+             12_results.md: 35
+             appendix_results_detail.md: 35
+EQUAL      N24  deliberate defects planted, and caught
+             12_results.md: 92
+             12_results.md: 90
+             appendix_results_detail.md: 90
+             appendix_results_detail.md: 92
+EQUAL      N25  findings recorded (rows of Table F.2), and the Critical ones
+             12_results.md: 71
+             appendix_results_detail.md: 71
+             18_appendices.md: 71
+             12_results.md: one
+EQUAL      N26  planted defects that change no behaviour
+             12_results.md: two
+
+EQUAL 26

@@ -1,0 +1,714 @@
+[
+ {
+  "id": "N01",
+  "what": "reporting installations (analytics, 21 August 2026)",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "abstract",
+    "669,743",
+    "669,743"
+   ],
+   [
+    "resume",
+    "669 743",
+    "669,743"
+   ],
+   [
+    "01_introduction.md",
+    "669,743",
+    "669,743"
+   ]
+  ]
+ },
+ {
+  "id": "N02",
+  "what": "distinct integrations measured (37 + 40, two shared)",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "abstract",
+    "75",
+    "75"
+   ],
+   [
+    "resume",
+    "75",
+    "75"
+   ],
+   [
+    "01_introduction.md",
+    "75",
+    "75"
+   ],
+   [
+    "16_conclusion.md",
+    "75",
+    "75"
+   ]
+  ]
+ },
+ {
+  "id": "N03",
+  "what": "Table 11.3: distinct integrations, median installations, installations represented",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "11_data_presentation.md",
+    "37",
+    "37"
+   ],
+   [
+    "11_data_presentation.md",
+    "40",
+    "40"
+   ],
+   [
+    "11_data_presentation.md",
+    "16,294",
+    "16,294"
+   ],
+   [
+    "11_data_presentation.md",
+    "48",
+    "48"
+   ],
+   [
+    "11_data_presentation.md",
+    "998,478",
+    "998,478"
+   ],
+   [
+    "11_data_presentation.md",
+    "46,979",
+    "46,979"
+   ],
+   [
+    "11_data_presentation.md",
+    "two",
+    "two"
+   ],
+   [
+    "11_data_presentation.md",
+    "twenty-one",
+    "twenty-one"
+   ]
+  ]
+ },
+ {
+  "id": "N04",
+  "what": "load rates, Table 12.2 (head unconfined, confined; uniform unconfined, confined) and §14",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "84%",
+    "84%"
+   ],
+   [
+    "12_results.md",
+    "84%",
+    "84%"
+   ],
+   [
+    "12_results.md",
+    "92%",
+    "92%"
+   ],
+   [
+    "12_results.md",
+    "92%",
+    "92%"
+   ],
+   [
+    "14_learning_strategies.md",
+    "92%",
+    "92%"
+   ],
+   [
+    "14_learning_strategies.md",
+    "84%",
+    "84%"
+   ]
+  ]
+ },
+ {
+  "id": "N05",
+  "what": "garbage-collector technique: live objects holding the token, unconfined",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "7",
+    "7"
+   ],
+   [
+    "appendix_results_detail.md",
+    "7",
+    "7"
+   ]
+  ]
+ },
+ {
+  "id": "N06",
+  "what": "garbage-collector technique: objects the confined walk examined",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "8,942",
+    "8,942"
+   ],
+   [
+    "12_results.md",
+    "8942",
+    "8,942"
+   ],
+   [
+    "appendix_results_detail.md",
+    "8,942",
+    "8,942"
+   ]
+  ]
+ },
+ {
+  "id": "N07",
+  "what": "2021 pattern: planted secrets recovered, unconfined then confined",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "2 of 2",
+    "2 of 2"
+   ],
+   [
+    "12_results.md",
+    "0 of 2",
+    "0 of 2"
+   ],
+   [
+    "appendix_results_detail.md",
+    "2 of 2",
+    "2 of 2"
+   ],
+   [
+    "appendix_results_detail.md",
+    "0 of 2",
+    "0 of 2"
+   ]
+  ]
+ },
+ {
+  "id": "N08",
+  "what": "device states readable unconfined: all, and those that reveal presence",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "36",
+    "36"
+   ],
+   [
+    "12_results.md",
+    "20",
+    "20"
+   ],
+   [
+    "12_results.md",
+    "36 of 36",
+    "36 of 36"
+   ],
+   [
+    "appendix_results_detail.md",
+    "36 of 36",
+    "36 of 36"
+   ],
+   [
+    "appendix_results_detail.md",
+    "20",
+    "20"
+   ]
+  ]
+ },
+ {
+  "id": "N09",
+  "what": "hostile integration, final rerun: attempts, leaked unconfined, confined blocked / empty",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "11_data_presentation.md",
+    "39",
+    "39"
+   ],
+   [
+    "12_results.md",
+    "39",
+    "39"
+   ],
+   [
+    "appendix_results_detail.md",
+    "39",
+    "39"
+   ],
+   [
+    "11_data_presentation.md",
+    "11",
+    "11"
+   ],
+   [
+    "11_data_presentation.md",
+    "29",
+    "29"
+   ],
+   [
+    "11_data_presentation.md",
+    "10",
+    "10"
+   ]
+  ]
+ },
+ {
+  "id": "N10",
+  "what": "bridge coverage by kind, of the 37 most-installed (platform rule, final recount)",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "abstract",
+    "36",
+    "36"
+   ],
+   [
+    "resume",
+    "36",
+    "36"
+   ],
+   [
+    "12_results.md",
+    "36",
+    "36"
+   ],
+   [
+    "16_conclusion.md",
+    "36",
+    "36"
+   ],
+   [
+    "appendix_results_detail.md",
+    "36",
+    "36"
+   ]
+  ]
+ },
+ {
+  "id": "N11",
+  "what": "device-kind uses bridged, of those the 37 provide",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "appendix_results_detail.md",
+    "247 of the 248",
+    "247 of the 248"
+   ]
+  ]
+ },
+ {
+  "id": "N12",
+  "what": "kinds of device the bridge represents",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "29",
+    "29"
+   ],
+   [
+    "appendix_results_detail.md",
+    "29",
+    "29"
+   ]
+  ]
+ },
+ {
+  "id": "N13",
+  "what": "the fifteen against a real installation: devices published, checks held",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "65",
+    "65"
+   ],
+   [
+    "appendix_results_detail.md",
+    "65",
+    "65"
+   ],
+   [
+    "appendix_results_detail.md",
+    "36",
+    "36"
+   ]
+  ]
+ },
+ {
+  "id": "N14",
+  "what": "integrations run end to end (rows of Table [R].2, and every count of them)",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "abstract",
+    "fifteen",
+    "fifteen"
+   ],
+   [
+    "12_results.md",
+    "fifteen",
+    "fifteen"
+   ],
+   [
+    "16_conclusion.md",
+    "fifteen",
+    "fifteen"
+   ],
+   [
+    "11_data_presentation.md",
+    "fifteen",
+    "fifteen"
+   ]
+  ]
+ },
+ {
+  "id": "N15",
+  "what": "average community integrations per installation",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "4.02",
+    "4.02"
+   ],
+   [
+    "11_data_presentation.md",
+    "4.02",
+    "4.02"
+   ]
+  ]
+ },
+ {
+  "id": "N16",
+  "what": "sandboxes that fit in 60% of 4,050 MB: at ten components, and at none",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "17",
+    "17"
+   ],
+   [
+    "abstract",
+    "17",
+    "17"
+   ],
+   [
+    "16_conclusion.md",
+    "17",
+    "17"
+   ],
+   [
+    "appendix_results_detail.md",
+    "17",
+    "17"
+   ],
+   [
+    "appendix_results_detail.md",
+    "43",
+    "43"
+   ]
+  ]
+ },
+ {
+  "id": "N17",
+  "what": "capacity against the average need, in words",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "four",
+    "four"
+   ],
+   [
+    "abstract",
+    "four",
+    "four"
+   ],
+   [
+    "16_conclusion.md",
+    "four",
+    "four"
+   ],
+   [
+    "appendix_results_detail.md",
+    "four",
+    "four"
+   ]
+  ]
+ },
+ {
+  "id": "N18",
+  "what": "mediator capacity with the durable record",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "269",
+    "269"
+   ],
+   [
+    "appendix_results_detail.md",
+    "269",
+    "269"
+   ]
+  ]
+ },
+ {
+  "id": "N19",
+  "what": "headroom over realistic demand, in words (to the nearest ten)",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "sixty",
+    "sixty"
+   ],
+   [
+    "appendix_results_detail.md",
+    "sixty",
+    "sixty"
+   ]
+  ]
+ },
+ {
+  "id": "N20",
+  "what": "reported costs: one request, the durable record, push cost, flood, powercalc compiled",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "43 µs",
+    "43.2 µs"
+   ],
+   [
+    "appendix_results_detail.md",
+    "43 µs",
+    "43.2 µs"
+   ],
+   [
+    "12_results.md",
+    "3.67 ms",
+    "3.67 ms"
+   ],
+   [
+    "appendix_results_detail.md",
+    "3.67 ms",
+    "3.67 ms"
+   ],
+   [
+    "appendix_results_detail.md",
+    "10.9 µs",
+    "10.9 µs"
+   ],
+   [
+    "appendix_results_detail.md",
+    "0.81 s",
+    "0.81 s"
+   ],
+   [
+    "appendix_results_detail.md",
+    "1.87 s",
+    "1.87 s"
+   ]
+  ]
+ },
+ {
+  "id": "N21",
+  "what": "reported range of a household command",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "11–16 ms",
+    "11–16 ms"
+   ],
+   [
+    "appendix_results_detail.md",
+    "11–16 ms",
+    "11–16 ms"
+   ]
+  ]
+ },
+ {
+  "id": "N22",
+  "what": "the final rerun's column (medians of its five passes)",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "59.1 MB",
+    "59.1 MB"
+   ],
+   [
+    "appendix_results_detail.md",
+    "59.1 MB",
+    "59.1 MB"
+   ],
+   [
+    "12_results.md",
+    "141.2 MB",
+    "141.2 MB"
+   ],
+   [
+    "appendix_results_detail.md",
+    "141.2 MB",
+    "141.2 MB"
+   ],
+   [
+    "12_results.md",
+    "42.1 µs",
+    "42.1 µs"
+   ],
+   [
+    "appendix_results_detail.md",
+    "42.1 µs",
+    "42.1 µs"
+   ],
+   [
+    "12_results.md",
+    "3.69 ms",
+    "3.6871 ms"
+   ],
+   [
+    "appendix_results_detail.md",
+    "3.69 ms",
+    "3.6871 ms"
+   ],
+   [
+    "12_results.md",
+    "0.49 ms",
+    "0.49 ms"
+   ],
+   [
+    "appendix_results_detail.md",
+    "0.49 ms",
+    "0.49 ms"
+   ],
+   [
+    "12_results.md",
+    "12.5 ms",
+    "12.4735 ms"
+   ],
+   [
+    "appendix_results_detail.md",
+    "12.5 ms",
+    "12.4735 ms"
+   ],
+   [
+    "appendix_results_detail.md",
+    "11.4 µs",
+    "11.4 µs"
+   ],
+   [
+    "appendix_results_detail.md",
+    "0.82 s",
+    "0.816 s"
+   ],
+   [
+    "appendix_results_detail.md",
+    "1.89 s",
+    "1.89 s"
+   ]
+  ]
+ },
+ {
+  "id": "N23",
+  "what": "test suites in the final rerun, both runs",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "35",
+    "35"
+   ],
+   [
+    "appendix_results_detail.md",
+    "35",
+    "35"
+   ]
+  ]
+ },
+ {
+  "id": "N24",
+  "what": "deliberate defects planted, and caught",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "92",
+    "92"
+   ],
+   [
+    "12_results.md",
+    "90",
+    "90"
+   ],
+   [
+    "appendix_results_detail.md",
+    "90",
+    "90"
+   ],
+   [
+    "appendix_results_detail.md",
+    "92",
+    "92"
+   ]
+  ]
+ },
+ {
+  "id": "N25",
+  "what": "findings recorded (rows of Table F.2), and the Critical ones",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "71",
+    "71"
+   ],
+   [
+    "appendix_results_detail.md",
+    "71",
+    "71"
+   ],
+   [
+    "18_appendices.md",
+    "71",
+    "71"
+   ],
+   [
+    "12_results.md",
+    "one",
+    "one"
+   ]
+  ]
+ },
+ {
+  "id": "N26",
+  "what": "planted defects that change no behaviour",
+  "status": "EQUAL",
+  "copies": [
+   [
+    "12_results.md",
+    "two",
+    "two"
+   ]
+  ]
+ }
+]
