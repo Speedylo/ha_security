@@ -34,17 +34,18 @@ The first check is part of the method itself. Every experiment's predictions and
 
 The second check is human review, and the literature search shows how it was structured. Claude screened 642 distinct records, excluded 590 on their titles and, of the 52 screened on their abstracts, classed five as adjacent to the project's research gap. I reviewed all five and kept one, which shows that the AI's relevance judgements were too generous. I checked the exclusions the other way, through a random sample of 20 drawn with a fixed seed, and agreed with all 20. The sample does not prove that no relevant paper was missed, but it limits the risk. I adopted the same approach, full review of positive judgements and a seeded sample of negative ones, for any later bulk judgement made by the AI.
 
-The third check is a log of every correction made to AI output, kept since 23 October 2026, with six earlier entries reconstructed from the project's records. It holds 40 entries (Table 13.2). One records a risk rather than an error: the 590 title exclusions were the AI's alone, apart from the sample.
+The third check is a log of every correction made to AI output, kept since 23 October 2026, with six earlier entries reconstructed from the project's records. It holds 55 entries (Table 13.2). One records a risk rather than an error: the 590 title exclusions were the AI's alone, apart from the sample.
 
 **Table 13.2**
-*The 40 entries of the AI-use log, by kind*
+*The 55 entries of the AI-use log, by kind*
 
 | Kind | Entries | Example |
 |---|---|---|
-| Errors of fact, count or code | 13 | A count of 38 integrations "declaring permissions" had counted configuration files; re-measured on the device, the true figure was 0 of 75 |
+| Errors of fact, count or code | 15 | A count of 38 integrations "declaring permissions" had counted configuration files; re-measured on the device, the true figure was 0 of 75 |
 | Test assumptions that were wrong while the code was right | 5 | A check expected a new device to show no state, which holds only on a freshly installed platform |
-| Errors of judgement, planning or method | 10 | The project's claims were narrowed to fit a paper of which only the abstract had been read; the change was rolled back |
-| Overclaims about my role, a source or a result | 11 | "I reviewed every screening decision", when I had reviewed the adjacent records and a sample, not all 590 title exclusions |
+| Errors of judgement, method or writing | 13 | The project's claims were narrowed to fit a paper of which only the abstract had been read; the change was rolled back |
+| Overclaims about my role, a source or a result | 17 | "I reviewed every screening decision", when I had reviewed the adjacent records and a sample, not all 590 title exclusions |
+| Text I cut or rejected without naming an error | 4 | A subsection on scheduling in Section 10, dropped on reading |
 | A risk, not an error | 1 | The title screen, above |
 
 The errors were caught by the method's own checks, by my review, or by Claude's checks against the project's records before a draft was shown. None was accepted because the tool seemed reliable. Taken together, the three checks show that AI output in this project was wrong often enough that none of it could be accepted unverified, and that the process caught those errors.
