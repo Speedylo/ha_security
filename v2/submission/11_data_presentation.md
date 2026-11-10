@@ -1,69 +1,74 @@
 # 11. Data Presentation
 
-This section states what was measured, on what, with which instruments, and how the results are to be read, before Section 12 reports what the measurements showed. An evaluation that introduces its method alongside its results invites the reading that the method was chosen to fit them. The assertions and their falsifiers below were written on 2 September 2026, before any of the measurements they specify had been run, and were not revised in light of the results. The method begins with the claim it tests.
+This section describes the data on which Section 12 rests. It covers the three questions the evaluation asked, with the answer that would count as "no", the device and the two ways each integration was run, the two samples of integrations, and what was recorded for each.
 
-## 11.1 The claim and what would falsify it
+## 11.1 The three questions
 
-The central claim of this project is that unmodified, pre-existing integrations can be confined at a cost worth paying. The claim contains three assertions that can fail independently: confinement is effective, it is compatible, and it is affordable. A sandbox that blocks every attack but breaks most integrations would satisfy the first while defeating the claim, so all three must be tested. Following Popper's criterion of falsifiability [44], each assertion was given a falsifier before measurement: an observation that would show it false, judged where necessary against an unconfined arm in which the same integration runs without the framework. Table 11.1 sets them out.
+The project claims that existing integrations can be confined, without changing them, at a cost worth paying. The claim holds only if three assertions hold: confinement protects the household (A), integrations still work when confined (B), and a home device can afford it (C). A sandbox that blocked every attack but broke most integrations would satisfy the first assertion and still defeat the claim, so all three were tested. Following Popper's (1959) criterion that a claim is open to test only if some observation could refute it, each assertion was given the result that would show it false. These conditions were written on 2 September 2026, before any of the measurements they describe, and are set out in Table 11.1.
 
-**Table 11.1 — The three assertions and their falsifiers, fixed on 2 September 2026**
+**Table 11.1**
+*The three assertions and what would show them false*
 
-| Assertion | Falsified if |
+| Assertion | Shown false if |
 |---|---|
-| A. Confinement is effective | The garbage-collector technique [5] reaches a platform object from inside the sandbox, or a platform credential is recoverable from the sandbox, or the attack pattern disclosed in 2021 [7] succeeds under the framework |
-| B. Confinement is compatible | The unconfined arm shows that most of the confined shortfall is caused by the design, that is, the unconfined arm passes substantially all of the head-weighted corpus while the confined arm does not |
-| C. Confinement is affordable | The cost of each sandbox reduces the number the reference device can hold below the mean number of community integrations an installation running HACS has, 4.02 [1], or mediation at realistic numbers of sandboxes changes what the platform can do |
+| A. Confinement protects the household | From inside a sandbox, the garbage-collector technique (Corno & Mannella, 2022) reaches a platform object, a planted credential is recovered, or the 2021 file-theft pattern (Home Assistant, 2021a) succeeds |
+| B. Integrations still work | The unconfined run loads almost all of the most-installed integrations and the confined run does not, so that most of the shortfall comes from the design |
+| C. A home device can afford it | The reference device cannot hold as many sandboxes as the average installation has community integrations, 4.02 (Home Assistant, n.d.-c), or mediation changes what the platform can do |
 
-Each falsifier names an observation rather than a threshold of satisfaction. Any one condition under A would defeat the architecture, not merely its implementation, because each is an attack the architecture was designed to remove. The falsifier for C is stated against a mean because the platform's telemetry publishes no spread across installations [1], so a budget above the mean may still fail installations in the tail, and this weakness is carried into the result.
+Each condition names an observation rather than a level of satisfaction. The budget in C is stated against an average because the platform publishes no spread across installations, a weakness that Section 12.5 carries into the result. One further condition applies to the evaluation itself, which fails if it reports as passed a requirement it cannot show; Appendix [R].6 describes how this was checked.
 
-A fourth falsifier applies to the evaluation rather than to the framework. The evaluation fails on its own terms if it reports as passed a requirement it cannot demonstrate, or reports an aggregate figure that conceals a breakdown it holds. This condition makes the honesty of the reporting something that can be checked, and Section 12.4 checks it. Assertion B, however, can be tested only against a baseline, which is the subject of the paired design.
+## 11.2 The device and the two runs
 
-## 11.2 The paired design
+Every measurement was taken on one device, the reference hardware that requirement C4 names. Table 11.2 records its configuration.
 
-Every security and compatibility result is the difference between two arms run on the same host, with the same platform release and in the same session. In the confined arm the integration runs inside the framework. In the unconfined arm the same integration runs as Home Assistant runs it today, in a full installation with no namespaces, no system-call filter, no resource limits, no separate file-system view, no mediator and no bridge. Confinement is therefore the only variable between the arms.
-
-The pairing is what gives a negative result its meaning. A security test that finds nothing is ambiguous, because a broken test also finds nothing; the same attack succeeding in the unconfined arm shows that the test works on this host and release, so its failure in the confined arm can be attributed to confinement. The pairing also cuts against the framework. An attack that fails in both arms, for a reason unrelated to confinement, is excluded from the framework's results rather than counted in its favour.
-
-Two decisions in the construction of the arms protect the comparison. Both arms call the same measurement function with the same arguments, so they classify outcomes by the same rules. The unconfined arm is also deliberately generous: it sets up the platform's default components together with every component and package the integration declares, which makes any cost charged to confinement larger rather than smaller. Its first version was less generous, and an integration that declares the `mqtt` component failed unconfined while passing confined; a baseline weaker than the arm it is compared against inverts the cost it is meant to measure. The arms also share one environment, described next.
-
-## 11.3 Environment and corpora
-
-Every measurement was taken on one device, the reference hardware that requirement C4 names, and Table 11.2 records its configuration.
-
-**Table 11.2 — The test environment**
+**Table 11.2**
+*The test environment*
 
 | Item | Value |
 |---|---|
-| Device | Raspberry Pi 5, 4 GB |
+| Device | Raspberry Pi 5, 4 GB of memory |
 | Operating system | Raspberry Pi OS (Debian 13), kernel 6.12.47, 64-bit Arm |
-| Platform | Home Assistant 2026.8.3, unmodified, on Python 3.14.7 |
-| Framework | Supervisor and mediator on the operating system's Python 3.13.5, standard library only |
-| Privilege | An ordinary user throughout; no step of any run requires root |
+| Platform | Home Assistant 2026.8.3, unchanged, on Python 3.14.7 |
+| Framework | Python 3.13.5, standard library only |
+| Privileges | An ordinary user; no step needs administrator rights |
 
-Holding the environment fixed makes the arms comparable, but it also limits how far the results generalise: they describe one platform release on one device and one processor architecture. Releases remove interfaces that integrations depend on, and one integration in the head-weighted corpus fails on a constant removed in this very release, so a compatibility figure should be expected to change with the release.
+Every security and compatibility test was run twice on this device, with the same release and in the same session. In the confined run the integration runs inside the framework, and in the unconfined run it runs as Home Assistant runs it today, so confinement is the only difference between the two. The pairing is what gives a negative result its meaning. A security test that finds nothing is ambiguous, because a broken test also finds nothing, but the same attack succeeding unconfined shows that the test works, so its failure when confined can be attributed to the framework. The unconfined run was also made generous: it sets up every component and package the integration declares, so that a failure is charged to confinement rather than to a weak comparison.
 
-Compatibility was measured on real, unmodified integrations from HACS, the community catalogue [6], and two corpora were used because they answer different questions. Table 11.3 compares them.
+## 11.3 The two samples
 
-**Table 11.3 — The two corpora**
+Compatibility was measured on real, unmodified integrations from the Home Assistant Community Store (HACS, n.d.), using two samples that answer different questions. Table 11.3 compares them.
 
-| | Head-weighted | Uniform |
+**Table 11.3**
+*The two samples of community integrations*
+
+| | Most installed | Random |
 |---|---|---|
-| Selection | The 37 most-installed integrations | 40 repositories drawn with equal probability (seed 20260902) |
-| Integrations measured | 37 | 40 |
-| Install count, median | 16,294 | 48 |
+| Selection | The 40 most-installed catalogue entries | 40 entries drawn with equal probability (seed 20260902) |
+| Distinct integrations | 37 | 40 |
+| Median installations per integration | 16,294 | 48 |
 | Installations represented | 998,478 | 46,979 |
-| Integrations declaring no platform components | 18 of 37 | 26 of 40 |
 
-The head-weighted corpus describes what most installations run, and the uniform corpus describes what most integrations are. Home Assistant's analytics count installations per integration name rather than per repository, and the catalogue lists three of the most-installed names under two repositories each, so the 40 most-installed entries in the catalogue contain 37 distinct integrations. The two share only two members, so the second is close to an independent sample of the same ecosystem rather than a different view of the first, while the first represents twenty-one times the installations of the second. Neither corpus generalises to integrations distributed outside HACS. The instruments applied to these corpora are described next.
+The first sample describes what most installations run, and the second describes what most integrations are. The 40 entries of the first sample yield 37 integrations because the platform's analytics count installations by integration name, and three names belong to two repositories each. The two samples share only two integrations, so the second is close to an independent sample of the same catalogue, while the first represents about twenty-one times as many installations. Neither covers integrations distributed outside the catalogue.
 
-## 11.4 Instruments and statistics
+## 11.4 What was recorded
 
-Compatibility is reported as two numbers that are never combined. The first, whether an integration imports and sets up cleanly, was measured for every integration in both corpora; it is an upper bound, because an integration that imports may still fail at its first poll. The second is whether an integration was executed end to end, its entities and actions working in a live platform. Most integrations cannot be tested this way: 26 of the 37 head-weighted integrations require an API key, token, password, user name, host or e-mail address before their configuration can complete, and no test of any sandbox can supply those details. End-to-end results are therefore reported as a named set of integrations rather than as a rate.
+Security was recorded by a hostile integration written for the evaluation, which makes 39 attempts from inside a sandbox, together with one permitted request for the device it declared. Each attempt ends in one of three outcomes. It is blocked when it fails with an error, empty when it succeeds but finds nothing, and leaked when it returns something it should not. Blocked and empty outcomes are kept apart because they fail for different reasons: a blocked attempt meets a check or a missing file, while an empty one finds that the resource is not there to take. Table 11.4 shows five attempts from the final rerun.
 
-Security is measured with an adversarial integration that makes 39 attack attempts from inside a sandbox, together with one permitted request for the entity it declared as a control, and records one of three outcomes for each attempt. An attempt is blocked when something refuses it, empty when it succeeds and finds nothing because nothing is there, and leaked when it returns something it should not. The first two are kept apart because a refusal depends on a check that an attacker might evade, while an empty result depends on the resource being absent from the sandbox.
+**Table 11.4**
+*Five attempts by the hostile integration, final rerun of 1 November 2026*
 
-Performance is measured as memory and time. Memory is the proportional set size, which counts each page a process holds divided by the number of processes sharing it [56], because most of a sandbox consists of interpreter pages the kernel shares between sandboxes. Each figure was measured during development and re-measured in five passes over frozen code, the first three each on a separate boot, and in five more passes at the submitted version. A figure passes if the median across passes falls within a tolerance fixed before the first pass, 20% for timings and 5% for memory; a figure outside it is reported as a finding, not averaged away. The 99th percentile is recorded for each pass. A bootstrap 95% interval of the median [57] was computed as well, but resampling five values yields little more than their range, so Section 12 reports the range itself rather than imply a precision five passes cannot give. These instruments produce the data; the rules for presenting it follow.
+| Attempt | Unconfined | Confined |
+|---|---|---|
+| Read the household's secrets file through a relative path | Leaked: the planted secret | Blocked: no such file |
+| Connect to a service running on the device | Leaked: connected | Blocked: connection refused |
+| Create an isolated environment of its own, a step towards escape | Leaked: succeeded | Blocked: not permitted |
+| List the files in the device owner's home directory | Leaked: the file names | Empty: nothing to list |
+| Read a device it did not declare | No check: the code acts directly | Blocked: refused by the mediator |
 
-## 11.5 How the results are presented
+Across the whole suite, 11 attempts leaked unconfined. Confined, 29 were blocked, 10 found nothing and none leaked.
 
-Three rules govern how Section 12 presents the data. First, no aggregate figure of threats controlled is reported. Such a figure would merge attacks refused by a check, attacks that found nothing to reach and risks retained by decision into one number, which is the concealment the fourth falsifier names. Section 12 reports each category separately, and Appendix C gives the full register. Second, where the population is small, results are reported as named integrations with their outcomes, so that a reader can see which cases a figure rests on. Third, the strength of each statement follows its evidence: a verified result is said to show, a qualified one to suggest, and an argued one is presented as argument. Under these rules, Section 12 reports each assertion against its falsifier and states whether the falsifier was met.
+Compatibility is recorded as two numbers that are never combined. The first, whether an integration loads and sets up cleanly, was measured for every integration in both samples. It is an upper bound, because an integration that loads may still fail when it first fetches data. The second is whether an integration works end to end, with its devices and actions behaving as they do unconfined. Most integrations cannot be tested this way, because they need an account key, a password or a device address before their setup can complete, so end-to-end results are reported for fifteen named integrations rather than as a rate.
+
+Cost is recorded as memory and time. Memory is counted as proportional set size, which divides each page a process holds by the number of processes that share it (Linux kernel documentation, n.d.), because most of a sandbox consists of pages the kernel shares between sandboxes. Each figure was measured in ten passes on fixed code and in five more in the final rerun, and the median across passes is the figure reported.
+
+Section 12 presents these data under three rules. No single figure of threats controlled is given, because it would merge blocked attempts, empty ones and risks retained by decision. Where a sample is small, the integrations are named with their outcomes, so that a reader can see which cases a figure rests on. Each statement is also as strong as its evidence: a measured result is said to show, a narrower one to suggest, and an argued one is presented as argument.
