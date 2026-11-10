@@ -396,8 +396,9 @@ def build(out: pathlib.Path) -> None:
     head_par = Paragraph(head, B.PARENT)
     B.set_text(head_par, "AI EVIDENCE BOX")
     B.page_break_before(head_par)
-    for para in front("AI Evidence Box").split("\n\n"):
-        par = B.body_par(holder, after=6, line=1.15)
+    for k, para in enumerate(front("AI Evidence Box").split("\n\n")):
+        # The copied heading has no space after it, so the first paragraph keeps its distance.
+        par = B.body_par(holder, before=12 if k == 0 else 0, after=6, line=1.15)
         B.add_runs(par, para.strip(), size=12)
     mc._p.pPr.remove(sect_pr)
     holder_ppr = OxmlElement("w:pPr"); holder.append(holder_ppr)
