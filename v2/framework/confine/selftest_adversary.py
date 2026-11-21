@@ -356,6 +356,81 @@ record("escape", "mount a tmpfs over /sandbox",
        lambda: libc.mount(b"tmpfs", b"/sandbox", b"tmpfs", 0, None) == 0 or _raise())
 record("escape", "setuid(0)", lambda: os.setuid(0))
 
+
+# The same effects through other doors (found 2026-11-20): `clone` and `clone3` take the
+# namespace flags `unshare` takes, and the new mount API reconfigures a mounted filesystem
+# without `mount`. Each returns True only if the door opened, which the report counts as LEAKED.
+_CLONE_NR = {"aarch64": 220, "x86_64": 56}[os.uname().machine]
+libc.syscall.restype = ctypes.c_long
+
+
+def _clone_opened(nr, *args):
+    pid = libc.syscall(ctypes.c_long(nr), *args)
+    if pid == 0:
+        os._exit(0)
+    if pid < 0:
+        _raise()
+    os.waitpid(pid, 0)
+    return True
+
+
+def _clone3_newuser():
+    args = struct.pack("=11Q", 0x10000000, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0)
+    buf = ctypes.create_string_buffer(args, len(args))
+    return _clone_opened(435, buf, ctypes.c_size_t(len(args)))
+
+
+def _tmp_quota_lifted():
+    # fspick the sandbox's private /tmp, whose size is its disk quota, and ask for 64 MB more.
+    before = os.statvfs("/tmp").f_blocks * os.statvfs("/tmp").f_frsize
+    fd = libc.syscall(ctypes.c_long(433), -100, b"/tmp", 0)
+    if fd < 0:
+        _raise()
+    want = str(before // (1024 * 1024) + 64).encode() + b"m"
+    if libc.syscall(ctypes.c_long(431), fd, 1, b"size", want, 0) < 0 \
+            or libc.syscall(ctypes.c_long(431), fd, 7, None, None, 0) < 0:
+        _raise()
+    after = os.statvfs("/tmp").f_blocks * os.statvfs("/tmp").f_frsize
+    return f"/tmp grew from {before} to {after} bytes" if after > before else None
+
+
+record("escape", "clone(CLONE_NEWUSER)",
+       lambda: _clone_opened(_CLONE_NR, ctypes.c_ulong(0x10000000 | 17), 0, 0, 0, 0))
+record("escape", "clone3(CLONE_NEWUSER)", _clone3_newuser)
+record("escape", "fspick + fsconfig: lift the /tmp disk quota", _tmp_quota_lifted)
+
+
+# Two more found 2026-11-21. On x86_64 the x32 calling convention reports the same architecture
+# and marks its calls by setting bit 30 of the number (`man 2 seccomp`), so a deny-list of plain
+# numbers matches none of them. Tried in a throwaway child, so that a success does not move the
+# rest of this run into a new user namespace. And io_uring performs reads, writes, opens and
+# connects from a ring in shared memory, operations the filter never sees one by one: no way out
+# of the boundary, but a large body of kernel code within reach.
+def _x32_unshare_newuser():
+    pid = os.fork()
+    if pid == 0:
+        r = libc.syscall(ctypes.c_long(0x40000000 | 272), ctypes.c_ulong(0x10000000))
+        os._exit(0 if r == 0 else (ctypes.get_errno() or 1))
+    _, status = os.waitpid(pid, 0)
+    code = os.waitstatus_to_exitcode(status)
+    if code:
+        raise OSError(code, os.strerror(code))
+    return "a new user namespace through the x32 number of unshare"
+
+
+def _io_uring_ring():
+    params = ctypes.create_string_buffer(120)   # struct io_uring_params, zeroed
+    fd = libc.syscall(ctypes.c_long(425), 4, params)
+    if fd < 0:
+        _raise()
+    os.close(fd)
+    return "an io_uring ring, whose operations do not pass through the filter"
+
+
+if os.uname().machine == "x86_64":
+    record("escape", "x32 unshare(CLONE_NEWUSER)", _x32_unshare_newuser)
+record("kernel surface", "io_uring_setup", _io_uring_ring)
+
 # ---- reaching another integration ------------------------------------------------------
 record("reach another", "connect to a TCP service on the host",
        lambda: socket.create_connection(("127.0.0.1", 8123), timeout=2) and "connected")

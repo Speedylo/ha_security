@@ -52,16 +52,46 @@ BPF_LD_W_ABS = 0x20
 BPF_JEQ_K = 0x15
 BPF_RET_K = 0x06
 
-# Offsets into `struct seccomp_data`: nr at 0, arch at 4.
+BPF_JSET_K = 0x45
+BPF_JGE_K = 0x35
+
+# On x86_64 a second calling convention, x32, reports the same architecture value and marks its
+# calls by setting this bit in the number, so a list of plain numbers matches none of them and
+# the whole deny-list is bypassed (`man 2 seccomp`). Found 2026-11-21. No ordinary x86_64
+# program uses x32, so every number at or above the bit is refused. aarch64 has no x32 and no
+# number this high, so there the check never fires.
+X32_SYSCALL_BIT = 0x40000000
+
+# Offsets into `struct seccomp_data`: nr at 0, arch at 4, then the instruction pointer, then the
+# six arguments. 16 is the low word of the first argument on a little-endian machine, which both
+# supported architectures are.
 OFF_NR = 0
 OFF_ARCH = 4
+OFF_ARG0_LO = 16
+
+# `unshare` and `setns` are not the only ways to make a namespace: `clone` takes the same
+# CLONE_NEW* flags, and `clone3` takes them inside a structure in memory, which a seccomp filter
+# cannot read. Found 2026-11-20: with only `unshare` denied, `clone(CLONE_NEWUSER)` and `clone3`
+# still gave the sandbox a fresh user namespace holding every capability. So `clone` is refused
+# when its flags ask for any new namespace (the flags are its first argument on both
+# architectures, and all the CLONE_NEW* bits `clone` accepts are in the low word), and `clone3`
+# is answered "not implemented", so that the C library falls back to `clone` and is checked there.
+# CLONE_NEWTIME is absent on purpose: `clone` cannot take it (that bit is part of the exit
+# signal there), and `clone3`, the only clone that can, is already refused.
+CLONE_NAMESPACE_FLAGS = (0x00020000 | 0x02000000 | 0x04000000 | 0x08000000
+                         | 0x10000000 | 0x20000000 | 0x40000000)
+#                        NEWNS        NEWCGROUP    NEWUTS       NEWIPC
+#                        NEWUSER      NEWPID       NEWNET
+CLONE_NR = {"aarch64": 220, "x86_64": 56}
+CLONE3_NR = 435   # the same on both: it is in the table the architectures share from 424 on
 
 # What is denied, grouped by why. Every entry is here because it attacks the kernel or the
 # boundary itself, not because an integration is unlikely to need it.
 DENIED_BY_REASON: dict[str, tuple[str, ...]] = {
     "leaving or rearranging the sandbox": (
         "mount", "umount2", "pivot_root", "chroot", "unshare", "setns",
-        "open_tree", "move_mount", "fsopen", "mount_setattr",
+        "open_tree", "move_mount", "fsopen", "fsconfig", "fsmount", "fspick",
+        "mount_setattr",
     ),
     "reaching into another process": (
         "ptrace", "process_vm_readv", "process_vm_writev",
@@ -72,6 +102,12 @@ DENIED_BY_REASON: dict[str, tuple[str, ...]] = {
     ),
     "the kernel keyring, and handles that bypass path resolution": (
         "add_key", "request_key", "keyctl", "name_to_handle_at", "open_by_handle_at",
+    ),
+    # io_uring performs reads, writes, opens and connects from a ring in shared memory, so the
+    # operations never pass this filter one by one. None of them leaves the boundary, but the
+    # code behind them is large and young, a frequent source of kernel exploits (2026-11-21).
+    "operations the filter would never see one by one": (
+        "io_uring_setup", "io_uring_enter", "io_uring_register",
     ),
 }
 
@@ -84,8 +120,9 @@ SYSCALLS: dict[str, dict[str, int]] = {
         "keyctl": 219, "swapon": 224, "swapoff": 225, "perf_event_open": 241,
         "name_to_handle_at": 264, "open_by_handle_at": 265, "setns": 268,
         "process_vm_readv": 270, "process_vm_writev": 271, "finit_module": 273,
-        "bpf": 280, "open_tree": 428, "move_mount": 429, "fsopen": 430,
-        "mount_setattr": 442,
+        "bpf": 280, "io_uring_setup": 425, "io_uring_enter": 426,
+        "io_uring_register": 427, "open_tree": 428, "move_mount": 429, "fsopen": 430,
+        "fsconfig": 431, "fsmount": 432, "fspick": 433, "mount_setattr": 442,
     },
     "x86_64": {
         "ptrace": 101, "syslog": 103, "pivot_root": 155, "chroot": 161, "acct": 163,
@@ -94,8 +131,9 @@ SYSCALLS: dict[str, dict[str, int]] = {
         "request_key": 249, "keyctl": 250, "unshare": 272, "perf_event_open": 298,
         "name_to_handle_at": 303, "open_by_handle_at": 304, "setns": 308,
         "process_vm_readv": 310, "process_vm_writev": 311, "finit_module": 313,
-        "bpf": 321, "open_tree": 428, "move_mount": 429, "fsopen": 430,
-        "mount_setattr": 442,
+        "bpf": 321, "io_uring_setup": 425, "io_uring_enter": 426,
+        "io_uring_register": 427, "open_tree": 428, "move_mount": 429, "fsopen": 430,
+        "fsconfig": 431, "fsmount": 432, "fspick": 433, "mount_setattr": 442,
     },
 }
 
@@ -137,6 +175,19 @@ def build_filter(machine: str | None = None) -> tuple[bytes, list[str]]:
         _instruction(BPF_JEQ_K, 1, 0, arch),
         _instruction(BPF_RET_K, 0, 0, SECCOMP_RET_KILL_PROCESS),
         _instruction(BPF_LD_W_ABS, 0, 0, OFF_NR),
+        # x32 numbers: refused whatever call they name.
+        _instruction(BPF_JGE_K, 0, 1, X32_SYSCALL_BIT),
+        _instruction(BPF_RET_K, 0, 0, SECCOMP_RET_ERRNO | (errno.EPERM & 0xFFFF)),
+        # clone3: "not implemented", so the C library retries with clone (checked next).
+        _instruction(BPF_JEQ_K, 0, 1, CLONE3_NR),
+        _instruction(BPF_RET_K, 0, 0, SECCOMP_RET_ERRNO | (errno.ENOSYS & 0xFFFF)),
+        # clone: allowed for a thread or a process, refused for a new namespace. A miss skips
+        # the four instructions of this check, with the call number still loaded.
+        _instruction(BPF_JEQ_K, 0, 4, CLONE_NR[machine]),
+        _instruction(BPF_LD_W_ABS, 0, 0, OFF_ARG0_LO),
+        _instruction(BPF_JSET_K, 0, 1, CLONE_NAMESPACE_FLAGS),
+        _instruction(BPF_RET_K, 0, 0, SECCOMP_RET_ERRNO | (errno.EPERM & 0xFFFF)),
+        _instruction(BPF_RET_K, 0, 0, SECCOMP_RET_ALLOW),
     ]
     n = len(covered)
     for i, name in enumerate(covered):
@@ -187,8 +238,63 @@ def _try_keyctl() -> int:
                               0, 0, 0, 0, 0) >= 0 else ctypes.get_errno()
 
 
+def _try_clone(nr: int, *args) -> int:
+    """Make a new user namespace through a clone call; the child, if one is born, leaves at once."""
+    _libc.syscall.restype = ctypes.c_long
+    pid = _libc.syscall(ctypes.c_long(nr), *args)
+    if pid == 0:
+        os._exit(0)
+    if pid < 0:
+        return ctypes.get_errno()
+    os.waitpid(pid, 0)
+    return 0
+
+
+def _try_clone_newuser() -> int:
+    return _try_clone(CLONE_NR[platform.machine()], ctypes.c_ulong(0x10000000 | 17), 0, 0, 0, 0)
+
+
+def _try_clone3_newuser() -> int:
+    # struct clone_args: flags, pidfd, child_tid, parent_tid, exit_signal, then six more fields.
+    args = struct.pack("=11Q", 0x10000000, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0)
+    buf = ctypes.create_string_buffer(args, len(args))
+    code = _try_clone(CLONE3_NR, buf, ctypes.c_size_t(len(args)))
+    # ENOSYS is this filter's answer for clone3; anything else that is not success is too.
+    return errno.EPERM if code == errno.ENOSYS else code
+
+
+def _try_x32_unshare() -> int:
+    """`unshare(CLONE_NEWUSER)` through its x32 number, in a child that leaves at once."""
+    pid = os.fork()
+    if pid == 0:
+        _libc.syscall.restype = ctypes.c_long
+        r = _libc.syscall(ctypes.c_long(X32_SYSCALL_BIT | 272), ctypes.c_ulong(0x10000000))
+        os._exit(0 if r == 0 else (ctypes.get_errno() or 1))
+    _, status = os.waitpid(pid, 0)
+    code = os.waitstatus_to_exitcode(status)
+    # A kernel built without x32 answers ENOSYS: the door does not exist there, which is as good.
+    return errno.EPERM if code == errno.ENOSYS else code
+
+
+def _try_io_uring() -> int:
+    _libc.syscall.restype = ctypes.c_long
+    params = ctypes.create_string_buffer(120)   # struct io_uring_params, zeroed
+    fd = _libc.syscall(ctypes.c_long(425), 4, params)
+    if fd < 0:
+        return ctypes.get_errno()
+    os.close(fd)
+    return 0
+
+
+# The clone probes qualify for the same reason as `unshare`: an ordinary user may make a user
+# namespace, so the call succeeds without the filter and its refusal is evidence of the filter.
 BEHAVIOURAL = {"chroot": _try_chroot, "unshare": _try_unshare,
-               "ptrace": _try_ptrace, "keyctl": _try_keyctl}
+               "clone(CLONE_NEWUSER)": _try_clone_newuser,
+               "clone3(CLONE_NEWUSER)": _try_clone3_newuser,
+               "ptrace": _try_ptrace, "keyctl": _try_keyctl,
+               "io_uring_setup": _try_io_uring}
+if platform.machine() == "x86_64":
+    BEHAVIOURAL["x32:unshare(CLONE_NEWUSER)"] = _try_x32_unshare
 
 
 def probe() -> dict[str, str]:

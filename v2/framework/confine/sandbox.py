@@ -8,9 +8,11 @@ sandbox's own directory. This module is where those sentences become a filesyste
 The construction is the standard one — a private mount namespace, a fresh tmpfs root, bind
 mounts for what is allowed, then `pivot_root` — and three details in it are load-bearing:
 
-  - **Mount propagation is made private first.** Without that, every mount made here would
-    propagate back to the host's namespace, and the sandbox would be rearranging the machine
-    it is supposed to be confined within.
+  - **Mount propagation is made private first.** This mount namespace belongs to a new user
+    namespace, so the kernel has already reduced the copied shared mounts to slave mounts, and
+    nothing mounted here propagates back to the host. A slave mount still receives the host's
+    mounts, though: without this step, something the host mounted later could appear inside
+    the sandbox. Making the whole tree private fixes the view at construction.
   - **`pivot_root`, not `chroot`.** A process inside a user namespace holds `CAP_SYS_CHROOT`
     over that namespace, and a `chroot` is escapable by anything holding it. Using `chroot`
     here would produce a boundary that looks identical from the inside and is not one.
@@ -205,8 +207,9 @@ def build_root(spec: SandboxSpec, scratch: str = "/tmp/.confine-root") -> None:
     the new PID namespace, and immediately before `exec`. Everything it does is invisible
     outside this mount namespace.
     """
-    # 1. Detach this namespace's propagation from the host's. Everything after this line is
-    #    private; without it, all of it would appear on the host too.
+    # 1. Detach this namespace's propagation from the host's. The kernel has already made the
+    #    copied mounts slaves (the namespace belongs to a new user namespace), so nothing here
+    #    reaches the host; making them private also stops the host's later mounts reaching in.
     mount(None, "/", None, MS_REC | MS_PRIVATE)
 
     # 2. A new root that starts genuinely empty. Small on purpose: it holds mount points and
