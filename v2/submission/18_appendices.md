@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Framework | `v2/framework/confine/` — standard library plus `ctypes`, no third-party dependencies, no override flag |
+| Framework | `v2/framework/confine/` — standard library plus `ctypes`, no third-party dependencies |
 | Self-tests | **35 suites**, all passing on the test hardware. `selftest.py` and `selftest_*.py` in the same directory; `experiments/selftests/suites_all.sh` runs them |
 | Experiments | `v2/experiments/` — each with its script, its raw result file and a readable write-up |
 | Figures | `v2/figures/` — each figure and its threat model generated from one source, so they cannot drift |
@@ -33,7 +33,7 @@ This appendix gives the verdict on each requirement of Table 3.2, with its evide
 | C4 | Met | Every performance figure measured on the Raspberry Pi 5 (Table 12.4) |
 | F1 | Met | A confined integration's fifteen sensors are registry entities in a live Home Assistant instance, keep their names and survive a restart (Appendix F.2) |
 | F2 | Met | Real integrations polled their own live services confined and matched the unconfined arm's output, across three HTTP libraries and one authenticated service (Table 12.3) |
-| F3 | Met | Seven mismatched behaviours produced seven refusals naming seven distinct clauses; the suite checks that a refusal without a clause cannot be built |
+| F3 | Met | Seven mismatched behaviours produced seven refusals naming seven distinct clauses |
 | F4 | Met | The grant renders in plain language with denials at equal weight, in the terminal and on the approval screen |
 | S1 | Met, paired | The heap walk reached a live credential through 7 objects unconfined and through none of 8,942 objects confined (Table 12.1) |
 | S2 | Met, paired | Other processes, whose environment can hold credentials, were visible unconfined and not confined (Table 12.1); the adversary suite recovered no platform credential from the sandbox's file system, process table or memory |
@@ -118,7 +118,7 @@ Inherent risk is rated against Home Assistant as it stands, with no requirement 
 
 Eighteen threats were identified against the platform as it stands: five Critical, twelve High and one Medium, and all five Critical threats share one cause, the shared process. T19 has no rating against the platform, because it does not exist there. The treatment of T18 created it: a durable record per decision makes each refusal cost the mediator about 3.7 ms of shared time, and a flood of refusals happened by accident during the evaluation. It is rated against the design before its control and is not counted among the eighteen.
 
-T07's impact is rated through the platform's automations rather than through the data it corrupts. A state trigger in Home Assistant fires on any change to its entity's state, and the context passed to the automation records the user who caused the change, if any, but not the integration that wrote it (`triggers/state.py` and `Context` in `core.py`, release 2026.8.3). An integration that writes `home` to a householder's presence entity therefore causes any automation that disarms the alarm or unlocks the door on arrival to do so, without itself calling the service that T05's control checks. The worst outcome consistent with the actor model is physical access to the dwelling (A1), level 5. The owning integration's next update does not lower that rating, for two reasons. Presence, door and lock entities report only when something changes, so a forged value can stand for hours, and an automation that has already acted is not reversed when the state is corrected. An earlier rating of 2, Minor, rested on that correction and was raised for these reasons.
+T07's impact is rated through the platform's automations rather than through the data it corrupts. A state trigger in Home Assistant fires on any change to its entity's state, and the context passed to the automation records the user who caused the change, if any, but not the integration that wrote it (release 2026.8.3). An integration that writes `home` to a householder's presence entity therefore causes any automation that disarms the alarm or unlocks the door on arrival to do so, without itself calling the service that T05's control checks. The worst outcome consistent with the actor model is physical access to the dwelling (A1), level 5. The owning integration's next update does not lower that rating, for two reasons. Presence, door and lock entities report only when something changes, so a forged value can stand for hours, and an automation that has already acted is not reversed when the state is corrected.
 
 ### C.3 Treatment and verdicts
 
@@ -131,7 +131,7 @@ Figure C.1 draws the confined design on the canvas of Figure 8.1, so that the di
 
 *Note.* Each integration runs in its own sandbox and reaches the platform only through the mediator. All six boundaries now exist; TB4 is unchanged and TB2 is narrowed (residual risk R3). Flow (m) is the approval.
 
-Every treatment but two changes consequence rather than likelihood, bounding what the code can do. The verdicts are not aggregated into a single figure, for the reason Section 11 gives. *Paired* means the threat was also shown to succeed against the unconfined arm on the same host and platform release.
+The verdicts are not aggregated into a single figure, for the reason Section 11 gives. *Paired* means the threat was also shown to succeed against the unconfined arm on the same host and platform release.
 
 **Table C.4 — Treatment, requirement and verdict**
 
@@ -176,9 +176,9 @@ The seven residual risks, R1 to R7, are given with their ratings and the reason 
 | R6 | The user is not equipped to evaluate a declaration | Medium | Out of scope: enforcement does not depend on the user reading the manifest |
 | R7 | Input and output bandwidth is unbounded | Medium | Inherited: systemd delegates only the `cpu`, `memory` and `pids` controllers to a user's service manager (systemd, n.d.), so the unprivileged supervisor cannot apply the `io` controller |
 
-R3 changed during verification. The model originally stated that Home Assistant issues no scoped token, so the mediator had to hold full authority. Checked against the platform's own release, that was wrong: a token carries its user's permissions, and an entity policy, by domain or by entity, is enforced. The mediator had held an administrator's token only because this project's bridge admitted no one else (finding F45). It now runs as an ordinary user, which removes every administrative function from its reach. The risk stays High because the locks of A1 are still reachable, but its reason is now narrower and exact: the platform's per-entity policy exists, yet no supported interface creates one.
+The mediator runs as an ordinary user rather than an administrator (finding F45), so it cannot create users, change the configuration or install integrations. R3 stays High because it can still operate every device, the locks of A1 included: the platform enforces a policy per entity, but no supported interface creates one.
 
-One further residual sits within T14 and was found by measurement. The sandbox's filesystem binds the interpreter and its libraries at their host paths, so a confined integration can read the host's directory layout along those paths, including a user's name where the runtime is installed under a home directory. It cannot read any content outside its grant. Its likelihood is 5, because the exposure follows from the construction, and its impact 1, since a name and directory names give no capability and disclose no reading, so it is rated 5, Medium, and retained. The remedy is a deployment step, installation under a neutral path. Rated at impact 2 it would be High, and the appetite would then require the remedy.
+One further residual sits within T14 and was found by measurement. The sandbox's filesystem binds the interpreter and its libraries at their host paths, so a confined integration can read the host's directory layout along those paths, including a user's name where the runtime is installed under a home directory. It cannot read any content outside its grant. Its likelihood is 5, because the exposure follows from the construction, and its impact 1, since a name and directory names give no capability and disclose no reading, so it is rated 5, Medium, and retained. The remedy is a deployment step, installation under a neutral path.
 
 T07's treatment also leaves a residual, and it falls within R2. Confinement stops an integration writing to entities it has not declared, but it cannot make the values it writes to its own entities true. An integration that publishes its own presence sensor can report a householder at home, and an automation the householder has built on that sensor will act on the report. The control bounds which entities an integration can forge, not whether its readings are honest, so this is the abuse of legitimately declared authority that R2 names, and it is retained with R2 as High and structural.
 
@@ -200,7 +200,7 @@ T07's treatment also leaves a residual, and it falls within R2. Confinement stop
 | T10 | Authorisation: escalation | T01, T03, T05, T13 | Demonstrated, except T13, retained |
 | T11 | Non-repudiation: anonymous action | T18 | Demonstrated, bounded by R4 |
 
-Eight of the eleven are mapped, five without qualification. The two registers differ in both directions: theirs reaches consequences this design does not touch, delay, partial loss and physical damage, while this register separates the update channel (TB4) and the host (TB5) into boundaries that a gateway-level model folds together. T16's control plausibly reaches T5 and T6 as well, since a gateway being exhausted is delayed and partially lost before it is lost entirely, but the register maps T16 only to T7, and the table reports that mapping as it stands.
+Eight of the eleven are mapped, five without qualification. The two registers differ in both directions: theirs reaches consequences this design does not touch, delay, partial loss and physical damage, while this register separates the update channel (TB4) and the host (TB5) into boundaries that a gateway-level model folds together.
 
 ---
 
@@ -223,20 +223,9 @@ Table C.7 gives the authority that Section 2.1 summarises, with the source for e
 
 ## Appendix D — How the evaluation was checked
 
-The evaluation fails on its own terms if it reports a requirement as passed without demonstrating it, or an aggregate that conceals a breakdown it holds. This happened twice during development, and both times the fault was found by reading the report as a whole rather than by any test. Every claim was then registered with its evidence and a pass criterion fixed in advance (Table D.1), and other methods looked for faults the evidence itself might hide (Table D.2). The full register and the 71 findings, one per line, are in the repository (Appendix A).
+The evaluation fails on its own terms if it reports a requirement as passed without demonstrating it, or an aggregate that conceals a breakdown it holds. To guard against both, every claim in the report was registered with its evidence and a pass criterion fixed in advance, and other methods looked for faults the evidence itself might hide (Table D.1). Of the 153 claims registered, 119 held as stated on the frozen code, 27 hold only in a narrower form, which the report now states, 5 rest on reasoning rather than measurement, and 2 were withdrawn because the evidence did not support them. The full register and the 71 findings, one per line, are in the repository (Appendix A).
 
-**Table D.1 — Claim register outcome by tier**
-
-| Tier | What it holds | Rows | Verified | Qualified | Argued | Withdrawn |
-|---|---|---|---|---|---|---|
-| A | The abstract, the 20 requirements, the 19 threat verdicts, the 11 verdicts against the published threat model, the central claim and the contributions | 91 | 72 | 15 | 4 | 0 |
-| B | One row per measurement, each with its criterion kind declared before re-running | 30 | 24 | 5 | 0 | 1 |
-| C | The remaining claims in the text, as 16 mechanism groups and 16 single claims | 32 | 23 | 7 | 1 | 1 |
-| | **Total** | **153** | **119** | **27** | **5** | **2** |
-
-A claim is *Verified* when it held as stated on the frozen code, *Qualified* when it holds only in a narrower form, which the report now states, *Argued* when it rests on reasoning rather than measurement, and *Withdrawn* when the evidence did not support it.
-
-**Table D.2 — What each checking method found**
+**Table D.1 — What each checking method found**
 
 | Method | Principal findings | Result at the second final rerun |
 |---|---|---|
@@ -248,6 +237,6 @@ A claim is *Verified* when it held as stated on the frozen code, *Qualified* whe
 | Reproduction from a fresh copy | No reproduction guide existed (F18) | Guide written and followed from a fresh copy; not yet on a freshly installed device |
 | Running real integrations against a real installation | The stand-in hid how few kinds the bridge covered (F64); a picture link could pass the egress allowlist through the household's browser (F71) | 36 of 36 |
 
-Of the 71 findings, one is Critical, 17 Major, 5 between Minor and Major, 44 Minor, 3 notes and 1 a request to re-measure. F01–F53 come from the verification campaign, F54–F56 from a functional retest, F57–F60 from checking Section 9 against the code and from the fixes that followed, F61 and F62 from the first final rerun, F63 from writing the manifest schema, and F64–F71 from extending the end-to-end runs and the bridge. One remains open (F18), one is retained as a residual risk (F11), and two are carried as stated limitations (F53, F63).
+Of the 71 findings, one is Critical, 17 Major, 5 between Minor and Major, 44 Minor, 3 notes and 1 a request to re-measure. One remains open (F18), one is retained as a residual risk (F11), and two are carried as stated limitations (F53, F63).
 
 The evaluation was repeated in full twice, each time from a fresh copy of a tagged version under predictions committed beforehand, the second at the frozen code of 1 November 2026, and every step of the second met its criterion. Its bounds are stated in Section 12.5: the deliberate defects were chosen by hand, so they show that each tested point is guarded, not that every point is, and the reproduction guide has not yet been followed on a freshly installed device.

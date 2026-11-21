@@ -64,8 +64,6 @@ Kulkarni, S., Mylonas, A., & Vidalis, S. (2026). P3CRID: A threat model methodol
 
 Ladisa, P., Plate, H., Martinez, M., & Barais, O. (2023). SoK: Taxonomy of attacks on open-source software supply chains. In *2023 IEEE Symposium on Security and Privacy (SP)* (pp. 1509–1526). IEEE. https://doi.org/10.1109/SP46215.2023.10179304
 
-Li, Z., Li, K., Ma, B., Xu, M., Zhang, Y., & Cheng, X. (2025). *We urgently need privilege management in MCP: A measurement of API usage in MCP ecosystems* (arXiv:2507.06250). arXiv. https://doi.org/10.48550/arXiv.2507.06250
-
 Linux man-pages project. (n.d.-a). *chroot(2)*. Retrieved October 16, 2026, from https://man7.org/linux/man-pages/man2/chroot.2.html
 
 Linux man-pages project. (n.d.-b). *namespaces(7)*. Retrieved October 16, 2026, from https://man7.org/linux/man-pages/man7/namespaces.7.html
