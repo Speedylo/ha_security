@@ -50,7 +50,9 @@ Home Assistant. (2021a, January 22). *Disclosure: Security vulnerabilities in cu
 
 Home Assistant. (2021b, January 23). *Security disclosure 2: Vulnerabilities in custom integrations HACS, Font Awesome and others*. Home Assistant Blog. https://www.home-assistant.io/blog/2021/01/23/security-disclosure2/
 
-Home Assistant. (2026). *Home Assistant Core* (Version 2026.8.3) [Computer software]. GitHub. https://github.com/home-assistant/core/tree/2026.8.3
+Home Assistant. (2026a). *Home Assistant Core* (Version 2026.8.3) [Computer software]. GitHub. https://github.com/home-assistant/core/tree/2026.8.3
+
+Home Assistant. (2026b, November 4). *2026.11: A lot in store!* Home Assistant Blog. https://www.home-assistant.io/blog/2026/11/04/release-202611/
 
 International Organization for Standardization. (2018). *Risk management — Guidelines* (ISO Standard No. 31000:2018).
 

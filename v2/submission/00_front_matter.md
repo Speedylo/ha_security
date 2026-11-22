@@ -45,7 +45,7 @@ I would like to thank my supervisor for the guidance and feedback given througho
 | | |
 |---|---|
 | **Arm** | One of two paired runs of the same integration, on the same device and platform release: confined (in the framework) or unconfined (as Home Assistant runs it today) |
-| **Community Store** | The Home Assistant Community Store (HACS), the usual channel for installing community integrations |
+| **Community Store** | The Home Assistant Community Store (HACS), the usual channel for installing community integrations; part of the platform, as the Marketplace, from version 2026.11 |
 | **Integration** | A Python module that connects Home Assistant to a device or service and runs inside its process. Distinct from an add-on, which runs in its own container |
 | **Manifest** | The `manifest.json` file every integration ships. This framework adds a `permissions` block to it, which states what the integration may do |
 | **Mediator** | The separate process that holds the platform credential and decides every request a confined integration makes |
@@ -53,5 +53,5 @@ I would like to thank my supervisor for the guidance and feedback given througho
 | **Release** | Home Assistant 2026.8.3, the platform version used throughout |
 | **F1–F4, S1–S9, C1–C4, N1–N3** | Functional, security, constraint and non-functional requirements (Section 3, Appendix B) |
 | **T01–T19, R1–R7** | Threats and residual risks of the threat model (Section 8, Appendix C) |
-| **F01–F71** | Findings of the verification work, written with two digits to distinguish them from requirements (summarised in Appendix D; listed in the repository) |
+| **F01–F75** | Findings of the verification work, written with two digits to distinguish them from requirements (summarised in Appendix D; listed in the repository) |
 | **M01–M88** | Deliberate defects (mutants), 92 in all, used to test whether the test suites detect a removed check (Section 12.4) |

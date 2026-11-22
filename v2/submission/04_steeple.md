@@ -24,7 +24,7 @@ Responsibility for what a community integration does falls between the parties t
 
 ## 4.6 Legal
 
-Where the law imposes a duty, it assumes evidence that a standard installation cannot produce. Since 11 September 2026, a manufacturer has had to report an actively exploited vulnerability in its product within 24 hours of becoming aware of it (Regulation (EU) 2024/2847, 2024, Article 14). Knowing what was exploited requires knowing what an integration did. The platform records changes to devices but not what an integration read, and an integration's actions carry no user (Home Assistant, 2026), which a review of the literature found reduces the ability to audit logs and locate malicious extensions (Thingnes & Meland, 2025). The framework records every request an integration makes, allowed or refused, before acting on it, so a household can show what an integration accessed.
+Where the law imposes a duty, it assumes evidence that a standard installation cannot produce. Since 11 September 2026, a manufacturer has had to report an actively exploited vulnerability in its product within 24 hours of becoming aware of it (Regulation (EU) 2024/2847, 2024, Article 14). Knowing what was exploited requires knowing what an integration did. The platform records changes to devices but not what an integration read, and an integration's actions carry no user (Home Assistant, 2026a), which a review of the literature found reduces the ability to audit logs and locate malicious extensions (Thingnes & Meland, 2025). The framework records every request an integration makes, allowed or refused, before acting on it, so a household can show what an integration accessed.
 
 ## 4.7 Ethical
 
