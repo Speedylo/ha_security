@@ -1,0 +1,77 @@
+{"sample": "corpus", "domain": "adaptive_lighting", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "alarmo", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "alexa_media", "old_ok": true, "new_ok": true, "same": true, "built": ["dictor"], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "bambu_lab", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "battery_notes", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "bermuda", "old_ok": true, "new_ok": true, "same": true, "built": ["bluetooth-data-tools", "pyric"], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "ble_monitor", "old_ok": true, "new_ok": true, "same": true, "built": ["pyric"], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "browser_mod", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "dreame_vacuum", "old_ok": true, "new_ok": true, "same": true, "built": ["android-backup", "micloud", "netifaces"], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "dwd_weather", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "eufy_security", "old_ok": true, "new_ok": true, "same": true, "built": ["pyturbojpeg"], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "frigate", "old_ok": true, "new_ok": true, "same": true, "built": ["titlecase"], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "govee", "old_ok": true, "new_ok": true, "same": true, "built": ["bluetooth-data-tools", "pyric"], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "hacs", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "homematicip_local", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "llmvision", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "localtuya", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "meross_lan", "old_ok": true, "new_ok": true, "same": true, "built": ["cached-ipaddress"], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "midea_ac_lan", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "nodered", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "nordpool", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "octopus_energy", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "pirateweather", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "powercalc", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "scheduler", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "smartthinq_sensors", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "solarman", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "solcast_solar", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "sonoff", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "spook", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "tapo_control", "old_ok": true, "new_ok": true, "same": true, "built": ["pyturbojpeg", "wsdiscovery"], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "thermal_comfort", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "waste_collection_schedule", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "watchman", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "webrtc", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "xiaomi_home", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus", "domain": "xiaomi_miot", "old_ok": true, "new_ok": true, "same": true, "built": ["pyqrcode", "micloud", "android-backup", "netifaces"], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "alarm_clocks", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "als_sundance_marin", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "apsystems_ecu_reader", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "bermuda", "old_ok": true, "new_ok": true, "same": true, "built": ["bluetooth-data-tools", "pyric"], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "browser_mod", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "circuitsetup_energy_analyzer", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "ecobot", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "enki", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "enphase_ev", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "ha_insights", "old_ok": true, "new_ok": true, "same": true, "built": ["bluetooth-data-tools", "pyric"], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "honor_x3", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "irrigationprogram", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "kamstrup_403", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "kroki", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "lifesmart", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "lightwave2", "old_ok": true, "new_ok": true, "same": true, "built": ["lightwave2"], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "localtuya_rc", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "nature_remo", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "network_scanner", "old_ok": true, "new_ok": true, "same": true, "built": ["python-nmap"], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "next_rocket_launch", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "nuki_otp", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "ocado", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "oekofen_pellematic_compact", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "polleninformation", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "pronote", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "qolsys_panel", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "regensburg_transport", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "saj_esolar_air", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "sessy", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "skybellgen", "old_ok": true, "new_ok": true, "same": true, "built": ["pyturbojpeg"], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "smhi_brandrisk", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "solis_modbus", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "sonyavr", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "tasmota_mielhvac", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "trakt_tv", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "trmnl_webhook_push", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "tvoverlay_ui", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "vacation_mode", "old_ok": true, "new_ok": true, "same": true, "built": null, "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "warema_wms", "old_ok": true, "new_ok": true, "same": true, "built": [], "error": null, "only_old": [], "only_new": []}
+{"sample": "corpus_uniform", "domain": "zendure_ha", "old_ok": true, "new_ok": true, "same": true, "built": ["bluetooth-data-tools", "pyric"], "error": null, "only_old": [], "only_new": []}

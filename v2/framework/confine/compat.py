@@ -48,6 +48,7 @@ from .manifest import Manifest
 from .mediator import Mediator
 from .platform import Platform, acting_policy
 from .preflight import require_ready
+from . import sandboxed_build
 from .provenance import RESOLVE_BEFORE, record_run
 from .sandbox import SandboxSpec
 from .integrity import TreeState, compare
@@ -86,26 +87,86 @@ def install_requirements(requirements: list[str], target: Path, python: Path,
     installing `requirements` at setup, and under R2 that install belongs inside the sandbox.
     Doing it per integration rather than into one shared directory also means an integration
     cannot see another's dependencies, which a shared directory would quietly grant.
+
+    **Wheels only on the host.** Installing a wheel unpacks files and runs none of the package's
+    code; installing a package that ships only as source *builds* it, which runs the package's
+    own build code. So the host installs wheels only (`--only-binary :all:`), and when uv reports
+    a package it cannot install without building, that one package is built into a wheel inside
+    a sandbox with no network (`sandboxed_build`) and the install is retried with it.
+    `selftest_install` is the test: a source package whose build tries to write, read and
+    connect outside does all three on the host and none in the sandbox.
     """
     target.mkdir(parents=True, exist_ok=True)
     if not requirements:
         return {"ok": True, "installed": [], "note": "no requirements declared",
                 "resolved_before": RESOLVE_BEFORE}
-    proc = subprocess.run(
-        [uv, "pip", "install", "--quiet", "--python", str(python),
-         "--target", str(target), "--exclude-newer", RESOLVE_BEFORE,
-         # W2 (c): `uv` does not compile bytecode by default, and inside the sandbox this tree is
-         # read-only, so without it every confined start compiles these modules again.
-         *(["--compile-bytecode"] if compile_bytecode else []), *requirements],
-        capture_output=True, text=True, timeout=timeout)
+
+    def failed(message: str) -> dict:
+        return {"ok": False, "resolved_before": RESOLVE_BEFORE, "error": message[:200],
+                "installed": sorted(p.name.split("-")[0] for p in target.glob("*.dist-info")),
+                "built_in_sandbox": built}
+
+    wheelhouse = Path(tempfile.mkdtemp(prefix="confine-wheelhouse-"))
+    links = [wheelhouse, *sandboxed_build.find_links()]
+    built: list[str] = []
+    not_built: list[str] = []
+    tried: set[tuple[str, str | None]] = set()
+    try:
+        # Resolve wheels-only, build in the sandbox whatever that resolution could not do without
+        # building (or chose differently because of it, `newer_source_only`), and repeat until
+        # the resolution stops changing. Only then install, so the target is written once.
+        for _ in range(sandboxed_build.MAX_BUILDS + 1):
+            chosen, message = sandboxed_build.resolve(uv, python, requirements, links,
+                                                      RESOLVE_BEFORE, timeout)
+            if chosen is None:
+                source = sandboxed_build.needs_source(message)
+                pending = [] if source is None else [source]
+            else:
+                pending = sandboxed_build.newer_source_only(chosen, uv, python, links,
+                                                            RESOLVE_BEFORE, timeout)
+            pending = [p for p in pending if (sandboxed_build.normalise(p[0]), p[1]) not in tried]
+            if not pending:
+                if chosen is None:
+                    return failed(message.splitlines()[-1] if message else "install failed")
+                break
+            for name, version in pending:
+                tried.add((sandboxed_build.normalise(name), version))
+                try:
+                    sandboxed_build.build(name, version, python, uv, wheelhouse,
+                                          RESOLVE_BEFORE, timeout=timeout)
+                    built.append(name)
+                except sandboxed_build.BuildFailed as err:
+                    # A package the resolution cannot do without is a failed install. A newer
+                    # release that would only have replaced a working choice is not.
+                    if chosen is None:
+                        return failed(str(err))
+                    # Kept in the result, so a version that differs from an unrestricted install
+                    # is visible rather than silent.
+                    not_built.append(str(err)[:200])
+        else:
+            return failed(f"more than {sandboxed_build.MAX_BUILDS} rounds of building")
+
+        proc = subprocess.run(
+            [uv, "pip", "install", "--quiet", "--python", str(python),
+             "--target", str(target), "--exclude-newer", RESOLVE_BEFORE,
+             "--only-binary", ":all:",
+             *[arg for link in links for arg in ("--find-links", str(link))],
+             # W2 (c): `uv` does not compile bytecode by default, and inside the sandbox this
+             # tree is read-only, so without it every confined start compiles these modules
+             # again.
+             *(["--compile-bytecode"] if compile_bytecode else []), *requirements],
+            capture_output=True, text=True, timeout=timeout)
+        if proc.returncode != 0:
+            message = (proc.stderr or proc.stdout).strip()
+            return failed(message.splitlines()[-1] if message else "install failed")
+    finally:
+        shutil.rmtree(wheelhouse, ignore_errors=True)
+
     installed = sorted(p.name.split("-")[0] for p in target.glob("*.dist-info"))
-    if proc.returncode != 0:
-        return {"ok": False, "installed": installed, "resolved_before": RESOLVE_BEFORE,
-                "error": (proc.stderr or proc.stdout).strip().splitlines()[-1][:200]
-                if (proc.stderr or proc.stdout).strip() else "install failed"}
     # The resolved set. Since finding F08 the identity reads the same thing from the install
     # directory itself (`audit.resolved_versions`), so the run record carries it too.
     return {"ok": True, "installed": installed, "resolved_before": RESOLVE_BEFORE,
+            "built_in_sandbox": built, "not_built": not_built,
             "resolved": sorted(p.name.removesuffix(".dist-info")
                                for p in target.glob("*.dist-info"))}
 
