@@ -1,0 +1,31 @@
+
+published: sensor.selftest_hostile True, switch.selftest_pictured True
+
+D0 — control: the detector sees a payload that is interpreted
+
+  ok    D0 markup put into the page on purpose is seen: the tag and its script  — ['/html/control', '/ran/control']
+
+D1–D4 — each page
+
+  ok    D1 devices: the published name is drawn  — Overview – Home Assistant body{font-family:Roboto,Noto,sans-serif;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothi
+  ok    D1 dialog: the published name is drawn  — Overview – Home Assistant body{font-family:Roboto,Noto,sans-serif;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothi
+  ok    details: the dialog's Details item is found
+  ok    D1 details: the published name is drawn  — Overview – Home Assistant body{font-family:Roboto,Noto,sans-serif;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothi
+  ok    D1 switch_dialog: the published name is drawn  — Overview – Home Assistant body{font-family:Roboto,Noto,sans-serif;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothi
+  ok    entities: the list's search box is found
+  ok    D1 entities: the published name is drawn  — Entities – Home Assistant body{font-family:Roboto,Noto,sans-serif;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothi
+
+D2 — what was published appears as text
+
+  ok    D2 the dialog shows the state as text, markup included
+  ok    D2 the dialog shows the name as text, markup included
+  ok    D2 the details show the attributes as text, markup and link included
+
+D3, D4 — what the browser requested
+
+  ok    D3 no page interpreted a published tag (no /html/ request)  — []
+  ok    D3 no page ran a published script (no /ran/ request)  — []
+  ok    D4 no page loaded a picture link the integration published (F71)  — []
+  ok    every chain verifies
+
+15/15 checks passed

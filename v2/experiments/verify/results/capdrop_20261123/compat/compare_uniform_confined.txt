@@ -1,0 +1,5 @@
+arm_a: 40 integrations, levels import_failed 1, platform_import_failed 2, platforms_clean 37
+arm_b: 0 integrations, levels 
+c1 final2 {'integrations_checked': 40, 'source_changed': 0, 'total_diff_lines': 0, 'lines_unknown': 0, 'trees_gaining_bytecode': 0, 'domains_with_changes': []}
+c1 new    {'integrations_checked': 40, 'source_changed': 0, 'total_diff_lines': 0, 'lines_unknown': 0, 'trees_gaining_bytecode': 0, 'domains_with_changes': []}
+DIFFERENCES 0

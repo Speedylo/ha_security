@@ -1,0 +1,9 @@
+start 2026-11-23T19:01:07+01:00 uptime up 37 minutes commit ab2af16b40b27aa8bf828c914e8313e2e8322821 dirty=3 host raspberrypi kernel 6.12.47+rpt-rpi-2712 arch aarch64
+9448a1256ef9f6cd390daac67d25216e57cd0bffe92d109a510480f5680a447d  capabilities.py
+cf9bf39f536fa9f333eb7b6c34dadebcb41c49e5d6a4ac8828f88262bcd27946  enter.py
+3ddf8ad19a9067c088f5b66cbad23ba9d71f91e7d23cd2c565feedc1f5ac369d  selftest_adversary.py
+pre: HEAD enter.py, new selftest_adversary.py only:  M v2/framework/confine/selftest_adversary.py 
+adversary_head exit=1 seconds=9 2026-11-23T19:01:16+01:00
+dirty after=3
+end 2026-11-23T19:01:16+01:00
+ALLDONE

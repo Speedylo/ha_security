@@ -1,0 +1,20 @@
+alarmo — function.json
+  PASS  P1 unconfined: config entry LOADED
+  PASS  P2 unconfined: alarm_control_panel.alarmo published, first 'disarmed'   [['disarmed', 'arming', 'armed_away', 'disarmed']]
+  PASS  P3 unconfined: disarmed → arming → armed_away → disarmed, in that order   [['disarmed', 'arming', 'armed_away', 'disarmed']]
+  PASS  P4 unconfined: both commands accepted   [[None, None]]
+        record — published types: alarm_control_panel (supported)
+  PASS  P1 confined: config entry LOADED
+  PASS  P2 confined: alarm_control_panel.alarmo published, first 'disarmed'   [['disarmed', 'arming', 'armed_away', 'disarmed']]
+  PASS  P3 confined: disarmed → arming → armed_away → disarmed, in that order   [['disarmed', 'arming', 'armed_away', 'disarmed']]
+  PASS  P4 confined: both commands accepted   [[None, None]]
+        record — published types: alarm_control_panel (supported)
+        record — confined arm's refused decisions: 0 []
+
+waste_collection_schedule — egress_waste_collection_schedule.json
+  FAIL  P7 A: the WET sensor reads 'on Tue, 27.10.2026'   [on Tue, 24.11.2026]
+  FAIL  P7 B: the WET sensor reads 'on Tue, 27.10.2026'   [on Tue, 24.11.2026]
+        record — unconfined published types: calendar (supported), sensor (supported)
+        record — confined_declared published types: calendar (supported), sensor (supported)
+
+8/10 held; missed: ["P7 A: the WET sensor reads 'on Tue, 27.10.2026'", "P7 B: the WET sensor reads 'on Tue, 27.10.2026'"]

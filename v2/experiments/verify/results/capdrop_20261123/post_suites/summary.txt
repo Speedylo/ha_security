@@ -1,0 +1,14 @@
+start 2026-11-23T19:01:16+01:00 uptime up 37 minutes commit ab2af16b40b27aa8bf828c914e8313e2e8322821 dirty=3 host raspberrypi kernel 6.12.47+rpt-rpi-2712 arch aarch64
+9448a1256ef9f6cd390daac67d25216e57cd0bffe92d109a510480f5680a447d  capabilities.py
+cf9bf39f536fa9f333eb7b6c34dadebcb41c49e5d6a4ac8828f88262bcd27946  enter.py
+3ddf8ad19a9067c088f5b66cbad23ba9d71f91e7d23cd2c565feedc1f5ac369d  selftest_adversary.py
+house_a_down exit=0 seconds=0 2026-11-23T19:01:16+01:00
+house_a_up exit=0 seconds=8 2026-11-23T19:01:24+01:00
+preflight exit=0 seconds=0 2026-11-23T19:01:24+01:00
+suites_1 exit=0 seconds=286 2026-11-23T19:06:10+01:00
+suites_2 exit=0 seconds=280 2026-11-23T19:10:50+01:00
+suites_1 failed=0 of 36
+suites_2 failed=0 of 36
+dirty after=3
+end 2026-11-23T19:10:50+01:00
+ALLDONE

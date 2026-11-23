@@ -1,0 +1,21 @@
+running the unconfined arm ...
+running the confined arm ...
+Installing a dependency built from source: the build's own code, with and without a sandbox
+
+  UNCONFINED — uv on the host, as before
+    installed                               : yes
+    build wrote a file outside              : YES
+    build read the planted secret           : YES
+    build reached a listener on the host    : YES
+    build saw the host directory            : YES
+
+  CONFINED — wheels on the host, builds in a sandbox
+    installed                               : yes
+    build wrote a file outside              : no
+    build read the planted secret           : no
+    build reached a listener on the host    : no
+    build saw the host directory            : no
+
+PASS — the source package's build code wrote, read, connected and looked outside
+       when built on the host, and did none of the four in the sandbox, where the
+       package still built and installed.

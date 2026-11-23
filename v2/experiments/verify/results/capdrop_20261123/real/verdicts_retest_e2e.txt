@@ -1,0 +1,47 @@
+  PASS  P1 unconfined: 8.06 -> 3.00 -> 0.00                        ['8.06', '3.00', '0.00']
+  PASS  P1 confined: 8.06 -> 3.00 -> 0.00                          ['8.06', '3.00', '0.00']
+  PASS  P1 withheld subscribe: 8.06 unchanged at b and c           ['8.06', '8.06', '8.06']
+  PASS  P1 withheld read: never a number                           ['unknown', 'unavailable']
+  PASS  P2 watchman unconfined: scanned                            status idle
+  PASS  P2 watchman unconfined: processed_files >= 1               2
+  PASS  P2 watchman unconfined: missing_entities = 1               1
+  PASS  P2 watchman unconfined: missing_actions = 1                1
+  PASS  P2 watchman confined: scanned                              status idle
+  PASS  P2 watchman confined: processed_files >= 1                 2
+  PASS  P2 watchman confined: missing_entities = 2                 2
+  PASS  P2 watchman confined: missing_actions = 1                  1
+  PASS  P2 watchman-both-declared confined: scanned                status idle
+  PASS  P2 watchman-both-declared confined: processed_files >= 1   2
+  PASS  P2 watchman-both-declared confined: missing_entities = 1   1
+  PASS  P2 watchman-both-declared confined: missing_actions = 1    1
+  PASS  P3 adaptive_lighting unconfined: brightness_pct and color_temp_kelvin attributes 48.30360522092723 %, 2000 K
+  PASS  P3 adaptive_lighting unconfined: >= 1 light.turn_on for light.living_room 1 calls
+  PASS  P3 adaptive_lighting unconfined: brightness = round(255 x pct / 100) +-1 sent 123, from attribute 123
+  PASS  P3 adaptive_lighting unconfined: no colour, no transition  ['brightness', 'entity_id']
+  PASS  P3 adaptive_lighting confined: brightness_pct and color_temp_kelvin attributes 48.1282362054481 %, 2000 K
+  PASS  P3 adaptive_lighting confined: >= 1 light.turn_on for light.living_room 1 calls
+  PASS  P3 adaptive_lighting confined: brightness = round(255 x pct / 100) +-1 sent 123, from attribute 123
+  PASS  P3 adaptive_lighting confined: no colour, no transition    ['brightness', 'entity_id']
+  PASS  P3 arms agree: brightness within 2 points, colour within 50 K 48.30360522092723/48.1282362054481 %, 2000/2000 K
+  PASS  P3 adaptive_lighting-no-service confined: brightness_pct and color_temp_kelvin attributes 47.9735667488843 %, 2000 K
+  PASS  P3 adaptive_lighting-no-service confined: zero calls reach the platform 0
+  PASS  P3 adaptive_lighting-no-service confined: zero service decisions recorded 0
+  PASS  P4 scheduler unconfined: a switch.schedule_* published, 'on' after add [] seen ['unknown', 'on', 'triggered']
+  PASS  P4 scheduler unconfined: exactly one light.turn_on, brightness 200, for light.living_room [{"brightness": 200, "entity_id": ["light.living_room"]}]
+  PASS  P4 scheduler unconfined: at the start time +-5 s, not before +0.0 s after 2026-11-23T18:28:00+00:00
+  FAIL  P4 scheduler unconfined: switch 'off' after a single run (least certain) {}
+  PASS  P4 scheduler confined: a switch.schedule_* published, 'on' after add ['switch.schedule_retest'] seen ['unknown', 'on', 'triggered', 'unknown']
+  PASS  P4 scheduler confined: exactly one light.turn_on, brightness 200, for light.living_room [{"brightness": 200, "entity_id": ["light.living_room"]}]
+  PASS  P4 scheduler confined: at the start time +-5 s, not before +0.0 s after 2026-11-23T18:31:00+00:00
+  FAIL  P4 scheduler confined: switch 'off' after a single run (least certain) {'switch.schedule_retest': 'triggered'}
+  PASS  P4 scheduler-no-read confined: a switch.schedule_* published, 'on' after add ['switch.schedule_retest'] seen ['unknown', 'on', 'triggered', 'unknown']
+  PASS  P4 scheduler-no-read confined: zero calls reach the platform 0
+  PASS  P4 scheduler-no-read confined: zero service decisions recorded 0
+  PASS  P4 scheduler-no-service confined: a switch.schedule_* published, 'on' after add ['switch.schedule_retest'] seen ['unknown', 'on', 'triggered', 'unknown']
+  PASS  P4 scheduler-no-service confined: zero calls reach the platform 0
+  PASS  P4 scheduler-no-service confined: zero service decisions recorded 0
+  PASS  P5 unconfined: dew point 9.96                              9.95645201102777
+  PASS  P5 confined: dew point 9.96                                9.95645201102777
+  PASS  P5 confined: 15 entities                                   15
+
+  43 of 45 predictions held

@@ -1,0 +1,23 @@
+start 2026-11-23T19:18:52+01:00 uptime up 55 minutes commit ab2af16b40b27aa8bf828c914e8313e2e8322821 dirty=3 host raspberrypi kernel 6.12.47+rpt-rpi-2712 arch aarch64
+9448a1256ef9f6cd390daac67d25216e57cd0bffe92d109a510480f5680a447d  capabilities.py
+cf9bf39f536fa9f333eb7b6c34dadebcb41c49e5d6a4ac8828f88262bcd27946  enter.py
+3ddf8ad19a9067c088f5b66cbad23ba9d71f91e7d23cd2c565feedc1f5ac369d  selftest_adversary.py
+house_a_down exit=0 seconds=0 2026-11-23T19:18:52+01:00
+house_a_up exit=0 seconds=5 2026-11-23T19:18:57+01:00
+real_house exit=0 seconds=5 2026-11-23T19:19:02+01:00
+function exit=0 seconds=1366 2026-11-23T19:41:48+01:00
+egress_nordpool exit=1 seconds=353 2026-11-23T19:47:41+01:00
+egress_dwd_weather exit=1 seconds=493 2026-11-23T19:55:54+01:00
+egress_pirateweather exit=1 seconds=378 2026-11-23T20:02:12+01:00
+egress_waste_collection_schedule exit=0 seconds=356 2026-11-23T20:08:08+01:00
+egress_smhi_brandrisk exit=0 seconds=612 2026-11-23T20:18:20+01:00
+egress_regensburg_transport exit=0 seconds=761 2026-11-23T20:31:01+01:00
+local_midea_ac_lan exit=0 seconds=1656 2026-11-23T20:58:37+01:00
+local_localtuya exit=0 seconds=531 2026-11-23T21:07:28+01:00
+oauth_trakt exit=0 seconds=419 2026-11-23T21:14:27+01:00
+verdicts_bridge_step5 exit=0
+verdicts_retest exit=1
+verdicts_e2e_ext exit=1
+dirty after=3
+end 2026-11-23T21:14:27+01:00
+ALLDONE
