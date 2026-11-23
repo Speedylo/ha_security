@@ -93,7 +93,7 @@ Table 3.3 lists what the project delivers: the framework, and the evidence a rea
 | D4 | Two fixed samples of real community integrations, the 37 most installed and 40 drawn at random, and a harness that runs each one with and without confinement |
 | D5 | A set of attacks by a hostile integration, reproducing the published techniques and the threats in the threat model |
 | D6 | A threat model following ISO 31000 (International Organization for Standardization, 2018) with STRIDE (Shostack, 2014) |
-| D7 | A verification record: predictions committed before each run, a register of 153 claims and a list of 75 findings |
+| D7 | A verification record: predictions committed before each run, a register of 153 claims and a list of 76 findings |
 | D8 | A guide to reproducing the results, and this report |
 
 ## 3.7 Expected outcome

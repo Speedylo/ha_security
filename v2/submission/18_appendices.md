@@ -12,7 +12,7 @@
 | Working notes | `v2/notes/` — decision records, evidence write-ups and the pre-registered predictions |
 | Test hardware | Raspberry Pi 5, 4 GB, Raspberry Pi OS trixie. **Every measurement in this report was taken on it** |
 | Version | Tag `final-2026-11`, at which every measurement, mutant, suite and fault was rerun on 1 November 2026; results in `v2/experiments/verify/results/final2_20261101/`. The first full rerun, at tag `final-2026-10` on 16 October 2026, is kept in `final_20261016/` |
-| Full appendices | `v2/notes/appendices_full_20261110/`: the full compatibility results, the 35 self-test suites, the manifest schema, the requirements' derivations and criteria, the 75 findings one per line, and the architecture's detail, cut from this report for length |
+| Full appendices | `v2/notes/appendices_full_20261110/`: the full compatibility results, the 35 self-test suites, the manifest schema, the requirements' derivations and criteria, the 76 findings one per line, and the architecture's detail, cut from this report for length |
 | Reproduction | `v2/REPRODUCE.md`, followed from a fresh clone; following it on a freshly imaged device is still open (F18) |
 
 The repository is public at https://github.com/Speedylo/ha_security.
@@ -223,7 +223,7 @@ Table C.7 gives the authority that Section 2.1 summarises, with the source for e
 
 ## Appendix D — How the evaluation was checked
 
-The evaluation fails on its own terms if it reports a requirement as passed without demonstrating it, or an aggregate that conceals a breakdown it holds. To guard against both, every claim in the report was registered with its evidence and a pass criterion fixed in advance, and other methods looked for faults the evidence itself might hide (Table D.1). Of the 153 claims registered, 119 held as stated on the frozen code, 27 hold only in a narrower form, which the report now states, 5 rest on reasoning rather than measurement, and 2 were withdrawn because the evidence did not support them. The full register and the 75 findings, one per line, are in the repository (Appendix A).
+The evaluation fails on its own terms if it reports a requirement as passed without demonstrating it, or an aggregate that conceals a breakdown it holds. To guard against both, every claim in the report was registered with its evidence and a pass criterion fixed in advance, and other methods looked for faults the evidence itself might hide (Table D.1). Of the 153 claims registered, 119 held as stated on the frozen code, 27 hold only in a narrower form, which the report now states, 5 rest on reasoning rather than measurement, and 2 were withdrawn because the evidence did not support them. The full register and the 76 findings, one per line, are in the repository (Appendix A).
 
 **Table D.1 — What each checking method found**
 
@@ -232,11 +232,11 @@ The evaluation fails on its own terms if it reports a requirement as passed with
 | Re-measurement on fixed code | The mediation delay was 43 µs, not the 31.5 µs first stated (F17) | Every figure inside its criterion (Section 12.3) |
 | Re-derivation of headline figures from raw records | A stated worst-case delay had no record behind it (F23) | 39 of 40 equal; the other was the abstract's outdated suite count |
 | Fault injection | A full disk left the audit record unverifiable (F28); losing the platform left no recovery (F29) | 11 of 11 on both hosts |
-| Security review and fuzzing | A sandbox could inherit the supervisor's terminal (F34, Critical); malformed requests could stop the mediator (F33); the system-call filter left four calls with the effect of denied ones open, among them a way to lift the disk quota (F72–F75) | 4,864 requests, no escape |
+| Security review and fuzzing | A sandbox could inherit the supervisor's terminal (F34, Critical); malformed requests could stop the mediator (F33); the system-call filter left four calls with the effect of denied ones open, among them a way to lift the disk quota (F72–F75); the integration kept every capability inside its own namespaces (F76) | 4,864 requests, no escape |
 | Deliberate defects (mutation testing) | Three defects survived every suite at first; the supervisor ran in no suite (F48) | 90 of 92 caught; the other two change no behaviour, so no test could detect them. All 35 suites pass, twice |
 | Reproduction from a fresh copy | No reproduction guide existed (F18) | Guide written and followed from a fresh copy; not yet on a freshly installed device |
 | Running real integrations against a real installation | The stand-in hid how few kinds the bridge covered (F64); a picture link could pass the egress allowlist through the household's browser (F71) | 36 of 36 |
 
-Of the 75 findings, one is Critical, 19 Major, 6 between Minor and Major, 45 Minor, 3 notes and 1 a request to re-measure. One remains open (F18), one is retained as a residual risk (F11), and two are carried as stated limitations (F53, F63).
+Of the 76 findings, one is Critical, 19 Major, 7 between Minor and Major, 45 Minor, 3 notes and 1 a request to re-measure. One remains open (F18), one is retained as a residual risk (F11), and two are carried as stated limitations (F53, F63).
 
 The evaluation was repeated in full twice, each time from a fresh copy of a tagged version under predictions committed beforehand, the second at the frozen code of 1 November 2026, and every step of the second met its criterion. Its bounds are stated in Section 12.5: the deliberate defects were chosen by hand, so they show that each tested point is guarded, not that every point is, and the reproduction guide has not yet been followed on a freshly installed device.
