@@ -24,7 +24,7 @@ from __future__ import annotations
 import os
 import sys
 
-from . import namespaces, sandbox, seccomp
+from . import capabilities, namespaces, sandbox, seccomp
 from .sandbox import SandboxSpec
 
 # The supervisor names the descriptor rather than the child assuming one: `pass_fds` preserves
@@ -122,6 +122,16 @@ def main() -> int:
         covered = seccomp.install()
     except (OSError, seccomp.Unsupported) as err:
         _report(f"fail seccomp {err}")
+        os._exit(71)
+
+    # Then every capability, which only the construction above needed. uid 0 would otherwise
+    # keep the full set across `execve`, and the integration would start with all of it
+    # (found 2026-11-22). The filter just installed is what keeps them from coming back
+    # through a new user namespace (see `capabilities.py`).
+    try:
+        capabilities.drop_all()
+    except OSError as err:
+        _report(f"fail capabilities {err}")
         os._exit(71)
 
     env = dict(BASE_ENV)

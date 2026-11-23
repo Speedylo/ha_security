@@ -431,6 +431,44 @@ if os.uname().machine == "x86_64":
     record("escape", "x32 unshare(CLONE_NEWUSER)", _x32_unshare_newuser)
 record("kernel surface", "io_uring_setup", _io_uring_ring)
 
+
+# Capabilities (found 2026-11-22). The sandbox is built as uid 0 in its own user namespace, and uid 0
+# keeps a full set of capabilities across exec unless something drops them. They act only on the
+# sandbox's own namespaces, but they put capability-gated kernel code within reach: CAP_NET_ADMIN is
+# the gate in front of netfilter, the code behind the well-known user-namespace escalations. Each
+# attempt below is harmless (it sets what is already set) and succeeds only with the capability.
+def _capabilities_held():
+    sets = {line.split(":")[0]: line.split()[1]
+            for line in Path("/proc/self/status").read_text().splitlines()
+            if line.startswith(("CapInh", "CapPrm", "CapEff", "CapBnd", "CapAmb"))}
+    held = {name: value for name, value in sets.items() if int(value, 16)}
+    return " ".join(f"{name} {value}" for name, value in held.items()) or None
+
+
+def _interface_changed():
+    import fcntl
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+        request = struct.pack("16sh14s", b"lo", 0, b"")
+        flags = struct.unpack("16sh14s", fcntl.ioctl(sock, 0x8913, request))[1]    # SIOCGIFFLAGS
+        fcntl.ioctl(sock, 0x8914, struct.pack("16sh14s", b"lo", flags, b""))      # SIOCSIFFLAGS
+    return "changed the flags of lo (CAP_NET_ADMIN, the gate in front of netfilter)"
+
+
+def _raw_socket():
+    with socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP):
+        return "opened a raw socket (CAP_NET_RAW)"
+
+
+def _hostname_set():
+    socket.sethostname(socket.gethostname())
+    return "set the hostname (CAP_SYS_ADMIN)"
+
+
+record("capabilities", "capabilities held at run time", _capabilities_held)
+record("capabilities", "change a network interface", _interface_changed)
+record("capabilities", "open a raw socket", _raw_socket)
+record("capabilities", "set the hostname", _hostname_set)
+
 # ---- reaching another integration ------------------------------------------------------
 record("reach another", "connect to a TCP service on the host",
        lambda: socket.create_connection(("127.0.0.1", 8123), timeout=2) and "connected")
