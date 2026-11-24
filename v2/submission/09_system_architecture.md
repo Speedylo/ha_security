@@ -128,7 +128,7 @@ Each decision record names the run, the operation, its target, the verdict and t
 
 The framework fails closed. If the mediator stops, every channel closes, and each sandbox can then reach nothing, because the channel was its only route out. A sandbox that floods the mediator with refused requests is stopped rather than allowed to bury the record. A restarted sandbox keeps its stored settings but receives a fresh copy of its code, so it cannot replace its approved code with code of its own.
 
-When the framework stops an integration, it says why in plain language in the Repairs panel, with one action. A flooding integration, for example, is reported as having "kept trying to do things it does not have permission to do", and the message adds that this is usually a bug and that restarting gives it no new permissions. Only one action anywhere can widen a grant, *Allow and start*, and it is labelled as an approval. A household member who confirms a message without reading it therefore cannot make the house less safe.
+When the framework stops an integration, it says why in plain language in the Repairs panel, with one action. A flooding integration, for example, is reported as having "kept trying to do things it does not have permission to do", and the message adds that this is usually a bug and that restarting gives it no new permissions. Only one action anywhere can widen a grant, *Allow and start*, and it is labelled as an approval. An administrator who confirms such a message without reading it therefore cannot make the house less safe.
 
 ## 9.8 One command, end to end
 
