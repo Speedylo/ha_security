@@ -45,6 +45,7 @@ Falsifier: if any of 17–19 fails on HEAD, the defect is not what this note say
   text ("…AND what it is allowed to do has changed"), and 16 (`(False, True)`); 17–19 and 1–14 ok.
 - **Fix:** `describe.changes_since_approval` only (rule above); the gate is untouched.
 - **P2 HELD (laptop):** `selftest_approval` 20/20, `selftest_t12` 33/33, `selftest_describe` PASS.
-- **P3 open:** Pi suites (`selftest_supervise` needs the HA interpreter) at the next Pi session.
+- **P3 HELD (Pi, 2026-11-24):** clone of a55734f, preflight READY, suites 36/36 twice; approval
+  20/20 both; results `experiments/verify/results/banner_20261124/`.
 - Uncommitted. Finding F77, rated **Minor** by Younes (2026-11-24): no authority changes, only the
   screen's sentence. Report counts 76→77 with the 28 Nov fixes.

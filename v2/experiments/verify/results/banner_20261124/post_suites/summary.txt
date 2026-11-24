@@ -1,0 +1,11 @@
+start 2026-11-24T22:04:05+01:00 uptime up 3 hours, 6 minutes commit a55734f4a5b3ae7666ddb92945a6465c1f5e4036 dirty=0 host raspberrypi kernel 6.12.47+rpt-rpi-2712 arch aarch64
+house_a_down exit=0 seconds=0 2026-11-24T22:04:05+01:00
+house_a_up exit=0 seconds=12 2026-11-24T22:04:17+01:00
+preflight exit=0 seconds=0 2026-11-24T22:04:17+01:00
+suites_1 exit=0 seconds=291 2026-11-24T22:09:08+01:00
+suites_2 exit=0 seconds=282 2026-11-24T22:13:50+01:00
+suites_1 failed=0 of 36
+suites_2 failed=0 of 36
+dirty after=0
+end 2026-11-24T22:13:50+01:00
+ALLDONE
