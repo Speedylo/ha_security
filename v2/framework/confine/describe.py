@@ -17,8 +17,10 @@ support:
   - **The content hash** — §5.12.5 settled this: no for the digest, yes for the change. A hex
     string means nothing to the reader F4 exists to serve, and showing one would be security
     theatre in the literal sense. A *change* in it is a sentence a non-programmer can act on.
-  - **Consent flow** — buttons, prompts, a wizard. §3.7 puts it out of scope, and a surface is
-    what is owed rather than an interaction.
+  - **Consent flow** — buttons, prompts, a wizard. §3.7 put it out of scope, and a surface was
+    what was owed rather than an interaction. Since F57c there is one, outside this module: the
+    Repairs screen renders `describe_markdown`, and its single *Allow and start* approves exactly
+    what it showed (`approve_shown`).
 
 **The negative list is the part that matters.** §5.10.7 observes that in its worked example nine
 of the ten capabilities are denied by their absence — the manifest never mentions them. A
@@ -226,9 +228,17 @@ def changes_since_approval(component: Path, manifest: Manifest,
                            approvals: Path) -> tuple[bool, bool, bool]:
     """(approved before, code changed, permissions changed), against the last approval.
 
-    The permissions count as changed when the identity's manifest or requirements moved, which
-    is all `main` compared before F60, **or when the grant digest differs**: a derived grant lives in a file the
-    identity does not hash, so only the digest sees it widen (F57).
+    **The permissions count as changed exactly when the grant digest differs** (F77). Until F77
+    they also counted as changed whenever the identity's `manifest` part moved, but that part
+    hashes the whole `manifest.json`, `version` included, so every real update was shown as a
+    permissions change; a dependency change was too. The digest covers the grant actually
+    loaded, whichever file it came from, which is also why F60 added it: a derived grant lives in
+    a file the identity does not hash (F57).
+
+    **The code counts as changed** when the source or the dependencies moved, or when
+    `manifest.json` moved while the grant did not: some other part of the integration's own
+    description changed, which is an update. Whatever this reports, the gate
+    (`require_approval`) refuses any change until it is approved again.
     """
     record = last_record(approvals, component.name)
     if record is None:
@@ -237,9 +247,11 @@ def changes_since_approval(component: Path, manifest: Manifest,
         moved = Identity.compute(component).changes_from(Identity(**record["identity"]))
     except TypeError:
         return True, True, True
-    grant = grant_digest(manifest.provenance.value, manifest.permissions)
-    return (True, "source" in moved,
-            "manifest" in moved or "requirements" in moved or record.get("grant") != grant)
+    permissions = record.get("grant") != grant_digest(manifest.provenance.value,
+                                                      manifest.permissions)
+    code = ("source" in moved or "requirements" in moved
+            or ("manifest" in moved and not permissions))
+    return True, code, permissions
 
 
 def describe_refusal(error: ManifestRejected, domain: str) -> str:

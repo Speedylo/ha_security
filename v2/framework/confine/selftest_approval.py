@@ -160,6 +160,76 @@ def shown_steps(root: Path, mediator: Mediator, demo: Path) -> None:
           not decision.allowed, decision.reason)
 
 
+def banner_steps(root: Path) -> None:
+    """Checks 15–19 (`notes/banner_prediction_20261124.md`, F77): the banner names what changed.
+
+    "Permissions changed" must mean the grant changed, never only that `manifest.json`'s bytes did:
+    every real update bumps `version`, and a banner that says the permissions changed on each one
+    wears out the one warning meant to be loud.
+    """
+    from .describe import changes_since_approval, describe_markdown
+
+    approvals = root / DEFAULT_LOG
+
+    def write(directory: Path, *, version: str = "1.0.0", requirements: list[str] | None = None,
+              permissions: dict | None = None, code: str = "") -> None:
+        manifest = {"domain": directory.name, "name": directory.name, "version": version,
+                    "requirements": requirements or []}
+        if permissions is not None:
+            manifest["permissions"] = permissions
+        (directory / "manifest.json").write_text(json.dumps(manifest))
+        (directory / "__init__.py").write_text(
+            "async def async_setup(hass, config):\n    return True" + code + "\n")
+
+    def moved(directory: Path) -> tuple[bool, bool]:
+        manifest = Manifest.load(directory, root)
+        _, code, permissions = changes_since_approval(directory, manifest, approvals)
+        return code, permissions
+
+    def fresh(domain: str, **kwargs) -> Path:
+        directory = component(root, domain)
+        write(directory, **kwargs)
+        approve(directory)
+        return directory
+
+    plug = fresh("demo_banner_update", permissions=READ)
+    write(plug, version="1.0.1", permissions=READ, code="  # 1.0.1")
+    got = moved(plug)
+    check("15. a code-only update (version bumped, grant the same) is code changed, "
+          "permissions not", got == (True, False), f"(code, permissions)={got}")
+    screen = describe_markdown(Manifest.load(plug, root), code_changed=got[0],
+                               permissions_changed=got[1])
+    check("    and the Repairs screen says what it is allowed to do has not changed",
+          "What it is allowed to do has not changed" in screen, screen.split("\n")[0][:120])
+
+    deps = fresh("demo_banner_deps", permissions=READ)
+    write(deps, permissions=READ, requirements=["acme-client==2.0"])
+    got = moved(deps)
+    check("16. a dependency added, nothing else, is code changed, permissions not",
+          got == (True, False), f"(code, permissions)={got}")
+
+    wider = fresh("demo_banner_wider", permissions=READ)
+    write(wider, permissions=WIDER)
+    got = moved(wider)
+    check("17. its own permissions block widened, code the same, is permissions changed, "
+          "code not", got == (False, True), f"(code, permissions)={got}")
+
+    derived = component(root, "demo_banner_derived")
+    write(derived)
+    derive(derived, READ)
+    approve(derived)
+    derive(derived, WIDER)
+    got = moved(derived)
+    check("18. a derived grant widened beside it, code the same, is permissions changed, "
+          "code not", got == (False, True), f"(code, permissions)={got}")
+
+    both = fresh("demo_banner_both", permissions=READ)
+    write(both, version="1.1.0", permissions=WIDER, code="  # 1.1.0")
+    got = moved(both)
+    check("19. code, version and grant all changed is both", got == (True, True),
+          f"(code, permissions)={got}")
+
+
 def main() -> int:
     root = Path(tempfile.mkdtemp(prefix="selftest-approval-"))
     try:
@@ -214,6 +284,9 @@ def main() -> int:
 
         print("\nAllowed from the Repairs panel (F57c): an approval of exactly what was shown:")
         shown_steps(root, mediator, demo)
+
+        print("\nWhat the banner says changed (F77):")
+        banner_steps(root)
     finally:
         shutil.rmtree(root, ignore_errors=True)
 

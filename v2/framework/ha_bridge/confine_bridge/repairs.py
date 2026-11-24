@@ -1,9 +1,10 @@
 """The way back after a cut-off, or a start that did not happen: one button, in the Repairs panel.
 
 The mediator stops a confined integration that floods it with refused requests, and keeps it
-stopped until someone asks for it back (`notes/flood_cutoff_prediction.md`). That someone is a
-member of the household, not an administrator, so the asking happens where Home Assistant already
-asks them to fix things. The flow offers exactly one action, and it is a safe one: a restart runs
+stopped until someone asks for it back (`notes/flood_cutoff_prediction.md`). That someone is
+whoever administers Home Assistant (only an administrator can use a Repairs action), and the asking
+happens in Home Assistant's own screens, where it already asks them to fix things, never in a
+terminal. The flow offers exactly one action, and it is a safe one: a restart runs
 the integration again under the same manifest, so a user who confirms without reading cannot give
 it anything it did not already have.
 """
