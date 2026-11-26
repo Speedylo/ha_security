@@ -1,9 +1,0 @@
-# M62 (expected: K31): a media player's join is forwarded
---- a/framework/confine/mediator.py
-+++ b/framework/confine/mediator.py
-@@ -460,4 +460,5 @@
-         "shuffle_set": [{"shuffle": _flag}],
-         "repeat_set": [{"repeat": _repeat}],
-+        "join": [{}],
-         "play_media": [{"media_content_type": _text, "media_content_id": _media_id,
-                         "enqueue": _Optional(_enqueue), "announce": _Optional(_flag),

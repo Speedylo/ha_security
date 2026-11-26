@@ -14,7 +14,8 @@ a spare card). Until it has, treat a step that fails as a finding about the guid
 Every step ends with a **Check**, so you can tell the step worked before the next one depends on it.
 
 **Section numbers.** References such as §3.4, §7.17 or "Chapter 6" in this guide and in the
-experiments' READMEs point to the project's working report, which is kept locally and not published.
+experiments' READMEs point to the project's working report, and paths under `notes/` and `verify/` to
+its working notes and verification scripts; all three are kept locally and not published.
 The final report, submitted separately, presents the same measurements in its Sections 11 and 12 and
 Appendices D and F.
 
@@ -56,7 +57,7 @@ cd ~/ha_security/v2
 The evaluation was run in full at four tags: `verify-2026-10` and `verify-2026-10-f03` (the
 verification campaign, 5–6 October 2026), then `final-2026-10` (the first full rerun, 16 October) and
 `final-2026-11` (the second, 1 November), whose results the final report gives. `main` has all of
-them, plus the defects fixed afterwards (F72–F77), each with its prediction note and its results under
+them, plus the defects fixed afterwards (F72–F77), each with its results under
 `experiments/verify/results/`, and the documents written since. To reproduce the reported figures,
 check out `final-2026-11`; to run the current framework, stay on `main`.
 

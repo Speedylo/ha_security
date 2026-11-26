@@ -62,3 +62,7 @@ v2/figures/fig_5_1_confined.*
 v2/figures/fig_8_2_confined.*
 v2/figures/fig_i5_1_system.*
 v2/figures/fig_i5_2_request.*
+
+# Working notes and verification scripts: kept locally, not published (2026-11-26)
+v2/notes/
+v2/verify/

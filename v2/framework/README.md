@@ -3,7 +3,8 @@
 **Started:** 2026-08-25 · **Described by:** Section 9 of the final report
 
 > **Section numbers.** The `§5.x`–`§7.x` and "Chapter" references in this file and in the module
-> docstrings point to the project's working report, which is kept locally and not published. The
+> docstrings point to the project's working report, and paths under `notes/` and `verify/` to its
+> working notes and verification scripts; all three are kept locally and not published. The
 > final report, submitted separately, describes the same framework in Section 9 and its evaluation in
 > Sections 11 and 12.
 

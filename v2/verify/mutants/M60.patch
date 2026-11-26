@@ -1,9 +1,0 @@
-# M60 (expected: K14): a light's toggle is forwarded, though (A) works it out
---- a/framework/confine/mediator.py
-+++ b/framework/confine/mediator.py
-@@ -382,4 +382,5 @@
-             ("transition", _number))}],
-         "turn_off": [{"transition": _Optional(_number), "flash": _Optional(_flash)}],
-+        "toggle": [{}],
-     },
-     "fan": {

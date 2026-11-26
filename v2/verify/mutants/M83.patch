@@ -1,9 +1,0 @@
-# M83 (expected: Q9): image/svg+xml is a listed picture type
---- a/framework/confine/mediator.py
-+++ b/framework/confine/mediator.py
-@@ -559,4 +559,5 @@
-     "image/gif": lambda b: b[:6] in (b"GIF87a", b"GIF89a"),
-     "image/webp": lambda b: b[:4] == b"RIFF" and b[8:12] == b"WEBP",
-+    "image/svg+xml": lambda b: True,
- }
- 
