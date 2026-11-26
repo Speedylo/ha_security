@@ -53,7 +53,7 @@ The simplest test is whether an integration loads at all. Two samples were used:
 
 The two runs failed on exactly the same integrations, with the same error messages, so confinement caused none of the failures. The 84% figure therefore describes the integrations and the platform release, not the framework. The random sample was predicted to do worse, because less popular integrations are less well maintained, but it did 8 points better. A typical integration in that sample needs less from the platform, so it has less that can go missing.
 
-Loading is not the same as working, so fifteen integrations were also run from start to finish. Each was set up through its own unmodified configuration steps and given a task whose correct result was predicted beforehand. All fifteen worked confined. Table 12.3 shows five of them, and Appendix F gives all fifteen. They are reported by name rather than as a rate because most integrations need an account or a physical device before they can do anything, with or without confinement.
+Loading is not the same as working, so fifteen integrations were also run from start to finish. Each was set up through its own unmodified configuration steps and given a task whose correct result was predicted beforehand. All fifteen worked confined. Table 12.3 shows five of them, and Table F.1 gives all fifteen. They are reported by name rather than as a rate because most integrations need an account or a physical device before they can do anything, with or without confinement.
 
 **Table 12.3**
 *Five of the fifteen integrations run end to end*
@@ -97,7 +97,7 @@ Delay is not a constraint either. Writing each decision to disk is the slowest s
 
 ## 12.4 How the results were checked
 
-These results are only as good as the evaluation behind them, so the evaluation was tested too. Pass criteria were committed before each experiment ran, and all the experiments were repeated in full twice on tagged code, the second time on the finished version. In that rerun, all 35 test suites passed twice, and every step met its criterion. To check that the tests themselves could fail, 92 defects were planted in the code one at a time, and the tests caught 90. The other two change nothing the code does, so no test could detect them. This work produced 76 findings, summarised in Appendix D, of which one was critical. All but four are resolved, and none changed the three answers above. The AI-specific checks are described in Section 13.
+These results are only as good as the evaluation behind them, so the evaluation was tested too. Pass criteria were committed before each experiment ran, and all the experiments were repeated in full twice on tagged code, the second time on the finished version. In that rerun, all 35 test suites passed twice, and every step met its criterion. To check that the tests themselves could fail, 92 defects were planted in the code one at a time, and the tests caught 90. The other two change nothing the code does, so no test could detect them. This work produced 77 findings, summarised in Appendix D, of which one was critical. All but four are resolved, and none changed the three answers above. The AI-specific checks are described in Section 13.
 
 ## 12.5 Limits of the results
 

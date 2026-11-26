@@ -418,5 +418,5 @@ def build(out: pathlib.Path) -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("-o", "--out", type=pathlib.Path, default=HERE / "final_report.docx")
+    ap.add_argument("-o", "--out", type=pathlib.Path, default=HERE / "Younes_Rahati_Final_Report.docx")
     build(ap.parse_args().out)

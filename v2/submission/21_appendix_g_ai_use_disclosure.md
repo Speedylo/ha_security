@@ -26,7 +26,7 @@ The project ran over many sessions, so this appendix gives a representative samp
 | 2026-10-25 | "go ahead with the fix" | The fix for F65, a defect that stopped every sandbox's web component from starting |
 | 2026-10-26 | "we fix it" | A fix for F68 rather than a recorded limit, with its prediction and failing test committed first |
 | 2026-10-31 | State the lock code format "as a limit" | The final report states this limit rather than adding code to work around it |
-| 2026-11-01 | Freeze the code | Only defects found while writing may be fixed; no new features or experiments |
+| 2026-11-01 | Freeze the code | Only defects may be fixed, and no features added; the defects found later, while preparing the defence (F72–F77), were fixed under this rule |
 | 2026-11-04 | "the new work done for extending device types won't be included in the interim report. They will be included in the final report." | The interim report kept its 27 October figures; the bridge extension is reported here |
 
 My instructions also included questions, and one of them changed how the project was tested. I asked whether the test suites did more than confirm what the code already did, and the answer was a campaign of deliberate defects planted in the code to check that the suites catch them (Section 13.2).
@@ -35,7 +35,7 @@ My instructions also included questions, and one of them changed how the project
 
 The output of the tool was never used without a human check, and the check depended on the kind of output.
 
-For **code**, I approved each design before it was written, usually by choosing among options the tool laid out with its recommendation. A prediction note was then committed, a test was shown to fail, and only then was the change made. The change was accepted only when the test passed and every other suite still passed, and the experiments were then rerun against the real platform. When the tool's recommendation was wrong for the project, I decided otherwise, as when I chose to fix F68 rather than record it.
+For **code**, I approved each design before it was written, usually by choosing among options the tool laid out with its recommendation. For each defect fixed during the evaluation, a prediction note was committed first, a test was shown to fail, and only then was the change made. The change was accepted only when the test passed and every other suite still passed, and the experiments were then rerun against the real platform. When the tool's recommendation was wrong for the project, I decided otherwise, as when I chose to fix F68 rather than record it.
 
 For **measurements**, the pass criteria were committed before each run, and each figure in this report was checked against its raw result file. The tool's reading of a result was not accepted on its own: two complete reruns of every experiment, on 16 October and 1 November 2026, recomputed the reported figures from the raw data.
 
