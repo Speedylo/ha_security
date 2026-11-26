@@ -1,0 +1,10611 @@
+{
+ "label": "core-2026.8.3",
+ "root": "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components",
+ "n_directories": 1482,
+ "grep": {
+  "homeassistant.helpers": {
+   "n": 1356,
+   "share": 91.5
+  },
+  "DataUpdateCoordinator": {
+   "n": 572,
+   "share": 38.6
+  },
+  "async_add_entities": {
+   "n": 941,
+   "share": 63.5
+  },
+  "hass.data": {
+   "n": 279,
+   "share": 18.8
+  },
+  "hass.states.async_set": {
+   "n": 2,
+   "share": 0.1
+  }
+ },
+ "imports_helpers": {
+  "n": 1356,
+  "share": 91.5
+ },
+ "unparseable_files": [],
+ "without_helper_import": [
+  "3_day_blinds",
+  "acomax",
+  "aep_ohio",
+  "aep_texas",
+  "amp_motorization",
+  "anwb_energie",
+  "apollo_automation",
+  "appalachianpower",
+  "artsound",
+  "atlanticcityelectric",
+  "august_ble",
+  "avosdim",
+  "balay",
+  "bauknecht",
+  "bge",
+  "bliss_automation",
+  "bloc_blinds",
+  "brandt",
+  "brel_home",
+  "bswitch",
+  "bticino",
+  "bubendorff",
+  "burbank_water_and_power",
+  "bwt",
+  "coautilities",
+  "comed",
+  "coned",
+  "constructa",
+  "cosori",
+  "cozytouch",
+  "cribl",
+  "dacia",
+  "decorquip",
+  "delmarva",
+  "diaz",
+  "digital_loggers",
+  "dooya",
+  "duquesne_light",
+  "eastron",
+  "energie_vanons",
+  "esera_onewire",
+  "evergy",
+  "fire_tv",
+  "flexom",
+  "frankever",
+  "fujitsu_anywair",
+  "gaggenau",
+  "gaviota",
+  "gitter",
+  "harvey",
+  "havana_shade",
+  "heicko",
+  "heiwa",
+  "hexaom",
+  "hi_kumo",
+  "home_plus_control",
+  "hurrican_shutters_wholesale",
+  "indianamichiganpower",
+  "inspired_shades",
+  "iotorero",
+  "ismartwindow",
+  "kaiser_nienhaus",
+  "kentuckypower",
+  "konnected_esphome",
+  "krispol",
+  "legrand",
+  "levoit",
+  "linak",
+  "linkedgo",
+  "linx",
+  "luxaflex",
+  "madeco",
+  "marantz",
+  "martec",
+  "maytag",
+  "mijndomein_energie",
+  "monessen",
+  "neff",
+  "neo",
+  "nexen",
+  "nexity",
+  "nutrichef",
+  "ogemray",
+  "oru_opower",
+  "pcs_lighting",
+  "peco_opower",
+  "pepco",
+  "pge",
+  "pinecil",
+  "piper",
+  "pitsos",
+  "portlandgeneral",
+  "profilo",
+  "pse",
+  "psoklahoma",
+  "quadrafire",
+  "raven_rock_mfg",
+  "rexel",
+  "rhasspy",
+  "samsam",
+  "scl",
+  "screenaway",
+  "sensorblue",
+  "siemens",
+  "simply_automated",
+  "simu",
+  "smart_blinds",
+  "smart_home",
+  "smart_rollos",
+  "smarther",
+  "smud",
+  "somfy",
+  "swepco",
+  "symfonisk",
+  "thermador",
+  "thermoplus",
+  "tplink_tapo",
+  "ubiwizz",
+  "ublockout",
+  "ultraloq",
+  "uprise_smart_shades",
+  "vagner_pool",
+  "vermont_castings",
+  "whisper",
+  "zbox_hub",
+  "zondergas"
+ ],
+ "per_integration": {
+  "3_day_blinds": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "abode": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "acaia": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "accuweather": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "acmeda": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "acomax": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "actiontec": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "actron_air": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "adax": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "adguard": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ads": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "advantage_air": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aemet": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aep_ohio": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "aep_texas": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "aftership": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "agent_dvr": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ai_task": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aidot": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "air_quality": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "airgradient": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "airly": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "airnow": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "airobot": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "airos": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "airpatrol": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "airq": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "airthings": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "airthings_ble": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "airtouch4": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "airtouch5": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "airvisual": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "airvisual_pro": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "airzone": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "airzone_cloud": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aladdin_connect": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "alarm_control_panel": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "alarmdecoder": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "alert": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "alexa": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "alexa_devices": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "alpha_vantage": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "altruist": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "amazon_polly": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "amberelectric": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ambient_network": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ambient_station": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "amcrest": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "amp_motorization": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "analytics": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "analytics_insights": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "android_ip_webcam": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "androidtv": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "androidtv_remote": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "anel_pwrctrl": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "anglian_water": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "anova": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "anthemav": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "anthropic": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "anwb_energie": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "aosmith": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "apache_kafka": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "apcupsd": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "api": {
+   "grep": [
+    "hass.data",
+    "hass.states.async_set",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "apollo_automation": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "appalachianpower": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "apple_tv": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "application_credentials": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "apprise": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aprilaire": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aprs": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "apsystems": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aquacell": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aqualogic": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aquostv": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aqvify": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aranet": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "arcam_fmj": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "arest": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "arris_tg2492lg": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "artsound": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "aruba": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "arve": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "arwn": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aseko_pool_live": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "assist_pipeline": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "assist_satellite": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "asuswrt": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "atag": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "atlanticcityelectric": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "atome": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "august": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "august_ble": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "aurora": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aurora_abb_powerone": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aussie_broadband": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "autarco": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "auth": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "automation": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "autoskope": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "avea": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "avosdim": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "awair": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aws": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "aws_s3": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "axis": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "azure_data_explorer": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "azure_devops": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "azure_event_hub": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "azure_service_bus": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "azure_storage": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "backblaze_b2": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "backup": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "baf": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "baidu": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "balay": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "balboa": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bang_olufsen": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "battery": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bauknecht": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "bayesian": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bbox": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bge": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "binary_sensor": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bitcoin": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bizkaibus": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "blackbird": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "blebox": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "blink": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bliss_automation": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "bloc_blinds": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "blockchain": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "blue_current": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bluemaestro": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "blueprint": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bluesound": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bluetooth": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bluetooth_adapters": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bluetooth_le_tracker": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bmw_connected_drive": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bond": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bosch_alarm": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bosch_shc": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "brands": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "brandt": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "braviatv": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "brel_home": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "bring": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "broadlink": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "brother": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "brottsplatskartan": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "browser": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "brunt": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bryant_evolution": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bsblan": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bswitch": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "bt_home_hub_5": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bt_smarthub": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bthome": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bticino": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "bubendorff": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "buienradar": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "burbank_water_and_power": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "button": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "bwt": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "caldav": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "calendar": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cambridge_audio": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "camera": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "canary": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "casper_glow": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cast": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ccm15": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "centriconnect": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cert_expiry": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "chacon_dio": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "channels": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "chef_iq": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "chess_com": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cielo_home": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cisco_ios": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cisco_mobility_express": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cisco_webex_teams": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "citybikes": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "clickatell": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "clicksend": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "clicksend_tts": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "climate": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cloud": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cloudflare": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cloudflare_r2": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cmus": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "co2signal": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "coautilities": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "coinbase": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "color_extractor": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "comed": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "comed_hourly_pricing": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "comelit": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "comfoconnect": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "command_line": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "compensation": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "compit": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "concord232": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "coned": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "config": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "configurator": {
+   "grep": [
+    "hass.data",
+    "hass.states.async_set",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "constructa": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "control4": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "conversation": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cookidoo": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "coolmaster": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cosori": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "counter": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cover": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cozytouch": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "cppm_tracker": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cpuspeed": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cribl": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "crownstone": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "currencylayer": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "cync": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dacia": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "daikin": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "danfoss_air": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "data_grand_lyon": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "datadog": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "date": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "datetime": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ddwrt": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "deako": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "debugpy": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "deconz": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "decora_wifi": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "decorquip": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "default_config": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "delijn": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "delmarva": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "deluge": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "demo": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "denon": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "denon_rs232": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "denonavr": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "derivative": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "devialet": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "device_automation": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "device_sun_light_trigger": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "device_tracker": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "devolo_home_control": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "devolo_home_network": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dexcom": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dhcp": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "diagnostics": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dialogflow": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "diaz": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "digital_loggers": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "digital_ocean": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "directv": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "discogs": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "discord": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "discovergy": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dlink": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dlna_dmr": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dlna_dms": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dnsip": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "doods": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "door": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "doorbell": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "doorbird": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dooya": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "dormakaba_dkey": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "downloader": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dremel_3d_printer": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "drop_connect": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dropbox": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "droplet": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dsmr": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dsmr_reader": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dublin_bus_transport": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "duckdns": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "duco": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dunehd": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "duotecno": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "duquesne_light": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "dwd_weather_warnings": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dynalite": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "dyson_infrared": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "eafm": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "earn_e_p1": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "eastron": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "easyenergy": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ebox": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ebusd": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ecoal_boiler": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ecobee": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ecoforest": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "econet": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ecovacs": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ecowitt": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "edifier_infrared": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "edimax": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "edl21": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "efergy": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "egardia": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "egauge": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "eheimdigital": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "eight_sleep": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ekeybionyx": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "electrasmart": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "electric_kiwi": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "elevenlabs": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "elgato": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "elkm1": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "elmax": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "elv": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "elvia": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "emby": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "emoncms": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "emoncms_history": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "emonitor": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "emulated_hue": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "emulated_kasa": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "emulated_roku": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "energenie_power_sockets": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "energie_vanons": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "energieleser": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "energy": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "energyid": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "energyzero": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "enigma2": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "enocean": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "enphase_envoy": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "entur_public_transport": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "envertech_evt800": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "environment_canada": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "envisalink": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ephember": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "epic_games_store": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "epion": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "epson": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "eq3btsmart": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "escea": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "esera_onewire": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "esphome": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "essent": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "etherscan": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "eufy": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "eufylife_ble": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "eurotronic_cometblue": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "event": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "evergy": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "everlights": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "evil_genius_labs": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "evohome": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ezviz": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "faa_delays": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "facebook": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fail2ban": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "familyhub": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fan": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fastdotcom": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "feedreader": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ffmpeg": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ffmpeg_motion": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ffmpeg_noise": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fibaro": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fido": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "file": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "file_upload": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "filesize": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "filter": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fing": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fints": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fire_tv": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "firefly_iii": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fireservicerota": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "firmata": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fish_audio": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fitbit": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fivem": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fixer": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fjaraskupan": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fleetgo": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "flexit": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "flexit_bacnet": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "flexom": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "flic": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "flipr": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "flo": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "flock": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "flume": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fluss": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "flux": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "flux_led": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "folder": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "folder_watcher": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "foobot": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "forecast_solar": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "forked_daapd": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fortios": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "foscam": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "foursquare": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "frankever": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "free_mobile": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "freebox": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "freedns": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "freedompro": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "freshr": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fressnapf_tracker": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fritz": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fritzbox": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fritzbox_callmonitor": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fronius": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "frontend": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "frontier_silicon": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fuelprices_dk": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fujitsu_anywair": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "fujitsu_fglair": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fully_kiosk": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fumis": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "futurenow": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "fyta": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "gaggenau": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "garadget": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "garage_door": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "garages_amsterdam": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "gardena_bluetooth": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "gate": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "gatus": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "gaviota": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "gc100": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "gdacs": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "generic": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "generic_hygrostat": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "generic_thermostat": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "geniushub": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "gentex_homelink": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "geo_json_events": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "geo_location": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "geo_rss_events": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "geocaching": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "geofency": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "geonetnz_quakes": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "geonetnz_volcano": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "geosphere_austria_warnings": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ghost": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "gios": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "github": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "gitlab_ci": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "gitter": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "glances": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "go2rtc": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "goalzero": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "gogogate2": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "goodwe": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_air_quality": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_assistant": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_assistant_sdk": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_cloud": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_drive": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_generative_ai_conversation": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_health": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_mail": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_maps": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_photos": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_pubsub": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_sheets": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_tasks": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_translate": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_travel_time": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_weather": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "google_wifi": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "govee_ble": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "govee_light_local": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "gpsd": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "gpslogger": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "graphite": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "gree": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "green_planet_energy": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "greencell": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "greeneye_monitor": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "group": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "growatt_server": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "gtfs": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "guardian": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "guntamatic": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "habitica": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hanna": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "harbor": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hardkernel": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hardware": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "harman_kardon_avr": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "harman_luxury": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "harmony": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "harvey": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "hassio": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "havana_shade": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "haveibeenpwned": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hddtemp": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hdfury": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hdmi_cec": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "heatmiser": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hegel": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "heicko": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "heiwa": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "helty": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "heos": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "here_travel_time": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hexaom": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "hi_kumo": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "hikvision": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hikvisioncam": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hisense_aehw4a1": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "history": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "history_stats": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hitron_coda": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hive": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hko": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hlk_sw16": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "holiday": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "home_connect": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "home_plus_control": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "homeassistant": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "homeassistant_alerts": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "homeassistant_connect_zbt2": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "homeassistant_green": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "homeassistant_hardware": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "homeassistant_sky_connect": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "homeassistant_yellow": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "homee": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "homekit": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "homekit_controller": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "homematic": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "homematicip_cloud": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "homevolt": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "homewizard": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "homeworks": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "honeywell": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "honeywell_string_lights": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "horizon": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hp_ilo": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hr_energy_qube": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "html5": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "http": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "huawei_lte": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hue": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hue_ble": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "huisbaasje": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "humidifier": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "humidity": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hunterdouglas_powerview": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hurrican_shutters_wholesale": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "husqvarna_automower": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "husqvarna_automower_ble": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "huum": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hvv_departures": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hydrawise": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hyperion": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "hypontech": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ialarm": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "iammeter": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "iaqualink": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ibeacon": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "icloud": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "idasen_desk": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "idrive_e2": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "idteck_prox": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ifttt": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "iglo": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "igloohome": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ign_sismologia": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ihc": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "illuminance": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "image": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "image_processing": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "image_upload": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "imap": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "imeon_inverter": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "imgw_pib": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "immich": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "imou": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "improv_ble": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "incomfort": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "indevolt": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "indianamichiganpower": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "inels": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "influxdb": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "infrared": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "inkbird": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "input_boolean": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "input_button": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "input_datetime": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "input_number": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "input_select": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "input_text": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "inspired_shades": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "insteon": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "integration": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "intelliclima": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "intellifire": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "intent": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "intent_script": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "intesishome": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "iometer": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ios": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "iotawatt": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "iotorero": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "iotty": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "iperf3": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ipma": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ipp": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "iqvia": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "irish_rail_transport": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "irm_kmi": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "iron_os": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "isal": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "iskra": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "islamic_prayer_times": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ismartwindow": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "israel_rail": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "iss": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ista_ecotrend": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "isy994": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "itach": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "itunes": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ituran": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "izone": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "jellyfin": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "jewish_calendar": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "joaoapps_join": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "juicenet": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "justnimbus": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "jvc_projector": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "kaiser_nienhaus": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "kaiterra": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "kaleidescape": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "kankun": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "karakeep": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "keba": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "keenetic_ndms2": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "kef": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "kegtron": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "kentuckypower": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "keyboard_remote": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "keymitt_ble": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "kiosker": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "kira": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "kitchen_sink": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "kiwi": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "klik_aan_klik_uit": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "kmtronic": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "knocki": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "knx": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "kodi": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "konnected": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "konnected_esphome": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "kostal_plenticore": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "kraken": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "krispol": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "kulersky": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "kwb": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "labs": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lacrosse": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lacrosse_view": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lamarzocco": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lametric": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "landisgyr_heat_meter": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lannouncer": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lastfm": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "launch_library": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "laundrify": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lawn_mower": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lcn": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ld2410_ble": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "leaone": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "led_ble": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "led_infrared": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "legrand": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "lektrico": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "letpot": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "levoit": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "lg_infrared": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lg_netcast": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lg_soundbar": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lg_thinq": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lg_tv_rs232": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "libre_hardware_monitor": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lichess": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lidarr": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "liebherr": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "life360": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lifx": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lifx_cloud": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "light": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lightwave": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "limitlessled": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "linak": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "linkedgo": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "linkplay": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "linksys_smart": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "linode": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "linux_battery": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "linx": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "litejet": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "litellm": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "litterrobot": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "livisi": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "llama_cpp": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "llamalab_automate": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "llm": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "local_calendar": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "local_file": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "local_ip": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "local_todo": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "locative": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lock": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "logbook": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "logger": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lojack": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "london_air": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "london_underground": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lookin": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "loqed": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lovelace": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "luci": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "luftdaten": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lunatone": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lupusec": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lutron": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lutron_caseta": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "luxaflex": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "lw12wifi": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lyngdorf": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "lyric": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "madeco": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "madvr": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mailgun": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "manual": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "manual_mqtt": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "marantz": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "marantz_infrared": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "martec": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "marytts": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mastodon": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "matrix": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "matter": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "maxcube": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "maytag": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "mazda": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mcp": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mcp_server": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mealie": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "meater": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "medcom_ble": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "media_extractor": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "media_player": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "media_source": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mediaroom": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "melcloud": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "melcloud_home": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "melissa": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "melnor": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "meraki": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "message_bird": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "met": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "met_eireann": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "meteo_france": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "meteo_lt": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "meteoalarm": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "meteoclimatic": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "metoffice": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mfi": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "microbees": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "microsoft": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "midea": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "miele": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mijndomein_energie": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "mikrotik": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mill": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "min_max": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "minecraft_server": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "minio": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mitsubishi_comfort": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mjpeg": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "moat": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mobile_app": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mochad": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "modbus": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "modem_callerid": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "modern_forms": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "moehlenhoff_alpha2": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "moisture": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mold_indicator": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "monarch_money": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "monessen": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "monoprice": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "monzo": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "moon": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mopeka": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "motion": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "motion_blinds": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "motionblinds_ble": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "motioneye": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "motionmount": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mpd": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mqtt": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mqtt_eventstream": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mqtt_json": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mqtt_room": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mqtt_statestream": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "msteams": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mta": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mullvad": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "music_assistant": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mutesync": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mvglive": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "my": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "myneomitis": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "myq": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mysensors": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mystrom": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "mythicbeastsdns": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "myuplink": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nad": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nam": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "namecheapdns": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nanoleaf": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nasweb": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "neato": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nederlandse_spoorwegen": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "neff": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "neo": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "neopool": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ness_alarm": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nest": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "netatmo": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "netdata": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "netgear": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "netgear_lte": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "netio": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "network": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "neurio_energy": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nexen": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "nexia": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nexity": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "nextbus": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nextcloud": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nextdns": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nfandroidtv": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nibe_heatpump": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nice_go": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nightscout": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "niko_home_control": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nilu": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nina": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nintendo_parental_controls": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nissan_leaf": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nmap_tracker": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nmbs": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "no_ip": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "noaa_tides": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nobo_hub": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nordpool": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "norway_air": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "notify": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "notify_events": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "notion": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "novy_cooker_hood": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nrgkick": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nsw_fuel_station": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nsw_rural_fire_service_feed": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ntfy": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nuheat": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nuki": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "numato": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "number": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nut": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nutrichef": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "nws": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nx584": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nyt_games": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "nzbget": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "oasa_telematics": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "obihai": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "occupancy": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "octoprint": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "oem": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ogemray": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "ohmconnect": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ohme": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ollama": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ombi": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "omie": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "omnilogic": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "onboarding": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "oncue": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ondilo_ico": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "onedrive": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "onedrive_for_business": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "onewire": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "onkyo": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "onvif": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "open_meteo": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "open_router": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "openai_conversation": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "openalpr_cloud": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "opendisplay": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "openerz": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "openevse": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "openexchangerates": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "opengarage": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "openhardwaremonitor": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "openhome": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "openrgb": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "opensensemap": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "opensky": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "opentherm_gw": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "openuv": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "openweathermap": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "opnsense": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "opower": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "opple": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "oralb": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "oru": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "oru_opower": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "orvibo": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "osoenergy": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "osramlightify": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "otbr": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "otp": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ouman_eh_800": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ourgroceries": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "overkiz": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "overseerr": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ovhcloud_ai_endpoints": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ovo_energy": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "owntracks": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "p1_monitor": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "paj_gps": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "palazzetti": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "panasonic_bluray": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "panasonic_viera": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "panel_custom": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "paperless_ngx": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pcs_lighting": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "peblar": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "peco": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "peco_opower": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "pegel_online": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pencom": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pepco": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "permobil": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "persistent_notification": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "person": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pge": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "pglab": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "philips_js": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pi_hole": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "picnic": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "picotts": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pilight": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pinecil": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "ping": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pioneer": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "piper": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "pitsos": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "pjlink": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "plaato": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "plant": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "playstation_network": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "plex": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "plugwise": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "plum_lightpad": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pocketcasts": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "point": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pooldose": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "poolsense": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "portainer": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "portlandgeneral": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "power": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "powerfox": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "powerfox_local": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "powerwall": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "prana": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "private_ble_device": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "probe_plus": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "profiler": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "profilo": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "progettihwsw": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "proliphix": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "prometheus": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "prosegur": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "prowl": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "proximity": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "proxmoxve": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "proxy": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "prusalink": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ps4": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pse": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "psoklahoma": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "ptdevices": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pterodactyl": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pulseaudio_loopback": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pure_energie": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "purpleair": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "push": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pushbullet": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pushover": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pushsafer": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pvoutput": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pvpc_hourly_pricing": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "pyload": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "python_script": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "qbittorrent": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "qbus": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "qingping": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "qld_bushfire": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "qnap": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "qnap_qsw": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "qrcode": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "quadrafire": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "quantum_gateway": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "qvr_pro": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "qwikswitch": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rabbitair": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rachio": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "radarr": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "radio_browser": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "radio_frequency": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "radiotherm": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rainbird": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "raincloud": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rainforest_eagle": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rainforest_raven": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rainmachine": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "random": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rapt_ble": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "raspberry_pi": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "raspyrfm": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "raven_rock_mfg": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "rdw": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "recollect_waste": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "recorder": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "recovery_mode": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "recswitch": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "reddit": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "redgtech": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "refoss": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rehlko": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rejseplanen": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "remember_the_milk": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "remote": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "remote_calendar": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "remote_rpi_gpio": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "renault": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "renson": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "reolink": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "repairs": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "repetier": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rest": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rest_command": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rexel": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "rflink": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rfxtrx": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rhasspy": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "ridwell": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ring": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ripple": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "risco": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rituals_perfume_genie": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rmvtransport": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "roborock": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rocketchat": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "roku": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "romy": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "roomba": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "roon": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "route53": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "route_b_smart_meter": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rova": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rpi_power": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rss_feed_template": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rtorrent": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ruckus_unleashed": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "russound_rio": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "russound_rnet": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ruuvi_gateway": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ruuvitag_ble": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "rympro": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sabnzbd": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "saj": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "samsam": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "samsung_infrared": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "samsungtv": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sanix": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "satel_integra": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "saunum": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "scene": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "schedule": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "schlage": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "schluter": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "scl": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "scorpiontrack": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "scrape": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "screenaway": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "screenlogic": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "script": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "search": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "season": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "select": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sendgrid": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sense": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sensibo": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sensirion_ble": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sensor": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sensorblue": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "sensorpro": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sensorpush": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sensorpush_cloud": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sensoterra": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sentry": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "senz": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "serial": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "serial_pm": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sesame": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "seven_segments": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "seventeentrack": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sfr_box": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sftp_storage": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sharkiq": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "shell_command": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "shelly": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "shodan": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "shopping_list": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sia": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "siemens": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "sigfox": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sighthound": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "signal_messenger": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "simplefin": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "simplepush": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "simplisafe": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "simply_automated": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "simu": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "sinch": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "siren": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sisyphus": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sky_hub": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sky_remote": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "skybeacon": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "skybell": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "slack": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sleep_as_android": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sleepiq": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "slide": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "slide_local": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "slimproto": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sma": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "smappee": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "smarla": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "smart_blinds": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "smart_home": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "smart_meter_texas": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "smart_rollos": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "smarther": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "smartthings": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "smarttub": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "smarty": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "smhi": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "smlight": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "smtp": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "smud": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "snapcast": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "snmp": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "snoo": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "snooz": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "solaredge": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "solaredge_local": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "solarlog": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "solarman": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "solax": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "soma": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "somfy": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "somfy_mylink": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sonarr": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "songpal": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sonos": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sony_projector": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "soundtouch": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "spaceapi": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "spc": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "speedtestdotnet": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "spider": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "splunk": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "spotify": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sql": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "squeezebox": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "srp_energy": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ssdp": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "starline": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "starlingbank": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "starlink": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "startca": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "statistics": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "statsd": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "steam_online": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "steamist": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "stiebel_eltron": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "stookwijzer": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "stream": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "streamlabswater": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "stt": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "subaru": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "suez_water": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sun": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sunricher_dali": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "sunweg": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "supervisord": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "supla": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "surepetcare": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "swepco": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "swiss_hydrological_data": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "swiss_public_transport": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "swisscom": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "switch": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "switch_as_x": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "switchbee": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "switchbot": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "switchbot_cloud": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "switcher_kis": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "switchmate": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "symfonisk": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "syncthing": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "syncthru": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "synology_chat": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "synology_dsm": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "synology_srm": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "syslog": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "system_bridge": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "system_health": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "system_log": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "systemmonitor": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "systemnexa2": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tado": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tag": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tailscale": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tailwind": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tami4": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tank_utility": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tankerkoenig": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tapsaff": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tasmota": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tautulli": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tcp": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "technove": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ted5000": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tedee": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "telegram": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "telegram_bot": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "teleinfo": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tellduslive": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tellstick": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "telnet": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "teltonika": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "temper": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "temperature": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "template": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tesla_fleet": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tesla_wall_connector": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "teslemetry": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tessie": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "text": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "thermador": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "thermobeacon": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "thermoplus": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "thermopro": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "thethingsnetwork": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "thingspeak": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "thinkingcleaner": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "thomson": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "thread": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "threshold": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tibber": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tile": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tilt_ble": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tilt_pi": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "time": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "time_date": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "timer": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tmb": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tod": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "todo": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "todoist": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "togrill": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tolo": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tomato": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tomorrowio": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "toon": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "torque": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "totalconnect": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "touchline": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "touchline_sl": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tplink": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tplink_lte": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tplink_omada": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tplink_tapo": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "traccar": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "traccar_server": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "trace": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tractive": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tradfri": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "trafikverket_camera": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "trafikverket_ferry": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "trafikverket_train": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "trafikverket_weatherstation": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "trane": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "transmission": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "transport_nsw": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "travisci": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "trend": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "triggercmd": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "trmnl": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tts": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "tuya": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "twentemilieu": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "twilio": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "twilio_call": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "twilio_sms": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "twinkly": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "twitch": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "twitter": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ubiwizz": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "ublockout": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "ubus": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "uhoo": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "uk_transport": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ukraine_alarm": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ultraloq": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "unifi": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "unifi_access": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "unifi_direct": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "unifi_discovery": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "unifiprotect": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "universal": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "upb": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "upc_connect": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "upcloud": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "update": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "upnp": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "uprise_smart_shades": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "uptime": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "uptime_kuma": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "uptimerobot": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "usage_prediction": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "usb": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "usgs_earthquakes_feed": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "utility_meter": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "uvc": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "v2c": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vacuum": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vagner_pool": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "vallox": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "valve": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vasttrafik": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vegehub": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "velbus": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "velux": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "venstar": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vera": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "verisure": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vermont_castings": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "versasense": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "version": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vesync": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "viaggiatreno": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vibration": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vicare": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "victron_ble": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "victron_gx": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "victron_remote_monitoring": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vilfo": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vistapool": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vivotek": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vizio": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vlc": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vlc_telnet": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "vodafone_station": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "voicerss": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "voip": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "volkszaehler": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "volumio": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "volvo": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "w800rf32": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "wake_on_lan": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "wake_word": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "wallbox": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "waqi": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "water_heater": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "waterfurnace": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "watergate": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "watts": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "watttime": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "wattwaechter": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "waze_travel_time": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "weather": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "weatherflow": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "weatherflow_cloud": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "weatherkit": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "web_rtc": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "webdav": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "webhook": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "webmin": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "webostv": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "websocket_api": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "weheat": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "wemo": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "whirlpool": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "whisper": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "whois": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "wiffi": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "wiim": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "wilight": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "window": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "wirelesstag": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "withings": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "wiz": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "wled": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "wmspro": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "wolflink": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "workday": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "worldclock": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "worldtidesinfo": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "worxlandroid": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ws66i": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "wsdot": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "wyoming": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "x10": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "xbox": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "xeoma": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "xiaomi": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "xiaomi_aqara": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "xiaomi_ble": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "xiaomi_miio": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "xiaomi_tv": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "xmpp": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "xs1": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "xthings_cloud": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "yale": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "yale_smart_alarm": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "yalexs_ble": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "yamaha": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "yamaha_musiccast": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "yandex_transport": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "yandextts": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "yardian": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "yeelight": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "yeelightsunflower": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "yi": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "yolink": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "yoto": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "youless": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "youtube": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zabbix": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zamg": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zbox_hub": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "zengge": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zeroconf": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zerproc": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zestimate": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zeversolar": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zha": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zhong_hong": {
+   "grep": [
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "ziggo_mediabox_xl": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zimi": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zinvolt": {
+   "grep": [
+    "DataUpdateCoordinator",
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zodiac": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zondergas": {
+   "grep": [],
+   "imports_helpers": false
+  },
+  "zone": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zoneminder": {
+   "grep": [
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zwave_js": {
+   "grep": [
+    "async_add_entities",
+    "hass.data",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  },
+  "zwave_me": {
+   "grep": [
+    "async_add_entities",
+    "homeassistant.helpers"
+   ],
+   "imports_helpers": true
+  }
+ },
+ "run": {
+  "argv": [
+   "helper_layer.py",
+   "--root",
+   "/home/younes/r2exp/ha314/lib/python3.14/site-packages/homeassistant/components",
+   "--label",
+   "core-2026.8.3",
+   "--json",
+   "core.json"
+  ],
+  "python": "3.14.7",
+  "host": "raspberrypi",
+  "machine": "aarch64",
+  "time": "2026-11-26T09:15:02+0100"
+ }
+}

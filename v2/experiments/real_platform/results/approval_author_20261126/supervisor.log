@@ -1,0 +1,6 @@
+09:33:30  supervising demo_flood; durable log /home/younes/r2exp/demo_author_20261126/audit/decisions-20261126T093330-3443.jsonl; Ctrl-C to stop
+09:33:30  not started: demo_flood: no approval is on record for its permissions; read it with `python3 -m confine.describe /tmp/supervise-demo_flood-gsk44v69/custom_components/demo_flood` and approve it with `--approve`
+09:37:04  demo_flood allowed by an administrator, from the Repairs panel
+09:37:04  demo_flood started (run 1, pid 3505)
+09:37:04  demo_flood run 1 folder /tmp/supervise-demo_flood-gsk44v69/.confine/demo_flood-start1
+09:38:34  stopped

@@ -1,0 +1,26 @@
+{
+  "domain": "demo_flood",
+  "name": "Demo Flood",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://example.invalid/capstone",
+  "iot_class": "cloud_polling",
+  "requirements": [],
+  "version": "1.0.0",
+  "permissions": {
+    "schema_version": 1,
+    "entities": {
+      "read": [
+        "light.living_room"
+      ],
+      "subscribe": [
+        "light.living_room"
+      ]
+    },
+    "services": {
+      "call": [
+        "light.turn_on"
+      ]
+    }
+  }
+}
