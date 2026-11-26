@@ -1,10 +1,10 @@
 # The framework — supervisor-side code
 
-**Started:** 2026-08-25 · **Described by:** Section 9 of the final report (`../submission/09_system_architecture.md`)
+**Started:** 2026-08-25 · **Described by:** Section 9 of the final report
 
 > **Section numbers.** The `§5.x`–`§7.x` and "Chapter" references in this file and in the module
 > docstrings point to the project's working report, which is kept locally and not published. The
-> final report, in `../submission/`, describes the same framework in Section 9 and its evaluation in
+> final report, submitted separately, describes the same framework in Section 9 and its evaluation in
 > Sections 11 and 12.
 
 > **What this file covers.** The tables and commands below describe the core of the framework and its

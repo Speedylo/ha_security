@@ -8,6 +8,9 @@ the mutation runs, the two samples, the findings table), and reads each figure a
 `submission/` states it. A check is EQUAL only when every stated copy matches its recomputation;
 NOT FOUND means a pattern matched nothing, which is itself a finding (the wording moved).
 
+Like `report/`, `submission/` is kept locally and not published (the report is submitted to the
+programme separately), so the read-back runs only where the report's source is present.
+
 Run from v2/:  python3 verify/recompute_final.py [--json OUT]
 """
 

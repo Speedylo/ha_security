@@ -15,8 +15,8 @@ Every step ends with a **Check**, so you can tell the step worked before the nex
 
 **Section numbers.** References such as §3.4, §7.17 or "Chapter 6" in this guide and in the
 experiments' READMEs point to the project's working report, which is kept locally and not published.
-The final report is in `submission/`: its Sections 11 and 12 and Appendices D and F present the same
-measurements.
+The final report, submitted separately, presents the same measurements in its Sections 11 and 12 and
+Appendices D and F.
 
 ## What you need
 
