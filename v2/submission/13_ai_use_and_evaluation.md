@@ -34,17 +34,17 @@ The first check is part of the method itself. Every experiment's predictions and
 
 The second check is human review, and the literature search shows how it was structured. Claude screened 642 distinct records, excluded 590 on their titles and, of the 52 screened on their abstracts, classed five as adjacent to the project's research gap. I reviewed all five and kept one, which shows that the AI's relevance judgements were too generous. I checked the exclusions the other way, through a random sample of 20 drawn with a fixed seed, and agreed with all 20. The sample does not prove that no relevant paper was missed, but it limits the risk. I adopted the same approach, full review of positive judgements and a seeded sample of negative ones, for any later bulk judgement made by the AI.
 
-The third check is a log of every correction made to AI output, kept since 23 October 2026, with six earlier entries reconstructed from the project's records. It holds 67 entries (Table 13.2). One records a risk rather than an error: the 590 title exclusions were the AI's alone, apart from the sample.
+The third check is a log of every correction made to AI output, kept since 23 October 2026, with six earlier entries reconstructed from the project's records. It holds 72 entries (Table 13.2). One records a risk rather than an error: the 590 title exclusions were the AI's alone, apart from the sample.
 
 **Table 13.2**
-*The 67 entries of the AI-use log, by kind*
+*The 72 entries of the AI-use log, by kind*
 
 | Kind | Entries | Example |
 |---|---|---|
-| Errors of fact, count or code | 20 | A count of 38 integrations "declaring permissions" had counted configuration files; re-measured on the device, the true figure was 0 of 75 |
+| Errors of fact, count or code | 21 | A count of 38 integrations "declaring permissions" had counted configuration files; re-measured on the device, the true figure was 0 of 75 |
 | Test assumptions that were wrong while the code was right | 5 | A check expected a new device to show no state, which holds only on a freshly installed platform |
 | Errors of judgement, method or writing | 13 | The project's claims were narrowed to fit a paper of which only the abstract had been read; the change was rolled back |
-| Overclaims about my role, a source or a result | 24 | "I reviewed every screening decision", when I had reviewed the adjacent records and a sample, not all 590 title exclusions |
+| Overclaims about my role, a source or a result | 28 | "I reviewed every screening decision", when I had reviewed the adjacent records and a sample, not all 590 title exclusions |
 | Text I cut or rejected without naming an error | 4 | A subsection on scheduling in Section 10, dropped on reading |
 | A risk, not an error | 1 | The title screen, above |
 
@@ -52,7 +52,7 @@ The errors were caught by the method's own checks, by my review, or by Claude's 
 
 ## 13.4 Critical reflection and limitations
 
-The evidence supports some conclusions about the AI's reliability and leaves others open. Its recurring weakness was overstatement. Counts were stale or computed over the wrong set, a source was summarised more strongly than it reads, a result was stated for more integrations than it covered, and my own part was described as larger than it was. I caught each instance by reading the text against what had actually been done, which is a check no automated test performs.
+The evidence supports some conclusions about the AI's reliability and leaves others open. Its recurring weakness was overstatement. Counts were stale or computed over the wrong set, a source was summarised more strongly than it reads, and a result was stated for more integrations than it covered. I caught each instance by reading the text against what had actually been done, which is a check no automated test performs.
 
 The bridge extension added two patterns that the interim report could not show. Five times, a test or prediction the AI wrote was wrong while the code was right, and three of these tests assumed a platform holding little or no state, so they passed on a fresh installation and failed on a used one. Counts were also carried forward from earlier work without being recounted, such as a coverage figure that treated one integration as fully supported after an earlier batch had recorded the gap. A further entry concerns an action rather than text. The agent ran a script with a help option the script did not have, and the script regenerated fourteen committed records. Version control restored them, but the episode shows that an agent's mistakes can change the record as well as misdescribe it.
 

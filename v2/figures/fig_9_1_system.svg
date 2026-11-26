@@ -13,7 +13,7 @@
 <text x="230" y="460" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">states · services · devices</text>
 <text x="230" y="484" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">users · automations</text>
 <path d="M 230,320 L 230,400" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
-<rect x="160" y="336" width="140" height="48" fill="#ffffff"/>
+<rect x="168" y="336" width="124" height="48" fill="#ffffff"/>
 <text x="230" y="349" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">entities and</text>
 <text x="230" y="371" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">commands</text>
 <rect x="90" y="720" width="280" height="64" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
@@ -45,11 +45,11 @@
 <text x="780" y="674" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Push and command relay</text>
 <text x="780" y="696" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">from (A) into a sandbox</text>
 <path d="M 590,310 L 390,310" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
-<rect x="396" y="258" width="188" height="45" fill="#ffffff"/>
+<rect x="405" y="258" width="169" height="45" fill="#ffffff"/>
 <text x="490" y="270" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">publication;</text>
 <text x="490" y="290" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">household commands</text>
 <path d="M 590,460 L 390,460" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="416" y="408" width="149" height="45" fill="#ffffff"/>
+<rect x="426" y="408" width="129" height="45" fill="#ffffff"/>
 <text x="490" y="420" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">service calls,</text>
 <text x="490" y="440" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">state reads</text>
 <rect x="600" y="860" width="300" height="90" rx="5" fill="#e2e2e2" stroke="#1a1a1a" stroke-width="1.5"/>
@@ -57,7 +57,7 @@
 <text x="750" y="905" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">hash- and MAC-chained;</text>
 <text x="750" y="927" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">outside every sandbox</text>
 <path d="M 750,740 L 750,860" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="676" y="790" width="149" height="45" fill="#ffffff"/>
+<rect x="684" y="790" width="133" height="45" fill="#ffffff"/>
 <text x="750" y="802" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">written before</text>
 <text x="750" y="822" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the act</text>
 <rect x="1110" y="150" width="360" height="190" rx="5" fill="#f3f3f3" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="9 5"/>
@@ -83,7 +83,7 @@
 <path d="M 970,370 L 1110,245" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
 <path d="M 970,470 L 1110,465" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
 <path d="M 970,520 L 1110,645" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
-<rect x="976" y="267" width="129" height="66" fill="#ffffff"/>
+<rect x="986" y="267" width="109" height="66" fill="#ffffff"/>
 <text x="1040" y="280" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">one channel</text>
 <text x="1040" y="300" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">each: a Unix</text>
 <text x="1040" y="320" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">socket pair</text>
@@ -92,7 +92,7 @@
 <text x="1290" y="905" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">reached only through the broker,</text>
 <text x="1290" y="927" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">never from a sandbox directly</text>
 <path d="M 950,615 L 1060,615 L 1060,905 L 1110,905" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="1001" y="768" width="119" height="45" fill="#ffffff"/>
+<rect x="1005" y="768" width="110" height="45" fill="#ffffff"/>
 <text x="1060" y="780" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">permitted</text>
 <text x="1060" y="800" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">connections</text>
 <text x="750" y="28" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" font-style="italic" text-anchor="middle" dominant-baseline="middle">Only the mediator holds a credential to the house. Each sandbox's only route out is its channel,</text>

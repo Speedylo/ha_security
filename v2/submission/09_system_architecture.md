@@ -21,11 +21,9 @@ Four design decisions fixed this shape. Table 9.1 states each with the alternati
 | Decision | Alternative rejected | Reason |
 |---|---|---|
 | Enforce outside Home Assistant's process | A permission check inside the platform | Integrations share one Python interpreter, so an integration can reach the platform's credentials (Corno & Mannella, 2022) and could bypass any check written there |
-| Give each sandbox a real Home Assistant runtime that starts empty | A stand-in object that imitates the platform | 91% of the 1,482 integrations shipped with Home Assistant 2026.8.3 build on the platform's helper layer, which expects the genuine platform beneath it |
+| Give each sandbox a real Home Assistant runtime that starts empty | A stand-in object that imitates the platform | All 144 of the most-installed community integrations examined build on the platform's helper layer, which expects the genuine platform beneath it |
 | Build the sandbox from Linux's own isolation features | A restricted Python interpreter; WebAssembly; gVisor or a micro virtual machine; a container | In order: shares the interpreter it restricts; cannot run unmodified integrations; costs memory a home device cannot spare; uses the same kernel features, with packaging added |
 | Confine every community integration, and no built-in one | Confining everything | Built-in integrations are reviewed by the platform's maintainers, whose security policy excludes community integrations (Home Assistant, n.d.-f) |
-
-The second decision carries most of the security. The runtime in a sandbox starts with no devices and receives only those the integration declared, so a device it was not granted is not refused when the integration asks for it; the device does not exist where the integration can look. An error in a permission check cannot reveal what was never delivered.
 
 ## 9.2 The sandbox
 
@@ -38,7 +36,7 @@ Each sandbox is built so that what an integration must not reach is absent from 
 
 *Note.* The control group bounds everything the sandbox runs, the namespaces decide what it can see, and the seccomp filter sits on its system calls. The channel is its only way out.
 
-From inside, the result is a small and empty machine: the project's self-test finds that the integration is root only within its own namespace, sees no process but its own, has a network with no route anywhere, and can write to its data folder but not to its own code. The house's secrets file and stored configuration are not locked away; they are simply not there, because the sandbox's filesystem is assembled from only what is allowed. This removes the target of the file-theft technique used in the 2021 disclosures (Home Assistant, 2021a).
+From inside, the result is a small and empty machine. The project's self-tests find that the integration is root only within its own namespace, and holds none of root's powers even there: Linux gives root in a new namespace a full set of these powers, called capabilities (Linux man-pages project, n.d.-f), and the supervisor drops every one before the integration starts. The integration sees no process but its own, has a network with no route anywhere, and can write to its data folder but not to its own code. The house's secrets file and stored configuration are not locked away; they are simply not there, because the sandbox's filesystem is assembled from only what is allowed. This removes the target of the file-theft technique used in the 2021 disclosures (Home Assistant, 2021a).
 
 The runtime inside sets up only the platform components the integration uses, so a sandbox needs between 56.5 and 135.6 MB of memory (Section 12.3). The sandbox's contribution is a boundary that rests on the kernel and on absence, rather than on code that inspects each request.
 
@@ -67,15 +65,22 @@ Every service is named on its own, because a grant to lock a door must not imply
 }
 ```
 
-A manifest grants nothing until a person has approved it, and the approval is bound to exactly what that person was shown. An administrator reads a plain-language account of the grant in Home Assistant's Repairs panel, the platform's own place for issues that need a user's attention (Home Assistant, n.d.-e), and approves it with a single labelled action, *Allow and start*. A screen opened before an update approves nothing, because the approval must match the code and grant it showed. The manifest thereby turns an integration's authority from something implicit into something a household has read and agreed to.
+A manifest grants nothing until a person has approved it, and the approval is bound to exactly what that person was shown. An administrator reads a plain-language account of the grant in Home Assistant's Repairs panel, the platform's own place for issues that need a user's attention (Home Assistant, n.d.-e), and approves it with a single labelled action, *Allow and start* (Figure 9.3). A screen opened before an update approves nothing, because the approval must match the code and grant it showed. The manifest thereby turns an integration's authority from something implicit into something a household has read and agreed to.
+
+![Figure 9.3](../figures/shot_9_3_approval.png)
+
+**Figure 9.3**
+*Approving an integration in the Repairs panel*
+
+*Note.* Home Assistant 2026.8.3 on the Raspberry Pi, showing the manifest above, declared in the integration's own `manifest.json`. Scrolled down, the dialog lists one more refusal and ends: "If you do not recognise it or do not want it to have these permissions, close this window: it will stay stopped."
 
 ## 9.4 The mediator and the bridge
 
-Every request that crosses the boundary is identified, decided, recorded and only then performed, as Figure 9.3 traces. The mediator knows which integration is speaking from the channel the request arrived on, which the supervisor created for that sandbox alone, and never from anything the request says about itself. It checks the request against that integration's manifest, writes the decision to disk with the clause that produced it, and only then acts on (A). Because the record comes first, an action that succeeds and then crashes the mediator is still on record. Each round trip adds about 43 µs (Section 12.3), and most of an integration's work never reaches the mediator at all.
+Every request that crosses the boundary is identified, decided, recorded and only then performed, as Figure 9.4 traces. The mediator knows which integration is speaking from the channel the request arrived on, which the supervisor created for that sandbox alone, and never from anything the request says about itself. It checks the request against that integration's manifest, writes the decision to disk with the clause that produced it, and only then acts on (A). Because the record comes first, an action that succeeds and then crashes the mediator is still on record. Each round trip adds about 43 µs (Section 12.3), and not every action takes one: the integration's own processing stays inside its sandbox, and a TCP connection is checked once, when it opens, after which its data flows directly.
 
-![Figure 9.3](../figures/fig_9_3_request.svg)
+![Figure 9.4](../figures/fig_9_3_request.svg)
 
-**Figure 9.3**
+**Figure 9.4**
 *The life of a request*
 
 *Note.* A service call from the integration passes through the mediator's five steps, with the record written before the act. The lower panels show the two directions that run into the sandbox: a change in the house, and a household's command.
@@ -98,11 +103,11 @@ The bridge's contribution is that confinement is invisible to the household: a c
 
 ## 9.5 Reaching the network
 
-The sandbox has no route anywhere, so the mediator opens every connection an integration makes, in the five steps of Figure 9.4. It checks the host and port against the manifest, resolves the name itself, rejects any address that leads into the house or onto the device, connects to exactly the address it checked, and hands the open connection back.
+The sandbox has no route anywhere, so the mediator opens every connection an integration makes, in the five steps of Figure 9.5. It checks the host and port against the manifest, resolves the name itself, rejects any address that leads into the house or onto the device, connects to exactly the address it checked, and hands the open connection back.
 
-![Figure 9.4](../figures/fig_9_4_egress.svg)
+![Figure 9.5](../figures/fig_9_4_egress.svg)
 
-**Figure 9.4**
+**Figure 9.5**
 *A connection, resolved and pinned*
 
 *Note.* Inside the sandbox a name resolves only to a placeholder that leads nowhere. A name that resolves to an address in the house is refused at the third step.
@@ -113,11 +118,11 @@ The home network sits behind a separate clause, because reaching it also means r
 
 ## 9.6 Identity and the record
 
-A decision is attributable only if the record names the code that made the request. An integration's identity is therefore not its name, which stays the same in every release, but a fingerprint, or hash, of its code, its manifest and its installed dependencies, so a changed manifest or library produces a new identity. The identity is written in a run record when the sandbox is built, and every later decision refers to it, as Figure 9.5 shows.
+A decision is attributable only if the record names the code that made the request. An integration's identity is therefore not its name, which stays the same in every release, but a fingerprint, or hash, of its code, its manifest and its installed dependencies, so a changed manifest or library produces a new identity. The identity is written in a run record when the sandbox is built, and every later decision refers to it, as Figure 9.6 shows.
 
-![Figure 9.5](../figures/fig_9_5_record.svg)
+![Figure 9.6](../figures/fig_9_5_record.svg)
 
-**Figure 9.5**
+**Figure 9.6**
 *The audit record*
 
 *Note.* Every record carries two links to the one before it, a hash and a keyed code, which fail independently.
@@ -128,7 +133,7 @@ Each decision record names the run, the operation, its target, the verdict and t
 
 The framework fails closed. If the mediator stops, every channel closes, and each sandbox can then reach nothing, because the channel was its only route out. A sandbox that floods the mediator with refused requests is stopped rather than allowed to bury the record. A restarted sandbox keeps its stored settings but receives a fresh copy of its code, so it cannot replace its approved code with code of its own.
 
-When the framework stops an integration, it says why in plain language in the Repairs panel, with one action. A flooding integration, for example, is reported as having "kept trying to do things it does not have permission to do", and the message adds that this is usually a bug and that restarting gives it no new permissions. Only one action anywhere can widen a grant, *Allow and start*, and it is labelled as an approval. An administrator who confirms such a message without reading it therefore cannot make the house less safe.
+When the framework stops an integration, it says why in plain language in the Repairs panel, with one action. A flooding integration, for example, is reported as having "kept trying to do things it does not have permission to do", and the message adds that this is usually a bug and that restarting gives it no new permissions. Restarting returns an integration to the grant it was approved for and never widens it: within Home Assistant, the only action that widens a grant is *Allow and start*, which is labelled as an approval. An administrator who confirms a failure message without reading it therefore cannot give an integration more than was approved.
 
 ## 9.8 One command, end to end
 

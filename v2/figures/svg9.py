@@ -119,7 +119,10 @@ class Canvas:
         """Text on a white ground, so that it stays legible where it crosses a line."""
         lines = text.split("\n")
         shown = size * self.text_scale
-        w = 0.6 * shown * max(len(s) for s in lines) + 10
+        if self.fit:  # the final's figures: the ground hugs the text, so it hides as little as it can
+            w = max(self._width(s, shown) for s in lines) + 10
+        else:  # the interim figures regenerate unchanged
+            w = 0.6 * shown * max(len(s) for s in lines) + 10
         h = (shown + 4) * len(lines) + 4
         left = {"middle": x - w / 2, "start": x - 5, "end": x - w + 5}[anchor]
         self.parts.append(f'<rect x="{left:.0f}" y="{y - h / 2:.0f}" width="{w:.0f}" '

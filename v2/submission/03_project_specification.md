@@ -28,7 +28,7 @@ Four constraints follow from the situation rather than from choice, and together
 
 **C2: Home Assistant is not modified.** The project has no authority over the platform, so a mechanism that needed a platform change would be a proposal rather than a control that a household could install.
 
-**C3: Enforcement does not depend on the author's cooperation or honesty.** The closest earlier work relies on developers to declare truthfully what their plug-ins need, and its authors acknowledge that anyone with access to the source could alter it (Corno & Mannella, 2023). A malicious author declares whatever serves the attack, so the framework must hold an integration to its declaration whatever the code does, and grant nothing when there is no declaration.
+**C3: Enforcement does not depend on the author's cooperation or honesty.** The closest earlier work turns developers' own declarations into firewall rules, so a developer obtains whatever network access it declares (Corno & Mannella, 2023). A malicious author can declare less than its code does, or more than its purpose needs. The framework must therefore treat a declaration as a limit rather than a description: an integration that attempts more than it declared is stopped whatever its code does, a declaration that asks for more than its purpose needs is shown to the administrator before anything runs so that it can be refused, and an integration without a declaration is granted nothing.
 
 **C4: The design runs on modest home hardware.** Home Assistant is installed on hardware ranging from full computers down to small single-board computers such as the Raspberry Pi. A design that works only at the top of that range would exclude part of its users, so every measurement was taken on a Raspberry Pi 5 with 4 GB of memory, without administrator rights except for one setting made at boot.
 
@@ -36,7 +36,7 @@ C1 and C3 together define the central difficulty. Confinement has to be imposed 
 
 ## 3.4 Requirements
 
-Twenty requirements state what that confinement must achieve: the four constraints, four functional requirements (F), nine security requirements (S) and three non-functional requirements (N). Table 3.2 gives each one with the test it had to pass, shortened from the criteria fixed on 2 September 2026, before the evaluation ran. Appendix B gives each requirement's verdict with its evidence.
+Twenty requirements state what that confinement must achieve: the four constraints, four functional requirements (F), nine security requirements (S) and three non-functional requirements (N). Table 3.2 gives each one with the test it had to pass, shortened from the criteria fixed before the evaluation ran. Appendix B gives each requirement's verdict with its evidence.
 
 **Table 3.2**
 *Requirements and how each was to be judged*

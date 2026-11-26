@@ -41,7 +41,10 @@ def msg(a, b, y, text, dashed=False):
     """A message from lane a to lane b, its label just above the arrow."""
     xa, xb = LANES[a][0], LANES[b][0]
     c.line([(xa, y), (xb, y)], dashed=dashed)
-    lift = (15 * (text.count("\n") + 1) + 4) / 2 + 3
+    # The label's white ground must end above the arrow and its head (about 6 px each side of
+    # the line), at the size the canvas actually draws, or it hides them.
+    shown = 11 * c.text_scale
+    lift = ((shown + 4) * (text.count("\n") + 1) + 4) / 2 + 8
     c.label((xa + xb) / 2, y - lift, text, size=11)
 
 
@@ -58,17 +61,17 @@ def panel(y, title):
 
 # --- a service call from the sandbox --------------------------------------------------------
 panel(140, "A SERVICE CALL FROM THE INTEGRATION")
-msg("int", "b", 220, "light.turn_on, as it\nwould call it unconfined")
-msg("b", "half", 275, "not a service of (B):\nforward it")
-msg("half", "med", 335, "service.call frame on its channel\n(four-byte length, then JSON)")
+msg("int", "b", 228, "light.turn_on, as it\nwould call it unconfined")
+msg("b", "half", 285, "not a service of (B):\nforward it")
+msg("half", "med", 345, "service.call frame on its channel\n(four-byte length, then JSON)")
 step("med", 385, "1  identity: from the channel,\nnever from the frame", h=54)
 step("med", 445, "2  the manifest bound\nto that identity", h=54)
 step("med", 505, "3  permit or deny, naming\nthe deciding clause", h=54)
-msg("med", "log", 580, "4  record the decision,\nflushed to disk")
-msg("med", "a", 640, "5  perform the call,\nwith the mediator's token")
-msg("a", "med", 685, "result", dashed=True)
-msg("med", "half", 735, "answer, with the deciding clause", dashed=True)
-msg("half", "int", 780, "the call returns, or raises if it was denied", dashed=True)
+msg("med", "log", 590, "4  record the decision,\nflushed to disk")
+msg("med", "a", 650, "5  perform the call,\nwith the mediator's token")
+msg("a", "med", 695, "result", dashed=True)
+msg("med", "half", 745, "answer, with the deciding clause", dashed=True)
+msg("half", "int", 790, "the call returns, or raises if it was denied", dashed=True)
 c.label(1170, 470, "a denied call skips\nstep 5: it is recorded\nand answered, and\nnothing is performed", size=11)
 
 # --- a state pushed into the sandbox --------------------------------------------------------
@@ -80,9 +83,9 @@ c.label(1170, 960, "recorded once, when\nthe subscription\nwas decided", size=11
 
 # --- a household's command into the sandbox ---------------------------------------------------
 panel(1030, "THE HOUSEHOLD OPERATES A CONFINED ENTITY")
-msg("a", "med", 1080, "command, from the bridge\nintegration in (A)")
-msg("med", "log", 1130, "record it")
-msg("med", "half", 1180, "pass it to the owning sandbox")
+msg("a", "med", 1088, "command, from the bridge\nintegration in (A)")
+msg("med", "log", 1135, "record it")
+msg("med", "half", 1182, "pass it to the owning sandbox")
 msg("half", "int", 1225, "the entity's own handler runs")
 
 c.save(OUT)

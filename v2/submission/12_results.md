@@ -1,6 +1,6 @@
 # 12. Simulations, Results and Interpretation
 
-This section answers three questions in turn: whether confinement protects the household (Assertion A), whether integrations still work when confined (Assertion B), and whether a home device can afford it (Assertion C). Each question was given a test before any measurement was made, which named the result that would show the answer to be no (Section 11). Every security and compatibility result compares a confined run with an unconfined run on the same device and the same Home Assistant release, 2026.8.3, so any difference comes from the framework. Unless stated otherwise, the figures come from the final rerun of 1 November 2026, which repeated every experiment on the finished code. Appendix F gives the detailed results.
+This section answers three questions in turn: whether confinement protects the household (Assertion A), whether integrations still work when confined (Assertion B), and whether a home device can afford it (Assertion C). Each question was given a test before any measurement was made, which named the result that would show the answer to be no (Section 11). Every security and compatibility result compares a confined run with an unconfined run on the same device and the same Home Assistant release, 2026.8.3, so any difference comes from the framework. Appendix F gives the detailed results.
 
 ## 12.1 Does confinement protect the household?
 

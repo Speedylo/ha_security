@@ -21,7 +21,7 @@ The repository is public at https://github.com/Speedylo/ha_security.
 
 ## Appendix B — Requirements register
 
-This appendix gives the verdict on each requirement of Table 3.2, with its evidence, judged against criteria fixed on 2 September 2026, before the evaluation ran. Where each requirement comes from, its criterion in full and how each verdict changed during verification are kept in the repository (Appendix A).
+This appendix gives the verdict on each requirement of Table 3.2, with its evidence, judged against criteria fixed before the evaluation ran. Where each requirement comes from, its criterion in full and how each verdict changed during verification are kept in the repository (Appendix A).
 
 **Table B.1 — Verdicts and evidence**
 
@@ -122,14 +122,14 @@ T07's impact is rated through the platform's automations rather than through the
 
 ### C.3 Treatment and verdicts
 
-Figure C.1 draws the confined design on the canvas of Figure 8.1, so that the difference between the two shows what the treatments change: the four absent boundaries now exist, and the flows that reached the shared memory, the stored credentials, any file and the other integration have no counterpart.
+Figure C.1 draws the confined design on the layout of Figure 8.1, so that the difference between the two shows what the treatments change: the four absent boundaries now exist, and the flows that reached the shared memory, the stored credentials, any file and the other integration have no counterpart.
 
-![Figure C.1](../figures/fig_8_2_confined.svg)
+![Figure C.1](../figures/fig_c_1_confined.svg)
 
 **Figure C.1**
-*The confined design, on the canvas of Figure 8.1*
+*The confined design, on the layout of Figure 8.1*
 
-*Note.* Each integration runs in its own sandbox and reaches the platform only through the mediator. All six boundaries now exist; TB4 is unchanged and TB2 is narrowed (residual risk R3). Flow (m) is the approval.
+*Note.* Each integration runs in its own sandbox and reaches the platform only through the mediator. All six boundaries now exist. TB4 is unchanged, and TB2 is narrowed rather than closed: the mediator acts as an ordinary user, but that user can still operate every device (residual risk R3). No arrow reaches the host's files or joins the two sandboxes, so nothing crosses TB5 or TB6.
 
 The verdicts are not aggregated into a single figure, for the reason Section 11 gives. *Paired* means the threat was also shown to succeed against the unconfined arm on the same host and platform release.
 

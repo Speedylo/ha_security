@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="1000" viewBox="0 0 1700 1000">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a1a1a"/></marker></defs>
+<text x="850" y="30" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" font-style="italic" text-anchor="middle" dominant-baseline="middle">Each integration is its own process and reaches the house only through the mediator, which records every decision.</text>
+<rect x="40" y="60" width="260" height="90" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="170" y="93" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Integration author</text>
+<text x="170" y="117" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">and community store</text>
+<rect x="40" y="600" width="260" height="80" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="170" y="628" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Household</text>
+<text x="170" y="652" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">web interface and app</text>
+<rect x="1440" y="180" width="240" height="90" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="1560" y="213" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Internet</text>
+<text x="1560" y="237" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">granted hosts only</text>
+<rect x="1440" y="470" width="240" height="110" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="1560" y="502" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Home devices</text>
+<text x="1560" y="525" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">only if the home</text>
+<text x="1560" y="548" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">network is granted</text>
+<rect x="300" y="850" width="380" height="110" rx="5" fill="#e2e2e2" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="490" y="882" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Files on the host</text>
+<text x="490" y="905" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">secrets, configuration,</text>
+<text x="490" y="928" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">every stored credential</text>
+<rect x="340" y="180" width="280" height="560" rx="5" fill="#f3f3f3" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="9 5"/>
+<text x="352" y="201" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">HOME ASSISTANT</text>
+<rect x="355" y="250" width="250" height="150" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="480" y="302" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Platform core</text>
+<text x="480" y="325" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">states · services</text>
+<text x="480" y="348" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">devices · users</text>
+<rect x="355" y="470" width="250" height="120" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="480" y="495" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Repairs panel</text>
+<text x="480" y="518" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the administrator</text>
+<text x="480" y="542" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">approves the grant</text>
+<text x="480" y="565" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">shown</text>
+<rect x="740" y="180" width="260" height="560" rx="5" fill="#f3f3f3" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="9 5"/>
+<text x="752" y="201" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">FRAMEWORK</text>
+<rect x="755" y="230" width="230" height="110" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="870" y="263" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Supervisor</text>
+<text x="870" y="285" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">builds each sandbox</text>
+<text x="870" y="307" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">before its code runs</text>
+<rect x="755" y="380" width="230" height="320" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="870" y="485" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Mediator</text>
+<text x="870" y="507" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">holds the only token,</text>
+<text x="870" y="529" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">as an ordinary user;</text>
+<text x="870" y="551" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">decides each request</text>
+<text x="870" y="573" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">against the manifest;</text>
+<text x="870" y="595" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">records it, then acts</text>
+<rect x="1100" y="250" width="240" height="190" rx="5" fill="#f3f3f3" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="9 5"/>
+<text x="1112" y="271" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">SANDBOX A</text>
+<rect x="1120" y="300" width="200" height="120" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="1220" y="348" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Integration A</text>
+<text x="1220" y="372" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">(community)</text>
+<rect x="1100" y="560" width="240" height="190" rx="5" fill="#f3f3f3" stroke="#1a1a1a" stroke-width="1.5" stroke-dasharray="9 5"/>
+<text x="1112" y="581" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">SANDBOX B</text>
+<rect x="1120" y="610" width="200" height="120" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="1220" y="658" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Integration B</text>
+<text x="1220" y="682" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">(community)</text>
+<rect x="740" y="850" width="260" height="110" rx="5" fill="#e2e2e2" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="870" y="882" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Audit record</text>
+<text x="870" y="905" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">every decision,</text>
+<text x="870" y="928" font-size="19.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">hash-chained</text>
+<path d="M 300,105 L 1280,105 L 1280,300" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M 170,600 L 170,325 L 355,325" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
+<path d="M 170,530 L 355,530" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M 605,530 L 755,530" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M 755,370 L 605,370" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M 1120,400 L 985,400" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
+<path d="M 1120,670 L 985,670" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)" marker-start="url(#ar)"/>
+<path d="M 985,465 L 1390,465 L 1390,225 L 1440,225" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M 1390,465 L 1390,525 L 1440,525" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<path d="M 870,700 L 870,850" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="420" y="65" width="279" height="26" fill="#ffffff"/>
+<text x="560" y="78" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">installs and updates the code</text>
+<rect x="200" y="288" width="124" height="24" fill="#ffffff"/>
+<text x="262" y="300" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">web interface</text>
+<rect x="221" y="493" width="83" height="24" fill="#ffffff"/>
+<text x="262" y="505" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">approves</text>
+<rect x="1101" y="453" width="238" height="24" fill="#ffffff"/>
+<text x="1220" y="465" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">permitted connections only</text>
+<rect x="804" y="768" width="133" height="45" fill="#ffffff"/>
+<text x="870" y="780" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">written before</text>
+<text x="870" y="800" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the act</text>
+<rect x="735.0" y="80" width="130" height="50" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="800" y="96" font-size="15" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">TB4</text>
+<text x="800" y="114" font-size="15" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">UNCHANGED</text>
+<rect x="621.0" y="345" width="118" height="50" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="680" y="360" font-size="15" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">TB2</text>
+<text x="680" y="380" font-size="15" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">NARROWED</text>
+<rect x="992.0" y="375" width="100" height="50" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="1042" y="390" font-size="15" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">TB1</text>
+<text x="1042" y="410" font-size="15" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">EXISTS</text>
+<rect x="992.0" y="645" width="100" height="50" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="1042" y="660" font-size="15" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">TB1</text>
+<text x="1042" y="680" font-size="15" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">EXISTS</text>
+<rect x="1165.0" y="490" width="110" height="50" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="1220" y="506" font-size="15" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">TB6</text>
+<text x="1220" y="524" font-size="15" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">EXISTS</text>
+<rect x="1340.0" y="315" width="100" height="50" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="1390" y="330" font-size="15" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">TB3</text>
+<text x="1390" y="350" font-size="15" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">EXISTS</text>
+<rect x="435.0" y="770" width="110" height="50" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
+<text x="490" y="786" font-size="15" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">TB5</text>
+<text x="490" y="804" font-size="15" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">EXISTS</text>
+</svg>

@@ -4,7 +4,7 @@ This section describes the data on which Section 12 rests. It covers the three q
 
 ## 11.1 The three questions
 
-The project claims that existing integrations can be confined, without changing them, at a cost worth paying. The claim holds only if three assertions hold: confinement protects the household (A), integrations still work when confined (B), and a home device can afford it (C). A sandbox that blocked every attack but broke most integrations would satisfy the first assertion and still defeat the claim, so all three were tested. Following Popper's (1959) criterion that a claim is open to test only if some observation could refute it, each assertion was given the result that would show it false. These conditions were written on 2 September 2026, before any of the measurements they describe, and are set out in Table 11.1.
+The project claims that existing integrations can be confined, without changing them, at a cost worth paying. The claim holds only if three assertions hold: confinement protects the household (A), integrations still work when confined (B), and a home device can afford it (C). A sandbox that blocked every attack but broke most integrations would satisfy the first assertion and still defeat the claim, so all three were tested. Following Popper's (1959) criterion that a claim is open to test only if some observation could refute it, each assertion was given the result that would show it false. These conditions were written before any of the measurements they describe, and are set out in Table 11.1.
 
 **Table 11.1**
 *The three assertions and what would show them false*

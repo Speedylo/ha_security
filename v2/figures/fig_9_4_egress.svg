@@ -19,45 +19,45 @@
 <text x="1150" y="92" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">Declared host</text>
 <path d="M 1150,114 L 1150,820" fill="none" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="6 4"/>
 <path d="M 150,175 L 390,175" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="151" y="150" width="238" height="24" fill="#ffffff"/>
-<text x="270" y="162" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">resolve api.example.com</text>
-<path d="M 390,225 L 150,225" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
-<rect x="146" y="182" width="248" height="45" fill="#ffffff"/>
-<text x="270" y="195" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">a placeholder from</text>
-<text x="270" y="215" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">240.0.0.0/4 (unroutable)</text>
-<path d="M 150,290 L 390,290" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="161" y="248" width="218" height="45" fill="#ffffff"/>
-<text x="270" y="260" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">connect to the</text>
-<text x="270" y="280" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">placeholder, port 443</text>
-<path d="M 390,350 L 690,350" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="396" y="308" width="287" height="45" fill="#ffffff"/>
-<text x="540" y="320" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">connect api.example.com:443,</text>
-<text x="540" y="340" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">on its channel</text>
+<rect x="167" y="142" width="206" height="24" fill="#ffffff"/>
+<text x="270" y="155" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">resolve api.example.com</text>
+<path d="M 390,240 L 150,240" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+<rect x="168" y="187" width="203" height="45" fill="#ffffff"/>
+<text x="270" y="199" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">a placeholder from</text>
+<text x="270" y="220" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">240.0.0.0/4 (unroutable)</text>
+<path d="M 150,305 L 390,305" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="176" y="252" width="188" height="45" fill="#ffffff"/>
+<text x="270" y="264" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">connect to the</text>
+<text x="270" y="285" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">placeholder, port 443</text>
+<path d="M 390,365 L 690,365" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="418" y="312" width="243" height="45" fill="#ffffff"/>
+<text x="540" y="324" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">connect api.example.com:443,</text>
+<text x="540" y="345" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">on its channel</text>
 <rect x="555" y="381.0" width="270" height="58" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
 <text x="690" y="400" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">1  decide against the</text>
 <text x="690" y="420" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">egress clauses; record it</text>
 <path d="M 690,475 L 940,475" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="716" y="450" width="198" height="24" fill="#ffffff"/>
-<text x="815" y="462" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">2  resolve the name</text>
+<rect x="732" y="442" width="166" height="24" fill="#ffffff"/>
+<text x="815" y="455" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">2  resolve the name</text>
 <path d="M 940,520 L 690,520" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
-<rect x="765" y="495" width="99" height="24" fill="#ffffff"/>
-<text x="815" y="508" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">addresses</text>
+<rect x="769" y="488" width="92" height="24" fill="#ffffff"/>
+<text x="815" y="500" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">addresses</text>
 <rect x="555" y="530.0" width="270" height="96" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
 <text x="690" y="547" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">3  re-check each address;</text>
 <text x="690" y="568" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">refuse private, loopback,</text>
 <text x="690" y="588" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">link-local and reserved</text>
 <text x="690" y="609" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">ones, and record it</text>
-<path d="M 690,670 L 1150,670" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="791" y="628" width="258" height="45" fill="#ffffff"/>
-<text x="920" y="640" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">4  connect to exactly the</text>
-<text x="920" y="660" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">address just checked</text>
-<path d="M 690,730 L 390,730" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
-<rect x="416" y="688" width="248" height="45" fill="#ffffff"/>
-<text x="540" y="700" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">5  the connected socket,</text>
-<text x="540" y="720" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">passed over the channel</text>
-<path d="M 390,775 L 150,775" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
-<rect x="126" y="750" width="287" height="24" fill="#ffffff"/>
-<text x="270" y="762" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">an ordinary connected socket</text>
+<path d="M 690,682 L 1150,682" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="812" y="629" width="216" height="45" fill="#ffffff"/>
+<text x="920" y="641" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">4  connect to exactly the</text>
+<text x="920" y="662" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">address just checked</text>
+<path d="M 690,742 L 390,742" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+<rect x="436" y="689" width="207" height="45" fill="#ffffff"/>
+<text x="540" y="701" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">5  the connected socket,</text>
+<text x="540" y="722" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">passed over the channel</text>
+<path d="M 390,787 L 150,787" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+<rect x="144" y="754" width="252" height="24" fill="#ffffff"/>
+<text x="270" y="767" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">an ordinary connected socket</text>
 <rect x="1260" y="150" width="270" height="330" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
 <text x="1272" y="171" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">IF THE NAME REBINDS</text>
 <text x="1395" y="210" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">The name was granted, but</text>

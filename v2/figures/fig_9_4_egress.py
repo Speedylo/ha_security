@@ -40,7 +40,10 @@ for key, (x, heading) in LANES.items():
 def msg(a, b, y, text, dashed=False):
     xa, xb = LANES[a][0], LANES[b][0]
     c.line([(xa, y), (xb, y)], dashed=dashed)
-    lift = (15 * (text.count("\n") + 1) + 4) / 2 + 3
+    # The label's white ground must end above the arrow and its head (about 6 px each side of
+    # the line), at the size the canvas actually draws, or it hides them.
+    shown = 11 * c.text_scale
+    lift = ((shown + 4) * (text.count("\n") + 1) + 4) / 2 + 8
     c.label((xa + xb) / 2, y - lift, text, size=11)
 
 
@@ -50,16 +53,16 @@ def step(lane, y, text, h=46):
 
 
 msg("int", "shim", 175, "resolve api.example.com")
-msg("shim", "int", 225, "a placeholder from\n240.0.0.0/4 (unroutable)", dashed=True)
-msg("int", "shim", 290, "connect to the\nplaceholder, port 443")
-msg("shim", "med", 350, "connect api.example.com:443,\non its channel")
+msg("shim", "int", 240, "a placeholder from\n240.0.0.0/4 (unroutable)", dashed=True)
+msg("int", "shim", 305, "connect to the\nplaceholder, port 443")
+msg("shim", "med", 365, "connect api.example.com:443,\non its channel")
 step("med", 410, "1  decide against the\negress clauses; record it", h=58)
 msg("med", "dns", 475, "2  resolve the name")
 msg("dns", "med", 520, "addresses", dashed=True)
 step("med", 578, "3  re-check each address;\nrefuse private, loopback,\nlink-local and reserved\nones, and record it", h=96)
-msg("med", "host", 670, "4  connect to exactly the\naddress just checked")
-msg("med", "shim", 730, "5  the connected socket,\npassed over the channel", dashed=True)
-msg("shim", "int", 775, "an ordinary connected socket", dashed=True)
+msg("med", "host", 682, "4  connect to exactly the\naddress just checked")
+msg("med", "shim", 742, "5  the connected socket,\npassed over the channel", dashed=True)
+msg("shim", "int", 787, "an ordinary connected socket", dashed=True)
 
 # --- the attack the order defeats -------------------------------------------------------------
 c.box(1260, 150, 270, 330, fill="white", title="IF THE NAME REBINDS")

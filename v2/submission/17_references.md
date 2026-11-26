@@ -8,8 +8,6 @@ Barth, A., Felt, A. P., Saxena, P., & Boodman, A. (2010). Protecting browsers fr
 
 Cohen, T. (2026, May 12). *Remote integration execution* [Online forum post]. Home Assistant Community. https://community.home-assistant.io/t/remote-integration-execution/1010130
 
-Common Criteria Recognition Arrangement. (2017). *Common Criteria for information technology security evaluation, Part 2: Security functional components* (Version 3.1, Revision 5, CCMB-2017-04-002).
-
 Corno, F., & Mannella, L. (2022). A threat model for extensible smart home gateways. In *2022 7th International Conference on Smart and Sustainable Technologies (SpliTech)* (pp. 1–6). IEEE. https://doi.org/10.23919/SpliTech55088.2022.9854235
 
 Corno, F., & Mannella, L. (2023). A gateway-based MUD architecture to enhance smart home security. In *2023 8th International Conference on Smart and Sustainable Technologies (SpliTech)* (pp. 1–6). IEEE. https://doi.org/10.23919/SpliTech58164.2023.10193747

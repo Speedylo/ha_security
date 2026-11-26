@@ -38,12 +38,12 @@ Six actors could threaten these assets, and the evidence for each differs; the m
 
 Between these actors and the assets lie six trust boundaries, and in today's Home Assistant four of the six do not exist. Figure 8.1 shows why. The integrations and the platform share one operating-system process and one Python interpreter, so there is no point in the running system at which the boundary between an integration and the platform (TB1), the network (TB3), the host's files (TB5) or another integration (TB6) could be enforced. The two that exist, the community store's review (TB4) and the platform's programming interface (TB2), constrain how an integration is built but not what it does. The model's first finding is therefore structural: the missing boundaries are a consequence of one shared process, not of any one integration's code.
 
-![Figure 8.1](../figures/fig_4_1_current_state.svg)
+![Figure 8.1](../figures/fig_8_1_today.svg)
 
 **Figure 8.1**
 *Home Assistant today, with the six trust boundaries*
 
-*Note.* Everything inside the dashed box shares one process. Boundaries marked ABSENT have no enforcement point anywhere in the running system. The letters (a) to (k) mark what an integration can do, for example (f) read every integration's stored credentials or (g) read any file, the secrets file included. Appendix C shows the confined design on the same canvas.
+*Note.* Everything inside the dashed box shares one process. Each arrow is something an integration can do, and each tag marks the trust boundary that arrow crosses: ABSENT means no enforcement point exists anywhere in the running system. TB1 lies between an integration and whatever mediates its requests, TB2 between that point and the platform, TB3 between an integration and the network, TB4 between the author and the installation, TB5 between an integration and the host's files, and TB6 between integrations. TB4 exists only as the community store's check of an integration's structure, and TB2 only as the platform's interface, which is not scoped to any integration. Appendix C shows the confined design on the same layout.
 
 ## 8.3 Risks and their treatment
 
@@ -66,7 +66,7 @@ Applying STRIDE to each boundary identified eighteen threats against the platfor
 
 The highest ratings describe ordinary platform behaviour rather than exploits. An integration that unlocks a door today exploits nothing; it uses the platform as designed, which is why the likelihood of T01, T03 and T05 is rated almost certain. Because one architectural decision governs most of the risk, treating that decision is worth more than treating any number of individual threats, and Section 9 describes the design that does so. Its treatments mostly reduce consequence rather than likelihood: they bound what an integration's code can do once installed, which complements the community store's existing review of how a repository is structured (HACS, n.d.).
 
-The model also changed the requirements, which is the clearest evidence that writing it first mattered. No requirement on resource exhaustion existed, because neither the problem statement nor the literature justified one. The threat of an integration exhausting processor, memory or disk supplied the justification, since availability is a security property when automations include alarms and heating, and Corno and Mannella (2022) treat a gateway's resource saturation as a threat. Requirement S9, that the framework bounds an integration's use of processor, memory and disk, was therefore derived from an identified threat, at the point in the process where ISO 31000 places it.
+The model also changed the requirements, which is the clearest evidence that writing it first mattered. No requirement on resource exhaustion existed, because the problem statement and the literature review both concern what an integration is allowed to do rather than how much it consumes. The threat model raised the threat of an integration exhausting processor, memory or disk, and supplied the justification: availability is a security property when automations include alarms and heating, and Corno and Mannella (2022) include a gateway's resource saturation among their threats. Requirement S9, that the framework bounds an integration's use of processor, memory and disk, was therefore derived from an identified threat, at the point in the process where ISO 31000 places it.
 
 ## 8.4 Residual risks
 

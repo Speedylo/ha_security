@@ -23,17 +23,17 @@
 <path d="M 1280,114 L 1280,1240" fill="none" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="6 4"/>
 <path d="M 30,140 L 1370,140" fill="none" stroke="#1a1a1a" stroke-width="1"/>
 <text x="40" y="158" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">A SERVICE CALL FROM THE INTEGRATION</text>
-<path d="M 140,220 L 350,220" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="121" y="178" width="248" height="45" fill="#ffffff"/>
-<text x="245" y="190" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">light.turn_on, as it</text>
-<text x="245" y="210" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">would call it unconfined</text>
-<path d="M 350,275 L 560,275" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="346" y="232" width="218" height="45" fill="#ffffff"/>
-<text x="455" y="245" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">not a service of (B):</text>
+<path d="M 140,228 L 350,228" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="137" y="175" width="215" height="45" fill="#ffffff"/>
+<text x="245" y="187" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">light.turn_on, as it</text>
+<text x="245" y="208" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">would call it unconfined</text>
+<path d="M 350,285 L 560,285" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="368" y="232" width="174" height="45" fill="#ffffff"/>
+<text x="455" y="244" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">not a service of (B):</text>
 <text x="455" y="265" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">forward it</text>
-<path d="M 560,335 L 820,335" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="522" y="292" width="337" height="45" fill="#ffffff"/>
-<text x="690" y="305" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">service.call frame on its channel</text>
+<path d="M 560,345 L 820,345" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="546" y="292" width="289" height="45" fill="#ffffff"/>
+<text x="690" y="304" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">service.call frame on its channel</text>
 <text x="690" y="325" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">(four-byte length, then JSON)</text>
 <rect x="685" y="358.0" width="270" height="54" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
 <text x="820" y="375" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">1  identity: from the channel,</text>
@@ -44,24 +44,24 @@
 <rect x="685" y="478.0" width="270" height="54" rx="5" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.5"/>
 <text x="820" y="495" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">3  permit or deny, naming</text>
 <text x="820" y="515" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the deciding clause</text>
-<path d="M 820,580 L 1060,580" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="821" y="538" width="238" height="45" fill="#ffffff"/>
-<text x="940" y="550" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">4  record the decision,</text>
+<path d="M 820,590 L 1060,590" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="841" y="537" width="198" height="45" fill="#ffffff"/>
+<text x="940" y="549" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">4  record the decision,</text>
 <text x="940" y="570" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">flushed to disk</text>
-<path d="M 820,640 L 1280,640" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="921" y="598" width="258" height="45" fill="#ffffff"/>
-<text x="1050" y="610" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">5  perform the call,</text>
+<path d="M 820,650 L 1280,650" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="940" y="597" width="220" height="45" fill="#ffffff"/>
+<text x="1050" y="609" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">5  perform the call,</text>
 <text x="1050" y="630" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">with the mediator's token</text>
-<path d="M 1280,685 L 820,685" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
-<rect x="1015" y="660" width="69" height="24" fill="#ffffff"/>
-<text x="1050" y="672" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">result</text>
-<path d="M 820,735 L 560,735" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
-<rect x="527" y="710" width="327" height="24" fill="#ffffff"/>
-<text x="690" y="722" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">answer, with the deciding clause</text>
-<path d="M 560,780 L 140,780" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
-<rect x="127" y="755" width="446" height="24" fill="#ffffff"/>
-<text x="350" y="768" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the call returns, or raises if it was denied</text>
-<rect x="1056" y="427" width="228" height="86" fill="#ffffff"/>
+<path d="M 1280,695 L 820,695" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+<rect x="1018" y="662" width="64" height="24" fill="#ffffff"/>
+<text x="1050" y="675" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">result</text>
+<path d="M 820,745 L 560,745" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+<rect x="550" y="712" width="280" height="24" fill="#ffffff"/>
+<text x="690" y="725" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">answer, with the deciding clause</text>
+<path d="M 560,790 L 140,790" fill="none" stroke="#1a1a1a" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+<rect x="164" y="758" width="372" height="24" fill="#ffffff"/>
+<text x="350" y="770" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the call returns, or raises if it was denied</text>
+<rect x="1075" y="427" width="189" height="86" fill="#ffffff"/>
 <text x="1170" y="439" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">a denied call skips</text>
 <text x="1170" y="460" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">step 5: it is recorded</text>
 <text x="1170" y="480" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">and answered, and</text>
@@ -69,32 +69,32 @@
 <path d="M 30,810 L 1370,810" fill="none" stroke="#1a1a1a" stroke-width="1"/>
 <text x="40" y="828" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">A DECLARED ENTITY CHANGES IN (A)</text>
 <path d="M 1280,870 L 820,870" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="936" y="845" width="228" height="24" fill="#ffffff"/>
-<text x="1050" y="858" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the entity's new state</text>
+<rect x="953" y="838" width="193" height="24" fill="#ffffff"/>
+<text x="1050" y="850" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the entity's new state</text>
 <path d="M 820,930 L 560,930" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="502" y="888" width="376" height="45" fill="#ffffff"/>
-<text x="690" y="900" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">push to each sandbox that subscribed;</text>
-<text x="690" y="920" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">nothing recorded per delivery</text>
+<rect x="529" y="877" width="321" height="45" fill="#ffffff"/>
+<text x="690" y="889" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">push to each sandbox that subscribed;</text>
+<text x="690" y="910" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">nothing recorded per delivery</text>
 <path d="M 560,990 L 350,990" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="351" y="965" width="208" height="24" fill="#ffffff"/>
-<text x="455" y="978" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">set the state in (B)</text>
-<rect x="1071" y="927" width="198" height="66" fill="#ffffff"/>
+<rect x="370" y="958" width="169" height="24" fill="#ffffff"/>
+<text x="455" y="970" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">set the state in (B)</text>
+<rect x="1085" y="927" width="170" height="66" fill="#ffffff"/>
 <text x="1170" y="940" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">recorded once, when</text>
 <text x="1170" y="960" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the subscription</text>
 <text x="1170" y="980" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">was decided</text>
 <path d="M 30,1030 L 1370,1030" fill="none" stroke="#1a1a1a" stroke-width="1"/>
 <text x="40" y="1048" font-size="18" font-family="Helvetica,Arial,sans-serif" font-weight="bold" fill="#1a1a1a" text-anchor="start" dominant-baseline="middle">THE HOUSEHOLD OPERATES A CONFINED ENTITY</text>
-<path d="M 1280,1080 L 820,1080" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="926" y="1038" width="248" height="45" fill="#ffffff"/>
-<text x="1050" y="1050" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">command, from the bridge</text>
-<text x="1050" y="1070" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">integration in (A)</text>
-<path d="M 820,1130 L 1060,1130" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="890" y="1105" width="99" height="24" fill="#ffffff"/>
-<text x="940" y="1118" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">record it</text>
-<path d="M 820,1180 L 560,1180" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="541" y="1155" width="297" height="24" fill="#ffffff"/>
-<text x="690" y="1168" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">pass it to the owning sandbox</text>
+<path d="M 1280,1088 L 820,1088" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="944" y="1035" width="211" height="45" fill="#ffffff"/>
+<text x="1050" y="1047" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">command, from the bridge</text>
+<text x="1050" y="1068" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">integration in (A)</text>
+<path d="M 820,1135 L 1060,1135" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="896" y="1102" width="88" height="24" fill="#ffffff"/>
+<text x="940" y="1115" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">record it</text>
+<path d="M 820,1182 L 560,1182" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="564" y="1150" width="253" height="24" fill="#ffffff"/>
+<text x="690" y="1162" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">pass it to the owning sandbox</text>
 <path d="M 560,1225 L 140,1225" fill="none" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#ar)"/>
-<rect x="201" y="1200" width="297" height="24" fill="#ffffff"/>
-<text x="350" y="1212" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the entity's own handler runs</text>
+<rect x="224" y="1192" width="253" height="24" fill="#ffffff"/>
+<text x="350" y="1205" font-size="16.5" font-family="Helvetica,Arial,sans-serif" font-weight="normal" fill="#1a1a1a" text-anchor="middle" dominant-baseline="middle">the entity's own handler runs</text>
 </svg>

@@ -34,12 +34,12 @@ Community review is the one safeguard that works, since the code is public and o
 
 ## 2.3 Who carries the risk
 
-Attacks that require installing a community integration fall outside the platform's security programme (Home Assistant, n.d.-f), and such integrations are installed "at their own risk" (Home Assistant, 2021a). The platform's permissions apply to the people who use it: where it checks whether an action is allowed, it checks the user who asked. An integration's code asks for an action with no user behind it, and the check then lets the action through (Home Assistant, 2026a). The household is given the risk without any means to act on it: it cannot see what an integration will access before installing it, limit it while it runs, or find out afterwards what it did. Running integrations on separate machines, as a 2026 proposal suggests for reliability (Cohen, 2026), would not change this, because an integration moved elsewhere still acts through an unrestricted credential.
+Attacks that require installing a community integration fall outside the platform's security programme (Home Assistant, n.d.-f), and the platform states that users install such integrations "at their own risk" (Home Assistant, 2021a). The platform's permissions apply to the people who use it: where it checks whether an action is allowed, it checks the user who asked. An integration's code asks for an action with no user behind it, and the check then lets the action through (Home Assistant, 2026a). The household is given the risk without any means to act on it: it cannot see what an integration will access before installing it, limit it while it runs, or find out afterwards what it did. Running integrations on separate machines, as a 2026 proposal suggests for reliability (Cohen, 2026), would not change this, because an integration moved elsewhere still acts through an unrestricted credential.
 
 ## 2.4 The statement
 
-> Community integrations run with Home Assistant's full authority, locks and alarms included, in more than half of reporting installations, and nothing in the ecosystem limits what they can do once installed. The platform leaves that risk with the household.
->
-> What is missing is a way for an integration's authority to be declared, enforced and recorded, so that the risk the household is told to own becomes one it can see and limit.
+Community integrations run with Home Assistant's full authority, locks and alarms included, in more than half of reporting installations, and nothing in the ecosystem limits what they can do once installed. The platform leaves that risk with the household.
+
+What is missing is a way for an integration's authority to be declared, enforced and recorded, so that the risk the household is told to own becomes one it can see and limit.
 
 Section 3 turns this statement into an objective, four constraints and the requirements a solution must meet.
