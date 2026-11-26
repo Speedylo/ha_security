@@ -13,7 +13,7 @@ The project claims that existing integrations can be confined, without changing 
 |---|---|
 | A. Confinement protects the household | From inside a sandbox, the garbage-collector technique (Corno & Mannella, 2022) reaches a platform object, a planted credential is recovered, or the 2021 file-theft pattern (Home Assistant, 2021a) succeeds |
 | B. Integrations still work | The unconfined run loads almost all of the most-installed integrations and the confined run does not, so that most of the shortfall comes from the design |
-| C. A home device can afford it | The reference device cannot hold as many sandboxes as the average installation has community integrations, 4.02 (Home Assistant, n.d.-d), or mediation changes what the platform can do |
+| C. A home device can afford it | The reference device cannot hold as many sandboxes as the average installation has community integrations, 4.02 (Home Assistant, n.d.-b), or mediation changes what the platform can do |
 
 Each condition names an observation rather than a level of satisfaction. The budget in C is stated against an average because the platform publishes no spread across installations, a weakness that Section 12.5 carries into the result. One further condition applies to the evaluation itself, which fails if it reports as passed a requirement it cannot show; Appendix D describes how this was checked.
 

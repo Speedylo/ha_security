@@ -32,17 +32,13 @@ Hardt, D. (Ed.). (2012). *The OAuth 2.0 authorization framework* (RFC 6749). Int
 
 Home Assistant. (n.d.-a). *Add-ons*. Home Assistant Developer Documentation. Retrieved October 16, 2026, from https://developers.home-assistant.io/docs/add-ons
 
-Home Assistant. (n.d.-b). *Config entries*. Home Assistant Developer Documentation. Retrieved October 11, 2026, from https://developers.home-assistant.io/docs/config_entries_index
+Home Assistant. (n.d.-b). *Home Assistant analytics*. Retrieved August 21, 2026, from https://analytics.home-assistant.io/
 
-Home Assistant. (n.d.-c). *Creating your first integration*. Home Assistant Developer Documentation. Retrieved October 16, 2026, from https://developers.home-assistant.io/docs/creating_component_index/
+Home Assistant. (n.d.-c). *Repairs*. Home Assistant Developer Documentation. Retrieved October 11, 2026, from https://developers.home-assistant.io/docs/core/platform/repairs
 
-Home Assistant. (n.d.-d). *Home Assistant analytics*. Retrieved August 21, 2026, from https://analytics.home-assistant.io/
+Home Assistant. (n.d.-d). *Security*. Retrieved October 16, 2026, from https://www.home-assistant.io/security/
 
-Home Assistant. (n.d.-e). *Repairs*. Home Assistant Developer Documentation. Retrieved October 11, 2026, from https://developers.home-assistant.io/docs/core/platform/repairs
-
-Home Assistant. (n.d.-f). *Security*. Retrieved October 16, 2026, from https://www.home-assistant.io/security/
-
-Home Assistant. (n.d.-g). *Service actions*. Home Assistant Developer Documentation. Retrieved October 16, 2026, from https://developers.home-assistant.io/docs/dev_101_services/
+Home Assistant. (n.d.-e). *Service actions*. Home Assistant Developer Documentation. Retrieved October 16, 2026, from https://developers.home-assistant.io/docs/dev_101_services/
 
 Home Assistant. (2021a, January 22). *Disclosure: Security vulnerabilities in custom integrations HACS, Dwains Dashboard, Font Awesome and others*. Home Assistant Blog. https://www.home-assistant.io/blog/2021/01/22/security-disclosure/
 
@@ -64,17 +60,11 @@ Kulkarni, S., Mylonas, A., & Vidalis, S. (2026). P3CRID: A threat model methodol
 
 Ladisa, P., Plate, H., Martinez, M., & Barais, O. (2023). SoK: Taxonomy of attacks on open-source software supply chains. In *2023 IEEE Symposium on Security and Privacy (SP)* (pp. 1509–1526). IEEE. https://doi.org/10.1109/SP46215.2023.10179304
 
-Linux man-pages project. (n.d.-a). *chroot(2)*. Retrieved October 16, 2026, from https://man7.org/linux/man-pages/man2/chroot.2.html
+Linux man-pages project. (n.d.-a). *namespaces(7)*. Retrieved October 16, 2026, from https://man7.org/linux/man-pages/man7/namespaces.7.html
 
-Linux man-pages project. (n.d.-b). *namespaces(7)*. Retrieved October 16, 2026, from https://man7.org/linux/man-pages/man7/namespaces.7.html
+Linux man-pages project. (n.d.-b). *seccomp(2)*. Retrieved October 16, 2026, from https://man7.org/linux/man-pages/man2/seccomp.2.html
 
-Linux man-pages project. (n.d.-c). *pivot_root(2)*. Retrieved October 16, 2026, from https://man7.org/linux/man-pages/man2/pivot_root.2.html
-
-Linux man-pages project. (n.d.-d). *seccomp(2)*. Retrieved October 16, 2026, from https://man7.org/linux/man-pages/man2/seccomp.2.html
-
-Linux man-pages project. (n.d.-e). *unix(7)*. Retrieved October 16, 2026, from https://man7.org/linux/man-pages/man7/unix.7.html
-
-Linux man-pages project. (n.d.-f). *user_namespaces(7)*. Retrieved October 16, 2026, from https://man7.org/linux/man-pages/man7/user_namespaces.7.html
+Linux man-pages project. (n.d.-c). *user_namespaces(7)*. Retrieved October 16, 2026, from https://man7.org/linux/man-pages/man7/user_namespaces.7.html
 
 Parasuraman, R., & Manzey, D. H. (2010). Complacency and bias in human use of automation: An attentional integration. *Human Factors, 52*(3), 381–410. https://doi.org/10.1177/0018720810376055
 

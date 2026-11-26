@@ -213,11 +213,11 @@ Table C.7 gives the authority that Section 2.1 summarises, with the source for e
 
 | Asset | Reach | Consequence of abuse | Basis |
 |---|---|---|---|
-| Entity states | Every entity in the installation | Occupancy, presence, sleep patterns, absence from home | Deduced from the loading model (Home Assistant, n.d.-g) |
-| Service calls | Any service, including unlocking a door and disarming an alarm | Physical access to the dwelling | Deduced from the loading model (Home Assistant, n.d.-g); the platform's per-user check lets through a call that carries no user (Home Assistant, 2026a) |
+| Entity states | Every entity in the installation | Occupancy, presence, sleep patterns, absence from home | Deduced from the loading model (Home Assistant, n.d.-e) |
+| Service calls | Any service, including unlocking a door and disarming an alarm | Physical access to the dwelling | Deduced from the loading model (Home Assistant, n.d.-e); the platform's per-user check lets through a call that carries no user (Home Assistant, 2026a) |
 | Stored credentials | Any file the process can read, including stored secrets | Compromise of every linked cloud account | Deduced from the loading model; shown for flawed integrations in 2021, where the platform noted that the exposed files include stored credentials (Home Assistant, 2021a) |
 | File system | Whatever the process's user can read | Configuration, history database, tokens | Deduced from the loading model; shown for flawed integrations in 2021 (Home Assistant, 2021a) |
-| Network | Unrestricted outbound access and the home network | Exfiltration; a foothold inside the home | Deduced from the loading model (Home Assistant, n.d.-g) |
+| Network | Unrestricted outbound access and the home network | Exfiltration; a foothold inside the home | Deduced from the loading model (Home Assistant, n.d.-e) |
 | Web endpoints | Can add its own HTTP endpoints to the platform's web server, with the login check switched off | An unauthenticated way into the home | Reported for an integration shipped with the platform (CVE-2023-27482) (elttam, 2023) |
 | Other integrations' live objects | Any object in the shared interpreter | Theft or alteration of another integration's secrets | Demonstrated experimentally (Corno & Mannella, 2022) |
 

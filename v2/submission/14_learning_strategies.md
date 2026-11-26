@@ -4,7 +4,7 @@ This project asked me to work in areas I had not studied before, among them the 
 
 ## 14.1 Learning from primary sources
 
-I learned most from reading the closest prior work in full rather than in summary. Corno and Mannella (2022) showed that an integration can walk the Python garbage collector to reach another integration's live objects, and that single result ruled out every design that enforces permissions inside the platform's own process, before I had written any code. Read less carefully, the paper would have pointed to the obvious first design, a permission check wrapped around the platform's core object, which would have failed in a way no test written for it would reveal. For the kernel, I worked from the manual pages of each interface the framework uses (Linux man-pages project, n.d.-b, n.d.-d), because the limits that matter for security are stated there.
+I learned most from reading the closest prior work in full rather than in summary. Corno and Mannella (2022) showed that an integration can walk the Python garbage collector to reach another integration's live objects, and that single result ruled out every design that enforces permissions inside the platform's own process, before I had written any code. Read less carefully, the paper would have pointed to the obvious first design, a permission check wrapped around the platform's core object, which would have failed in a way no test written for it would reveal. For the kernel, I worked from the manual pages of each interface the framework uses (Linux man-pages project, n.d.-a, n.d.-b), because the limits that matter for security are stated there.
 
 ## 14.2 Learning by predicting
 

@@ -72,7 +72,7 @@ A confined integration is useful only if its devices reach the household, which 
 
 ## 12.3 Can a home device afford it?
 
-The reference device is a Raspberry Pi 5 with 4 GB of memory. The test was whether it can hold as many sandboxes as the average installation has community integrations, 4.02 (Home Assistant, n.d.-d), without slowing what the platform does. Table 12.4 gives the main costs. The reported figures were measured in ten passes on fixed code, and the final rerun confirmed them within the limits set before it ran, with memory 3–5% higher.
+The reference device is a Raspberry Pi 5 with 4 GB of memory. The test was whether it can hold as many sandboxes as the average installation has community integrations, 4.02 (Home Assistant, n.d.-b), without slowing what the platform does. Table 12.4 gives the main costs. The reported figures were measured in ten passes on fixed code, and the final rerun confirmed them within the limits set before it ran, with memory 3–5% higher.
 
 **Table 12.4**
 *The cost of confinement on the reference device*
