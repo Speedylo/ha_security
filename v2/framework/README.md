@@ -1,21 +1,25 @@
 # The framework — supervisor-side code
 
-**Started:** 2026-08-25 · **Described by:** `report/06_implementation.md`
+**Started:** 2026-08-25 · **Described by:** Section 9 of the final report (`../submission/09_system_architecture.md`)
 
-> **2026-10-06.** The tables and commands below describe the framework as of early September: eleven of
-> today's 27 suites (27 since 2026-10-07, with `selftest_supervise`), and commands that assume an interpreter at `~/r2exp/ha314`. To build that
-> environment and run every suite, follow `../REPRODUCE.md`. The module list is still the map to
-> Chapter 6; modules added since (egress, the UDP relay, the push loop, (A)) are described in their
-> own docstrings and in Chapter 7's sections that introduced them.
+> **Section numbers.** The `§5.x`–`§7.x` and "Chapter" references in this file and in the module
+> docstrings point to the project's working report, which is kept locally and not published. The
+> final report, in `../submission/`, describes the same framework in Section 9 and its evaluation in
+> Sections 11 and 12.
 
-This is the artifact Chapter 6 builds. It is new code written against the design Chapter 5
-produced; the earlier feasibility spike in `~/capstone/spike/` is prior work, cited in §6.2 and
-not imported here.
+> **What this file covers.** The tables and commands below describe the core of the framework and its
+> first self-tests. There are now 36 suites; to build the environment and run all of them, follow
+> `../REPRODUCE.md`. Modules added later (egress, the UDP relay, the push loop, the real Home
+> Assistant, the supervisor) are described in their own docstrings; the main ones are listed at the
+> end of the table.
+
+This is new code written against the project's design. An earlier feasibility spike is prior work,
+kept outside this repository and not imported here.
 
 ## Layout
 
-Modules follow Chapter 6's sections rather than convenience, so that a section and the code it
-describes can be read side by side.
+Modules follow the working report's sections rather than convenience, so that a section and the code
+it describes can be read side by side.
 
 | Module | Section | What it is |
 |---|---|---|
@@ -33,13 +37,18 @@ describes can be read side by side.
 | `confine/describe.py` | §6.7 | Rendering a declaration for the person deciding whether to install |
 | `confine/audit.py` | §6.8 | Three-part identity, and the two chains over the record |
 | `confine/platform.py` | §6.10 | Step 5 — acting, against a stand-in Home Assistant |
-| `confine/sandbox_runtime.py` | §6.10 | **The bridge.** Runs inside the sandbox; imports nothing from this package |
+| `confine/sandbox_runtime.py` | §6.10 | **The bridge's sandbox half.** Runs inside the sandbox; imports nothing from this package |
 | `confine/selftest_channel.py` | §6.5.2 | Two sandboxes, both claiming to be the same integration |
 | `confine/selftest_policy.py` | §6.6 | S5's asymmetry, resolve-then-pin, and what is refused at parse time |
 | `confine/selftest_describe.py` | §6.7 | Four states an integration can be in, four renderings |
 | `confine/selftest_audit.py` | §6.8 | Identity's three components, and every form of tampering |
 | `confine/selftest_adversary.py` | §6.9 | A hostile integration, inside a sandbox, trying everything |
 | `confine/selftest_bridge.py` | §6.10 | An unmodified integration running, publishing, and confined |
+| `confine/supervise.py` | — | The supervisor: starts one integration's sandbox and mediator against the real Home Assistant, and handles approval and restarts |
+| `confine/capabilities.py` | — | Drops every capability before the integration starts (F76) |
+| `confine/egress.py`, `confine/egress_shim.py` | — | Network access: resolve, check, connect, and hand back the connected socket |
+| `confine/real_platform.py` | — | The mediator's one connection to the real Home Assistant, (A) |
+| `ha_bridge/confine_bridge/` | — | **The bridge** in (A): mirrors confined integrations' devices, and the Repairs panel's messages and actions |
 
 ## Running the preflight
 

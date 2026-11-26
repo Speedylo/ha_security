@@ -6,6 +6,7 @@ Every community integration runs inside Home Assistant's own process with all of
 
 | If you want | Read |
 |---|---|
+| The final report | `submission/`: its source, one Markdown file per section, and the script that builds it |
 | To reproduce the results | `REPRODUCE.md`: the environment from a blank Raspberry Pi, then every suite and experiment |
 | One experiment's command and raw results | `experiments/<name>/README.md` |
 | The code | `framework/README.md` |
@@ -22,8 +23,12 @@ Every community integration runs inside Home Assistant's own process with all of
 | `figures/` | Figure sources, the corpus fetcher and the platform-interface measurement |
 | `verify/` | The verification campaign's scripts and claim register |
 | `notes/` | Each experiment's predictions, committed before it ran, and the project's working notes |
+| `submission/` | The final report's source and build script |
+| `interim/` | Only `build_interim.py`, the template handling the final report's build reuses (the interim report itself is submitted separately) |
 
-The reports and diaries are submitted to the programme separately; this repository holds the work they describe.
+The final report's source is here; the built PDF, the interim report and the diaries are submitted to the programme separately.
+
+**Section numbers.** References such as §7.17 or "Chapter 6" in `REPRODUCE.md`, the READMEs, `notes/` and the code's docstrings point to the project's working report, which is kept locally and not published. The final report in `submission/` presents the same work: the framework in Section 9, the evaluation in Sections 11 and 12, and the detail in its appendices.
 
 ## Conventions
 

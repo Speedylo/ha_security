@@ -13,6 +13,11 @@ a spare card). Until it has, treat a step that fails as a finding about the guid
 
 Every step ends with a **Check**, so you can tell the step worked before the next one depends on it.
 
+**Section numbers.** References such as §3.4, §7.17 or "Chapter 6" in this guide and in the
+experiments' READMEs point to the project's working report, which is kept locally and not published.
+The final report is in `submission/`: its Sections 11 and 12 and Appendices D and F present the same
+measurements.
+
 ## What you need
 
 | | Used for every figure in the report |
@@ -48,9 +53,12 @@ git clone https://github.com/Speedylo/ha_security.git ~/ha_security
 cd ~/ha_security/v2
 ```
 
-The evaluation was frozen at two tags: `verify-2026-10`, where every measurement was re-run, and
-`verify-2026-10-f03`, which has the one fix the verification campaign made to the framework (§7.45.2).
-`main` has both, plus the documents written since.
+The evaluation was run in full at four tags: `verify-2026-10` and `verify-2026-10-f03` (the
+verification campaign, 5–6 October 2026), then `final-2026-10` (the first full rerun, 16 October) and
+`final-2026-11` (the second, 1 November), whose results the final report gives. `main` has all of
+them, plus the defects fixed afterwards (F72–F77), each with its prediction note and its results under
+`experiments/verify/results/`, and the documents written since. To reproduce the reported figures,
+check out `final-2026-11`; to run the current framework, stay on `main`.
 
 **Check:** `git log -1 --oneline` prints a commit, and `ls framework/confine | wc -l` is about 60.
 
@@ -155,7 +163,9 @@ way on the Pi, both were identical to the copies measured, file for file
 
 Every run from §7.37 on acts on a real Home Assistant, (A), not the stand-in. `house_a` creates its
 configuration in `~/r2exp/houseA`, onboards an owner, installs the bridge integration, and writes a
-long-lived token to `~/.config/capstone/house_a.token` (mode 600; it is printed nowhere).
+long-lived token to `~/.config/capstone/house_a.token`. It also creates the ordinary, non-admin user
+the mediator runs as, names it to the bridge, and writes that user's token to
+`~/.config/capstone/house_a_mediator.token` (F45). Both files are mode 600 and printed nowhere.
 
 ```bash
 cd ~/ha_security/v2/framework
@@ -200,7 +210,7 @@ bash experiments/selftests/suites_all.sh ~/r2exp/suites
 cat ~/r2exp/suites/summary.txt
 ```
 
-**Check:** the preflight exits 0, and every one of the 35 suite lines in `summary.txt` reads `exit=0`. The
+**Check:** the preflight exits 0, and every one of the 36 suite lines in `summary.txt` reads `exit=0`. The
 whole run takes about five minutes on the Pi 5. One known caveat: `selftest`'s "the user's home directory: ABSENT"
 row fails if `TMPDIR` points under your home directory, because the test's configuration root is then
 itself under home (F10). Leave `TMPDIR` unset.
@@ -221,7 +231,7 @@ results are. Run them from `v2/framework` unless the README says otherwise.
 | `gc_attack` | §7.15 |
 | `end_to_end` | §7.17, §7.31 |
 | `egress_demand`, `egress_shape` | §7.18, §7.24, §7.31.11 |
-| `durability` *(no README yet, F07)* | §7.20.1 |
+| `durability` | §7.20.1 |
 | `push_loop`, `real_platform` | §7.36, §7.37, §7.38 |
 | `bytecode_cache` | §7.39 |
 | `local_tcp` | §7.40 (needs step 7's LAN change) |
@@ -232,7 +242,8 @@ results are. Run them from `v2/framework` unless the README says otherwise.
 **Credentials, for three runs only.** Nothing else needs an account. Each lives in
 `~/.config/capstone/`, mode 600, and is never printed or committed:
 
-- `house_a.token`, written by step 9;
+- `house_a.token` and `house_a_mediator.token`, written by step 9: the owner's token, and the token
+  of the ordinary, non-admin user the mediator runs as (F45);
 - `pirateweather.key`, a free Pirate Weather API key, for the credentialed `pirateweather` run (§7.31);
 - `trakt.json`, from `experiments/oauth/trakt_device_login.py` with your own free Trakt account (§7.42).
 
@@ -244,4 +255,3 @@ results are. Run them from `v2/framework` unless the README says otherwise.
 - Transitive package versions are not pinned (step 5, F13).
 - The 150-integration sample behind contribution 1's API-surface figures was never kept and cannot be
   rebuilt (F16).
-- The repository is private on GitHub. An examiner needs access, or an archive.

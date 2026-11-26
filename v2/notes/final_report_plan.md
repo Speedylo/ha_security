@@ -49,7 +49,7 @@ Applies to all sections, **including those already approved** (§13, and the Oct
 1. Read the matching section in at least two past reports (`~/capstone/.claude/*.pdf`).
 2. Compare length, level of detail, what is mentioned and omitted, and readability; give Younes the gaps and the proposed shape.
 3. Rework: one thread per subsection; figures and a worked example from real output; no finding codes or process accounting in the body; limits gathered in one place.
-4. Move detail to an appendix, and keep the old text in `submission/before_final/`.
+4. Move detail to an appendix, and keep the old text in `submission/before_final/`. *(2026-11-26: moved to `notes/report_drafts/`, so `submission/` holds only the current source; the paths below say `before_final/`.)*
 5. Check every number against its result file and every sentence for overclaiming before showing it.
 
 §12 is the worked model. §13 has no past equivalent: compare it with the interim's §6 and the syllabus.

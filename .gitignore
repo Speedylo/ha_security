@@ -53,6 +53,7 @@ v2/report/
 v2/proposal/
 
 # Course deliverables, submitted separately (2026-10-25)
-v2/interim/
+v2/interim/*
+!v2/interim/build_interim.py
 v2/Diary1.docx
 v2/Diary2.docx
